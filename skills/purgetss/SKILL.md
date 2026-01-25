@@ -79,7 +79,9 @@ The following are **NOT supported**:
 - **NO `p-` padding classes**: Titanium does NOT support a native `padding` property on `View`, `Window`, `ScrollView`, or `TableView`. Always use **margins on children** (`m-`) to simulate internal spacing.
 - **View defaults to `SIZE`**: Use `w-screen`/`h-screen` to fill space when needed.
 - **`rounded-full`**: To get a perfect circle, use `rounded-full-XX` (where XX is the width/height of the square element).
+- **`rounded-full-XX` includes size**: These classes already set `width`, `height`, and `borderRadius`. Do **not** add `w-XX h-XX`/`wh-XX` unless you need to override.
 - **`m-xx` on FILL elements**: Adding `m-4` to a `w-screen` element pins it to all four edges (top, bottom, left, right). This will **stretch the component vertically** to fill the parent unless you explicitly add `h-auto` (`Ti.UI.SIZE`) to constrain it to its content.
+- **`w-XX` + `h-XX` → `wh-XX`**: If both width and height use the same scale value, prefer a single `wh-XX` (order doesn't matter: `w-10 h-10` and `h-10 w-10` are equivalent).
 - **Use `wh-` shortcuts**: PurgeTSS provides a complete scale of combined width/height utilities:
     - **Numeric Scale**: `wh-0` to `wh-96` (e.g., `wh-16` sets both to 64px).
     - **Fractions**: `wh-1/2`, `wh-3/4`, up to `wh-11/12` for proportional sizing.
