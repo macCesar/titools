@@ -85,15 +85,15 @@ gemini skills list
 
 ## Skills Overview
 
-| Skill            | Purpose                       | Use When                                     |
-| ---------------- | ----------------------------- | -------------------------------------------- |
-| **alloy-expert** | Architecture + Implementation | Starting point for most Titanium/Alloy tasks |
-| **purgetss**     | Utility-first styling         | UI styling, animations, icon fonts           |
-| **ti-ui**        | UI/UX patterns                | Layouts, ListViews, gestures, platform UI    |
-| **ti-howtos**    | Native features               | Location, Push, Media, Platform APIs         |
-| **ti-guides**    | SDK fundamentals              | Hyperloop, distribution, tiapp.xml           |
-| **alloy-guides** | Alloy MVC reference           | Models, Views, Controllers, Widgets          |
-| **alloy-howtos** | Alloy CLI & debugging         | Project setup, CLI commands, errors          |
+| Skill            | Purpose                       | Best For                                |
+| ---------------- | ----------------------------- | --------------------------------------- |
+| **alloy-expert** | Architecture + Implementation | Starting point for most tasks           |
+| **purgetss**     | Utility-first styling         | UI styling and animations               |
+| **ti-ui**        | UI/UX patterns                | Complex layouts, ListViews, platform UI |
+| **ti-howtos**    | Native feature integration    | Location, Push, Media, Platform APIs    |
+| **ti-guides**    | SDK fundamentals              | Hyperloop, distribution, configuration  |
+| **alloy-guides** | Alloy MVC reference           | Models, Views, Controllers, Widgets     |
+| **alloy-howtos** | Alloy CLI & debugging         | Project setup, CLI commands, errors     |
 
 ---
 
@@ -110,7 +110,11 @@ The AI will automatically use:
 - `purgetss` → Styling classes and animations
 - `ti-howtos` → Secure token storage
 
+**You don't need to call skills explicitly** - the AI reads skill descriptions and loads the appropriate knowledge when needed.
+
 ### Skill Hierarchy
+
+`alloy-expert` acts as the **orchestrator**, delegating to specialized skills when needed:
 
 ```
                     ┌─────────────────┐
@@ -145,20 +149,30 @@ The AI will automatically use:
 
 **The primary skill for Titanium Alloy development.** Start here for most tasks.
 
-**Activates when:**
+**When it activates:**
 - Designing project structure
 - Implementing controllers, views, services
 - Choosing data strategies (Models vs Collections)
+- Writing clean ES6+ code
 - Memory management and cleanup patterns
 - Performance optimization
 - Security patterns
+- Migrating legacy apps
 
 **Example prompts:**
 ```
-"How should I structure a new Titanium Alloy app?"
+"How should I structure a new Titanium Alloy app with authentication?"
 "Create a user service that fetches data from an API"
+"What's the best pattern for navigation between screens?"
 "How do I prevent memory leaks in my controllers?"
+"Migrate this classic Titanium code to modern Alloy patterns"
 ```
+
+**Key features:**
+- PurgeTSS rules built-in (correct classes)
+- Quick decision matrix for common questions
+- 13 reference guides for deep dives
+- Delegates to specialized skills when needed
 
 ---
 
@@ -166,24 +180,30 @@ The AI will automatically use:
 
 **Utility-first styling toolkit for Titanium/Alloy.**
 
-**Activates when:**
-- Setting up PurgeTSS
+**When it activates:**
+- Setting up PurgeTSS in a project
 - Complex layouts (Grid system)
-- Animations (`<Animation>` component)
+- Declarative animations (`<Animation>` component)
 - Icon fonts (Font Awesome, Material Icons)
+- Custom color palettes
 - Platform-specific styling
+- config.cjs configuration
 
 **Example prompts:**
 ```
-"Create a responsive grid layout"
-"Add a fade-in animation"
-"How do I use Font Awesome icons?"
+"Set up PurgeTSS in my existing Alloy project"
+"Create a responsive 12-column grid layout"
+"Add a fade-in animation when my view appears"
+"Configure custom colors in config.cjs"
+"How do I use Font Awesome 7 icons?"
+"Style this button differently on iOS vs Android"
 ```
 
 **Critical rules:**
 - NO flexbox (`flex-row`, `justify-between`) → use `horizontal`/`vertical`
 - NO `w-full` → use `w-screen`
 - NO `p-*` on Views → use `m-*` on children
+- Arbitrary values use parentheses: `w-(100px)`, NOT `w-[100px]`
 
 ---
 
@@ -191,19 +211,32 @@ The AI will automatically use:
 
 **UI/UX expert for layouts and platform components.**
 
-**Activates when:**
-- Layout systems
+**When it activates:**
+- Layout systems (composite, vertical, horizontal)
 - ListView/TableView optimization
-- Gestures (swipe, pinch)
+- Event handling and bubbling
+- Animations and transforms
+- Gestures (swipe, pinch, longpress)
+- Orientation handling
 - App icons and splash screens
-- Platform-specific UI
+- Android Action Bar / iOS Navigation patterns
+- Accessibility (VoiceOver, TalkBack)
 
 **Example prompts:**
 ```
-"Create a high-performance ListView"
+"Create a high-performance ListView with custom templates"
 "Handle swipe gestures on table rows"
-"Set up app icons for all densities"
+"Set up app icons for all iOS and Android densities"
+"Implement pull-to-refresh on a ScrollView"
+"Make my app accessible for VoiceOver users"
+"Configure the Android Action Bar with custom menu items"
 ```
+
+**Key rules:**
+- NO `Ti.UI.SIZE` in ListView items (causes jerky scrolling)
+- Prefer ListView over TableView for large datasets
+- Use `dp` units for cross-platform consistency
+- Remove global listeners on pause
 
 ---
 
@@ -211,21 +244,36 @@ The AI will automatically use:
 
 **Native feature integration expert.**
 
-**Activates when:**
+**When it activates:**
 - Location services and Maps
-- Push notifications
+- Push notifications (APNs/FCM)
+- Local notifications
 - Camera and Gallery
-- Audio/Video
-- File system and SQLite
-- Android Intents
-- iOS Background Services
+- Audio/Video playback
+- File system operations
+- SQLite databases
+- HTTPClient networking
+- WebView integration
+- Android Intents and Services
+- iOS Background Services, iCloud, Keychain
+- Core Motion, WatchKit
 
 **Example prompts:**
 ```
-"Implement GPS tracking"
-"Set up push notifications"
-"Capture and resize photos"
+"Implement battery-efficient GPS tracking"
+"Set up push notifications for iOS and Android"
+"Capture and resize photos from the camera"
+"Download files with progress indicator"
+"Store sensitive data in iOS Keychain"
+"Create an Android background service"
+"Integrate with Apple Watch using WatchKit"
 ```
+
+**Key rules:**
+- Always handle both `onload` and `onerror` for HTTPClient
+- Always close database handles and result sets
+- Use `imageAsResized` to avoid memory exhaustion
+- Configure proper permissions in tiapp.xml
 
 ---
 
@@ -233,16 +281,24 @@ The AI will automatically use:
 
 **SDK fundamentals and advanced configuration.**
 
-**Activates when:**
+**When it activates:**
 - Hyperloop native access
-- App distribution
+- Native module development
+- App distribution (Play Store, App Store)
 - tiapp.xml configuration
-- Memory optimization
+- CLI commands and options
+- Memory and bridge optimization
+- CommonJS module patterns
+- Coding best practices
 
 **Example prompts:**
 ```
 "Access native iOS APIs using Hyperloop"
-"Prepare my app for App Store submission"
+"Configure tiapp.xml for production build"
+"Prepare my app for Google Play submission"
+"Create a native Android module"
+"Optimize bridge crossings for better performance"
+"What are the reserved words I should avoid?"
 ```
 
 ---
@@ -251,16 +307,24 @@ The AI will automatically use:
 
 **Complete Alloy MVC framework reference.**
 
-**Activates when:**
-- MVC architecture
-- Backbone.js models/collections
-- Data binding
-- Widgets
+**When it activates:**
+- MVC architecture concepts
+- Backbone.js models and collections
+- Data binding patterns
+- XML markup elements
+- TSS styling syntax
+- Widget development
+- Sync adapters (sql, properties)
+- Migrations
 
 **Example prompts:**
 ```
+"Explain how Alloy data binding works"
 "Create a model with SQLite adapter"
 "Bind a collection to a TableView"
+"Build a reusable widget"
+"What's the TSS syntax for platform-specific styles?"
+"How does the Alloy compilation process work?"
 ```
 
 ---
@@ -269,17 +333,29 @@ The AI will automatically use:
 
 **Alloy CLI, configuration, and debugging.**
 
-**Activates when:**
-- Alloy CLI commands
-- Configuration files
-- Debugging errors
+**When it activates:**
+- Alloy CLI commands (new, generate, compile)
+- Configuration files (alloy.jmk, config.json)
+- Debugging compilation errors
+- Conditional views
 - Custom XML tags
+- Best practices and naming conventions
+- Backbone.Events patterns
 
 **Example prompts:**
 ```
 "Generate a new model with CLI"
+"Configure alloy.jmk build hooks"
 "Fix 'No app.js found' error"
+"Create conditional views based on user state"
+"Build a custom XML tag without widgets"
+"Set up Backbone.Events for global communication"
 ```
+
+**Key rules:**
+- Use Backbone.Events instead of Ti.App.fireEvent
+- Never use double underscore prefixes (`__foo`)
+- Access config at runtime with `Alloy.CFG.yourKey`
 
 ---
 
@@ -293,20 +369,105 @@ Help me set up the project structure."
 
 ### UI Development
 ```
-"Create a product listing screen with pull-to-refresh,
-infinite scroll, and swipe-to-delete"
+"Create a product listing screen with:
+- Pull-to-refresh
+- Infinite scroll pagination
+- Image caching
+- Swipe-to-delete"
 ```
 
 ### API Integration
 ```
-"Build a complete authentication flow with JWT tokens
-and secure storage"
+"Build a complete authentication flow:
+- Login/Register screens
+- JWT token management
+- Secure storage
+- Auto-refresh tokens"
 ```
 
 ### Performance Optimization
 ```
-"My ListView scrolls poorly and uses too much memory.
-Help me optimize it."
+"My app is slow. The ListView scrolls poorly and
+the app uses too much memory. Help me optimize it."
+```
+
+### Migration
+```
+"I have a legacy Titanium classic app from 2015.
+Help me migrate it to modern Alloy with PurgeTSS."
+```
+
+### Platform-Specific Features
+```
+"Implement Apple Sign-In for iOS and Google Sign-In for Android"
+```
+
+### Debugging
+```
+"I'm getting 'Alloy is not defined' in my lib file. How do I fix it?"
+```
+
+---
+
+## Best Practices
+
+### 1. Be Specific
+Instead of: "Make a list"
+Try: "Create a ListView with user avatars, names, and swipe actions"
+
+### 2. Provide Context
+Instead of: "Fix the error"
+Try: "I'm getting this error when compiling: [error message]. Here's my code: [code]"
+
+### 3. Ask for Architecture First
+For complex features, start with:
+"How should I architect a real-time chat feature?"
+Then follow up with implementation details.
+
+### 4. Mention Constraints
+"Build a settings screen. Must work offline and sync when connected."
+
+### 5. Reference Existing Code
+"Here's my current controller. How can I improve memory management?"
+
+---
+
+## Skill Contents Summary
+
+| Skill        | SKILL.md                      | References                                   |
+| ------------ | ----------------------------- | -------------------------------------------- |
+| alloy-expert | Architecture + Implementation | 13 files (patterns, testing, security, etc.) |
+| purgetss     | Setup + Critical Rules        | 13 files (grid, animations, icons, etc.)     |
+| ti-ui        | UI Rules + Platform Diffs     | 13 files (layouts, lists, gestures, etc.)    |
+| ti-howtos    | Integration Workflow          | 7 files (location, media, data, etc.)        |
+| ti-guides    | Core Workflow                 | 16 files (hyperloop, distribution, etc.)     |
+| alloy-guides | MVC Quick Start               | 10 files (models, views, widgets, etc.)      |
+| alloy-howtos | Best Practices                | 6 files (CLI, config, debugging, etc.)       |
+
+---
+
+## Troubleshooting
+
+### Skill Not Activating?
+
+If the AI doesn't seem to use Titanium knowledge:
+1. Mention "Titanium" or "Alloy" explicitly in your prompt
+2. Be more specific about what you're building
+3. Reference the technology stack
+
+### Wrong Advice?
+
+If the AI suggests incorrect patterns (like flexbox):
+1. Remind it you're using PurgeTSS
+2. Reference the correct pattern from memory
+3. Ask to check the PurgeTSS rules
+
+### Need More Detail?
+
+Ask the AI to:
+```
+"Show me the reference documentation for ListView performance"
+"What does the alloy-expert skill say about memory cleanup?"
 ```
 
 ---
@@ -337,6 +498,7 @@ rm -rf ~/.codex/skills/{alloy-expert,purgetss,ti-ui,ti-howtos,ti-guides,alloy-gu
 - Keep SKILL.md concise (<500 lines)
 - Use progressive disclosure (details in references)
 - Include concrete examples
+- Test with real sessions
 
 ---
 
