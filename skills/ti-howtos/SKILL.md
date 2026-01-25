@@ -1,6 +1,6 @@
 ---
 name: ti-howtos
-description: Comprehensive Titanium SDK How-tos expert covering ALL official how-to guides. Use when Claude needs to implement: (1) Location & Maps with battery-efficient tracking, (2) Push/Local Notifications with proper lifecycle, (3) Media APIs (Camera, Gallery, Audio, Video, Images), (4) Remote data (HTTPClient, JSON, XML, uploads/downloads, sockets), (5) Local data (Filesystem, SQLite, Properties, Streams), (6) WebView integration with bidirectional communication, (7) Android platform features (Intents, Receivers, Services, Intent Filters), (8) iOS platform features (Background Services, Spotlight, Handoff, iCloud, Core Motion, WatchKit), (9) Extending Titanium (Hyperloop, native modules), or (10) Cross-platform patterns and persistence strategies.
+description: "Comprehensive Titanium SDK How-tos expert covering ALL official how-to guides. Use when Claude needs to implement: (1) Location & Maps with battery-efficient tracking, (2) Push/Local Notifications with proper lifecycle, (3) Media APIs (Camera, Gallery, Audio, Video, Images), (4) Remote data (HTTPClient, JSON, XML, uploads/downloads, sockets), (5) Local data (Filesystem, SQLite, Properties, Streams), (6) WebView integration with bidirectional communication, (7) Android platform features (Intents, Receivers, Services, Intent Filters), (8) iOS platform features (Background Services, Spotlight, Handoff, iCloud, Core Motion, WatchKit), (9) Extending Titanium (Hyperloop, native modules), or (10) Cross-platform patterns and persistence strategies."
 ---
 
 # Titanium SDK How-tos Expert
@@ -65,6 +65,17 @@ Comprehensive expert covering all official Titanium SDK how-to guides. Provides 
 
 ### Advanced
 -   **[Extending Titanium](references/extending-titanium.md)**: Hyperloop integration, native module development (Android/iOS), adding custom native functionality.
+
+## Related Skills
+
+For tasks beyond native feature integration, use these complementary skills:
+
+| Task | Use This Skill |
+|------|----------------|
+| Project architecture, services, memory cleanup | `alloy-expert` |
+| UI layouts, ListViews, gestures, animations | `ti-ui` |
+| Hyperloop, app distribution, tiapp.xml config | `ti-guides` |
+| Alloy MVC, models, data binding | `alloy-guides` |
 
 ## Response Format
 
