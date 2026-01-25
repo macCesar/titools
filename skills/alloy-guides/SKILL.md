@@ -121,3 +121,14 @@ if (OS_ANDROID) {
 ## References
 
 Read detailed documentation from the reference files listed above based on your specific task.
+
+## Related Skills
+
+For tasks beyond Alloy MVC basics, use these complementary skills:
+
+| Task | Use This Skill |
+|------|----------------|
+| Modern architecture, services, patterns | `alloy-expert` |
+| Alloy CLI, config files, debugging errors | `alloy-howtos` |
+| Utility-first styling with PurgeTSS | `purgetss` |
+| Native features (location, push, media) | `ti-howtos` |
