@@ -4,6 +4,19 @@ All notable changes to Titanium SDK Skills will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.0.2] - 2025-01-25
+
+### Added
+- Related Skills section to all 6 specialized skills for cross-skill collaboration
+- `smart-mappings.md` reference to purgetss skill
+
+### Changed
+- README.md now includes complete user guide (merged from separate docs)
+- Updated `titanium-resets.md` reference in purgetss
+
+### Fixed
+- YAML frontmatter in 4 SKILL.md files (quoted description values containing colons)
+
 ## [1.0.1] - 2025-01-25
 
 ### Changed
