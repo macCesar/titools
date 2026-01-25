@@ -95,6 +95,8 @@ gemini skills list
 | **alloy-guides** | Alloy MVC reference           | Models, Views, Controllers, Widgets     |
 | **alloy-howtos** | Alloy CLI & debugging         | Project setup, CLI commands, errors     |
 
+> **Note:** `ti-guides`, `ti-howtos`, `ti-ui`, `alloy-guides`, and `alloy-howtos` are based on **official Titanium SDK and Alloy documentation**. `alloy-expert` and `purgetss` are opinionated and reflect personal coding conventions (biased toward PurgeTSS).
+
 ---
 
 ## How Skills Work
