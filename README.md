@@ -4,11 +4,11 @@ A comprehensive collection of AI-powered skills that transform your coding assis
 
 ## Compatible Platforms
 
-| Platform | Status | Installation Path |
-|----------|--------|-------------------|
-| [Claude Code](https://claude.ai/claude-code) | ✅ Fully Compatible | `~/.claude/skills/` |
+| Platform                                                  | Status             | Installation Path   |
+| --------------------------------------------------------- | ------------------ | ------------------- |
+| [Claude Code](https://claude.ai/claude-code)              | ✅ Fully Compatible | `~/.claude/skills/` |
 | [Gemini CLI](https://github.com/google-gemini/gemini-cli) | ✅ Fully Compatible | `~/.gemini/skills/` |
-| [Codex CLI](https://developers.openai.com/codex/cli/) | ✅ Fully Compatible | `~/.codex/skills/` |
+| [Codex CLI](https://developers.openai.com/codex/cli/)     | ✅ Fully Compatible | `~/.codex/skills/`  |
 
 All three platforms use the same **Agent Skills open standard**: a `SKILL.md` file with YAML frontmatter.
 
@@ -16,13 +16,34 @@ All three platforms use the same **Agent Skills open standard**: a `SKILL.md` fi
 
 ## Quick Install
 
-### One-Line Install (All Platforms)
+### One-Line Install
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/macCesar/titanium-sdk-skills/main/install.sh | bash
 ```
 
-This script auto-detects which platforms you have installed and copies skills to the appropriate locations.
+The interactive installer auto-detects your platforms and lets you choose where to install:
+
+```
+Titanium SDK Skills Installer
+
+✓ Claude Code detected
+✓ Gemini CLI detected
+✓ Codex CLI detected
+
+Select platform to install:
+
+  a) All detected platforms
+  1) Claude Code only
+  2) Gemini CLI only
+  3) Codex CLI only
+  q) Quit
+```
+
+**Install to all platforms without prompting:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/macCesar/titanium-sdk-skills/main/install.sh | bash -s -- --all
+```
 
 ### Manual Install
 
@@ -64,15 +85,15 @@ gemini skills list
 
 ## Skills Overview
 
-| Skill | Purpose | Use When |
-|-------|---------|----------|
+| Skill            | Purpose                       | Use When                                     |
+| ---------------- | ----------------------------- | -------------------------------------------- |
 | **alloy-expert** | Architecture + Implementation | Starting point for most Titanium/Alloy tasks |
-| **purgetss** | Utility-first styling | UI styling, animations, icon fonts |
-| **ti-ui** | UI/UX patterns | Layouts, ListViews, gestures, platform UI |
-| **ti-howtos** | Native features | Location, Push, Media, Platform APIs |
-| **ti-guides** | SDK fundamentals | Hyperloop, distribution, tiapp.xml |
-| **alloy-guides** | Alloy MVC reference | Models, Views, Controllers, Widgets |
-| **alloy-howtos** | Alloy CLI & debugging | Project setup, CLI commands, errors |
+| **purgetss**     | Utility-first styling         | UI styling, animations, icon fonts           |
+| **ti-ui**        | UI/UX patterns                | Layouts, ListViews, gestures, platform UI    |
+| **ti-howtos**    | Native features               | Location, Push, Media, Platform APIs         |
+| **ti-guides**    | SDK fundamentals              | Hyperloop, distribution, tiapp.xml           |
+| **alloy-guides** | Alloy MVC reference           | Models, Views, Controllers, Widgets          |
+| **alloy-howtos** | Alloy CLI & debugging         | Project setup, CLI commands, errors          |
 
 ---
 
