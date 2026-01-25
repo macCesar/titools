@@ -1,6 +1,6 @@
 ---
 name: purgetss
-description: Expert styling and UI/UX design system using the PurgeTSS toolkit for Titanium SDK. Use when Claude needs to: (1) Set up a new project with utility-first styling, (2) Implement complex Grid-based or responsive layouts, (3) Create declarative animations using the <Animation> component, (4) Automate assets like Icon Fonts or Color Palettes via CLI, (5) Configure advanced design rules in config.cjs, or (6) Work with arbitrary values, platform modifiers, and custom Ti Elements.
+description: "Expert styling and UI/UX design system using the PurgeTSS toolkit for Titanium SDK. Use when Claude needs to: (1) Set up a new project with utility-first styling, (2) Implement complex Grid-based or responsive layouts, (3) Create declarative animations using the Animation component, (4) Automate assets like Icon Fonts or Color Palettes via CLI, (5) Configure advanced design rules in config.cjs, or (6) Work with arbitrary values, platform modifiers, and custom Ti Elements."
 ---
 
 # PurgeTSS Expert
@@ -76,12 +76,20 @@ The following are **NOT supported**:
 
 ### Other Mandatory Rules
 
-- **NO `p-` padding on base elements** (View, Window, ScrollView, TableView) - Use margins on children
-- **View defaults to `SIZE`** - Use `w-screen`/`h-screen` to fill space
-- **`w-full` does NOT exist** - Use `w-screen` for full width
-- **`rounded-full` does NOT exist** - Use `rounded-full-XX` (XX × 4 = size, border-radius = half)
-- **`m-xx` fills parent container** - Add `h-auto`/`w-auto` to constrain to content size
-- **`wh-screen` exists** - Shortcut for `w-screen h-screen`
+- **NO `p-` padding classes**: Titanium does NOT support a native `padding` property on `View`, `Window`, `ScrollView`, or `TableView`. Always use **margins on children** (`m-`) to simulate internal spacing.
+- **View defaults to `SIZE`**: Use `w-screen`/`h-screen` to fill space when needed.
+- **`rounded-full`**: To get a perfect circle, use `rounded-full-XX` (where XX is the width/height of the square element).
+- **`m-xx` on FILL elements**: Adding `m-4` to a `w-screen` element pins it to all four edges (top, bottom, left, right). This will **stretch the component vertically** to fill the parent unless you explicitly add `h-auto` (`Ti.UI.SIZE`) to constrain it to its content.
+- **Use `wh-` shortcuts**: PurgeTSS provides a complete scale of combined width/height utilities:
+    - **Numeric Scale**: `wh-0` to `wh-96` (e.g., `wh-16` sets both to 64px).
+    - **Fractions**: `wh-1/2`, `wh-3/4`, up to `wh-11/12` for proportional sizing.
+    - **Special Values**: `wh-auto` (explicit `SIZE`), `wh-full` (`100%`), and `wh-screen` (`FILL`).
+    - Using these instead of separate `w-` and `h-` classes improves XML readability and reduces generated TSS size.
+
+:::tip LAYOUT TIP: EDGE PINNING
+If using margins (`m-`) causes your `Label` or `Button` to stretch unexpectedly, it is due to Titanium's **Edge Pinning** rule (2 opposite pins = computed dimension). Use the `wh-auto` class to explicitly force `SIZE` behavior and prevent stretching.
+:::
+
 - **NEVER add `composite` class explicitly** - That's the default, use `horizontal`/`vertical` when needed
 - **Arbitrary values use parentheses**: `w-(100px)`, `bg-(#ff0000)` - NO square brackets
 - **`mode: 'all'` required** in `config.cjs` for Ti Elements styling
@@ -119,6 +127,7 @@ Load these only when needed:
 
 ### Layout & Styling
 - [Grid Layout System](references/grid-layout.md) - 12-column grid, responsive layouts
+- [Smart Mappings](references/smart-mappings.md) - How gap, shadows, and grid work under the hood
 - [Arbitrary Values](references/arbitrary-values.md) - Parentheses notation for custom values
 - [Platform Modifiers](references/platform-modifiers.md) - ios:, android:, tablet:, handheld:
 - [Opacity Modifier](references/opacity-modifier.md) - Color transparency with /50 syntax
@@ -137,3 +146,14 @@ For complete WRONG vs CORRECT examples including:
 - Manual .tss anti-patterns
 
 See [EXAMPLES.md](references/EXAMPLES.md)
+
+## Related Skills
+
+For tasks beyond styling, use these complementary skills:
+
+| Task | Use This Skill |
+|------|----------------|
+| Project architecture, services, controllers | `alloy-expert` |
+| Complex UI components, ListViews, gestures | `ti-ui` |
+| Alloy MVC concepts, data binding, TSS syntax | `alloy-guides` |
+| Native features (camera, location, push) | `ti-howtos` |

@@ -1,6 +1,6 @@
 ---
 name: ti-guides
-description: Master of Titanium SDK best practices, architecture, native access via Hyperloop, app distribution, and configuration. Use when Claude needs to: (1) Optimize memory and bridge efficiency, (2) Implement modular architecture (CommonJS/Alloy), (3) Access native APIs directly via Hyperloop, (4) Manage database transactions and image memory, (5) Standardize coding styles and conventions, (6) Distribute apps to Google Play/App Store, or (7) Configure tiapp.xml and CLI settings.
+description: "Master of Titanium SDK best practices, architecture, native access via Hyperloop, app distribution, and configuration. Use when Claude needs to: (1) Optimize memory and bridge efficiency, (2) Implement modular architecture (CommonJS/Alloy), (3) Access native APIs directly via Hyperloop, (4) Manage database transactions and image memory, (5) Standardize coding styles and conventions, (6) Distribute apps to Google Play/App Store, or (7) Configure tiapp.xml and CLI settings."
 ---
 
 # Titanium SDK Guide Expert
@@ -41,6 +41,17 @@ This skill ensures Titanium projects follow TiDev standards for stability, perfo
 -   **[tiapp.xml Configuration](references/tiapp-config.md)**: Complete reference for tiapp.xml and timodule.xml, including all elements, properties, and platform-specific settings.
 -   **[CLI Reference](references/cli-reference.md)**: Titanium CLI commands, options, tasks, configuration, and build processes.
 -   **[Resources](references/resources.md)**: Community support, modules, sample code, Slack, and learning materials.
+
+## Related Skills
+
+For tasks beyond SDK fundamentals, use these complementary skills:
+
+| Task | Use This Skill |
+|------|----------------|
+| Project architecture, services, patterns | `alloy-expert` |
+| Native features (location, push, media) | `ti-howtos` |
+| Alloy CLI, configuration, debugging | `alloy-howtos` |
+| UI layouts, ListViews, gestures | `ti-ui` |
 
 ## Response Format
 
