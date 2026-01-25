@@ -90,3 +90,14 @@ When looking for specific patterns, grep these terms in reference files:
 - **Android**: `Action Bar`, `onCreateOptionsMenu`, `theme`, `Material3`, `talkback`
 - **iOS**: `3D Touch`, `Popover`, `SplitWindow`, `badge`, `NavigationWindow`
 - **Accessibility**: `accessibilityLabel`, `VoiceOver`, `TalkBack`, `accessibilityHidden`
+
+## Related Skills
+
+For tasks beyond UI components, use these complementary skills:
+
+| Task | Use This Skill |
+|------|----------------|
+| Project architecture, services, memory cleanup | `alloy-expert` |
+| Utility-first styling, animations, grid layouts | `purgetss` |
+| Native features (camera, location, push, media) | `ti-howtos` |
+| Alloy MVC, data binding, widgets | `alloy-guides` |

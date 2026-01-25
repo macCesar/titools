@@ -152,3 +152,14 @@ Complete documentation for each topic area:
 - **custom_tags.md** - Creating reusable custom XML tags without widgets
 - **debugging_troubleshooting.md** - Common errors with solutions
 - **samples.md** - Controller examples, conditional views, data-binding patterns
+
+## Related Skills
+
+For tasks beyond Alloy CLI and configuration, use these complementary skills:
+
+| Task | Use This Skill |
+|------|----------------|
+| Modern architecture, services, patterns | `alloy-expert` |
+| Alloy MVC concepts, models, data binding | `alloy-guides` |
+| SDK config, Hyperloop, app distribution | `ti-guides` |
+| Utility-first styling with PurgeTSS | `purgetss` |
