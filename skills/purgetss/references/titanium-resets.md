@@ -30,6 +30,14 @@ The most important reset is for the `View` element. By default, `View` is set to
 - Grow to accommodate explicit dimensions (`w-64`, `h-32`, etc.)
 - Expand to fill margins (`m-4`, `mx-2`, `mt-6 mb-4`, etc.)
 
+:::tip EXPLICIT SIZE VS NATIVE UNDEFINED
+In Titanium, most elements like `Label` and `Button` default to `SIZE` behavior, but their property values are `undefined`. 
+
+According to the **UI Composite Layout Behavior Spec**, if a dimension is `undefined` and you apply two opposite pins (e.g., `left` and `right` via `m-xx`), the motor will **compute the dimension based on the pins**, causing the element to stretch.
+
+**PurgeTSS** recommends using the `wh-auto` class (which sets explicit `Ti.UI.SIZE` for both width and height) to override this pinning effect and ensure the element only occupies the space needed for its content regardless of margins.
+:::
+
 ### Practical Examples
 
 ```xml
@@ -158,6 +166,24 @@ This automatically generates:
 - **Width**: `w-sm`, `w-md`, `w-lg`, `w-xl`
 - **Height**: `h-sm`, `h-md`, `h-lg`, `h-xl`
 - **Gap**: `gap-sm`, `gap-md`, `gap-lg`, `gap-xl`
+
+### Combined Utilities (`wh-`)
+
+PurgeTSS provides `wh-` shortcuts to set both width and height simultaneously. This is more than just a convenience; it ensures consistent dimension resets for components.
+
+| Class | Titanium Value | Purpose |
+|-------|----------------|---------|
+| `.wh-auto` | `width: Ti.UI.SIZE, height: Ti.UI.SIZE` | Explicitly force size-to-content. **The Safe Reset.** |
+| `.wh-screen` | `width: Ti.UI.FILL, height: Ti.UI.FILL` | Fill all available parent space. |
+| `.wh-full` | `width: '100%', height: '100%'` | Relative 100% sizing. |
+
+**The `wh-` Scale:**
+- **Numeric**: `wh-0` (0px) up to `wh-96` (384px) following the spacing scale.
+- **Fractions**: `wh-1/2` (50%), `wh-1/3` (33%), up to `wh-11/12` (91%).
+
+:::tip
+Always prefer `wh-screen` (FILL) over `wh-full` (100%) for better native performance in Titanium, unless you specifically need percentage-based calculations against a parent's dimension.
+:::
 
 ### Color Inheritance
 
