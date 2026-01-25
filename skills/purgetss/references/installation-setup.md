@@ -1,0 +1,334 @@
+# PurgeTSS Installation & Setup
+
+PurgeTSS must be installed globally and initialized within each Titanium Alloy project to enable its utility-first workflow.
+
+## Prerequisites
+
+:::caution Node.js 20+ Required
+PurgeTSS has been thoroughly tested and proven to be compatible with Node 20.0.0 or higher.
+:::
+
+## Global Installation
+
+Install PurgeTSS globally on your machine using NPM:
+
+```bash
+[sudo] npm install -g purgetss
+```
+
+:::info
+On macOS/Linux systems, you may need to use `sudo` for global NPM installations. On Windows, run your terminal as Administrator if needed.
+:::
+
+## Initial Project Setup
+
+:::info
+**You only need to execute `purgetss` once within your project to automatically generate the required files and folders.**
+
+Subsequently, whenever you build your application, **PurgeTSS** will parse all your XML files and generate a clean `app.tss` file containing only the classes used in your project.
+:::
+
+### Running PurgeTSS for the First Time
+
+```bash
+cd /path/to/your/alloy/project
+purgetss
+```
+
+### What Happens on First Run
+
+When you run `purgetss` for the first time in your project, it will perform the following tasks:
+
+#### 1. Auto-Run Hook Setup
+
+**PurgeTSS** adds a task in `alloy.jmk` to auto-run `purgetss` every time you compile your app.
+
+**This is especially useful when using `liveview`** - changes to XML files are automatically reflected in your app.
+
+Your `alloy.jmk` will contain:
+
+```javascript
+task('pre:compile', function(event, logger) {
+	require('child_process').execSync('purgetss', logger.warn('::PurgeTSS:: Auto-Purging ' + event.dir.project));
+})
+```
+
+#### 2. purgetss Folder Structure
+
+PurgeTSS creates a `purgetss` folder at the root of your project:
+
+```bash
+./purgetss
+├─ fonts/              # Place custom font files (.ttf, .otf) here
+├─ styles/
+│  ├─ definitions.css # Used for VS Code IntelliSense
+│  └─ tailwind.tss    # All PurgeTSS utility classes
+└─ config.cjs         # Your project's theme configuration
+```
+
+**File descriptions:**
+
+- **`config.cjs`**: Where you customize colors, spacing, fonts, border radius, and add custom rules for Ti Elements
+- **`styles/tailwind.tss`**: All Tailwind-like utility classes + any custom classes from `config.cjs`
+- **`styles/definitions.css`**: Special CSS file incorporating ALL classes from `tailwind.tss`, `_app.tss`, remaining `.tss` files, and `fonts.tss`. Used by VS Code extension for IntelliSense
+- **`fonts/`**: Directory for custom fonts (Icon, Serif, Sans-Serif, Cursive, Fantasy, Monospace). Use `purgetss build-fonts` after adding fonts
+
+#### 3. app.tss Backup
+
+:::caution IMPORTANT NOTICE!!!
+**PurgeTSS will OVERWRITE your existing `app.tss` file.**
+
+Upon the initial execution of **PurgeTSS**, your `app.tss` file is backed up to `_app.tss`.
+
+From this point forward, you have the option to add, delete, or update your custom classes in `_app.tss`.
+
+Alternatively, a better approach is to include your custom values in `config.cjs`.
+:::
+
+Every time `purgetss` runs, it copies the content of `_app.tss` to `app.tss` (if it exists).
+
+## Creating a Fresh config.cjs
+
+If you need to start with a fresh `config.cjs` file, delete the existing one and run:
+
+```bash
+purgetss init
+```
+
+This will create a minimal `./purgetss/config.cjs`:
+
+```javascript
+module.exports = {
+  purge: {
+    mode: 'all',
+    method: 'sync', // How to execute the auto-purging task: sync or async
+
+    // These options are passed directly to PurgeTSS
+    options: {
+      missing: true, // Reports missing classes
+      widgets: false, // Purges widgets too
+      safelist: [], // Array of classes to keep
+      plugins: [] // Array of properties to ignore
+    }
+  },
+  theme: {
+    extend: {}
+  }
+};
+```
+
+:::info
+Every section of the config file is optional, so you only need to specify what you'd like to change. Any missing sections will fall back to the default configuration.
+:::
+
+## Visual Studio Code Integration
+
+For the best development experience with PurgeTSS, we recommend installing and configuring the following VS Code extensions.
+
+### Quick Setup with install-dependencies
+
+The fastest way to set up VS Code integration is to use the `install-dependencies` command:
+
+```bash
+purgetss install-dependencies
+# or
+purgetss id
+```
+
+This command automatically installs and configures:
+- ESLint with Titanium-specific rules
+- Tailwind CSS (for IntelliSense integration)
+- VS Code settings and recommended extensions
+- Configuration files (`.editorconfig`, `eslint.config.js`, `tailwind.config.js`, `.vscode/extensions.json`, `.vscode/settings.json`)
+
+:::caution
+This command will overwrite existing `extensions.json` and `settings.json` files. Create a backup if you want to preserve them.
+:::
+
+### Manual Extension Setup
+
+If you prefer manual setup, install these extensions:
+
+1. **[XML Tools](https://marketplace.visualstudio.com/items?itemName=DotJoshJohnson.xml)** - For XML formatting
+2. **[ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)** - Code quality and consistency
+3. **[Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)** - Intelligent PurgeTSS class support
+4. **[Tailwind RAW Reorder](https://marketplace.visualstudio.com/items?itemName=KevinYouu.tailwind-raw-reorder-tw4)** - Opinionated class sorter for better readability
+5. **[IntelliSense for CSS class names in HTML](https://marketplace.visualstudio.com/items?itemName=Zignd.html-css-class-completion)** - Class name completion based on your PurgeTSS definitions
+
+### Extension Configuration
+
+Add this to your VS Code `settings.json`:
+
+```json
+{
+  "html-css-class-completion.HTMLLanguages": [
+    "html",
+    "vue",
+    "razor",
+    "blade",
+    "handlebars",
+    "twig",
+    "django-html",
+    "php",
+    "markdown",
+    "erb",
+    "ejs",
+    "svelte",
+    "xml"
+  ],
+  "html-css-class-completion.excludeGlobPattern": "**/node_modules/**,purgetss/fonts/**/*.{css,html}"
+}
+```
+
+This enables:
+- Class name completion in XML files
+- Exclusion of generated files from caching
+- IntelliSense based on your actual PurgeTSS configuration
+
+### Tailwind Config for VS Code
+
+Create or update `tailwind.config.js` at your project root for optimal IntelliSense:
+
+```javascript
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./app/views/**/*.xml",
+    "./purgetss/**/*.cjs"
+  ],
+  theme: {
+    extend: {}
+  },
+  plugins: []
+}
+```
+
+This helps Tailwind CSS IntelliSense understand your project structure.
+
+## LiveView Development
+
+:::tip
+We recommend using `liveview` to speed up testing and development time. **LiveView provides instant feedback** when you make changes to your XML files or styles.
+:::
+
+### Enabling LiveView
+
+LiveView is typically enabled through Titanium's development tools. When using LiveView with PurgeTSS:
+
+1. **Auto-purge is automatically enabled** when you run `purgetss`
+2. Changes to XML files trigger auto-purge on next compile
+3. LiveView reloads your app with the new styles
+
+### LiveView with TiKit Components
+
+If you don't see any changes reflected when changing and rebuilding a project with TiKit Components and LiveView, set the compile method to `async` in `config.cjs`:
+
+```javascript
+module.exports = {
+  purge: {
+    mode: 'all',
+    method: 'async' // Use async for LiveView + TiKit compatibility
+  }
+}
+```
+
+### LiveView Development Workflow
+
+**Optimal workflow with LiveView:**
+
+1. **Enable auto-purge** (done automatically by `purgetss`)
+2. **Set method to 'async'** if using TiKit Components
+3. **Make changes to XML or config.cjs**
+4. **Save file** (triggers auto-compile)
+5. **LiveView automatically reflects changes**
+
+**Example workflow:**
+```bash
+# Terminal 1: Run LiveView
+appc run --liveview
+
+# Terminal 2: Make changes
+# Edit app/views/index.xml
+# Save file - LiveView auto-reloads with new styles
+```
+
+### Common LiveView Issues
+
+**Problem:** Styles not updating in LiveView
+
+**Solutions:**
+1. Verify `alloy.jmk` has the pre:compile task
+2. Try `method: 'async'` in `config.cjs`
+3. Ensure `purgetss` ran successfully (check console output)
+4. Manually trigger compile if auto-compile isn't working
+
+**Problem:** Changes to `config.cjs` not reflected
+
+**Solutions:**
+1. Run `purgetss build` manually after config changes
+2. Check that `tailwind.tss` was regenerated
+3. Verify your config syntax is correct (no trailing commas, etc.)
+
+## First Run Example
+
+After running `purgetss`, here's what your generated `app.tss` will look like:
+
+```tss
+/* PurgeTSS v7.2.7 */
+/* Created by César Estrada */
+/* https://purgetss.com */
+
+/* _app.tss styles */
+'.my-custom-class': {
+  backgroundColor: '#002359'
+}
+
+/* Ti Elements */
+'ImageView[platform=ios]': { hires: true }
+'View': { width: Ti.UI.SIZE, height: Ti.UI.SIZE }
+'Window': { backgroundColor: '#FFFFFF' }
+
+/* Main Styles */
+'.bg-white': { backgroundColor: '#ffffff' }
+'.font-semibold': { font: { fontWeight: 'semibold' } }
+'.h-16': { height: 64 }
+'.h-auto': { height: Ti.UI.SIZE }
+'.horizontal': { layout: 'horizontal' }
+// ... all other classes used in your XML files
+```
+
+:::info
+After running `purgetss`, you will have a new `app.tss` file with only the classes used in the XML files. Your original `app.tss` file is backed up in `_app.tss`. You can use this file to add, delete, or update any of your original styles. Every time `purgetss` runs, it will copy the content of `_app.tss` to `app.tss`.
+:::
+
+## Quick Start with Example Files
+
+PurgeTSS includes example files to get you started:
+
+1. Copy the content of `index.xml` into a new Alloy project
+2. Install Font Awesome: `purgetss icon-library --vendor=fontawesome`
+3. Run `purgetss` once to generate necessary files
+4. Compile your app as usual
+5. Use `liveview` for faster iteration
+
+For more examples, see the [Tailwind TSS Sample App](https://github.com/macCesar/tailwind.tss-sample-app).
+
+## Troubleshooting
+
+### PurgeTSS Not Running on Compile
+
+Check that `alloy.jmk` exists in your project root and contains the pre:compile task. If missing, run `purgetss` again.
+
+### Classes Not Appearing in IntelliSense
+
+1. Ensure `definitions.css` is being generated (check `purgetss/styles/definitions.css`)
+2. Verify VS Code extension is installed and configured
+3. Try reloading VS Code after running `purgetss`
+
+### Missing Classes Report
+
+If `purge.options.missing` is set to `true`, check the end of your `app.tss` file for a list of missing or misspelled classes.
+
+:::info
+This is very useful if you want to check if you forgot to add a class definition or if you forgot to remove non-existing classes from your views, especially if you have upgraded from PurgeTSS v5 to v6.
+:::
