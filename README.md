@@ -42,7 +42,7 @@ Select platform to install:
 
 ### Using skills.sh
 
-You can also install these skills using `skills.sh`:
+You can also install these skills using `skills.sh` and follow the inline instructions:
 
 ```bash
 npx skills add macCesar/titanium-sdk-skills
