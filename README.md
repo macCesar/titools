@@ -18,13 +18,11 @@ All three platforms use the same **Agent Skills open standard**: a `SKILL.md` fi
 
 ### One-Line Install
 
-Auto-detects installed LLMs and guides you through platform-specific install options.
-
 ```bash
 curl -fsSL https://raw.githubusercontent.com/macCesar/titanium-sdk-skills/main/install.sh | bash
 ```
 
-The interactive installer auto-detects your platforms and lets you choose where to install:
+Auto-detects installed LLMs and guides you through platform-specific install options (including an interactive menu for where to install):
 
 ```
 Titanium SDK Skills Installer
