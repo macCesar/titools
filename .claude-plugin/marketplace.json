@@ -1,0 +1,13 @@
+{
+  "name": "titanium-sdk-skills",
+  "owner": {
+    "name": "Cesar Macias"
+  },
+  "plugins": [
+    {
+      "name": "titanium-sdk-skills",
+      "description": "Titanium SDK, Alloy, and PurgeTSS skills for Claude Code.",
+      "source": "."
+    }
+  ]
+}

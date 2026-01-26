@@ -1,0 +1,9 @@
+{
+  "name": "titanium-sdk-skills",
+  "version": "1.0.0",
+  "description": "Titanium SDK, Alloy, and PurgeTSS skills for Claude Code.",
+  "author": {
+    "name": "Cesar Macias"
+  },
+  "repository": "https://github.com/macCesar/titanium-sdk-skills"
+}
