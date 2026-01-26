@@ -16,31 +16,9 @@ All three platforms use the same **Agent Skills open standard**: a `SKILL.md` fi
 
 ## Quick Install
 
-### Claude Code Marketplace (Recommended)
-
-```bash
-/plugin marketplace add macCesar/titanium-sdk-skills
-/plugin install titanium-sdk-skills@titanium-sdk-skills
-```
-
-If you don't see the skills immediately, restart Claude Code.
-
-### Gemini CLI (Install from Repo)
-
-Gemini CLI can install skills directly from a Git repo, including subfolders in a monorepo:
-
-```bash
-# Install individual skills from this repo
-gemini skills install https://github.com/macCesar/titanium-sdk-skills.git --path skills/alloy-expert
-gemini skills install https://github.com/macCesar/titanium-sdk-skills.git --path skills/purgetss
-gemini skills install https://github.com/macCesar/titanium-sdk-skills.git --path skills/ti-ui
-gemini skills install https://github.com/macCesar/titanium-sdk-skills.git --path skills/ti-howtos
-gemini skills install https://github.com/macCesar/titanium-sdk-skills.git --path skills/ti-guides
-gemini skills install https://github.com/macCesar/titanium-sdk-skills.git --path skills/alloy-guides
-gemini skills install https://github.com/macCesar/titanium-sdk-skills.git --path skills/alloy-howtos
-```
-
 ### One-Line Install
+
+Auto-detects installed LLMs and guides you through platform-specific install options.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/macCesar/titanium-sdk-skills/main/install.sh | bash
@@ -64,27 +42,28 @@ Select platform to install:
   q) Quit
 ```
 
-**Install to all platforms without prompting:**
+### Claude Code Marketplace
+
 ```bash
-curl -fsSL https://raw.githubusercontent.com/macCesar/titanium-sdk-skills/main/install.sh | bash -s -- --all
+/plugin marketplace add macCesar/titanium-sdk-skills
+/plugin install titanium-sdk-skills@titanium-sdk-skills
 ```
 
-### Manual Install
+If you don't see the skills immediately, restart Claude Code.
 
-Clone and copy to your platform's skills directory:
+### Gemini CLI
+
+Gemini CLI can install skills directly from a Git repo, including subfolders in a monorepo:
 
 ```bash
-git clone https://github.com/macCesar/titanium-sdk-skills.git
-cd titanium-sdk-skills
-
-# For Claude Code
-cp -r skills/* ~/.claude/skills/
-
-# For Gemini CLI
-cp -r skills/* ~/.gemini/skills/
-
-# For Codex CLI
-cp -r skills/* ~/.codex/skills/
+# Install individual skills from this repo
+gemini skills install https://github.com/macCesar/titanium-sdk-skills.git --path skills/alloy-expert
+gemini skills install https://github.com/macCesar/titanium-sdk-skills.git --path skills/purgetss
+gemini skills install https://github.com/macCesar/titanium-sdk-skills.git --path skills/ti-ui
+gemini skills install https://github.com/macCesar/titanium-sdk-skills.git --path skills/ti-howtos
+gemini skills install https://github.com/macCesar/titanium-sdk-skills.git --path skills/ti-guides
+gemini skills install https://github.com/macCesar/titanium-sdk-skills.git --path skills/alloy-guides
+gemini skills install https://github.com/macCesar/titanium-sdk-skills.git --path skills/alloy-howtos
 ```
 
 ### Codex CLI (No Marketplace Yet)
