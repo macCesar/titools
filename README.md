@@ -40,37 +40,6 @@ Select platform to install:
   q) Quit
 ```
 
-### Claude Code Marketplace
-
-```bash
-/plugin marketplace add macCesar/titanium-sdk-skills
-/plugin install titanium-sdk-skills@titanium-sdk-skills
-```
-
-If you don't see the skills immediately, restart Claude Code.
-
-### Gemini CLI
-
-Gemini CLI can install skills directly from a Git repo, including subfolders in a monorepo:
-
-```bash
-# Install individual skills from this repo
-gemini skills install https://github.com/macCesar/titanium-sdk-skills.git --path skills/alloy-expert
-gemini skills install https://github.com/macCesar/titanium-sdk-skills.git --path skills/purgetss
-gemini skills install https://github.com/macCesar/titanium-sdk-skills.git --path skills/ti-ui
-gemini skills install https://github.com/macCesar/titanium-sdk-skills.git --path skills/ti-howtos
-gemini skills install https://github.com/macCesar/titanium-sdk-skills.git --path skills/ti-guides
-gemini skills install https://github.com/macCesar/titanium-sdk-skills.git --path skills/alloy-guides
-gemini skills install https://github.com/macCesar/titanium-sdk-skills.git --path skills/alloy-howtos
-```
-
-### Codex CLI (No Marketplace Yet)
-
-Codex CLI does not currently document a marketplace or an install-from-repo command, so the recommended options are:
-
-1) Use the `install.sh` one-liner above
-2) Manual copy to `~/.codex/skills/`
-
 ### Verify Installation
 
 **Claude Code:**
