@@ -417,6 +417,8 @@ Then follow up with implementation details.
 ### 5. Reference Existing Code
 "Here's my current controller. How can I improve memory management?"
 
+> **More examples:** See [Example Prompts](docs/EXAMPLE-PROMPTS.md) for detailed prompts that test each skill's capabilities.
+
 ---
 
 ## Skill Contents Summary
