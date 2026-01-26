@@ -40,6 +40,14 @@ Select platform to install:
   q) Quit
 ```
 
+### Using skills.sh
+
+You can also install these skills using `skills.sh`:
+
+```bash
+npx skills add macCesar/titanium-sdk-skills
+```
+
 ### Verify Installation
 
 **Claude Code:**
