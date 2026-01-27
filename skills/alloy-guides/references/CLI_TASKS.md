@@ -2,13 +2,23 @@
 
 ## Table of Contents
 
-1. [Creating a New Application](#creating-a-new-application)
-2. [Creating a New Application Using a Test Application](#creating-a-new-application-using-a-test-application)
-3. [Generating Components](#generating-components)
-4. [Extracting Localization Strings](#extracting-localization-strings)
-5. [Compiling a Specific View-Controller](#compiling-a-specific-view-controller)
-6. [Building an Application](#building-an-application)
-7. [Installing Special Project Components](#installing-special-project-components)
+- [Alloy Tasks with the CLI](#alloy-tasks-with-the-cli)
+  - [Table of Contents](#table-of-contents)
+  - [Creating a New Application](#creating-a-new-application)
+  - [Creating a New Application Using a Test Application](#creating-a-new-application-using-a-test-application)
+  - [Generating Components](#generating-components)
+    - [Generating a Controller](#generating-a-controller)
+    - [Generating a View](#generating-a-view)
+    - [Generating a Style](#generating-a-style)
+    - [Generating a Model](#generating-a-model)
+    - [Generating a Migration](#generating-a-migration)
+    - [Generating a Widget](#generating-a-widget)
+    - [Generating alloy.jmk](#generating-alloyjmk)
+  - [Extracting Localization Strings](#extracting-localization-strings)
+  - [Compiling a Specific View-Controller](#compiling-a-specific-view-controller)
+  - [Building an Application](#building-an-application)
+  - [Installing Special Project Components](#installing-special-project-components)
+    - [Installing the Compiler Plugin](#installing-the-compiler-plugin)
 
 ## Creating a New Application
 
@@ -121,7 +131,7 @@ This creates `app/alloy.jmk` with a few task hooks in place.
 
 ## Extracting Localization Strings
 
-The `alloy extract-i18n` command inspects your JS and TSS files for instances of Titanium's localization functions and adds those strings to an i18n strings.xml file.
+The `alloy extract-i18n` command inspects your JS, TSS and XML files (since Alloy 1.6.0) for instances of Titanium's localization functions and adds those strings to an i18n strings.xml file.
 
 ```bash
 alloy extract-i18n [language] [--apply]
@@ -135,15 +145,44 @@ alloy extract-i18n [language] [--apply]
 Supported functions:
 
 * `Titanium.Locale.getString()`
+* `Ti.Locale.getString()`
 * `L()`
 
 **Example**:
 
 ```javascript
-var name = Ti.Locale.getString('name');
-var color = Titanium.Locale.getString('color');
-var currency = L('currency');
+// In JavaScript/TSS
+const name = Ti.Locale.getString('name');
+const color = Titanium.Locale.getString('color');
+const currency = L('currency');
 ```
+
+```xml
+<!-- In XML (since Alloy 1.6.0) -->
+<Label textid="greeting" />
+<Button titleid="submit_button" />
+```
+
+**Preview Output** (without --apply):
+
+```
+[INFO] ######## BEFORE ########
+[INFO] <?xml version="1.0" encoding="UTF-8"?>
+[INFO] <resources>
+[INFO] </resources>
+[INFO]
+[INFO] ######## AFTER ########
+[INFO] <?xml version="1.0" encoding="UTF-8"?>
+[INFO] <resources>
+[INFO]     <string name="name">name</string>
+[INFO]     <string name="color">color</string>
+[INFO]     <string name="currency">currency</string>
+[INFO]     <string name="greeting">greeting</string>
+[INFO]     <string name="submit_button">submit_button</string>
+[INFO] </resources>
+```
+
+Running with `--apply`:
 
 ```bash
 alloy extract-i18n --apply
@@ -156,6 +195,8 @@ Generates `app/i18n/en/strings.xml`:
   <string name="name">name</string>
   <string name="color">color</string>
   <string name="currency">currency</string>
+  <string name="greeting">greeting</string>
+  <string name="submit_button">submit_button</string>
 </resources>
 ```
 

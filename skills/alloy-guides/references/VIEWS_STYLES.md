@@ -2,12 +2,16 @@
 
 ## Table of Contents
 
-1. [Titanium Style Sheets](#titanium-style-sheets)
-2. [Global Styles](#global-styles)
-3. [Platform-Specific Styles](#platform-specific-styles)
-4. [Custom Query Styles](#custom-query-styles)
-5. [Themes](#themes)
-6. [Style Priorities](#style-priorities)
+- [Alloy Styles and Themes](#alloy-styles-and-themes)
+  - [Table of Contents](#table-of-contents)
+  - [Titanium Style Sheets](#titanium-style-sheets)
+  - [Global Styles](#global-styles)
+  - [Platform-Specific Styles](#platform-specific-styles)
+  - [Custom Query Styles](#custom-query-styles)
+    - [Example Using Custom Properties](#example-using-custom-properties)
+    - [Example Using Conditional Statements](#example-using-conditional-statements)
+  - [Themes](#themes)
+  - [Style Priorities](#style-priorities)
 
 ## Titanium Style Sheets
 
@@ -49,6 +53,14 @@ Alloy does not support the CSS concept of child or descendent selectors.
 "#label": {
     color: "#999"
 }
+```
+
+For the Label's `transform` property in the example above, the TSS file is using a function assigned to the `Alloy.Globals` namespace defined in the initializer file:
+
+**app/alloy.js**
+
+```javascript
+Alloy.Globals.rotateLeft = Ti.UI.createMatrix2D().rotate(-90);
 ```
 
 **app/views/index.xml**
@@ -164,7 +176,72 @@ You can create custom queries to select which styles to apply in both the TSS an
 1. Define a conditional statement that returns a boolean value, and assign it to a property in `Alloy.Globals` or a local function.
 2. Assign the `if` attribute to an element in the XML or TSS file.
 
+### Example Using Custom Properties
+
+The application can pass custom Boolean properties to the `Alloy.createController()` method. These properties can be accessed by both the XML and TSS files. When calling the `createController()` method, pass the custom Boolean properties in the second argument of the method.
+
+The controller below defines two functions that create and open an instance of the `win2` controller, but each function passes a different property to the controller.
+
+**apps/controllers/index.js**
+
+```javascript
+function openBar (e) {
+  Alloy.createController('win2', {'fooBar': true}).getView().open();
+};
+
+function openBaz (e) {
+    Alloy.createController('win2', {'fooBaz': true}).getView().open();
+};
+```
+
+In the TSS file, add the conditional block and assign the `if` attribute to the property passed to the `createController()` method. Prefix the property name with the `$.args` namespace. Based on the property passed to the method, the application displays a different styled label.
+
+**app/styles/win2.tss**
+
+```javascript
+"#label[if=$.args.fooBar]": {
+  'text' : 'Foobar',
+  'color' : 'blue'
+}
+
+"#label[if=$.args.fooBaz]": {
+    'text' : 'Foobaz',
+    'color' : 'red'
+}
+```
+
+In the XML markup, add the `if` attribute to an element and assign it to the property passed to the `createController()` method. Prefix the property name with the `$.args` namespace. Based on the property passed to the method, the application displays a different label.
+
+**app/views/win2.xml**
+
+```xml
+<Alloy>
+    <Window>
+        <Label if="$.args.fooBar" color="blue">Foobar</Label>
+        <Label if="$.args.fooBaz" color="red">Foobaz</Label>
+    </Window>
+</Alloy>
+```
+
 ### Example Using Conditional Statements
+
+In this example, the application defines conditional statements to determine the iPhone device the application is running on. This iPhone application displays a scrolling block of text with a title above it and a caption below it:
+
+**app/views/index.xml**
+
+```xml
+<Alloy>
+    <Window>
+        <Label id="title" textid="title"/>
+        <ScrollView>
+            <Label id="content" textid="content"/>
+        </ScrollView>
+        <Label id="info">TextViewer by BluthCo</Label>
+    </Window>
+</Alloy>
+```
+
+To take advantage of the various iPhone devices, we need to see if the device is running iOS 7 and above, and whether the iPhone is using the old regular or the latest tall form factor. We can define both of these query statements in the initializer file:
 
 **app/alloy.js**
 
@@ -172,6 +249,8 @@ You can create custom queries to select which styles to apply in both the TSS an
 Alloy.Globals.isIos7Plus = (OS_IOS && parseInt(Ti.Platform.version.split(".")[0]) >= 7);
 Alloy.Globals.iPhoneTall = (OS_IOS && Ti.Platform.osname == "iphone" && Ti.Platform.displayCaps.platformHeight == 568);
 ```
+
+In the style file, use these conditional statements to create styles for specific devices. For example, since iOS 7, you can take advantage of the built-in text styles instead of defining all the attributes for a Font object, and since the iPhone 5 (and later) is taller, you need to make the ScrollView longer.
 
 **app/styles/index.tss**
 
@@ -185,7 +264,36 @@ Alloy.Globals.iPhoneTall = (OS_IOS && Ti.Platform.osname == "iphone" && Ti.Platf
         fontSize: '12dp'
     }
 },
+"#info": {
+    color: 'gray',
+    bottom: '20dp',
+    font: {
+        fontSize: '9dp'
+    }
+},
+"#title": {
+    color: 'black',
+    top: '15dp',
+    font: {
+        fontSize: '14dp',
+        fontWeight: 'bold'
+    }
+},
+"Window": {
+    layout: 'vertical',
+    backgroundColor: 'white'
+},
+"ScrollView": {
+    height: '415dp'
+},
 // Query styles
+"#info[if=Alloy.Globals.isIos7Plus]": {
+    font: { textStyle : Ti.UI.TEXT_STYLE_FOOTNOTE }
+},
+"#title[if=Alloy.Globals.isIos7Plus]": {
+    top: '25dp', // compensate for the status bar on iOS 7
+    font: { textStyle : Ti.UI.TEXT_STYLE_HEADLINE }
+},
 "#content[if=Alloy.Globals.isIos7Plus]": {
     font: { textStyle : Ti.UI.TEXT_STYLE_CAPTION1 }
 },
@@ -200,16 +308,16 @@ Themes provide a way to overwrite or modify files for a specific brand of your a
 
 To create a theme, create a folder called `themes` in your Alloy `app` directory. In the `themes` folder, create a folder for your theme.
 
-| Folder or Filename | Merges or Overwrites |
-| --- | --- |
-| config.json | merges |
-| i18n | merges folders and files |
-| assets | merges folders, overwrites files |
-| lib | merges folders, overwrites files |
-| platform | merges folders, overwrites files |
-| styles | merges folders and files |
-| widgets/\*/assets | merges folders, overwrites files |
-| widgets/\*/styles | merges folders and files |
+| Folder or Filename | Merges or Overwrites             |
+| ------------------ | -------------------------------- |
+| config.json        | merges                           |
+| i18n               | merges folders and files         |
+| assets             | merges folders, overwrites files |
+| lib                | merges folders, overwrites files |
+| platform           | merges folders, overwrites files |
+| styles             | merges folders and files         |
+| widgets/\*/assets  | merges folders, overwrites files |
+| widgets/\*/styles  | merges folders and files         |
 
 To use a theme, add it to your `config.json`:
 
@@ -232,15 +340,15 @@ To use a theme, add it to your `config.json`:
 
 When mixing themes, the global style file, view style files and defining styles inline in the XML markup, Alloy applies the styles in the following order from lowest to highest priority:
 
-| Style Defined in... | Example |
-| --- | --- |
-| Global Style File | `styles/app.tss` |
-| Global Style File in a Theme | `themes/<theme_name>/styles/app.tss` |
-| Global Style File with Platform-Specific Styles | `styles/<platform>/app.tss` |
-| Global Style File in a Theme with Platform-Specific Styles | `themes/<theme_name>/styles/<platform>/app.tss` |
-| View-Controller Style File | `styles/<view_controller>.tss` |
-| View-Controller Style File in a Theme | `themes/<theme_name>/styles/<view_controller>.tss` |
-| View-Controller Style File with Platform-Specific Styles | `styles/<platform>/<view_controller>.tss` |
+| Style Defined in...                                                 | Example                                                       |
+| ------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Global Style File                                                   | `styles/app.tss`                                              |
+| Global Style File in a Theme                                        | `themes/<theme_name>/styles/app.tss`                          |
+| Global Style File with Platform-Specific Styles                     | `styles/<platform>/app.tss`                                   |
+| Global Style File in a Theme with Platform-Specific Styles          | `themes/<theme_name>/styles/<platform>/app.tss`               |
+| View-Controller Style File                                          | `styles/<view_controller>.tss`                                |
+| View-Controller Style File in a Theme                               | `themes/<theme_name>/styles/<view_controller>.tss`            |
+| View-Controller Style File with Platform-Specific Styles            | `styles/<platform>/<view_controller>.tss`                     |
 | View-Controller Style File in a Theme with Platform-Specific Styles | `themes/<theme_name>/styles/<platform>/<view_controller>.tss` |
-| XML Markup | `views/<view_controller>.xml` |
-| XML Markup with Platform-Specific Styles | `views/<platform>/<view_controller>.xml` |
+| XML Markup                                                          | `views/<view_controller>.xml`                                 |
+| XML Markup with Platform-Specific Styles                            | `views/<platform>/<view_controller>.xml`                      |

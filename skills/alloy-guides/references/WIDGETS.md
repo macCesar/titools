@@ -2,17 +2,19 @@
 
 ## Table of Contents
 
-1. [Introduction](#introduction)
-2. [Using Widgets](#using-widgets)
-3. [Creating Widgets](#creating-widgets)
-4. [Assets and Libs](#assets-and-libs)
-5. [Configuration](#configuration)
-6. [Controllers](#controllers)
-7. [Models](#models)
-8. [Styles](#styles)
-9. [Themes](#themes)
-10. [Views](#views)
-11. [Widgets](#widgets-1)
+- [Alloy Widgets](#alloy-widgets)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [Using Widgets](#using-widgets)
+  - [Creating Widgets](#creating-widgets)
+  - [Assets and Libs](#assets-and-libs)
+  - [Configuration](#configuration)
+  - [Controllers](#controllers)
+  - [Models](#models)
+  - [Styles](#styles)
+  - [Themes](#themes)
+  - [Views](#views)
+  - [Widgets](#widgets)
 
 ## Introduction
 
@@ -72,7 +74,7 @@ To use another view-controller besides `widget.js`/`widget.xml`, use the `Widget
 **app/widgets/foo/controllers/widget.js**
 
 ```javascript
-var button = Widget.createController('button').getView();
+const button = Widget.createController('button').getView();
 $.widget.add(button);
 ```
 
@@ -81,10 +83,10 @@ All methods in the widget controller are private unless you prefix the method wi
 **app/widgets/foo/controllers/widget.js**
 
 ```javascript
-$.init = function (args) {
-    $.button.title = args.title || 'Si';
+$.init = args => {
+    $.button.title = args.title || 'Yes';
     $.button.color = args.color || 'black';
-    message = args.message || 'Hola mundo';
+    const message = args.message || 'Hello World';
 }
 ```
 

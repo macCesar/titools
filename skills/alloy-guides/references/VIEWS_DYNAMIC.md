@@ -2,11 +2,15 @@
 
 ## Table of Contents
 
-1. [Introduction](#introduction)
-2. [Define Class Styles](#define-class-styles)
-3. [Generate a Dynamic Style](#generate-a-dynamic-style)
-4. [Modify TSS Classes](#modify-tss-classes)
-5. [Autostyle](#autostyle)
+- [Dynamic Styles](#dynamic-styles)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [Define Class Styles](#define-class-styles)
+  - [Generate a Dynamic Style](#generate-a-dynamic-style)
+    - [Equivalent Code Outside Controller](#equivalent-code-outside-controller)
+  - [Modify TSS Classes](#modify-tss-classes)
+  - [Autostyle](#autostyle)
+    - [Why Autostyle is Needed](#why-autostyle-is-needed)
 
 ## Introduction
 
@@ -29,8 +33,14 @@ Before using either method, you need to create class styles in the TSS files, ei
   shadowColor: '#88f',
   shadowOffset: {x:1,y:3}
 },
+".ldpi" : {
+  font: {fontSize: '9dp', fontWeight: 'normal' }
+},
+".mdpi" : {
+  font: {fontSize: '12dp', fontWeight: 'normal' }
+},
 ".hdpi" : {
-  font: {fontSize: '24dp', fontWeight: 'bold' }
+  font: {fontSize: '18dp', fontWeight: 'bold' }
 },
 ".xhdpi" : {
   font: {fontSize: '24dp', fontWeight: 'bold' }
@@ -62,6 +72,8 @@ Before using either method, you need to create class styles in the TSS files, ei
 }
 ```
 
+The previous style sheet defines various class and markup element styles for labels, buttons and windows. Alloy assigns a priority for each class, based on its order in the TSS file. Styles listed first receive a lower priority than ones listed afterwards. For example, if both the ldpi and hdpi classes are assigned to a label, since hdpi is after ldpi, the label text is 24 dp not 9 dp.
+
 ## Generate a Dynamic Style
 
 To generate a dynamic style, use the controller's `createStyle` method by passing it a dictionary with TSS classes. This method returns a dictionary that can be passed to the view object's `applyProperties` method or a create view object method.
@@ -85,9 +97,9 @@ function doClick(e) {
     $.win.close();
 }
 
-args = arguments[0] || {};
+const args = arguments[0] || {};
 if (args.button) {
-    var style = $.createStyle({
+    const style = $.createStyle({
         classes: args.button,
         apiName: 'Button',
         color: 'blue'
@@ -95,7 +107,7 @@ if (args.button) {
     $.button.applyProperties(style);
 }
 if (args.win) {
-    var style = $.createStyle({
+    const style = $.createStyle({
         classes: args.win,
         apiName: 'Window',
         backgroundColor: 'white'
@@ -104,7 +116,7 @@ if (args.win) {
 }
 if (args.label) {
     args.label.top = 10
-    var label = $.UI.create("Label", args.label);
+    const label = $.UI.create("Label", args.label);
     $.win.add(label);
 }
 ```
@@ -112,7 +124,7 @@ if (args.label) {
 **app/controllers/index.js**
 
 ```javascript
-var args = {};
+const args = {};
 args.button = ['rude_button'];
 args.win = ['tiny_win'];
 args.label = {
@@ -121,6 +133,38 @@ args.label = {
 };
 Alloy.createController('dialog', args).getView().open();
 ```
+
+### Equivalent Code Outside Controller
+
+In this example, the dialog controller code is not necessary. The dialog can be generated and styled outside the view-controller. The following code using only the previous XML markup is equivalent to what the previous two controllers are doing:
+
+**app/controllers/index.js**
+
+```javascript
+const dialog = Alloy.createController('dialog');
+let style = dialog.createStyle({
+    classes: 'rude_button',
+    apiName: 'Button',
+    color: 'blue'
+});
+dialog.button.applyProperties(style);
+style = dialog.createStyle({
+    classes: 'tiny_win',
+    apiName: 'Window',
+    backgroundColor: 'white'
+});
+dialog.win.applyProperties(style);
+style = {
+    top: 10,
+    text: 'No zombies allowed!',
+    classes: 'hdpi shadow'
+}
+const label = dialog.UI.create('Label', style);
+dialog.win.add(label);
+dialog.getView().open();
+```
+
+Note that code outside of the dialog view-controller is using the instance variable name `dialog` to make the API calls with the `createStyle` and `UI.create` methods rather than the `$` variable, which is used when making controller API calls inside its own view-controller.
 
 ## Modify TSS Classes
 
@@ -131,15 +175,15 @@ Pass a reference to the view object as the first parameter, then pass the classe
 **app/controllers/index.js**
 
 ```javascript
-var dialog = Alloy.createController('dialog');
+const dialog = Alloy.createController('dialog');
 dialog.addClass(dialog.win, 'tiny_win', {backgroundColor:'white'});
 dialog.addClass(dialog.button, 'rude_button', {color: 'blue'});
-var style = {
+const style = {
     top: 10,
     text: 'No zombies allowed!',
     classes: 'hdpi shadow'
 }
-var label = dialog.UI.create('Label', style);
+const label = dialog.UI.create('Label', style);
 dialog.getView().open();
 ```
 

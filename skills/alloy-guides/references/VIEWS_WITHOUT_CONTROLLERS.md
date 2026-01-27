@@ -2,9 +2,11 @@
 
 ## Table of Contents
 
-1. [Introduction](#introduction)
-2. [XML Markup](#xml-markup)
-3. [Controller Code](#controller-code)
+- [Views without Controllers](#views-without-controllers)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [XML Markup](#xml-markup)
+  - [Controller Code](#controller-code)
 
 ## Introduction
 
@@ -71,7 +73,7 @@ For example:
 **app/controllers/index.js**
 
 ```javascript
-var profile = Alloy.createController('profile');
+const profile = Alloy.createController('profile');
 profile.updateViews({
   "#container" : {
         layout : "vertical"
@@ -98,7 +100,7 @@ $.index.open();
 **app/controllers/index.js** (Alloy < 1.4.0)
 
 ```javascript
-var profile = Alloy.createController('profile');
+const profile = Alloy.createController('profile');
 profile.container.layout = 'vertical';
 profile.picture.image = '/appicon.png';
 profile.name.text = 'Mr. Man';

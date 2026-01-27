@@ -1,26 +1,45 @@
 ---
 name: alloy-guides
-description: Comprehensive guide for the Alloy MVC framework for Titanium SDK. Use when working with Titanium Alloy applications - creating or modifying Alloy MVC components (models, views, controllers), implementing data binding with Backbone.js models and collections, styling with TSS (Titanium Style Sheets), working with widgets and components, using the Alloy CLI for code generation, implementing migrations and sync adapters, integrating PurgeTSS for utility-first styling. This skill contains the complete official Alloy documentation.
+description: Comprehensive guide for the Alloy MVC framework for Titanium SDK. Use for: (1) Creating or modifying Alloy MVC components (models, views, controllers), (2) Implementing data binding with Backbone.js models and collections, (3) Styling with TSS (Titanium Style Sheets), (4) Working with widgets and components, (5) Using the Alloy CLI for code generation, (6) Implementing migrations and sync adapters, (7) Integrating PurgeTSS for utility-first styling. This skill contains the complete official Alloy documentation.
 ---
 
 # Alloy MVC Framework Guide
 
 Complete reference for building Titanium mobile applications with the Alloy MVC framework and Backbone.js.
 
+## Table of Contents
+
+- [Alloy MVC Framework Guide](#alloy-mvc-framework-guide)
+  - [Table of Contents](#table-of-contents)
+  - [Quick Reference](#quick-reference)
+  - [Project Structure](#project-structure)
+  - [MVC Quick Start](#mvc-quick-start)
+  - [Key Concepts](#key-concepts)
+  - [Common Patterns](#common-patterns)
+    - [Creating a Model](#creating-a-model)
+    - [Data Binding](#data-binding)
+    - [Platform-Specific Code](#platform-specific-code)
+    - [Widget Usage](#widget-usage)
+  - [Compilation Process](#compilation-process)
+  - [References](#references)
+  - [Related Skills](#related-skills)
+
+---
+
 ## Quick Reference
 
-| Topic | Reference File |
-|-------|---------------|
-| Core concepts, MVC, Backbone.js, conventions | [CONCEPTS.md](references/CONCEPTS.md) |
-| Controllers, events, conditional code, arguments | [CONTROLLERS.md](references/CONTROLLERS.md) |
-| Models, collections, data binding, migrations | [MODELS.md](references/MODELS.md) |
-| XML markup, elements, attributes, events | [VIEWS_XML.md](references/VIEWS_XML.md) |
-| TSS styling, themes, platform-specific styles | [VIEWS_STYLES.md](references/VIEWS_STYLES.md) |
-| Dynamic styles, autostyle, runtime styling | [VIEWS_DYNAMIC.md](references/VIEWS_DYNAMIC.md) |
-| Controllers-less views, patterns | [VIEWS_WITHOUT_CONTROLLERS.md](references/VIEWS_WITHOUT_CONTROLLERS.md) |
-| Creating and using widgets | [WIDGETS.md](references/WIDGETS.md) |
-| CLI commands, code generation | [CLI_TASKS.md](references/CLI_TASKS.md) |
-| PurgeTSS integration and features | [PURGETSS.md](references/PURGETSS.md) |
+| Topic                                            | Reference File                                                          |
+| ------------------------------------------------ | ----------------------------------------------------------------------- |
+| Core concepts, MVC, Backbone.js, conventions     | [CONCEPTS.md](references/CONCEPTS.md)                                   |
+| Controllers, events, conditional code, arguments | [CONTROLLERS.md](references/CONTROLLERS.md)                             |
+| Models, collections, data binding, migrations    | [MODELS.md](references/MODELS.md)                                       |
+| XML markup, elements, attributes, events         | [VIEWS_XML.md](references/VIEWS_XML.md)                                 |
+| TSS styling, themes, platform-specific styles    | [VIEWS_STYLES.md](references/VIEWS_STYLES.md)                           |
+| Dynamic styles, autostyle, runtime styling       | [VIEWS_DYNAMIC.md](references/VIEWS_DYNAMIC.md)                         |
+| Controllers-less views, patterns                 | [VIEWS_WITHOUT_CONTROLLERS.md](references/VIEWS_WITHOUT_CONTROLLERS.md) |
+| Creating and using widgets                       | [WIDGETS.md](references/WIDGETS.md)                                     |
+| CLI commands, code generation                    | [CLI_TASKS.md](references/CLI_TASKS.md)                                 |
+| PurgeTSS integration and features                | [PURGETSS.md](references/PURGETSS.md)                                   |
 
 ## Project Structure
 
@@ -126,9 +145,9 @@ Read detailed documentation from the reference files listed above based on your 
 
 For tasks beyond Alloy MVC basics, use these complementary skills:
 
-| Task | Use This Skill |
-|------|----------------|
-| Modern architecture, services, patterns | `alloy-expert` |
+| Task                                      | Use This Skill |
+| ----------------------------------------- | -------------- |
+| Modern architecture, services, patterns   | `alloy-expert` |
 | Alloy CLI, config files, debugging errors | `alloy-howtos` |
-| Utility-first styling with PurgeTSS | `purgetss` |
-| Native features (location, push, media) | `ti-howtos` |
+| Utility-first styling with PurgeTSS       | `purgetss`     |
+| Native features (location, push, media)   | `ti-howtos`    |

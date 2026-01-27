@@ -2,18 +2,34 @@
 
 ## Table of Contents
 
-1. [Introduction](#introduction)
-2. [Collection Element](#collection-element)
-3. [Model Element](#model-element)
-4. [Module Attribute](#module-attribute)
-5. [Module Element](#module-element-1)
-6. [Require Element](#require-element)
-7. [Namespace](#namespace)
-8. [Conditional Code](#conditional-code)
-9. [Property Mapping](#property-mapping)
-10. [Event Handling](#event-handling)
-11. [Data Binding](#data-binding)
-12. [Non-Standard Syntax](#non-standard-syntax)
+- [Alloy XML Markup](#alloy-xml-markup)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [Collection Element](#collection-element)
+    - [Creating a Singleton](#creating-a-singleton)
+    - [Creating an Instance](#creating-an-instance)
+  - [Model Element](#model-element)
+    - [Creating a Singleton](#creating-a-singleton-1)
+    - [Creating an Instance](#creating-an-instance-1)
+  - [Module Attribute](#module-attribute)
+  - [Module Element](#module-element)
+  - [Require Element](#require-element)
+    - [Including Views](#including-views)
+    - [Importing Widgets](#importing-widgets)
+    - [Passing Arguments](#passing-arguments)
+    - [Binding Events](#binding-events)
+    - [Adding Children Views](#adding-children-views)
+  - [Namespace](#namespace)
+  - [Conditional Code](#conditional-code)
+  - [Property Mapping](#property-mapping)
+    - [Proxy Properties](#proxy-properties)
+    - [Android ActionBar](#android-actionbar)
+    - [iOS Navigation Button Shorthand](#ios-navigation-button-shorthand)
+    - [iOS SystemButton Shorthand](#ios-systembutton-shorthand)
+    - [TextField Keyboard Shorthands](#textfield-keyboard-shorthands)
+  - [Event Handling](#event-handling)
+  - [Data Binding](#data-binding)
+  - [Non-Standard Syntax](#non-standard-syntax)
 
 ## Introduction
 
@@ -39,29 +55,29 @@ If the top-level UI component does not have an ID defined, it can be referenced 
 
 The following table lists the attributes for the UI components:
 
-| Attribute | Description |
-| --- | --- |
-| `id` | Identifies UI elements in the controller (prefixed with `$.`) and style sheet (prefixed with `#`). |
-| `class` | Applies additional styles (prefixed with `.` in the TSS file). |
-| `autoStyle` | Enables the autostyle feature for dynamic styling. |
-| `formFactor` | Acts as a compiler directive for size-specific view components (`handheld` or `tablet`). |
-| `if` | Use a custom query to apply additional styles to the element. |
-| `module` | Requires in a CommonJS module. |
-| `ns` | Overrides the default `Titanium.UI` namespace. |
-| `platform` | Switches the namespace based on the platform. |
-| `<properties>` | Assigns values to UI object properties. |
-| `<events>` | Assigns callbacks to UI object events. |
+| Attribute      | Description                                                                                        |
+| -------------- | -------------------------------------------------------------------------------------------------- |
+| `id`           | Identifies UI elements in the controller (prefixed with `$.`) and style sheet (prefixed with `#`). |
+| `class`        | Applies additional styles (prefixed with `.` in the TSS file).                                     |
+| `autoStyle`    | Enables the autostyle feature for dynamic styling.                                                 |
+| `formFactor`   | Acts as a compiler directive for size-specific view components (`handheld` or `tablet`).           |
+| `if`           | Use a custom query to apply additional styles to the element.                                      |
+| `module`       | Requires in a CommonJS module.                                                                     |
+| `ns`           | Overrides the default `Titanium.UI` namespace.                                                     |
+| `platform`     | Switches the namespace based on the platform.                                                      |
+| `<properties>` | Assigns values to UI object properties.                                                            |
+| `<events>`     | Assigns callbacks to UI object events.                                                             |
 
 The following table lists the special XML elements besides the Titanium UI components:
 
-| Element | Description |
-| --- | --- |
-| `Alloy` | Root element for all view XML files. Required in all views. |
-| `Collection` | Creates a singleton or instance of a collection. |
-| `Model` | Creates a singleton or instance of a model. |
-| `Module` | Imports a module view inside this view. |
-| `Require` | Imports a widget or includes another view inside this view. |
-| `Widget` | Imports a widget inside this view. |
+| Element      | Description                                                 |
+| ------------ | ----------------------------------------------------------- |
+| `Alloy`      | Root element for all view XML files. Required in all views. |
+| `Collection` | Creates a singleton or instance of a collection.            |
+| `Model`      | Creates a singleton or instance of a model.                 |
+| `Module`     | Imports a module view inside this view.                     |
+| `Require`    | Imports a widget or includes another view inside this view. |
+| `Widget`     | Imports a widget inside this view.                          |
 
 `index.xml` is a special case that only accepts the following view components as direct children of the Alloy tag:
 
@@ -69,6 +85,10 @@ The following table lists the special XML elements besides the Titanium UI compo
 * `Ti.UI.TabGroup` or `<TabGroup>`
 * `Ti.UI.NavigationWindow` or `<NavigationWindow>`
 * `Ti.UI.iOS.SplitWindow` or `<SplitWindow>`
+
+::: warning
+With the release of CLI 7.1.0, you can use platform as a prefix in the XML. For example: `<Label ios:text="Hello iOS!" android:text="Hello Android!" />`
+:::
 
 ## Collection Element
 
@@ -86,7 +106,7 @@ The `Collection` XML element creates a singleton or instance of a collection. Th
 ```
 
 ```javascript
-var library = Alloy.Collections.book;
+const library = Alloy.Collections.book;
 library.fetch();
 ```
 
@@ -102,7 +122,7 @@ library.fetch();
 ```
 
 ```javascript
-var library = $.localLibrary;
+const library = $.localLibrary;
 library.fetch();
 ```
 
@@ -122,7 +142,7 @@ The `Model` XML element creates a singleton or instance of a model. The `Model` 
 ```
 
 ```javascript
-var drama = Alloy.Models.book;
+const drama = Alloy.Models.book;
 drama.set('title', 'Hamlet');
 drama.set('author', 'William Shakespeare');
 ```
@@ -139,7 +159,7 @@ drama.set('author', 'William Shakespeare');
 ```
 
 ```javascript
-var drama = $.myBook;
+const drama = $.myBook;
 drama.set('title', 'Hamlet');
 drama.set('author', 'William Shakespeare');
 ```
@@ -151,18 +171,18 @@ You can require a CommonJS module in an Alloy view using the `module` attribute 
 **app/lib/foo.js**
 
 ```javascript
-exports.createFoo = function (args) {
-    var viewArgs = {
+exports.createFoo = args => {
+    const viewArgs = {
         backgroundColor: args.color || 'white',
         width: 100,
         height: 100
     };
-    var view = Ti.UI.createView(viewArgs);
-    var labelArgs = {
+    const view = Ti.UI.createView(viewArgs);
+    const labelArgs = {
         color: args.textColor || 'black',
         text: args.text || 'Foobar'
     };
-    var label = Ti.UI.createLabel(labelArgs);
+    const label = Ti.UI.createLabel(labelArgs);
     view.add(label);
     return view;
 };
@@ -229,7 +249,7 @@ Views may be included in other views using the `Require` element. Specify the `t
 To use UI objects from the included views:
 
 ```javascript
-var aboutView = $.aboutTab.getView('aboutView');
+const aboutView = $.aboutTab.getView('aboutView');
 aboutView.url = 'http://www.google.com';
 ```
 
@@ -275,7 +295,7 @@ This is equivalent to:
 **apps/controllers/index.js**
 
 ```javascript
-var foobar = Alloy.createController('foo', {
+const foobar = Alloy.createController('foo', {
     id: 'foobar',
     customTitle: 'Hello',
     customImage: 'images/hello.png'
@@ -287,8 +307,8 @@ In the required view's controller:
 **apps/controllers/foo.js**
 
 ```javascript
-var title = $.args.customTitle || 'Foobar';
-var image = $.args.customImage || 'default.png';
+const title = $.args.customTitle || 'Foobar';
+const image = $.args.customImage || 'default.png';
 ```
 
 ### Binding Events
@@ -312,7 +332,7 @@ Button View:
 In the controller of the required view:
 
 ```
-$.button.addEventListener('click', function(e) {
+$.button.addEventListener('click', e => {
     $.trigger('click', e);
 });
 ```
@@ -332,7 +352,7 @@ If your Require element is a parent view, you can add children elements to it. T
 **controllers/info.js**
 
 ```javascript
-_.each($.args.children || [], function(child) {
+_.each($.args.children || [], child => {
     $.info.add(child);
 });
 
@@ -367,22 +387,22 @@ For UI objects that belong to a specific platform, use the `platform` attribute:
 
 Many of the Titanium view proxies not part of the `Titanium.UI` namespace do not require that the `ns` attribute be explicitly set. The following elements are implicitly mapped to a namespace:
 
-| Element | Namespace |
-| --- | --- |
-| Menu | Ti.Android |
-| MenuItem | Ti.Android |
-| Annotation | Ti.Map |
-| VideoPlayer | Ti.Media |
-| MusicPlayer | Ti.Media |
-| SearchView | Ti.UI.Android |
-| AdView | Ti.UI.iOS |
-| CoverFlowView | Ti.UI.iOS |
-| NavigationWindow | Ti.UI |
-| TabbedBar | Ti.UI.iOS |
-| DocumentViewer | Ti.UI.iOS |
-| Popover | Ti.UI.iPad |
-| SplitWindow | Ti.UI.iOS |
-| StatusBar | Ti.UI.iOS |
+| Element          | Namespace     |
+| ---------------- | ------------- |
+| Menu             | Ti.Android    |
+| MenuItem         | Ti.Android    |
+| Annotation       | Ti.Map        |
+| VideoPlayer      | Ti.Media      |
+| MusicPlayer      | Ti.Media      |
+| SearchView       | Ti.UI.Android |
+| AdView           | Ti.UI.iOS     |
+| CoverFlowView    | Ti.UI.iOS     |
+| NavigationWindow | Ti.UI         |
+| TabbedBar        | Ti.UI.iOS     |
+| DocumentViewer   | Ti.UI.iOS     |
+| Popover          | Ti.UI.iPad    |
+| SplitWindow      | Ti.UI.iOS     |
+| StatusBar        | Ti.UI.iOS     |
 
 ## Conditional Code
 
@@ -416,7 +436,7 @@ Each Titanium UI object property is defined as an attribute in the XML and TSS f
 
 ### Proxy Properties
 
-For properties that are assigned Titanium proxies, create a child tag under the Titanium UI object tag, using the name of the property with the first character capitalized.
+For properties that are assigned Titanium proxies, such as Views or Buttons, these properties can be declared. Create a child tag under the Titanium UI object tag, using the name of the property with the first character capitalized. Then, declare your Titanium proxy inline with the child property tag.
 
 ```xml
 <Alloy>
@@ -427,6 +447,22 @@ For properties that are assigned Titanium proxies, create a child tag under the 
     </Window>
 </Alloy>
 ```
+
+Currently, the following Titanium proxies and properties implemented using this syntax are:
+
+| Titanium Proxy Object / Alloy tag             | Proxy Property                                                                 | Child Alloy Tag                                                                                   | Since                                   |
+| --------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| Ti.Android.MenuItem / `<MenuItem>`            | actionView                                                                     | `<ActionView>`                                                                                    | Alloy 1.6.0                             |
+| Ti.UI.iPad.Popover / `<PopOver>`              | contentView                                                                    | `<ContentView>`                                                                                   | Alloy 1.4.0                             |
+| Ti.UI.Label / `<Label>`                       | attributedString                                                               | `<AttributedString>`                                                                              | Alloy 1.7.6                             |
+| Ti.UI.ListSection / `<ListSection>`           | footerView, headerView                                                         | `<FooterView>`, `<HeaderView>`                                                                    | Alloy 1.3.0                             |
+| Ti.UI.ListView / `<ListView>`                 | footerView, headerView, pullView, searchView                                   | `<FooterView>`, `<HeaderView>`, `<PullView>`, `<SearchBar>` or `<SearchView platform="android">`  | Alloy 1.3.0                             |
+| Ti.UI.OptionDialog / `<OptionDialog>`         | androidView                                                                    | `<AndroidView>` or `<View>`                                                                       | Alloy 1.5.0                             |
+| Ti.UI.TableView / `<TableView>`               | footerView, headerPullView, headerView, search                                 | `<FooterView>`, `<HeaderPullView>`, `<HeaderView>`, `<Search>`                                    | Alloy 1.1.0                             |
+| Ti.UI.TableViewSection / `<TableViewSection>` | headerView                                                                     | `<HeaderView>`                                                                                    | -                                       |
+| Ti.UI.TextArea / `<TextArea>`                 | attributedString, keyboardToolbar                                              | `<AttributedString>`, `<KeyboardToolbar>`                                                         | Alloy 1.7.6, 1.5.0                      |
+| Ti.UI.TextField / `<TextField>`               | attributedHintText, attributedString, keyboardToolbar, leftButton, rightButton | `<AttributeHintText>`, `<AttributedString>`, `<KeyboardToolbar>`, `<LeftButton>`, `<RightButton>` | Alloy 1.7.6, 1.7.6, 1.3.0, 1.3.0, 1.3.0 |
+| Ti.UI.Window / `<Window>`                     | leftNavButton, rightNavButton, titleControl, toolbar                           | `<LeftNavButton>`, `<RightNavButton>`, `<TitleControl>`, `<WindowToolbar>`                        | Alloy 1.6.0                             |
 
 ### Android ActionBar
 

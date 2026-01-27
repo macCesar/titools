@@ -2,10 +2,13 @@
 
 ## Table of Contents
 
-1. [Overview](#overview)
-2. [Command-Line Interface Usage](#command-line-interface-usage)
-3. [Key Features](#key-features)
-4. [Documentation](#documentation)
+- [PurgeTSS](#purgetss)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Command-Line Interface Usage](#command-line-interface-usage)
+  - [Key Features](#key-features)
+  - [Documentation](#documentation)
+    - [Topics](#topics)
 
 ## Overview
 

@@ -2,14 +2,24 @@
 
 ## Table of Contents
 
-1. [Overview](#overview)
-2. [Model-View-Controller](#model-view-controller)
-3. [Alloy and the Titanium SDK](#alloy-and-the-titanium-sdk)
-4. [Convention over Configuration](#convention-over-configuration)
-5. [Platform-Specific Resources](#platform-specific-resources)
-6. [Widgets](#widgets)
-7. [Builtins](#builtins)
-8. [Compilation Process](#compilation-process)
+- [Alloy Concepts](#alloy-concepts)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Model-View-Controller](#model-view-controller)
+    - [Alloy: MVC with Backbone](#alloy-mvc-with-backbone)
+  - [Alloy and the Titanium SDK](#alloy-and-the-titanium-sdk)
+    - [Titanium SDK to Alloy Mapping](#titanium-sdk-to-alloy-mapping)
+  - [Convention over Configuration](#convention-over-configuration)
+    - [Platform-Specific Resources](#platform-specific-resources)
+  - [Widgets](#widgets)
+  - [Builtins](#builtins)
+  - [Compilation Process](#compilation-process)
+    - [Cleanup](#cleanup)
+    - [Build Configuration](#build-configuration)
+    - [Alloy Framework, Assets, and Lib](#alloy-framework-assets-and-lib)
+    - [Model-View-Controller and Widget Generation](#model-view-controller-and-widget-generation)
+    - [Main Application](#main-application)
+    - [Code Optimization](#code-optimization)
 
 ## Overview
 
@@ -47,12 +57,20 @@ For assets, such as images, any references to the `Resources` folder in the Tita
 
 ### Titanium SDK to Alloy Mapping
 
-| Titanium SDK Component | Alloy Component |
-|------------------------|-----------------|
-| Titanium.UI.* Objects | XML element. Remove the namespace. For some elements, you may need to assign the `ns` attribute.<br><br>```xml\n<!-- Creates a button -->\n<Button />\n``` |
-| Titanium Object properties | XML attribute if the property can be expressed as a string, number or Titanium SDK constant.<br><br>```xml\n<Button title="Foobar" top="0" width="Ti.UI.SIZE"/>\n```<br><br>TSS attribute if the property can be directly expressed as a string, number, Titanium SDK constant, dictionary or array.<br><br>```javascript\n"Button":{\n  title: "Foobar",\n  top: 0,\n  width: Ti.UI.SIZE\n}\n``` |
-| Titanium Object methods | Use in the controller code. You need to define the `id` attribute of the object in the XML markup, so the object can be referenced in the controller.<br><br>```javascript\n// Need to give the object an ID, for example\n// <Button id="button" />\n$.button.setTitle('Push Me!');\n``` |
-| Titanium Object events | XML attribute to bind a callback in the associated controller. Capitalize the first character of the event name and append 'on' to the beginning of the name.<br><br>```xml\n<!-- doClick needs to be declared\nin the associated controller -->\n<Button onClick="doClick"/>\n``` |
+| Titanium SDK Component                                                                  | Alloy Component                                                                                                                                               |
+| --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Titanium.UI.* Objects**                                                               | **XML element**. Remove the namespace. For some elements, you may need to assign the `ns` attribute.                                                          |
+| `Titanium.UI.createButton();`                                                           | `<Button />` creates a button                                                                                                                                 |
+|                                                                                         | **TSS element**. Remove the namespace.                                                                                                                        |
+|                                                                                         | `"Button":{ /* Button attributes */ }`                                                                                                                        |
+| **Titanium Object properties**                                                          | **XML attribute** if the property can be expressed as a string, number or Titanium SDK constant.                                                              |
+| `Titanium.UI.createButton({text: "Foobar", top: 0, width: Ti.UI.SIZE});`                | `<Button title="Foobar" top="0" width="Ti.UI.SIZE"/>`                                                                                                         |
+|                                                                                         | **TSS attribute** if the property can be directly expressed as a string, number, Titanium SDK constant, dictionary or array.                                  |
+|                                                                                         | `"Button":{ title: "Foobar", top: 0, width: Ti.UI.SIZE }`                                                                                                     |
+| **Titanium Object methods**                                                             | Use in the controller code. You need to define the `id` attribute of the object in the XML markup, so the object can be referenced in the controller.         |
+| `const button = Titanium.UI.createButton(); button.setTitle('Push Me!');`               | `// Need to give the object an ID: <Button id="button" />` then `$.button.setTitle('Push Me!');`                                                              |
+| **Titanium Object events**                                                              | XML attribute to bind a callback in the associated controller. Capitalize the first character of the event name and append 'on' to the beginning of the name. |
+| `const button = Titanium.UI.createButton(); button.addEventListener('click', doClick);` | `<Button onClick="doClick"/>` (doClick needs to be declared in the associated controller)                                                                     |
 
 ## Convention over Configuration
 
@@ -60,26 +78,26 @@ To simplify development, Alloy uses a directory structure and naming conventions
 
 The following is a list of directories and files that can be found in an Alloy project:
 
-| Directory/File | Description |
-|----------------|-------------|
-| `app` | Contains the models, views, controllers and assets of the application. All work should be done here. |
-| `app/alloy.jmk` | Build configuration file. See Build Configuration File (alloy.jmk). |
-| `app/alloy.js` | Initializer file used to preconfigure components or override Alloy methods before the main controller is executed. |
-| `app/config.json` | Project configuration file. See Project Configuration File (config.json). |
-| `app/assets` | Contains image assets and other files that need to be copied into the `Resources` directory. Reference these files in the code without the 'app/assets' path. |
-| `app/controllers` | Contains controllers in the format `filename.js` to a corresponding view file `app/views/filename.xml`. |
-| `app/i18n` | Since Alloy 1.8.0 and Titanium 5.2.0 Language Strings are sourced from `app/i18n` and Alloy will generate the `i18n` folder in the project root. |
-| `app/lib` | Contains application-specific library code, typically in the CommonJS format. |
-| `app/migrations` | Contains database migration files in the format `<DATETIME>_filename.js`. See Migrations for more information. |
-| `app/models` | Contains model files in the format `filename.js`. |
-| `app/platform` | Since Alloy 1.8.0 platform resources are sourced from `app/platform` and Alloy will generate the `platform` folder in the project root. |
-| `app/specs` | Like the `app/lib` folder except it is only used if the deploy type is **not** production (since Alloy 1.2.0). |
-| `app/styles` | Contains view styling in the format `filename.tss`, which is applied to a corresponding view file `app/views/filename.xml`. |
-| `app/themes` | Contains themes to customize the assets and styles of the entire GUI. |
-| `app/views` | Contains views in the format `filename.xml` with the optional corresponding files `app/controllers/filename.js` and `app/styles/filename.tss`. |
-| `app/widgets` | Contains widget files. Each widget will have its own `app`-like directory structure. |
-| `i18n` | Since Alloy 1.8.0 and Titanium 5.2.0 Language Strings are sourced from `app/i18n` and Alloy will generate the `i18n` folder in the project root. |
-| `Resources` | Contains the Titanium files generated by the Alloy interface from the `app` directory. All files will be overwritten each time the application is built. Since Alloy 1.3.0, Alloy creates a separate Titanium project for each platform you build for in the `Resources/<platform>` folder. |
+| Directory/File    | Description                                                                                                                                                                                                                                                                                 |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `app`             | Contains the models, views, controllers and assets of the application. All work should be done here.                                                                                                                                                                                        |
+| `app/alloy.jmk`   | Build configuration file. See Build Configuration File (alloy.jmk).                                                                                                                                                                                                                         |
+| `app/alloy.js`    | Initializer file used to preconfigure components or override Alloy methods before the main controller is executed.                                                                                                                                                                          |
+| `app/config.json` | Project configuration file. See Project Configuration File (config.json).                                                                                                                                                                                                                   |
+| `app/assets`      | Contains image assets and other files that need to be copied into the `Resources` directory. Reference these files in the code without the 'app/assets' path.                                                                                                                               |
+| `app/controllers` | Contains controllers in the format `filename.js` to a corresponding view file `app/views/filename.xml`.                                                                                                                                                                                     |
+| `app/i18n`        | Since Alloy 1.8.0 and Titanium 5.2.0 Language Strings are sourced from `app/i18n` and Alloy will generate the `i18n` folder in the project root.                                                                                                                                            |
+| `app/lib`         | Contains application-specific library code, typically in the CommonJS format.                                                                                                                                                                                                               |
+| `app/migrations`  | Contains database migration files in the format `<DATETIME>_filename.js`. See Migrations for more information.                                                                                                                                                                              |
+| `app/models`      | Contains model files in the format `filename.js`.                                                                                                                                                                                                                                           |
+| `app/platform`    | Since Alloy 1.8.0 platform resources are sourced from `app/platform` and Alloy will generate the `platform` folder in the project root.                                                                                                                                                     |
+| `app/specs`       | Like the `app/lib` folder except it is only used if the deploy type is **not** production (since Alloy 1.2.0).                                                                                                                                                                              |
+| `app/styles`      | Contains view styling in the format `filename.tss`, which is applied to a corresponding view file `app/views/filename.xml`.                                                                                                                                                                 |
+| `app/themes`      | Contains themes to customize the assets and styles of the entire GUI.                                                                                                                                                                                                                       |
+| `app/views`       | Contains views in the format `filename.xml` with the optional corresponding files `app/controllers/filename.js` and `app/styles/filename.tss`.                                                                                                                                              |
+| `app/widgets`     | Contains widget files. Each widget will have its own `app`-like directory structure.                                                                                                                                                                                                        |
+| `i18n`            | Since Alloy 1.8.0 and Titanium 5.2.0 Language Strings are sourced from `app/i18n` and Alloy will generate the `i18n` folder in the project root.                                                                                                                                            |
+| `Resources`       | Contains the Titanium files generated by the Alloy interface from the `app` directory. All files will be overwritten each time the application is built. Since Alloy 1.3.0, Alloy creates a separate Titanium project for each platform you build for in the `Resources/<platform>` folder. |
 
 **Notes:** the `lib`, `migrations`, `themes` and `widgets` folders are not automatically generated when creating a new project. The `migrations` and `widgets` folder will be generated by the Alloy command-line interface if any of those components are generated. The `lib` and `themes` folders will need to be manually created.
 
@@ -120,8 +138,8 @@ Widgets are self-contained components that can be easily dropped into Alloy-powe
 Alloy comes with additional utilities used to simplify certain functions, such as animations, string manipulation, and display unit conversion. These utilities are referred to as 'builtins.' To use these utilities, the controller needs to call `require` with 'alloy' as the root directory. For example, to use an animation function to shake the current view by pressing the 'shake' button:
 
 ```javascript
-var animation = require('alloy/animation');
-$.shake.addEventListener('click', function(e) {
+const animation = require('alloy/animation');
+$.shake.addEventListener('click', e => {
   animation.shake($.view);
 });
 ```

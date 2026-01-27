@@ -2,16 +2,20 @@
 
 ## Table of Contents
 
-1. [Overview](#overview)
-2. [Controllers](#controllers)
-3. [Events](#events)
-4. [Inheritance](#inheritance)
-5. [Conditional Code](#conditional-code)
-6. [Passing Arguments](#passing-arguments)
-7. [Global Namespace](#global-namespace)
-8. [Initializer File (alloy.js)](#initializer-file-alloyjs)
-9. [Library Code and CommonJS Modules](#library-code-and-commonjs-modules)
-10. [Extending Alloy, Underscore.js and Backbone.js](#extending-alloy-underscorejs-and-backbonejs)
+- [Alloy Controllers](#alloy-controllers)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Controllers](#controllers)
+    - [Events](#events)
+    - [Inheritance](#inheritance)
+    - [Conditional Code](#conditional-code)
+    - [Passing Arguments](#passing-arguments)
+    - [Global Namespace](#global-namespace)
+  - [Initializer File (alloy.js)](#initializer-file-alloyjs)
+  - [Library Code and CommonJS Modules](#library-code-and-commonjs-modules)
+    - [Specs Folder](#specs-folder)
+    - [Platform-Specific Library Folders](#platform-specific-library-folders)
+    - [Extending Alloy, Underscore.js and Backbone.js](#extending-alloy-underscorejs-and-backbonejs)
 
 ## Overview
 
@@ -92,7 +96,7 @@ For example, the animal view-controller defines a label object with a speak meth
 **app/controllers/animal.js**
 
 ```javascript
-exports.speak = function() {
+exports.speak = () => {
     alert("Yelp!");
 };
 ```
@@ -112,7 +116,7 @@ Then, the following code inherits from the animal view-controller and overrides 
 ```javascript
 exports.baseController = "animal";
 $.animalLabel.text = "Dog";
-exports.speak = function() {
+exports.speak = () => {
     alert("Bark!");
 };
 ```
@@ -135,12 +139,12 @@ For example, since iOS devices do not include a back button, the application can
 
 ```javascript
 if (OS_IOS) {
-  var closeButton = Ti.UI.createButton({
+  const closeButton = Ti.UI.createButton({
         title: 'Close',
         style: Ti.UI.iPhone.SystemButtonStyle.PLAIN
     });
 
-    closeButton.addEventListener('click', function(){
+    closeButton.addEventListener('click', () => {
         $.window.close();
     });
 
@@ -150,7 +154,7 @@ if (OS_IOS) {
 
 ### Passing Arguments
 
-When initializing an external controller, you can pass arguments to customize it, for instance, `var controller = Alloy.createController('controller', {args1: 'foo'})`. In the external controller, the special variable `$.args` is used to receive the arguments. Prior to Alloy 1.6, you needed to use `arguments[0]`. For example, suppose you want to add multiple TableViewRow objects to a TableView object.
+When initializing an external controller, you can pass arguments to customize it, for instance, `const controller = Alloy.createController('controller', {args1: 'foo'})`. In the external controller, the special variable `$.args` is used to receive the arguments. Prior to Alloy 1.6, you needed to use `arguments[0]`. For example, suppose you want to add multiple TableViewRow objects to a TableView object.
 
 For the TableViewRow object, called 'row', the view contains only the object, and the controller contains only a few lines of code to parse the arguments:
 
@@ -172,7 +176,7 @@ $.rowView.url = $.args.url || '';
 **app/controllers/row.js (Alloy <1.6)**
 
 ```javascript
-var args = arguments[0] || {};
+const args = arguments[0] || {};
 ```
 
 In a separate controller containing the TableView object, called 'tableView', the code is cycling through an array of data and creating new instances of 'row' to supply it to 'tableView.'
@@ -180,9 +184,9 @@ In a separate controller containing the TableView object, called 'tableView', th
 **app/controllers/index.js**
 
 ```javascript
-var data[];
-for (var i=0; i<source.length; i++) {
-    var arg = {
+const data = [];
+for (let i=0; i<source.length; i++) {
+    const arg = {
         title: source[i].postTitle,
         url: source[i].postLink
     };
@@ -207,7 +211,7 @@ Alloy.Globals.parent = $.index;
 Access the parent window in another controller:
 
 ```javascript
-var parent = Alloy.Globals.parent;
+const parent = Alloy.Globals.parent;
 parent.close();
 ```
 
@@ -220,7 +224,7 @@ The initializer file `app/alloy.js` can be used to execute some code near the be
 For instance, the default `isTablet` method returns true if it is identified as an iPad, an Android device in the large or extra large group, or if either dimension exceeds 400 dp for Mobile Web application. To override that behavior, you can add the following code to `alloy.js`.
 
 ```
-Alloy.isTablet = function(){
+Alloy.isTablet = () => {
     return !(Math.min(Ti.Platform.displayCaps.platformHeight, Ti.Platform.displayCaps.platformWidth) < 600);
 }
 ```
@@ -232,7 +236,7 @@ Some JavaScript code might not be suitable as controller code, since it does not
 To use the library or CommonJS module, require it with the library name or module name without the 'app/lib' path and '.js' extension:
 
 ```javascript
-var lib = require('library_name');
+const lib = require('library_name');
 lib.foo();
 ```
 
@@ -276,18 +280,18 @@ app/
 To access the Alloy API methods, such as `createController` and `createModel`, as well as Underscore.js and Backbone.js in CommonJS modules and JavaScript files in `app/lib`, you need to load those modules in to the library:
 
 ```javascript
-var Alloy = require('alloy'), _ = require("alloy/underscore")._, Backbone = require("alloy/backbone");
+const Alloy = require('alloy'), _ = require("alloy/underscore")._, Backbone = require("alloy/backbone");
 
 // Alloy extended
 Alloy.createController('foo').getView().open();
 
 // Underscore extended
-var even = _.find([1, 2, 3, 4, 5, 6], function(num){ return num % 2 == 0; });
+const even = _.find([1, 2, 3, 4, 5, 6], num => num % 2 === 0);
 Ti.API.info(even);
 
 // Backbone extended
-var Book = Backbone.Model.extend();
-var book = new Book({title: 'Ulysses', author: 'James Joyce'});
+const Book = Backbone.Model.extend();
+const book = new Book({title: 'Ulysses', author: 'James Joyce'});
 Ti.API.info(JSON.stringify(book));
 ```
 

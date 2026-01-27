@@ -29,13 +29,13 @@ The JavaScript file exports a definition object comprised of three different obj
 exports.definition = {
     config : { // table schema and adapter information
     },
-    extendModel: function(Model) {
+    extendModel(Model) {
         _.extend(Model.prototype, { // Extend, override or implement Backbone.Model
         });
 
         return Model;
     },
-    extendCollection: function(Collection) {
+    extendCollection(Collection) {
         _.extend(Collection.prototype, { // Extend, override or implement Backbone.Collection
     });
 
@@ -49,9 +49,9 @@ To access a model locally in a controller, use the `Alloy.createModel` method. T
 **Basic model usage**
 
 ```javascript
-var book = Alloy.createModel('book', {title:'Green Eggs and Ham', author:'Dr. Seuss'});
-var title = book.get('title');
-var author = book.get('author');
+const book = Alloy.createModel('book', {title:'Green Eggs and Ham', author:'Dr. Seuss'});
+const title = book.get('title');
+const author = book.get('author');
 
 // Label object in the view with id = 'label'
 $.label.text = title + ' by ' + author;
@@ -66,7 +66,7 @@ You can also create a global singleton instance of a model, either in markup or 
 ```javascript
 // This will create a singleton if it has not been previously created,
 // or retrieves the singleton if it already exists.
-var book = Alloy.Models.instance('book');
+const book = Alloy.Models.instance('book');
 ```
 
 #### Configuration Object
@@ -121,12 +121,12 @@ exports.definition = {
     config : { // table schema and adapter information
     },
 
-    extendModel: function(Model) {
+    extendModel(Model) {
         _.extend(Model.prototype, {
             // Implement the validate method
-            validate: function (attrs) {
-                for (var key in attrs) {
-                    var value = attrs[key];
+            validate(attrs) {
+                for (const key in attrs) {
+                    const value = attrs[key];
                     if (key === "title") {
                         if (value.length <= 0) {
                             return "Error: No title!";
@@ -141,7 +141,7 @@ exports.definition = {
             },
             // Extend Backbone.Model
             customProperty: 'book',
-            customFunction: function() {
+            customFunction() {
                 Ti.API.info('I am a book model.');
             },
         });
@@ -154,7 +154,7 @@ exports.definition = {
 In the controller, to access the model, do:
 
 ```javascript
-var book = Alloy.createModel('book', {title:'Green Eggs and Ham', author:'Dr. Seuss'});
+const book = Alloy.createModel('book', {title:'Green Eggs and Ham', author:'Dr. Seuss'});
 // Since set or save(attribute) is not being called, we can call isValid to validate the model object
 if (book.isValid() && book.customProperty == "book") { // Save data to persistent storage
     book.save();
@@ -171,7 +171,7 @@ Collections are ordered sets of models and inherit from the Backbone.Collection 
 **Creating collections**
 
 ```javascript
-var library = Alloy.createCollection('book');
+const library = Alloy.createCollection('book');
 library.fetch(); // Grab data from persistent storage
 ```
 
@@ -184,7 +184,7 @@ You can also create a global singleton instance, either in markup or in the cont
 ```javascript
 // This will create a singleton if it has not been previously created,
 // or retrieves the singleton if it already exists.
-var library = Alloy.Collections.instance('book');
+const library = Alloy.Collections.instance('book');
 ```
 
 #### Extending the Backbone.Collection Class
@@ -197,14 +197,14 @@ Like the Backbone.Model class, the Backbone.Collection class can be similarly ex
 exports.definition = {
     config : { // table schema and adapter information
     },
-    extendModel: function(Model) {
+    extendModel(Model) {
         _.extend(Model.prototype, { // Extend, override or implement Backbone.Model methods
         });
         return Model;
     },
-    extendCollection: function(Collection) {
+    extendCollection(Collection) {
         _.extend(Collection.prototype, { // Implement the comparator method.
-            comparator : function(book) {
+            comparator(book) {
                 return book.get('title');
             }
         }); // end extend
@@ -221,10 +221,10 @@ Additionally, the Backbone.Collection class inherits some functionality from [Un
 **Iterating over a collection with underscore**
 
 ```javascript
-var data = library.map(function(book) {
+const data = library.map(book => {
     // The book argument is an individual model object in the collection
-    var title = book.get('title');
-    var row = Ti.UI.createTableViewRow({"title":title});
+    const title = book.get('title');
+    const row = Ti.UI.createTableViewRow({"title":title});
     return row;
 });
 // TableView object in the view with id = 'table'
@@ -238,9 +238,9 @@ When working with Alloy Models and Collections, use the Backbone.Events `on`, `o
 **Using events with collections**
 
 ```javascript
-var library = Alloy.createCollection('book');
+const library = Alloy.createCollection('book');
 function event_callback (context) {
-    var output = context || 'change is bad.';
+    const output = context || 'change is bad.';
     Ti.API.info(output);
 };
 // Bind the callback to the change event of the collection.
@@ -261,6 +261,226 @@ If you want to fire or listen to multiple events, Backbone.js uses spaces to del
 
 ## Alloy Data Binding
 
+### Collection vs Model Data Binding
+
+You can bind both a collection of models or an individual model. To bind a model attribute the opening curly bracket is first followed by the model name and then the attribute. To bind a collection you add the `dataCollection` attribute to the container using the collection name as value.
+
+```xml
+<Alloy>
+    <Model src="currentCategory" />
+    <Collection src="book" />
+    <Window>
+        <!-- model data binding -->
+        <Label text="{currentCategory.name}" />
+
+        <!-- collection data binding -->
+        <ScrollView dataCollection="book">
+            <Label text="{title}" />
+        </ScrollView>
+    </Window>
+</Alloy>
+```
+
+### Global Singleton vs Local Instance
+
+In the above code snippet, the model and collection are global singletons under `Alloy.Models.currentCategory` and `Alloy.Collections.book`. You can also use local instances for the current controller by adding `instance="true"` as attribute. You also need to assign them an ID in order to reference them in the XML and controller.
+
+```xml
+<Alloy>
+    <Model src="currentCategory" instance="true" id="c" />
+    <Collection src="book" instance="true" id="b" />
+    <Window>
+        <!-- model data binding -->
+        <Label text="{$.c.name}" />
+
+        <!-- collection data binding -->
+        <ScrollView dataCollection="$.b">
+            <Label text="{title}" />
+        </ScrollView>
+    </Window>
+</Alloy>
+```
+
+### Simple vs Complex Data Binding
+
+It's important to understand the difference between simple and complex data binding as they were implemented in unique ways which results in different behaviour.
+
+Simple data binding involves one model attribute where complex data binding involves a combination of strings (including white space) and model attributes or even multiple model attributes:
+
+```xml
+<Alloy>
+    <Model src="book">
+    <Window>
+        <!-- simple -->
+        <Label text="{book.title}" />
+
+        <!-- complex -->
+        <Label text="Title: {book.title}" />
+        <Label text="{book.author.name} {book.author.email}" />
+    </Window>
+</Alloy>
+```
+
+### Backbone Binding
+
+The application can monitor Backbone events to trigger updates to the view.
+
+For instance, the code below demonstrates how to update a table when a model object is added to a collection by monitoring the add event:
+
+```javascript
+library.on('add', e => {
+    // custom function to update the content on the view
+    updateFooView(library);
+});
+```
+
+Another method is to selectively monitor changes. For instance, the code below demonstrates how to update data if a title changes in the collection:
+
+```javascript
+library.on('change:title', e => {
+    // custom function to update the content on the view
+    updateFooView(library);
+});
+```
+
+::: warning ⚠️ Warning
+This only works if the Backbone method fires the change event and does not enable `{silent: true}` as an option.
+:::
+
+### Bind Deep Object Properties
+
+You can bind deep object properties:
+
+```xml
+<Alloy>
+    <Model src="book" />
+    <Label text="{book.author.name}" />
+</Alloy>
+```
+
+Before, you needed to use a transformer to create a reference like `authorName`.
+
+Prior to CLI 7.1.0, the only way to set object properties (e.g. `font.fontFamily` for a Label) was to use TSS. You can use dot notation in XML:
+
+```xml
+<Alloy>
+    <Model src="book" />
+    <Label font.fontFamily="Roboto">Hello</Label>
+</Alloy>
+```
+
+### Use Models and Properties with Special Characters
+
+You can bind models and properties that use names with special characters like dashes and spaces. Simply wrap the names in square brackets and quotes like you'd do in JavaScript:
+
+```xml
+<Alloy>
+    <Model src="my-model">
+    <Label text="['my-model']['my-property']" />
+</Alloy>
+```
+
+### Bind Multiple Models to the Same View
+
+You have the ability to bind multiple models to the same view:
+
+```xml
+<Alloy>
+    <Model src="a" />
+    <Model src="b" />
+    <Label text="{a.hello} {b.world}" />
+</Alloy>
+```
+
+### Define Transformations in the Model
+
+Since Alloy 1.8.1, all types of data binding will generate the following logic to determine what object will be bound to the view:
+
+```javascript
+let t;
+if (_.isFunction(<dataTransform>)) { // only for collection binding
+    t = <dataTransform>(model);
+} else if (_.isFunction(model.transform)) {
+    t = model.transform();
+} else {
+    t = model.toJSON();
+}
+$.myLabel.text = t.author.name;
+```
+
+You'd extend a model with a `transform()` method as such:
+
+```javascript
+exports.definition = {
+    // config
+    extendModel(Model) {
+        _.extend(Model.prototype, {
+            transform() {
+                const t = this.toJSON();
+                t.titleCaps = t.title.toUpperCase();
+                return t;
+            }
+        });
+        return Model;
+    }
+};
+```
+
+### Lazy Transformation (Performance Tip)
+
+The advantage of defining transformations in the model is that you don't need to repeat them in every controller. A possible disadvantage is that everywhere you bind the model all transformations are computed where you might only need some.
+
+You can handle this using `Object.defineProperty()`. Its `get` callback will only be called when the transform key is actually requested:
+
+```javascript
+const moment = require('alloy/moment');
+
+exports.definition = {
+    extendModel(Model) {
+        _.extend(Model.prototype, {
+            transform() {
+                const model = this;
+                const t = this.toJSON();
+
+                Object.defineProperty(t, 'dateFormatted', {
+                  get() {
+                    return moment(t.date).format('LLLL');
+                  }
+                });
+
+                return t;
+            }
+        });
+        return Model;
+    }
+};
+```
+
+### Populating a Model After Data Binding
+
+When Alloy compiles your views and controllers, the generated view code precedes your controller code. Any models you define for data binding in the XML will also be created at that point. Just like you call `fetch()` to populate the collection, you do the exact same thing for the model.
+
+**index.xml**
+
+```xml
+<Alloy>
+    <Model src="book" instance="true" id="current" />
+    <Window>
+        <Label text="{book.title}" />
+    </Window>
+</Alloy>
+```
+
+**index.js**
+
+```javascript
+$.current.fetch({
+    id: Ti.App.Properties.getString('currentBook')
+});
+
+$.index.open();
+```
+
 ### Introduction
 
 When data in the collection changes, you may want to update the view simultaneously to keep information synchronized. This concept is known as data binding. Both Alloy and Backbone provide some mechanisms to bind model data to a view.
@@ -273,18 +493,18 @@ In Alloy, collection data can be synchronized to a view object, or a single mode
 
 To enable collection-view binding, create a global singleton or controller-specific collection using the [Collection tag](https://docs.appcelerator.com/platform/latest/#!/guide/Alloy_XML_Markup-section-35621525_AlloyXMLMarkup-CollectionElement) in the XML markup of the main view, then add the view object you want to bind data to. The following Titanium view objects support binding to a Collection:
 
-| View Object | Since Alloy version | Add data binding attributes to... | Repeater Object to map model attributes to view properties |
-|-------------|---------------------|-----------------------------------|-----------------------------------------------------------|
-| ButtonBar | 1.1 | `<Labels>` | `<Label/>` |
-| CoverFlowView | 1.1 | `<Images>` | `<Image/>` |
-| ListView | 1.2 | `<ListSection>` | `<ListItem/>` |
-| Map Module | 1.4 | `<Module module="ti.map" method="createView">` | None, model attributes will be used as params for createAnnotation() directly. |
-| Picker | 1.5 | `<PickerColumn>` or `<Column>` | `<PickerRow/>` or `<Row/>` |
-| ScrollableView | 1.1 | `<ScrollableView>` | `<View/>` May contain children view objects. |
-| TableView | 1.0 | `<TableView>` | `<TableViewRow/>` May contain children view objects. |
-| TabbedBar | 1.1 | `<Labels>` | `<Label/>` |
-| Toolbar | 1.1 | `<Items>` | `<Item/>` |
-| View | 1.0 | `<View>` | Any view object except a top-level container like a Window or TabGroup |
+| View Object    | Since Alloy version | Add data binding attributes to...              | Repeater Object to map model attributes to view properties                     |
+| -------------- | ------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------ |
+| ButtonBar      | 1.1                 | `<Labels>`                                     | `<Label/>`                                                                     |
+| CoverFlowView  | 1.1                 | `<Images>`                                     | `<Image/>`                                                                     |
+| ListView       | 1.2                 | `<ListSection>`                                | `<ListItem/>`                                                                  |
+| Map Module     | 1.4                 | `<Module module="ti.map" method="createView">` | None, model attributes will be used as params for createAnnotation() directly. |
+| Picker         | 1.5                 | `<PickerColumn>` or `<Column>`                 | `<PickerRow/>` or `<Row/>`                                                     |
+| ScrollableView | 1.1                 | `<ScrollableView>`                             | `<View/>` May contain children view objects.                                   |
+| TableView      | 1.0                 | `<TableView>`                                  | `<TableViewRow/>` May contain children view objects.                           |
+| TabbedBar      | 1.1                 | `<Labels>`                                     | `<Label/>`                                                                     |
+| Toolbar        | 1.1                 | `<Items>`                                      | `<Item/>`                                                                      |
+| View           | 1.0                 | `<View>`                                       | Any view object except a top-level container like a Window or TabGroup         |
 
 You need to specify additional attributes in the markup, which are only specific to collection data binding. The only mandatory attribute is `dataCollection`, which specifies the collection singleton or instance to render. Note that you can only add these attributes to specific XML elements (refer to the table above).
 
@@ -303,9 +523,9 @@ In the controller code of the repeater object, you can use the special variable 
 **IMPORTANT:** When using Alloy's data binding in a view-controller, you **MUST** call the `$.destroy()` function when closing a controller to prevent potential memory leaks. The `destroy` function unbinds the callbacks created by Alloy when the collection-view syntax is used. For example:
 
 ```
-$.win.addEventListener("close", function(){
+$.win.addEventListener("close", () => {
     $.destroy();
-}
+});
 ```
 :::
 
@@ -391,10 +611,10 @@ To do complex transformations on the model attributes, extend the model prototyp
 ```javascript
 exports.definition = {
   config: {}, // model definition
-  extendModel: function(Model) {
+  extendModel(Model) {
     _.extend(Model.prototype, {
-      transform: function transform() {
-        var transformed = this.toJSON();
+      transform() {
+        const transformed = this.toJSON();
         transformed.artist = transformed.artist.toUpperCase();
         return transformed;
       }
@@ -416,13 +636,13 @@ Backbone syncs your models to persistent storage devices based on the implementa
 
 The sync method depends on calls to other Backbone methods as described in the table below.
 
-| **Backbone Method** | **Sync CRUD Method** | **Equivalent HTTP Method** | **Equivalent SQL Method** |
-| --- | --- | --- | --- |
-| Collection.fetch | read | GET | SELECT |
-| Collection.create (id == null) or Collection.create (id != null) | create or update | POST or PUT | INSERT or UPDATE |
-| Model.fetch | read | GET | SELECT |
-| Model.save (id == null) or Model.save (id != null) | create or update | POST or PUT | INSERT or UPDATE |
-| Model.destroy | delete | DELETE | DELETE |
+| **Backbone Method**                                              | **Sync CRUD Method** | **Equivalent HTTP Method** | **Equivalent SQL Method** |
+| ---------------------------------------------------------------- | -------------------- | -------------------------- | ------------------------- |
+| Collection.fetch                                                 | read                 | GET                        | SELECT                    |
+| Collection.create (id == null) or Collection.create (id != null) | create or update     | POST or PUT                | INSERT or UPDATE          |
+| Model.fetch                                                      | read                 | GET                        | SELECT                    |
+| Model.save (id == null) or Model.save (id != null)               | create or update     | POST or PUT                | INSERT or UPDATE          |
+| Model.destroy                                                    | delete               | DELETE                     | DELETE                    |
 
 #### Ready-Made Sync Adapters
 
@@ -443,8 +663,8 @@ The `sql` sync adapter has a few extra features:
 The Backbone.Collection.fetch method supports SQL queries as a parameter. Use `query` as the key in the dictionary object to create a simple query or query with a prepared statement.
 
 ```javascript
-var library = Alloy.createCollection('book');
-var table = library.config.adapter.collection_name;
+const library = Alloy.createCollection('book');
+const table = library.config.adapter.collection_name;
 // use a simple query
 library.fetch({query:'SELECT * from ' + table + ' where author="' + searchAuthor + '"'});
 // or a prepared statement
@@ -500,6 +720,20 @@ Define the `db_name` key-value pair in the `config.adapter` object to specify th
 
 Define the `db_file` key-value pair in the `config.adapter` object to specify the database file ('myfile.sqlite') to preload. Place this file in the `app/assets` directory of your Alloy project.
 
+### Custom Sync Adapters
+
+To create a custom sync adapter, create a JavaScript file in either `app/assets/alloy/sync` or `app/lib/alloy/sync`. During compilation, this file is copied to the `Resources/alloy/sync` folder. In the `config` object of the model file, set the `type` in the `adapter` object to the name of the JavaScript file minus the '.js' extension.
+
+The sync adapter exports three functions:
+
+* `module.exports.beforeModelCreate` (optional) - executes code before creating the Backbone.Model class. First passed parameter is the `config` object from the model file. Second passed parameter is the name of the Alloy Model file. Returns a `config` object.
+
+* `module.exports.afterModelCreate` (optional) - execute code after creating the Backbone.Model class. First passed parameter is the newly created Backbone.Model class. Second passed parameter is the name of the Alloy Model file.
+
+* `module.exports.sync` - implement the Backbone.sync method.
+
+For a sample of an adapter, refer to the [BookClient](https://github.com/appcelerator-developer-relations/BookClient) project which syncs with the [BookService](https://github.com/appcelerator-developer-relations/BookService) project.
+
 ### Migrations
 
 A migration is a description of incremental changes to a database, which takes your database from version 1 to version X, with a migration file for each step in the evolution of your database schema.
@@ -508,23 +742,23 @@ In Alloy, migrations are defined by JavaScript files located in the `app/migrati
 
 The migration file contains two functions that need to be implemented: `migration.up(migrator)` and `migration.down(migrator)`, where `migrator` is a special migration object that provides references to the database and table as well as some convenient functions for table operations:
 
-| Key | Description |
-| --- | --- |
-| `db` | Handle to a `Ti.Database` instance. DO NOT CLOSE THIS HANDLE. |
-| `dbname` | Name of the database. |
-| `table` | Name of the table. Same as value of the `config.adapter.collection_name` key. |
-| `idAttribute` | Name of the columns attribute to use as the primary key. |
-| `createTable` | Function to create a table. Required parameter is the `columns` object. |
-| `dropTable` | Function to drop the current table from the database. |
-| `insertRow` | Function to insert data into the table. Useful for preloading data. |
-| `deleteRow` | Function to delete data from the table. |
+| Key           | Description                                                                   |
+| ------------- | ----------------------------------------------------------------------------- |
+| `db`          | Handle to a `Ti.Database` instance. DO NOT CLOSE THIS HANDLE.                 |
+| `dbname`      | Name of the database.                                                         |
+| `table`       | Name of the table. Same as value of the `config.adapter.collection_name` key. |
+| `idAttribute` | Name of the columns attribute to use as the primary key.                      |
+| `createTable` | Function to create a table. Required parameter is the `columns` object.       |
+| `dropTable`   | Function to drop the current table from the database.                         |
+| `insertRow`   | Function to insert data into the table. Useful for preloading data.           |
+| `deleteRow`   | Function to delete data from the table.                                       |
 
 For example, the migration file below is the initial version of the database that preloads some data in the table.
 
 **app/migrations/20120610049877_book.js**
 
 ```javascript
-var preload_data = [
+const preload_data = [
   {title: 'To Kill a Mockingbird', author:'Harper Lee'},
   {title: 'The Catcher in the Rye', author:'J. D. Salinger'},
   {title: 'Of Mice and Men', author:'John Steinbeck'},
@@ -533,7 +767,7 @@ var preload_data = [
   {title: 'Animal Farm', author:'George Orwell'}
 ];
 
-migration.up = function(migrator) {
+migration.up = migrator => {
     migrator.createTable({
         "columns":
         {
@@ -541,23 +775,163 @@ migration.up = function(migrator) {
             "author": "TEXT"
         }
     });
-    for (var i = 0; i < preload_data.length; i++) {
+    for (let i = 0; i < preload_data.length; i++) {
       migrator.insertRow(preload_data[i]);
     }
 };
 
-migration.down = function(migrator) {
+migration.down = migrator => {
     migrator.dropTable();
+};
+```
+
+#### Migration Rollback Example
+
+Suppose later, you want to include some additional information for your books, such as an ISBN. The below migration file upgrades or rolls back the changes. Since SQLite does not support the DROP COLUMN operation, the migration needs to create a temporary table to hold the data, drop the new database, create the old database, then copy the data back.
+
+**app/migrations/20130118069778_book.js**
+
+```javascript
+migration.up = migrator => {
+    migrator.db.execute('ALTER TABLE ' + migrator.table + ' ADD COLUMN isbn INT;');
+};
+
+migration.down = migrator => {
+    const db = migrator.db;
+    const table = migrator.table;
+    db.execute('CREATE TEMPORARY TABLE book_backup(title,author,alloy_id);')
+    db.execute('INSERT INTO book_backup SELECT title,author,alloy_id FROM ' + table + ';');
+    migrator.dropTable();
+    migrator.createTable({
+        columns: {
+            title:"TEXT",
+            author:"TEXT",
+        },
+    });
+    db.execute('INSERT INTO ' + table + ' SELECT title,author,alloy_id FROM book_backup;');
+    db.execute('DROP TABLE book_backup;');
 };
 ```
 
 ## Backbone Objects without Alloy
 
-You can use plain Backbone Collection and Model objects in place of the Alloy versions. This does not require any special Alloy or Titanium code. Use the [Backbone API](http://docs.appcelerator.com/backbone/0.9.2/) to create and control Backbone objects instead of using the `createCollection` and `createModel` methods. Backbone models also do not require a model configuration file.
+You can use plain Backbone Collection and Model objects in place of the Alloy versions. This does not require any special Alloy or Titanium code. Use the Backbone API to create and control Backbone objects instead of using the `createCollection` and `createModel` methods. Backbone models also do not require a model configuration file.
+
+**app/controllers/index.js**
+
+```javascript
+// Initialize a collection class and implement the comparator method for sorting
+const collection = Backbone.Collection.extend({
+  comparator(model) {
+    return model.get('title');
+  }
+});
+
+// Create a new collection
+const library = new collection([
+  {title: 'To Kill a Mockingbird', author:'Harper Lee'},
+  {title: 'The Catcher in the Rye', author:'J. D. Salinger'},
+  {title: 'Of Mice and Men', author:'John Steinbeck'},
+  {title: 'Lord of the Flies', author:'William Golding'},
+  {title: 'The Great Gatsby', author:'F. Scott Fitzgerald'},
+  {title: 'Tom Sawyer', author:'Mark Twain'},
+  {title: 'Animal Farm', author:'George Orwell'}
+]);
+
+// Initialize a model class
+const modelClass = Backbone.Model.extend();
+
+// Create a new model and add it to the collection
+const book = new modelClass({title:'Bossypants', author:'Tina Fey'});
+library.add(book);
+
+// Remove the very first model from the collection
+const model = library.at(0);
+library.remove(model);
+```
 
 These Backbone objects cannot persist to external storage without implementing the Backbone.sync method, so if you make calls to Collection.fetch, Collection.create, Model.fetch, Model.save and Model.destroy, the application throws an error.
 
-You can use Alloy's Model-View binding mechanism to keep the local Backbone Models and Collections in sync with an Alloy view-controller. Follow the same directions in the [Alloy Model-View Binding](#model-view-binding) section except instead of using the `Model` or `Collections` XML tag, you need to first initialize your model or collection in the alloy.js initializer file and add it to the `Alloy.Models` or `Alloy.Collections` namespace.
+### Using Backbone Objects with Alloy Data Binding
+
+You can use Alloy's Model-View binding mechanism to keep the local Backbone Models and Collections in sync with an Alloy view-controller. Follow the same directions for data binding except instead of using the `Model` or `Collections` XML tag, you need to first initialize your model or collection in the alloy.js initializer file and add it to the `Alloy.Models` or `Alloy.Collections` namespace.
+
+**app/alloy.js**
+
+```javascript
+// Initialize a collection class and implement the comparator method for sorting
+const collection = Backbone.Collection.extend({
+  comparator(model) {
+    return model.get('title');
+  }
+});
+
+// Create a new collection
+const library = new collection([
+  {title: 'To Kill a Mockingbird', author:'Harper Lee'},
+  {title: 'The Catcher in the Rye', author:'J. D. Salinger'},
+  {title: 'Of Mice and Men', author:'John Steinbeck'},
+  {title: 'Lord of the Flies', author:'William Golding'},
+  {title: 'The Great Gatsby', author:'F. Scott Fitzgerald'},
+  {title: 'Tom Sawyer', author:'Mark Twain'},
+  {title: 'Animal Farm', author:'George Orwell'}
+]);
+
+// Add the collection to the global scope
+Alloy.Collections.book = library;
+```
+
+**app/views/index.xml**
+
+```xml
+<!-- Markup the view the same except there is no Collection tag -->
+<Alloy>
+    <Window class="container">
+        <TableView dataCollection="book" dataTransform="transformFunction" dataFilter="filterFunction">
+            <TableViewRow title="{title}" />
+        </TableView>
+    </Window>
+</Alloy>
+```
+
+**app/controllers/index.js**
+
+```javascript
+$.index.open();
+
+function transformFunction(model) {
+    const transform = model.toJSON();
+    transform.title = '[' + transform.title + ']';
+    transform.custom = transform.title + " by " + transform.author;
+    return transform;
+}
+
+function filterFunction(collection) {
+    return collection.where({author:'Mark Twain'});
+}
+
+// Get a reference to the library
+const library = Alloy.Collections.book;
+
+// Trigger the update using the 'change' event instead of the fetch method
+library.trigger('change');
+
+// Initialize a model class
+const modelClass = Backbone.Model.extend();
+
+// Create a new model and add it to the collection
+const book = new modelClass({title:'Bossypants', author:'Tina Fey'});
+library.add(book);
+
+// Remove the very first model from the collection
+const model = library.at(0);
+library.remove(model);
+
+// Do not forget to call destroy to unbind the event handlers created by Alloy
+$.index.addEventListener('close', () => {
+    $.destroy();
+});
+```
 
 ## Alloy Backbone Migration
 
@@ -633,24 +1007,24 @@ Passing `{silent:true}` to methods now suppresses the `change:attr` events, thus
 
 The following APIs have been added between Backbone 1.1.2 and 0.9.2.
 
-| API | Type | Notes |
-| --- | --- | --- |
-| Backbone.request | event | Fired whenever a request begins to be made to the server. |
-| Backbone.Collection.findWhere | method | Same as `where()` but only returns the first result. |
-| Backbone.Collection.set | method | Performs a "smart" update of the collection. |
-| Backbone.Event.once | method | Same as `on()` except after the event is fired, the callback is removed. |
-| Backbone.Model.invert | method | Returns a copy of the object where keys and values are switched. |
-| Backbone.Model.keys | method | Returns an array of the object's keys. |
-| Backbone.Model.omit | method | Returns a copy of an object without the specified keys. |
-| Backbone.Model.pairs | method | Returns an array of `[key, value]` pairs. |
-| Backbone.Model.pick | method | Returns a copy of an object with the specified keys. |
-| Backbone.Model.values | method | Returns an array of the object's property values. |
+| API                           | Type   | Notes                                                                    |
+| ----------------------------- | ------ | ------------------------------------------------------------------------ |
+| Backbone.request              | event  | Fired whenever a request begins to be made to the server.                |
+| Backbone.Collection.findWhere | method | Same as `where()` but only returns the first result.                     |
+| Backbone.Collection.set       | method | Performs a "smart" update of the collection.                             |
+| Backbone.Event.once           | method | Same as `on()` except after the event is fired, the callback is removed. |
+| Backbone.Model.invert         | method | Returns a copy of the object where keys and values are switched.         |
+| Backbone.Model.keys           | method | Returns an array of the object's keys.                                   |
+| Backbone.Model.omit           | method | Returns a copy of an object without the specified keys.                  |
+| Backbone.Model.pairs          | method | Returns an array of `[key, value]` pairs.                                |
+| Backbone.Model.pick           | method | Returns a copy of an object with the specified keys.                     |
+| Backbone.Model.values         | method | Returns an array of the object's property values.                        |
 
 #### Removed APIs
 
 The following APIs have been removed between Backbone 1.1.2 and 0.9.2.
 
-| API | Type | Notes |
-| --- | --- | --- |
+| API                          | Type   | Notes                                       |
+| ---------------------------- | ------ | ------------------------------------------- |
 | Backbone.Collection.getByCid | method | Pass the CID to the `get()` method instead. |
-| Backbone.Model.change | method |  |
+| Backbone.Model.change        | method |                                             |
