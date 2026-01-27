@@ -1,5 +1,39 @@
 # Orientation
 
+## Table of Contents
+
+- [Orientation](#orientation)
+  - [Table of Contents](#table-of-contents)
+  - [1. Overview](#1-overview)
+  - [2. Orientation Modes](#2-orientation-modes)
+    - [Supported Orientations](#supported-orientations)
+  - [3. Locking Orientation](#3-locking-orientation)
+    - [Lock to Specific Orientation](#lock-to-specific-orientation)
+    - [Android Orientation Values](#android-orientation-values)
+    - [Runtime Orientation Lock (iOS)](#runtime-orientation-lock-ios)
+  - [4. Handling Orientation Changes](#4-handling-orientation-changes)
+    - [Detect Orientation Change](#detect-orientation-change)
+    - [Window Orientation Events](#window-orientation-events)
+  - [5. Adapting UI to Orientation](#5-adapting-ui-to-orientation)
+    - [Responsive Layout Example](#responsive-layout-example)
+    - [Orientation-Specific Components](#orientation-specific-components)
+  - [6. Platform Differences](#6-platform-differences)
+    - [iOS Orientation](#ios-orientation)
+    - [Android Orientation](#android-orientation)
+  - [7. Checking Current Orientation](#7-checking-current-orientation)
+  - [8. Disabling Orientation Change](#8-disabling-orientation-change)
+    - [Disable All Rotation](#disable-all-rotation)
+    - [Disable Rotation for Specific Window (iOS)](#disable-rotation-for-specific-window-ios)
+  - [9. Orientation Lock During Specific Operation](#9-orientation-lock-during-specific-operation)
+    - [Temporarily Lock Orientation](#temporarily-lock-orientation)
+  - [10. Best Practices](#10-best-practices)
+  - [11. Common Issues](#11-common-issues)
+    - [Orientation Not Changing](#orientation-not-changing)
+    - [UI Doesn't Adapt](#ui-doesnt-adapt)
+    - [Upside-Down Orientation](#upside-down-orientation)
+
+---
+
 ## 1. Overview
 
 Orientation refers to whether the app displays in portrait or landscape mode, and how to handle orientation changes.
@@ -8,15 +42,15 @@ Orientation refers to whether the app displays in portrait or landscape mode, an
 
 ### Supported Orientations
 
-| Mode | Description |
-|------|-------------|
-| `Ti.UI.PORTRAIT` | Upright, home button at bottom |
-| `Ti.UI.UPSIDE_PORTRAIT` | Upright, home button at top |
-| `Ti.UI.LANDSCAPE_LEFT` | Landscape, home button on right |
-| `Ti.UI.LANDSCAPE_RIGHT` | Landscape, home button on left |
-| `Ti.UI.FACE_UP` | Device face up (flat on table) |
-| `Ti.UI.FACE_DOWN` | Device face down (flat on table) |
-| `Ti.UI.AUTO` | Let system decide |
+| Mode                    | Description                      |
+| ----------------------- | -------------------------------- |
+| `Ti.UI.PORTRAIT`        | Upright, home button at bottom   |
+| `Ti.UI.UPSIDE_PORTRAIT` | Upright, home button at top      |
+| `Ti.UI.LANDSCAPE_LEFT`  | Landscape, home button on right  |
+| `Ti.UI.LANDSCAPE_RIGHT` | Landscape, home button on left   |
+| `Ti.UI.FACE_UP`         | Device face up (flat on table)   |
+| `Ti.UI.FACE_DOWN`       | Device face down (flat on table) |
+| `Ti.UI.AUTO`            | Let system decide                |
 
 ## 3. Locking Orientation
 
@@ -85,8 +119,8 @@ Ti.UI.iPhone.setStatusBarStyle(Ti.UI.iPhone.StatusBar.DEFAULT);
 ### Detect Orientation Change
 
 ```javascript
-Ti.Gesture.addEventListener('orientationchange', function(e) {
-  Ti.API.info('Orientation changed to: ' + e.orientation);
+Ti.Gesture.addEventListener('orientationchange', (e) => {
+  Ti.API.info(`Orientation changed to: ${e.orientation}`);
 
   if (e.orientation === Ti.UI.PORTRAIT) {
     adjustForPortrait();
@@ -96,24 +130,17 @@ Ti.Gesture.addEventListener('orientationchange', function(e) {
   }
 });
 ```
-
-### Orientation Event Properties
-
-| Property | Description |
-|----------|-------------|
-| `orientation` | New orientation constant |
-| `source` | View that triggered event |
-
+...
 ### Window Orientation Events
 
 ```javascript
-var win = Ti.UI.createWindow();
+const win = Ti.UI.createWindow();
 
-win.addEventListener('focus', function() {
-  Ti.API.info('Current orientation: ' + Ti.Gesture.orientation);
+win.addEventListener('focus', () => {
+  Ti.API.info(`Current orientation: ${Ti.Gesture.orientation}`);
 });
 
-win.addEventListener('orientationchange', function(e) {
+win.addEventListener('orientationchange', (e) => {
   Ti.API.info('Window orientation changed');
 });
 ```
@@ -123,14 +150,14 @@ win.addEventListener('orientationchange', function(e) {
 ### Responsive Layout Example
 
 ```javascript
-var container = Ti.UI.createView({
+const container = Ti.UI.createView({
   width: Ti.UI.FILL,
   height: Ti.UI.FILL,
   layout: 'vertical'
 });
 
 function updateLayout() {
-  var orientation = Ti.Gesture.orientation;
+  const orientation = Ti.Gesture.orientation;
 
   if (orientation === Ti.UI.PORTRAIT ||
       orientation === Ti.UI.UPSIDE_PORTRAIT) {
@@ -164,14 +191,14 @@ function createLandscapeLayout() {
   });
 }
 
-var currentLayout;
+let currentLayout;
 
 function switchLayout() {
-  var orientation = Ti.Gesture.orientation;
-  var isPortrait = (orientation === Ti.UI.PORTRAIT ||
+  const orientation = Ti.Gesture.orientation;
+  const isPortrait = (orientation === Ti.UI.PORTRAIT ||
                    orientation === Ti.UI.UPSIDE_PORTRAIT);
 
-  var newLayout = isPortrait ? createPortraitLayout() : createLandscapeLayout();
+  const newLayout = isPortrait ? createPortraitLayout() : createLandscapeLayout();
 
   if (currentLayout) {
     win.remove(currentLayout);
@@ -204,16 +231,16 @@ Ti.Gesture.addEventListener('orientationchange', switchLayout);
 
 ```javascript
 // Get current orientation
-var currentOrientation = Ti.Gesture.orientation;
+const currentOrientation = Ti.Gesture.orientation;
 
-Ti.API.info('Current: ' + currentOrientation);
+Ti.API.info(`Current: ${currentOrientation}`);
 
 // Check if portrait
-var isPortrait = (currentOrientation === Ti.UI.PORTRAIT ||
+const isPortrait = (currentOrientation === Ti.UI.PORTRAIT ||
                  currentOrientation === Ti.UI.UPSIDE_PORTRAIT);
 
 // Check if landscape
-var isLandscape = (currentOrientation === Ti.UI.LANDSCAPE_LEFT ||
+const isLandscape = (currentOrientation === Ti.UI.LANDSCAPE_LEFT ||
                    currentOrientation === Ti.UI.LANDSCAPE_RIGHT);
 ```
 
@@ -247,7 +274,7 @@ var isLandscape = (currentOrientation === Ti.UI.LANDSCAPE_LEFT ||
 ### Disable Rotation for Specific Window (iOS)
 
 ```javascript
-var win = Ti.UI.createWindow({
+const win = Ti.UI.createWindow({
   orientationModes: [Ti.UI.PORTRAIT]
 });
 ```
@@ -259,7 +286,7 @@ var win = Ti.UI.createWindow({
 ### Temporarily Lock Orientation
 
 ```javascript
-var originalOrientation = null;
+let originalOrientation = null;
 
 function lockOrientation() {
   // Save current orientation
@@ -279,15 +306,15 @@ function unlockOrientation() {
 }
 
 // Use case: During video playback
-var videoPlayer = Ti.Media.createVideoPlayer({
+const videoPlayer = Ti.Media.createVideoPlayer({
   url: 'video.mp4'
 });
 
-videoPlayer.addEventListener('playbackstart', function() {
+videoPlayer.addEventListener('playbackstart', () => {
   lockOrientation();
 });
 
-videoPlayer.addEventListener('playbackcomplete', function() {
+videoPlayer.addEventListener('playbackcomplete', () => {
   unlockOrientation();
 });
 ```

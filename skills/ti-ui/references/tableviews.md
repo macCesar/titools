@@ -1,5 +1,59 @@
 # TableViews
 
+## Table of Contents
+
+- [TableViews](#tableviews)
+  - [Table of Contents](#table-of-contents)
+  - [1. Overview](#1-overview)
+  - [2. TableView vs ListView](#2-tableview-vs-listview)
+  - [3. Creating a TableView](#3-creating-a-tableview)
+    - [Basic TableView](#basic-tableview)
+  - [4. Creating rows](#4-creating-rows)
+    - [Object Literal Rows (Simple)](#object-literal-rows-simple)
+    - [Explicit TableViewRow Objects](#explicit-tableviewrow-objects)
+    - [Performance: setData() vs appendRow()](#performance-setdata-vs-appendrow)
+  - [5. Row Properties](#5-row-properties)
+    - [Built-in Row Properties](#built-in-row-properties)
+    - [Styled Rows Example](#styled-rows-example)
+    - [Row Indicators](#row-indicators)
+  - [6. Custom Rows](#6-custom-rows)
+    - [Adding Child Views](#adding-child-views)
+    - [Performance Warning](#performance-warning)
+  - [7. Headers and Footers](#7-headers-and-footers)
+    - [Table-Level Headers/Footers](#table-level-headersfooters)
+    - [Custom Header/Footer Views](#custom-headerfooter-views)
+    - [Section Headers/Footers](#section-headersfooters)
+  - [8. Grouped Table Style (iOS)](#8-grouped-table-style-ios)
+  - [9. Editing Mode](#9-editing-mode)
+  - [10. TableView Events](#10-tableview-events)
+    - [Click Event](#click-event)
+    - [Delete Event](#delete-event)
+    - [Scroll Events](#scroll-events)
+  - [11. Searching](#11-searching)
+  - [12. Updating Table Data](#12-updating-table-data)
+    - [Appending Rows](#appending-rows)
+    - [Inserting Rows](#inserting-rows)
+    - [Deleting Rows](#deleting-rows)
+    - [Updating Specific Row](#updating-specific-row)
+  - [13. TableView Sections](#13-tableview-sections)
+    - [Creating Sections](#creating-sections)
+    - [Custom Section Headers](#custom-section-headers)
+  - [14. Performance Optimization](#14-performance-optimization)
+    - [Use className](#use-classname)
+    - [Avoid Too Many Rows](#avoid-too-many-rows)
+    - [Optimize Custom Rows](#optimize-custom-rows)
+  - [15. Common Patterns](#15-common-patterns)
+    - [Detail View Navigation](#detail-view-navigation)
+    - [Row Actions (Swipe to Delete)](#row-actions-swipe-to-delete)
+    - [Refresh Control](#refresh-control)
+  - [16. Platform Differences](#16-platform-differences)
+    - [iOS](#ios)
+    - [Android](#android)
+  - [17. Migration: TableView to ListView](#17-migration-tableview-to-listview)
+  - [Best Practices](#best-practices)
+
+---
+
 ## 1. Overview
 
 TableView is a scrolling list component that displays rows of data. While ListView is the recommended modern API for most use cases, TableView remains useful for:
@@ -10,21 +64,21 @@ TableView is a scrolling list component that displays rows of data. While ListVi
 
 ## 2. TableView vs ListView
 
-| Feature | TableView | ListView |
-|---------|-----------|----------|
-| **Recommended for** | Legacy apps, complex animations | New apps, large datasets |
-| **Data binding** | Direct row object access | Template-based binding |
-| **Performance** | Good for small datasets | Optimized for large datasets |
-| **Row access** | Direct children access | Virtual, data-only updates |
-| **Animations** | Full row animation support | Limited |
-| **Complexity** | Simpler for basic needs | More setup required |
+| Feature             | TableView                       | ListView                     |
+| ------------------- | ------------------------------- | ---------------------------- |
+| **Recommended for** | Legacy apps, complex animations | New apps, large datasets     |
+| **Data binding**    | Direct row object access        | Template-based binding       |
+| **Performance**     | Good for small datasets         | Optimized for large datasets |
+| **Row access**      | Direct children access          | Virtual, data-only updates   |
+| **Animations**      | Full row animation support      | Limited                      |
+| **Complexity**      | Simpler for basic needs         | More setup required          |
 
 ## 3. Creating a TableView
 
 ### Basic TableView
 
 ```javascript
-var table = Ti.UI.createTableView({
+const table = Ti.UI.createTableView({
   height: Ti.UI.FILL,
   width: Ti.UI.FILL,
   backgroundColor: 'white',
@@ -34,32 +88,19 @@ var table = Ti.UI.createTableView({
 
 win.add(table);
 ```
-
-### TableView Properties
-
-| Property | Description |
-|----------|-------------|
-| `data` | Array of row objects |
-| `headerTitle` / `headerView` | Table header |
-| `footerTitle` / `footerView` | Table footer |
-| `rowHeight` / `minRowHeight` / `maxRowHeight` | Row dimensions |
-| `scrollable` | Enable vertical scrolling |
-| `separatorColor` | Color between rows |
-| `style` | iOS: GROUPED or PLAIN |
-| `allowsSelection` | Enable row selection |
-
-## 4. Creating Rows
+...
+## 4. Creating rows
 
 ### Object Literal Rows (Simple)
 
 ```javascript
-var data = [
+const data = [
   { title: 'Row 1' },
   { title: 'Row 2' },
   { title: 'Row 3' }
 ];
 
-var table = Ti.UI.createTableView({
+const table = Ti.UI.createTableView({
   data: data
 });
 
@@ -69,30 +110,31 @@ win.add(table);
 ### Explicit TableViewRow Objects
 
 ```javascript
-var row = Ti.UI.createTableViewRow({
+const row = Ti.UI.createTableViewRow({
   title: 'Row 1',
-  className: 'row'  // Performance optimization
+  // Performance optimization
+  className: 'row'
 });
 
 table.appendRow(row);
 
 // With explicit row, you can call methods
-var imgCapture = row.toImage();
+const imgCapture = row.toImage();
 ```
 
 ### Performance: setData() vs appendRow()
 
 ```javascript
 // GOOD - Batch assignment
-var rows = [];
-for (var i = 0; i < 100; i++) {
-  rows.push({ title: 'Row ' + i });
+const rows = [];
+for (let i = 0; i < 100; i++) {
+  rows.push({ title: `Row ${i}` });
 }
 table.setData(rows);  // Fast
 
 // AVOID - Adding one by one (slow for many rows)
-for (var i = 0; i < 100; i++) {
-  table.appendRow({ title: 'Row ' + i });
+for (let i = 0; i < 100; i++) {
+  table.appendRow({ title: `Row ${i}` });
 }
 ```
 
@@ -102,30 +144,30 @@ for (var i = 0; i < 100; i++) {
 
 ### Built-in Row Properties
 
-| Property | Description |
-|----------|-------------|
-| `title` | Row title text |
-| `className` | Reuse identifier for performance |
-| `leftImage` | Image to left of title |
-| `rightImage` | Image to right of title |
-| `backgroundImage` | Row background image |
-| `backgroundColor` | Row background color |
-| `hasChild` | Shows > indicator (iOS/Android) |
-| `hasDetail` | Shows detail indicator (iOS only) |
-| `hasCheck` | Shows checkmark indicator |
-| `header` | Section header text |
-| `footer` | Section footer text |
+| Property          | Description                       |
+| ----------------- | --------------------------------- |
+| `title`           | Row title text                    |
+| `className`       | Reuse identifier for performance  |
+| `leftImage`       | Image to left of title            |
+| `rightImage`      | Image to right of title           |
+| `backgroundImage` | Row background image              |
+| `backgroundColor` | Row background color              |
+| `hasChild`        | Shows > indicator (iOS/Android)   |
+| `hasDetail`       | Shows detail indicator (iOS only) |
+| `hasCheck`        | Shows checkmark indicator         |
+| `header`          | Section header text               |
+| `footer`          | Section footer text               |
 
 ### Styled Rows Example
 
 ```javascript
-var data = [
+const data = [
   { title: 'Row 1', leftImage: 'icon.png', hasChild: true },
   { title: 'Row 2', rightImage: 'arrow.png', hasDetail: true },
   { title: 'Row 3', backgroundColor: '#fdd', hasCheck: true }
 ];
 
-var table = Ti.UI.createTableView({ data: data });
+const table = Ti.UI.createTableView({ data: data });
 ```
 
 ### Row Indicators
@@ -148,29 +190,29 @@ Row indicators provide visual cues:
 ### Adding Child Views
 
 ```javascript
-var data = [];
+const data = [];
 
-for (var i = 0; i < 10; i++) {
-  var row = Ti.UI.createTableViewRow({
-    className: 'customRow',
-    height: 60
+for (let i = 0; i < 10; i++) {
+  const row = Ti.UI.createTableViewRow({
+    height: 60,
+    className: 'customRow'
   });
 
-  var label = Ti.UI.createLabel({
+  const label = Ti.UI.createLabel({
     left: 10,
-    text: 'Row ' + (i + 1),
+    text: `Row ${i + 1}`,
     font: { fontSize: 16 }
   });
 
-  var image = Ti.UI.createImageView({
+  const image = Ti.UI.createImageView({
     right: 10,
     image: 'icon.png'
   });
 
-  var button = Ti.UI.createButton({
+  const button = Ti.UI.createButton({
     right: 60,
-    height: 30,
     width: 80,
+    height: 30,
     title: 'Action'
   });
 
@@ -181,7 +223,7 @@ for (var i = 0; i < 10; i++) {
   data.push(row);
 }
 
-var table = Ti.UI.createTableView({ data: data });
+const table = Ti.UI.createTableView({ data: data });
 ```
 
 ### Performance Warning
@@ -193,7 +235,7 @@ var table = Ti.UI.createTableView({ data: data });
 ### Table-Level Headers/Footers
 
 ```javascript
-var table = Ti.UI.createTableView({
+const table = Ti.UI.createTableView({
   data: data,
   headerTitle: 'Table Header',
   footerTitle: 'Table Footer'
@@ -204,14 +246,14 @@ var table = Ti.UI.createTableView({
 
 ```javascript
 function createCustomView(title) {
-  var view = Ti.UI.createView({
-    backgroundColor: '#222',
-    height: 40
+  const view = Ti.UI.createView({
+    height: 40,
+    backgroundColor: '#222'
   });
 
-  var text = Ti.UI.createLabel({
-    text: title,
+  const text = Ti.UI.createLabel({
     left: 20,
+    text: title,
     color: '#fff'
   });
 
@@ -219,7 +261,7 @@ function createCustomView(title) {
   return view;
 }
 
-var table = Ti.UI.createTableView({
+const table = Ti.UI.createTableView({
   data: data,
   headerView: createCustomView('Header View'),
   footerView: createCustomView('Footer View')
@@ -229,7 +271,7 @@ var table = Ti.UI.createTableView({
 ### Section Headers/Footers
 
 ```javascript
-var data = [
+const data = [
   { title: 'Row 1', header: 'Section 1' },
   { title: 'Row 2' },
   { title: 'Row 3' },
@@ -237,13 +279,13 @@ var data = [
   { title: 'Row 5' }
 ];
 
-var table = Ti.UI.createTableView({ data: data });
+const table = Ti.UI.createTableView({ data: data });
 ```
 
 ## 8. Grouped Table Style (iOS)
 
 ```javascript
-var data = [
+const data = [
   { title: 'row 1', header: 'Header 1' },
   { title: 'row 2' },
   { title: 'row 3' },
@@ -251,7 +293,7 @@ var data = [
   { title: 'row 5' }
 ];
 
-var table = Ti.UI.createTableView({
+const table = Ti.UI.createTableView({
   data: data,
   style: Ti.UI.iPhone.TableViewStyle.GROUPED
 });
@@ -266,7 +308,7 @@ table.editing = true;
 table.moving = true;
 
 // Allow deletion
-var data = [
+const data = [
   { title: 'Row 1', canEdit: true },
   { title: 'Row 2', canEdit: false }  // Cannot be deleted
 ];
@@ -277,47 +319,47 @@ var data = [
 ### Click Event
 
 ```javascript
-table.addEventListener('click', function(e) {
+table.addEventListener('click', (e) => {
   // e.index: row index
   // e.row: TableViewRow object
   // e.rowData: row data object
   // e.section: section (if using sections)
 
-  Ti.API.info('Clicked row: ' + e.index);
-  Ti.API.info('Row title: ' + e.row.title);
+  Ti.API.info(`Clicked row: ${e.index}`);
+  Ti.API.info(`Row title: ${e.row.title}`);
 });
 ```
 
 ### Delete Event
 
 ```javascript
-table.addEventListener('delete', function(e) {
-  Ti.API.info('Deleted row: ' + e.row.title);
+table.addEventListener('delete', (e) => {
+  Ti.API.info(`Deleted row: ${e.row.title}`);
 });
 ```
 
 ### Scroll Events
 
 ```javascript
-table.addEventListener('scroll', function(e) {
-  Ti.API.info('Scrolling... y=' + e.y);
+table.addEventListener('scroll', (e) => {
+  Ti.API.info(`Scrolling... y=${e.y}`);
 });
 
-table.addEventListener('scrollEnd', function(e) {
-  Ti.API.info('Scroll ended at y=' + e.y);
+table.addEventListener('scrollEnd', (e) => {
+  Ti.API.info(`Scroll ended at y=${e.y}`);
 });
 ```
 
 ## 11. Searching
 
 ```javascript
-var search = Ti.UI.createSearchBar({
-  showCancel: true,
+const search = Ti.UI.createSearchBar({
+  top: 0,
   height: 43,
-  top: 0
+  showCancel: true
 });
 
-var table = Ti.UI.createTableView({
+const table = Ti.UI.createTableView({
   search: search,  // Attach search bar
   searchHidden: false  // Initially visible
 });
@@ -357,7 +399,7 @@ table.setData([]);
 ### Updating Specific Row
 
 ```javascript
-var data = table.data;
+const data = table.data;
 data[2].title = 'Updated Title';
 table.setData(data);
 ```
@@ -367,21 +409,21 @@ table.setData(data);
 ### Creating Sections
 
 ```javascript
-var section1 = Ti.UI.createTableViewSection({
+const section1 = Ti.UI.createTableViewSection({
   headerTitle: 'Section 1'
 });
 
 section1.add(Ti.UI.createTableViewRow({ title: 'Row 1' }));
 section1.add(Ti.UI.createTableViewRow({ title: 'Row 2' }));
 
-var section2 = Ti.UI.createTableViewSection({
+const section2 = Ti.UI.createTableViewSection({
   headerTitle: 'Section 2',
   footerTitle: 'Section Footer'
 });
 
 section2.add(Ti.UI.createTableViewRow({ title: 'Row 3' }));
 
-var table = Ti.UI.createTableView({
+const table = Ti.UI.createTableView({
   data: [section1, section2]
 });
 ```
@@ -389,7 +431,7 @@ var table = Ti.UI.createTableView({
 ### Custom Section Headers
 
 ```javascript
-var section = Ti.UI.createTableViewSection({
+const section = Ti.UI.createTableViewSection({
   headerView: createCustomView('Custom Header')
 });
 ```
@@ -400,14 +442,15 @@ var section = Ti.UI.createTableViewSection({
 
 ```javascript
 // GOOD - Rows with same structure share className
-var row1 = Ti.UI.createTableViewRow({
-  className: 'standardRow',
-  title: 'Row 1'
+const row1 = Ti.UI.createTableViewRow({
+  title: 'Row 1',
+  className: 'standardRow'
 });
 
-var row2 = Ti.UI.createTableViewRow({
-  className: 'standardRow',  // Reuses row1's template
-  title: 'Row 2'
+const row2 = Ti.UI.createTableViewRow({
+  title: 'Row 2',
+  // Reuses row1's template
+  className: 'standardRow'
 });
 ```
 
@@ -416,16 +459,16 @@ var row2 = Ti.UI.createTableViewRow({
 ### Avoid Too Many Rows
 
 If you have thousands of rows, consider:
-- Filtering mechanism
-- Drill-down interface
 - Pagination
 - ListView instead
+- Filtering mechanism
+- Drill-down interface
 
 ### Optimize Custom Rows
 
-- Minimize child views per row
-- Use simple layouts
 - Test on device
+- Use simple layouts
+- Minimize child views per row
 - Avoid nested ScrollViews
 
 ## 15. Common Patterns
@@ -433,14 +476,14 @@ If you have thousands of rows, consider:
 ### Detail View Navigation
 
 ```javascript
-table.addEventListener('click', function(e) {
-  var detailWin = Ti.UI.createWindow({
+table.addEventListener('click', (e) => {
+  const detailWin = Ti.UI.createWindow({
     title: e.row.title,
     backgroundColor: 'white'
   });
 
-  var detailLabel = Ti.UI.createLabel({
-    text: 'Details for ' + e.row.title
+  const detailLabel = Ti.UI.createLabel({
+    text: `Details for ${e.row.title}`
   });
 
   detailWin.add(detailLabel);
@@ -453,15 +496,15 @@ table.addEventListener('click', function(e) {
 ```javascript
 table.setEditable(true);
 
-table.addEventListener('delete', function(e) {
+table.addEventListener('delete', (e) => {
   // Confirm deletion
-  var dialog = Ti.UI.createAlertDialog({
+  const dialog = Ti.UI.createAlertDialog({
     title: 'Delete',
     message: 'Delete this row?',
     buttonNames: ['Delete', 'Cancel']
   });
 
-  dialog.addEventListener('click', function(evt) {
+  dialog.addEventListener('click', (evt) => {
     if (evt.index === 0) {
       // Delete confirmed
       // e.row is automatically removed
@@ -475,15 +518,15 @@ table.addEventListener('delete', function(e) {
 ### Refresh Control
 
 ```javascript
-var table = Ti.UI.createTableView({
+const table = Ti.UI.createTableView({
   refreshControl: Ti.UI.createRefreshControl({
     tintColor: 'blue'
   })
 });
 
-table.refreshControl.addEventListener('refreshstart', function() {
+table.refreshControl.addEventListener('refreshstart', () => {
   // Load data
-  loadData(function() {
+  loadData(() => {
     table.refreshControl.endRefreshing();
   });
 });

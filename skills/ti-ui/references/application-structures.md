@@ -1,5 +1,51 @@
 # Application Structures and Core Building Blocks
 
+## Table of Contents
+
+- [Application Structures and Core Building Blocks](#application-structures-and-core-building-blocks)
+  - [Table of Contents](#table-of-contents)
+  - [1. Overview](#1-overview)
+  - [2. Windows](#2-windows)
+    - [Window Concepts](#window-concepts)
+    - [Creating Windows](#creating-windows)
+    - [Window Events](#window-events)
+    - [Window Lifecycle](#window-lifecycle)
+  - [3. Views](#3-views)
+    - [View Concepts](#view-concepts)
+    - [Creating Views](#creating-views)
+    - [Common View Types](#common-view-types)
+    - [Adding Views to Windows](#adding-views-to-windows)
+    - [Removing Views](#removing-views)
+  - [4. TabGroups](#4-tabgroups)
+    - [Tab-Based Apps](#tab-based-apps)
+    - [Tab Properties](#tab-properties)
+    - [Window Titles vs Tab Titles](#window-titles-vs-tab-titles)
+    - [Tab Events](#tab-events)
+    - [Tab Recommendations](#tab-recommendations)
+    - [Tab-Based Applications](#tab-based-applications)
+    - [Navigation Bar Customization](#navigation-bar-customization)
+  - [7. Modal Windows](#7-modal-windows)
+    - [iOS Modal Windows](#ios-modal-windows)
+  - [8. Heavyweight vs Lightweight Windows](#8-heavyweight-vs-lightweight-windows)
+    - [Heavyweight Windows (Android)](#heavyweight-windows-android)
+    - [Lightweight Windows](#lightweight-windows)
+  - [9. Window Hierarchy and Stacking](#9-window-hierarchy-and-stacking)
+    - [Understanding the Stack](#understanding-the-stack)
+    - [Accessing the Stack](#accessing-the-stack)
+  - [10. Platform-Specific Navigation](#10-platform-specific-navigation)
+    - [Android Navigation Patterns](#android-navigation-patterns)
+    - [iOS Navigation Patterns](#ios-navigation-patterns)
+  - [11. Execution Contexts](#11-execution-contexts)
+    - [Lightweight Contexts](#lightweight-contexts)
+  - [12. Common Patterns](#12-common-patterns)
+    - [Drill-Down Navigation](#drill-down-navigation)
+    - [Modal Forms](#modal-forms)
+    - [Tab with Navigation](#tab-with-navigation)
+  - [13. Best Practices](#13-best-practices)
+  - [14. Platform Differences Summary](#14-platform-differences-summary)
+
+---
+
 ## 1. Overview
 
 Titanium apps are built from three core components:
@@ -20,7 +66,7 @@ In web development terms:
 ### Creating Windows
 
 ```javascript
-var win = Ti.UI.createWindow({
+const win = Ti.UI.createWindow({
   title: 'My Window',
   backgroundColor: '#fff',
   fullscreen: false,
@@ -30,52 +76,23 @@ var win = Ti.UI.createWindow({
 
 win.open();
 ```
-
-### Window Properties
-
-| Property | Description |
-|----------|-------------|
-| `title` | Window title (shown in nav bar) |
-| `backgroundColor` | Background color |
-| `fullscreen` | Hide status bar (iOS) |
-| `modal` | Modal window (iOS: fills screen, Android: no effect) |
-| `barColor` | Navigation bar color (iOS) |
-| `translucent` | Allow transparency behind status bar |
-| `orientationModes` | Allowed orientations |
-| `layout` | Default layout for children |
-
-### Window Opening Modes
-
-```javascript
-// Normal window
-win.open();
-
-// Modal window (iOS)
-win.open({ modal: true });
-
-// With animation
-win.open({ animated: true });
-
-// As fullscreen
-win.open({ fullscreen: true });
-```
-
+...
 ### Window Events
 
 ```javascript
-win.addEventListener('open', function(e) {
+win.addEventListener('open', (e) => {
   Ti.API.info('Window opened');
 });
 
-win.addEventListener('close', function(e) {
+win.addEventListener('close', (e) => {
   Ti.API.info('Window closed');
 });
 
-win.addEventListener('focus', function(e) {
+win.addEventListener('focus', (e) => {
   Ti.API.info('Window focused');
 });
 
-win.addEventListener('blur', function(e) {
+win.addEventListener('blur', (e) => {
   Ti.API.info('Window blurred');
 });
 ```
@@ -85,8 +102,8 @@ win.addEventListener('blur', function(e) {
 Windows exist in a stack. Opening a window pushes it onto the stack; closing pops it from the stack.
 
 ```javascript
-var win1 = Ti.UI.createWindow({ title: 'Window 1' });
-var win2 = Ti.UI.createWindow({ title: 'Window 2' });
+const win1 = Ti.UI.createWindow({ title: 'Window 1' });
+const win2 = Ti.UI.createWindow({ title: 'Window 2' });
 
 win1.open();
 win2.open();  // Pushed on top of win1
@@ -106,7 +123,7 @@ Views are style-able generic containers that:
 ### Creating Views
 
 ```javascript
-var view = Ti.UI.createView({
+const view = Ti.UI.createView({
   width: 300,
   height: 400,
   backgroundColor: 'blue',
@@ -121,23 +138,23 @@ win.add(view);
 
 ```javascript
 // Basic view
-var view = Ti.UI.createView();
+const view = Ti.UI.createView();
 
 // Container with specific purpose
-var containerView = Ti.UI.createView({
+const containerView = Ti.UI.createView({
   layout: 'vertical',
   height: Ti.UI.SIZE
 });
 
 // ImageView
-var imageView = Ti.UI.createImageView({
+const imageView = Ti.UI.createImageView({
   image: 'photo.png',
   width: 100,
   height: 100
 });
 
 // WebView
-var webView = Ti.UI.createWebView({
+const webView = Ti.UI.createWebView({
   url: 'https://example.com',
   width: Ti.UI.FILL,
   height: Ti.UI.FILL
@@ -177,27 +194,27 @@ TabGroups contain multiple tabs, each containing a window. This is the most comm
 
 ```javascript
 // Create tab group
-var tabGroup = Ti.UI.createTabGroup();
+const tabGroup = Ti.UI.createTabGroup();
 
 // Create windows
-var win1 = Ti.UI.createWindow({
+const win1 = Ti.UI.createWindow({
   title: 'Tab 1',
   backgroundColor: '#fff'
 });
 
-var win2 = Ti.UI.createWindow({
+const win2 = Ti.UI.createWindow({
   title: 'Tab 2',
   backgroundColor: '#fff'
 });
 
 // Create tabs
-var tab1 = Ti.UI.createTab({
+const tab1 = Ti.UI.createTab({
   icon: 'tab1icon.png',
   title: 'Tab 1',
   window: win1
 });
 
-var tab2 = Ti.UI.createTab({
+const tab2 = Ti.UI.createTab({
   icon: 'tab2icon.png',
   title: 'Tab 2',
   window: win2
@@ -213,18 +230,18 @@ tabGroup.open();
 
 ### Tab Properties
 
-| Property | Description |
-|----------|-------------|
-| `icon` | Tab icon (PNG path) |
-| `title` | Tab text |
-| `window` | Root window for tab |
-| `badge` | Badge number |
+| Property     | Description            |
+| ------------ | ---------------------- |
+| `icon`       | Tab icon (PNG path)    |
+| `title`      | Tab text               |
+| `window`     | Root window for tab    |
+| `badge`      | Badge number           |
 | `activeIcon` | Icon when active (iOS) |
 
 ### Window Titles vs Tab Titles
 
 ```javascript
-var tab = Ti.UI.createTab({
+const tab = Ti.UI.createTab({
   title: 'Tab Title',     // Shown on tab handle
   window: Ti.UI.createWindow({
     title: 'Window Title'  // Shown in nav bar
@@ -235,8 +252,8 @@ var tab = Ti.UI.createTab({
 ### Tab Events
 
 ```javascript
-tabGroup.addEventListener('focus', function(e) {
-  Ti.API.info('Tab focused: ' + e.index);
+tabGroup.addEventListener('focus', (e) => {
+  Ti.API.info(`Tab focused: ${e.index}`);
   // e.tab: the tab object
   // e.index: tab index
 });
@@ -254,8 +271,6 @@ tabGroup.addEventListener('focus', function(e) {
 - Each tab focuses on limited, related functionality
 - Tabs are related within overall app purpose
 
-## 5. Tab-Based vs Window-Based Apps
-
 ### Tab-Based Applications
 
 **Characteristics**:
@@ -271,7 +286,7 @@ tabGroup.addEventListener('focus', function(e) {
 
 ```javascript
 // Classic tab-based app
-var tabGroup = Ti.UI.createTabGroup();
+const tabGroup = Ti.UI.createTabGroup();
 
 tabGroup.addTab(Ti.UI.createTab({
   title: 'Home',
@@ -293,26 +308,9 @@ tabGroup.addTab(Ti.UI.createTab({
 
 tabGroup.open();
 ```
-
-### Window-Based Applications
-
-**Characteristics**:
-- Single full-screen window initially
-- Navigation via menus, UI components, or platform-specific patterns
-- Common for games and single-screen apps
-
-**Android navigation**:
-- Menu button for options
-- Back button for navigation
-
-**iOS navigation**:
-- NavigationWindow for hierarchical navigation
-- DashboardView (deprecated)
-- Custom UI components
-
-```javascript
+...
 // Window-based app with NavigationWindow (iOS)
-var navWindow = Ti.UI.createNavigationWindow({
+const navWindow = Ti.UI.createNavigationWindow({
   window: Ti.UI.createWindow({
     backgroundColor: '#fff',
     title: 'Home'
@@ -327,7 +325,7 @@ navWindow.open();
 NavigationWindow provides iOS-style navigation with push/pop transitions.
 
 ```javascript
-var navWindow = Ti.UI.createNavigationWindow({
+const navWindow = Ti.UI.createNavigationWindow({
   window: Ti.UI.createWindow({
     title: 'Root',
     backgroundColor: '#fff'
@@ -335,7 +333,7 @@ var navWindow = Ti.UI.createNavigationWindow({
 });
 
 // Open detail window
-var detailWin = Ti.UI.createWindow({
+const detailWin = Ti.UI.createWindow({
   title: 'Detail',
   backgroundColor: 'gray'
 });
@@ -349,7 +347,7 @@ detailWin.close();
 ### Navigation Bar Customization
 
 ```javascript
-var win = Ti.UI.createWindow({
+const win = Ti.UI.createWindow({
   title: 'My Window',
   barColor: '#000',  // Nav bar color
   translucent: false  // Opaque nav bar
@@ -360,7 +358,7 @@ win.leftNavButton = Ti.UI.createButton({
   title: 'Back'
 });
 
-win.leftNavButton.addEventListener('click', function() {
+win.leftNavButton.addEventListener('click', () => {
   navWindow.closeWindow(win);
 });
 
@@ -375,7 +373,7 @@ win.rightNavButton = Ti.UI.createButton({
 ### iOS Modal Windows
 
 ```javascript
-var modalWin = Ti.UI.createWindow({
+const modalWin = Ti.UI.createWindow({
   title: 'Modal',
   backgroundColor: '#fff'
 });
@@ -398,7 +396,7 @@ Android windows are "heavyweight" - they each run in their own activity/context.
 
 ```javascript
 // Explicit heavyweight (Android)
-var win = Ti.UI.createWindow({
+const win = Ti.UI.createWindow({
   fullscreen: false,
   navBarHidden: false,
   modal: false  // Still heavyweight on Android
@@ -415,7 +413,7 @@ var win = Ti.UI.createWindow({
 
 ```javascript
 // Lightweight (same context)
-var win = Ti.UI.createWindow({
+const win = Ti.UI.createWindow({
   navBarHidden: true,  // Creates lightweight on Android
   modal: true  // Can create lightweight on iOS
 });
@@ -432,9 +430,9 @@ var win = Ti.UI.createWindow({
 ### Understanding the Stack
 
 ```javascript
-var win1 = Ti.UI.createWindow({ title: '1' });
-var win2 = Ti.UI.createWindow({ title: '2' });
-var win3 = Ti.UI.createWindow({ title: '3' });
+const win1 = Ti.UI.createWindow({ title: '1' });
+const win2 = Ti.UI.createWindow({ title: '2' });
+const win3 = Ti.UI.createWindow({ title: '3' });
 
 win1.open();
 // Stack: [win1]
@@ -456,10 +454,10 @@ win2.close();
 
 ```javascript
 // Get current window (some contexts)
-var currentWin = Ti.UI.currentWindow;
+const currentWin = Ti.UI.currentWindow;
 
 // On Android, get current activity
-var activity = Ti.Android.currentActivity;
+const activity = Ti.Android.currentActivity;
 ```
 
 ## 10. Platform-Specific Navigation
@@ -468,15 +466,15 @@ var activity = Ti.Android.currentActivity;
 
 **Back Button**:
 ```javascript
-win.addEventListener('androidback', function(e) {
+win.addEventListener('androidback', (e) => {
   // Override default behavior
-  var dialog = Ti.UI.createAlertDialog({
+  const dialog = Ti.UI.createAlertDialog({
     title: 'Exit?',
     message: 'Go back?',
     buttonNames: ['Yes', 'No']
   });
 
-  dialog.addEventListener('click', function(evt) {
+  dialog.addEventListener('click', (evt) => {
     if (evt.index === 0) {
       win.close();
     }
@@ -488,10 +486,10 @@ win.addEventListener('androidback', function(e) {
 
 **Menu Button**:
 ```javascript
-var activity = Ti.Android.currentActivity;
+const activity = Ti.Android.currentActivity;
 
-activity.onCreateOptionsMenu = function(e) {
-  var menu = e.menu;
+activity.onCreateOptionsMenu = (e) => {
+  const menu = e.menu;
 
   menu.add({
     title: 'Refresh',
@@ -505,7 +503,7 @@ activity.onCreateOptionsMenu = function(e) {
   });
 };
 
-activity.onOptionsItemSelected = function(e) {
+activity.onOptionsItemSelected = (e) => {
   switch(e.itemId) {
     case 1:
       refreshData();
@@ -522,7 +520,7 @@ activity.onOptionsItemSelected = function(e) {
 
 **NavigationWindow** (most common):
 ```javascript
-var navWindow = Ti.UI.createNavigationWindow({
+const navWindow = Ti.UI.createNavigationWindow({
   window: rootWindow
 });
 navWindow.open();
@@ -530,13 +528,13 @@ navWindow.open();
 
 **Tab Bar Controller**:
 ```javascript
-var tabGroup = Ti.UI.createTabGroup();
+const tabGroup = Ti.UI.createTabGroup();
 tabGroup.open();
 ```
 
 **SplitWindow** (iPad):
 ```javascript
-var splitWin = Ti.UI.iOS.createSplitWindow({
+const splitWin = Ti.UI.iOS.createSplitWindow({
   masterView: masterWindow,
   detailView: detailWindow
 });
@@ -550,43 +548,29 @@ splitWin.open();
 Windows share contexts by default:
 
 ```javascript
-var win1 = Ti.UI.createWindow();
-var win2 = Ti.UI.createWindow();
+const win1 = Ti.UI.createWindow();
+const win2 = Ti.UI.createWindow();
 
 // These share the same JavaScript context
-var sharedVariable = 123;  // Accessible in both
+const sharedVariable = 123;  // Accessible in both
 ```
-
-### Heavyweight Contexts
-
-Each heavyweight window has its own context:
-
-```javascript
-// Each window gets fresh JS context
-// Variables NOT shared between heavyweight windows
-```
-
-**Context implications**:
-- Heavyweight: Each window starts with fresh JS
-- Lightweight: Shared JS variables
-- Consider this when designing app architecture
-
+...
 ## 12. Common Patterns
 
 ### Drill-Down Navigation
 
 ```javascript
 // Root level
-var table = Ti.UI.createTableView({
+const table = Ti.UI.createTableView({
   data: [
     { title: 'Category 1', hasChild: true },
     { title: 'Category 2', hasChild: true }
   ]
 });
 
-table.addEventListener('click', function(e) {
+table.addEventListener('click', (e) => {
   if (e.row.hasChild) {
-    var detailTable = createDetailTable(e.row.title);
+    const detailTable = createDetailTable(e.row.title);
 
     // iOS: Use NavigationWindow
     if (Ti.Platform.osname === 'iphone') {
@@ -603,24 +587,24 @@ table.addEventListener('click', function(e) {
 
 ```javascript
 function showModalForm() {
-  var formWin = Ti.UI.createWindow({
+  const formWin = Ti.UI.createWindow({
     title: 'Add Item',
     backgroundColor: '#fff',
     modal: true
   });
 
-  var nameField = Ti.UI.createTextField({
+  const nameField = Ti.UI.createTextField({
     hintText: 'Name',
     top: 20,
     height: 40
   });
 
-  var saveButton = Ti.UI.createButton({
+  const saveButton = Ti.UI.createButton({
     title: 'Save',
     top: 70
   });
 
-  saveButton.addEventListener('click', function() {
+  saveButton.addEventListener('click', () => {
     saveData(nameField.value);
     formWin.close();
   });
@@ -634,14 +618,14 @@ function showModalForm() {
 ### Tab with Navigation
 
 ```javascript
-var navWindow = Ti.UI.createNavigationWindow({
+const navWindow = Ti.UI.createNavigationWindow({
   window: Ti.UI.createWindow({
     title: 'Home',
     backgroundColor: '#fff'
   })
 });
 
-var tab = Ti.UI.createTab({
+const tab = Ti.UI.createTab({
   title: 'Home',
   icon: 'home.png',
   window: navWindow  // Use navWindow, not win directly
@@ -662,10 +646,10 @@ tabGroup.addTab(tab);
 
 ## 14. Platform Differences Summary
 
-| Feature | iOS | Android |
-|---------|-----|---------|
-| Modal windows | Fill screen, cover tab bar | No effect (windows always full screen) |
-| Navigation | NavigationWindow | Back button + Menu button |
-| Tabs | Fixed width, "More" overflow | Shrink to fit |
-| Window stack | Manual management | Back button navigation |
-| Heavyweight | Requires fullscreen | Default behavior |
+| Feature       | iOS                          | Android                                |
+| ------------- | ---------------------------- | -------------------------------------- |
+| Modal windows | Fill screen, cover tab bar   | No effect (windows always full screen) |
+| Navigation    | NavigationWindow             | Back button + Menu button              |
+| Tabs          | Fixed width, "More" overflow | Shrink to fit                          |
+| Window stack  | Manual management            | Back button navigation                 |
+| Heavyweight   | Requires fullscreen          | Default behavior                       |
