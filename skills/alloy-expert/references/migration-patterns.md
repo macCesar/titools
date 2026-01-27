@@ -4,13 +4,13 @@
 
 Before migrating, evaluate the current codebase:
 
-| Area | Signs of Legacy Code | Target State |
-|------|---------------------|--------------|
-| Styling | Manual `.tss` files, inline attributes | PurgeTSS utility classes |
-| Controllers | 200+ lines, API calls, business logic | Thin orchestrators (<100 lines) |
-| Events | `Ti.App.fireEvent` everywhere | Backbone.Events or StateStore |
-| Navigation | Direct `Alloy.createController().getView().open()` | Navigation service |
-| Data | Scattered `Ti.App.Properties`, no collections | Centralized state + Collections |
+| Area        | Signs of Legacy Code                               | Target State                    |
+| ----------- | -------------------------------------------------- | ------------------------------- |
+| Styling     | Manual `.tss` files, inline attributes             | PurgeTSS utility classes        |
+| Controllers | 200+ lines, API calls, business logic              | Thin orchestrators (<100 lines) |
+| Events      | `Ti.App.fireEvent` everywhere                      | Backbone.Events or StateStore   |
+| Navigation  | Direct `Alloy.createController().getView().open()` | Navigation service              |
+| Data        | Scattered `Ti.App.Properties`, no collections      | Centralized state + Collections |
 
 ## Phase 1: PurgeTSS Integration
 
@@ -43,8 +43,8 @@ PurgeTSS automatically backs up `app.tss` to `_app.tss`. Your custom styles are 
 
 ```xml
 <!-- AFTER: PurgeTSS classes -->
-<View class="bg-white h-16 top-0">
-  <Label class="text-gray-800 text-lg font-bold" text="Welcome" />
+<View class="top-0 h-16 bg-white">
+  <Label class="text-lg font-bold text-gray-800" text="Welcome" />
 </View>
 
 <!-- No manual TSS needed - delete #header and #title styles -->
@@ -94,12 +94,12 @@ function loadProfile() {
 ```javascript
 // AFTER: Thin controller + Service
 // lib/api/userApi.js
-export async function getProfile() {
+exports.getProfile = async function() {
   return apiClient.get('/profile')
 }
 
 // lib/services/userService.js
-export async function loadUserProfile() {
+exports.loadUserProfile = async function() {
   const data = await userApi.getProfile()
   return transformProfile(data)
 }
@@ -179,7 +179,7 @@ $.cleanup = cleanup
 // lib/services/navigation.js
 const stack = []
 
-export function open(route, params = {}, options = {}) {
+exports.open = function(route, params = {}, options = {}) {
   const controller = Alloy.createController(route, params)
   const view = controller.getView()
 
@@ -202,14 +202,14 @@ export function open(route, params = {}, options = {}) {
   return controller
 }
 
-export function back() {
+exports.back = function() {
   const current = stack[stack.length - 1]
   if (current) {
     current.controller.getView().close()
   }
 }
 
-export function getStack() {
+exports.getStack = function() {
   return [...stack]
 }
 ```
@@ -252,7 +252,7 @@ const user = JSON.parse(Ti.App.Properties.getString('user'))
 
 // AFTER: Centralized state
 // In service
-import { appStore } from 'lib/services/stateStore'
+const { appStore } = require('lib/services/stateStore')
 appStore.setState({ user })
 
 // In any controller
@@ -289,10 +289,10 @@ Alloy.Events.trigger('user:updated', data)
 
 ## Common Migration Pitfalls
 
-| Pitfall | Consequence | Prevention |
-|---------|-------------|------------|
-| Migrating styles without testing | Broken layouts | Test each view on both platforms |
-| Forgetting cleanup functions | Memory leaks | Add cleanup before adding listeners |
-| Partial event migration | Duplicate events | Grep for all usages before migrating |
-| Breaking navigation flow | Lost state, crashes | Test all navigation paths |
-| Rushing state migration | Inconsistent UI | Migrate one state slice at a time |
+| Pitfall                          | Consequence         | Prevention                           |
+| -------------------------------- | ------------------- | ------------------------------------ |
+| Migrating styles without testing | Broken layouts      | Test each view on both platforms     |
+| Forgetting cleanup functions     | Memory leaks        | Add cleanup before adding listeners  |
+| Partial event migration          | Duplicate events    | Grep for all usages before migrating |
+| Breaking navigation flow         | Lost state, crashes | Test all navigation paths            |
+| Rushing state migration          | Inconsistent UI     | Migrate one state slice at a time    |

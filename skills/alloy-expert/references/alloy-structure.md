@@ -122,21 +122,38 @@ api.getFrames()
 
 ## Navigation & Cleanup Pattern
 
+### Automatic Cleanup with ControllerAutoCleanup
+
+For automatic controller cleanup without code changes, use the ControllerAutoCleanup utility.
+
+**Installation:**
+
+1. Copy `ControllerAutoCleanup.js` to `app/lib/`
+2. Add as first line in `alloy.js`:
+
 ```javascript
-// lib/services/navigation.js
-export function open(route, params) {
-  const controller = Alloy.createController(route, params)
-  const view = controller.getView()
-  
-  view.addEventListener('close', () => {
-    if (controller.cleanup) {
-      controller.cleanup()
-    }
-  })
-  
-  view.open()
-}
+// alloy.js
+require('ControllerAutoCleanup')
+
+// Rest of your alloy.js initialization...
+Alloy.Collections.frames = new Backbone.Collection()
 ```
+
+**How it works:**
+
+- Monkey-patches `Alloy.createController` to add automatic cleanup
+- Listens for `close` events and recursively cleans up controllers
+- No code changes needed - existing `Alloy.createController().getView().open()` calls get cleanup automatically
+
+**Benefits:**
+
+| Without ControllerAutoCleanup              | With ControllerAutoCleanup |
+| ------------------------------------------ | -------------------------- |
+| Must remember manual cleanup               | Cleanup automatic          |
+| Easy to forget, causes memory leaks        | Memory leaks prevented     |
+| Repetitive code in each navigation service | One-line install           |
+
+See [ControllerAutoCleanup.js](../assets/ControllerAutoCleanup.js) for the complete source code.
 
 ## i18n and Accessibility Rules
 
@@ -144,3 +161,184 @@ export function open(route, params) {
 - All interactive elements must have `accessibilityLabel`.
 - Use `lib/helpers/i18n.js` for strings that require logic (e.g., "You have 5 messages").
 - Use **PurgeTSS modifiers** for platform-specific design instead of conditional code.
+
+## Widget Structure
+
+Widgets are self-contained, reusable components used in 3+ places across the app.
+
+```
+app/widgets/
+└── loadingOverlay/
+    ├── controllers/
+    │   └── widget.js      # Main widget controller
+    ├── views/
+    │   └── widget.xml     # Main widget view
+    ├── styles/
+    │   └── widget.tss     # Widget-specific styles (optional with PurgeTSS)
+    └── widget.json        # Widget manifest
+```
+
+### widget.json Configuration
+```json
+{
+  "id": "com.app.loadingOverlay",
+  "name": "Loading Overlay",
+  "description": "Full-screen loading indicator with optional message",
+  "author": "Your Name",
+  "version": "1.0.0",
+  "copyright": "Copyright (c) 2024",
+  "license": "MIT",
+  "min-alloy-version": "1.0.0",
+  "min-titanium-version": "9.0.0",
+  "tags": "ui, loading",
+  "platforms": "android,ios"
+}
+```
+
+### Widget View (widget.xml)
+```xml
+<Alloy>
+  <View id="container" class="wh-screen hidden bg-black/50">
+    <View class="wh-32 vertical rounded-2xl bg-white">
+      <ActivityIndicator id="spinner" class="mt-6" />
+      <Label id="messageLabel" class="mx-4 mt-4 text-sm text-gray-600" />
+    </View>
+  </View>
+</Alloy>
+```
+
+### Widget Controller (widget.js)
+```javascript
+// Widget controller receives args via $.args
+const args = $.args || {}
+
+// Initialize with defaults
+let message = args.message || L('loading')
+
+// Public API
+$.show = (msg) => {
+  if (msg) message = msg
+  $.messageLabel.text = message
+  $.spinner.show()
+  $.container.visible = true
+}
+
+$.hide = () => {
+  $.spinner.hide()
+  $.container.visible = false
+}
+
+$.setMessage = (msg) => {
+  $.messageLabel.text = msg
+}
+
+// Cleanup
+$.cleanup = () => {
+  $.spinner.hide()
+  $.destroy()
+}
+```
+
+### Using Widgets
+```xml
+<!-- In any view -->
+<Alloy>
+  <Window>
+    <!-- Your content -->
+
+    <!-- Add widget -->
+    <Widget id="loader" src="loadingOverlay" message="L('please_wait')" />
+  </Window>
+</Alloy>
+```
+
+```javascript
+// In controller
+const loadData = () => {
+  $.loader.show(L('loading_data'))
+
+  api.fetchData()
+    .then(renderData)
+    .finally(() => $.loader.hide())
+}
+```
+
+:::tip PurgeTSS with Widgets
+If your widget uses PurgeTSS utility classes (as shown in the example above), you must enable widget processing in `./purgetss/config.cjs`:
+
+```javascript
+// ./purgetss/config.cjs
+module.exports = {
+  purge: {
+    options: {
+      widgets: true  // Enable PurgeTSS class processing for widgets
+    }
+  }
+}
+```
+
+Without this setting, PurgeTSS will NOT process classes in widget files.
+:::
+
+## config.json Reference
+
+The `app/config.json` file configures Alloy compilation and runtime behavior.
+
+```json
+{
+  "global": {
+    "theme": "default"
+  },
+  "env:development": {
+    "apiUrl": "https://dev-api.example.com",
+    "debug": true,
+    "logLevel": "debug"
+  },
+  "env:test": {
+    "apiUrl": "https://staging-api.example.com",
+    "debug": true,
+    "logLevel": "info"
+  },
+  "env:production": {
+    "apiUrl": "https://api.example.com",
+    "debug": false,
+    "logLevel": "error"
+  },
+  "os:android": {
+    "androidSpecificSetting": true
+  },
+  "os:ios": {
+    "iosSpecificSetting": true
+  },
+  "dependencies": {
+    "com.app.loadingOverlay": "1.0"
+  },
+  "autoStyle": false,
+  "backbone": "1.4.0",
+  "sourcemap": true
+}
+```
+
+### Accessing Config Values
+```javascript
+// In any controller or lib file
+const apiUrl = Alloy.CFG.apiUrl
+const isDebug = Alloy.CFG.debug
+const logLevel = Alloy.CFG.logLevel
+
+// Environment check
+if (Alloy.CFG.debug) {
+  console.log('Debug mode enabled')
+}
+```
+
+### Key Configuration Options
+
+| Property       | Description                                       |
+| -------------- | ------------------------------------------------- |
+| `theme`        | Theme folder to use from `app/themes/`            |
+| `autoStyle`    | Auto-apply TSS styles (set `false` with PurgeTSS) |
+| `backbone`     | Backbone.js version to use                        |
+| `sourcemap`    | Generate source maps for debugging                |
+| `dependencies` | Widget dependencies and versions                  |
+| `adaptersPath` | Custom path for sync adapters                     |

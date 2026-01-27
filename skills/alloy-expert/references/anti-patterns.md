@@ -23,7 +23,7 @@
 
 ## 6. Complex Matrix Animations
 **Symptom:** Manual use of `Ti.UI.create2DMatrix()`.
-**Solution:** Use the **PurgeTSS Animation Module** (`animation.apply($.view, 'fade-in')`).
+**Solution:** Use the **PurgeTSS Animation Module** with state modifiers (`class="close:opacity-0 open:opacity-100"`).
 
 ## 7. Hardcoded Strings & Missing a11y
 **Symptom:** `text="Login"` instead of `text="L('login')"`, or missing `accessibilityLabel`.
@@ -65,15 +65,16 @@
 </View>
 ```
 
-## 11. Using `w-full` Instead of `w-screen`
-**Symptom:** Using `w-full` expecting full width.
-**Problem:** `w-full` does NOT exist in PurgeTSS. Views default to `Ti.UI.SIZE`.
-**Solution:** Use `w-screen` for full width, `wh-screen` for full width + height.
+## 11. Confusing `w-full` with `w-screen`
+**Symptom:** Using `w-full` when `w-screen` is needed.
+**Difference:** `w-full` sets `width: '100%'` (100% of parent), while `w-screen` sets `width: Ti.UI.FILL` (fills available space).
+**Solution:** Use `w-screen` for full-width elements that should fill space. `w-full` is useful when you need percentage-based sizing.
 
 ## 12. Using `rounded-full` Without Size
 **Symptom:** Using `rounded-full` expecting a circle.
-**Problem:** `rounded-full` doesn't exist. You need `rounded-full-XX` where XX × 4 = element size.
-**Solution:** For a 48×48 circle, use `rounded-full-12` (12 × 4 = 48).
+**Problem:** `rounded-full` (without number) doesn't exist. You need `rounded-full-XX` where XX × 4 = element size.
+**Note:** `rounded-full-XX` already includes width and height. Don't add `w-XX h-XX` with it.
+**Solution:** For a 48×48 circle, use `rounded-full-12` (includes size). For percentage-based, use `w-12 h-12 rounded-full`.
 
 ## 13. Adding `composite` Class Explicitly
 **Symptom:** Adding `class="composite"` to Views.
@@ -94,14 +95,14 @@
 
 ## Quick Reference Table
 
-| Anti-Pattern | Why It Fails | Correct Approach |
-|--------------|--------------|------------------|
-| `flex-row` | Flexbox not supported | `horizontal` |
-| `flex-col` | Flexbox not supported | `vertical` |
-| `justify-*` | Flexbox not supported | Use margins/positioning |
-| `p-4` on View | No padding on containers | `m-4` on children |
-| `w-full` | Doesn't exist | `w-screen` |
-| `rounded-full` | Needs size suffix | `rounded-full-12` |
-| `composite` class | Already default | Omit it |
-| `w-[100px]` | Wrong syntax | `w-(100px)` |
-| Manual `.tss` | Overwritten by PurgeTSS | Use utility classes |
+| Anti-Pattern      | Why It Fails             | Correct Approach        |
+| ----------------- | ------------------------ | ----------------------- |
+| `flex-row`        | Flexbox not supported    | `horizontal`            |
+| `flex-col`        | Flexbox not supported    | `vertical`              |
+| `justify-*`       | Flexbox not supported    | Use margins/positioning |
+| `p-4` on View     | No padding on containers | `m-4` on children       |
+| `w-full`          | Doesn't exist            | `w-screen`              |
+| `rounded-full`    | Needs size suffix        | `rounded-full-12`       |
+| `composite` class | Already default          | Omit it                 |
+| `w-[100px]`       | Wrong syntax             | `w-(100px)`             |
+| Manual `.tss`     | Overwritten by PurgeTSS  | Use utility classes     |

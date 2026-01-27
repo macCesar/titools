@@ -19,8 +19,8 @@
     <Templates>
       <!-- FIXED HEIGHT is critical for performance -->
       <ItemTemplate name="userTemplate" height="64">
-        <View class="horizontal w-screen h-16">
-          <ImageView bindId="avatar" class="w-12 h-12 ml-4 rounded-full-12" />
+        <View class="horizontal h-16 w-screen">
+          <ImageView bindId="avatar" class="rounded-full-12 ml-4" />
           <View class="vertical ml-3">
             <Label bindId="name" class="text-base font-bold" />
             <Label bindId="email" class="text-sm text-gray-500" />
@@ -81,7 +81,7 @@ function formatTimestamp(timestamp) {
 
 ```javascript
 // lib/services/imageCache.js
-export const ImageCache = {
+exports.ImageCache = {
   _cache: new Map(),
   _loading: new Map(),
 
@@ -183,7 +183,7 @@ $.nameLabel.applyProperties({
 <Label text="Hello" width="200" height="40" color="#000" font="{fontSize:16}" />
 
 <!-- GOOD: Single class application -->
-<Label text="Hello" class="w-50 h-10 text-black text-base" />
+<Label text="Hello" class="h-10 w-1/2 text-base text-black" />
 ```
 
 ## Memory Management
@@ -246,7 +246,7 @@ $.cleanup = cleanup
 
 ```javascript
 // lib/services/imageManager.js
-export const ImageManager = {
+exports.ImageManager = {
   // Resize images to avoid loading full-resolution into memory
   resizeForDisplay(imageUrl, maxWidth, maxHeight) {
     const imageView = Ti.UI.createImageView({
@@ -347,7 +347,7 @@ $.cleanup = cleanup
 
 ```javascript
 // lib/services/database.js
-export const DB = {
+exports.DB = {
   // Use transactions for multiple writes
   batchInsert(items) {
     const db = Ti.Database.open('mydb')
@@ -424,7 +424,7 @@ export const DB = {
 
 ```javascript
 // lib/services/perfMonitor.js
-export const Perf = {
+exports.Perf = {
   _metrics: {
     renders: [],
     bridgeCrossings: 0
@@ -481,17 +481,375 @@ measure.end()
 
 ## Performance Checklist
 
-| Area | Check |
-|------|-------|
-| **ListView** | Fixed heights on all templates |
-| **ListView** | Using templates, not dynamic views |
-| **ListView** | Image pre-sizing and caching |
-| **Bridge** | Cached Ti.Platform properties |
-| **Bridge** | Using applyProperties for updates |
-| **Bridge** | PurgeTSS classes instead of inline styles |
-| **Memory** | All global listeners cleaned up |
-| **Memory** | Heavy objects nulled in cleanup |
-| **Memory** | Images resized appropriately |
-| **Database** | Using transactions for batch ops |
-| **Database** | Indexes on frequently queried columns |
-| **Database** | ResultSets and DB handles closed |
+| Area         | Check                                     |
+| ------------ | ----------------------------------------- |
+| **ListView** | Fixed heights on all templates            |
+| **ListView** | Using templates, not dynamic views        |
+| **ListView** | Image pre-sizing and caching              |
+| **Bridge**   | Cached Ti.Platform properties             |
+| **Bridge**   | Using applyProperties for updates         |
+| **Bridge**   | PurgeTSS classes instead of inline styles |
+| **Memory**   | All global listeners cleaned up           |
+| **Memory**   | Heavy objects nulled in cleanup           |
+| **Memory**   | Images resized appropriately              |
+| **Database** | Using transactions for batch ops          |
+| **Database** | Indexes on frequently queried columns     |
+| **Database** | ResultSets and DB handles closed          |
+
+## ScrollView Performance
+
+### Optimizing Large ScrollViews
+
+```xml
+<!-- Avoid: Creating many views at once -->
+<ScrollView class="wh-screen vertical">
+  <!-- DON'T: 100+ views created immediately -->
+</ScrollView>
+
+<!-- Better: Use ListView for list-like content -->
+<ListView class="wh-screen">
+  <!-- Views created on-demand as user scrolls -->
+</ListView>
+```
+
+### When You Must Use ScrollView
+
+```javascript
+// Lazy load content sections
+const sections = [
+  { id: 'header', height: 200 },
+  { id: 'featured', height: 300 },
+  { id: 'products', height: 400 },
+  { id: 'reviews', height: 500 }
+]
+
+let loadedSections = new Set()
+
+function init() {
+  // Load only visible sections initially
+  loadSection('header')
+
+  $.scrollView.addEventListener('scroll', onScroll)
+}
+
+function onScroll(e) {
+  const scrollY = e.y
+  const viewportHeight = $.scrollView.rect.height
+
+  sections.forEach(section => {
+    if (loadedSections.has(section.id)) return
+
+    // Check if section is about to be visible
+    const sectionTop = getSectionTop(section.id)
+
+    if (sectionTop < scrollY + viewportHeight + 100) {
+      loadSection(section.id)
+    }
+  })
+}
+
+function loadSection(sectionId) {
+  if (loadedSections.has(sectionId)) return
+
+  loadedSections.add(sectionId)
+
+  // Load content for this section
+  const container = $[sectionId + 'Container']
+  const content = createSectionContent(sectionId)
+  container.add(content)
+}
+```
+
+### ScrollView Memory Management
+
+```javascript
+// Release images when scrolled far away
+function onScroll(e) {
+  const scrollY = e.y
+  const viewportHeight = $.scrollView.rect.height
+
+  // Release images more than 2 screens away
+  const releaseThreshold = viewportHeight * 2
+
+  imageViews.forEach((img, index) => {
+    const imgTop = img.rect.y
+    const distance = Math.abs(imgTop - scrollY)
+
+    if (distance > releaseThreshold && img.image) {
+      // Store URL for later reload
+      img._originalUrl = img.image
+      img.image = null
+    } else if (distance < viewportHeight && img._originalUrl) {
+      // Reload when close to viewport
+      img.image = img._originalUrl
+      delete img._originalUrl
+    }
+  })
+}
+```
+
+## Animation Performance
+
+### 60fps Animation Rules
+
+```javascript
+// Rule 1: Use native animations (not JavaScript intervals)
+// BAD: JavaScript-driven animation
+let x = 0
+setInterval(() => {
+  x += 1
+  $.view.left = x // 60 bridge crossings per second!
+}, 16)
+
+// GOOD: Native animation
+const animation = Ti.UI.createAnimation({
+  left: 100,
+  duration: 500,
+  curve: Ti.UI.ANIMATION_CURVE_EASE_OUT
+})
+$.view.animate(animation)
+```
+
+### PurgeTSS Animation Component (Recommended)
+
+```xml
+<!-- Define animations with state modifiers -->
+<Animation id="fadeIn" module="purgetss.ui" class="close:opacity-0 duration-300 open:opacity-100" />
+<Animation id="fadeOut" module="purgetss.ui" class="close:opacity-100 duration-300 open:opacity-0" />
+<Animation id="slideInRight" module="purgetss.ui" class="close:translate-x-full duration-300 open:translate-x-0" />
+<Animation id="scalePress" module="purgetss.ui" class="close:scale-100 duration-150 open:scale-95" />
+```
+
+```javascript
+// Fade in/out
+$.fadeIn.open($.card)
+$.fadeOut.close($.card)
+
+// Slide animations
+$.slideInRight.open($.panel)
+$.slideInRight.close($.panel)
+
+// Scale animations (press effect)
+$.scalePress.open($.button)  // Scale down
+$.scalePress.close($.button) // Scale back up
+
+// Chained animations with callback
+$.fadeIn.open($.modal, () => {
+  // Animation complete, trigger next animation
+  $.slideInRight.open($.content)
+})
+```
+
+### Hardware-Accelerated Properties
+
+```javascript
+// These properties are GPU-accelerated (fast):
+// - opacity
+// - transform (translate, scale, rotate)
+
+// These trigger layout recalculation (slow):
+// - width, height
+// - top, left, right, bottom
+// - visible
+
+// GOOD: Animate opacity for fade effects
+const fadeOut = Ti.UI.createAnimation({
+  opacity: 0,
+  duration: 200
+})
+
+// GOOD: Use transform for movement
+const slideRight = Ti.UI.createAnimation({
+  duration: 300,
+  transform: Ti.UI.createMatrix2D().translate(100, 0),
+})
+
+// AVOID: Animating layout properties
+const badAnimation = Ti.UI.createAnimation({
+  left: 100,  // Triggers layout recalc
+  width: 200, // Triggers layout recalc
+  duration: 300
+})
+```
+
+### Animation Cleanup
+
+```javascript
+// Always remove animation listeners
+let currentAnimation = null
+
+function animateIn() {
+  currentAnimation = Ti.UI.createAnimation({
+    opacity: 1,
+    duration: 300
+  })
+
+  const onComplete = () => {
+    currentAnimation.removeEventListener('complete', onComplete)
+    currentAnimation = null
+  }
+
+  currentAnimation.addEventListener('complete', onComplete)
+  $.view.animate(currentAnimation)
+}
+
+function cleanup() {
+  // Cancel any running animation
+  if (currentAnimation) {
+    $.view.animate({ duration: 0 }) // Cancel
+    currentAnimation = null
+  }
+  $.destroy()
+}
+
+$.cleanup = cleanup
+```
+
+## Debouncing and Throttling
+
+### Debounce Pattern
+
+Use when you want to wait for the user to stop an action before processing.
+
+```javascript
+// lib/helpers/timing.js
+exports.debounce = function debounce(fn, delay = 300) {
+  let timeoutId = null
+
+  const debounced = function(...args) {
+    clearTimeout(timeoutId)
+    timeoutId = setTimeout(() => {
+      fn.apply(this, args)
+    }, delay)
+  }
+
+  debounced.cancel = () => {
+    clearTimeout(timeoutId)
+    timeoutId = null
+  }
+
+  return debounced
+}
+```
+
+```javascript
+// Usage: Search input
+const { debounce } = require('lib/helpers/timing')
+
+const debouncedSearch = debounce(async (query) => {
+  const results = await searchService.search(query)
+  renderResults(results)
+}, 300)
+
+function onSearchChange(e) {
+  debouncedSearch(e.value)
+}
+
+function cleanup() {
+  debouncedSearch.cancel()
+  $.destroy()
+}
+```
+
+### Throttle Pattern
+
+Use when you want to limit how often a function can run.
+
+```javascript
+// lib/helpers/timing.js
+exports.throttle = function throttle(fn, limit = 100) {
+  let lastRun = 0
+  let timeoutId = null
+
+  const throttled = function(...args) {
+    const now = Date.now()
+    const remaining = limit - (now - lastRun)
+
+    if (remaining <= 0) {
+      lastRun = now
+      fn.apply(this, args)
+    } else if (!timeoutId) {
+      timeoutId = setTimeout(() => {
+        lastRun = Date.now()
+        timeoutId = null
+        fn.apply(this, args)
+      }, remaining)
+    }
+  }
+
+  throttled.cancel = () => {
+    clearTimeout(timeoutId)
+    timeoutId = null
+  }
+
+  return throttled
+}
+```
+
+```javascript
+// Usage: Scroll handler
+const { throttle } = require('lib/helpers/timing')
+
+const throttledScroll = throttle((scrollY) => {
+  updateHeaderOpacity(scrollY)
+  checkLazyLoadImages(scrollY)
+}, 50) // Max 20 calls per second
+
+function onScroll(e) {
+  throttledScroll(e.y)
+}
+
+function cleanup() {
+  throttledScroll.cancel()
+  $.scrollView.removeEventListener('scroll', onScroll)
+  $.destroy()
+}
+```
+
+### Common Use Cases
+
+| Pattern  | Use Case         | Delay        |
+| -------- | ---------------- | ------------ |
+| Debounce | Search input     | 300ms        |
+| Debounce | Auto-save        | 1000ms       |
+| Debounce | Window resize    | 150ms        |
+| Throttle | Scroll events    | 50-100ms     |
+| Throttle | Mouse/touch move | 16ms (60fps) |
+| Throttle | API polling      | 5000ms+      |
+
+### Combined Pattern for Real-time + Final
+
+```javascript
+// Show immediate feedback while typing, but only search when done
+const { debounce, throttle } = require('lib/helpers/timing')
+
+// Update UI immediately (throttled)
+const updateSuggestions = throttle((query) => {
+  // Filter local cache for quick suggestions
+  const suggestions = localCache.filter(q => q.includes(query))
+  renderSuggestions(suggestions)
+}, 100)
+
+// Search API only when typing stops (debounced)
+const searchApi = debounce(async (query) => {
+  const results = await api.search(query)
+  renderResults(results)
+}, 500)
+
+function onSearchChange(e) {
+  const query = e.value.trim()
+
+  if (query.length > 0) {
+    updateSuggestions(query)  // Immediate feedback
+    searchApi(query)          // API call when done typing
+  } else {
+    clearResults()
+  }
+}
+
+function cleanup() {
+  updateSuggestions.cancel()
+  searchApi.cancel()
+  $.destroy()
+}
+```

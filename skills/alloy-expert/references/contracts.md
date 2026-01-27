@@ -22,7 +22,7 @@ Contracts define the input/output specifications between layers, ensuring consis
  * @property {number} [offset] - Pagination offset
  */
 
-export const userApi = {
+exports.userApi = {
   /**
    * Get paginated list of users
    * @param {UserFilters} [filters]
@@ -92,7 +92,7 @@ export const userApi = {
  * @property {boolean} isLoading
  */
 
-export const AuthService = {
+exports.AuthService = {
   /**
    * Authenticate user with credentials
    * @param {string} email
@@ -178,7 +178,7 @@ $.cleanup = cleanup
  * @property {boolean} [animated=true] - Animate transition
  */
 
-export const Navigation = {
+exports.Navigation = {
   /**
    * Open a new screen
    * @param {string} route - Controller path (e.g., 'user/detail')
@@ -215,7 +215,7 @@ export const Navigation = {
 ```javascript
 // lib/helpers/formatters.js
 
-export const Formatters = {
+exports.Formatters = {
   /**
    * Format currency with locale
    * @param {number} amount
@@ -250,7 +250,7 @@ export const Formatters = {
 /**
  * Named events for type safety and discoverability
  */
-export const Events = {
+exports.Events = {
   // User events
   USER_LOGGED_IN: 'user:loggedIn',      // payload: { user: User }
   USER_LOGGED_OUT: 'user:loggedOut',    // payload: none

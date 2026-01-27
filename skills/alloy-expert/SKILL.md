@@ -1,11 +1,32 @@
 ---
 name: alloy-expert
-description: "Complete Titanium SDK + Alloy development expertise following PurgeTSS standards. Use when Claude needs to: (1) Design project architecture and folder structures, (2) Implement controllers, views, and services, (3) Choose between Models vs Collections for data strategies, (4) Establish communication patterns (Event Bus, Services), (5) Write clean ES6+ code with proper memory cleanup, (6) Apply PurgeTSS utility classes correctly, (7) Implement testing, error handling, and logging, (8) Optimize performance (ListView, bridge, memory), (9) Apply security patterns for mobile apps, (10) Migrate legacy Titanium apps to modern architecture."
+description: "Complete Titanium SDK + Alloy development expertise following PurgeTSS standards. Use for: (1) Designing project architecture and folder structures, (2) Implementing controllers, views, and services, (3) Choosing between Models vs Collections for data strategies, (4) Establishing communication patterns (Event Bus, Services), (5) Writing clean modern JavaScript (CommonJS modules + ES6 features like const/let, arrow functions, destructuring) with proper memory cleanup, (6) Applying PurgeTSS utility classes correctly, (7) Implementing testing, error handling, and logging, (8) Optimizing performance (ListView, bridge, memory), (9) Applying security patterns for mobile apps, (10) Migrating legacy Titanium apps to modern architecture."
 ---
 
 # Titanium Alloy Expert
 
 Complete architectural and implementation guidance for building scalable, maintainable Titanium Alloy applications with PurgeTSS styling.
+
+## Table of Contents
+
+- [Titanium Alloy Expert](#titanium-alloy-expert)
+  - [Table of Contents](#table-of-contents)
+  - [Workflow](#workflow)
+  - [Quick Start Example](#quick-start-example)
+  - [Code Standards (Low Freedom)](#code-standards-low-freedom)
+  - [PurgeTSS Rules (Low Freedom)](#purgetss-rules-low-freedom)
+  - [Quick Decision Matrix](#quick-decision-matrix)
+  - [Reference Guides (Progressive Disclosure)](#reference-guides-progressive-disclosure)
+    - [Architecture](#architecture)
+    - [Implementation](#implementation)
+    - [Quality \& Reliability](#quality--reliability)
+    - [Performance \& Security](#performance--security)
+    - [Migration](#migration)
+  - [Specialized Titanium Skills](#specialized-titanium-skills)
+  - [Guiding Principles](#guiding-principles)
+  - [Response Format](#response-format)
+
+---
 
 ## Workflow
 
@@ -15,6 +36,63 @@ Complete architectural and implementation guidance for building scalable, mainta
 4. **Implementation**: Write XML views + ES6+ controllers
 5. **Quality**: Testing, error handling, logging, performance
 6. **Cleanup**: Implement `cleanup()` pattern for memory management
+
+## Quick Start Example
+
+Minimal example following all conventions:
+
+**View (views/user/card.xml)**
+```xml
+<Alloy>
+  <View class="m-2 rounded-xl bg-white shadow-md">
+    <View class="horizontal m-3 w-screen">
+      <Label class="fa-solid fa-user text-2xl text-blue-500" />
+      <Label id="name" class="ml-3 text-lg font-bold" />
+    </View>
+    <Button class="mx-3 mb-3 h-10 w-screen rounded-md bg-blue-600 text-white"
+      title="L('view_profile')"
+      onClick="onViewProfile"
+    />
+  </View>
+</Alloy>
+```
+
+**Controller (controllers/user/card.js)**
+```javascript
+const { Navigation } = require('lib/services/navigation')
+
+function init() {
+  const user = $.args.user
+  $.name.text = user.name
+}
+
+function onViewProfile() {
+  Navigation.open('user/profile', { userId: $.args.user.id })
+}
+
+function cleanup() {
+  $.destroy()
+}
+
+$.cleanup = cleanup
+```
+
+**Service (lib/services/navigation.js)**
+```javascript
+exports.Navigation = {
+  open(route, params = {}) {
+    const controller = Alloy.createController(route, params)
+    const view = controller.getView()
+
+    view.addEventListener('close', function() {
+      if (controller.cleanup) controller.cleanup()
+    })
+
+    view.open()
+    return controller
+  }
+}
+```
 
 ## Code Standards (Low Freedom)
 
@@ -27,34 +105,38 @@ Complete architectural and implementation guidance for building scalable, mainta
 
 ## PurgeTSS Rules (Low Freedom)
 
-| WRONG | CORRECT | Why |
-|-------|---------|-----|
-| `flex-row` | `horizontal` | Flexbox not supported |
-| `flex-col` | `vertical` | Flexbox not supported |
-| `w-full` | `w-screen` | `w-full` doesn't exist |
-| `p-4` on View | `m-4` on children | No padding on containers |
-| `justify-*` | margins/positioning | Flexbox not supported |
-| `items-center` | layout + sizing | Different meaning in Titanium |
-| `rounded-full` | `rounded-full-12` | Need size suffix (12×4=48px) |
-| `border-[1px]` | `border-(1)` | Parentheses, not brackets |
+| WRONG                          | CORRECT             | Why                           |
+| ------------------------------ | ------------------- | ----------------------------- |
+| `flex-row`                     | `horizontal`        | Flexbox not supported         |
+| `flex-col`                     | `vertical`          | Flexbox not supported         |
+| `p-4` on View                  | `m-4` on children   | No padding on containers      |
+| `justify-*`                    | margins/positioning | Flexbox not supported         |
+| `items-center` (for centering) | layout + sizing     | Different meaning in Titanium |
+| `rounded-full` (for circle)    | `rounded-full-12`   | Need size suffix (12×4=48px)  |
+| `border-[1px]`                 | `border-(1)`        | Parentheses, not brackets     |
+
+**Note on `w-full` vs `w-screen`:**
+- `w-full` → `width: '100%'` (100% of parent container) - exists and valid
+- `w-screen` → `width: Ti.UI.FILL` (fills all available space) - use for full-width elements
 
 ## Quick Decision Matrix
 
-| Question | Answer |
-|----------|--------|
-| Where does API call go? | `lib/api/` |
-| Where does business logic go? | `lib/services/` |
-| Where do I store auth tokens? | Keychain (iOS) / KeyStore (Android) via service |
-| Models or Collections? | Collections for API data, Models for SQLite persistence |
-| Ti.App.fireEvent or EventBus? | **Always EventBus** (Backbone.Events) |
-| Direct navigation or service? | **Always Navigation service** (auto cleanup) |
-| Manual TSS or PurgeTSS? | **Always PurgeTSS utility classes** |
-| Controller 100+ lines? | Extract logic to services |
+| Question                      | Answer                                                  |
+| ----------------------------- | ------------------------------------------------------- |
+| Where does API call go?       | `lib/api/`                                              |
+| Where does business logic go? | `lib/services/`                                         |
+| Where do I store auth tokens? | Keychain (iOS) / KeyStore (Android) via service         |
+| Models or Collections?        | Collections for API data, Models for SQLite persistence |
+| Ti.App.fireEvent or EventBus? | **Always EventBus** (Backbone.Events)                   |
+| Direct navigation or service? | **Always Navigation service** (auto cleanup)            |
+| Manual TSS or PurgeTSS?       | **Always PurgeTSS utility classes**                     |
+| Controller 100+ lines?        | Extract logic to services                               |
 
 ## Reference Guides (Progressive Disclosure)
 
 ### Architecture
-- **[Structure & Organization](references/alloy-structure.md)**: Models vs Collections, folder maps, styling strategies
+- **[Structure & Organization](references/alloy-structure.md)**: Models vs Collections, folder maps, styling strategies, automatic cleanup
+- **[ControllerAutoCleanup.js](assets/ControllerAutoCleanup.js)**: Drop-in utility for automatic controller cleanup (prevents memory leaks)
 - **[Architectural Patterns](references/patterns.md)**: Repository, Service Layer, Event Bus, Factory, Singleton
 - **[Contracts & Communication](references/contracts.md)**: Layer interaction examples and JSDoc specs
 - **[Anti-Patterns](references/anti-patterns.md)**: Fat controllers, flexbox classes, memory leaks, direct API calls
@@ -80,14 +162,14 @@ Complete architectural and implementation guidance for building scalable, mainta
 
 For specific feature implementations, defer to these specialized skills:
 
-| Task | Use This Skill |
-|------|----------------|
-| PurgeTSS setup, advanced styling, animations | `purgetss` |
-| Location, Maps, Push Notifications, Media APIs | `ti-howtos` |
-| UI layouts, ListViews, gestures, platform-specific UI | `ti-ui` |
-| Alloy CLI, configuration files, debugging | `alloy-howtos` |
-| Alloy MVC complete reference | `alloy-guides` |
-| Hyperloop, native modules, app distribution | `ti-guides` |
+| Task                                                  | Use This Skill |
+| ----------------------------------------------------- | -------------- |
+| PurgeTSS setup, advanced styling, animations          | `purgetss`     |
+| Location, Maps, Push Notifications, Media APIs        | `ti-howtos`    |
+| UI layouts, ListViews, gestures, platform-specific UI | `ti-ui`        |
+| Alloy CLI, configuration files, debugging             | `alloy-howtos` |
+| Alloy MVC complete reference                          | `alloy-guides` |
+| Hyperloop, native modules, app distribution           | `ti-guides`    |
 
 ## Guiding Principles
 
