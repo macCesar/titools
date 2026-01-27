@@ -3,12 +3,50 @@
 Comprehensive guide for debugging Titanium apps, managing memory, finding leaks, and using native debugging tools.
 
 ## Table of Contents
-1. [Debugging Overview](#debugging-overview)
-2. [Memory Management](#memory-management)
-3. [Memory Leak Detection](#memory-leak-detection)
-4. [Android Debugging Tools](#android-debugging-tools)
-5. [iOS Debugging Tools](#ios-debugging-tools)
-6. [Best Practices](#best-practices)
+
+- [Debugging and Profiling](#debugging-and-profiling)
+  - [Table of Contents](#table-of-contents)
+  - [Debugging Overview](#debugging-overview)
+    - [Essential Elements of Debugging](#essential-elements-of-debugging)
+    - [Debugging Techniques](#debugging-techniques)
+  - [Memory Management](#memory-management)
+    - [How JavaScript Manages Memory](#how-javascript-manages-memory)
+    - [How Titanium Manages Memory](#how-titanium-manages-memory)
+    - [Releasing Memory Properly](#releasing-memory-properly)
+    - [Parent-Child Relationships](#parent-child-relationships)
+    - [Platform Memory Limits](#platform-memory-limits)
+  - [Memory Leak Detection](#memory-leak-detection)
+    - [Common Leak Sources](#common-leak-sources)
+    - [Debugging Memory on iOS (Instruments)](#debugging-memory-on-ios-instruments)
+    - [Debugging Memory on Android (DDMS)](#debugging-memory-on-android-ddms)
+  - [Android Debugging Tools](#android-debugging-tools)
+    - [DDMS (Dalvik Debug Monitor Service)](#ddms-dalvik-debug-monitor-service)
+      - [Log Output with DDMS](#log-output-with-ddms)
+      - [Simulate Network Conditions](#simulate-network-conditions)
+      - [Simulate Calls/SMS](#simulate-callssms)
+      - [Set GPS Coordinates](#set-gps-coordinates)
+      - [File System Exploration](#file-system-exploration)
+      - [Memory Monitoring](#memory-monitoring)
+    - [ADB (Android Debug Bridge)](#adb-android-debug-bridge)
+      - [Log Output](#log-output)
+      - [File System](#file-system)
+      - [Transfer Files](#transfer-files)
+      - [Access SQLite Databases](#access-sqlite-databases)
+    - [Creating Emulators](#creating-emulators)
+    - [Modifying Emulators](#modifying-emulators)
+  - [iOS Debugging Tools](#ios-debugging-tools)
+    - [Instruments](#instruments)
+    - [Xcode Build Debugging](#xcode-build-debugging)
+    - [Console Logs](#console-logs)
+  - [6. Automation and UI Testing](#6-automation-and-ui-testing)
+  - [Best Practices](#best-practices)
+    - [Memory Management](#memory-management-1)
+    - [Debugging](#debugging)
+    - [Performance](#performance)
+  - [Platform-Specific Notes](#platform-specific-notes)
+    - [Android](#android)
+    - [iOS](#ios)
+  - [Resources](#resources)
 
 ---
 
@@ -27,7 +65,7 @@ Comprehensive guide for debugging Titanium apps, managing memory, finding leaks,
 
 **1. Print Tracing (Logging)**
 ```javascript
-Ti.API.info('Variable value: ' + myVar);
+Ti.API.info(`Variable value: ${myVar}`);
 Ti.API.warn('Warning message');
 Ti.API.error('Error occurred');
 Ti.API.log('info', 'Custom level message');
@@ -66,7 +104,7 @@ Titanium is a **bridge** between JavaScript and native OS:
 
 ```javascript
 // JavaScript object + Native proxy
-var button = Ti.UI.createButton({title: 'Click me'});
+const button = Ti.UI.createButton({title: 'Click me'});
 ```
 
 **Key Rule:** Setting JavaScript object to `null` destroys BOTH the JavaScript object AND the native proxy.
@@ -75,7 +113,7 @@ var button = Ti.UI.createButton({title: 'Click me'});
 
 **Complete cleanup:**
 ```javascript
-var view = Ti.UI.createView({backgroundColor: 'white'});
+let view = Ti.UI.createView({backgroundColor: 'white'});
 win.add(view);
 
 // Later: remove AND nullify
@@ -85,7 +123,7 @@ view = null;  // Critical: destroys native proxy
 
 **Incomplete cleanup (MEMORY LEAK):**
 ```javascript
-var view = Ti.UI.createView({backgroundColor: 'white'});
+let view = Ti.UI.createView({backgroundColor: 'white'});
 win.add(view);
 
 // Later: only remove
@@ -96,7 +134,7 @@ win.remove(view);  // view object STILL EXISTS in memory!
 
 ```javascript
 // Good: children not referenced elsewhere
-var view = Ti.UI.createView({
+let view = Ti.UI.createView({
     backgroundColor: 'white'
 });
 view.add(Ti.UI.createButton({title: 'Click'}));  // Anonymous child
@@ -105,8 +143,8 @@ win.remove(view);
 view = null;  // Destroys view AND button
 
 // Bad: children referenced separately
-var button = Ti.UI.createButton({title: 'Click'});
-var view = Ti.UI.createView({backgroundColor: 'white'});
+const button = Ti.UI.createButton({title: 'Click'});
+let view = Ti.UI.createView({backgroundColor: 'white'});
 view.add(button);
 
 win.remove(view);
@@ -116,11 +154,11 @@ button = null;  // Now button is destroyed
 
 ### Platform Memory Limits
 
-| Platform | Memory Limit |
-|----------|--------------|
-| iPhone | ~10% of system memory |
-| iPad | 30-50 MB (smaller is better) |
-| Android | 24-32 MB heap (128 MB with large heap) |
+| Platform | Memory Limit                           |
+| -------- | -------------------------------------- |
+| iPhone   | ~10% of system memory                  |
+| iPad     | 30-50 MB (smaller is better)           |
+| Android  | 24-32 MB heap (128 MB with large heap) |
 
 **iOS Notes:**
 - Apple doesn't publish exact limits
@@ -136,20 +174,20 @@ button = null;  // Now button is destroyed
 **1. Global Event Listeners**
 ```javascript
 // LEAK: Listener keeps reference to window
-Ti.App.addEventListener('custom:event', function(e) {
+Ti.App.addEventListener('custom:event', (e) => {
     // Uses window variables
 });
 ```
 
 **Fix: Remove listeners when closing window**
 ```javascript
-function myHandler(e) {
+const myHandler = (e) => {
     // Handle event
-}
+};
 
 Ti.App.addEventListener('custom:event', myHandler);
 
-win.addEventListener('close', function() {
+win.addEventListener('close', () => {
     Ti.App.removeEventListener('custom:event', myHandler);
 });
 ```
@@ -158,9 +196,9 @@ win.addEventListener('close', function() {
 ```javascript
 // LEAK: Closure retains object reference
 function createWindow() {
-    var data = [];  // Large array
+    const data = [];  // Large array
     return Ti.UI.createWindow({
-        listener: function() {
+        listener: () => {
             data.push('more');  // Closure reference
         }
     });
@@ -192,11 +230,11 @@ view = null;
 5. Click Record
 
 **Key Columns:**
-| Column | What it Shows |
-|--------|---------------|
-| **Persistent Bytes** (Live Bytes) | Memory currently in use |
-| **#Persistent** (#Living) | Active object count |
-| **#Transient** (#Transitory) | Ready to garbage collect |
+| Column                            | What it Shows            |
+| --------------------------------- | ------------------------ |
+| **Persistent Bytes** (Live Bytes) | Memory currently in use  |
+| **#Persistent** (#Living)         | Active object count      |
+| **#Transient** (#Transitory)      | Ready to garbage collect |
 
 **Identifying Leaks:**
 1. Filter for `Ti` prefix (Titanium objects)
@@ -442,6 +480,12 @@ tail -f ~/Library/Logs/CoreSimulator/<SIMULATOR_ID>/system.log
 ```
 
 ---
+
+## 6. Automation and UI Testing
+
+For continuous integration (CI/CD) pipelines, automated deployment, and functional testing, see:
+
+- [Automation with Fastlane and Appium](./automation-fastlane-appium.md): Lane configuration, testing with Mocha/WebdriverIO, and store submission.
 
 ## Best Practices
 

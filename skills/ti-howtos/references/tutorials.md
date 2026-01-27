@@ -3,11 +3,40 @@
 Practical tutorials and guides for building real-world Titanium applications.
 
 ## Table of Contents
-1. [RESTe - API Integration](#reste-api-integration)
-2. [Camera App Tutorial](#camera-app-tutorial)
-3. [Geolocation Tutorial](#geolocation-tutorial)
-4. [Alloy Controller Chaining](#alloy-controller-chaining)
-5. [Build Automation](#build-automation)
+
+- [Titanium SDK Tutorials](#titanium-sdk-tutorials)
+  - [Table of Contents](#table-of-contents)
+  - [RESTe - API Integration](#reste---api-integration)
+    - [Overview](#overview)
+    - [Installation](#installation)
+    - [Basic Configuration](#basic-configuration)
+    - [Usage](#usage)
+    - [Backbone.js Models/Collections](#backbonejs-modelscollections)
+    - [Important Notes](#important-notes)
+    - [Mock Data (On-The-Fly)](#mock-data-on-the-fly)
+    - [Resources](#resources)
+  - [Camera App Tutorial](#camera-app-tutorial)
+    - [Basic Camera Access](#basic-camera-access)
+    - [Photo Gallery](#photo-gallery)
+    - [Saving Images](#saving-images)
+  - [Geolocation Tutorial](#geolocation-tutorial)
+    - [Basic Location](#basic-location)
+    - [Continuous Tracking](#continuous-tracking)
+    - [Reverse Geocoding](#reverse-geocoding)
+  - [Alloy Controller Chaining](#alloy-controller-chaining)
+    - [Pattern Overview](#pattern-overview)
+    - [Basic Pattern](#basic-pattern)
+    - [Benefits](#benefits)
+  - [Build Automation with Fastlane](#build-automation-with-fastlane)
+    - [Overview](#overview-1)
+    - [Installing Fastlane](#installing-fastlane)
+    - [Basic Fastfile](#basic-fastfile)
+    - [Usage](#usage-1)
+    - [Advanced Options](#advanced-options)
+  - [Additional Tutorials](#additional-tutorials)
+    - [Alloy Boilerplates](#alloy-boilerplates)
+    - [Complete Sample Apps](#complete-sample-apps)
+  - [Resources](#resources-1)
 
 ---
 
@@ -33,8 +62,8 @@ npm install reste
 
 **alloy.js:**
 ```javascript
-var reste = require("reste");
-var api = new reste();
+const reste = require("reste");
+const api = new reste();
 
 api.config({
     debug: true,                    // Console logging
@@ -61,13 +90,13 @@ api.config({
             post: "videos"
         }
     ],
-    onError: function(e, retry) {
-        var dialog = Ti.UI.createAlertDialog({
+    onError: (e, retry) => {
+        const dialog = Ti.UI.createAlertDialog({
             title: "Connection error",
             message: "Check your network and retry.",
             buttonNames: ['Retry']
         });
-        dialog.addEventListener("click", function() {
+        dialog.addEventListener("click", () => {
             retry();
         });
         dialog.show();
@@ -82,8 +111,8 @@ api.config({
 // Fetch single video
 api.getVideoById({
     videoId: "abc123"
-}, function(video) {
-    Ti.API.info('Got video: ' + video.title);
+}, (video) => {
+    Ti.API.info(`Got video: ${video.title}`);
 });
 
 // Create video
@@ -92,8 +121,8 @@ api.createVideo({
         title: "My Video",
         categoryId: 2
     }
-}, function(response) {
-    Ti.API.info('Created: ' + response.id);
+}, (response) => {
+    Ti.API.info(`Created: ${response.id}`);
 });
 ```
 
@@ -151,13 +180,13 @@ Alloy.Collections.videos.fetch({
 
 ```javascript
 // Create model without API
-var videoModel = api.createModel('video', {
+const videoModel = api.createModel('video', {
     title: 'Test Video',
     description: 'Mock data'
 });
 
 // Create collection
-var videoCollection = api.createCollection('videos', [
+const videoCollection = api.createCollection('videos', [
     {title: 'Video 1'},
     {title: 'Video 2'}
 ]);
@@ -177,11 +206,11 @@ var videoCollection = api.createCollection('videos', [
 ```javascript
 // Show camera
 Ti.Media.showCamera({
-    success: function(event) {
-        var image = event.media;
+    success: (event) => {
+        const image = event.media;
         if (event.mediaType === Ti.Media.MEDIA_TYPE_PHOTO) {
             // Use the photo
-            var imageView = Ti.UI.createImageView({
+            const imageView = Ti.UI.createImageView({
                 image: image,
                 width: 300,
                 height: 300
@@ -189,15 +218,15 @@ Ti.Media.showCamera({
             win.add(imageView);
         }
     },
-    cancel: function() {
+    cancel: () => {
         Ti.API.info('Camera canceled');
     },
-    error: function(error) {
-        var a = Ti.UI.createAlertDialog({title: 'Camera Error'});
+    error: (error) => {
+        const a = Ti.UI.createAlertDialog({title: 'Camera Error'});
         if (error.code === Ti.Media.NO_CAMERA) {
             a.setMessage('Device does not have camera');
         } else {
-            a.setMessage('Unexpected error: ' + error.code);
+            a.setMessage(`Unexpected error: ${error.code}`);
         }
         a.show();
     },
@@ -213,14 +242,14 @@ Ti.Media.showCamera({
 ```javascript
 // Open photo gallery
 Ti.Media.openPhotoGallery({
-    success: function(event) {
-        var image = event.media;
+    success: (event) => {
+        const image = event.media;
         // Process selected image
     },
-    cancel: function() {
+    cancel: () => {
         // User canceled
     },
-    error: function(error) {
+    error: (error) => {
         // Handle error
     },
     mediaTypes: [Ti.Media.MEDIA_TYPE_PHOTO]
@@ -233,11 +262,11 @@ Ti.Media.openPhotoGallery({
 // Save to gallery
 Ti.Media.saveToPhotoGallery({
     media: myImageBlob,
-    success: function() {
+    success: () => {
         alert('Saved!');
     },
-    error: function(e) {
-        alert('Error: ' + e.error);
+    error: (e) => {
+        alert(`Error: ${e.error}`);
     }
 });
 ```
@@ -251,10 +280,10 @@ Ti.Media.saveToPhotoGallery({
 ```javascript
 // One-time location
 if (Ti.Geolocation.locationServicesEnabled) {
-    Ti.Geolocation.getCurrentPosition(function(e) {
+    Ti.Geolocation.getCurrentPosition((e) => {
         if (!e.error) {
-            Ti.API.info('Lat: ' + e.coords.latitude);
-            Ti.API.info('Lon: ' + e.coords.longitude);
+            Ti.API.info(`Lat: ${e.coords.latitude}`);
+            Ti.API.info(`Lon: ${e.coords.longitude}`);
         }
     });
 }
@@ -268,10 +297,10 @@ Ti.Geolocation.accuracy = Ti.Geolocation.ACCURACY_BEST;
 Ti.Geolocation.distanceFilter = 10;  // Meters
 
 // Track location changes
-Ti.Geolocation.addEventListener('location', function(e) {
+Ti.Geolocation.addEventListener('location', (e) => {
     if (!e.error) {
-        var lat = e.coords.latitude;
-        var lon = e.coords.longitude;
+        const lat = e.coords.latitude;
+        const lon = e.coords.longitude;
         updateMap(lat, lon);
     }
 });
@@ -281,9 +310,9 @@ Ti.Geolocation.addEventListener('location', function(e) {
 
 ```javascript
 // Coordinates to address
-Ti.Geolocation.reverseGeocoder(37.389569, -122.050212, function(e) {
+Ti.Geolocation.reverseGeocoder(37.389569, -122.050212, (e) => {
     if (e.success) {
-        e.places.forEach(function(place) {
+        e.places.forEach((place) => {
             Ti.API.info(place.address);
             Ti.API.info(place.city);
             Ti.API.info(place.country);
@@ -304,15 +333,15 @@ Chain controller methods to pass data between Alloy controllers in a clean, main
 
 **Parent Controller:**
 ```javascript
-var childController = Alloy.createController('child', {
+const childController = Alloy.createController('child', {
     data: someData,
-    onAction: function(result) {
+    onAction: (result) => {
         // Handle result from child
-        Ti.API.info('Child returned: ' + result);
+        Ti.API.info(`Child returned: ${result}`);
     }
 });
 
-childController.on('customEvent', function(data) {
+childController.on('customEvent', (data) => {
     // Handle child events
 });
 
@@ -321,10 +350,10 @@ childController.open();
 
 **Child Controller:**
 ```javascript
-var args = arguments[0] || {};
+const args = arguments[0] || {};
 
 // Access parent data
-var parentData = args.data;
+const parentData = args.data;
 
 // Call parent callback
 function notifyParent(result) {

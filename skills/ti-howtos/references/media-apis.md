@@ -1,5 +1,32 @@
 # Media APIs
 
+## Table of Contents
+
+- [Media APIs](#media-apis)
+  - [Table of Contents](#table-of-contents)
+  - [1. Audio APIs](#1-audio-apis)
+    - [Playing Basic Sounds (Ti.Media.Sound)](#playing-basic-sounds-timediasound)
+    - [Streaming Audio (Ti.Media.AudioPlayer)](#streaming-audio-timediaaudioplayer)
+    - [Recording Audio (Ti.Media.AudioRecorder)](#recording-audio-timediaaudiorecorder)
+  - [2. Video APIs (Ti.Media.VideoPlayer)](#2-video-apis-timediavideoplayer)
+    - [Cross-Platform Considerations](#cross-platform-considerations)
+    - [Basic Usage](#basic-usage)
+    - [Key Events](#key-events)
+  - [3. Camera and Photo Gallery APIs](#3-camera-and-photo-gallery-apis)
+    - [Camera (Ti.Media.showCamera)](#camera-timediashowcamera)
+    - [Gallery (Ti.Media.openPhotoGallery)](#gallery-timediaopenphotogallery)
+    - [Memory Management](#memory-management)
+  - [4. Images and ImageView APIs](#4-images-and-imageview-apis)
+    - [Background Images](#background-images)
+    - [ImageView Component](#imageview-component)
+    - [Density-Specific Images](#density-specific-images)
+    - [Flipbook Animations](#flipbook-animations)
+  - [Permissions Checklist](#permissions-checklist)
+    - [iOS (tiapp.xml)](#ios-tiappxml)
+    - [Android (tiapp.xml)](#android-tiappxml)
+
+---
+
 ## 1. Audio APIs
 
 ### Playing Basic Sounds (Ti.Media.Sound)
@@ -9,7 +36,7 @@
 - Property `allowBackground=true` for continued playback when app closes
 
 ```javascript
-var sound = Ti.Media.createSound({
+const sound = Ti.Media.createSound({
   url: 'beep.mp3',
   preload: true
 });
@@ -24,11 +51,11 @@ sound.play();
   - `resume` event: Call `setPaused(false)` or `start()`
 
 ```javascript
-var streamer = Ti.Media.createAudioPlayer({ url: 'http://example.com/stream.mp3' });
+const streamer = Ti.Media.createAudioPlayer({ url: 'https://example.com/stream.mp3' });
 streamer.start();
 
-Ti.App.addEventListener('pause', function() { streamer.setPaused(true); });
-Ti.App.addEventListener('resume', function() { streamer.setPaused(false); });
+Ti.App.addEventListener('pause', () => { streamer.setPaused(true); });
+Ti.App.addEventListener('resume', () => { streamer.setPaused(false); });
 ```
 
 ### Recording Audio (Ti.Media.AudioRecorder)
@@ -51,7 +78,7 @@ Ti.App.addEventListener('resume', function() { streamer.setPaused(false); });
 - `scalingMode`: Control fill/fit behavior
 
 ```javascript
-var player = Ti.Media.createVideoPlayer({
+const player = Ti.Media.createVideoPlayer({
   url: 'movie.mp4',
   movieControlStyle: Ti.Media.VIDEO_CONTROL_EMBEDDED,
   autoplay: true
@@ -63,7 +90,7 @@ if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
 }
 
 // Stop when window closes
-win.addEventListener('close', function() { player.stop(); });
+win.addEventListener('close', () => { player.stop(); });
 ```
 
 ### Key Events
@@ -89,12 +116,12 @@ win.addEventListener('close', function() { player.stop(); });
 
 ```javascript
 Ti.Media.showCamera({
-  success: function(event) {
-    var blob = event.media.imageAsResized(800, 600);
+  success: (event) => {
+    const blob = event.media.imageAsResized(800, 600);
     imageView.image = blob;
   },
-  cancel: function() { Ti.API.info('Camera canceled'); },
-  error: function(e) { Ti.API.error('Camera error: ' + e.error); }
+  cancel: () => { Ti.API.info('Camera canceled'); },
+  error: (e) => { Ti.API.error(`Camera error: ${e.error}`); }
 });
 ```
 
@@ -126,11 +153,11 @@ Ti.Media.showCamera({
 
 For remote density-specific images on iOS:
 ```javascript
-var density = Ti.Platform.displayCaps.logicalDensityFactor;
-var url = 'http://example.com/image@' + density + 'x.png';
-var imageView = Ti.UI.createImageView({
-  url: url,
-  hires: true  // Indicates high-res remote image
+const density = Ti.Platform.displayCaps.logicalDensityFactor;
+const url = `https://example.com/image@${density}x.png`;
+const imageView = Ti.UI.createImageView({
+  image: url,
+  hires: true  // Indicates high-resolution remote image
 });
 ```
 
@@ -140,16 +167,16 @@ var imageView = Ti.UI.createImageView({
 - `repeatCount`: 0 = infinite, >1 = specific count
 
 ```javascript
-var images = [];
-for (var i = 1; i < 18; i++) {
-  images.push('frame' + i + '.png');
+const frames = [];
+for (let i = 1; i < 18; i++) {
+  frames.push(`frame${i}.png`);
 }
-var imageView = Ti.UI.createImageView({
-  images: images,
+const animationView = Ti.UI.createImageView({
+  images: frames,
   duration: 100,
   repeatCount: 0
 });
-// imageView.stop() / imageView.start() to control
+// animationView.stop() / animationView.start() para controlar
 ```
 
 ## Permissions Checklist

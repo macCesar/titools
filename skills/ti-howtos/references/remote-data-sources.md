@@ -1,19 +1,54 @@
 # Remote Data Sources
 
+## Table of Contents
+
+- [Remote Data Sources](#remote-data-sources)
+  - [Table of Contents](#table-of-contents)
+  - [1. HTTPClient and Request Lifecycle](#1-httpclient-and-request-lifecycle)
+    - [Basic Pattern](#basic-pattern)
+    - [HTTP Methods](#http-methods)
+    - [Setting Headers](#setting-headers)
+    - [XHR Lifecycle States](#xhr-lifecycle-states)
+    - [Progress Monitoring](#progress-monitoring)
+  - [2. Working with JSON Data](#2-working-with-json-data)
+    - [Receiving JSON](#receiving-json)
+    - [Sending JSON](#sending-json)
+    - [Important Limitation](#important-limitation)
+  - [3. Working with XML Data](#3-working-with-xml-data)
+    - [Parsing XML](#parsing-xml)
+    - [Common DOM Methods](#common-dom-methods)
+    - [Important: Know Your DTD](#important-know-your-dtd)
+  - [4. File Uploads and Downloads](#4-file-uploads-and-downloads)
+    - [File Upload](#file-upload)
+    - [File Download (Cross-Platform)](#file-download-cross-platform)
+    - [File Storage Locations](#file-storage-locations)
+  - [5. Sockets](#5-sockets)
+    - [Creating a TCP Socket](#creating-a-tcp-socket)
+    - [Socket Listening (Android/iOS)](#socket-listening-androidios)
+  - [6. Dealing with SOAP Web Services](#6-dealing-with-soap-web-services)
+    - [Manual Approach (SOAP Envelope)](#manual-approach-soap-envelope)
+  - [7. SSL Certificate \& Security Manager](#7-ssl-certificate--security-manager)
+    - [SSL Pinning (TiSDK 3.3.0+)](#ssl-pinning-tisdk-330)
+    - [Android: addTrustManager](#android-addtrustmanager)
+  - [CORS Considerations for Mobile Web](#cors-considerations-for-mobile-web)
+  - [Best Practices](#best-practices)
+
+---
+
 ## 1. HTTPClient and Request Lifecycle
 
 ### Basic Pattern
 `Ti.Network.HTTPClient` mirrors XHR (XMLHttpRequest) API. Always handle both success and error cases.
 
 ```javascript
-var xhr = Ti.Network.createHTTPClient({
-  onload: function(e) {
+const xhr = Ti.Network.createHTTPClient({
+  onload: (e) => {
     // this.responseText - raw text (for JSON/text)
     // this.responseXML - XML document (including SOAP)
     // this.responseData - binary data (Blob)
-    Ti.API.debug(this.responseText);
+    Ti.API.debug(xhr.responseText);
   },
-  onerror: function(e) {
+  onerror: (e) => {
     Ti.API.debug(e.error);
   },
   timeout: 5000
@@ -31,10 +66,10 @@ xhr.send();
 **Critical**: Headers must be set AFTER `open()` but BEFORE `send()`
 
 ```javascript
-var client = Ti.Network.createHTTPClient();
+const client = Ti.Network.createHTTPClient();
 client.open('POST', 'http://server.com/upload');
 client.setRequestHeader('Content-Type', 'text/csv');
-client.setRequestHeader('Authorization', 'Bearer ' + token);
+client.setRequestHeader('Authorization', `Bearer ${token}`);
 client.send('data');
 ```
 
@@ -47,10 +82,10 @@ Monitor with `onreadystatechange`:
 - `DONE` - Transfer complete or error occurred
 
 ```javascript
-xhr.onreadystatechange = function(e) {
-  switch(this.readyState) {
+xhr.onreadystatechange = (e) => {
+  switch(xhr.readyState) {
     case Ti.Network.HTTPClient.HEADERS_RECEIVED:
-      Ti.API.info('Headers: ' + this.getResponseHeader('Content-Type'));
+      Ti.API.info(`Headers: ${xhr.getResponseHeader('Content-Type')}`);
       break;
     case Ti.Network.HTTPClient.DONE:
       Ti.API.info('Complete');
@@ -64,10 +99,10 @@ xhr.onreadystatechange = function(e) {
 - `ondatastream`: Download progress (0.0-1.0)
 
 ```javascript
-xhr.onsendstream = function(e) {
+xhr.onsendstream = (e) => {
   progressBar.value = e.progress;
 };
-xhr.ondatastream = function(e) {
+xhr.ondatastream = (e) => {
   progressBar.value = e.progress;
 };
 ```
@@ -76,8 +111,8 @@ xhr.ondatastream = function(e) {
 
 ### Receiving JSON
 ```javascript
-xhr.onload = function() {
-  var data = JSON.parse(this.responseText);
+xhr.onload = () => {
+  const data = JSON.parse(xhr.responseText);
   Ti.API.info(data.users[0].name);
 };
 ```
@@ -86,7 +121,7 @@ xhr.onload = function() {
 `send()` automatically stringifies objects:
 
 ```javascript
-var postData = { title: 'My Post', body: 'Content' };
+const postData = { title: 'My Post', body: 'Content' };
 xhr.open('POST', 'http://blog.com/api/posts');
 xhr.send(postData);  // Auto-stringified
 ```
@@ -94,9 +129,9 @@ xhr.send(postData);  // Auto-stringified
 For GET querystrings, manually stringify and encode:
 
 ```javascript
-var data = { search: 'titanium' };
-var queryString = encodeURIComponent(JSON.stringify(data));
-xhr.open('GET', 'http://api.com/search?q=' + queryString);
+const data = { search: 'titanium' };
+const queryString = encodeURIComponent(JSON.stringify(data));
+xhr.open('GET', `http://api.com/search?q=${queryString}`);
 xhr.send();
 ```
 
@@ -109,11 +144,11 @@ JSON cannot represent methods. Attempting to stringify Titanium objects returns 
 Titanium provides XML DOM Level 2 implementation. Auto-serializes if Content-Type is XML.
 
 ```javascript
-xhr.onload = function() {
-  var doc = this.responseXML.documentElement;
-  var items = doc.getElementsByTagName('item');
-  for (var i = 0; i < items.length; i++) {
-    var title = items.item(i)
+xhr.onload = () => {
+  const doc = xhr.responseXML.documentElement;
+  const items = doc.getElementsByTagName('item');
+  for (let i = 0; i < items.length; i++) {
+    const title = items.item(i)
       .getElementsByTagName('title').item(0)
       .textContent;
     Ti.API.info(title);
@@ -137,10 +172,10 @@ Pass a Blob to `send()`:
 
 ```javascript
 Ti.Media.openPhotoGallery({
-  success: function(event) {
-    var xhr = Ti.Network.createHTTPClient({
-      onload: function() {
-        Ti.API.info('Upload complete: ' + this.status);
+  success: (event) => {
+    const xhr = Ti.Network.createHTTPClient({
+      onload: () => {
+        Ti.API.info(`Upload complete: ${xhr.status}`);
       }
     });
     xhr.open('POST', 'https://server.com/upload');
@@ -154,7 +189,7 @@ Ti.Media.openPhotoGallery({
 
 For file uploads with actual file contents:
 ```javascript
-var file = Ti.Filesystem.getFile(event.media.nativePath);
+const file = Ti.Filesystem.getFile(event.media.nativePath);
 if (file.exists()) {
   xhr.send({ file: file.read() });
 }
@@ -165,13 +200,13 @@ if (file.exists()) {
 **Option 1**: Write manually to filesystem
 
 ```javascript
-var xhr = Ti.Network.createHTTPClient({
-  onload: function() {
-    var file = Ti.Filesystem.getFile(
+const xhr = Ti.Network.createHTTPClient({
+  onload: () => {
+    const file = Ti.Filesystem.getFile(
       Ti.Filesystem.applicationDataDirectory,
       'downloaded.png'
     );
-    file.write(this.responseData);
+    file.write(xhr.responseData);
     Ti.App.fireEvent('download_complete', { path: file.nativePath });
   },
   timeout: 10000
@@ -183,8 +218,8 @@ xhr.send();
 **Option 2**: iOS-only automatic saving with `file` property
 
 ```javascript
-var xhr = Ti.Network.createHTTPClient({
-  onload: function() {
+const xhr = Ti.Network.createHTTPClient({
+  onload: () => {
     Ti.API.info('Saved to applicationDataDirectory/test.pdf');
   }
 });
@@ -210,7 +245,7 @@ Titanium supports TCP socket connections via `Ti.Network.Socket`.
 ### Creating a TCP Socket
 
 ```javascript
-var socket = Ti.Network.Socket.createTCP({
+const socket = Ti.Network.Socket.createTCP({
   host: 'example.com',
   port: 80,
   connected: function(e) {
@@ -220,46 +255,82 @@ var socket = Ti.Network.Socket.createTCP({
       value: 'GET / HTTP/1.1\r\nHost: example.com\r\n\r\n'
     }));
   },
-  error: function(e) {
-    Ti.API.error('Socket error: ' + e.error);
+  error: (e) => {
+    Ti.API.error(`Socket error: ${e.error}`);
   }
 });
 
 socket.connect();
 ```
 
-### Reading from Socket
+### Socket Listening (Android/iOS)
+To create a socket server that accepts connections:
+```javascript
+const listenSocket = Ti.Network.Socket.createTCP({
+    host: '127.0.0.1', // localhost
+    port: 40404,
+    accepted: (e) => {
+        Ti.API.info(`Incoming connection accepted: ${e.inbound}`);
+        e.inbound.close();
+    }
+});
+listenSocket.listen();
+listenSocket.accept(); // Asynchronous, waits for next connection
+```
+
+## 6. Dealing with SOAP Web Services
+
+Although JSON is recommended, you can consume legacy SOAP services using a "low-tech" approach by sending the XML envelope manually.
+
+### Manual Approach (SOAP Envelope)
+```javascript
+const client = Ti.Network.createHTTPClient();
+client.onload = () => {
+    const doc = client.responseXML.documentElement;
+    // Parse the response XML manually
+};
+
+const soapRequest = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n" +
+"<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"> \n" +
+"<SOAP-ENV:Body> \n" +
+"  <GetUserDetailsReq> \n" +
+"    <SessionToken>XXXX</SessionToken> \n" +
+"  </GetUserDetailsReq> \n" +
+"</SOAP-ENV:Body> \n" +
+"</SOAP-ENV:Envelope>";
+
+client.open('POST', 'https://server.com/service.asmx');
+client.setRequestHeader('Content-Type', 'text/xml; charset=utf-8');
+client.send({ xml: soapRequest });
+```
+
+## 7. SSL Certificate & Security Manager
+
+For robust security (SSL Pinning), use the `securityManager` property.
+
+### SSL Pinning (TiSDK 3.3.0+)
+Unlike standard certificate validation, Pinning ensures the app only communicates with a server having a specific certificate.
 
 ```javascript
-socket.read(function(e) {
-  if (e.bytesProcessed > 0) {
-    var data = e.buffer.toString();
-    Ti.API.info('Received: ' + data);
-  }
+const xhr = Ti.Network.createHTTPClient({
+    validatesSecureCertificate: true,
+    // securityManager allows implementing custom validation logic
+    securityManager: mySecurityModule 
 });
 ```
 
-### Socket Lifecycle
-- `connect()` - Initiate connection
-- `write(buffer)` - Send data
-- `read(callback)` - Read incoming data
-- `close()` - Close connection
-
-## 6. SSL Certificate Store Support
-
-### SSL Pinning
-Titanium supports SSL certificate pinning for secure connections.
-
+### Android: addTrustManager
+Allows adding custom certificates for development environments or private networks:
 ```javascript
-var xhr = Ti.Network.createHTTPClient({
-  onload: function() { /* ... */ },
-  onerror: function() { /* ... */ },
-  validatesSecureCertificate: true  // Default, validates SSL
-});
+const certificateStore = require('ti.certificatestore');
+const xhr = Ti.Network.createHTTPClient();
+
+certificateStore.addCertificate('server.p12', 'password');
+xhr.addTrustManager(certificateStore.getTrustManager());
+
+xhr.open("GET", url);
+xhr.send();
 ```
-
-For custom certificate validation or pinning, you may need to implement additional security measures in your backend configuration.
-
 ## CORS Considerations for Mobile Web
 
 For Mobile Web targets accessing cross-domain resources:
