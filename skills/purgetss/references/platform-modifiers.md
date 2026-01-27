@@ -2,6 +2,51 @@
 
 Platform and Device modifiers (also called variants or prefixes) allow you to specify different styles for an element depending on the platform (iOS or Android) and device (tablet or handheld) that the app is running on.
 
+## Table of Contents
+
+- [Platform and Device Modifiers](#platform-and-device-modifiers)
+  - [Table of Contents](#table-of-contents)
+  - [Available Modifiers](#available-modifiers)
+    - [Platform Modifiers](#platform-modifiers)
+    - [Device (Form Factor) Modifiers](#device-form-factor-modifiers)
+  - [Usage in XML](#usage-in-xml)
+    - [Basic Platform Targeting](#basic-platform-targeting)
+    - [Combining with Arbitrary Values](#combining-with-arbitrary-values)
+    - [Multiple Modifiers on Same Element](#multiple-modifiers-on-same-element)
+  - [Generated TSS Output](#generated-tss-output)
+  - [Custom Conditional Modifiers](#custom-conditional-modifiers)
+    - [Syntax](#syntax)
+    - [Example with iPhone X Notch](#example-with-iphone-x-notch)
+    - [Setting Up Conditional Variables](#setting-up-conditional-variables)
+  - [Modifiers in config.cjs](#modifiers-in-configcjs)
+    - [Custom Class with Platform Variants](#custom-class-with-platform-variants)
+    - [Ti Element with Platform and Device Variants](#ti-element-with-platform-and-device-variants)
+    - [Complex Example with All Variants](#complex-example-with-all-variants)
+  - [Platform-Specific Properties](#platform-specific-properties)
+    - [iOS-Specific Properties](#ios-specific-properties)
+    - [Android-Specific Properties](#android-specific-properties)
+  - [Interaction Modifiers](#interaction-modifiers)
+    - [Active State Modifier](#active-state-modifier)
+  - [Best Practices](#best-practices)
+    - [1. Use Modifiers for Platform Differences](#1-use-modifiers-for-platform-differences)
+    - [2. Combine with Default Styles](#2-combine-with-default-styles)
+    - [3. Use Device Modifiers for Layout Adaptation](#3-use-device-modifiers-for-layout-adaptation)
+    - [4. Leverage config.cjs for Complex Platform Logic](#4-leverage-configcjs-for-complex-platform-logic)
+  - [Common Patterns](#common-patterns)
+    - [iOS Shadow / Android Elevation](#ios-shadow--android-elevation)
+    - [Different Font Sizes per Platform](#different-font-sizes-per-platform)
+    - [Safe Area Handling for iPhone X](#safe-area-handling-for-iphone-x)
+    - [Adaptive Spacing](#adaptive-spacing)
+    - [Platform-Specific Colors](#platform-specific-colors)
+  - [Troubleshooting](#troubleshooting)
+    - [Modifiers Not Applying](#modifiers-not-applying)
+    - [Conditional Modifiers Not Working](#conditional-modifiers-not-working)
+    - [Platform Detection Issues](#platform-detection-issues)
+  - [Modifier Reference Table](#modifier-reference-table)
+  - [Complete Example](#complete-example)
+
+---
+
 ## Available Modifiers
 
 ### Platform Modifiers
@@ -12,7 +57,7 @@ Target specific OS engines directly in the XML:
 - **`android:`** - Applies only to Android devices
 
 ```xml
-<View class="mt-4 ios:mt-10 android:mt-5" />
+<View class="ios:mt-10 android:mt-5 mt-4" />
 <Label class="ios:text-blue-600 android:text-gray-600" />
 ```
 
@@ -24,7 +69,7 @@ Target device categories based on screen size:
 - **`handheld:`** - Phones (iPhone and Android phones)
 
 ```xml
-<View class="w-screen tablet:w-1/2 handheld:w-full" />
+<View class="tablet:w-1/2 handheld:w-full w-screen" />
 ```
 
 ## Usage in XML
@@ -34,8 +79,8 @@ Target device categories based on screen size:
 ```xml
 <Alloy>
   <Window class="tablet:bg-green-500 handheld:bg-blue-500">
-    <View class="h-32 tablet:bg-green-100 handheld:bg-blue-100">
-      <Label class="w-screen h-auto text-center ios:text-blue-800 ios:text-xl android:text-green-800 android:text-2xl">
+    <View class="tablet:bg-green-100 handheld:bg-blue-100 h-32">
+      <Label class="ios:text-blue-800 ios:text-xl android:text-green-800 android:text-2xl h-auto w-screen text-center">
         This is a Test
       </Label>
     </View>
@@ -212,7 +257,7 @@ The `active:` modifier works with elements that have touch event handlers. The s
 
 <!-- Avoid: Creating separate views -->
 <Window>
-  <View platform="ios" class="shadow-lg bg-white" />
+  <View platform="ios" class="bg-white shadow-lg" />
   <View platform="android" class="elevation-4 bg-white" />
 </Window>
 ```
@@ -223,7 +268,7 @@ Always provide a default style, then override with modifiers:
 
 ```xml
 <!-- Good: Default + overrides -->
-<Label class="text-lg ios:text-xl android:text-2xl text-gray-800" />
+<Label class="ios:text-xl android:text-2xl text-lg text-gray-800" />
 
 <!-- Less clear: Only modifiers -->
 <Label class="ios:text-xl android:text-2xl ios:text-gray-800 android:text-gray-800" />
@@ -264,13 +309,13 @@ For complex platform-specific rules, define them in `config.cjs` rather than clu
 ### iOS Shadow / Android Elevation
 
 ```xml
-<View class="ios:shadow-md android:elevation-2 bg-white rounded-lg" />
+<View class="ios:shadow-md android:elevation-2 rounded-lg bg-white" />
 ```
 
 ### Different Font Sizes per Platform
 
 ```xml
-<Label class="text-gray-800 ios:text-base android:text-sm font-semibold" />
+<Label class="ios:text-base android:text-sm font-semibold text-gray-800" />
 ```
 
 ### Safe Area Handling for iPhone X
@@ -282,7 +327,7 @@ For complex platform-specific rules, define them in `config.cjs` rather than clu
 ### Adaptive Spacing
 
 ```xml
-<View class="p-4 tablet:p-8 handheld:p-4" />
+<View class="tablet:p-8 handheld:p-4 p-4" />
 ```
 
 ### Platform-Specific Colors
@@ -334,14 +379,14 @@ console.log(Alloy.Globals.isIPhoneX); // Should be true/false
 
 ## Modifier Reference Table
 
-| Modifier | Target | Example | Generated Selector |
-|----------|--------|---------|-------------------|
-| `ios:` | iOS devices only | `ios:bg-blue-500` | `[platform=ios]` |
-| `android:` | Android devices only | `android:bg-green-500` | `[platform=android]` |
-| `tablet:` | Tablets only | `tablet:w-1/2` | `[formFactor=tablet]` |
-| `handheld:` | Phones only | `handheld:w-full` | `[formFactor=handheld]` |
-| `[if=varName]:` | Custom conditional | `[if=Alloy.Globals.isIPhoneX]:pt-12` | `[if=Alloy.Globals.isIPhoneX]` |
-| `active:` | Touch interaction | `active:opacity-80` | `active` state |
+| Modifier        | Target               | Example                              | Generated Selector             |
+| --------------- | -------------------- | ------------------------------------ | ------------------------------ |
+| `ios:`          | iOS devices only     | `ios:bg-blue-500`                    | `[platform=ios]`               |
+| `android:`      | Android devices only | `android:bg-green-500`               | `[platform=android]`           |
+| `tablet:`       | Tablets only         | `tablet:w-1/2`                       | `[formFactor=tablet]`          |
+| `handheld:`     | Phones only          | `handheld:w-full`                    | `[formFactor=handheld]`        |
+| `[if=varName]:` | Custom conditional   | `[if=Alloy.Globals.isIPhoneX]:pt-12` | `[if=Alloy.Globals.isIPhoneX]` |
+| `active:`       | Touch interaction    | `active:opacity-80`                  | `active` state                 |
 
 ## Complete Example
 
@@ -349,20 +394,20 @@ console.log(Alloy.Globals.isIPhoneX); // Should be true/false
 <Alloy>
   <Window class="bg-white">
     <!-- Header with platform-specific styling -->
-    <View class="h-16 ios:shadow-sm android:elevation-2 bg-white">
-      <Label class="w-screen h-auto text-center ios:text-xl android:text-lg font-bold text-gray-800">
+    <View class="ios:shadow-sm android:elevation-2 h-16 bg-white">
+      <Label class="ios:text-xl android:text-lg h-auto w-screen text-center font-bold text-gray-800">
         Platform Demo
       </Label>
     </View>
 
     <!-- Adaptive content layout -->
-    <View class="p-4 tablet:p-8">
+    <View class="tablet:p-8 p-4">
       <View class="horizontal w-screen">
         <!-- Tablet: sidebar, Phone: full width cards -->
-        <View class="tablet:w-1/3 handheld:w-full bg-gray-100 rounded-lg p-4">
+        <View class="tablet:w-1/3 handheld:w-full rounded-lg bg-gray-100 p-4">
           <Label text="Sidebar" class="text-center" />
         </View>
-        <View class="tablet:w-2/3 handheld:w-full bg-white rounded-lg p-4 ml-4">
+        <View class="tablet:w-2/3 handheld:w-full ml-4 rounded-lg bg-white p-4">
           <Label text="Main Content" class="text-center" />
         </View>
       </View>

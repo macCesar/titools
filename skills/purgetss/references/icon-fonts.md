@@ -2,6 +2,10 @@
 
 PurgeTSS supports several icon font libraries for use in your Titanium Alloy applications.
 
+:::tip Looking for Text Fonts?
+For **text fonts** (Google Fonts, Roboto, Inter, etc.), see [CLI Commands → build-fonts](cli-commands.md#purgetss-build-fonts-alias-bf).
+:::
+
 :::info Official Icon Fonts for PurgeTSS
 
 Previous versions of PurgeTSS included several icon font libraries such as Bootstrap Icons, Boxicons, LineIcons, and Tabler Icons. **However, adding more icon fonts was getting out of control**.
@@ -14,6 +18,56 @@ Previous versions of PurgeTSS included several icon font libraries such as Boots
 - [Material Symbols](https://fonts.google.com/icons?icon.set=Material+Symbols)
 
 :::
+
+## Table of Contents
+
+- [Icon Fonts Libraries](#icon-fonts-libraries)
+  - [Table of Contents](#table-of-contents)
+  - [Installing Official Icon Fonts](#installing-official-icon-fonts)
+  - [Using Icon Fonts in XML](#using-icon-fonts-in-xml)
+    - [Font Awesome 7](#font-awesome-7)
+    - [Material Icons](#material-icons)
+    - [Material Symbols](#material-symbols)
+    - [Framework7 Icons](#framework7-icons)
+  - [Recreating Deleted Libraries](#recreating-deleted-libraries)
+    - [Step 1: Download the Libraries](#step-1-download-the-libraries)
+    - [Step 2: Place in fonts Folder](#step-2-place-in-fonts-folder)
+    - [Step 3: Run build-fonts Command](#step-3-run-build-fonts-command)
+      - [Generated fonts.tss Example](#generated-fontstss-example)
+    - [Renaming the Style Rule Name](#renaming-the-style-rule-name)
+  - [Using Custom Font Modules](#using-custom-font-modules)
+    - [Generated Module Structure](#generated-module-structure)
+    - [Usage in Controllers](#usage-in-controllers)
+  - [The --prefix Option](#the---prefix-option)
+    - [Example with Custom Prefix](#example-with-custom-prefix)
+  - [Icon Font Best Practices](#icon-font-best-practices)
+    - [1. Use Semantic Icon Names](#1-use-semantic-icon-names)
+    - [2. Combine with Styling Classes](#2-combine-with-styling-classes)
+    - [3. Use in Navigation](#3-use-in-navigation)
+    - [4. Dynamic Icons in Controllers](#4-dynamic-icons-in-controllers)
+  - [Font Assets Folder](#font-assets-folder)
+  - [Icon Sizing and Styling](#icon-sizing-and-styling)
+  - [Common Patterns](#common-patterns)
+    - [Icon with Text](#icon-with-text)
+    - [Circular Icon Button](#circular-icon-button)
+    - [Icon Badge](#icon-badge)
+    - [Social Media Icons](#social-media-icons)
+  - [Troubleshooting](#troubleshooting)
+    - [Icons Not Displaying](#icons-not-displaying)
+    - [Wrong Icon Character](#wrong-icon-character)
+    - [Icons Different on iOS vs Android](#icons-different-on-ios-vs-android)
+  - [Vendor-Specific Notes](#vendor-specific-notes)
+    - [Font Awesome 7](#font-awesome-7-1)
+    - [Font Awesome Pro](#font-awesome-pro)
+      - [Setting Up Font Awesome Pro](#setting-up-font-awesome-pro)
+      - [Pro Icon Styles](#pro-icon-styles)
+    - [Font Awesome 7 Beta](#font-awesome-7-beta)
+      - [Setting Up Font Awesome 7 Beta](#setting-up-font-awesome-7-beta)
+      - [Testing Beta Icons](#testing-beta-icons)
+    - [Material Icons vs Material Symbols](#material-icons-vs-material-symbols)
+  - [Complete Command Reference](#complete-command-reference)
+
+---
 
 ## Installing Official Icon Fonts
 
@@ -277,7 +331,7 @@ const icons = {
 ```xml
 <!-- Styled icon button -->
 <Label class="fas fa-arrow-right text-brand-600 text-xl" />
-<Label class="fas fa-search bg-gray-100 rounded-full p-2 text-gray-600" />
+<Label class="fas fa-search rounded-full bg-gray-100 p-2 text-gray-600" />
 ```
 
 ### 3. Use in Navigation
@@ -351,7 +405,7 @@ Icon fonts can be sized and styled just like any text element:
 <Label class="fas fa-home text-(#FF5733)" />
 
 <!-- Background utilities -->
-<Label class="fas fa-home bg-white rounded-full p-4 text-center" />
+<Label class="fas fa-home rounded-full bg-white p-4 text-center" />
 
 <!-- Transform utilities -->
 <Label class="fas fa-arrow-right rotate-45" />
@@ -372,7 +426,7 @@ Icon fonts can be sized and styled just like any text element:
 ### Circular Icon Button
 
 ```xml
-<Label class="fas fa-plus rounded-full bg-brand-500 w-12 h-12 text-white text-center text-xl" />
+<Label class="fas fa-plus bg-brand-500 h-12 w-12 rounded-full text-center text-xl text-white" />
 ```
 
 ### Icon Badge
@@ -380,7 +434,7 @@ Icon fonts can be sized and styled just like any text element:
 ```xml
 <View class="relative">
   <Label class="fas fa-bell text-xl" />
-  <Label class="fas fa-circle text-red-500 text-xs -right-(4) -top-(4)" />
+  <Label class="fas fa-circle -right-(4) -top-(4) text-xs text-red-500" />
 </View>
 ```
 
@@ -388,10 +442,10 @@ Icon fonts can be sized and styled just like any text element:
 
 ```xml
 <View class="horizontal w-screen">
-  <Label class="fab fa-twitter text-blue-400 text-2xl mr-4" />
-  <Label class="fab fa-facebook text-blue-600 text-2xl mr-4" />
-  <Label class="fab fa-instagram text-pink-500 text-2xl mr-4" />
-  <Label class="fab fa-github text-gray-800 text-2xl" />
+  <Label class="fab fa-twitter mr-4 text-2xl text-blue-400" />
+  <Label class="fab fa-facebook mr-4 text-2xl text-blue-600" />
+  <Label class="fab fa-instagram mr-4 text-2xl text-pink-500" />
+  <Label class="fab fa-github text-2xl text-gray-800" />
 </View>
 ```
 
@@ -544,12 +598,12 @@ Both use similar syntax but have different icon names and font files.
 
 ## Complete Command Reference
 
-| Command | Purpose |
-|---------|---------|
-| `purgetss icon-library -v=fa` | Install Font Awesome 7 |
-| `purgetss icon-library -v=mi` | Install Material Icons |
-| `purgetss icon-library -v=ms` | Install Material Symbols |
-| `purgetss icon-library -v=f7` | Install Framework7 Icons |
-| `purgetss icon-library -v=fa,mi -m` | Install multiple with module |
-| `purgetss build-fonts` | Build custom fonts from `purgetss/fonts/` |
-| `purgetss build-fonts -m` | Build with CommonJS module |
+| Command                             | Purpose                                   |
+| ----------------------------------- | ----------------------------------------- |
+| `purgetss icon-library -v=fa`       | Install Font Awesome 7                    |
+| `purgetss icon-library -v=mi`       | Install Material Icons                    |
+| `purgetss icon-library -v=ms`       | Install Material Symbols                  |
+| `purgetss icon-library -v=f7`       | Install Framework7 Icons                  |
+| `purgetss icon-library -v=fa,mi -m` | Install multiple with module              |
+| `purgetss build-fonts`              | Build custom fonts from `purgetss/fonts/` |
+| `purgetss build-fonts -m`           | Build with CommonJS module                |

@@ -8,6 +8,55 @@ PurgeTSS allows for extreme customization through its configuration file, custom
 **Legacy Mode Removed**: Legacy mode has been completely removed from PurgeTSS v7.2.x. All legacy-related options have been eliminated for a cleaner, modern codebase.
 :::
 
+## Table of Contents
+
+- [PurgeTSS Deep Customization](#purgetss-deep-customization)
+  - [Table of Contents](#table-of-contents)
+  - [The `config.cjs` File](#the-configcjs-file)
+    - [File Structure](#file-structure)
+    - [Creating a Fresh config.cjs](#creating-a-fresh-configcjs)
+  - [The `purge` Section](#the-purge-section)
+    - [`mode` Property](#mode-property)
+    - [`method` Property](#method-property)
+    - [`options` Properties](#options-properties)
+  - [The `theme` Section](#the-theme-section)
+    - [Overriding vs Extending](#overriding-vs-extending)
+  - [Customizing Colors](#customizing-colors)
+    - [Color Object Syntax](#color-object-syntax)
+    - [Overriding Default Colors](#overriding-default-colors)
+    - [Extending the Palette](#extending-the-palette)
+  - [Customizing Spacing](#customizing-spacing)
+    - [Shared Spacing Behavior](#shared-spacing-behavior)
+  - [List of Customizable Properties](#list-of-customizable-properties)
+    - [Global Properties](#global-properties)
+    - [Color Properties (50+ properties)](#color-properties-50-properties)
+    - [Configurable Properties (80+ properties)](#configurable-properties-80-properties)
+  - [Custom Rules \& Ti Elements](#custom-rules--ti-elements)
+    - [Modifier Key](#modifier-key)
+    - [Default, Platform, Device, or Conditional Blocks](#default-platform-device-or-conditional-blocks)
+    - [Property Values](#property-values)
+    - [Complete Example](#complete-example)
+  - [The `@apply` Directive](#the-apply-directive)
+    - [Platform-Specific Classes with `@apply`](#platform-specific-classes-with-apply)
+      - [Correct Usage - With Platform Variant](#correct-usage---with-platform-variant)
+      - [Wrong Usage - Omitting Platform Variant](#wrong-usage---omitting-platform-variant)
+      - [Why Platform Variants Are Required](#why-platform-variants-are-required)
+      - [Combining Platform Variants](#combining-platform-variants)
+    - [String vs Array Syntax](#string-vs-array-syntax)
+  - [Platform \& Device Modifiers in XML](#platform--device-modifiers-in-xml)
+    - [Platform Modifiers](#platform-modifiers)
+    - [Device Modifiers](#device-modifiers)
+    - [Custom Conditional Modifiers](#custom-conditional-modifiers)
+  - [Icon Font Support](#icon-font-support)
+  - [Theme Extension Best Practices](#theme-extension-best-practices)
+    - [1. Use `extend` for Additions](#1-use-extend-for-additions)
+    - [2. Use Direct Properties for Overrides](#2-use-direct-properties-for-overrides)
+    - [3. Mix Both When Needed](#3-mix-both-when-needed)
+  - [Summary Checklist](#summary-checklist)
+  - [Related References](#related-references)
+
+---
+
 ## The `config.cjs` File
 
 By default, **PurgeTSS** will look for a `./purgetss/config.cjs` file where you can define customizations.
@@ -500,11 +549,11 @@ module.exports = {
 
 Certain Titanium properties are platform-specific and will only work when properly scoped:
 
-| Property | Platform | Class |
-|----------|----------|-------|
-| `clipMode` | iOS only | `ios:clip-enabled`, `ios:clip-disabled` |
-| `touchFeedback` | Android only | `android:touch-feedback` |
-| `hires` | iOS only (ImageView) | `ios:hires` |
+| Property        | Platform             | Class                                   |
+| --------------- | -------------------- | --------------------------------------- |
+| `clipMode`      | iOS only             | `ios:clip-enabled`, `ios:clip-disabled` |
+| `touchFeedback` | Android only         | `android:touch-feedback`                |
+| `hires`         | iOS only (ImageView) | `ios:hires`                             |
 
 When using `@apply` with these properties, you MUST specify the platform variant in the `apply` string so PurgeTSS knows which platform's property to include.
 

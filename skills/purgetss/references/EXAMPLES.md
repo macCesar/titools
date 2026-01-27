@@ -4,10 +4,18 @@ Complete examples of common patterns with anti-patterns and correct implementati
 
 ## Table of Contents
 
-- [Titanium Layout Patterns](#titanium-layout-patterns)
-- [Manual .tss Files Anti-Pattern](#manual-tss-files-anti-pattern)
-- [Grid with Percentages](#grid-with-percentages)
-- [Gap Usage](#gap-usage)
+- [PurgeTSS Examples - WRONG vs CORRECT](#purgetss-examples---wrong-vs-correct)
+  - [Table of Contents](#table-of-contents)
+  - [Titanium Layout Patterns](#titanium-layout-patterns)
+    - [Horizontal Row with Space Between](#horizontal-row-with-space-between)
+    - [Centered Content (Vertically and Horizontally)](#centered-content-vertically-and-horizontally)
+    - [Vertical Stack with Spacing](#vertical-stack-with-spacing)
+    - [Header with Left/Right Elements](#header-with-leftright-elements)
+    - [Available Layout Classes](#available-layout-classes)
+  - [Manual .tss Files Anti-Pattern](#manual-tss-files-anti-pattern)
+  - [Grid with Percentages](#grid-with-percentages)
+  - [Gap Usage](#gap-usage)
+  - [Layout Defaults](#layout-defaults)
 
 ---
 
@@ -48,7 +56,7 @@ Titanium does NOT support CSS Flexbox. All examples use `horizontal`, `vertical`
 
 **❌ WRONG (Flexbox center doesn't exist):**
 ```xml
-<View class="flex justify-center items-center">
+<View class="flex items-center justify-center">
   <Label text="Centered" />
 </View>
 ```
@@ -56,14 +64,14 @@ Titanium does NOT support CSS Flexbox. All examples use `horizontal`, `vertical`
 **✅ CORRECT (Composite layout + center class):**
 ```xml
 <!-- Parent defaults to composite, no layout class needed -->
-<View class="w-screen h-screen">
+<View class="h-screen w-screen">
   <Label text="Centered" class="center" />
 </View>
 ```
 
 **✅ ALTERNATIVE (Use margins):**
 ```xml
-<View class="w-screen h-screen">
+<View class="h-screen w-screen">
   <Label text="Centered" class="mt-(40%) ml-(35%)" />
 </View>
 ```
@@ -92,7 +100,7 @@ Titanium does NOT support CSS Flexbox. All examples use `horizontal`, `vertical`
 
 **❌ WRONG (Flexbox justify-between):**
 ```xml
-<View class="flex-row justify-between items-center">
+<View class="flex-row items-center justify-between">
   <Label text="Title" class="font-bold" />
   <Label class="fas fa-bars" />
 </View>
@@ -100,21 +108,21 @@ Titanium does NOT support CSS Flexbox. All examples use `horizontal`, `vertical`
 
 **✅ CORRECT (Composite + positioning):**
 ```xml
-<View class="w-screen h-14">
-  <Label text="Title" class="font-bold left-4 center" />
-  <Label class="fas fa-bars right-4 center" />
+<View class="h-14 w-screen">
+  <Label text="Title" class="center left-4 font-bold" />
+  <Label class="fas fa-bars center right-4" />
 </View>
 ```
 
 ### Available Layout Classes
 
-| Class | Description | Use Case |
-|-------|-------------|----------|
-| `horizontal` | Children arranged left to right | Rows of buttons, form fields |
-| `vertical` | Children arranged top to bottom | Stacked content, lists |
-| *(no class)* | Defaults to `composite` | Absolute positioning, overlays |
-| `flow-col` | Horizontal grid flow with 100% width | Special grid layouts |
-| `flow-row` | Vertical grid flow with 100% height | Special grid layouts |
+| Class        | Description                          | Use Case                       |
+| ------------ | ------------------------------------ | ------------------------------ |
+| `horizontal` | Children arranged left to right      | Rows of buttons, form fields   |
+| `vertical`   | Children arranged top to bottom      | Stacked content, lists         |
+| *(no class)* | Defaults to `composite`              | Absolute positioning, overlays |
+| `flow-col`   | Horizontal grid flow with 100% width | Special grid layouts           |
+| `flow-row`   | Vertical grid flow with 100% height  | Special grid layouts           |
 
 ---
 

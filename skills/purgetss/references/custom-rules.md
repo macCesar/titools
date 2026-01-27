@@ -6,13 +6,27 @@ Custom rules in PurgeTSS allow you to style **Titanium elements**, **IDs**, and 
 This feature is particularly useful for meeting visual and design requirements across multiple platforms (iOS and Android).
 :::
 
+## Table of Contents
+
+- [Custom Rules for Ti Elements, IDs, and Classes](#custom-rules-for-ti-elements-ids-and-classes)
+  - [Table of Contents](#table-of-contents)
+  - [Naming Conventions](#naming-conventions)
+  - [Modifier Keys](#modifier-keys)
+    - [Platform, Device, and Conditional Blocks](#platform-device-and-conditional-blocks)
+  - [Property Values](#property-values)
+  - [Config Example](#config-example)
+  - [Generated TSS Output](#generated-tss-output)
+  - [Complete Styling Example](#complete-styling-example)
+
+---
+
 ## Naming Conventions
 
-| Target Type | Naming Convention | Example |
-|-------------|-------------------|---------|
-| **Ti Elements** | Exact element name | `Label`, `Button`, `ScrollView` |
-| **IDs** | camelCase | `#mainBanner`, `#sidebarWidget` |
-| **Classes** | kebab-case | `.my-custom-class`, `.feature-card` |
+| Target Type     | Naming Convention  | Example                             |
+| --------------- | ------------------ | ----------------------------------- |
+| **Ti Elements** | Exact element name | `Label`, `Button`, `ScrollView`     |
+| **IDs**         | camelCase          | `#mainBanner`, `#sidebarWidget`     |
+| **Classes**     | kebab-case         | `.my-custom-class`, `.feature-card` |
 
 :::caution PurgeTSS v5 or earlier
 For projects upgraded from PurgeTSS v5 or earlier, set `purge.options.missing` to `true` in `config.cjs` to get a report of any missing classes at the end of `app.tss`.
@@ -22,13 +36,13 @@ For projects upgraded from PurgeTSS v5 or earlier, set `purge.options.missing` t
 
 ### Platform, Device, and Conditional Blocks
 
-| Modifier | Description |
-|----------|-------------|
-| `DEFAULT` / `default` | Global style |
-| `ios` | iOS-specific |
-| `android` | Android-specific |
-| `tablet` | Tablet devices |
-| `handheld` | Handheld devices |
+| Modifier                  | Description                            |
+| ------------------------- | -------------------------------------- |
+| `DEFAULT` / `default`     | Global style                           |
+| `ios`                     | iOS-specific                           |
+| `android`                 | Android-specific                       |
+| `tablet`                  | Tablet devices                         |
+| `handheld`                | Handheld devices                       |
 | `[if=globalVariableName]` | Conditional block with global variable |
 
 ## Property Values

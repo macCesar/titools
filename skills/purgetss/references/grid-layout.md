@@ -6,6 +6,38 @@ The PurgeTSS grid system is a layout tool with utilities to lay out columns and 
 **PurgeTSS grid does NOT work like CSS Grid.** Titanium lacks native CSS Grid support. The PurgeTSS grid system is an abstraction using `horizontal` and `vertical` layouts with percentage widths and margins.
 :::
 
+## Table of Contents
+
+- [Grid Layout System](#grid-layout-system)
+  - [Table of Contents](#table-of-contents)
+  - [Basic Structure](#basic-structure)
+  - [Column Grid](#column-grid)
+    - [`.grid-cols-{n}`](#grid-cols-n)
+    - [`.col-span-{n}`](#col-span-n)
+  - [Row Grid](#row-grid)
+    - [`.grid-rows-{n}`](#grid-rows-n)
+    - [`.row-span-{n}`](#row-span-n)
+  - [Gutter Utilities](#gutter-utilities)
+    - [Available Gap Utilities](#available-gap-utilities)
+  - [Direction Utilities](#direction-utilities)
+  - [Alignment Utilities](#alignment-utilities)
+  - [Common Layout Patterns](#common-layout-patterns)
+    - [Two-Column Layout](#two-column-layout)
+    - [Three-Column Layout](#three-column-layout)
+    - [Sidebar + Main Content](#sidebar--main-content)
+    - [Asymmetric Layout](#asymmetric-layout)
+  - [Grid System Pitfalls and Solutions](#grid-system-pitfalls-and-solutions)
+    - [Problem: Gap Breaks Percentage Widths](#problem-gap-breaks-percentage-widths)
+    - [Problem: Grid Without w-screen](#problem-grid-without-w-screen)
+    - [Problem: Missing Gap Container](#problem-missing-gap-container)
+  - [When to Use Grid vs. Manual Layout](#when-to-use-grid-vs-manual-layout)
+    - [Use Grid System When:](#use-grid-system-when)
+    - [Use Manual Layout When:](#use-manual-layout-when)
+  - [Complete Utility Reference](#complete-utility-reference)
+  - [Real-World Example](#real-world-example)
+
+---
+
 ## Basic Structure
 
 This is the most basic layout for using the grid system:
@@ -187,9 +219,9 @@ Align items within the grid:
 
 ```xml
 <View class="grid">
-  <View class="col-span-4 start">...</View>
-  <View class="col-span-4 center">...</View>
-  <View class="col-span-4 end">...</View>
+  <View class="start col-span-4">...</View>
+  <View class="center col-span-4">...</View>
+  <View class="end col-span-4">...</View>
 </View>
 ```
 
@@ -257,10 +289,10 @@ Align items within the grid:
 ```xml
 <!-- ❌ This may overflow -->
 <View class="grid grid-cols-2">
-  <View class="gap-2 col-span-6">
+  <View class="col-span-6 gap-2">
     <!-- 50% width + 8px margin all sides = overflow -->
   </View>
-  <View class="gap-2 col-span-6">
+  <View class="col-span-6 gap-2">
     <!-- Same issue -->
   </View>
 </View>
@@ -342,11 +374,11 @@ Align items within the grid:
 
 ```xml
 <!-- Manual layout for more control -->
-<View class="horizontal w-screen mb-4">
-  <View class="w-(48%) mr-2 rounded-xl bg-white shadow vertical">
+<View class="horizontal mb-4 w-screen">
+  <View class="w-(48%) vertical mr-2 rounded-xl bg-white shadow">
     <!-- Card content -->
   </View>
-  <View class="w-(48%) ml-2 rounded-xl bg-white shadow vertical">
+  <View class="w-(48%) vertical ml-2 rounded-xl bg-white shadow">
     <!-- Card content -->
   </View>
 </View>
@@ -354,21 +386,21 @@ Align items within the grid:
 
 ## Complete Utility Reference
 
-| Utility | Purpose | Example |
-|---------|---------|---------|
-| `.grid` | Horizontal layout | `<View class="grid">` |
-| `.grid-flow-col` | Horizontal layout | `<View class="grid-flow-col">` |
-| `.grid-flow-row` | Vertical layout | `<View class="grid-flow-row">` |
-| `.grid-cols-{n}` | N columns per row | `<View class="grid-cols-2">` |
-| `.grid-rows-{n}` | N rows per column | `<View class="grid-rows-2">` |
-| `.col-span-{n}` | Span N columns (12-grid) | `<View class="col-span-6">` |
-| `.row-span-{n}` | Span N rows (12-grid) | `<View class="row-span-6">` |
-| `.gap-{size}` | Gap all sides | `<View class="gap-4">` |
-| `.gap-x-{size}` | Gap horizontal | `<View class="gap-x-4">` |
-| `.gap-y-{size}` | Gap vertical | `<View class="gap-y-4">` |
-| `.start` | Align to start | `<View class="start">` |
-| `.center` | Align to center | `<View class="center">` |
-| `.end` | Align to end | `<View class="end">` |
+| Utility          | Purpose                  | Example                        |
+| ---------------- | ------------------------ | ------------------------------ |
+| `.grid`          | Horizontal layout        | `<View class="grid">`          |
+| `.grid-flow-col` | Horizontal layout        | `<View class="grid-flow-col">` |
+| `.grid-flow-row` | Vertical layout          | `<View class="grid-flow-row">` |
+| `.grid-cols-{n}` | N columns per row        | `<View class="grid-cols-2">`   |
+| `.grid-rows-{n}` | N rows per column        | `<View class="grid-rows-2">`   |
+| `.col-span-{n}`  | Span N columns (12-grid) | `<View class="col-span-6">`    |
+| `.row-span-{n}`  | Span N rows (12-grid)    | `<View class="row-span-6">`    |
+| `.gap-{size}`    | Gap all sides            | `<View class="gap-4">`         |
+| `.gap-x-{size}`  | Gap horizontal           | `<View class="gap-x-4">`       |
+| `.gap-y-{size}`  | Gap vertical             | `<View class="gap-y-4">`       |
+| `.start`         | Align to start           | `<View class="start">`         |
+| `.center`        | Align to center          | `<View class="center">`        |
+| `.end`           | Align to end             | `<View class="end">`           |
 
 ## Real-World Example
 
@@ -383,15 +415,15 @@ Align items within the grid:
       </View>
 
       <!-- Stats Grid -->
-      <View class="grid m-4">
+      <View class="m-4 grid">
         <View class="col-span-6">
-          <View class="gap-2 bg-white rounded-lg p-4">
+          <View class="gap-2 rounded-lg bg-white p-4">
             <Label class="text-2xl font-bold text-blue-600" text="1,234" />
             <Label class="text-sm text-gray-500" text="Total Users" />
           </View>
         </View>
         <View class="col-span-6">
-          <View class="gap-2 bg-white rounded-lg p-4">
+          <View class="gap-2 rounded-lg bg-white p-4">
             <Label class="text-2xl font-bold text-green-600" text="$56.7k" />
             <Label class="text-sm text-gray-500" text="Revenue" />
           </View>
@@ -399,19 +431,19 @@ Align items within the grid:
       </View>
 
       <!-- Three Column Section -->
-      <View class="grid m-4">
+      <View class="m-4 grid">
         <View class="col-span-4">
-          <View class="gap-2 bg-white rounded-lg p-4 h-32">
+          <View class="h-32 gap-2 rounded-lg bg-white p-4">
             <Label class="text-center text-gray-800" text="Card 1" />
           </View>
         </View>
         <View class="col-span-4">
-          <View class="gap-2 bg-white rounded-lg p-4 h-32">
+          <View class="h-32 gap-2 rounded-lg bg-white p-4">
             <Label class="text-center text-gray-800" text="Card 2" />
           </View>
         </View>
         <View class="col-span-4">
-          <View class="gap-2 bg-white rounded-lg p-4 h-32">
+          <View class="h-32 gap-2 rounded-lg bg-white p-4">
             <Label class="text-center text-gray-800" text="Card 3" />
           </View>
         </View>

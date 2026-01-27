@@ -2,6 +2,32 @@
 
 PurgeTSS automatically resets certain Titanium elements to facilitate UI layout. Understanding these resets is critical for effective PurgeTSS usage.
 
+## Table of Contents
+
+- [Titanium Element Resets](#titanium-element-resets)
+  - [Table of Contents](#table-of-contents)
+  - [The Three Default Resets](#the-three-default-resets)
+  - [View Reset: `Ti.UI.SIZE`](#view-reset-tiuisize)
+    - [What `Ti.UI.SIZE` Means](#what-tiuisize-means)
+    - [Practical Examples](#practical-examples)
+    - [View in Different Layouts](#view-in-different-layouts)
+  - [ImageView Reset: iOS Hi-Res](#imageview-reset-ios-hi-res)
+  - [Window Reset: White Background](#window-reset-white-background)
+  - [Width/Height Inheritance](#widthheight-inheritance)
+    - [Shared Spacing Scale](#shared-spacing-scale)
+    - [Combined Utilities (`wh-`)](#combined-utilities-wh-)
+    - [Color Inheritance](#color-inheritance)
+  - [Common Pitfalls](#common-pitfalls)
+    - [1. Assuming View fills parent](#1-assuming-view-fills-parent)
+    - [2. Padding on View/Window](#2-padding-on-viewwindow)
+    - [3. Not using w-screen for percentage calculations](#3-not-using-w-screen-for-percentage-calculations)
+    - [4. Confusion about h-screen](#4-confusion-about-h-screen)
+  - [Reset Behavior in Generated app.tss](#reset-behavior-in-generated-apptss)
+  - [Overriding Resets](#overriding-resets)
+  - [Summary Table](#summary-table)
+
+---
+
 ## The Three Default Resets
 
 ```tss
@@ -48,7 +74,7 @@ According to the **UI Composite Layout Behavior Spec**, if a dimension is `undef
 <!-- Result: View wraps the label tightly -->
 
 <!-- View with explicit dimensions -->
-<View class="w-64 h-32 bg-white">
+<View class="h-32 w-64 bg-white">
   <Label text="Hello" />
 </View>
 <!-- Result: View is exactly 256px wide x 128px tall, label inside -->
@@ -60,7 +86,7 @@ According to the **UI Composite Layout Behavior Spec**, if a dimension is `undef
 <!-- Result: View is 16px larger on all sides (content + 16px margins) -->
 
 <!-- View with w-screen (fills parent) -->
-<View class="w-screen h-16 bg-red-500">
+<View class="h-16 w-screen bg-red-500">
   <Label text="Full width banner" />
 </View>
 <!-- Result: View fills parent's width, 64px tall -->
@@ -74,7 +100,7 @@ According to the **UI Composite Layout Behavior Spec**, if a dimension is `undef
   <View class="bg-blue-500">
     <!-- This View will be SIZE of its content -->
   </View>
-  <View class="w-screen h-20 bg-red-500">
+  <View class="h-20 w-screen bg-red-500">
     <!-- This View fills width, fixed height -->
   </View>
 </View>
@@ -86,7 +112,7 @@ According to the **UI Composite Layout Behavior Spec**, if a dimension is `undef
   <View class="bg-blue-500">
     <!-- SIZE of content, may be very small -->
   </View>
-  <View class="w-32 h-32 bg-red-500">
+  <View class="h-32 w-32 bg-red-500">
     <!-- Fixed 128x128 -->
   </View>
 </View>
@@ -96,7 +122,7 @@ According to the **UI Composite Layout Behavior Spec**, if a dimension is `undef
 ```xml
 <View>
   <!-- No layout class = composite = default -->
-  <View class="left-10 top-20 w-64 h-32 bg-blue-500">
+  <View class="left-10 top-20 h-32 w-64 bg-blue-500">
     <!-- Positioning works, can overlap other Views -->
   </View>
 </View>
@@ -171,11 +197,11 @@ This automatically generates:
 
 PurgeTSS provides `wh-` shortcuts to set both width and height simultaneously. This is more than just a convenience; it ensures consistent dimension resets for components.
 
-| Class | Titanium Value | Purpose |
-|-------|----------------|---------|
-| `.wh-auto` | `width: Ti.UI.SIZE, height: Ti.UI.SIZE` | Explicitly force size-to-content. **The Safe Reset.** |
-| `.wh-screen` | `width: Ti.UI.FILL, height: Ti.UI.FILL` | Fill all available parent space. |
-| `.wh-full` | `width: '100%', height: '100%'` | Relative 100% sizing. |
+| Class        | Titanium Value                          | Purpose                                               |
+| ------------ | --------------------------------------- | ----------------------------------------------------- |
+| `.wh-auto`   | `width: Ti.UI.SIZE, height: Ti.UI.SIZE` | Explicitly force size-to-content. **The Safe Reset.** |
+| `.wh-screen` | `width: Ti.UI.FILL, height: Ti.UI.FILL` | Fill all available parent space.                      |
+| `.wh-full`   | `width: '100%', height: '100%'`         | Relative 100% sizing.                                 |
 
 **The `wh-` Scale:**
 - **Numeric**: `wh-0` (0px) up to `wh-96` (384px) following the spacing scale.
@@ -215,7 +241,7 @@ This generates classes for ALL color properties:
 </View>
 
 <!-- CORRECT: Explicitly set dimensions -->
-<View class="w-screen h-64 bg-blue-500">
+<View class="h-64 w-screen bg-blue-500">
   <!-- Fills parent width, 256px tall -->
 </View>
 ```
@@ -224,7 +250,7 @@ This generates classes for ALL color properties:
 
 ```xml
 <!-- WRONG: Padding on base elements -->
-<View class="p-4 bg-white">
+<View class="bg-white p-4">
   <Label text="Content" />
 </View>
 
@@ -324,10 +350,10 @@ Prefer `config.cjs` for custom defaults because they're preserved when PurgeTSS 
 
 ## Summary Table
 
-| Element | Reset Property | Reset Value | Impact |
-|---------|---------------|-------------|---------|
-| `View` | width/height | `Ti.UI.SIZE` | Occupies only content size by default |
-| `ImageView[platform=ios]` | hires | `true` | High-res images on Retina displays |
-| `Window` | backgroundColor | `'#FFFFFF'` | White background by default |
+| Element                   | Reset Property  | Reset Value  | Impact                                |
+| ------------------------- | --------------- | ------------ | ------------------------------------- |
+| `View`                    | width/height    | `Ti.UI.SIZE` | Occupies only content size by default |
+| `ImageView[platform=ios]` | hires           | `true`       | High-res images on Retina displays    |
+| `Window`                  | backgroundColor | `'#FFFFFF'`  | White background by default           |
 
 Understanding these resets is essential for predictable layouts in PurgeTSS.
