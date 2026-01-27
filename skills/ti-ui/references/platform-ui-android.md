@@ -1,5 +1,53 @@
 # Android UI Components and Conventions
 
+## Table of Contents
+
+- [Android UI Components and Conventions](#android-ui-components-and-conventions)
+  - [Table of Contents](#table-of-contents)
+  - [1. Action Bar](#1-action-bar)
+    - [Overview](#overview)
+    - [Enabling Action Bar](#enabling-action-bar)
+    - [Creating Action Bar (Programmatic)](#creating-action-bar-programmatic)
+    - [Action Bar with App Icon](#action-bar-with-app-icon)
+    - [Action View (Custom Layout)](#action-view-custom-layout)
+  - [2. Android Themes](#2-android-themes)
+    - [Overview](#overview-1)
+    - [Titanium Material Themes (SDK 10.0.0+)](#titanium-material-themes-sdk-1000)
+    - [Material 3 Themes (SDK 12.0.0+)](#material-3-themes-sdk-1200)
+    - [Applying Themes](#applying-themes)
+    - [Custom Theme](#custom-theme)
+    - [Color Palette Attributes](#color-palette-attributes)
+    - [Hiding Action Bar](#hiding-action-bar)
+    - [Theme Requirements](#theme-requirements)
+  - [3. Options Menu](#3-options-menu)
+    - [Legacy Options Menu](#legacy-options-menu)
+    - [Context Menu (Long Press)](#context-menu-long-press)
+  - [4. Status Bar Notifications](#4-status-bar-notifications)
+    - [Notifications](#notifications)
+    - [Notification Channels (Android 8.0+)](#notification-channels-android-80)
+    - [Clearing Notifications](#clearing-notifications)
+  - [5. Progress Bars](#5-progress-bars)
+    - [Horizontal Progress Bar](#horizontal-progress-bar)
+    - [Spinner (Indeterminate Progress)](#spinner-indeterminate-progress)
+  - [6. Tab Groups and Tabs](#6-tab-groups-and-tabs)
+    - [Native Android Tabs](#native-android-tabs)
+    - [Tab Badges](#tab-badges)
+  - [7. Hardware Back Button Handling](#7-hardware-back-button-handling)
+    - [Handling Back Button](#handling-back-button)
+    - [Exit Confirmation Dialog](#exit-confirmation-dialog)
+  - [8. Notification Drawer](#8-notification-drawer)
+    - [Display Notification](#display-notification)
+  - [9. Android UI Conventions](#9-android-ui-conventions)
+    - [Back Button Behavior](#back-button-behavior)
+    - [Up/Down Navigation](#updown-navigation)
+    - [App Shortcuts](#app-shortcuts)
+  - [10. Material Design Components](#10-material-design-components)
+    - [Using AppCompat v7](#using-appcompat-v7)
+    - [Material Design Components](#material-design-components)
+  - [Best Practices](#best-practices)
+
+---
+
 ## 1. Action Bar
 
 ### Overview
@@ -29,13 +77,13 @@ The Action Bar is a key Android UI component that appears at the top of the scre
 ### Creating Action Bar (Programmatic)
 
 ```javascript
-var activity = Ti.Android.currentActivity;
+const activity = Ti.Android.currentActivity;
 
-activity.onCreateOptionsMenu = function(e) {
-  var menu = e.menu;
+activity.onCreateOptionsMenu = (e) => {
+  const menu = e.menu;
 
   // Add "Refresh" action
-  var refreshItem = menu.add({
+  const refreshItem = menu.add({
     title: 'Refresh',
     icon: Ti.Android.R.drawable.ic_menu_refresh,
     showAsAction: Ti.Android.SHOW_AS_ACTION_IF_ROOM,
@@ -43,7 +91,7 @@ activity.onCreateOptionsMenu = function(e) {
   });
 
   // Add "Settings" action
-  var settingsItem = menu.add({
+  const settingsItem = menu.add({
     title: 'Settings',
     icon: Ti.Android.R.drawable.ic_menu_preferences,
     showAsAction: Ti.Android.SHOW_AS_ACTION_IF_ROOM,
@@ -51,7 +99,7 @@ activity.onCreateOptionsMenu = function(e) {
   });
 
   // Add "Search" action (shown as collapsible action view)
-  var searchItem = menu.add({
+  const searchItem = menu.add({
     title: 'Search',
     icon: Ti.Android.R.drawable.ic_menu_search,
     actionView: Ti.UI.createSearchBar({
@@ -62,7 +110,7 @@ activity.onCreateOptionsMenu = function(e) {
   });
 };
 
-activity.onOptionsItemSelected = function(e) {
+activity.onOptionsItemSelected = (e) => {
   switch (e.itemId) {
     case 1:
       refreshData();
@@ -77,9 +125,9 @@ activity.onOptionsItemSelected = function(e) {
   return false;
 };
 
-activity.onPrepareOptionsMenu = function(e) {
+activity.onPrepareOptionsMenu = (e) => {
   // Update menu items before showing
-  var menu = e.menu;
+  const menu = e.menu;
   // Modify items based on state
 };
 ```
@@ -87,13 +135,13 @@ activity.onPrepareOptionsMenu = function(e) {
 ### Action Bar with App Icon
 
 ```javascript
-var activity = Ti.Android.currentActivity;
+const activity = Ti.Android.currentActivity;
 
-activity.onCreateOptionsMenu = function(e) {
-  var menu = e.menu;
+activity.onCreateOptionsMenu = (e) => {
+  const menu = e.menu;
 
   // App icon on left
-  var appIcon = menu.addMenuItem({
+  const appIcon = menu.addMenuItem({
     title: 'My App',
     icon: Ti.App.Android.R.drawable.app_icon,
     itemId: 0
@@ -105,30 +153,30 @@ activity.onCreateOptionsMenu = function(e) {
 ### Action View (Custom Layout)
 
 ```javascript
-activity.onCreateOptionsMenu = function(e) {
-  var menu = e.menu;
+activity.onCreateOptionsMenu = (e) => {
+  const menu = e.menu;
 
   // Custom action view with button
-  var actionView = Ti.UI.createView({
+  const actionView = Ti.UI.createView({
     height: Ti.UI.FILL,
     backgroundColor: '#4CAF50',
     layout: 'horizontal'
   });
 
-  var actionButton = Ti.UI.createButton({
+  const actionButton = Ti.UI.createButton({
     title: 'Action',
     color: 'white',
     height: Ti.UI.FILL,
     width: Ti.UI.SIZE
   });
 
-  actionButton.addEventListener('click', function() {
+  actionButton.addEventListener('click', () => {
     performAction();
   });
 
   actionView.add(actionButton);
 
-  var actionItem = menu.add({
+  const actionItem = menu.add({
     title: 'Custom',
     actionView: actionView,
     showAsAction: Ti.Android.SHOW_AS_ACTION_ALWAYS,
@@ -145,17 +193,17 @@ Themes control the visual style of Android apps. Titanium 10.0.0+ **requires** m
 
 ### Titanium Material Themes (SDK 10.0.0+)
 
-| Theme | Description |
-|-------|-------------|
-| `Theme.Titanium.DayNight` | Light/dark switching (default 10.0.x) |
-| `Theme.Titanium.DayNight.NoTitleBar` | No action bar |
-| `Theme.Titanium.DayNight.Fullscreen` | No action bar or status bar |
-| `Theme.Titanium.DayNight.Solid` | Seamless background (default 10.1.0+) |
-| `Theme.Titanium.Dark` | Dark only |
-| `Theme.Titanium.Light` | Light only |
-| `Theme.AppDerived.NoTitleBar` | Inherits app theme, no action bar |
-| `Theme.AppDerived.Fullscreen` | Inherits app theme, fullscreen |
-| `Theme.AppDerived.Translucent` | Transparent background |
+| Theme                                | Description                           |
+| ------------------------------------ | ------------------------------------- |
+| `Theme.Titanium.DayNight`            | Light/dark switching (default 10.0.x) |
+| `Theme.Titanium.DayNight.NoTitleBar` | No action bar                         |
+| `Theme.Titanium.DayNight.Fullscreen` | No action bar or status bar           |
+| `Theme.Titanium.DayNight.Solid`      | Seamless background (default 10.1.0+) |
+| `Theme.Titanium.Dark`                | Dark only                             |
+| `Theme.Titanium.Light`               | Light only                            |
+| `Theme.AppDerived.NoTitleBar`        | Inherits app theme, no action bar     |
+| `Theme.AppDerived.Fullscreen`        | Inherits app theme, fullscreen        |
+| `Theme.AppDerived.Translucent`       | Transparent background                |
 
 ### Material 3 Themes (SDK 12.0.0+)
 
@@ -168,11 +216,11 @@ Themes control the visual style of Android apps. Titanium 10.0.0+ **requires** m
 </android>
 ```
 
-| Theme | Description |
-|-------|-------------|
-| `Theme.Titanium.Material3.DayNight` | Material 3 with dynamic colors |
-| `Theme.Titanium.Material3.DayNight.NoTitleBar` | No action bar |
-| `Theme.Titanium.Material3.DayNight.Fullscreen` | No action/status bar |
+| Theme                                          | Description                    |
+| ---------------------------------------------- | ------------------------------ |
+| `Theme.Titanium.Material3.DayNight`            | Material 3 with dynamic colors |
+| `Theme.Titanium.Material3.DayNight.NoTitleBar` | No action bar                  |
+| `Theme.Titanium.Material3.DayNight.Fullscreen` | No action/status bar           |
 
 **Custom Material 3 theme:**
 ```xml
@@ -231,16 +279,16 @@ const win = Ti.UI.createWindow({
 
 ### Color Palette Attributes
 
-| Attribute | Description |
-|-----------|-------------|
-| `colorPrimary` | Action bar color |
-| `colorPrimaryDark` | Status bar color (API 21+) |
-| `colorAccent` | Control accent color |
-| `colorControlNormal` | Inactive control color |
-| `colorControlActivated` | Active control color |
-| `colorControlHighlight` | Click highlight (API 21+) |
-| `android:navigationBarColor` | Bottom nav bar (API 21+) |
-| `android:textColorPrimary` | Primary text color |
+| Attribute                    | Description                |
+| ---------------------------- | -------------------------- |
+| `colorPrimary`               | Action bar color           |
+| `colorPrimaryDark`           | Status bar color (API 21+) |
+| `colorAccent`                | Control accent color       |
+| `colorControlNormal`         | Inactive control color     |
+| `colorControlActivated`      | Active control color       |
+| `colorControlHighlight`      | Click highlight (API 21+)  |
+| `android:navigationBarColor` | Bottom nav bar (API 21+)   |
+| `android:textColorPrimary`   | Primary text color         |
 
 ### Hiding Action Bar
 
@@ -274,10 +322,10 @@ win.addEventListener('open', () => {
 ### Legacy Options Menu
 
 ```javascript
-var activity = Ti.Android.currentActivity;
+const activity = Ti.Android.currentActivity;
 
-activity.onCreateOptionsMenu = function(e) {
-  var menu = e.menu;
+activity.onCreateOptionsMenu = (e) => {
+  const menu = e.menu;
 
   // Add items
   menu.add({ title: 'Option 1', itemId: 1 });
@@ -286,7 +334,7 @@ activity.onCreateOptionsMenu = function(e) {
   menu.add({ title: 'Option 4', itemId: 4 });
 };
 
-activity.onOptionsItemSelected = function(e) {
+activity.onOptionsItemSelected = (e) => {
   switch (e.itemId) {
     case 1:
       handleOption1();
@@ -300,11 +348,11 @@ activity.onOptionsItemSelected = function(e) {
 ### Context Menu (Long Press)
 
 ```javascript
-var view = Ti.UI.createView({
+const view = Ti.UI.createView({
   backgroundColor: 'white'
 });
 
-view.addEventListener('longpress', function(e) {
+view.addEventListener('longpress', (e) => {
   // Register for context menu
   registerForContextMenu();
 });
@@ -321,7 +369,7 @@ function registerForContextMenu() {
 
 ```javascript
 // Create notification
-var notification = Ti.Android.createNotification({
+const notification = Ti.Android.createNotification({
   contentTitle: 'New Message',
   contentText: 'You have a new message',
   contentIntent: Ti.Android.createIntent({
@@ -341,7 +389,7 @@ Ti.Android.NotificationManager.notify(1, notification);
 
 ```javascript
 // Create notification channel for Android 8.0+
-var channel = Ti.Android.createNotificationChannel({
+const channel = Ti.Android.createNotificationChannel({
   id: 'my_channel_id',
   name: 'My Channel',
   importance: Ti.Android.NOTIFICATION_IMPORTANCE_HIGH,
@@ -354,7 +402,7 @@ var channel = Ti.Android.createNotificationChannel({
 Ti.Android.NotificationManager.createNotificationChannel(channel);
 
 // Use channel in notification
-var notification = Ti.Android.createNotification({
+const notification = Ti.Android.createNotification({
   channelId: 'my_channel_id',
   contentTitle: 'Channel Test',
   contentText: 'Testing notification channels',
@@ -379,7 +427,7 @@ Ti.Android.NotificationManager.cancelAll();
 ### Horizontal Progress Bar
 
 ```javascript
-var progressBar = Ti.UI.createProgressBar({
+const progressBar = Ti.UI.createProgressBar({
   min: 0,
   max: 100,
   value: 0,
@@ -400,7 +448,7 @@ progressBar.show();
 ### Spinner (Indeterminate Progress)
 
 ```javascript
-var activityIndicator = Ti.UI.createActivityIndicator({
+const activityIndicator = Ti.UI.createActivityIndicator({
   message: 'Loading...',
   location: Ti.UI.Android.ACTIVITY_INDICATOR_DIALOG,
   cancelable: false
@@ -417,19 +465,19 @@ activityIndicator.hide();
 ### Native Android Tabs
 
 ```javascript
-var tabGroup = Ti.UI.createTabGroup({
+const tabGroup = Ti.UI.createTabGroup({
   tabs: [tab1, tab2, tab3]
 });
 
-tabGroup.addEventListener('open', function(e) {
-  Ti.API.info('Tab opened: ' + e.index + ' (' + e.tab.title + ')');
+tabGroup.addEventListener('open', (e) => {
+  Ti.API.info(`Tab opened: ${e.index} (${e.tab.title})`);
 });
 ```
 
 ### Tab Badges
 
 ```javascript
-var tab = Titanium.UI.createTab({
+const tab = Titanium.UI.createTab({
   title: 'Inbox',
   window: winInbox,
   icon: Ti.Android.R.drawable.ic_menu_info
@@ -447,9 +495,9 @@ tab.badge = null;  // or tab.setBadge(null);
 ### Handling Back Button
 
 ```javascript
-var win = Ti.UI.createWindow();
+const win = Ti.UI.createWindow();
 
-win.addEventListener('androidback', function(e) {
+win.addEventListener('androidback', (e) => {
   e.cancelBubble = true;  // Prevent default behavior
 
   // Check if can go back
@@ -470,16 +518,16 @@ function canGoBack() {
 
 ```javascript
 function showExitConfirmation() {
-  var dialog = Ti.UI.createAlertDialog({
+  const dialog = Ti.UI.createAlertDialog({
     title: 'Exit?',
     message: 'Do you want to exit?',
     buttonNames: ['Yes', 'No'],
     cancel: 1
   });
 
-  dialog.addEventListener('click', function(e) {
+  dialog.addEventListener('click', (e) => {
     if (e.index === 0) {
-      var activity = Ti.Android.currentActivity;
+      const activity = Ti.Android.currentActivity;
       activity.finish();  // Close app
     }
   });
@@ -493,7 +541,7 @@ function showExitConfirmation() {
 ### Display Notification
 
 ```javascript
-var notification = Ti.Android.createNotification({
+const notification = Ti.Android.createNotification({
   contentTitle: 'Download Complete',
   contentText: 'Your file has been downloaded',
   contentIntent: Ti.Android.createIntent({

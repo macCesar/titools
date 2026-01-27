@@ -1,5 +1,45 @@
 # Gestures
 
+## Table of Contents
+
+- [Gestures](#gestures)
+  - [Table of Contents](#table-of-contents)
+  - [1. Overview](#1-overview)
+  - [2. Touch Events](#2-touch-events)
+    - [Touch Lifecycle](#touch-lifecycle)
+    - [Touch Event Properties](#touch-event-properties)
+    - [Android Note](#android-note)
+  - [3. Swipe Gesture](#3-swipe-gesture)
+    - [Basic Swipe](#basic-swipe)
+    - [Swipe Direction Detection](#swipe-direction-detection)
+    - [Swipe vs Scroll](#swipe-vs-scroll)
+  - [4. Pinch Gesture (iOS Only)](#4-pinch-gesture-ios-only)
+    - [Pinch to Zoom](#pinch-to-zoom)
+  - [5. Long Press Gesture](#5-long-press-gesture)
+    - [Basic Long Press](#basic-long-press)
+    - [Long Press Duration](#long-press-duration)
+    - [Android Long Press Convention](#android-long-press-convention)
+  - [6. Shake Gesture](#6-shake-gesture)
+    - [Detecting Shake](#detecting-shake)
+    - [Shake Example](#shake-example)
+    - [Testing Shake](#testing-shake)
+  - [7. Accelerometer as Input](#7-accelerometer-as-input)
+    - [Basic Accelerometer](#basic-accelerometer)
+    - [Accelerometer Properties](#accelerometer-properties)
+    - [Using Accelerometer for Control](#using-accelerometer-for-control)
+    - [Smoothing Accelerometer Data](#smoothing-accelerometer-data)
+  - [8. Gesture Lifecycle Management](#8-gesture-lifecycle-management)
+    - [Battery Considerations](#battery-considerations)
+  - [9. Platform-Specific Considerations](#9-platform-specific-considerations)
+    - [iOS](#ios)
+    - [Android](#android)
+  - [10. Best Practices](#10-best-practices)
+  - [11. Combining Gestures](#11-combining-gestures)
+    - [Multiple Gesture Types](#multiple-gesture-types)
+    - [Preventing Gesture Conflicts](#preventing-gesture-conflicts)
+
+---
+
 ## 1. Overview
 
 Titanium supports various gestures beyond simple taps:
@@ -15,35 +55,35 @@ Titanium supports various gestures beyond simple taps:
 ### Touch Lifecycle
 
 ```javascript
-var view = Ti.UI.createView({
+const view = Ti.UI.createView({
   backgroundColor: 'blue',
   width: 200, height: 200
 });
 
-view.addEventListener('touchstart', function(e) {
-  Ti.API.info('Touch started at: ' + e.x + ', ' + e.y);
+view.addEventListener('touchstart', (e) => {
+  Ti.API.info(`Touch started at: ${e.x}, ${e.y}`);
 });
 
-view.addEventListener('touchmove', function(e) {
-  Ti.API.info('Moving to: ' + e.x + ', ' + e.y);
+view.addEventListener('touchmove', (e) => {
+  Ti.API.info(`Moving to: ${e.x}, ${e.y}`);
 });
 
-view.addEventListener('touchend', function(e) {
-  Ti.API.info('Touch ended at: ' + e.x + ', ' + e.y);
+view.addEventListener('touchend', (e) => {
+  Ti.API.info(`Touch ended at: ${e.x}, ${e.y}`);
 });
 
-view.addEventListener('touchcancel', function(e) {
+view.addEventListener('touchcancel', (e) => {
   Ti.API.info('Touch cancelled (incoming call, etc.)');
 });
 ```
 
 ### Touch Event Properties
 
-| Property | Description |
-|----------|-------------|
-| `x` | X coordinate in view's coordinate system |
-| `y` | Y coordinate in view's coordinate system |
-| `globalPoint` | Screen coordinates (iOS only) |
+| Property      | Description                              |
+| ------------- | ---------------------------------------- |
+| `x`           | X coordinate in view's coordinate system |
+| `y`           | Y coordinate in view's coordinate system |
+| `globalPoint` | Screen coordinates (iOS only)            |
 
 ### Android Note
 
@@ -54,14 +94,14 @@ On Android, `longpress` and `swipe` cancel touch events - `touchend` may not fir
 ### Basic Swipe
 
 ```javascript
-var view = Ti.UI.createView({
+const view = Ti.UI.createView({
   backgroundColor: 'yellow',
   width: Ti.UI.FILL,
   height: 100
 });
 
-view.addEventListener('swipe', function(e) {
-  Ti.API.info('Swiped direction: ' + e.direction);
+view.addEventListener('swipe', (e) => {
+  Ti.API.info(`Swiped direction: ${e.direction}`);
   // e.direction can be: 'left', 'right', 'up', 'down'
 });
 ```
@@ -69,7 +109,7 @@ view.addEventListener('swipe', function(e) {
 ### Swipe Direction Detection
 
 ```javascript
-view.addEventListener('swipe', function(e) {
+view.addEventListener('swipe', (e) => {
   switch(e.direction) {
     case 'left':
       Ti.API.info('Swiped left');
@@ -97,13 +137,13 @@ view.addEventListener('swipe', function(e) {
 ## 4. Pinch Gesture (iOS Only)
 
 ```javascript
-var view = Ti.UI.createView({
+const view = Ti.UI.createView({
   backgroundColor: 'green',
   width: 300, height: 300
 });
 
-view.addEventListener('pinch', function(e) {
-  Ti.API.info('Pinch scale: ' + e.scale);
+view.addEventListener('pinch', (e) => {
+  Ti.API.info(`Pinch scale: ${e.scale}`);
   // e.scale < 1.0 = pinch together
   // e.scale > 1.0 = pinch apart
 });
@@ -112,34 +152,31 @@ view.addEventListener('pinch', function(e) {
 ### Pinch to Zoom
 
 ```javascript
-var imageView = Ti.UI.createImageView({
+const imageView = Ti.UI.createImageView({
   image: 'photo.jpg',
-  width: 300, height: 300,
   width: 300, height: 300
 });
 
-var currentScale = 1.0;
+let currentScale = 1.0;
 
-imageView.addEventListener('pinch', function(e) {
+imageView.addEventListener('pinch', (e) => {
   currentScale = e.scale;
   imageView.transform = Ti.UI.create2DMatrix().scale(currentScale);
 });
 ```
-
-**Note**: Pinch is iOS-only. Android support is experimental/in development.
 
 ## 5. Long Press Gesture
 
 ### Basic Long Press
 
 ```javascript
-var view = Ti.UI.createView({
+const view = Ti.UI.createView({
   backgroundColor: 'orange',
   width: 200, height: 200
 });
 
-view.addEventListener('longpress', function(e) {
-  Ti.API.info('Long press at: ' + e.x + ', ' + e.y);
+view.addEventListener('longpress', (e) => {
+  Ti.API.info(`Long press at: ${e.x}, ${e.y}`);
   showContextMenu(e);
 });
 ```
@@ -149,23 +186,23 @@ view.addEventListener('longpress', function(e) {
 Default long press duration varies by platform. Custom handling:
 
 ```javascript
-var pressTimer = null;
-var PRESS_DURATION = 1000; // 1 second
+let pressTimer = null;
+const PRESS_DURATION = 1000; // 1 second
 
-view.addEventListener('touchstart', function(e) {
-  pressTimer = setTimeout(function() {
+view.addEventListener('touchstart', (e) => {
+  pressTimer = setTimeout(() => {
     showContextMenu(e);
   }, PRESS_DURATION);
 });
 
-view.addEventListener('touchend', function(e) {
+view.addEventListener('touchend', () => {
   if (pressTimer) {
     clearTimeout(pressTimer);
     pressTimer = null;
   }
 });
 
-view.addEventListener('touchmove', function(e) {
+view.addEventListener('touchmove', () => {
   // Cancel long press if moved significantly
   if (pressTimer) {
     clearTimeout(pressTimer);
@@ -179,13 +216,13 @@ view.addEventListener('touchmove', function(e) {
 On Android, long press typically shows context menu:
 
 ```javascript
-view.addEventListener('longpress', function(e) {
-  var dialog = Ti.UI.createAlertDialog({
+view.addEventListener('longpress', (e) => {
+  const dialog = Ti.UI.createAlertDialog({
     title: 'Options',
     message: 'What would you like to do?',
     buttonNames: ['Edit', 'Delete', 'Share', 'Cancel']
   });
-  dialog.addEventListener('click', function(e) {
+  dialog.addEventListener('click', (e) => {
     switch(e.index) {
       case 0: editItem(); break;
       case 1: deleteItem(); break;
@@ -201,8 +238,8 @@ view.addEventListener('longpress', function(e) {
 ### Detecting Shake
 
 ```javascript
-Ti.Gesture.addEventListener('shake', function(e) {
-  Ti.API.info('Device shaken at ' + e.timestamp);
+Ti.Gesture.addEventListener('shake', (e) => {
+  Ti.API.info(`Device shaken at ${e.timestamp}`);
 
   // Refresh content, undo action, etc.
   refreshData();
@@ -213,11 +250,11 @@ Ti.Gesture.addEventListener('shake', function(e) {
 
 ```javascript
 // Use shake to refresh data
-var scrollView = Ti.UI.createScrollView({
+const scrollView = Ti.UI.createScrollView({
   contentHeight: Ti.UI.SIZE
 });
 
-Ti.Gesture.addEventListener('shake', function() {
+Ti.Gesture.addEventListener('shake', () => {
   // Refresh data
   loadDataFromServer();
 });
@@ -239,35 +276,35 @@ function loadDataFromServer() {
 ### Basic Accelerometer
 
 ```javascript
-var labelX = Ti.UI.createLabel({ text: 'X: 0' });
-var labelY = Ti.UI.createLabel({ text: 'Y: 0', top: 30 });
-var labelZ = Ti.UI.createLabel({ text: 'Z: 0', top: 60 });
+const labelX = Ti.UI.createLabel({ text: 'X: 0' });
+const labelY = Ti.UI.createLabel({ text: 'Y: 0', top: 30 });
+const labelZ = Ti.UI.createLabel({ text: 'Z: 0', top: 60 });
 
-Ti.Accelerometer.addEventListener('update', function(e) {
-  labelX.text = 'X: ' + e.x.toFixed(2);
-  labelY.text = 'Y: ' + e.y.toFixed(2);
-  labelZ.text = 'Z: ' + e.z.toFixed(2);
+Ti.Accelerometer.addEventListener('update', (e) => {
+  labelX.text = `X: ${e.x.toFixed(2)}`;
+  labelY.text = `Y: ${e.y.toFixed(2)}`;
+  labelZ.text = `Z: ${e.z.toFixed(2)}`;
 });
 ```
 
 ### Accelerometer Properties
 
-| Property | Description | Range |
-|----------|-------------|-------|
-| `x` | X-axis acceleration | G-force (±9.81 m/s²) |
-| `y` | Y-axis acceleration | G-force |
-| `z` | Z-axis acceleration | G-force |
-| `timestamp` | When event occurred | Timestamp |
+| Property    | Description         | Range                |
+| ----------- | ------------------- | -------------------- |
+| `x`         | X-axis acceleration | G-force (±9.81 m/s²) |
+| `y`         | Y-axis acceleration | G-force              |
+| `z`         | Z-axis acceleration | G-force              |
+| `timestamp` | When event occurred | Timestamp            |
 
 ### Using Accelerometer for Control
 
 ```javascript
-var sensitivity = 2.0;
-var lastX = 0, lastY = 0;
+const sensitivity = 2.0;
+let lastX = 0, lastY = 0;
 
-Ti.Accelerometer.addEventListener('update', function(e) {
-  var deltaX = e.x - lastX;
-  var deltaY = e.y - lastY;
+Ti.Accelerometer.addEventListener('update', (e) => {
+  const deltaX = e.x - lastX;
+  const deltaY = e.y - lastY;
 
   if (Math.abs(deltaX) > sensitivity) {
     if (deltaX > 0) {
@@ -287,17 +324,17 @@ Ti.Accelerometer.addEventListener('update', function(e) {
 Accelerometer data is very sensitive. Apply smoothing:
 
 ```javascript
-var samples = [];
-var SAMPLE_SIZE = 10;
+let samples = [];
+const SAMPLE_SIZE = 10;
 
-Ti.Accelerometer.addEventListener('update', function(e) {
+Ti.Accelerometer.addEventListener('update', (e) => {
   samples.push({ x: e.x, y: e.y, z: e.z });
 
   if (samples.length >= SAMPLE_SIZE) {
     // Calculate average
-    var avgX = samples.reduce(function(sum, s) { return sum + s.x; }, 0) / samples.length;
-    var avgY = samples.reduce(function(sum, s) { return sum + s.y; }, 0) / samples.length;
-    var avgZ = samples.reduce(function(sum, s) { return sum + s.z; }, 0) / samples.length;
+    const avgX = samples.reduce((sum, s) => sum + s.x, 0) / samples.length;
+    const avgY = samples.reduce((sum, s) => sum + s.y, 0) / samples.length;
+    const avgZ = samples.reduce((sum, s) => sum + s.z, 0) / samples.length;
 
     // Use averaged values
     updatePosition(avgX, avgY, avgZ);
@@ -317,8 +354,8 @@ Global gesture events (`Ti.Gesture`, `Ti.Accelerometer`) keep hardware powered a
 **Always remove listeners when not needed:**
 
 ```javascript
-var accelerometerAdded = false;
-var accelerometerCallback = function(e) {
+let accelerometerAdded = false;
+const accelerometerCallback = (e) => {
   // Process accelerometer data
 };
 
@@ -338,11 +375,11 @@ function stopTracking() {
 
 // Android: Manage with app lifecycle
 if (Ti.Platform.osname === 'android') {
-  Ti.Android.currentActivity.addEventListener('pause', function() {
+  Ti.Android.currentActivity.addEventListener('pause', () => {
     stopTracking();
   });
 
-  Ti.Android.currentActivity.addEventListener('resume', function() {
+  Ti.Android.currentActivity.addEventListener('resume', () => {
     startTracking();
   });
 }
@@ -379,13 +416,13 @@ if (Ti.Platform.osname === 'android') {
 ### Multiple Gesture Types
 
 ```javascript
-var view = Ti.UI.createView({
+const view = Ti.UI.createView({
   width: 300, height: 300,
   backgroundColor: 'cyan'
 });
 
 // Swipe for navigation
-view.addEventListener('swipe', function(e) {
+view.addEventListener('swipe', (e) => {
   if (e.direction === 'left') {
     showPrevious();
   } else if (e.direction === 'right') {
@@ -394,17 +431,17 @@ view.addEventListener('swipe', function(e) {
 });
 
 // Long press for options
-view.addEventListener('longpress', function(e) {
+view.addEventListener('longpress', (e) => {
   showOptions();
 });
 
 // Double tap for like
-view.addEventListener('doubletap', function(e) {
+view.addEventListener('doubletap', (e) => {
   likeContent();
 });
 
 // Pinch to zoom (iOS)
-view.addEventListener('pinch', function(e) {
+view.addEventListener('pinch', (e) => {
   if (e.scale > 1.0) {
     zoomIn();
   } else {
@@ -416,14 +453,14 @@ view.addEventListener('pinch', function(e) {
 ### Preventing Gesture Conflicts
 
 ```javascript
-var touchStartTime = 0;
+let touchStartTime = 0;
 
-view.addEventListener('touchstart', function(e) {
+view.addEventListener('touchstart', (e) => {
   touchStartTime = Date.now();
 });
 
-view.addEventListener('touchend', function(e) {
-  var touchDuration = Date.now() - touchStartTime;
+view.addEventListener('touchend', (e) => {
+  const touchDuration = Date.now() - touchStartTime;
 
   if (touchDuration < 200) {
     // Short tap - treat as click

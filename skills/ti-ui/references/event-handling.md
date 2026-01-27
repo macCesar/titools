@@ -1,68 +1,60 @@
 # Event Handling
 
+## Table of Contents
+
+- [Event Handling](#event-handling)
+  - [Table of Contents](#table-of-contents)
+  - [1. Event Listener Pattern](#1-event-listener-pattern)
+    - [Basic Pattern](#basic-pattern)
+    - [Controlling Event Bubbling](#controlling-event-bubbling)
+    - [Bubbling Example](#bubbling-example)
+  - [3. Firing Events](#3-firing-events)
+    - [Fire Custom Event](#fire-custom-event)
+    - [Listening to App Events](#listening-to-app-events)
+    - [Memory Warning](#memory-warning)
+  - [5. Touch Events](#5-touch-events)
+    - [Touch Event Lifecycle](#touch-event-lifecycle)
+    - [Touch Enabled](#touch-enabled)
+  - [6. Named vs Anonymous Functions](#6-named-vs-anonymous-functions)
+    - [Anonymous Function (One-time use)](#anonymous-function-one-time-use)
+    - [Named Function (Reusable)](#named-function-reusable)
+  - [7. Removing Event Listeners](#7-removing-event-listeners)
+    - [Must Match Function Signature](#must-match-function-signature)
+  - [8. Android Hardware Button Events](#8-android-hardware-button-events)
+    - [Available Events](#available-events)
+    - [Handling Back Button](#handling-back-button)
+    - [Note: Window Types](#note-window-types)
+  - [9. Android Menu](#9-android-menu)
+    - [Create Options Menu](#create-options-menu)
+  - [10. Event Listener Best Practices](#10-event-listener-best-practices)
+    - [Define Before Event May Fire](#define-before-event-may-fire)
+    - [Global Event Memory Leaks](#global-event-memory-leaks)
+    - [Remove Listeners on Window Close](#remove-listeners-on-window-close)
+  - [11. Special Considerations](#11-special-considerations)
+    - [Platform-Specific Events](#platform-specific-events)
+    - [Event Naming](#event-naming)
+    - [Custom Properties on Events](#custom-properties-on-events)
+  - [Best Practices Summary](#best-practices-summary)
+
+---
+
 ## 1. Event Listener Pattern
 
 ### Basic Pattern
 
 ```javascript
-element.addEventListener('event_type', function(e) {
+element.addEventListener('event_type', (e) => {
   // code here runs when event fires
   // 'e' is the event object
-  Ti.API.info('The ' + e.type + ' event happened');
+  Ti.API.info(`The ${e.type} event happened`);
 });
 ```
-
-### Common Event Types
-
-| Event | Description |
-|-------|-------------|
-| `click` / `singletap` | Single tap/click |
-| `dblclick` / `doubletap` | Double tap/click |
-| `swipe` | Left/right touch and drag |
-| `touchstart` | Finger first contacts screen |
-| `touchmove` | Finger drags on screen |
-| `touchend` | Finger lifts from screen |
-| `touchcancel` | OS interrupts touch event |
-| `longpress` / `longclick` | Long press (duration varies by platform) |
-| `pinch` | Pinch gesture (iOS only) |
-
-### Event Object Properties
-
-| Property | Description |
-|----------|-------------|
-| `type` | Event type name |
-| `source` | Reference to object receiving event |
-| `x`, `y` | Coordinates in view's coordinate system |
-| `globalPoint` | Screen coordinates (iOS only) |
-| `timestamp` | When event occurred (iOS mainly) |
-
-## 2. UI Event Bubbling
-
-### How Bubbling Works
-
-Events bubble UP from the touched view through parent views (inheriting from `Ti.UI.View`).
-
-**Bubbling Events** (input events):
-- click, singletap, dblclick, doubletap
-- longclick, longpress, pinch
-- swipe, touchstart, touchmove, touchend, touchcancel, twofingertap
-
-**Non-Bubbling Events** (view-specific):
-- scroll, focus, blur, postlayout
-
-### Special Containers (Bubbling Ends Here)
-
-These containers have no parents, so bubbling stops:
-- NavigationWindow
-- SplitWindow
-- Tab / TabGroup
-- Window
-
+...
 ### Controlling Event Bubbling
 
 ```javascript
 // Check if event bubbles
-Ti.API.info('Bubbles: ' + e.bubbles);
+Ti.API.info(`Bubbles: ${e.bubbles}`);
 
 // Stop further bubbling
 e.cancelBubble = true;
@@ -74,31 +66,31 @@ view.bubbleParent = false;
 ### Bubbling Example
 
 ```javascript
-var win = Ti.UI.createWindow({
+const win = Ti.UI.createWindow({
   backgroundColor: 'white'
 });
 
-var container = Ti.UI.createView({
+const container = Ti.UI.createView({
   backgroundColor: 'yellow',
   width: 200, height: 200
 });
 
-var button = Ti.UI.createButton({
+const button = Ti.UI.createButton({
   title: 'Click Me',
   width: 100, height: 50
 });
 
-button.addEventListener('click', function(e) {
-  Ti.API.info('Button received: ' + e.type);
+button.addEventListener('click', (e) => {
+  Ti.API.info(`Button received: ${e.type}`);
   // e.cancelBubble = true; // Would stop here
 });
 
-container.addEventListener('click', function(e) {
-  Ti.API.info('Container received: ' + e.type);
+container.addEventListener('click', (e) => {
+  Ti.API.info(`Container received: ${e.type}`);
 });
 
-win.addEventListener('click', function(e) {
-  Ti.API.info('Window received: ' + e.type);
+win.addEventListener('click', (e) => {
+  Ti.API.info(`Window received: ${e.type}`);
 });
 
 container.add(button);
@@ -122,41 +114,18 @@ button.fireEvent('customEvent', {
 });
 
 // Handle it
-button.addEventListener('customEvent', function(e) {
-  Ti.API.info('Message: ' + e.message);
-  Ti.API.info('Count: ' + e.count);
+button.addEventListener('customEvent', (e) => {
+  Ti.API.info(`Message: ${e.message}`);
+  Ti.API.info(`Count: ${e.count}`);
 });
 ```
-
-### Simulate Events
-
-```javascript
-// Simulate button click
-button.fireEvent('click');
-```
-
-## 4. Application-Level Events
-
-### Overview
-
-App-level events are GLOBAL across your app - accessible in all contexts, CommonJS modules, and scopes.
-
-### Firing App Events
-
-```javascript
-// Fire app-level event
-Ti.App.fireEvent('db_updated', {
-  timestamp: Date.now(),
-  recordCount: 100
-});
-```
-
+...
 ### Listening to App Events
 
 ```javascript
 // Listen anywhere in app
-Ti.App.addEventListener('db_updated', function(e) {
-  Ti.API.info('DB updated at: ' + e.timestamp);
+Ti.App.addEventListener('db_updated', (e) => {
+  Ti.API.info(`DB updated at: ${e.timestamp}`);
   tableView.setData(getCurrentRecords());
 });
 ```
@@ -167,7 +136,7 @@ Global event listeners persist for app lifetime, preventing garbage collection:
 
 ```javascript
 // Good: Remove when done
-var handler = function(e) { /* ... */ };
+const handler = (e) => { /* ... */ };
 Ti.App.addEventListener('myEvent', handler);
 // Later:
 Ti.App.removeEventListener('myEvent', handler);
@@ -178,19 +147,19 @@ Ti.App.removeEventListener('myEvent', handler);
 ### Touch Event Lifecycle
 
 ```javascript
-view.addEventListener('touchstart', function(e) {
-  Ti.API.info('Touch started at: ' + e.x + ', ' + e.y);
+view.addEventListener('touchstart', (e) => {
+  Ti.API.info(`Touch started at: ${e.x}, ${e.y}`);
 });
 
-view.addEventListener('touchmove', function(e) {
-  Ti.API.info('Dragging to: ' + e.x + ', ' + e.y);
+view.addEventListener('touchmove', (e) => {
+  Ti.API.info(`Dragging to: ${e.x}, ${e.y}`);
 });
 
-view.addEventListener('touchend', function(e) {
-  Ti.API.info('Touch ended at: ' + e.x + ', ' + e.y);
+view.addEventListener('touchend', (e) => {
+  Ti.API.info(`Touch ended at: ${e.x}, ${e.y}`);
 });
 
-view.addEventListener('touchcancel', function(e) {
+view.addEventListener('touchcancel', (e) => {
   Ti.API.info('Touch cancelled (phone call, etc.)');
 });
 ```
@@ -219,7 +188,7 @@ button.addEventListener('click', function(e) {
 
 ```javascript
 function handleClick(e) {
-  Ti.API.info('Clicked: ' + e.type);
+  Ti.API.info(`Clicked: ${e.type}`);
 }
 
 button1.addEventListener('click', handleClick);
@@ -249,35 +218,35 @@ button.removeEventListener('click', myHandler);
 
 ### Available Events
 
-| Event | Fired When |
-|-------|------------|
-| `androidback` | Back button released |
-| `androidhome` | Home button released |
-| `androidsearch` | Search button released |
-| `androidcamera` | Camera button released |
-| `androidfocus` | Camera half-pressed |
-| `androidvolup` | Volume-up released |
-| `androidvoldown` | Volume-down released |
+| Event            | Fired When             |
+| ---------------- | ---------------------- |
+| `androidback`    | Back button released   |
+| `androidhome`    | Home button released   |
+| `androidsearch`  | Search button released |
+| `androidcamera`  | Camera button released |
+| `androidfocus`   | Camera half-pressed    |
+| `androidvolup`   | Volume-up released     |
+| `androidvoldown` | Volume-down released   |
 
 ### Handling Back Button
 
 ```javascript
-var win = Ti.UI.createWindow({ backgroundColor: 'white' });
+const win = Ti.UI.createWindow({ backgroundColor: 'white' });
 
-win.addEventListener('androidback', function(e) {
+win.addEventListener('androidback', (e) => {
   // Prevent default behavior
   e.bubbles = false;
 
   // Custom back behavior
-  var dialog = Ti.UI.createAlertDialog({
+  const dialog = Ti.UI.createAlertDialog({
     message: 'Exit app?',
     buttonNames: ['Yes', 'No'],
     cancel: 1
   });
-  dialog.addEventListener('click', function(e) {
+  dialog.addEventListener('click', (e) => {
     if (e.index === 0) {
       // Close app
-      var activity = Ti.Android.currentActivity;
+      const activity = Ti.Android.currentActivity;
       activity.finish();
     }
   });
@@ -294,29 +263,29 @@ Since 3.2.0, all windows are heavyweight by default and can receive hardware but
 ### Create Options Menu
 
 ```javascript
-var activity = Ti.Android.currentActivity;
+const activity = Ti.Android.currentActivity;
 
-activity.onCreateOptionsMenu = function(e) {
-  var menu = e.menu;
+activity.onCreateOptionsMenu = (e) => {
+  const menu = e.menu;
 
   // Add menu items
-  var menuItem = menu.add({
+  const menuItem = menu.add({
     title: 'Refresh',
     icon: Ti.App.Android.R.drawable.ic_menu_refresh,
     showAsAction: Ti.Android.SHOW_AS_ACTION_IF_ROOM
   });
-  menuItem.addEventListener('click', function(e) {
+  menuItem.addEventListener('click', () => {
     refreshData();
   });
 };
 
-activity.onPrepareOptionsMenu = function(e) {
+activity.onPrepareOptionsMenu = (e) => {
   // Update menu before showing
-  var menu = e.menu;
+  const menu = e.menu;
   // Modify items based on state
 };
 
-activity.onOptionsItemSelected = function(e) {
+activity.onOptionsItemSelected = (e) => {
   // Handle menu item selection
   if (e.itemId === SOME_ID) {
     return true; // Event handled
@@ -331,7 +300,7 @@ activity.onOptionsItemSelected = function(e) {
 
 ```javascript
 // GOOD: Define before opening
-win.addEventListener('open', function(e) {
+win.addEventListener('open', () => {
   Ti.API.info('Window opened');
 });
 win.open();
@@ -348,9 +317,9 @@ win.addEventListener('open', function(e) {
 ```javascript
 // BAD: Global listener with local reference
 function init() {
-  var localData = 'some data';
+  const localData = 'some data';
 
-  Ti.App.addEventListener('update', function() {
+  Ti.App.addEventListener('update', () => {
     // 'localData' stays in memory forever
     Ti.API.info(localData);
   });
@@ -358,7 +327,7 @@ function init() {
 
 // GOOD: Remove when done
 function init() {
-  var handler = function() {
+  const handler = () => {
     Ti.API.info('data');
   };
 
@@ -372,12 +341,12 @@ function init() {
 ### Remove Listeners on Window Close
 
 ```javascript
-var win = Ti.UI.createWindow();
-var handler = function(e) { /* ... */ };
+const win = Ti.UI.createWindow();
+const handler = (e) => { /* ... */ };
 
 someComponent.addEventListener('event', handler);
 
-win.addEventListener('close', function() {
+win.addEventListener('close', () => {
   someComponent.removeEventListener('event', handler);
 });
 ```

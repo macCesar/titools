@@ -1,15 +1,53 @@
 # Layouts, Positioning, and View Hierarchy
 
+## Table of Contents
+
+- [Layouts, Positioning, and View Hierarchy](#layouts-positioning-and-view-hierarchy)
+  - [Table of Contents](#table-of-contents)
+  - [1. Units of Measurement](#1-units-of-measurement)
+    - [Available Units](#available-units)
+    - [Density-Independent Pixels (dp)](#density-independent-pixels-dp)
+    - [Best Practice](#best-practice)
+  - [2. Positioning Properties](#2-positioning-properties)
+    - [Edge-Based Positioning](#edge-based-positioning)
+    - [Center Positioning](#center-positioning)
+    - [Dynamic Sizing](#dynamic-sizing)
+  - [3. Layout Modes](#3-layout-modes)
+    - [Composite (Default)](#composite-default)
+    - [Vertical Layout](#vertical-layout)
+    - [Horizontal Layout](#horizontal-layout)
+  - [4. Auto-Size Behaviors](#4-auto-size-behaviors)
+    - [Ti.UI.SIZE](#tiuisize)
+    - [Ti.UI.FILL](#tiuifill)
+    - [Component Defaults](#component-defaults)
+    - [Auto-Size in Layout Modes](#auto-size-in-layout-modes)
+  - [5. Combining Layouts](#5-combining-layouts)
+    - [Nested Layouts](#nested-layouts)
+  - [6. View Hierarchy and Z-Index](#6-view-hierarchy-and-z-index)
+    - [Stacking Order](#stacking-order)
+    - [Explicit Z-Index](#explicit-z-index)
+  - [7. Common Layout Patterns](#7-common-layout-patterns)
+    - [Full-Screen Overlay](#full-screen-overlay)
+    - [Centered Content](#centered-content)
+    - [Bottom-Aligned Content](#bottom-aligned-content)
+    - [Percentage-Based Layout](#percentage-based-layout)
+  - [8. Platform Considerations](#8-platform-considerations)
+    - [Android Density-Specific Resources](#android-density-specific-resources)
+    - [iOS Asset Catalog](#ios-asset-catalog)
+  - [Best Practices](#best-practices)
+
+---
+
 ## 1. Units of Measurement
 
 ### Available Units
 
-| Unit | Description | Platform Notes |
-|-------|-------------|------------------|
-| `dp` / `dip` | Density-independent pixels | **Recommended** for cross-platform |
-| `px` | Absolute pixels | Use sparingly - varies by screen density |
-| `%` | Percentage of parent size | Relative to parent's dimension |
-| `system` | Platform default | iOS = dip, Android = px (unless configured) |
+| Unit         | Description                | Platform Notes                              |
+| ------------ | -------------------------- | ------------------------------------------- |
+| `dp` / `dip` | Density-independent pixels | **Recommended** for cross-platform          |
+| `px`         | Absolute pixels            | Use sparingly - varies by screen density    |
+| `%`          | Percentage of parent size  | Relative to parent's dimension              |
+| `system`     | Platform default           | iOS = dip, Android = px (unless configured) |
 
 ### Density-Independent Pixels (dp)
 
@@ -27,13 +65,13 @@ Always use `dp` for consistent sizing across devices:
 
 ```javascript
 // GOOD
-var view = Ti.UI.createView({
+const view = Ti.UI.createView({
   width: '100dp',
   height: '50dp'
 });
 
 // AVOID (platform-dependent)
-var view = Ti.UI.createView({
+const view = Ti.UI.createView({
   width: 100,  // pixels - varies by device
   height: 50
 });
@@ -46,7 +84,7 @@ var view = Ti.UI.createView({
 Relative to parent edges:
 
 ```javascript
-var view = Ti.UI.createView({
+const view = Ti.UI.createView({
   top: 20,      // 20dp from top
   left: 30,     // 30dp from left
   bottom: 10,   // 10dp from bottom (height = parent.height - 30)
@@ -57,7 +95,7 @@ var view = Ti.UI.createView({
 ### Center Positioning
 
 ```javascript
-var view = Ti.UI.createView({
+const view = Ti.UI.createView({
   center: { x: 50, y: 50 }  // 50% from parent's top-left
 });
 ```
@@ -67,7 +105,7 @@ var view = Ti.UI.createView({
 Omit a dimension to calculate dynamically:
 
 ```javascript
-var view = Ti.UI.createView({
+const view = Ti.UI.createView({
   top: 10,
   bottom: 10,  // Height = parent.height - 20
   left: 0,
@@ -82,16 +120,16 @@ var view = Ti.UI.createView({
 Views stack on top of each other:
 
 ```javascript
-var container = Ti.UI.createView({
+const container = Ti.UI.createView({
   layout: 'composite'  // default
 });
 
-var view1 = Ti.UI.createView({
+const view1 = Ti.UI.createView({
   backgroundColor: 'red',
   top: 10, left: 10, width: 100, height: 100
 });
 
-var view2 = Ti.UI.createView({
+const view2 = Ti.UI.createView({
   backgroundColor: 'blue',
   top: 20, left: 20, width: 100, height: 100
 });
@@ -110,17 +148,17 @@ Stacking order controlled by:
 Children stack vertically:
 
 ```javascript
-var container = Ti.UI.createView({
+const container = Ti.UI.createView({
   layout: 'vertical',
   height: Ti.UI.SIZE  // Grows to fit children
 });
 
-var label1 = Ti.UI.createLabel({
+const label1 = Ti.UI.createLabel({
   text: 'First',
   height: Ti.UI.SIZE
 });
 
-var label2 = Ti.UI.createLabel({
+const label2 = Ti.UI.createLabel({
   text: 'Second',
   top: 10,  // Offset from previous sibling's bottom
   height: Ti.UI.SIZE
@@ -141,18 +179,18 @@ container.add(label2);
 Children line up left to right:
 
 ```javascript
-var container = Ti.UI.createView({
+const container = Ti.UI.createView({
   layout: 'horizontal',
   width: Ti.UI.FILL,
   height: Ti.UI.SIZE
 });
 
-var view1 = Ti.UI.createView({
+const view1 = Ti.UI.createView({
   width: 100, height: 50,
   backgroundColor: 'red'
 });
 
-var view2 = Ti.UI.createView({
+const view2 = Ti.UI.createView({
   width: 100, height: 50,
   left: 10,  // Offset from previous sibling's right
   backgroundColor: 'blue'
@@ -175,7 +213,7 @@ container.add(view2);
 View sizes to fit its content:
 
 ```javascript
-var label = Ti.UI.createLabel({
+const label = Ti.UI.createLabel({
   text: 'Hello World',
   width: Ti.UI.SIZE,   // Width fits text
   height: Ti.UI.SIZE  // Height fits text
@@ -187,7 +225,7 @@ var label = Ti.UI.createLabel({
 View fills remaining space in parent:
 
 ```javascript
-var view = Ti.UI.createView({
+const view = Ti.UI.createView({
   width: Ti.UI.FILL,   // Fill remaining width
   height: Ti.UI.FILL   // Fill remaining height
 });
@@ -195,13 +233,13 @@ var view = Ti.UI.createView({
 
 ### Component Defaults
 
-| SIZE Components | FILL Components | Mixed |
-|:----------------|:----------------|:-------|
-| Button | Window | TableViewRow (FILL width, SIZE height) |
-| Label | View | Slider (FILL width, SIZE height) |
-| ImageView | ScrollView | Toolbar (FILL width, SIZE height) |
-| Switch | WebView | |
-| TextField | ScrollableView | |
+| SIZE Components | FILL Components | Mixed                                  |
+| :-------------- | :-------------- | :------------------------------------- |
+| Button          | Window          | TableViewRow (FILL width, SIZE height) |
+| Label           | View            | Slider (FILL width, SIZE height)       |
+| ImageView       | ScrollView      | Toolbar (FILL width, SIZE height)      |
+| Switch          | WebView         |                                        |
+| TextField       | ScrollableView  |                                        |
 
 ### Auto-Size in Layout Modes
 
@@ -214,25 +252,25 @@ In `vertical`/`horizontal` layouts:
 ### Nested Layouts
 
 ```javascript
-var outerContainer = Ti.UI.createView({
+const outerContainer = Ti.UI.createView({
   layout: 'vertical',
   width: Ti.UI.FILL,
   height: Ti.UI.FILL
 });
 
 // Top section
-var header = Ti.UI.createView({
+const header = Ti.UI.createView({
   layout: 'horizontal',
   height: 50,
   backgroundColor: 'blue'
 });
 
-var title = Ti.UI.createLabel({
+const title = Ti.UI.createLabel({
   text: 'Header',
   color: 'white'
 });
 
-var button = Ti.UI.createButton({
+const button = Ti.UI.createButton({
   title: 'Menu'
 });
 
@@ -240,7 +278,7 @@ header.add(title);
 header.add(button);
 
 // Content area
-var content = Ti.UI.createView({
+const content = Ti.UI.createView({
   layout: 'composite',
   backgroundColor: 'white',
   height: Ti.UI.FILL
@@ -257,12 +295,12 @@ outerContainer.add(content);
 Views added later appear on top:
 
 ```javascript
-var view1 = Ti.UI.createView({
+const view1 = Ti.UI.createView({
   backgroundColor: 'red',
   width: 100, height: 100
 });
 
-var view2 = Ti.UI.createView({
+const view2 = Ti.UI.createView({
   backgroundColor: 'blue',
   width: 100, height: 100,
   top: 50, left: 50
@@ -275,13 +313,13 @@ win.add(view2);  // view2 appears on top of view1
 ### Explicit Z-Index
 
 ```javascript
-var view1 = Ti.UI.createView({
+const view1 = Ti.UI.createView({
   backgroundColor: 'red',
   zIndex: 1,
   width: 100, height: 100
 });
 
-var view2 = Ti.UI.createView({
+const view2 = Ti.UI.createView({
   backgroundColor: 'blue',
   zIndex: 2,  // Higher = on top
   width: 100, height: 100,
@@ -297,14 +335,14 @@ win.add(view1);  // Still below view2 due to zIndex
 ### Full-Screen Overlay
 
 ```javascript
-var overlay = Ti.UI.createView({
+const overlay = Ti.UI.createView({
   backgroundColor: 'rgba(0, 0, 0, 0.7)',
   width: Ti.UI.FILL,
   height: Ti.UI.FILL,
   zIndex: 999  // Ensure on top
 });
 
-var dialog = Ti.UI.createView({
+const dialog = Ti.UI.createView({
   backgroundColor: 'white',
   width: 300,
   height: 200,
@@ -318,12 +356,12 @@ win.add(overlay);
 ### Centered Content
 
 ```javascript
-var container = Ti.UI.createView({
+const container = Ti.UI.createView({
   width: Ti.UI.FILL,
   height: Ti.UI.FILL
 });
 
-var centered = Ti.UI.createView({
+const centered = Ti.UI.createView({
   width: 200,
   height: 100,
   backgroundColor: 'blue',
@@ -336,7 +374,7 @@ container.add(centered);
 ### Bottom-Aligned Content
 
 ```javascript
-var footer = Ti.UI.createView({
+const footer = Ti.UI.createView({
   backgroundColor: 'gray',
   height: 50,
   bottom: 0  // Anchor to bottom
@@ -346,13 +384,13 @@ var footer = Ti.UI.createView({
 ### Percentage-Based Layout
 
 ```javascript
-var leftPanel = Ti.UI.createView({
+const leftPanel = Ti.UI.createView({
   width: '30%',
   height: Ti.UI.FILL,
   backgroundColor: 'lightgray'
 });
 
-var rightPanel = Ti.UI.createView({
+const rightPanel = Ti.UI.createView({
   width: '70%',
   height: Ti.UI.FILL,
   left: '30%',  // Starts where left ends

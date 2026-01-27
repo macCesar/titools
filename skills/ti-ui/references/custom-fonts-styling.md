@@ -1,5 +1,62 @@
 # Custom Fonts and Attributed Strings
 
+## Table of Contents
+
+- [Custom Fonts and Attributed Strings](#custom-fonts-and-attributed-strings)
+  - [Table of Contents](#table-of-contents)
+  - [1. Custom Fonts Overview](#1-custom-fonts-overview)
+    - [Font Sources](#font-sources)
+  - [2. Platform-Specific Font Loading](#2-platform-specific-font-loading)
+    - [Key Difference](#key-difference)
+    - [Example](#example)
+  - [3. Alloy Projects](#3-alloy-projects)
+    - [Directory Structure](#directory-structure)
+    - [XML Usage](#xml-usage)
+    - [TSS Styling](#tss-styling)
+    - [Cross-Platform Solution 1: Rename Font File](#cross-platform-solution-1-rename-font-file)
+    - [Cross-Platform Solution 2: Platform-Specific Styles](#cross-platform-solution-2-platform-specific-styles)
+  - [4. Classic Titanium Projects](#4-classic-titanium-projects)
+    - [Directory Structure](#directory-structure-1)
+    - [Runtime Platform Switching](#runtime-platform-switching)
+    - [Platform-Switching Helper Function](#platform-switching-helper-function)
+  - [5. Finding PostScript Name](#5-finding-postscript-name)
+    - [Using FontBook (macOS)](#using-fontbook-macos)
+    - [Common Font Patterns](#common-font-patterns)
+  - [6. iOS Platform Notes](#6-ios-platform-notes)
+    - [Automatic Info.plist Registration](#automatic-infoplist-registration)
+    - [Using System Fonts](#using-system-fonts)
+  - [7. Attributed Strings](#7-attributed-strings)
+    - [Basic Syntax](#basic-syntax)
+    - [Important Warning](#important-warning)
+    - [Property Equivalents](#property-equivalents)
+  - [8. Attribute Types](#8-attribute-types)
+    - [Font Attribute](#font-attribute)
+    - [Foreground Color](#foreground-color)
+    - [Background Color](#background-color)
+    - [Underline](#underline)
+    - [Strikethrough](#strikethrough)
+    - [Links (iOS 7+)](#links-ios-7)
+  - [9. iOS-Exclusive Attributes](#9-ios-exclusive-attributes)
+    - [Ligature](#ligature)
+    - [Kerning (Character Spacing)](#kerning-character-spacing)
+    - [Stroke Text (iOS 7+)](#stroke-text-ios-7)
+    - [Shadow (iOS 7+)](#shadow-ios-7)
+    - [Letterpress Effect (iOS 7+)](#letterpress-effect-ios-7)
+    - [Writing Direction (iOS 7+)](#writing-direction-ios-7)
+    - [Baseline Offset (iOS 7+)](#baseline-offset-ios-7)
+    - [Oblique/Skew (iOS 7+)](#obliqueskew-ios-7)
+    - [Expansion (iOS 7+)](#expansion-ios-7)
+  - [10. Multiple Attributes Example](#10-multiple-attributes-example)
+  - [11. Best Practices](#11-best-practices)
+    - [Custom Fonts](#custom-fonts)
+    - [Attributed Strings](#attributed-strings)
+  - [12. Common Issues](#12-common-issues)
+    - [Font Not Showing](#font-not-showing)
+    - [Wrong Font on One Platform](#wrong-font-on-one-platform)
+    - [Attributed String Not Displaying](#attributed-string-not-displaying)
+
+---
+
 ## 1. Custom Fonts Overview
 
 Titanium supports TrueType (.ttf) and OpenType (.otf) fonts on both iOS and Android. Custom fonts are a quick way to personalize or brand your application.
@@ -13,10 +70,10 @@ Titanium supports TrueType (.ttf) and OpenType (.otf) fonts on both iOS and Andr
 
 ### Key Difference
 
-| Platform | fontFamily Value |
-|----------|------------------|
-| **Android** | Font file name without extension |
-| **iOS** | Font's PostScript name (embedded in font file) |
+| Platform    | fontFamily Value                               |
+| ----------- | ---------------------------------------------- |
+| **Android** | Font file name without extension               |
+| **iOS**     | Font's PostScript name (embedded in font file) |
 
 ### Example
 
@@ -112,7 +169,7 @@ Resources/
 ### Runtime Platform Switching
 
 ```javascript
-var fontFamilyName;
+let fontFamilyName;
 
 if (Ti.Platform.osname === 'android') {
   // Android: use filename without extension
@@ -122,7 +179,7 @@ if (Ti.Platform.osname === 'android') {
   fontFamilyName = 'CustomFont';
 }
 
-var label = Ti.UI.createLabel({
+const label = Ti.UI.createLabel({
   text: 'Custom Font Text',
   font: {
     fontFamily: fontFamilyName,
@@ -135,8 +192,8 @@ var label = Ti.UI.createLabel({
 
 ```javascript
 // Helper function from Tweetanium pattern
-var os = function(map) {
-  var def = map.def || null;
+const os = (map) => {
+  const def = map.def || null;
   if (map[Ti.Platform.osname]) {
     return (typeof map[Ti.Platform.osname] === 'function')
       ? map[Ti.Platform.osname]()
@@ -146,7 +203,7 @@ var os = function(map) {
 };
 
 // Usage
-var label = Ti.UI.createLabel({
+const label = Ti.UI.createLabel({
   text: 'Custom Font Text',
   font: {
     fontFamily: os({
@@ -172,12 +229,12 @@ The PostScript name is embedded in the font file and doesn't change if you renam
 
 ### Common Font Patterns
 
-| Friendly Name | PostScript Name Pattern |
-|---------------|------------------------|
-| Arial | ArialMT or Arial-BoldMT |
-| Helvetica | Helvetica or Helvetica-Bold |
-| Times New Roman | TimesNewRomanPSMT |
-| Custom-Regular | CustomName-Regular |
+| Friendly Name   | PostScript Name Pattern     |
+| --------------- | --------------------------- |
+| Arial           | ArialMT or Arial-BoldMT     |
+| Helvetica       | Helvetica or Helvetica-Bold |
+| Times New Roman | TimesNewRomanPSMT           |
+| Custom-Regular  | CustomName-Regular          |
 
 ## 6. iOS Platform Notes
 
@@ -201,8 +258,8 @@ Attributed strings allow applying different formatting to character ranges withi
 ### Basic Syntax
 
 ```javascript
-var text = "Have you tried hyperloop yet?";
-var attr = Ti.UI.createAttributedString({
+const text = "Have you tried hyperloop yet?";
+const attr = Ti.UI.createAttributedString({
   text: text,
   attributes: [
     {
@@ -213,7 +270,7 @@ var attr = Ti.UI.createAttributedString({
   ]
 });
 
-var label = Ti.UI.createLabel({
+const label = Ti.UI.createLabel({
   attributedString: attr
 });
 ```
@@ -225,18 +282,18 @@ If using `attributedString` or `attributedHintText`, **do not** set other text-m
 ### Property Equivalents
 
 | Component | AttributedString Property | Equivalent |
-|-----------|-------------------------|-------------|
-| Label | `attributedString` | `text` |
-| TextArea | `attributedString` | `value` |
-| TextField | `attributedString` | `value` |
-| TextField | `attributedHintText` | `hintText` |
+| --------- | ------------------------- | ---------- |
+| Label     | `attributedString`        | `text`     |
+| TextArea  | `attributedString`        | `value`    |
+| TextField | `attributedString`        | `value`    |
+| TextField | `attributedHintText`      | `hintText` |
 
 ## 8. Attribute Types
 
 ### Font Attribute
 
 ```javascript
-var attr = Ti.UI.createAttributedString({
+const attr = Ti.UI.createAttributedString({
   text: text,
   attributes: [
     {
@@ -273,9 +330,9 @@ var attr = Ti.UI.createAttributedString({
 
 ### Underline
 
-**Android**: Single line only, `value` ignored
+**Android**: Single line only, `value` ignored.
 
-**iOS**: Multiple styles and patterns
+**iOS**: Multiple styles and patterns. You can logically-OR constants together (e.g., `STYLE_DOUBLE | PATTERN_DOT`).
 
 ```javascript
 {
@@ -298,6 +355,7 @@ var attr = Ti.UI.createAttributedString({
 - `ATTRIBUTE_UNDERLINE_PATTERN_DASH`
 - `ATTRIBUTE_UNDERLINE_PATTERN_DASH_DOT`
 - `ATTRIBUTE_UNDERLINE_PATTERN_DASH_DOT_DOT`
+- `ATTRIBUTE_UNDERLINE_BY_WORD` (Draw lines only under characters, not spaces)
 
 **iOS Underline Color** (iOS 7+):
 ```javascript
@@ -310,20 +368,9 @@ var attr = Ti.UI.createAttributedString({
 
 ### Strikethrough
 
-```javascript
-{
-  type: Ti.UI.ATTRIBUTE_STRIKETHROUGH_STYLE,
-  value: Ti.UI.ATTRIBUTE_UNDERLINE_STYLE_THICK,  // Same styles as underline
-  range: [start, length]
-}
+**Android**: Single line through text only.
 
-// iOS 7+: Set strikethrough color
-{
-  type: Ti.UI.ATTRIBUTE_STRIKETHROUGH_COLOR,
-  value: 'red',
-  range: [start, length]
-}
-```
+**iOS**: Supports same styles and patterns as Underline.
 
 ### Links (iOS 7+)
 
@@ -338,10 +385,12 @@ var attr = Ti.UI.createAttributedString({
 Handle link clicks:
 
 ```javascript
-label.addEventListener('link', function(e) {
-  Ti.API.info('Link clicked: ' + e.url);
+label.addEventListener('link', (e) => {
+  Ti.API.info(`Link clicked: ${e.url}`);
 });
 ```
+
+**Note**: Prior to Titanium Release 4.0, the `link` event was only triggered by a long press on iOS.
 
 ## 9. iOS-Exclusive Attributes
 
@@ -350,7 +399,7 @@ label.addEventListener('link', function(e) {
 ```javascript
 {
   type: Ti.UI.ATTRIBUTE_LIGATURE,
-  value: 1,  // 1 = enabled, 0 = disabled
+  value: 1,  // 1 = enabled, 0 = disabled (default)
   range: [start, length]
 }
 ```
@@ -360,7 +409,7 @@ label.addEventListener('link', function(e) {
 ```javascript
 {
   type: Ti.UI.ATTRIBUTE_KERN,
-  value: 5.0,  // Positive = wider, 0 = default, negative = tighter
+  value: 5.0,  // Distance in points. Positive = wider, 0 = default, negative = tighter
   range: [start, length]
 }
 ```
@@ -391,7 +440,7 @@ label.addEventListener('link', function(e) {
   value: {
     color: 'green',
     offset: { width: 10, height: 5 },
-    blurRadius: 3.0  // iOS 7+, 0 = no blur
+    blurRadius: 3.0  // 0 = no blur
   },
   range: [start, length]
 }
@@ -409,6 +458,8 @@ label.addEventListener('link', function(e) {
 
 ### Writing Direction (iOS 7+)
 
+Controls text direction for a specific range. Can logically-OR direction with behavior (Embedding or Override).
+
 ```javascript
 {
   type: Ti.UI.ATTRIBUTE_WRITING_DIRECTION,
@@ -418,19 +469,21 @@ label.addEventListener('link', function(e) {
 }
 ```
 
-**Values**:
-- `ATTRIBUTE_WRITING_DIRECTION_NATURAL`
+**Direction Constants**:
+- `ATTRIBUTE_WRITING_DIRECTION_NATURAL`: Uses Unicode Bidirectional Algorithm.
 - `ATTRIBUTE_WRITING_DIRECTION_LEFT_TO_RIGHT`
 - `ATTRIBUTE_WRITING_DIRECTION_RIGHT_TO_LEFT`
-- `ATTRIBUTE_WRITING_DIRECTION_EMBEDDING`
-- `ATTRIBUTE_WRITING_DIRECTION_OVERRIDE`
+
+**Behavior Modifiers**:
+- `ATTRIBUTE_WRITING_DIRECTION_EMBEDDING`: Use embedded direction.
+- `ATTRIBUTE_WRITING_DIRECTION_OVERRIDE`: Force the direction.
 
 ### Baseline Offset (iOS 7+)
 
 ```javascript
 {
   type: Ti.UI.ATTRIBUTE_BASELINE_OFFSET,
-  value: 10,  // Positive = above, negative = below baseline
+  value: 10,  // Pixels. Positive = above, negative = below baseline
   range: [start, length]
 }
 ```
@@ -458,8 +511,8 @@ label.addEventListener('link', function(e) {
 ## 10. Multiple Attributes Example
 
 ```javascript
-var text = "Have you tried hyperloop yet?";
-var attr = Ti.UI.createAttributedString({
+const text = "Have you tried hyperloop yet?";
+const attr = Ti.UI.createAttributedString({
   text: text,
   attributes: [
     // Background color

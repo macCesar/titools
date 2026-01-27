@@ -1,18 +1,68 @@
 # ListViews and Performance Optimization
 
+## Table of Contents
+
+- [ListViews and Performance Optimization](#listviews-and-performance-optimization)
+  - [Table of Contents](#table-of-contents)
+  - [1. Overview](#1-overview)
+    - [Core Concepts](#core-concepts)
+  - [2. Basic ListView Structure](#2-basic-listview-structure)
+    - [Declarative (Alloy XML)](#declarative-alloy-xml)
+    - [Programmatic Data Binding](#programmatic-data-binding)
+    - [Mapping External Data](#mapping-external-data)
+  - [3. Templates](#3-templates)
+    - [Default Template](#default-template)
+    - [Custom Templates](#custom-templates)
+    - [Multiple Templates](#multiple-templates)
+  - [4. Data Binding](#4-data-binding)
+    - [Binding Syntax](#binding-syntax)
+    - [Programmatic Binding with Custom Templates](#programmatic-binding-with-custom-templates)
+  - [5. Section Operations](#5-section-operations)
+    - [CRUD Methods](#crud-methods)
+    - [Example Operations](#example-operations)
+  - [6. Events](#6-events)
+    - [Item Click](#item-click)
+    - [Marker Events (Infinite Scroll)](#marker-events-infinite-scroll)
+    - [Template Element Events](#template-element-events)
+  - [7. Critical Performance Rules](#7-critical-performance-rules)
+    - [Rule 1: Avoid Ti.UI.SIZE in Templates](#rule-1-avoid-tiuisize-in-templates)
+    - [Rule 2: Cannot Access Children Directly](#rule-2-cannot-access-children-directly)
+    - [Rule 3: Minimize Template Count](#rule-3-minimize-template-count)
+    - [Rule 4: Use updateItemAt for Changes](#rule-4-use-updateitemat-for-changes)
+    - [Rule 5: Animations are Limited](#rule-5-animations-are-limited)
+  - [8. iOS Action Items (Swipe Actions)](#8-ios-action-items-swipe-actions)
+  - [9. Search](#9-search)
+  - [10. Performance Best Practices](#10-performance-best-practices)
+    - [DO:](#do)
+    - [DON'T:](#dont)
+  - [11. Transitioning from TableView](#11-transitioning-from-tableview)
+    - [Core Logic Differences](#core-logic-differences)
+    - [API Differences](#api-differences)
+  - [12. Common Patterns](#12-common-patterns)
+    - [Infinite Scroll with Markers](#infinite-scroll-with-markers)
+    - [Multiple Selection](#multiple-selection)
+    - [Section Index (A-Z)](#section-index-a-z)
+  - [13. Platform Differences](#13-platform-differences)
+    - [iOS vs Android](#ios-vs-android)
+    - [cacheSize (iOS)](#cachesize-ios)
+  - [14. Debugging](#14-debugging)
+    - [Common Issues](#common-issues)
+
+---
+
 ## 1. Overview
 
 ListView is a data-oriented, high-performance replacement for TableView. It optimizes large datasets by recycling native views and managing the item lifecycle automatically.
 
 ### Core Concepts
 
-| Concept | Description |
-|---------|-------------|
-| **ListView** | Container for sections |
-| **ListSection** | Organizes items, supports CRUD operations |
-| **ListItem** | Virtual view object (not directly accessible after rendering) |
-| **ItemTemplate** | Defines row structure and binding |
-| **ListDataItem** | Raw data bound to templates |
+| Concept          | Description                                                   |
+| ---------------- | ------------------------------------------------------------- |
+| **ListView**     | Container for sections                                        |
+| **ListSection**  | Organizes items, supports CRUD operations                     |
+| **ListItem**     | Virtual view object (not directly accessible after rendering) |
+| **ItemTemplate** | Defines row structure and binding                             |
+| **ListDataItem** | Raw data bound to templates                                   |
 
 ## 2. Basic ListView Structure
 
@@ -35,7 +85,7 @@ ListView is a data-oriented, high-performance replacement for TableView. It opti
 ### Programmatic Data Binding
 
 ```javascript
-var items = [
+const items = [
   { properties: { title: "Item 1" } },
   { properties: { title: "Item 2" } },
   { properties: { title: "Item 3" } }
@@ -47,13 +97,13 @@ $.myList.sections[0].setItems(items);
 ### Mapping External Data
 
 ```javascript
-var externalData = [
+const externalData = [
   { name: "Item 1", value: 100 },
   { name: "Item 2", value: 200 }
 ];
 
 // Map to ListDataItem format
-var items = _.map(externalData, function(item) {
+const items = _.map(externalData, (item) => {
   return {
     properties: {
       title: item.name
@@ -134,7 +184,7 @@ Create with `<Templates>` and `<ItemTemplate>`:
 Assign template per item:
 
 ```javascript
-var items = [
+const items = [
   {
     label: { text: "Full item" },
     image: { image: "photo.png" },
@@ -159,7 +209,7 @@ $.dynamicListView.sections[0].setItems(items);
 ### Programmatic Binding with Custom Templates
 
 ```javascript
-var items = [
+const items = [
   {
     mass: { text: "1.00794" },
     name: { text: "Hydrogen" },
@@ -181,18 +231,18 @@ $.elementsList.sections[0].setItems(items);
 
 ### CRUD Methods
 
-| Method | Description |
-|--------|-------------|
-| `setItems(items)` | Replace all items |
-| `appendItems(items)` | Add to end |
-| `insertItemsAt(index, items)` | Insert at position |
-| `replaceItemsAt(index, count, items)` | Replace range |
-| `deleteItemsAt(index, count)` | Delete range |
+| Method                                | Description        |
+| ------------------------------------- | ------------------ |
+| `setItems(items)`                     | Replace all items  |
+| `appendItems(items)`                  | Add to end         |
+| `insertItemsAt(index, items)`         | Insert at position |
+| `replaceItemsAt(index, count, items)` | Replace range      |
+| `deleteItemsAt(index, count)`         | Delete range       |
 
 ### Example Operations
 
 ```javascript
-var section = $.myList.sections[0];
+const section = $.myList.sections[0];
 
 // Replace all (clears first)
 section.setItems(items);
@@ -225,8 +275,8 @@ function handleClick(e) {
   // e.bindId: which template element (null if row clicked)
   // e.itemId: custom itemId if set
 
-  var section = $.list.sections[e.sectionIndex];
-  var item = section.getItemAt(e.itemIndex);
+  const section = $.list.sections[e.sectionIndex];
+  const item = section.getItemAt(e.itemIndex);
 
   // Update item
   item.properties.title += " (clicked)";
@@ -246,13 +296,13 @@ $.myList.setMarker({ sectionIndex: 0, itemIndex: 99 });
 // Handle marker event
 function markerReached(e) {
   // Load more data
-  var moreData = loadNextPage();
+  const moreData = loadNextPage();
 
   // Append to list
   e.section.appendItems(moreData);
 
   // Set next marker
-  var nextMarker = e.itemIndex + moreData.length - 1;
+  const nextMarker = e.itemIndex + moreData.length - 1;
   $.myList.setMarker({ sectionIndex: e.sectionIndex, itemIndex: nextMarker });
 }
 
@@ -279,7 +329,7 @@ $.myList.addEventListener('marker', markerReached);
 function handleItemClick(e) {
   // Check which element was clicked
   if (e.bindId === "icon") {
-    var item = e.section.getItemAt(e.itemIndex);
+    const item = e.section.getItemAt(e.itemIndex);
 
     // Toggle image (update data, NOT e.source)
     if (item.icon.image === "star_grey.png") {
@@ -331,7 +381,7 @@ function handleClick(e) {
 ```javascript
 // DO - Update the data item
 function handleClick(e) {
-  var item = e.section.getItemAt(e.itemIndex);
+  const item = e.section.getItemAt(e.itemIndex);
   item.icon.image = "star_gold.png";
   e.section.updateItemAt(e.itemIndex, item);
 }
@@ -363,7 +413,7 @@ Fewer templates = better native cell reuse:
 
 ```javascript
 // Get item data
-var item = section.getItemAt(index);
+const item = section.getItemAt(index);
 
 // Modify properties
 item.properties.backgroundColor = 'blue';
@@ -380,14 +430,14 @@ ListView items have limited animation support. For complex animations, consider 
 ## 8. iOS Action Items (Swipe Actions)
 
 ```javascript
-var section = $.myList.sections[0];
+const section = $.myList.sections[0];
 
 // Define edit actions
-var deleteAction = Ti.UI.iOS.createListViewDeleteOptions({
+const deleteAction = Ti.UI.iOS.createListViewDeleteOptions({
   title: 'Delete'
 });
 
-var moreAction = Ti.UI.iOS.createListViewEditAction({
+const moreAction = Ti.UI.iOS.createListViewEditAction({
   title: 'More',
   backgroundColor: 'blue',
   style: Ti.UI.iOS.LIST_VIEW_EDIT_ACTION_STYLE_NORMAL
@@ -398,7 +448,7 @@ section.editActions = [deleteAction, moreAction];
 section.canEdit = true;
 
 // Handle actions
-$.myList.addEventListener('editaction', function(e) {
+$.myList.addEventListener('editaction', (e) => {
   if (e.action === deleteAction) {
     section.deleteItemsAt(e.itemIndex, 1);
   } else if (e.action === moreAction) {
@@ -410,14 +460,14 @@ $.myList.addEventListener('editaction', function(e) {
 ## 9. Search
 
 ```javascript
-var searchView = Ti.UI.createSearchBar({
+const searchView = Ti.UI.createSearchBar({
   showCancel: true
 });
 
 $.myList.searchView = searchView;
 
 // Mark searchable text in items
-var items = [
+const items = [
   {
     properties: {
       title: "Apple",
@@ -446,26 +496,42 @@ var items = [
 
 ## 11. Transitioning from TableView
 
-| TableView | ListView |
-|-----------|----------|
-| TableViewRow | ListItem (Virtual) |
+### Core Logic Differences
+
+| TableView            | ListView                     |
+| -------------------- | ---------------------------- |
+| TableViewRow         | ListItem (Virtual)           |
 | `add()` views to row | `childTemplates` in Template |
-| `data` property | `sections` property |
-| Direct child access | Bound data updates only |
-| `appendRow()` | `appendItems()` |
-| `updateRow()` | `updateItemAt()` |
-| `deleteRow()` | `deleteItemsAt()` |
+| `data` property      | `sections` property          |
+| Direct child access  | Bound data updates only      |
+| `appendRow()`        | `appendItems()`              |
+| `updateRow()`        | `updateItemAt()`             |
+| `deleteRow()`        | `deleteItemsAt()`            |
+
+### API Differences
+
+**Properties NOT available for ListItem**:
+- `accessibilityLabel`, `className`, `editable`, `hasCheck`, `hasChild`, `hasDetail`, `leftImage`, `moveable`, `rightImage`.
+- *Alternatives*: Use `accessoryType` for indicators, and `image` or custom templates for images.
+
+**TableViewSection methods NOT supported by ListSection**:
+- `add`, `remove`, `rowAtIndex`.
+- *Alternatives*: Use `getItemAt` and `appendItems`/`deleteItemsAt`.
+
+**TableView methods NOT available to ListView**:
+- `appendRow`, `deleteRow`, `deselectRow`, `insertRowAfter`, `insertRowBefore`, `selectRow`, `updateRow`, `scrollToIndex`.
+- *Alternatives*: Use `scrollToItem` and `selectItem` (iOS). For row manipulation, use the containing `ListSection`.
 
 ## 12. Common Patterns
 
 ### Infinite Scroll with Markers
 
 ```javascript
-var PAGE_SIZE = 25;
-var currentPage = 0;
+const PAGE_SIZE = 25;
+let currentPage = 0;
 
 function loadPage(page) {
-  var data = fetchDataFromAPI(page);
+  const data = fetchDataFromAPI(page);
 
   if (page === 0) {
     $.myList.sections[0].setItems(data);
@@ -474,7 +540,7 @@ function loadPage(page) {
   }
 
   // Set marker for next page
-  var markerIndex = (page * PAGE_SIZE) + data.length - 1;
+  const markerIndex = (page * PAGE_SIZE) + data.length - 1;
   $.myList.setMarker({ sectionIndex: 0, itemIndex: markerIndex });
 }
 
@@ -482,7 +548,7 @@ function loadPage(page) {
 loadPage(0);
 
 // Marker handler
-$.myList.addEventListener('marker', function(e) {
+$.myList.addEventListener('marker', (e) => {
   currentPage++;
   loadPage(currentPage);
 });
@@ -491,11 +557,11 @@ $.myList.addEventListener('marker', function(e) {
 ### Multiple Selection
 
 ```javascript
-var selectedItems = {};
+const selectedItems = {};
 
-$.myList.addEventListener('itemclick', function(e) {
-  var item = e.section.getItemAt(e.itemIndex);
-  var key = e.sectionIndex + '-' + e.itemIndex;
+$.myList.addEventListener('itemclick', (e) => {
+  const item = e.section.getItemAt(e.itemIndex);
+  const key = `${e.sectionIndex}-${e.itemIndex}`;
 
   if (selectedItems[key]) {
     // Deselect
@@ -521,13 +587,13 @@ $.myList.sectionIndexTitles = ["A", "B", "C", ...];
 
 ### iOS vs Android
 
-| Feature | iOS | Android |
-|---------|-----|---------|
-| Action items (swipe) | Full support | Not supported |
-| Section index titles | Full support | Not supported |
-| Search bar | Full support | Full support |
-| Default template image | Left side | Right side |
-| cacheSize property | Supported | Not supported |
+| Feature                | iOS          | Android       |
+| ---------------------- | ------------ | ------------- |
+| Action items (swipe)   | Full support | Not supported |
+| Section index titles   | Full support | Not supported |
+| Search bar             | Full support | Full support  |
+| Default template image | Left side    | Right side    |
+| cacheSize property     | Supported    | Not supported |
 
 ### cacheSize (iOS)
 

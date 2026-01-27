@@ -1,5 +1,52 @@
 # Animation, Matrices, and Transitions
 
+## Table of Contents
+
+- [Animation, Matrices, and Transitions](#animation-matrices-and-transitions)
+  - [Table of Contents](#table-of-contents)
+  - [1. Overview](#1-overview)
+  - [2. Basic Animations](#2-basic-animations)
+    - [Property Animation Syntax](#property-animation-syntax)
+    - [Animation Properties](#animation-properties)
+    - [Animation Curves (Easing)](#animation-curves-easing)
+    - [Reversing Animation](#reversing-animation)
+    - [Repeating Animation](#repeating-animation)
+  - [3. 2D Matrix Animations](#3-2d-matrix-animations)
+    - [Basic 2D Transform](#basic-2d-transform)
+    - [2D Matrix Methods](#2d-matrix-methods)
+    - [Sequential Transformations](#sequential-transformations)
+    - [Identity (Reset) Transform](#identity-reset-transform)
+  - [4. 3D Matrix Animations (iOS Only)](#4-3d-matrix-animations-ios-only)
+    - [Basic 3D Transform](#basic-3d-transform)
+    - [3D Matrix Methods](#3d-matrix-methods)
+    - [Flip Card Effect](#flip-card-effect)
+  - [5. iOS Transitions](#5-ios-transitions)
+    - [Transition Constants](#transition-constants)
+    - [View Transition](#view-transition)
+    - [Window Transition (NavigationWindow)](#window-transition-navigationwindow)
+  - [6. Dynamic Animations (iOS Only)](#6-dynamic-animations-ios-only)
+    - [Gravity Animation](#gravity-animation)
+    - [Attachment (Spring) Behavior](#attachment-spring-behavior)
+    - [Push Behavior](#push-behavior)
+  - [7. Animation Events](#7-animation-events)
+    - [Animation Lifecycle](#animation-lifecycle)
+    - [Stopping Animations](#stopping-animations)
+  - [8. Common Animation Patterns](#8-common-animation-patterns)
+    - [Fade In/Out](#fade-inout)
+    - [Slide In](#slide-in)
+    - [Pulse Animation](#pulse-animation)
+    - [Shake Animation](#shake-animation)
+    - [Bounce In](#bounce-in)
+  - [9. Performance Considerations](#9-performance-considerations)
+    - [DO:](#do)
+    - [DON'T:](#dont)
+    - [Bad vs Good](#bad-vs-good)
+  - [10. Platform Differences](#10-platform-differences)
+    - [iOS vs Android](#ios-vs-android)
+  - [Best Practices](#best-practices)
+
+---
+
 ## 1. Overview
 
 Animations add visual interest and professionalism to apps when used appropriately. Titanium supports:
@@ -21,7 +68,7 @@ view.animate({
 });
 
 // Method 2: Animation object (reusable)
-var fadeOut = Ti.UI.createAnimation({
+const fadeOut = Ti.UI.createAnimation({
   opacity: 0,
   duration: 2000
 });
@@ -31,7 +78,7 @@ view.animate(fadeOut);
 view.animate({
   opacity: 0,
   duration: 2000
-}, function() {
+}, () => {
   Ti.API.info('Animation complete');
   // Optional: reverse animation
   view.animate({
@@ -43,20 +90,20 @@ view.animate({
 
 ### Animation Properties
 
-| Property | Description | Default |
-|----------|-------------|---------|
-| `duration` | Duration in milliseconds | 0 |
-| `delay` | Delay before starting | 0 |
-| `curve` | Easing function | `Ti.UI.ANIMATION_CURVE_EASE_IN_OUT` |
-| `autoreverse` | Return to original state | `false` |
-| `repeat` | Number of times to repeat | 0 |
-| `opacity` | Target opacity (0-1) | - |
-| `top`, `left`, `bottom`, `right` | Position values | - |
-| `width`, `height` | Size values | - |
-| `backgroundColor` | Target color | - |
-| `transform` | Matrix transformation | - |
-| `view` | View for transition | - |
-| `transition` | Transition type (iOS) | - |
+| Property                         | Description               | Default                             |
+| -------------------------------- | ------------------------- | ----------------------------------- |
+| `duration`                       | Duration in milliseconds  | 0                                   |
+| `delay`                          | Delay before starting     | 0                                   |
+| `curve`                          | Easing function           | `Ti.UI.ANIMATION_CURVE_EASE_IN_OUT` |
+| `autoreverse`                    | Return to original state  | `false`                             |
+| `repeat`                         | Number of times to repeat | 0                                   |
+| `opacity`                        | Target opacity (0-1)      | -                                   |
+| `top`, `left`, `bottom`, `right` | Position values           | -                                   |
+| `width`, `height`                | Size values               | -                                   |
+| `backgroundColor`                | Target color              | -                                   |
+| `transform`                      | Matrix transformation     | -                                   |
+| `view`                           | View for transition       | -                                   |
+| `transition`                     | Transition type (iOS)     | -                                   |
 
 ### Animation Curves (Easing)
 
@@ -90,7 +137,7 @@ view.animate({
 view.animate({
   opacity: 0,
   duration: 2000
-}, function() {
+}, () => {
   view.animate({
     opacity: 1,
     duration: 2000
@@ -128,7 +175,7 @@ view.animate({ opacity: view.opacity, duration: 0 });
 
 ```javascript
 // Create matrix
-var matrix2d = Ti.UI.create2DMatrix();
+let matrix2d = Ti.UI.create2DMatrix();
 
 // Apply transformations
 matrix2d = matrix2d.rotate(20);      // Rotate 20 degrees
@@ -146,15 +193,15 @@ view.animate({
 
 ### 2D Matrix Methods
 
-| Method | Description |
-|--------|-------------|
-| `rotate(degrees)` | Rotate clockwise |
-| `scale(sx, sy)` | Scale (sy defaults to sx) |
-| `translate(dx, dy)` | Move by delta |
-| `skew(x, y)` | Skew/shear transformation |
-| `invert()` | Invert matrix |
-| `multiply(matrix)` | Multiply matrices |
-| `length` | Get matrix length |
+| Method              | Description               |
+| ------------------- | ------------------------- |
+| `rotate(degrees)`   | Rotate clockwise          |
+| `scale(sx, sy)`     | Scale (sy defaults to sx) |
+| `translate(dx, dy)` | Move by delta             |
+| `skew(x, y)`        | Skew/shear transformation |
+| `invert()`          | Invert matrix             |
+| `multiply(matrix)`  | Multiply matrices         |
+| `length`            | Get matrix length         |
 
 ### Sequential Transformations
 
@@ -162,12 +209,12 @@ Order matters for transformations:
 
 ```javascript
 // Rotate THEN scale
-var matrix1 = Ti.UI.create2DMatrix()
+const matrix1 = Ti.UI.create2DMatrix()
   .rotate(45)
   .scale(2);
 
 // Scale THEN rotate (different result)
-var matrix2 = Ti.UI.create2DMatrix()
+const matrix2 = Ti.UI.create2DMatrix()
   .scale(2)
   .rotate(45);
 ```
@@ -176,7 +223,7 @@ var matrix2 = Ti.UI.create2DMatrix()
 
 ```javascript
 // Reset to original state
-var identity = Ti.UI.create2DMatrix();
+const identity = Ti.UI.create2DMatrix();
 view.animate({
   transform: identity,
   duration: 500
@@ -190,7 +237,7 @@ view.animate({
 ### Basic 3D Transform
 
 ```javascript
-var matrix3d = Ti.UI.create3DMatrix();
+let matrix3d = Ti.UI.create3DMatrix();
 
 // Rotate around axis vector (x, y, z)
 matrix3d = matrix3d.rotate(180, 1, 1, 0);  // 180° around diagonal
@@ -208,32 +255,32 @@ view.animate({
 
 ### 3D Matrix Methods
 
-| Method | Description |
-|--------|-------------|
-| `rotate(degrees, x, y, z)` | Rotate around vector |
-| `scale(sx, sy, sz)` | Scale in 3D |
-| `translate(dx, dy, dz)` | Move in 3D |
-| `invert()` | Invert matrix |
-| `multiply(matrix)` | Multiply matrices |
-| `perspective(p)` | Set perspective (4th row) |
+| Method                     | Description               |
+| -------------------------- | ------------------------- |
+| `rotate(degrees, x, y, z)` | Rotate around vector      |
+| `scale(sx, sy, sz)`        | Scale in 3D               |
+| `translate(dx, dy, dz)`    | Move in 3D                |
+| `invert()`                 | Invert matrix             |
+| `multiply(matrix)`         | Multiply matrices         |
+| `perspective(p)`           | Set perspective (4th row) |
 
 ### Flip Card Effect
 
 ```javascript
-var frontView = Ti.UI.createView({
+const frontView = Ti.UI.createView({
   backgroundColor: 'red',
   width: 200, height: 200
 });
 
-var backView = Ti.UI.createView({
+const backView = Ti.UI.createView({
   backgroundColor: 'blue',
   width: 200, height: 200
 });
 
-var isFlipped = false;
+let isFlipped = false;
 
-frontView.addEventListener('click', function() {
-  var matrix = Ti.UI.create3DMatrix().rotate(180, 0, 1, 0);
+frontView.addEventListener('click', () => {
+  const matrix = Ti.UI.create3DMatrix().rotate(180, 0, 1, 0);
 
   if (!isFlipped) {
     frontView.animate({
@@ -270,14 +317,14 @@ Ti.UI.iPhone.AnimationStyle.OPAQUE_FADE  // Fade with black (not transparent)
 ### View Transition
 
 ```javascript
-var container = Ti.UI.createView({ width: 300, height: 300 });
-var box1 = Ti.UI.createView({ backgroundColor: 'red' });
-var box2 = Ti.UI.createView({ backgroundColor: 'blue' });
+const container = Ti.UI.createView({ width: 300, height: 300 });
+const box1 = Ti.UI.createView({ backgroundColor: 'red' });
+const box2 = Ti.UI.createView({ backgroundColor: 'blue' });
 container.add(box1);
 
-var selectedIndex = 0;
+let selectedIndex = 0;
 
-container.addEventListener('click', function() {
+container.addEventListener('click', () => {
   if (selectedIndex % 2 === 0) {
     container.animate({
       view: box2,
@@ -296,11 +343,11 @@ container.addEventListener('click', function() {
 ### Window Transition (NavigationWindow)
 
 ```javascript
-var navWindow = Ti.UI.createNavigationWindow({
+const navWindow = Ti.UI.createNavigationWindow({
   window: Ti.UI.createWindow({ backgroundColor: 'white' })
 });
 
-var win1 = Ti.UI.createWindow({
+const win1 = Ti.UI.createWindow({
   title: 'Window 1',
   backgroundColor: 'red',
   transitionAnimation: Ti.UI.iOS.createTransitionAnimation({
@@ -325,12 +372,12 @@ Physics-based animations using `Ti.UI.iOS.Animator`.
 ### Gravity Animation
 
 ```javascript
-var animator = Ti.UI.iOS.createAnimator({
+const animator = Ti.UI.iOS.createAnimator({
   referenceView: containerView
 });
 
 // Add gravity behavior
-var gravity = Ti.UI.iOS.createGravityBehavior({
+const gravity = Ti.UI.iOS.createGravityBehavior({
   gravityDirection: { x: 0.0, y: 1.0 }  // Downward
 });
 
@@ -339,7 +386,7 @@ gravity.addItem(animatedView);
 animator.addBehavior(gravity);
 
 // Add collision boundaries
-var collision = Ti.UI.iOS.createCollisionBehavior({
+const collision = Ti.UI.iOS.createCollisionBehavior({
   collisionMode: Ti.UI.iOS.COLLISION_MODE_BOUNDARY,
   boundary: containerView.toImage()
 });
@@ -347,15 +394,12 @@ collision.addItem(animatedView);
 animator.addBehavior(collision);
 
 animator.startAnimator();
-
-// Stop when done
-// animator.stopAnimator();
 ```
 
 ### Attachment (Spring) Behavior
 
 ```javascript
-var attachment = Ti.UI.iOS.createAttachmentBehavior({
+const attachment = Ti.UI.iOS.createAttachmentBehavior({
   items: [view1, view2],
   anchorPoint: { x: 150, y: 150 },
   frequency: 1.0,  // Oscillations per second
@@ -370,7 +414,7 @@ animator.startAnimator();
 ### Push Behavior
 
 ```javascript
-var push = Ti.UI.iOS.createPushBehavior({
+const push = Ti.UI.iOS.createPushBehavior({
   pushDirection: { x: 1.0, y: 0.0 },  // Rightward
   mode: Ti.UI.iOS.PUSH_MODE_INSTANTANEOUS,
   pushMagnitude: 5.0
@@ -385,19 +429,19 @@ animator.addBehavior(push);
 ### Animation Lifecycle
 
 ```javascript
-var animation = Ti.UI.createAnimation({
+const animation = Ti.UI.createAnimation({
   opacity: 0,
   duration: 2000
 });
 
 // 'start' event
-animation.addEventListener('start', function(e) {
+animation.addEventListener('start', (e) => {
   Ti.API.info('Animation started');
 });
 
 // 'complete' event
-animation.addEventListener('complete', function(e) {
-  Ti.API.info('Animation complete. Was canceled: ' + e.cancelled);
+animation.addEventListener('complete', (e) => {
+  Ti.API.info(`Animation complete. Was canceled: ${e.cancelled}`);
 });
 
 view.animate(animation);
@@ -471,7 +515,7 @@ function pulse(view) {
 
 ```javascript
 function shake(view) {
-  var shake = Ti.UI.createAnimation({
+  const shake = Ti.UI.createAnimation({
     transform: Ti.UI.create2DMatrix().translate(10, 0),
     duration: 50,
     autoreverse: true,
@@ -536,14 +580,14 @@ view.animate({
 
 ### iOS vs Android
 
-| Feature | iOS | Android |
-|---------|-----|---------|
-| 2D Matrix | Full support | Full support |
-| 3D Matrix | Full support | Not supported |
-| Transitions | Full support | Not supported |
-| Dynamic animations | Full support | Not supported |
-| Curves | +SPRING | Basic curves only |
-| Color animation | RGBA full | Basic colors |
+| Feature            | iOS          | Android           |
+| ------------------ | ------------ | ----------------- |
+| 2D Matrix          | Full support | Full support      |
+| 3D Matrix          | Full support | Not supported     |
+| Transitions        | Full support | Not supported     |
+| Dynamic animations | Full support | Not supported     |
+| Curves             | +SPRING      | Basic curves only |
+| Color animation    | RGBA full    | Basic colors      |
 
 ## Best Practices
 
