@@ -4,6 +4,33 @@ All notable changes to Titanium SDK Skills will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.1.0] - 2025-01-26
+
+### Added
+- **Centralized installer architecture**: Skills now install to `~/.agents/skills/` with symlinks to detected AI platforms
+- **Local repository support**: Installer can use local repo when running from source directory
+- **ControllerAutoCleanup.js**: Reusable utility asset for automatic controller memory cleanup in alloy-expert
+- **PurgeTSS class-index.md**: Complete inventory of 21,236 utility classes across 364 prefixes and 416 properties
+- **PurgeTSS dynamic-component-creation.md**: Guide for `$.UI.create()` and `Alloy.createStyle()` runtime usage
+- **ti-howtos automation-fastlane-appium.md**: CI/CD automation with Fastlane and Appium testing
+- **ti-howtos buffer-codec-streams.md**: Binary data handling and stream processing
+- **ti-howtos google-maps-v2.md**: Google Maps Android SDK integration guide
+- **ti-howtos ios-map-kit.md**: Apple MapKit framework integration guide
+- **ti-howtos webpack-build-pipeline.md**: Webpack configuration for Titanium builds
+
+### Changed
+- **Enhanced all SKILL.md files**: Added comprehensive table of contents and structured formatting
+- **Improved alloy-expert**: Expanded ES6+ patterns, security, testing, and performance documentation
+- **Enhanced purgetss**: Clarified `app.tss` vs `_app.tss` workflow, strengthened animation and grid docs
+- **Improved ti-guides**: Updated coding best practices and CommonJS patterns
+- **Enhanced ti-howtos**: Restructured location/maps content, improved platform deep-dives
+- **Improved ti-ui**: Better event handling, gestures, and platform-specific UI guides
+- **Enhanced alloy-guides**: Expanded Models, Views, Controllers, and Widgets references
+- **Improved alloy-howtos**: Strengthened CLI, config, and debugging documentation
+
+### Removed
+- **Deprecated Claude plugin files**: Removed `.claude-plugin/` directory in favor of standard Agent Skills format
+
 ## [1.0.2] - 2025-01-25
 
 ### Added
