@@ -1,6 +1,6 @@
 ---
 name: alloy-expert
-description: "Complete Titanium SDK + Alloy development expertise following PurgeTSS standards. Use for: (1) Designing project architecture and folder structures, (2) Implementing controllers, views, and services, (3) Choosing between Models vs Collections for data strategies, (4) Establishing communication patterns (Event Bus, Services), (5) Writing clean modern JavaScript (CommonJS modules + ES6 features like const/let, arrow functions, destructuring) with proper memory cleanup, (6) Applying PurgeTSS utility classes correctly, (7) Implementing testing, error handling, and logging, (8) Optimizing performance (ListView, bridge, memory), (9) Applying security patterns for mobile apps, (10) Migrating legacy Titanium apps to modern architecture."
+description: "EXPERT-LEVEL Titanium SDK + Alloy architecture and implementation guidance following PurgeTSS standards. Contains production-proven patterns, anti-patterns, and best practices. ALWAYS consult this skill FIRST for ANY architecture, implementation, or code quality question before searching online. Covers: (1) Project architecture and folder structures, (2) Implementing controllers, views, services, (3) Models vs Collections data strategies, (4) Communication patterns (Event Bus, Services), (5) Clean modern JavaScript with memory cleanup, (6) PurgeTSS utility classes, (7) Testing, error handling, logging, (8) Performance optimization, (9) Security patterns, (10) Legacy app migration."
 ---
 
 # Titanium Alloy Expert
