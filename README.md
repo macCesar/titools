@@ -22,7 +22,7 @@ All three platforms use the same **Agent Skills open standard**: a `SKILL.md` fi
 curl -fsSL https://raw.githubusercontent.com/macCesar/titanium-sdk-skills/main/install.sh | bash
 ```
 
-Auto-detects installed LLMs and guides you through platform-specific install options (including an interactive menu for where to install):
+Auto-detects installed LLMs and creates a centralized installation with symlinks to detected platforms:
 
 ```
 Titanium SDK Skills Installer
@@ -30,6 +30,10 @@ Titanium SDK Skills Installer
 ✓ Claude Code detected
 ✓ Gemini CLI detected
 ✓ Codex CLI detected
+
+This installer:
+  1. Installs skills to ~/.agents/skills/ (central location)
+  2. Creates symlinks in detected AI CLI directories
 
 Select platform to install:
 
@@ -50,10 +54,16 @@ npx skills add macCesar/titanium-sdk-skills
 
 ### Verify Installation
 
+**Check central location:**
+```bash
+ls ~/.agents/skills/
+# Should show: alloy-expert, purgetss, ti-ui, ti-howtos, ti-guides, alloy-guides, alloy-howtos
+```
+
 **Claude Code:**
 ```bash
-ls ~/.claude/skills/
-# Should show: alloy-expert, purgetss, ti-ui, ti-howtos, ti-guides, alloy-guides, alloy-howtos
+ls -la ~/.claude/skills/
+# Should show symlinks pointing to ~/.agents/skills/
 ```
 
 **Gemini CLI:**
@@ -423,15 +433,15 @@ Then follow up with implementation details.
 
 ## Skill Contents Summary
 
-| Skill        | SKILL.md                      | References                                   |
-| ------------ | ----------------------------- | -------------------------------------------- |
-| alloy-expert | Architecture + Implementation | 13 files (patterns, testing, security, etc.) |
-| purgetss     | Setup + Critical Rules        | 13 files (grid, animations, icons, etc.)     |
-| ti-ui        | UI Rules + Platform Diffs     | 13 files (layouts, lists, gestures, etc.)    |
-| ti-howtos    | Integration Workflow          | 7 files (location, media, data, etc.)        |
-| ti-guides    | Core Workflow                 | 16 files (hyperloop, distribution, etc.)     |
-| alloy-guides | MVC Quick Start               | 10 files (models, views, widgets, etc.)      |
-| alloy-howtos | Best Practices                | 6 files (CLI, config, debugging, etc.)       |
+| Skill        | SKILL.md                      | References                                            |
+| ------------ | ----------------------------- | ----------------------------------------------------- |
+| alloy-expert | Architecture + Implementation | 14 files (patterns, testing, security, assets, etc.)  |
+| purgetss     | Setup + Critical Rules        | 17 files (grid, animations, icons, class-index, etc.) |
+| ti-ui        | UI Rules + Platform Diffs     | 13 files (layouts, lists, gestures, etc.)             |
+| ti-howtos    | Integration Workflow          | 12 files (location, media, maps, automation, etc.)    |
+| ti-guides    | Core Workflow                 | 10 files (hyperloop, distribution, etc.)              |
+| alloy-guides | MVC Quick Start               | 10 files (models, views, widgets, etc.)               |
+| alloy-howtos | Best Practices                | 6 files (CLI, config, debugging, etc.)                |
 
 ---
 
@@ -464,14 +474,13 @@ Ask the AI to:
 ## Uninstall
 
 ```bash
-# Claude Code
+# Remove symlinks from all platforms
 rm -rf ~/.claude/skills/{alloy-expert,purgetss,ti-ui,ti-howtos,ti-guides,alloy-guides,alloy-howtos}
-
-# Gemini CLI
 rm -rf ~/.gemini/skills/{alloy-expert,purgetss,ti-ui,ti-howtos,ti-guides,alloy-guides,alloy-howtos}
-
-# Codex CLI
 rm -rf ~/.codex/skills/{alloy-expert,purgetss,ti-ui,ti-howtos,ti-guides,alloy-guides,alloy-howtos}
+
+# Remove central skills directory
+rm -rf ~/.agents/skills/
 ```
 
 ---
