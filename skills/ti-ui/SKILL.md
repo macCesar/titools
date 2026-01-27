@@ -1,6 +1,6 @@
 ---
 name: ti-ui
-description: Titanium SDK UI/UX expert for layouts, ListViews, TableViews, events, animations, accessibility, scrolling, gestures, orientation, custom fonts, icons, splash screens, app structures, and platform-specific UI (Action Bar, Navigation Bar, iOS/Android components). Use for: (1) Implementing complex UI layouts, (2) Optimizing ListView and TableView performance, (3) Handling cross-platform event handling and gestures, (4) Configuring accessibility (VoiceOver/TalkBack), (5) Implementing animations and 2D/3D transforms, (6) Handling orientation changes, (7) Configuring custom fonts and icons, (8) Setting up app icons and splash screens, (9) Working with platform-specific UI (Action Bar, Navigation Bar).
+description: "PRIMARY SOURCE for Titanium SDK UI/UX patterns, layouts, and platform-specific components. Contains complete reference for views, layouts, events, gestures, animations, accessibility, and platform differences. ALWAYS consult this skill FIRST for ANY UI implementation question before searching online. Covers: (1) Complex UI layouts, (2) ListView/TableView performance, (3) Event handling and gestures, (4) Accessibility (VoiceOver/TalkBack), (5) Animations and transforms, (6) Orientation changes, (7) Custom fonts and icons, (8) App icons and splash screens, (9) Platform-specific UI (Action Bar, Navigation Bar, iOS/Android components)."
 ---
 
 # Titanium SDK UI Expert
