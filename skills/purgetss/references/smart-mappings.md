@@ -2,6 +2,18 @@
 
 PurgeTSS maps CSS-like utilities to native Titanium properties. Understanding these "Smart Mappings" is key to predictable layouts and cross-platform consistency.
 
+## Table of Contents
+
+- [Smart Mappings \& Platform Realities](#smart-mappings--platform-realities)
+  - [Table of Contents](#table-of-contents)
+  - [1. The "Gap" Utility (Double Spacing)](#1-the-gap-utility-double-spacing)
+  - [2. Hybrid Shadows (iOS vs. Android)](#2-hybrid-shadows-ios-vs-android)
+  - [3. Grid Container Width](#3-grid-container-width)
+  - [4. Native Rotations](#4-native-rotations)
+  - [5. Z-Index vs Stacking Order](#5-z-index-vs-stacking-order)
+
+---
+
 ## 1. The "Gap" Utility (Double Spacing)
 In PurgeTSS, `gap` is mapped to **external margins** (`top`, `right`, `bottom`, `left`) because Titanium lacks a native CSS-style gap property.
 - **Behavior**: `.gap-4` adds 16dp to **all** sides of the element.

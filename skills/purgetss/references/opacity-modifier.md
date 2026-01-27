@@ -6,6 +6,40 @@ The opacity modifier allows you to add transparency to **ANY color property** by
 You can add an **opacity modifier to ANY of the available color properties** by adding an **opacity value** between 0 and 100 to the end of the color name separated by a slash ( / ).
 :::
 
+## Table of Contents
+
+- [Opacity Modifier](#opacity-modifier)
+  - [Table of Contents](#table-of-contents)
+  - [Basic Syntax](#basic-syntax)
+  - [How It Works](#how-it-works)
+  - [Usage in XML](#usage-in-xml)
+    - [Background Colors](#background-colors)
+    - [Text Colors](#text-colors)
+    - [Border Colors](#border-colors)
+    - [All Color Properties](#all-color-properties)
+  - [Usage with `@apply` Directive](#usage-with-apply-directive)
+  - [Complete List of Supported Color Properties](#complete-list-of-supported-color-properties)
+    - [Background Properties](#background-properties)
+    - [Text Properties](#text-properties)
+    - [Border Properties](#border-properties)
+    - [UI Element Properties](#ui-element-properties)
+    - [Navigation Properties](#navigation-properties)
+    - [Indicator Properties](#indicator-properties)
+    - [Tint Properties](#tint-properties)
+    - [Miscellaneous Properties](#miscellaneous-properties)
+  - [Opacity Value Reference](#opacity-value-reference)
+  - [Common Patterns](#common-patterns)
+    - [Hover/Active States](#hoveractive-states)
+    - [Disabled Appearance](#disabled-appearance)
+    - [Overlay/Backdrop](#overlaybackdrop)
+    - [Glassmorphism Effect](#glassmorphism-effect)
+    - [Gradient Fades](#gradient-fades)
+  - [Limitations](#limitations)
+  - [Performance Considerations](#performance-considerations)
+  - [Combining with Arbitrary Colors](#combining-with-arbitrary-colors)
+
+---
+
 ## Basic Syntax
 
 ```xml
@@ -156,22 +190,22 @@ The opacity modifier works with **ALL** color properties:
 
 ## Opacity Value Reference
 
-| Opacity Value | Decimal | Hex Alpha | Result |
-|---------------|---------|-----------|--------|
-| `/0` | 0.00 | `00` | Fully transparent |
-| `/10` | 0.10 | `1A` | 10% visible |
-| `/20` | 0.20 | `33` | 20% visible |
-| `/25` | 0.25 | `40` | 25% visible |
-| `/30` | 0.30 | `4D` | 30% visible |
-| `/40` | 0.40 | `66` | 40% visible |
-| `/50` | 0.50 | `80` | 50% visible |
-| `/60` | 0.60 | `99` | 60% visible |
-| `/70` | 0.70 | `B3` | 70% visible |
-| `/75` | 0.75 | `BF` | 75% visible |
-| `/80` | 0.80 | `CC` | 80% visible |
-| `/90` | 0.90 | `E6` | 90% visible |
-| `/95` | 0.95 | `F2` | 95% visible |
-| `/100` | 1.00 | `FF` | Fully opaque |
+| Opacity Value | Decimal | Hex Alpha | Result            |
+| ------------- | ------- | --------- | ----------------- |
+| `/0`          | 0.00    | `00`      | Fully transparent |
+| `/10`         | 0.10    | `1A`      | 10% visible       |
+| `/20`         | 0.20    | `33`      | 20% visible       |
+| `/25`         | 0.25    | `40`      | 25% visible       |
+| `/30`         | 0.30    | `4D`      | 30% visible       |
+| `/40`         | 0.40    | `66`      | 40% visible       |
+| `/50`         | 0.50    | `80`      | 50% visible       |
+| `/60`         | 0.60    | `99`      | 60% visible       |
+| `/70`         | 0.70    | `B3`      | 70% visible       |
+| `/75`         | 0.75    | `BF`      | 75% visible       |
+| `/80`         | 0.80    | `CC`      | 80% visible       |
+| `/90`         | 0.90    | `E6`      | 90% visible       |
+| `/95`         | 0.95    | `F2`      | 95% visible       |
+| `/100`        | 1.00    | `FF`      | Fully opaque      |
 
 ## Common Patterns
 
@@ -191,13 +225,13 @@ The opacity modifier works with **ALL** color properties:
 
 ```xml
 <!-- Semi-transparent overlay -->
-<View class="bg-black/50 absolute inset-0" />
+<View class="absolute inset-0 bg-black/50" />
 ```
 
 ### Glassmorphism Effect
 
 ```xml
-<View class="bg-white/20 backdrop-blur-md border-white/30" />
+<View class="border-white/30 bg-white/20 backdrop-blur-md" />
 ```
 
 ### Gradient Fades

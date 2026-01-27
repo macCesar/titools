@@ -2,6 +2,38 @@
 
 PurgeTSS must be installed globally and initialized within each Titanium Alloy project to enable its utility-first workflow.
 
+## Table of Contents
+
+- [PurgeTSS Installation \& Setup](#purgetss-installation--setup)
+  - [Table of Contents](#table-of-contents)
+  - [Prerequisites](#prerequisites)
+  - [Global Installation](#global-installation)
+  - [Initial Project Setup](#initial-project-setup)
+    - [Running PurgeTSS for the First Time](#running-purgetss-for-the-first-time)
+    - [What Happens on First Run](#what-happens-on-first-run)
+      - [1. Auto-Run Hook Setup](#1-auto-run-hook-setup)
+      - [2. purgetss Folder Structure](#2-purgetss-folder-structure)
+      - [3. app.tss Backup](#3-apptss-backup)
+  - [Creating a Fresh config.cjs](#creating-a-fresh-configcjs)
+  - [Visual Studio Code Integration](#visual-studio-code-integration)
+    - [Quick Setup with install-dependencies](#quick-setup-with-install-dependencies)
+    - [Manual Extension Setup](#manual-extension-setup)
+    - [Extension Configuration](#extension-configuration)
+    - [Tailwind Config for VS Code](#tailwind-config-for-vs-code)
+  - [LiveView Development](#liveview-development)
+    - [Enabling LiveView](#enabling-liveview)
+    - [LiveView with TiKit Components](#liveview-with-tikit-components)
+    - [LiveView Development Workflow](#liveview-development-workflow)
+    - [Common LiveView Issues](#common-liveview-issues)
+  - [First Run Example](#first-run-example)
+  - [Quick Start with Example Files](#quick-start-with-example-files)
+  - [Troubleshooting](#troubleshooting)
+    - [PurgeTSS Not Running on Compile](#purgetss-not-running-on-compile)
+    - [Classes Not Appearing in IntelliSense](#classes-not-appearing-in-intellisense)
+    - [Missing Classes Report](#missing-classes-report)
+
+---
+
 ## Prerequisites
 
 :::caution Node.js 20+ Required

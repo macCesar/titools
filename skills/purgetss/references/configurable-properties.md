@@ -2,6 +2,61 @@
 
 Complete list of all properties that can be customized in `config.cjs` under the `theme` section.
 
+## Table of Contents
+
+- [Configurable Properties Reference](#configurable-properties-reference)
+  - [Table of Contents](#table-of-contents)
+  - [Color Properties (50+ properties)](#color-properties-50-properties)
+    - [Background Colors](#background-colors)
+    - [Text Colors](#text-colors)
+    - [UI Element Colors](#ui-element-colors)
+    - [Border \& Separator Colors](#border--separator-colors)
+    - [Navigation \& Button Colors](#navigation--button-colors)
+    - [Indicator Colors](#indicator-colors)
+    - [Badge \& Notification Colors](#badge--notification-colors)
+    - [Miscellaneous Colors](#miscellaneous-colors)
+  - [Spacing \& Size Properties](#spacing--size-properties)
+    - [Dimensions](#dimensions)
+    - [Margin](#margin)
+    - [Padding](#padding)
+    - [Background Padding](#background-padding)
+    - [Content Size](#content-size)
+    - [Gaps](#gaps)
+  - [Border Properties](#border-properties)
+    - [Background Caps](#background-caps)
+  - [Positioning Properties](#positioning-properties)
+  - [Typography Properties](#typography-properties)
+  - [Layout Properties](#layout-properties)
+  - [Opacity \& Visibility](#opacity--visibility)
+  - [Transformation Properties](#transformation-properties)
+  - [Animation Properties](#animation-properties)
+  - [Z-Index \& Layering](#z-index--layering)
+  - [Shadow Properties](#shadow-properties)
+  - [Section Properties](#section-properties)
+  - [Separator Properties](#separator-properties)
+  - [Paging Properties](#paging-properties)
+  - [Zoom Properties](#zoom-properties)
+  - [Button Properties](#button-properties)
+  - [Left/Right Width](#leftright-width)
+  - [Cache Properties](#cache-properties)
+  - [Other Properties](#other-properties)
+  - [Quick Reference Table](#quick-reference-table)
+  - [Customizing in config.cjs](#customizing-in-configcjs)
+    - [Override Default Values](#override-default-values)
+    - [Extend Default Values](#extend-default-values)
+    - [Mix Override and Extend](#mix-override-and-extend)
+  - [Practical Examples](#practical-examples)
+    - [Complete Brand Color System](#complete-brand-color-system)
+    - [Custom Spacing Scale](#custom-spacing-scale)
+    - [Custom Font Family System](#custom-font-family-system)
+    - [Custom Border Radius Scale](#custom-border-radius-scale)
+    - [Complete Card Component via Ti Element](#complete-card-component-via-ti-element)
+    - [Button System with Variants](#button-system-with-variants)
+    - [Form Input System](#form-input-system)
+  - [Related References](#related-references)
+
+---
+
 ## Color Properties (50+ properties)
 
 All color properties inherit values from `theme.colors` and support the full Tailwind color palette plus any custom colors you define.
@@ -231,27 +286,27 @@ All spacing properties inherit from `theme.spacing` and support the default spac
 
 ## Quick Reference Table
 
-| Category | Property | Class Prefix Example |
-|----------|----------|---------------------|
-| **Background** | backgroundColor | `bg-*` |
-| | backgroundGradient | `from-*`, `to-*` |
-| **Text** | color/textColor | `text-*` |
-| | hintTextColor | `placeholder-*` |
-| **Border** | borderColor | `border-*` |
-| | borderWidth | `border-*` |
-| | borderRadius | `rounded-*` |
-| **Spacing** | margin | `m-*`, `mt-*`, `mb-*`, `ml-*`, `mr-*` |
-| | padding | `p-*`, `pt-*`, `pb-*`, `pl-*`, `pr-*` |
-| **Dimensions** | width | `w-*` |
-| | height | `h-*` |
-| **Position** | top/right/bottom/left | `top-*`, `right-*`, `bottom-*`, `left-*` |
-| **Typography** | fontFamily | `font-*` |
-| | fontSize | `text-*`, `text-size-*` |
-| **Transform** | rotate | `rotate-*` |
-| | scale | `scale-*` |
-| **Animation** | duration | `duration-*` |
-| | delay | `delay-*` |
-| **Z-Index** | zIndex | `z-*` |
+| Category       | Property              | Class Prefix Example                     |
+| -------------- | --------------------- | ---------------------------------------- |
+| **Background** | backgroundColor       | `bg-*`                                   |
+|                | backgroundGradient    | `from-*`, `to-*`                         |
+| **Text**       | color/textColor       | `text-*`                                 |
+|                | hintTextColor         | `placeholder-*`                          |
+| **Border**     | borderColor           | `border-*`                               |
+|                | borderWidth           | `border-*`                               |
+|                | borderRadius          | `rounded-*`                              |
+| **Spacing**    | margin                | `m-*`, `mt-*`, `mb-*`, `ml-*`, `mr-*`    |
+|                | padding               | `p-*`, `pt-*`, `pb-*`, `pl-*`, `pr-*`    |
+| **Dimensions** | width                 | `w-*`                                    |
+|                | height                | `h-*`                                    |
+| **Position**   | top/right/bottom/left | `top-*`, `right-*`, `bottom-*`, `left-*` |
+| **Typography** | fontFamily            | `font-*`                                 |
+|                | fontSize              | `text-*`, `text-size-*`                  |
+| **Transform**  | rotate                | `rotate-*`                               |
+|                | scale                 | `scale-*`                                |
+| **Animation**  | duration              | `duration-*`                             |
+|                | delay                 | `delay-*`                                |
+| **Z-Index**    | zIndex                | `z-*`                                    |
 
 ## Customizing in config.cjs
 
@@ -488,7 +543,7 @@ module.exports = {
     <Label class="text-gray-600" text="Card content goes here" />
   </View>
   <View class="card-footer">
-    <Button class="bg-brand text-white rounded-lg" title="Action" />
+    <Button class="bg-brand rounded-lg text-white" title="Action" />
   </View>
 </View>
 ```

@@ -2,6 +2,31 @@
 
 Sometimes, you may need a specific value that is not included among the default values, or that you only need to use once in your project and do not want to include in the `config.cjs` file. In these cases, you can use **arbitrary values**.
 
+## Table of Contents
+
+- [Arbitrary Values in PurgeTSS](#arbitrary-values-in-purgetss)
+  - [Table of Contents](#table-of-contents)
+  - [Parentheses Notation](#parentheses-notation)
+  - [Color Properties](#color-properties)
+    - [Example with Generated Output](#example-with-generated-output)
+    - [Additional Examples](#additional-examples)
+    - [Complete List of Color Properties](#complete-list-of-color-properties)
+  - [Spacing Properties](#spacing-properties)
+    - [Example with Generated Output](#example-with-generated-output-1)
+    - [Unit Conversion Rules](#unit-conversion-rules)
+    - [Additional Examples](#additional-examples-1)
+    - [Complete List of Spacing Properties](#complete-list-of-spacing-properties)
+  - [Miscellaneous Properties](#miscellaneous-properties)
+    - [Examples](#examples)
+    - [Complete List of Miscellaneous Properties](#complete-list-of-miscellaneous-properties)
+  - [Real-World Examples](#real-world-examples)
+    - [Credit Card Component](#credit-card-component)
+    - [Front Cover Example](#front-cover-example)
+    - [Menu Bar Example](#menu-bar-example)
+  - [Tips for Using Arbitrary Values](#tips-for-using-arbitrary-values)
+
+---
+
 ## Parentheses Notation
 
 :::info
@@ -12,9 +37,37 @@ Unfortunately, you cannot use square bracket notation like in Tailwind, because 
 
 ## Color Properties
 
-You can set arbitrary color values **to ALL available color properties**, using `hex`, `rgb`, `rgba`, or standard color names.
+You can set arbitrary color values **to ALL available color properties**, using `hex`, `rgb`, `rgba`, or standard color names, directly in `xml` files or in the `config.cjs` file.
 
-### Examples
+### Example with Generated Output
+
+```xml title="Arbitrary values for color properties"
+<Alloy>
+  <Window class="from-(#4C61E4) to-(#804C61E4)">
+    <Label class="w-(250) bg-(rgba(100,200,50)) text-(#4C61E4) text-(15) rounded-4 h-8 text-center" text="Green Label" />
+  </Window>
+</Alloy>
+```
+
+```css title="Generated classes"
+/* Ti Elements */
+'Window': { backgroundColor: '#FFFFFF' }
+
+/* Main Styles */
+'.h-8': { height: 32 }
+'.rounded-4': { borderRadius: 8 }
+'.text-center': { textAlign: Ti.UI.TEXT_ALIGNMENT_CENTER }
+
+/* Arbitrary Values */
+'.bg-(rgba(100,200,50))': { backgroundColor: 'rgba(100,200,50)' }
+'.from-(#4C61E4)': { backgroundGradient: { colors: [ '#004C61E4', '#4C61E4' ] } }
+'.text-(#4C61E4)': { color: '#4C61E4', textColor: '#4C61E4' }
+'.text-(15)': { font: { fontSize: 15 } }
+'.to-(#804C61E4)': { backgroundGradient: { colors: [ '#804C61E4' ] } }
+'.w-(250)': { width: 250 }
+```
+
+### Additional Examples
 
 ```xml
 <!-- Arbitrary hex colors -->
@@ -82,7 +135,33 @@ All of these support arbitrary values with parentheses notation:
 
 ## Spacing Properties
 
-You can set arbitrary values **to MOST size and dimension properties**, using `rem`, `px`, `pt`, `%`, `cm`, `in`, or `dp` values.
+You can set arbitrary values **to MOST of the size and dimension properties**, using `rem`, `px`, `pt`, `%`, `cm`, `in`, or `dp` values, directly in `xml` files or in the `config.cjs` file.
+
+### Example with Generated Output
+
+```xml title="Arbitrary values for spacing properties"
+<Alloy>
+  <Window>
+    <Label class="w-(10rem) h-(1.75rem) text-(15) rounded-(5) bg-blue-800 text-center text-white" text="My custom Label" />
+  </Window>
+</Alloy>
+```
+
+```css title="Generated classes"
+/* Ti Elements */
+'Window': { backgroundColor: '#FFFFFF' }
+
+/* Main Styles */
+'.bg-blue-800': { backgroundColor: '#1e40af' }
+'.text-center': { textAlign: Ti.UI.TEXT_ALIGNMENT_CENTER }
+'.text-white': { color: '#ffffff', textColor: '#ffffff' }
+
+/* Arbitrary Values */
+'.h-(1.75rem)': { height: 28 }
+'.rounded-(5)': { borderRadius: 5 }
+'.text-(15)': { font: { fontSize: 15 } }
+'.w-(10rem)': { width: 160 }
+```
 
 ### Unit Conversion Rules
 
@@ -90,7 +169,7 @@ You can set arbitrary values **to MOST size and dimension properties**, using `r
 - `em` or `rem` - Converted with formula: `value * 16`
 - `dp` - Unit type removed, value remains intact
 
-### Examples
+### Additional Examples
 
 ```xml
 <!-- Width and height -->
@@ -174,6 +253,9 @@ You can set arbitrary values **to MOST size and dimension properties**, using `r
 - `mt-(*any-size-value-and-unit*)`
 - `mx-(*any-size-value-and-unit*)`
 - `my-(*any-size-value-and-unit*)`
+
+**Max Elevation:**
+- `max-elevation-(*any-size-value-and-unit*)`
 
 **Max/Min Row Height:**
 - `max-row-h-(*any-size-value-and-unit*)`
@@ -292,9 +374,11 @@ You can set arbitrary values to properties like border radius, opacity, font siz
 
 ## Real-World Examples
 
+You can use any supported units depending on the property you are generating. You can use `hex` or `rgba` values for any `color` property, or you can use `rem` or `px` for any position or sizing property.
+
 ### Credit Card Component
 
-```xml
+```xml title="index.xml"
 <Alloy>
   <Window class="bg-(#53606b)">
     <View class="w-(2in) h-(3.5in) bg-(#4C61E4) rounded-(20)">
@@ -317,12 +401,54 @@ You can set arbitrary values to properties like border radius, opacity, font siz
 </Alloy>
 ```
 
-### Complex Layout with Absolute Positioning
+```css title="app.tss"
+/* Ti Elements */
+'View': { width: Ti.UI.SIZE, height: Ti.UI.SIZE }
+'Window': { backgroundColor: '#FFFFFF' }
 
-```xml
+/* Main Styles */
+'.bg-white': { backgroundColor: '#ffffff' }
+'.font-bold': { font: { fontWeight: 'bold' } }
+'.h-16': { height: 64 }
+'.h-screen': { height: Ti.UI.FILL }
+'.horizontal': { layout: 'horizontal' }
+'.ml-0': { left: 0 }
+'.ml-2': { left: 8 }
+'.ml-2.5': { left: 10 }
+'.mt-0': { top: 0 }
+'.text-2xl': { font: { fontSize: 24 } }
+'.text-white': { color: '#ffffff', textColor: '#ffffff' }
+'.w-full': { width: '100%' }
+'.w-screen': { width: Ti.UI.FILL }
+
+/* Arbitrary Values */
+'.-ml-(20)': { left: -20 }
+'.bg-(#4C61E4)': { backgroundColor: '#4C61E4' }
+'.bg-(#53606b)': { backgroundColor: '#53606b' }
+'.bg-(#6D80FB)': { backgroundColor: '#6D80FB' }
+'.bottom-(0)': { bottom: 0 }
+'.h-(3.5in)': { height: '3.5in' }
+'.h-(3rem)': { height: 48 }
+'.m-(50px)': { top: '50px', right: '50px', bottom: '50px', left: '50px' }
+'.opacity-(0.25)': { opacity: 0.25 }
+'.opacity-(0.35)': { opacity: 0.35 }
+'.rounded-(1.5rem)': { borderRadius: 24 }
+'.rounded-(20)': { borderRadius: 20 }
+'.w-(2in)': { width: '2in' }
+'.w-(3rem)': { width: 48 }
+
+/* Default Font Awesome */
+'.fa-apple': { text: '\uf179', title: '\uf179' }
+'.fab': { font: { fontFamily: 'FontAwesome7Brands-Regular' } }
+```
+
+### Front Cover Example
+
+Try this example on an iPad or tablet.
+
+```xml title="index.xml"
 <Alloy>
   <Window class="bg-white">
-    <!-- Background banner -->
     <View class="bg-(#1B6F3F) w-(2300px) h-(1600px) ml-0 mt-0">
       <View class="mt-(100px) h-(200px) left-(150px) horizontal">
         <Label class="fas fa-cloud text-(48px) text-white" />
@@ -330,23 +456,145 @@ You can set arbitrary values to properties like border radius, opacity, font siz
       </View>
 
       <View class="vertical left-(150px) w-(1300px)">
-        <Label class="text-(64px) mt-(275px) font-bold text-white">Convert your business</Label>
+        <Label class="text-(64px) mt-(275px) font-bold text-white">Convert your business to remote work at a time that matters most</Label>
         <Button class="mt-(75px) bg-(#fff) text-(#25A25B) h-(100px) w-(400px) rounded-(20px) left-(0) font-bold">Request Free Demo</Button>
       </View>
     </View>
 
-    <!-- Floating card with overlap -->
     <View class="mt-(100px) mr-(150px) w-(1800px) h-(200px) bg-(#0B4825)">
-      <Label class="left-(50px) text-(22px) font-normal text-white">We can have your remote teams up in 24 hours</Label>
+      <Label class="left-(50px) text-(22px) font-normal text-white">We can have your remote teams up and running in 24 hours</Label>
       <Button class="bg-(#25A25B) h-(100px) w-(350px) rounded-(20px) right-(50px) text-white">Request Free Demo</Button>
     </View>
 
-    <!-- Positioned image -->
     <View class="mt-(450px) right-(250px) rounded-(60px)">
-      <ImageView class="h-(1480px) w-(900px)" image="https://example.com/image.jpg" />
+      <ImageView class="h-(1480px) w-(900px)" image="https://images.pexels.com/photos/1526814/pexels-photo-1526814.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=1480&w=900&fit=crop" />
+    </View>
+
+    <View class="left-(150px) top-(1650px) vertical w-(1300px)">
+      <Button class="left-(0) bg-(#83B758) h-(60px) w-(250px) rounded-(20px) font-bold text-white">Fast Setup</Button>
+      <Label class="left-(0) text-(#042F16) text-(48px) font-bold">24 hour activation</Label>
+      <Label class="left-(0) text-(#042F16) text-(22px) font-normal">We offer same day activation. We are here to transition your business communications to the Cloud and get you back in business</Label>
     </View>
   </Window>
 </Alloy>
+```
+
+```css title="app.tss"
+/* Ti Elements */
+'ImageView[platform=ios]': { hires: true }
+'View': { width: Ti.UI.SIZE, height: Ti.UI.SIZE }
+'Window': { backgroundColor: '#FFFFFF' }
+
+/* Main Styles */
+'.bg-white': { backgroundColor: '#ffffff' }
+'.font-bold': { font: { fontWeight: 'bold' } }
+'.font-normal': { font: { fontWeight: 'normal' } }
+'.horizontal': { layout: 'horizontal' }
+'.ml-0': { left: 0 }
+'.mt-0': { top: 0 }
+'.text-white': { color: '#ffffff', textColor: '#ffffff' }
+'.vertical': { layout: 'vertical' }
+
+/* Arbitrary Values */
+'.bg-(#0B4825)': { backgroundColor: '#0B4825' }
+'.bg-(#1B6F3F)': { backgroundColor: '#1B6F3F' }
+'.bg-(#25A25B)': { backgroundColor: '#25A25B' }
+'.bg-(#83B758)': { backgroundColor: '#83B758' }
+'.bg-(#fff)': { backgroundColor: '#ffffff' }
+'.h-(100px)': { height: '100px' }
+'.h-(1480px)': { height: '1480px' }
+'.h-(1600px)': { height: '1600px' }
+'.h-(200px)': { height: '200px' }
+'.h-(60px)': { height: '60px' }
+'.left-(0)': { left: 0 }
+'.left-(150px)': { left: '150px' }
+'.left-(50px)': { left: '50px' }
+'.ml-(30px)': { left: '30px' }
+'.mr-(150px)': { right: '150px' }
+'.mt-(100px)': { top: '100px' }
+'.mt-(275px)': { top: '275px' }
+'.mt-(450px)': { top: '450px' }
+'.mt-(75px)': { top: '75px' }
+'.right-(250px)': { right: '250px' }
+'.right-(50px)': { right: '50px' }
+'.rounded-(20px)': { borderRadius: '20px' }
+'.rounded-(60px)': { borderRadius: '60px' }
+'.text-(#042F16)': { color: '#042F16', textColor: '#042F16' }
+'.text-(#25A25B)': { color: '#25A25B', textColor: '#25A25B' }
+'.text-(22px)': { font: { fontSize: '22px' } }
+'.text-(48px)': { font: { fontSize: '48px' } }
+'.text-(64px)': { font: { fontSize: '64px' } }
+'.top-(1650px)': { top: '1650px' }
+'.w-(1300px)': { width: '1300px' }
+'.w-(1800px)': { width: '1800px' }
+'.w-(2300px)': { width: '2300px' }
+'.w-(250px)': { width: '250px' }
+'.w-(350px)': { width: '350px' }
+'.w-(400px)': { width: '400px' }
+'.w-(900px)': { width: '900px' }
+
+/* Default Font Awesome */
+'.fa-cloud': { text: '\uf0c2', title: '\uf0c2' }
+'.fas': { font: { fontFamily: 'FontAwesome7Free-Solid' } }
+```
+
+### Menu Bar Example
+
+```xml title="index.xml"
+<Alloy>
+  <Window class="bg-(#53606b)" backgroundImage="https://i.pinimg.com/originals/ab/70/a1/ab70a19f087cc9ba2b03e3bee71acc3e.jpg">
+    <View class="h-(150px) bg-(#53A500) horizontal mt-0 w-full">
+      <Label class="w-(4.5rem) text-(16px) h-(150px) text-(#12681E) text-center font-bold" text="Home" />
+      <Label class="w-(4.5rem) text-(16px) h-(150px) text-(#12681E) bg-(#6DB400) text-center font-bold" text="News" />
+      <Label class="w-(4.5rem) text-(16px) h-(150px) text-(#12681E) text-center font-bold" text="About" />
+      <Label class="w-(4.5rem) text-(16px) h-(150px) text-(#12681E) text-center font-bold" text="Contact" />
+    </View>
+
+    <View class="bg-(rgba(255,255,0,0.75)) -right-(10px) top-(250px) bottom-(75px) w-(80%) border-(5) border-(#12681E) h-screen">
+      <View class="m-(1rem) vertical h-screen w-screen">
+        <Label class="text-(32px) text-(#12681E) font-bold" text="Superb idea: Building Green garden in your home" />
+        <TextArea class="text-(14px) text-(#12681E) mt-1 bg-transparent">Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis provident, est facere quos veniam repellat. Eum, perferendis quae! Tenetur necessitatibus, voluptatem error voluptate culpa minus est voluptates facere quis distinctio minima dignissimos iure in sequi ex amet officia rerum. Ut fugiat non vero nemo at quaerat assumenda ab officia reiciendis.</TextArea>
+      </View>
+    </View>
+  </Window>
+</Alloy>
+```
+
+```css title="app.tss"
+/* Ti Elements */
+'View': { width: Ti.UI.SIZE, height: Ti.UI.SIZE }
+'Window': { backgroundColor: '#FFFFFF' }
+
+/* Main Styles */
+'.bg-transparent': { backgroundColor: 'transparent' }
+'.font-bold': { font: { fontWeight: 'bold' } }
+'.h-screen': { height: Ti.UI.FILL }
+'.horizontal': { layout: 'horizontal' }
+'.mt-0': { top: 0 }
+'.mt-1': { top: 4 }
+'.text-center': { textAlign: Ti.UI.TEXT_ALIGNMENT_CENTER }
+'.vertical': { layout: 'vertical' }
+'.w-full': { width: '100%' }
+'.w-screen': { width: Ti.UI.FILL }
+
+/* Arbitrary Values */
+'.-right-(10px)': { right: '-10px' }
+'.bg-(#53606b)': { backgroundColor: '#53606b' }
+'.bg-(#53A500)': { backgroundColor: '#53A500' }
+'.bg-(#6DB400)': { backgroundColor: '#6DB400' }
+'.bg-(rgba(255,255,0,0.75))': { backgroundColor: 'rgba(255,255,0,0.75)' }
+'.border-(#12681E)': { borderColor: '#12681E' }
+'.border-(5)': { borderWidth: 5 }
+'.bottom-(75px)': { bottom: '75px' }
+'.h-(150px)': { height: '150px' }
+'.m-(1rem)': { top: 16, right: 16, bottom: 16, left: 16 }
+'.text-(#12681E)': { color: '#12681E', textColor: '#12681E' }
+'.text-(14px)': { font: { fontSize: '14px' } }
+'.text-(16px)': { font: { fontSize: '16px' } }
+'.text-(32px)': { font: { fontSize: '32px' } }
+'.top-(250px)': { top: '250px' }
+'.w-(4.5rem)': { width: 72 }
+'.w-(80%)': { width: '80%' }
 ```
 
 ## Tips for Using Arbitrary Values
