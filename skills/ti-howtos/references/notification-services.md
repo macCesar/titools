@@ -3,10 +3,49 @@
 Comprehensive guide for local and push notifications on iOS and Android.
 
 ## Table of Contents
-1. [Local Notifications Android](#local-notifications-android)
-2. [Local Notifications iOS](#local-notifications-ios)
-3. [Interactive Notifications iOS](#interactive-notifications-ios)
-4. [Push Notifications](#push-notifications)
+
+- [Push and Local Notifications](#push-and-local-notifications)
+  - [Table of Contents](#table-of-contents)
+  - [Local Notifications Android](#local-notifications-android)
+    - [Notification Display Locations](#notification-display-locations)
+    - [Create a Notification](#create-a-notification)
+    - [Sound](#sound)
+    - [Custom Layout with RemoteViews](#custom-layout-with-remoteviews)
+    - [Additional Properties](#additional-properties)
+    - [Update Notification](#update-notification)
+    - [Remove Notifications](#remove-notifications)
+    - [Respond to Notification Tap](#respond-to-notification-tap)
+    - [Schedule Future Notification (Background Service)](#schedule-future-notification-background-service)
+  - [Local Notifications iOS](#local-notifications-ios)
+    - [Notification Display Locations](#notification-display-locations-1)
+    - [Register for Notifications (iOS 8+)](#register-for-notifications-ios-8)
+    - [Schedule Local Notification](#schedule-local-notification)
+    - [Monitor Notifications](#monitor-notifications)
+    - [Cancel Notifications](#cancel-notifications)
+  - [Interactive Notifications iOS (iOS 8+)](#interactive-notifications-ios-ios-8)
+    - [Create Notification Actions](#create-notification-actions)
+    - [Create Notification Category](#create-notification-category)
+    - [Register Categories](#register-categories)
+    - [Monitor Interactive Notifications](#monitor-interactive-notifications)
+    - [Schedule Interactive Local Notification](#schedule-interactive-local-notification)
+    - [Send Interactive Push Notification](#send-interactive-push-notification)
+  - [Push Notifications](#push-notifications)
+    - [Overview](#overview)
+    - [Register for Push Notifications](#register-for-push-notifications)
+    - [Configure Push Services](#configure-push-services)
+    - [Push Notification Payload Format](#push-notification-payload-format)
+    - [Subscribe to Channels](#subscribe-to-channels)
+    - [Send Push Notifications](#send-push-notifications)
+    - [Best Practices](#best-practices)
+  - [Common Patterns](#common-patterns)
+    - [Check Notification Permissions](#check-notification-permissions)
+    - [PendingIntent for Notification Actions](#pendingintent-for-notification-actions)
+    - [Notification Groups (Android 7.0+)](#notification-groups-android-70)
+    - [Rich Notifications (iOS 10+)](#rich-notifications-ios-10)
+    - [Silent Push](#silent-push)
+  - [Platform-Specific Notes](#platform-specific-notes)
+    - [Android](#android)
+    - [iOS](#ios)
 
 ---
 
@@ -22,7 +61,7 @@ Comprehensive guide for local and push notifications on iOS and Android.
 
 **Basic Layout:**
 ```javascript
-var notification = Ti.Android.createNotification({
+const notification = Ti.Android.createNotification({
     contentTitle: 'Notification Title',
     contentText: 'Notification message',
     contentIntent: Ti.Android.createPendingIntent({
@@ -45,9 +84,9 @@ Ti.Android.NotificationManager.notify(1, notification);
 ### Sound
 
 ```javascript
-var notification = Ti.Android.createNotification({
+const notification = Ti.Android.createNotification({
     // ... other properties
-    sound: Ti.Filesystem.getResRawDirectory() + 'sound.wav'
+    sound: `${Ti.Filesystem.getResRawDirectory()}sound.wav`
 });
 ```
 
@@ -78,7 +117,7 @@ notification.flags |= Ti.Android.FLAG_ONLY_ALERT_ONCE;
 
 **2. Create RemoteViews and bind intents:**
 ```javascript
-var customView = Ti.Android.createRemoteViews({
+const customView = Ti.Android.createRemoteViews({
     layoutId: Ti.App.Android.R.layout.customview
 });
 
@@ -86,10 +125,10 @@ var customView = Ti.Android.createRemoteViews({
 customView.setTextViewText(Ti.App.Android.R.id.message, "Update available!");
 
 // Bind intents to buttons
-var downloadIntent = Ti.Android.createPendingIntent({intent: Ti.Android.createIntent()});
+const downloadIntent = Ti.Android.createPendingIntent({intent: Ti.Android.createIntent()});
 customView.setOnClickPendingIntent(Ti.App.Android.R.id.okbutton, downloadIntent);
 
-var notification = Ti.Android.createNotification({
+const notification = Ti.Android.createNotification({
     contentView: customView  // Avoid setting contentTitle/contentText or they override this
 });
 ```
@@ -147,7 +186,7 @@ Ti.Android.NotificationManager.cancelAll();
 
 **Launch app when tapped:**
 ```javascript
-var intent = Ti.Android.createIntent({
+const intent = Ti.Android.createIntent({
     action: Ti.Android.ACTION_MAIN,
     className: 'com.appcelerator.testapp.MyappActivity',  // ProjectName + Activity
     packageName: 'com.appcelerator.testapp'
@@ -171,15 +210,15 @@ notification.contentIntent = Ti.Android.createPendingIntent({intent: intent});
 
 **ExampleService.js:**
 ```javascript
-var service = Ti.Android.currentService;
-var serviceIntent = service.getIntent();
-var timestamp = new Date(serviceIntent.getStringExtra('timestamp'));
+const service = Ti.Android.currentService;
+const serviceIntent = service.getIntent();
+const timestamp = new Date(serviceIntent.getStringExtra('timestamp'));
 
 if (new Date() > timestamp) {
-    var title = serviceIntent.getStringExtra('title');
-    var message = serviceIntent.getStringExtra('message');
+    const title = serviceIntent.getStringExtra('title');
+    const message = serviceIntent.getStringExtra('message');
 
-    var notification = Ti.Android.createNotification({
+    const notification = Ti.Android.createNotification({
         contentTitle: title,
         contentText: message,
         contentIntent: Ti.Android.createPendingIntent({intent: Ti.Android.createIntent()})
@@ -192,9 +231,9 @@ if (new Date() > timestamp) {
 
 **Main app:**
 ```javascript
-var intent = Ti.Android.createServiceIntent({url: 'ExampleService.js'});
+const intent = Ti.Android.createServiceIntent({url: 'ExampleService.js'});
 intent.putExtra('interval', 5000);  // Check every 5 seconds
-intent.putExtra('timestamp', new Date(new Date().getTime() + 30 * 1000));  // Fire in 30 seconds
+intent.putExtra('timestamp', new Date(new Date().getTime() + (30 * 1000)));  // Fire in 30 seconds
 intent.putExtra('title', 'Scheduled Notification');
 intent.putExtra('message', 'This was scheduled!');
 Ti.Android.startService(intent);
@@ -231,7 +270,7 @@ if (Ti.Platform.name === 'iPhone OS' && parseInt(Ti.Platform.version.split('.')[
 ### Schedule Local Notification
 
 ```javascript
-var notification = Ti.App.iOS.scheduleLocalNotification({
+const notification = Ti.App.iOS.scheduleLocalNotification({
     date: new Date(new Date().getTime() + 3000),  // 3 seconds from now
     alertBody: 'New content available!',
     alertAction: 'update',  // Changes "slide to view" to "slide to update" or "Open" to "Update"
@@ -249,7 +288,7 @@ var notification = Ti.App.iOS.scheduleLocalNotification({
 
 **While app is in foreground or returns to foreground:**
 ```javascript
-Ti.App.iOS.addEventListener('notification', function(e) {
+Ti.App.iOS.addEventListener('notification', (e) => {
     // Process custom data
     if (e.userInfo && e.userInfo.url) {
         // Handle URL
@@ -272,7 +311,7 @@ Ti.App.iOS.addEventListener('notification', function(e) {
 Ti.App.iOS.cancelAllLocalNotifications();
 
 // Cancel specific notification
-var notification = Ti.App.iOS.scheduleLocalNotification({...});
+const notification = Ti.App.iOS.scheduleLocalNotification({...});
 notification.cancel();
 
 // Or by ID
@@ -290,7 +329,7 @@ Ti.App.iOS.cancelLocalNotification('foo');
 ### Create Notification Actions
 
 ```javascript
-var acceptAction = Ti.App.iOS.createUserNotificationAction({
+const acceptAction = Ti.App.iOS.createUserNotificationAction({
     identifier: 'ACCEPT_IDENTIFIER',
     title: 'Accept',
     activationMode: Ti.App.iOS.USER_NOTIFICATION_ACTIVATION_MODE_FOREGROUND,  // or BACKGROUND
@@ -298,7 +337,7 @@ var acceptAction = Ti.App.iOS.createUserNotificationAction({
     authenticationRequired: true  // Require device unlock
 });
 
-var rejectAction = Ti.App.iOS.createUserNotificationAction({
+const rejectAction = Ti.App.iOS.createUserNotificationAction({
     identifier: 'REJECT_IDENTIFIER',
     title: 'Reject',
     activationMode: Ti.App.iOS.USER_NOTIFICATION_ACTIVATION_MODE_BACKGROUND,
@@ -310,7 +349,7 @@ var rejectAction = Ti.App.iOS.createUserNotificationAction({
 ### Create Notification Category
 
 ```javascript
-var category = Ti.App.iOS.createUserNotificationCategory({
+const category = Ti.App.iOS.createUserNotificationCategory({
     identifier: 'INVITE_CATEGORY',
     actionsForDefaultContext: [acceptAction, rescheduleAction, delayAction, rejectAction],  // Alert dialog (4 max)
     actionsForMinimalContext: [acceptAction, rejectAction]  // Other styles (2 max)
@@ -334,7 +373,7 @@ Ti.App.iOS.registerUserNotificationSettings({
 
 **Local notifications:**
 ```javascript
-Ti.App.iOS.addEventListener('localnotificationaction', function(e) {
+Ti.App.iOS.addEventListener('localnotificationaction', (e) => {
     // e.category: category identifier
     // e.identifier: action identifier
     // e.userInfo: custom data
@@ -355,7 +394,7 @@ Ti.App.iOS.addEventListener('localnotificationaction', function(e) {
 
 **Push notifications:**
 ```javascript
-Ti.App.iOS.addEventListener('remotenotificationaction', function(e) {
+Ti.App.iOS.addEventListener('remotenotificationaction', (e) => {
     // e.category: category identifier
     // e.identifier: action identifier
     // e.data: push notification payload (JSON)
@@ -407,19 +446,19 @@ Push notifications allow server-to-device communication. Infrastructure differs 
 
 ```javascript
 Ti.Network.registerForPushNotifications({
-    success: function(e) {
+    success: (e) => {
         // e.deviceToken: token to send to your push server
-        Ti.API.info('Device Token: ' + e.deviceToken);
+        Ti.API.info(`Device Token: ${e.deviceToken}`);
         // Send this token to your server
     },
-    error: function(e) {
-        Ti.API.error('Push registration error: ' + e.error);
+    error: (e) => {
+        Ti.API.error(`Push registration error: ${e.error}`);
     },
-    callback: function(e) {
+    callback: (e) => {
         // Incoming push notification
         // e.data: push payload (iOS)
         // e.data: JSON object (Android)
-        Ti.API.info('Push received: ' + JSON.stringify(e.data));
+        Ti.API.info(`Push received: ${JSON.stringify(e.data)}`);
     }
 });
 ```
@@ -468,7 +507,7 @@ Cloud.PushNotifications.subscribeToken({
     device_token: deviceToken,
     channel: 'news',
     type: Ti.Platform.name === 'iPhone OS' ? 'ios' : 'android'
-}, function(e) {
+}, (e) => {
     if (e.success) {
         Ti.API.info('Subscribed to news channel');
     }
@@ -483,7 +522,7 @@ Cloud.PushNotifications.notify({
     channel: 'news',
     payload: 'Hello subscribers!',
     title: 'News Update'
-}, function(e) {
+}, (e) => {
     if (e.success) {
         Ti.API.info('Push sent successfully');
     }
@@ -516,11 +555,11 @@ Send to your push server with device tokens and payload.
 ### PendingIntent for Notification Actions
 
 ```javascript
-var intent = Ti.Android.createIntent({
+const intent = Ti.Android.createIntent({
     action: 'com.example.MY_ACTION',
     // Add data/flags
 });
-var pendingIntent = Ti.Android.createPendingIntent({
+const pendingIntent = Ti.Android.createPendingIntent({
     intent: intent,
     flags: Ti.Android.FLAG_UPDATE_CURRENT
 });

@@ -3,11 +3,30 @@
 Guide for obtaining, installing, and using Titanium modules to extend app functionality.
 
 ## Table of Contents
-1. [Obtaining Modules](#obtaining-modules)
-2. [Installing Modules](#installing-modules)
-3. [Configuring Your App](#configuring-your-app)
-4. [Using a Module](#using-a-module)
-5. [Troubleshooting](#troubleshooting)
+
+- [Using Modules](#using-modules)
+  - [Table of Contents](#table-of-contents)
+  - [Obtaining Modules](#obtaining-modules)
+    - [Sources of Modules](#sources-of-modules)
+  - [Installing Modules](#installing-modules)
+    - [Single Project Installation](#single-project-installation)
+    - [Global Installation (All Projects)](#global-installation-all-projects)
+  - [Configuring Your App](#configuring-your-app)
+    - [Updating tiapp.xml](#updating-tiappxml)
+    - [Selecting Module Versions](#selecting-module-versions)
+    - [Enable Debugger (for native modules)](#enable-debugger-for-native-modules)
+  - [Using a Module](#using-a-module)
+    - [Loading the Module (ES5)](#loading-the-module-es5)
+    - [Loading the Module (ES6+)](#loading-the-module-es6)
+    - [Using Module Functionality](#using-module-functionality)
+    - [Module Patterns](#module-patterns)
+  - [Troubleshooting](#troubleshooting)
+    - ["Requested module not found"](#requested-module-not-found)
+    - [Version Conflicts](#version-conflicts)
+    - [Platform-Specific Issues](#platform-specific-issues)
+    - [Clean Build](#clean-build)
+  - [Best Practices](#best-practices)
+  - [Module Development](#module-development)
 
 ---
 
@@ -53,10 +72,10 @@ Guide for obtaining, installing, and using Titanium modules to extend app functi
 
 Modules are installed to platform-specific locations:
 
-| Operating System | Path |
-|------------------|------|
-| macOS | `~/Library/Application Support/Titanium` |
-| Windows | `%ProgramData%\Titanium\mobilesdk\win32` |
+| Operating System | Path                                     |
+| ---------------- | ---------------------------------------- |
+| macOS            | `~/Library/Application Support/Titanium` |
+| Windows          | `%ProgramData%\Titanium\mobilesdk\win32` |
 
 **Show hidden Library folder on macOS:**
 ```bash
@@ -120,8 +139,8 @@ Required for debugging native modules:
 ### Loading the Module (ES5)
 
 ```javascript
-var Module = require('module.id');
-// Example: var Map = require('ti.map');
+const Module = require('module.id');
+// Example: const Map = require('ti.map');
 ```
 
 ### Loading the Module (ES6+)
@@ -138,10 +157,10 @@ import Module from 'module.id'
 After requiring, use the module's API:
 
 ```javascript
-// ES5 example with ti.admob
-var Admob = require('ti.admob');
+// ES6+ example with ti.admob
+const Admob = require('ti.admob');
 
-var adview = Admob.createView({
+const adview = Admob.createView({
     top: 0,
     testing: true,
     adBackgroundColor: 'black',
@@ -156,14 +175,14 @@ win.add(adview);
 
 **Singleton pattern:**
 ```javascript
-var admob = require('ti.admob');
+const admob = require('ti.admob');
 admob.createView({...});
 ```
 
 **Constructor pattern:**
 ```javascript
-var Map = require('ti.map');
-var view = Map.createView({...});
+const Map = require('ti.map');
+const view = Map.createView({...});
 ```
 
 Refer to module documentation for its specific API.

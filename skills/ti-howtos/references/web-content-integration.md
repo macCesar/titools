@@ -1,18 +1,54 @@
 # Web Content Integration
 
+## Table of Contents
+
+- [Web Content Integration](#web-content-integration)
+  - [Table of Contents](#table-of-contents)
+  - [1. The WebView Component](#1-the-webview-component)
+    - [WKWebView (Titanium SDK 8.0.0+)](#wkwebview-titanium-sdk-800)
+    - [Basic WebView Creation](#basic-webview-creation)
+      - [Remote URL](#remote-url)
+      - [Local HTML](#local-html)
+      - [Inline HTML](#inline-html)
+    - [Local Web Content with Assets](#local-web-content-with-assets)
+    - [WebView Properties and Methods](#webview-properties-and-methods)
+      - [Navigation](#navigation)
+      - [Load Control](#load-control)
+      - [Data Handling](#data-handling)
+      - [Events](#events)
+  - [2. Communication Between WebViews and Titanium](#2-communication-between-webviews-and-titanium)
+    - [Local Web Content Communication](#local-web-content-communication)
+      - [Logging from WebView](#logging-from-webview)
+      - [Bidirectional Events with Ti.App](#bidirectional-events-with-tiapp)
+    - [Remote Web Content Communication](#remote-web-content-communication)
+      - [Using evalJS() for Remote Content](#using-evaljs-for-remote-content)
+      - [Passing Data to Remote Content](#passing-data-to-remote-content)
+  - [3. Performance and Interaction Concerns](#3-performance-and-interaction-concerns)
+    - [WebView Performance](#webview-performance)
+    - [WebView in TableViews](#webview-in-tableviews)
+    - [WebView in Scrollable Components](#webview-in-scrollable-components)
+    - [Viewport Meta Tag](#viewport-meta-tag)
+  - [4. WebView Use Cases](#4-webview-use-cases)
+    - [Authentication Flows](#authentication-flows)
+    - [Canvas and Graphics](#canvas-and-graphics)
+  - [5. WKWebView-Specific Considerations](#5-wkwebview-specific-considerations)
+  - [Best Practices Summary](#best-practices-summary)
+
+---
+
 ## 1. The WebView Component
 
 ### WKWebView (Titanium SDK 8.0.0+)
 Apple deprecated UIWebView. Titanium now uses WKWebView as the underlying implementation.
 
-**Important**: WKWebView has some behavioral differences from the legacy UIWebView.
+**Important**: WKWebView has some behavioral differences compared to the original UIWebView.
 
 ### Basic WebView Creation
 
 #### Remote URL
 ```javascript
-var webview = Ti.UI.createWebView({
-  url: 'http://www.appcelerator.com'
+const webview = Ti.UI.createWebView({
+  url: 'https://www.appcelerator.com'
 });
 win.add(webview);
 win.open();
@@ -20,7 +56,7 @@ win.open();
 
 #### Local HTML
 ```javascript
-var webview = Ti.UI.createWebView({
+const webview = Ti.UI.createWebView({
   url: 'local.html'  // Relative to Resources or app/assets/app/lib
 });
 win.add(webview);
@@ -28,7 +64,7 @@ win.add(webview);
 
 #### Inline HTML
 ```javascript
-var webview = Ti.UI.createWebView({
+const webview = Ti.UI.createWebView({
   html: '<html><body><h1>Hello</h1></body></html>'
 });
 ```
@@ -53,12 +89,12 @@ Local content can include CSS, JS, and images. Paths are relative to Resources (
 ### WebView Properties and Methods
 
 #### Navigation
-- `canGoBack()` - Returns Boolean if back is possible
-- `canGoForward()` - Returns Boolean if forward is possible
+- `canGoBack()` - Returns Boolean if possible to go back
+- `canGoForward()` - Returns Boolean if possible to go forward
 - `goBack()` - Navigate back in history
 - `goForward()` - Navigate forward in history
 
-#### Loading Control
+#### Load Control
 - `loading` (Boolean) - Current loading state
 - `reload()` - Refresh the page
 - `stopLoading()` - Stop loading
@@ -67,20 +103,20 @@ Local content can include CSS, JS, and images. Paths are relative to Resources (
 #### Data Handling
 - `url` - Local or remote URL
 - `html` - Inline HTML string
-- `scalesPageToFit` - Boolean to scale content to fit dimensions
-- `setBasicAuthentication(username, password)` - HTTP auth
+- `scalesPageToFit` - Boolean to scale content to dimensions
+- `setBasicAuthentication(username, password)` - HTTP authentication
 
 #### Events
-- `beforeload` - Fired before loading starts (`e.url` contains source)
-- `load` - Fired when content loaded
-- `error` - Fired on load failure (`e.url`, `e.message`)
+- `beforeload` - Fires before loading begins (`e.url` contains the source)
+- `load` - Fires when content has loaded
+- `error` - Fires on load failures (`e.url`, `e.message`)
 
 ## 2. Communication Between WebViews and Titanium
 
 ### Local Web Content Communication
 
 #### Logging from WebView
-Ti.API methods work within local HTML:
+Ti.API methods work inside local HTML:
 
 ```html
 <html>
@@ -90,13 +126,6 @@ Ti.API methods work within local HTML:
 </html>
 ```
 
-Available logging methods:
-- `Ti.API.debug(message)`
-- `Ti.API.info(message)`
-- `Ti.API.warn(message)`
-- `Ti.API.error(message)`
-- `Ti.API.log(type, message)`
-
 #### Bidirectional Events with Ti.App
 
 **In local HTML**:
@@ -105,7 +134,7 @@ Available logging methods:
   <head>
     <script>
       // Listen for events from Titanium
-      Ti.App.addEventListener('app:fromTitanium', function(e) {
+      Ti.App.addEventListener('app:fromTitanium', (e) => {
         alert(e.message);
         document.getElementById('output').textContent = e.message;
       });
@@ -127,18 +156,18 @@ Available logging methods:
 
 **In Titanium**:
 ```javascript
-var webview = Ti.UI.createWebView({ url: 'local.html' });
+const webview = Ti.UI.createWebView({ url: 'local.html' });
 
-// Listen for events from WebView
-Ti.App.addEventListener('app:fromWebView', function(e) {
+// Listen for events from the WebView
+Ti.App.addEventListener('app:fromWebView', (e) => {
   alert(e.message);
 });
 
-// Send event to WebView
-var button = Ti.UI.createButton({
+// Send event to the WebView
+const button = Ti.UI.createButton({
   title: 'Send to WebView'
 });
-button.addEventListener('click', function() {
+button.addEventListener('click', () => {
   Ti.App.fireEvent('app:fromTitanium', {
     message: 'Hello from Titanium!'
   });
@@ -154,38 +183,38 @@ button.addEventListener('click', function() {
 Inject JavaScript and retrieve results as strings:
 
 ```javascript
-var webview = Ti.UI.createWebView({ url: 'https://example.com' });
+const webview = Ti.UI.createWebView({ url: 'https://example.com' });
 
-webview.addEventListener('load', function(e) {
-  // Get page title
-  var title = webview.evalJS('document.title');
-  Ti.API.info('Page title: ' + title);
+webview.addEventListener('load', (e) => {
+  // Get the page title
+  const title = webview.evalJS('document.title');
+  Ti.API.info(`Page title: ${title}`);
 
   // Get cookies
-  var cookies = webview.evalJS('document.cookie');
-  Ti.API.info('Cookies: ' + cookies);
+  const cookies = webview.evalJS('document.cookie');
+  Ti.API.info(`Cookies: ${cookies}`);
 
-  // Execute custom function
+  // Execute a custom function
   webview.evalJS('alert("Hello from Titanium!");');
 });
 ```
 
 **evalJS() Rules**:
-- Must call from `load` event (page must be loaded)
-- Pass code as single string
-- Returns string (or null)
+- Must be called from the `load` event (page must be loaded)
+- Pass code as a single string
+- Returns a string (or null)
 - Use `JSON.stringify()` for complex data
 
 #### Passing Data to Remote Content
 
 ```javascript
-webview.addEventListener('load', function() {
-  var data = { user: 'John', score: 100 };
-  webview.evalJS('window.appData = ' + JSON.stringify(data) + ';');
+webview.addEventListener('load', () => {
+  const data = { user: 'John', score: 100 };
+  webview.evalJS(`window.appData = ${JSON.stringify(data)};`);
 });
 ```
 
-Then in remote HTML:
+Then in the remote HTML:
 ```html
 <script>
   console.log(window.appData.user);  // 'John'
@@ -196,30 +225,25 @@ Then in remote HTML:
 
 ### WebView Performance
 
-**WebView is resource-intensive**:
+**WebView consumes many resources**:
 - Each WebView requires its own rendering context
 - Significant memory overhead
-- Load time regardless of content simplicity
+- Load time independent of content simplicity
 
-**Best Practice**: If you can recreate content with native Titanium components, do so.
+**Best Practice**: If you can recreate the content with native Titanium components, do it.
 
 ### WebView in TableViews
 
-**Anti-Pattern**: Embedding WebViews in TableViewRows causes sluggish scrolling.
-
-**Alternative**: Consider:
-- Native labels/attributes for text
-- Attribute strings for formatted text
-- Custom row renderers
+**Anti-Pattern**: Embedding WebViews in TableViewRows causes slow scrolling.
 
 ### WebView in Scrollable Components
 
-WebViews don't play well inside other scrollable containers (ScrollView, TableView). They consume touch events.
+WebViews don't work well inside other scrollable containers (ScrollView, TableView). They consume touch events.
 
-**Workaround**: Set `touchEnabled: false` on WebView if inside scrollable parent:
+**Workaround**: Set `touchEnabled: false` on the WebView if inside a scrollable parent:
 
 ```javascript
-var webview = Ti.UI.createWebView({
+const webview = Ti.UI.createWebView({
   url: 'content.html',
   touchEnabled: false  // Allow parent to handle touches
 });
@@ -227,31 +251,26 @@ var webview = Ti.UI.createWebView({
 
 ### Viewport Meta Tag
 
-For mobile-optimized content, use viewport meta tag:
+For mobile-optimized content, use the viewport meta tag:
 
 ```html
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 ```
 
-Resources:
-- [Apple Safari Viewport Guide](https://developer.apple.com/library/safari/documentation/AppleApplications/Reference/SafariWebContent/UsingtheViewport/UsingtheViewport.html)
-- [Android Targeting Screens](https://developer.android.com/guide/webapps/targeting.html)
-- [Mozilla Viewport Meta Tag](https://developer.mozilla.org/en/Mobile/Viewport_meta_tag)
-
 ## 4. WebView Use Cases
 
 ### Authentication Flows
-Many OAuth providers use WebView for login (like Facebook module).
+Many OAuth providers use WebView for login (like the Facebook module).
 
 ```javascript
-var authWebView = Ti.UI.createWebView({
+const authWebView = Ti.UI.createWebView({
   url: 'https://auth.example.com/oauth'
 });
 
-authWebView.addEventListener('load', function(e) {
+authWebView.addEventListener('load', (e) => {
   // Detect redirect to callback URL with token
   if (e.url.indexOf('myapp://callback') === 0) {
-    var token = extractTokenFromUrl(e.url);
+    const token = extractTokenFromUrl(e.url);
     Ti.App.fireEvent('auth:success', { token: token });
   }
 });
@@ -264,53 +283,25 @@ For complex graphics, use HTML5 Canvas:
 ```html
 <canvas id="myCanvas" width="300" height="200"></canvas>
 <script>
-  var ctx = document.getElementById('myCanvas').getContext('2d');
+  const ctx = document.getElementById('myCanvas').getContext('2d');
   ctx.fillStyle = 'green';
   ctx.fillRect(10, 10, 150, 100);
 </script>
 ```
 
-### Third-Party Libraries
-Use web libraries like jQuery, D3.js, Chart.js:
-
-```html
-<script src="jquery.min.js"></script>
-<script src="chart.min.js"></script>
-<script>
-  $(document).ready(function() {
-    var chart = new Chart(ctx, { ... });
-  });
-</script>
-```
-
-### Content Rendering
-For rich text, RSS feeds, or formatted documents:
-
-```javascript
-var webview = Ti.UI.createWebView({
-  html: renderContentAsHTML(rssData)
-});
-```
-
 ## 5. WKWebView-Specific Considerations
 
-### Different from UIWebView
+1. **Cookie Management**: WKWebView has separate cookie storage.
+2. **localStorage/SessionStorage**: Not shared with native app.
+3. **Asynchronous evalJS**: In modern iOS versions, async usage is preferred to avoid blocking.
 
-1. **Cookie Management**: WKWebView has separate cookie storage
-2. **localStorage/SessionStorage**: Not shared with native app
-3. **HTTP Headers**: May require additional handling
-4. **File Loading**: Different security restrictions for local files
-
-### For detailed WKWebView information
-See the official [WKWebView guide](https://docs.appcelerator.com/platform/latest/#!/guide/Titanium_SDK_How-tos) for comprehensive details on migration and specific behaviors.
+For detailed WKWebView information, refer to the official migration guide and specific behaviors.
 
 ## Best Practices Summary
 
-1. **Avoid WebViews when possible** - Use native components for better performance
-2. **Never embed in TableView** - Causes severe scrolling issues
-3. **Set touchEnabled: false** - If WebView must be inside scrollable container
-4. **Use local content for integration** - Only local content supports Ti.App events
-5. **Use evalJS() for remote** - Only way to interact with remote content
-6. **Wait for load event** - Before calling evalJS()
-7. **Configure viewport** - For proper mobile rendering
-8. **Consider caching** - Local content loads faster and works offline
+1. **Avoid WebViews when possible** - Use native components.
+2. **Never embed in TableView** - Causes serious scroll issues.
+3. **Use local content for integration** - Only local content supports Ti.App events.
+4. **Use evalJS() for remote** - Only way to interact with remote content.
+5. **Wait for the load event** - Before calling evalJS().
+6. **Configure the viewport** - For proper mobile rendering.

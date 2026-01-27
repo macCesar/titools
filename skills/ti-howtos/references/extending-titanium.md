@@ -1,14 +1,94 @@
 # Extending Titanium
 
-## 1. Overview
+## Table of Contents
 
-When Titanium's built-in APIs don't meet your needs, you have several options to extend its capabilities:
+- [Extending Titanium](#extending-titanium)
+  - [Table of Contents](#table-of-contents)
+  - [1. Module Architecture (Core Concepts)](#1-module-architecture-core-concepts)
+    - [Proxy-View Relationship](#proxy-view-relationship)
+  - [2. Module Debugging in Xcode (iOS)](#2-module-debugging-in-xcode-ios)
+  - [3. Upgrading to SDK 9.0.0+ (Android)](#3-upgrading-to-sdk-900-android)
+  - [4. Hyperloop](#4-hyperloop)
+    - [What is Hyperloop?](#what-is-hyperloop)
+    - [Prerequisites](#prerequisites)
+    - [Hyperloop Basics](#hyperloop-basics)
+    - [iOS Hyperloop Examples](#ios-hyperloop-examples)
+      - [Access iOS Frameworks](#access-ios-frameworks)
+      - [Access UIKit](#access-uikit)
+      - [Make Native HTTP Request](#make-native-http-request)
+      - [Access CoreBluetooth (Bluetooth LE)](#access-corebluetooth-bluetooth-le)
+      - [Access AVFoundation (Camera/Video)](#access-avfoundation-cameravideo)
+      - [Access Address Book (Contacts)](#access-address-book-contacts)
+      - [Access CoreLocation (Enhanced)](#access-corelocation-enhanced)
+    - [Android Hyperloop Examples](#android-hyperloop-examples)
+      - [Access Android Frameworks](#access-android-frameworks)
+      - [Access Vibrator](#access-vibrator)
+      - [Access TelephonyManager](#access-telephonymanager)
+      - [Access WiFi Manager](#access-wifi-manager)
+      - [Access PackageManager](#access-packagemanager)
+    - [Hyperloop Best Practices](#hyperloop-best-practices)
+  - [3. Native Module Development](#3-native-module-development)
+    - [When to Create Native Modules](#when-to-create-native-modules)
+    - [Android Module Development](#android-module-development)
+      - [Quick Start](#quick-start)
+      - [Use in Titanium app](#use-in-titanium-app)
+      - [Common Android Module Patterns](#common-android-module-patterns)
+    - [iOS Module Development](#ios-module-development)
+      - [Quick Start](#quick-start-1)
+      - [Common iOS Module Patterns](#common-ios-module-patterns)
+    - [Module Distribution](#module-distribution)
+      - [Packaging](#packaging)
+      - [Installing Module](#installing-module)
+      - [Module Configuration in tiapp.xml](#module-configuration-in-tiappxml)
+  - [4. Choosing Between Hyperloop and Native Modules](#4-choosing-between-hyperloop-and-native-modules)
+    - [Use Hyperloop When](#use-hyperloop-when)
+    - [Use Native Modules When](#use-native-modules-when)
+  - [5. Finding and Using Third-Party Modules](#5-finding-and-using-third-party-modules)
+    - [Ti\_slack Marketplace](#ti_slack-marketplace)
+    - [Popular Third-Party Modules](#popular-third-party-modules)
+    - [Using Third-Party Modules](#using-third-party-modules)
+  - [Best Practices Summary](#best-practices-summary)
 
-1. **Hyperloop** - Direct access to native platform APIs (iOS/Android)
-2. **Native Modules** - Custom native code wrapped for Titanium
-3. **Third-party Modules** - Community or vendor-provided modules
+---
 
-## 2. Hyperloop
+## 1. Module Architecture (Core Concepts)
+
+Titanium modules are based on a native class hierarchy that communicates with JavaScript:
+
+- **Proxy**: Base class that binds native code with JS. Maintains object state.
+- **Module**: A special Proxy that defines a namespace (e.g., `Ti.UI`). Only one per project is allowed.
+- **ViewProxy**: Proxy specialized in rendering views. Manages the native view's lifecycle.
+- **View**: The actual visual representation (e.g., a `UIButton` or an Android `UIView`).
+
+### Proxy-View Relationship
+The `ViewProxy` maintains properties in JS even if the native view does not exist yet. When the view is added to the hierarchy, the Proxy instantiates the native `View` and passes all accumulated properties to it.
+
+## 2. Module Debugging in Xcode (iOS)
+
+You can debug your native module directly within a Titanium project:
+
+1. Open the generated Xcode project from your test app at `build/iphone/<App>.xcodeproj`.
+2. Drag the module project (`.xcodeproj`) into the app project in Xcode.
+3. In the app, go to **Build Phases > Dependencies** and add the module.
+4. In **Link Binary With Libraries**, add the module's `.a` library or framework.
+5. Set a breakpoint in your native code and launch the app from Xcode.
+
+## 3. Upgrading to SDK 9.0.0+ (Android)
+
+Titanium 9.0.0 introduced major changes in Android:
+
+- **AndroidX**: Legacy support libraries are no longer supported. You must migrate your Java/Kotlin code to AndroidX.
+- **Gradle**: Modules now use Gradle for dependencies. Create an `android/build.gradle` file instead of manually copying `.jar` files to `lib/`.
+- **Architectures**: It is mandatory to include `arm64-v8a` and `x86_64` in the `manifest` file.
+
+**Example module `build.gradle`:**
+```gradle
+dependencies {
+    implementation 'com.google.android.material:material:1.1.0'
+}
+```
+
+## 4. Hyperloop
 
 ### What is Hyperloop?
 
@@ -37,8 +117,8 @@ Hyperloop provides direct JavaScript access to native iOS and Android APIs witho
 
 The pattern for accessing native APIs:
 ```javascript
-var NativeClass = require('path.to.NativeClass');
-var instance = new NativeClass();
+const NativeClass = require('path.to.NativeClass');
+const instance = new NativeClass();
 instance.methodName();
 ```
 
@@ -48,27 +128,27 @@ instance.methodName();
 
 ```javascript
 // Access Foundation framework
-var NSString = require('Foundation/NSString');
-var NSMutableString = require('Foundation/NSMutableString');
+const NSString = require('Foundation/NSString');
+const NSMutableString = require('Foundation/NSMutableString');
 
 // Create string
-var str = NSString.stringWithString('Hello from Hyperloop');
-Ti.API.info('Length: ' + str.length());
+const str = NSString.stringWithString('Hello from Hyperloop');
+Ti.API.info(`Length: ${str.length()}`);
 
 // Mutable string
-var mutable = NSMutableString.alloc().initWithString('Hello');
-mutable appendString(' Hyperloop');
+const mutable = NSMutableString.alloc().initWithString('Hello');
+mutable.appendString(' Hyperloop');
 Ti.API.info(mutable);  // "Hello Hyperloop"
 ```
 
 #### Access UIKit
 
 ```javascript
-var UIViewController = require('UIKit/UIViewController');
-var UIColor = require('UIKit/UIColor');
+const UIViewController = require('UIKit/UIViewController');
+const UIColor = require('UIKit/UIColor');
 
 // Create native view controller
-var controller = UIViewController.alloc().init();
+const controller = UIViewController.alloc().init();
 
 // Set background color
 controller.view().setBackgroundColor(
@@ -79,15 +159,15 @@ controller.view().setBackgroundColor(
 #### Make Native HTTP Request
 
 ```javascript
-var NSURL = require('Foundation/NSURL');
-var NSURLRequest = require('Foundation/NSURLRequest');
-var NSURLSession = require('Foundation/NSURLSession');
+const NSURL = require('Foundation/NSURL');
+const NSURLRequest = require('Foundation/NSURLRequest');
+const NSURLSession = require('Foundation/NSURLSession');
 
-var url = NSURL.URLWithString('https://api.example.com/data');
-var request = NSURLRequest.requestWithURL(url);
+const url = NSURL.URLWithString('https://api.example.com/data');
+const request = NSURLRequest.requestWithURL(url);
 
-var session = NSURLSession.sharedSession();
-var task = session.dataTaskWithRequestCompletionHandler(request, function(data, response, error) {
+const session = NSURLSession.sharedSession();
+const task = session.dataTaskWithRequestCompletionHandler(request, (data, response, error) => {
   if (!error) {
     Ti.API.info('Response received');
     // Process data
@@ -172,12 +252,12 @@ locationManager.startUpdatingLocation();
 #### Access Android Frameworks
 
 ```javascript
-var Context = require('android.content.Context');
-var Activity = require('android.app.Activity');
-var Toast = require('android.widget.Toast');
+const Context = require('android.content.Context');
+const Activity = require('android.app.Activity');
+const Toast = require('android.widget.Toast');
 
 // Get current activity
-var activity = Ti.Android.currentActivity;
+const activity = Ti.Android.currentActivity;
 
 // Show toast
 Toast.makeText(
@@ -190,11 +270,11 @@ Toast.makeText(
 #### Access Vibrator
 
 ```javascript
-var Vibrator = require('android.os.Vibrator');
-var Context = require('android.content.Context');
+const Vibrator = require('android.os.Vibrator');
+const Context = require('android.content.Context');
 
-var activity = Ti.Android.currentActivity;
-var vibrator = activity.getSystemService(Context.VIBRATOR_SERVICE);
+const activity = Ti.Android.currentActivity;
+const vibrator = activity.getSystemService(Context.VIBRATOR_SERVICE);
 
 // Vibrate for 500ms
 vibrator.vibrate(500);
@@ -203,18 +283,18 @@ vibrator.vibrate(500);
 #### Access TelephonyManager
 
 ```javascript
-var TelephonyManager = require('android.telephony.TelephonyManager');
-var Context = require('android.content.Context');
+const TelephonyManager = require('android.telephony.TelephonyManager');
+const Context = require('android.content.Context');
 
-var activity = Ti.Android.currentActivity;
-var tm = activity.getSystemService(Context.TELEPHONY_SERVICE);
+const activity = Ti.Android.currentActivity;
+const tm = activity.getSystemService(Context.TELEPHONY_SERVICE);
 
 // Get device ID
-var deviceId = tm.getDeviceId();
-Ti.API.info('Device ID: ' + deviceId);
+const deviceId = tm.getDeviceId();
+Ti.API.info(`Device ID: ${deviceId}`);
 
 // Get phone state
-var state = tm.getCallState();
+const state = tm.getCallState();
 if (state === 0) {
   Ti.API.info('Phone idle');
 } else if (state === 1) {
@@ -227,36 +307,36 @@ if (state === 0) {
 #### Access WiFi Manager
 
 ```javascript
-var WifiManager = require('android.net.wifi.WifiManager');
-var Context = require('android.content.Context');
+const WifiManager = require('android.net.wifi.WifiManager');
+const Context = require('android.content.Context');
 
-var activity = Ti.Android.currentActivity;
-var wifi = activity.getSystemService(Context.WIFI_SERVICE);
+const activity = Ti.Android.currentActivity;
+const wifi = activity.getSystemService(Context.WIFI_SERVICE);
 
 // Check WiFi enabled
 if (wifi.isWifiEnabled()) {
   // Get connection info
-  var info = wifi.getConnectionInfo();
-  var ssid = info.getSSID();
-  var speed = info.getLinkSpeed();
-  Ti.API.info('Connected to: ' + ssid + ' at ' + speed + ' Mbps');
+  const info = wifi.getConnectionInfo();
+  const ssid = info.getSSID();
+  const speed = info.getLinkSpeed();
+  Ti.API.info(`Connected to: ${ssid} at ${speed} Mbps`);
 }
 ```
 
 #### Access PackageManager
 
 ```javascript
-var PackageManager = require('android.content.pm.PackageManager');
+const PackageManager = require('android.content.pm.PackageManager');
 
-var activity = Ti.Android.currentActivity;
-var pm = activity.getPackageManager();
+const activity = Ti.Android.currentActivity;
+const pm = activity.getPackageManager();
 
 // Get installed apps
-var packages = pm.getInstalledApplications(0);
-for (var i = 0; i < packages.size(); i++) {
-  var pkg = packages.get(i);
-  var appName = pm.getApplicationLabel(pkg);
-  Ti.API.info('App: ' + appName);
+const packages = pm.getInstalledApplications(0);
+for (let i = 0; i < packages.size(); i++) {
+  const pkg = packages.get(i);
+  const appName = pm.getApplicationLabel(pkg);
+  Ti.API.info(`App: ${appName}`);
 }
 ```
 
@@ -271,11 +351,11 @@ for (var i = 0; i < packages.size(); i++) {
 
 ```javascript
 try {
-  var NativeClass = require('path.to.NativeClass');
-  var instance = new NativeClass();
+  const NativeClass = require('path.to.NativeClass');
+  const instance = new NativeClass();
   // Use instance
 } catch (e) {
-  Ti.API.error('Hyperloop error: ' + e.message);
+  Ti.API.error(`Hyperloop error: ${e.message}`);
 }
 ```
 
@@ -356,10 +436,10 @@ ant clean
 ant package
 ```
 
-5. **Use in Titanium app**:
+#### Use in Titanium app
 
 ```javascript
-var myModule = require('com.example.mymodule');
+const myModule = require('com.example.mymodule');
 Ti.API.info(myModule.helloWorld());  // "Hello from native module!"
 Ti.API.info(myModule.add(5, 3));      // 8
 Ti.API.info(myModule.version);       // "1.0.0"
@@ -497,7 +577,7 @@ com.example.mymodule/
 6. **Use in Titanium app**:
 
 ```javascript
-var myModule = require('com.example.mymodule');
+const myModule = require('com.example.mymodule');
 Ti.API.info(myModule.helloWorld());  // "Hello from native module!"
 Ti.API.info(myModule.add(5, {with: 3})); // 8
 Ti.API.info(myModule.version);       // "1.0.0"
@@ -628,7 +708,7 @@ Search for existing modules at:
 4. **Require in code**:
 
 ```javascript
-var Mapbox = require('com.mapbox.map');
+const Mapbox = require('com.mapbox.map');
 ```
 
 ## Best Practices Summary

@@ -1,80 +1,221 @@
 # iOS Platform Deep Dives
 
-## 1. Background Services
+## Table of Contents
+
+- [iOS Platform Deep Dives](#ios-platform-deep-dives)
+  - [Table of Contents](#table-of-contents)
+  - [1. iOS 17+ Privacy Requirements (Critical)](#1-ios-17-privacy-requirements-critical)
+    - [PrivacyInfo.xcprivacy File](#privacyinfoxcprivacy-file)
+  - [2. Background Services \& Silent Push](#2-background-services--silent-push)
+    - [Overview](#overview)
+    - [Silent Push (Background Update)](#silent-push-background-update)
+  - [3. iCloud Services \& Backup Control](#3-icloud-services--backup-control)
+    - [Disable Individual Backup (Best Practice)](#disable-individual-backup-best-practice)
+    - [Recursive Folder Backup Disable](#recursive-folder-backup-disable)
+  - [4. WatchKit \& Ti.WatchSession](#4-watchkit--tiwatchsession)
+    - [Activate Session](#activate-session)
+    - [Send Message (Immediate)](#send-message-immediate)
+    - [Receive Data from Watch](#receive-data-from-watch)
+  - [5. SiriKit \& Siri Intents](#5-sirikit--siri-intents)
+    - [Configuration in tiapp.xml](#configuration-in-tiappxml)
+    - [Siri Extensions](#siri-extensions)
+  - [6. Spotlight Search (Core Spotlight)](#6-spotlight-search-core-spotlight)
+  - [7. Core Motion Module](#7-core-motion-module)
+    - [Overview](#overview-1)
+    - [Basic Workflow](#basic-workflow)
+    - [Coordinate System](#coordinate-system)
+    - [Accelerometer](#accelerometer)
+    - [Gyroscope](#gyroscope)
+    - [Magnetometer](#magnetometer)
+    - [Device Motion](#device-motion)
+    - [Activity API](#activity-api)
+    - [Pedometer](#pedometer)
+    - [Core Motion Best Practices](#core-motion-best-practices)
+  - [3. Spotlight Search](#3-spotlight-search)
+    - [Overview](#overview-2)
+    - [Creating Searchable Items](#creating-searchable-items)
+    - [Indexing Items](#indexing-items)
+    - [Deleting from Index](#deleting-from-index)
+    - [Handling Search Results](#handling-search-results)
+    - [Best Practices](#best-practices)
+  - [8. Handoff User Activities](#8-handoff-user-activities)
+    - [Handling Incoming Handoff](#handling-incoming-handoff)
+    - [Invalidating Activities](#invalidating-activities)
+    - [Declaring Activity Types in tiapp.xml](#declaring-activity-types-in-tiappxml)
+  - [5. iCloud Services](#5-icloud-services)
+    - [Keychain Storage](#keychain-storage)
+    - [Document Picker](#document-picker)
+    - [CloudKit](#cloudkit)
+  - [6. WatchKit Integration](#6-watchkit-integration)
+    - [Overview](#overview-3)
+    - [Integration Steps](#integration-steps)
+    - [Watch Connectivity](#watch-connectivity)
+  - [7. SiriKit Integration](#7-sirikit-integration)
+    - [Overview](#overview-4)
+    - [Supported Intents (iOS 10+)](#supported-intents-ios-10)
+    - [Implementation](#implementation)
+    - [Voice Shortcuts (iOS 12+)](#voice-shortcuts-ios-12)
+  - [8. Additional iOS Features](#8-additional-ios-features)
+    - [3D Touch (Force Touch)](#3d-touch-force-touch)
+    - [Haptic Feedback](#haptic-feedback)
+    - [Document Interaction](#document-interaction)
+  - [Best Practices Summary](#best-practices-summary)
+
+---
+
+## 1. iOS 17+ Privacy Requirements (Critical)
+Apple requires declaring the use of certain APIs to prevent "fingerprinting".
+
+### PrivacyInfo.xcprivacy File
+Create this file in `app/assets/iphone/` (Alloy) or `Resources/iphone/` (Classic):
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>NSPrivacyAccessedAPITypes</key>
+    <array>
+        <dict>
+            <key>NSPrivacyAccessedAPIType</key>
+            <string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+            <key>NSPrivacyAccessedAPITypeReasons</key>
+            <array><string>AC6B.1</string></array>
+        </dict>
+    </array>
+</dict>
+</plist>
+```
+*Common categories: `UserDefaults` (Ti.App.Properties), `FileTimestamp` (file.createdAt), `SystemBootTime`.*
+
+## 2. Background Services & Silent Push
 
 ### Overview
-Background services allow tasks to continue running after the app enters the background. iOS has strict limitations on background execution.
+iOS allows limited background execution. For large downloads, use the `com.appcelerator.urlSession` module.
 
-### Registration
+### Silent Push (Background Update)
+Allows waking up the app to download content without showing a notification to the user.
+
+**tiapp.xml**:
+```xml
+<key>UIBackgroundModes</key>
+<array>
+    <string>remote-notification</string>
+</array>
+```
+
+**app.js**:
 ```javascript
-var service = Ti.App.iOS.registerBackgroundService({
-  url: 'bg.js'
+Ti.App.iOS.addEventListener('silentpush', (e) => {
+    // Start download or update
+    Ti.API.info(`Data received: ${JSON.stringify(e)}`);
+    
+    // Mandatory to call upon completion (max 30 seconds)
+    Ti.App.iOS.endBackgroundHandler(e.handlerId);
 });
 ```
 
-**bg.js**:
-```javascript
-// Background task code
-Ti.API.info('Background service running');
+## 3. iCloud Services & Backup Control
 
-// Example: Periodic check
-setInterval(function() {
-  checkForUpdates();
-}, 60000);  // Every minute
+### Disable Individual Backup (Best Practice)
+Apple rejects apps that upload unnecessary data to iCloud. Disable backup for temporary or recreatable files.
+
+```javascript
+const file = Ti.Filesystem.getFile(Ti.Filesystem.applicationDataDirectory, 'cache.dat');
+file.remoteBackup = false; // Prevents upload to iCloud/iTunes
 ```
 
-### Background Modes
-Enable specific background modes in `tiapp.xml`:
+### Recursive Folder Backup Disable
+```javascript
+function disableiCloudBackup(folder) {
+    const dir = Ti.Filesystem.getFile(folder);
+    const files = dir.getDirectoryListing();
+    files.forEach((name) => {
+        const f = Ti.Filesystem.getFile(folder, name);
+        f.remoteBackup = false;
+        if (f.isDirectory()) disableiCloudBackup(f.nativePath);
+    });
+}
+```
 
+## 4. WatchKit & Ti.WatchSession
+
+For watchOS 2+, use `Ti.WatchSession` for bidirectional communication.
+
+### Activate Session
+```javascript
+if (Ti.WatchSession.isSupported) {
+    Ti.WatchSession.activateSession();
+}
+```
+
+### Send Message (Immediate)
+```javascript
+if (Ti.WatchSession.isReachable) {
+    Ti.WatchSession.sendMessage({
+        orderId: '123',
+        status: 'shipped'
+    });
+}
+```
+
+### Receive Data from Watch
+```javascript
+Ti.WatchSession.addEventListener('receivemessage', (e) => {
+    Ti.API.info(`Message from Watch: ${e.message}`);
+});
+```
+
+## 5. SiriKit & Siri Intents
+
+Allows your app to respond to Siri voice commands (Messaging, Payments, Workouts).
+
+### Configuration in tiapp.xml
+```xml
+<key>NSSiriUsageDescription</key>
+<string>Siri will use your voice to send messages in this app.</string>
+```
+
+### Siri Extensions
+Requires creating an **Intents Extension** in Xcode and adding it to the `extensions/` folder of your project. Then register it in `tiapp.xml`:
 ```xml
 <ios>
-  <plist>
-    <dict>
-      <key>UIBackgroundModes</key>
-      <array>
-        <string>audio</string>           <!-- Audio playback -->
-        <string>location</string>        <!-- GPS tracking -->
-        <string>fetch</string>           <!-- Background fetch -->
-        <string>processing</string>      <!-- Background processing -->
-        <string>remote-notification</string>  <!-- Push processing -->
-      </array>
-    </dict>
-  </plist>
+    <extensions>
+        <extension projectPath="extensions/SiriIntent/SiriIntent.xcodeproj">
+            <target name="SiriIntent">
+                <provisioning-profiles>
+                    <device>PROVISIONING_PROFILE_UUID</device>
+                </provisioning-profiles>
+            </target>
+        </extension>
+    </extensions>
 </ios>
 ```
 
-### Common Use Cases
+## 6. Spotlight Search (Core Spotlight)
 
-#### Audio Background Mode
-For music/podcast streaming. Must set `allowBackground: true` on AudioPlayer.
-
-#### Location Background Mode
-For navigation/fitness tracking. Requires `NSLocationAlwaysAndWhenInUseUsageDescription` permission.
-
-#### Background Fetch
-iOS periodically launches app to fetch new content:
+Indexes your app's content to appear in global iOS search results.
 
 ```javascript
-// Set minimum fetch interval (in seconds)
-Ti.App.iOS.setMinimumBackgroundFetchInterval(3600);  // 1 hour
+const itemAttr = Ti.App.iOS.createSearchableItemAttributeSet({
+    itemContentType: Ti.App.iOS.UTTYPE_TEXT,
+    title: 'My Article',
+    contentDescription: 'Content description...',
+    keywords: ['titanium', 'help']
+});
 
-// Handle fetch event
-Ti.App.iOS.addEventListener('backgroundfetch', function(e) {
-  // Fetch new data
-  fetchData(function() {
-    // Call when done
-    e.performFetchWithResultHandler(Ti.App.iOS.BACKGROUND_FETCH_RESULT_NEW_DATA);
-  });
+const item = Ti.App.iOS.createSearchableItem({
+    uniqueIdentifier: 'id-123',
+    domainIdentifier: 'articles',
+    attributeSet: itemAttr
+});
+
+const indexer = Ti.App.iOS.createSearchableIndex();
+indexer.addToDefaultSearchableIndex([item], (e) => {
+    if (e.success) Ti.API.info('Indexed!');
 });
 ```
 
-### Background Service Limitations
-- Limited execution time (usually 30 seconds to 3 minutes)
-- System may terminate for resources
-- Not suitable for continuous long-running tasks
-- Use for: short downloads, cleanup, state saving
-
-## 2. Core Motion Module
+## 7. Core Motion Module
 
 ### Overview
 Core Motion provides access to hardware sensors: accelerometer, gyroscope, magnetometer, and more.
@@ -108,10 +249,10 @@ if (Accelerometer.isAccelerometerAvailable()) {
 3. Start updates:
 ```javascript
 Accelerometer.setAccelerometerUpdateInterval(1000);  // 1 second
-Accelerometer.startAccelerometerUpdates(function(e) {
+Accelerometer.startAccelerometerUpdates((e) => {
   if (e.success) {
-    var data = e.acceleration;
-    Ti.API.info('X: ' + data.x + ' Y: ' + data.y + ' Z: ' + data.z);
+    const data = e.acceleration;
+    Ti.API.info(`X: ${data.x} Y: ${data.y} Z: ${data.z}`);
   }
 });
 ```
@@ -202,14 +343,14 @@ if (DeviceMotion.isDeviceMotionAvailable()) {
     // Use true north reference
     DeviceMotion.startDeviceMotionUpdatesUsingReferenceFrame(
       { referenceFrame: CoreMotion.ATTITUDE_REFERENCE_FRAME_X_TRUE_NORTH_Z_VERTICAL },
-      function(e) {
+      (e) => {
         if (e.success) {
           // Attitude: orientation (pitch, roll, yaw)
-          var attitude = e.attitude;
-          Ti.API.info('Pitch: ' + attitude.pitch + ' Roll: ' + attitude.roll + ' Yaw: ' + attitude.yaw);
+          const attitude = e.attitude;
+          Ti.API.info(`Pitch: ${attitude.pitch} Roll: ${attitude.roll} Yaw: ${attitude.yaw}`);
 
           // User acceleration: force applied by user (not gravity)
-          var userAccel = e.userAcceleration;
+          const userAccel = e.userAcceleration;
         }
       }
     );
@@ -230,13 +371,11 @@ if (DeviceMotion.isDeviceMotionAvailable()) {
 
 ### Activity API
 
-Determines user's motion activity (walking, running, automotive, stationary).
-
 ```javascript
-var MotionActivity = CoreMotion.createMotionActivity();
+const MotionActivity = CoreMotion.createMotionActivity();
 
-MotionActivity.startActivityUpdates(function(e) {
-  var activity = e.activity;
+MotionActivity.startActivityUpdates((e) => {
+  const activity = e.activity;
 
   // Check confidence
   if (activity.confidence !== CoreMotion.MOTION_ACTIVITY_CONFIDENCE_LOW) {
@@ -275,20 +414,19 @@ MotionActivity.queryActivity({
 
 ### Pedometer
 
-Counts steps, distance, floors ascended/descended.
-
 ```javascript
-var Pedometer = CoreMotion.createPedometer();
+const Pedometer = CoreMotion.createPedometer();
+
 
 if (Pedometer.isStepCountingAvailable()) {
   // Start live updates
   Pedometer.startPedometerUpdates({
-    start: new Date(new Date().getTime() - 60 * 60 * 1000)  // From 1 hour ago
-  }, function(e) {
-    Ti.API.info('Steps: ' + e.numberOfSteps);
-    Ti.API.info('Distance: ' + e.distance + ' meters');
-    Ti.API.info('Floors up: ' + e.floorsAscended);
-    Ti.API.info('Floors down: ' + e.floorsDescended);
+    start: new Date(new Date().getTime() - (60 * 60 * 1000))  // From 1 hour ago
+  }, (e) => {
+    Ti.API.info(`Steps: ${e.numberOfSteps}`);
+    Ti.API.info(`Distance: ${e.distance} meters`);
+    Ti.API.info(`Floors up: ${e.floorsAscended}`);
+    Ti.API.info(`Floors down: ${e.floorsDescended}`);
   });
 }
 
@@ -413,15 +551,10 @@ Ti.App.iOS.addEventListener('continueactivity', function(e) {
 4. **Keep index updated** - Re-index when content changes
 5. **Delete obsolete items** - Don't clutter search results
 
-## 4. Handoff User Activities
-
-### Overview
-Handoff allows users to start an activity on one device and continue on another (iPhone, iPad, Mac).
-
-### Creating User Activities
+## 8. Handoff User Activities
 
 ```javascript
-var UserActivity = Ti.App.iOS.createUserActivity({
+const UserActivity = Ti.App.iOS.createUserActivity({
   activityType: 'com.myapp.reading-article',
   title: 'Reading: Titanium SDK Guide',
   userInfo: {
@@ -492,20 +625,18 @@ Ti.App.iOS.removeKeychainItem('authToken');
 
 ### Document Picker
 
-Access iCloud Drive or other document providers.
-
 ```javascript
-var DocumentPicker = Ti.UI.iOS.createDocumentPicker({
+const DocumentPicker = Ti.UI.iOS.createDocumentPicker({
   mode: Ti.UI.iOS.DOCUMENT_PICKER_MODE_OPEN
 });
 
-DocumentPicker.addEventListener('select', function(e) {
-  var url = e.url;  // File URL
-  Ti.API.info('Selected: ' + url);
+DocumentPicker.addEventListener('select', (e) => {
+  const url = e.url;  // File URL
+  Ti.API.info(`Selected: ${url}`);
 
   // Read file
-  var file = Ti.Filesystem.getFile(url);
-  var contents = file.read();
+  const file = Ti.Filesystem.getFile(url);
+  const contents = file.read();
 });
 
 DocumentPicker.addEventListener('cancel', function(e) {
@@ -596,12 +727,12 @@ INVoiceShortcut.present();
 ```javascript
 // Check for 3D Touch support
 if (Ti.Platform.forceTouchSupported) {
-  view.addEventListener('touchstart', function(e) {
-    var force = e.force || 0;
-    var maxForce = e.maximumForce || 1;
+  view.addEventListener('touchstart', (e) => {
+    const force = e.force || 0;
+    const maxForce = e.maximumForce || 1;
 
     if (force / maxForce > 0.75) {
-      // Deep press - show quick actions
+      // Deep press
       showQuickActions();
     }
   });
@@ -612,16 +743,16 @@ if (Ti.Platform.forceTouchSupported) {
 
 ```javascript
 // Generate haptic feedback
-var generator = Ti.UI.iOS.createHapticFeedbackGenerator();
+const generator = Ti.UI.iOS.createHapticFeedbackGenerator();
 
 // Impact feedback (light, medium, heavy)
-generator.impactOccurred(Ti.UI.iOS.HAPTIC_FEEDBACK_IMPACT_STYLE_MEDIUM);
+generator.impactOccurred(Ti.UI.iOS.HAPTIC_FEEDBACK_STYLE_MEDIUM);
 
 // Selection feedback
 generator.selectionChanged();
 
 // Notification feedback (success, warning, error)
-generator.notificationOccurred(Ti.UI.iOS.HAPTIC_FEEDBACK_NOTIFICATION_TYPE_SUCCESS);
+generator.notificationOccurred(Ti.UI.iOS.HAPTIC_FEEDBACK_TYPE_SUCCESS);
 ```
 
 ### Document Interaction
