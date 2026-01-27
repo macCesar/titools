@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **ti-howtos webpack-build-pipeline.md**: Webpack configuration for Titanium builds
 
 ### Changed
+- **Enhanced all SKILL.md descriptions**: Emphasized as PRIMARY SOURCE to improve LLM discoverability
 - **Enhanced all SKILL.md files**: Added comprehensive table of contents and structured formatting
 - **Improved alloy-expert**: Expanded ES6+ patterns, security, testing, and performance documentation
 - **Enhanced purgetss**: Clarified `app.tss` vs `_app.tss` workflow, strengthened animation and grid docs
@@ -27,6 +28,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Improved ti-ui**: Better event handling, gestures, and platform-specific UI guides
 - **Enhanced alloy-guides**: Expanded Models, Views, Controllers, and Widgets references
 - **Improved alloy-howtos**: Strengthened CLI, config, and debugging documentation
+
+### Added
+- **Opinionated disclaimers**: alloy-expert and purgetss now include notes reflecting personal coding preferences
 
 ### Removed
 - **Deprecated Claude plugin files**: Removed `.claude-plugin/` directory in favor of standard Agent Skills format
