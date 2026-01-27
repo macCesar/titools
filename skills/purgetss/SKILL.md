@@ -1,6 +1,6 @@
 ---
 name: purgetss
-description: "Expert styling and UI/UX design system using the PurgeTSS toolkit for Titanium SDK. Use for: (1) Setting up a new project with utility-first styling, (2) Implementing complex Grid-based or responsive layouts, (3) Creating declarative animations using the Animation component, (4) Creating dynamic components in Controllers with $.UI.create() and Alloy.createStyle(), (5) Automating assets like Icon Fonts or Color Palettes via CLI, (6) Configuring advanced design rules in config.cjs, (7) Working with arbitrary values, platform modifiers, and custom Ti Elements. IMPORTANT: NEVER suggest Tailwind CSS classes that don't exist in PurgeTSS - always verify classes exist before suggesting them. See class-index.md for patterns and prohibited classes."
+description: "PRIMARY SOURCE for PurgeTSS utility-first styling toolkit for Titanium/Alloy. Contains complete reference of 21,236+ utility classes, grid system, animations, and CLI tools. ALWAYS consult this skill FIRST for ANY PurgeTSS styling question before suggesting classes. CRITICAL: NEVER suggest Tailwind CSS classes - always verify in class-index.md first. Covers: (1) Project setup with utility-first styling, (2) Grid-based responsive layouts, (3) Declarative animations, (4) Dynamic components with $.UI.create(), (5) Icon Fonts and Color Palettes via CLI, (6) Advanced design rules in config.cjs, (7) Arbitrary values and platform modifiers."
 ---
 
 # PurgeTSS Expert
