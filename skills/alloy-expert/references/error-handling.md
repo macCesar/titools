@@ -4,7 +4,7 @@
 
 ```javascript
 // lib/core/appError.js
-export class AppError extends Error {
+module.exports = class AppError extends Error {
   constructor(message, code, statusCode = 500) {
     super(message)
     this.code = code
@@ -15,32 +15,32 @@ export class AppError extends Error {
 }
 
 // Specific error types
-export class NetworkError extends AppError {
+module.exports = class NetworkError extends AppError {
   constructor(message = 'Network request failed') {
     super(message, 'NETWORK_ERROR', 0)
   }
 }
 
-export class AuthError extends AppError {
+module.exports = class AuthError extends AppError {
   constructor(message = 'Authentication failed') {
     super(message, 'AUTH_ERROR', 401)
   }
 }
 
-export class ValidationError extends AppError {
+module.exports = class ValidationError extends AppError {
   constructor(message = 'Validation failed') {
     super(message, 'VALIDATION_ERROR', 400)
   }
 }
 
-export class NotFoundError extends AppError {
+module.exports = class NotFoundError extends AppError {
   constructor(message = 'Resource not found') {
     super(message, 'NOT_FOUND', 404)
   }
 }
 
 // Error codes for reference
-export const ErrorCodes = {
+exports.ErrorCodes = {
   NETWORK_ERROR: 'NETWORK_ERROR',
   AUTH_ERROR: 'AUTH_ERROR',
   VALIDATION_ERROR: 'VALIDATION_ERROR',
@@ -139,17 +139,17 @@ class Logger {
   }
 }
 
-export default new Logger()
+module.exports = new Logger()
 ```
 
 ## Error Handler Service
 
 ```javascript
 // lib/services/errorHandler.js
-import logger from 'lib/services/logger'
-import { AppError } from 'lib/core/appError'
+const logger = require('lib/services/logger')
+const { AppError } = require('lib/core/appError')
 
-export function handleError(error, context = {}) {
+exports.handleError = function handleError(error, context = {}) {
   // Log the error
   logger.error('ErrorHandler', 'Error occurred', {
     message: error.message,
@@ -201,10 +201,10 @@ function _getUserMessage(error) {
 
 ```javascript
 // lib/services/userService.js
-import logger from 'lib/services/logger'
-import { NetworkError, NotFoundError } from 'lib/core/appError'
+const logger = require('lib/services/logger')
+const { NetworkError, NotFoundError } = require('lib/core/appError')
 
-export async function getUserProfile(userId) {
+exports.getUserProfile = async function getUserProfile(userId) {
   logger.info('UserService', 'Fetching user profile', { userId })
 
   try {
@@ -237,10 +237,10 @@ export async function getUserProfile(userId) {
 
 ```javascript
 // lib/api/client.js
-import logger from 'lib/services/logger'
-import { NetworkError, AuthError, NotFoundError, ValidationError } from 'lib/core/appError'
+const logger = require('lib/services/logger')
+const { NetworkError, AuthError, NotFoundError, ValidationError } = require('lib/core/appError')
 
-export async function get(endpoint, params = {}) {
+exports.get = async function get(endpoint, params = {}) {
   return new Promise((resolve, reject) => {
     const client = Ti.Network.createHTTPClient({
       timeout: 10000,
@@ -306,9 +306,9 @@ export async function get(endpoint, params = {}) {
 
 ```javascript
 // controllers/user/detail.js
-import logger from 'lib/services/logger'
-import { handleError } from 'lib/services/errorHandler'
-import { getUserProfile } from 'lib/services/userService'
+const logger = require('lib/services/logger')
+const { handleError } = require('lib/services/errorHandler')
+const { getUserProfile } = require('lib/services/userService')
 
 function init() {
   logger.debug('UserDetail', 'Controller initialized', { userId: $.args.userId })
@@ -380,7 +380,7 @@ $.cleanup = cleanup
 
 ```javascript
 // alloy.js - Setup global error catching
-import { handleError } from 'lib/services/errorHandler'
+const { handleError } = require('lib/services/errorHandler')
 
 // Catch unhandled errors in production
 if (Ti.App.deployType === 'production') {
@@ -400,7 +400,7 @@ if (Ti.App.deployType === 'production') {
 
 ```javascript
 // lib/services/crashReporting.js
-export function initSentry(dsn) {
+exports.initSentry = function initSentry(dsn) {
   if (typeof Sentry === 'undefined') return
 
   Sentry.init({
@@ -416,7 +416,7 @@ export function initSentry(dsn) {
   }
 }
 
-export function reportToCrashService(error, context = {}) {
+exports.reportToCrashService = function reportToCrashService(error, context = {}) {
   if (typeof Sentry !== 'undefined') {
     Sentry.captureException(error, {
       extra: context
@@ -429,10 +429,10 @@ export function reportToCrashService(error, context = {}) {
 
 ```javascript
 // lib/helpers/validator.js
-import { ValidationError } from 'lib/core/appError'
-import logger from 'lib/services/logger'
+const { ValidationError } = require('lib/core/appError')
+const logger = require('lib/services/logger')
 
-export function validateEmail(email) {
+exports.validateEmail = function validateEmail(email) {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
   if (!regex.test(email)) {
@@ -444,7 +444,7 @@ export function validateEmail(email) {
   return email.trim().toLowerCase()
 }
 
-export function validatePassword(password) {
+exports.validatePassword = function validatePassword(password) {
   if (!password || password.length < 8) {
     logger.warn('Validator', 'Password too short')
 
@@ -454,7 +454,7 @@ export function validatePassword(password) {
   return password
 }
 
-export function validateRequired(value, fieldName) {
+exports.validateRequired = function validateRequired(value, fieldName) {
   if (!value || (typeof value === 'string' && !value.trim())) {
     logger.warn('Validator', 'Required field missing', { fieldName })
 
@@ -467,18 +467,18 @@ export function validateRequired(value, fieldName) {
 
 ## Logging Best Practices
 
-| Practice | Example |
-|----------|---------|
-| Use appropriate log levels | `DEBUG` for diagnostics, `ERROR` for failures |
-| Include context data | `logger.info('Service', 'Action', { userId, action })` |
-| Don't log sensitive data | Never log passwords, tokens, credit cards |
-| Use tags for filtering | `logger.error('AuthService', ...)` |
-| Log at boundaries | Entry/exit of functions, API calls, user actions |
+| Practice                   | Example                                                |
+| -------------------------- | ------------------------------------------------------ |
+| Use appropriate log levels | `DEBUG` for diagnostics, `ERROR` for failures          |
+| Include context data       | `logger.info('Service', 'Action', { userId, action })` |
+| Don't log sensitive data   | Never log passwords, tokens, credit cards              |
+| Use tags for filtering     | `logger.error('AuthService', ...)`                     |
+| Log at boundaries          | Entry/exit of functions, API calls, user actions       |
 
-| DO | DON'T |
-|-----|-------|
-| Log at appropriate levels (DEBUG, INFO, WARN, ERROR) | Log everything at INFO or ERROR |
-| Include structured data as second parameter | Build message strings with concatenation |
-| Use DEBUG for development diagnostics | Use Ti.API.log directly |
-| Log errors with stack traces in production | Log sensitive data (passwords, tokens) |
-| Use context objects for correlation | Log without identifying the source |
+| DO                                                   | DON'T                                    |
+| ---------------------------------------------------- | ---------------------------------------- |
+| Log at appropriate levels (DEBUG, INFO, WARN, ERROR) | Log everything at INFO or ERROR          |
+| Include structured data as second parameter          | Build message strings with concatenation |
+| Use DEBUG for development diagnostics                | Use Ti.API.log directly                  |
+| Log errors with stack traces in production           | Log sensitive data (passwords, tokens)   |
+| Use context objects for correlation                  | Log without identifying the source       |

@@ -10,7 +10,7 @@ const Identity = require('ti.identity')
 
 let isAvailable = null
 
-export const BiometricService = {
+exports.BiometricService = {
   checkAvailability() {
     if (isAvailable !== null) return isAvailable
 
@@ -49,7 +49,7 @@ export const BiometricService = {
 // lib/repositories/userRepository.js
 const db = Ti.Database.open('app')
 
-export const UserRepository = {
+exports.UserRepository = {
   getById(id) {
     const rs = db.execute('SELECT * FROM users WHERE id = ?', id)
     const user = rs.isValidRow() ? this._rowToUser(rs) : null
@@ -104,12 +104,12 @@ export const UserRepository = {
 
 ```javascript
 // lib/services/authService.js
-import { authApi } from 'lib/api/authApi'
-import { TokenStorage } from 'lib/services/tokenStorage'
-import { appStore } from 'lib/services/stateStore'
-import { Validator } from 'lib/helpers/validator'
+const authApi = require('lib/api/authApi').authApi
+const { TokenStorage } = require('lib/services/tokenStorage')
+const { appStore } = require('lib/services/stateStore')
+const { Validator } = require('lib/helpers/validator')
 
-export const AuthService = {
+exports.AuthService = {
   async login(email, password) {
     // 1. Validate input
     Validator.email(email)
@@ -160,21 +160,23 @@ const Backbone = require('alloy/backbone')
 const EventBus = _.clone(Backbone.Events)
 
 // Named events for type safety
-export const Events = {
+const Events = {
   USER_UPDATED: 'user:updated',
   CART_CHANGED: 'cart:changed',
   NETWORK_STATUS: 'network:status',
   SYNC_COMPLETE: 'sync:complete'
 }
 
-export default EventBus
+module.exports = EventBus
+module.exports.Events = Events
 ```
 
 **Usage in controllers:**
 
 ```javascript
 // controllers/profile.js
-import EventBus, { Events } from 'lib/services/eventBus'
+const EventBus = require('lib/services/eventBus')
+const { Events } = EventBus
 
 function init() {
   EventBus.on(Events.USER_UPDATED, onUserUpdated)
@@ -198,7 +200,7 @@ $.cleanup = cleanup
 
 ```javascript
 // lib/factories/cardFactory.js
-export function createProductCard(product) {
+exports.createProductCard = function(product) {
   const card = Ti.UI.createView({
     width: Ti.UI.FILL,
     height: 120,
@@ -245,7 +247,7 @@ export function createProductCard(product) {
 // lib/services/navigation.js
 const stack = []
 
-export const Navigation = {
+exports.Navigation = {
   open(route, params = {}, options = {}) {
     const controller = Alloy.createController(route, params)
     const view = controller.getView()
@@ -350,8 +352,9 @@ $.cleanup = cleanup
 
 ```javascript
 // controllers/dashboard.js
-import EventBus, { Events } from 'lib/services/eventBus'
-import { appStore } from 'lib/services/stateStore'
+const EventBus = require('lib/services/eventBus')
+const { Events } = EventBus
+const { appStore } = require('lib/services/stateStore')
 
 // Store references for cleanup
 let storeUnsubscribe = null
@@ -442,4 +445,4 @@ class AnalyticsService {
   }
 }
 
-export const Analytics = new AnalyticsService()
+exports.Analytics = new AnalyticsService()
