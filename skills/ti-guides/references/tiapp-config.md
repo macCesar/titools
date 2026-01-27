@@ -339,14 +339,14 @@ Ad-hoc [AndroidManifest.xml](http://developer.android.com/guide/topics/manifest/
 
 ### Android-Specific Properties
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `ti.android.shake.factor` | double | 1.3 | Shake event sensitivity |
-| `ti.android.shake.quiet.milliseconds` | int | 500 | Quiet time before shake event |
-| `ti.android.shake.active.milliseconds` | int | 1000 | Active time for shake event |
-| `ti.android.httpclient.maxbuffersize` | int | 524288 | HTTP response buffer size (bytes) |
-| `ti.android.compilejs` | bool | - | Enable JS compilation (default: dist only) |
-| `ti.android.debug` | bool | false | Enable detailed logging |
+| Property                               | Type   | Default | Description                                |
+| -------------------------------------- | ------ | ------- | ------------------------------------------ |
+| `ti.android.shake.factor`              | double | 1.3     | Shake event sensitivity                    |
+| `ti.android.shake.quiet.milliseconds`  | int    | 500     | Quiet time before shake event              |
+| `ti.android.shake.active.milliseconds` | int    | 1000    | Active time for shake event                |
+| `ti.android.httpclient.maxbuffersize`  | int    | 524288  | HTTP response buffer size (bytes)          |
+| `ti.android.compilejs`                 | bool   | -       | Enable JS compilation (default: dist only) |
+| `ti.android.debug`                     | bool   | false   | Enable detailed logging                    |
 
 ```xml
 <property name="ti.android.fastdev">false</property>

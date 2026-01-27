@@ -25,13 +25,13 @@ Choose template:
 
 ## Project Fields
 
-| Field | Description | Rules |
-|-------|-------------|-------|
-| **Project name** | App name shown to users | - |
-| **App ID** | Reverse domain notation | `com.company.appname` |
-| **Company URL** | Your website | - |
-| **SDK Version** | Titanium SDK to use | Use latest |
-| **Deployment Targets** | Platforms to support | android, ios, ipad, iphone |
+| Field                  | Description             | Rules                      |
+| ---------------------- | ----------------------- | -------------------------- |
+| **Project name**       | App name shown to users | -                          |
+| **App ID**             | Reverse domain notation | `com.company.appname`      |
+| **Company URL**        | Your website            | -                          |
+| **SDK Version**        | Titanium SDK to use     | Use latest                 |
+| **Deployment Targets** | Platforms to support    | android, ios, ipad, iphone |
 
 ### App ID Naming Guidelines
 
@@ -79,12 +79,19 @@ ti build -p ios -T device
 ti build -p android -T device
 ```
 
-## How Titanium Works
+## Simulator vs Emulator
 
-1. **Pre-compile**: JavaScript is minified and statically analyzed
-2. **Stub Generation**: Native stub files are created
-3. **Native Build**: Platform compilers (xcodebuild, gradle) build final app
-4. **Encryption**: JS is encrypted for production builds
+- **iOS Simulator**: The software simulates the environment within an iOS device. It's an OS X executable that runs your cross-compiled code.
+- **Android Emulator**: Provides a virtual hardware environment that runs the actual Android OS and platform components.
+
+**CRITICAL**: Neither environment is a perfect representation of a physical device. Always test on real hardware before publishing.
+
+## How Titanium Works (Under the Covers)
+
+1. **Pre-compile**: JavaScript is minified and statically analyzed to build a dependency hierarchy of Titanium APIs used.
+2. **Stub Generation**: A front-end compiler creates native stub files, native project files, and platform-specific code necessary for compilation.
+3. **Native Build**: Titanium calls platform-specific compilers (e.g., `xcodebuild` for iOS, Gradle for Android) to build the final native application.
+4. **Encryption**: JavaScript code is encrypted when building for "production" (release) or for device. Original code is not retrievable in human-readable form.
 
 ## Best Practices
 

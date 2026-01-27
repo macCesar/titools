@@ -145,6 +145,24 @@ ti clean          # All platforms
 ti clean -p ios   # iOS only
 ```
 
+### Module Management
+
+```bash
+ti module [TASK] [OPTIONS]
+```
+
+**Tasks:**
+- `create`: Create a new Titanium module.
+
+### Project Management
+
+```bash
+ti project [TASK] [OPTIONS]
+```
+
+**Tasks:**
+- `scan`: Scan directory for Titanium projects.
+
 ---
 
 ## Distribution Commands
@@ -213,91 +231,93 @@ Interactive selection of default SDK.
 
 ### Android Options
 
-| Option | Default | Description |
-|--------|---------|-------------|
-| `android.sdkPath` | auto | Android SDK path |
-| `android.ndkPath` | auto | Android NDK path |
-| `android.adb.port` | 5037 | ADB port number |
-| `android.autoSelectDevice` | true | Auto-select device/emulator |
-| `android.symlinkResources` | true (OS X) | Symlink vs copy resources |
-| `android.buildTools.selectedVersion` | max | Build tools version |
-| `android.javac.maxmemory` | "1024M" | JVM heap size |
-| `android.javac.source` | "1.6" | Java source version |
-| `android.javac.target` | "1.6" | Java target version |
-| `android.mergeCustomAndroidManifest` | false | Merge custom AndroidManifest.xml |
+| Option                               | Default     | Description                      |
+| ------------------------------------ | ----------- | -------------------------------- |
+| `android.sdkPath`                    | auto        | Android SDK path                 |
+| `android.ndkPath`                    | auto        | Android NDK path                 |
+| `android.adb.port`                   | 5037        | ADB port number                  |
+| `android.autoSelectDevice`           | true        | Auto-select device/emulator      |
+| `android.symlinkResources`           | true (OS X) | Symlink vs copy resources        |
+| `android.buildTools.selectedVersion` | max         | Build tools version              |
+| `android.javac.maxmemory`            | "1024M"     | JVM heap size                    |
+| `android.javac.source`               | "1.6"       | Java source version              |
+| `android.javac.target`               | "1.6"       | Java target version              |
+| `android.mergeCustomAndroidManifest` | false       | Merge custom AndroidManifest.xml |
 
 ### iOS Options
 
-| Option | Default | Description |
-|--------|---------|-------------|
-| `ios.developerName` | - | Developer certificate name |
-| `ios.distributionName` | - | Distribution certificate name |
-| `ios.autoSelectDevice` | true | Auto-select device/simulator |
-| `ios.symlinkResources` | true (OS X) | Symlink vs copy resources |
+| Option                 | Default     | Description                           |
+| ---------------------- | ----------- | ------------------------------------- |
+| `ios.developerName`    | -           | Developer certificate name            |
+| `ios.distributionName` | -           | Distribution certificate name         |
+| `ios.autoSelectDevice` | true        | Auto-select device/simulator          |
+| `ios.symlinkResources` | true (OS X) | Symlink vs copy resources             |
+| `ios.keychain`         | -           | Specific keychain to search for certs |
+| `ios.xcodePath`        | auto        | Path to Xcode installation            |
 
 ### CLI Options
 
-| Option | Default | Description |
-|--------|---------|-------------|
-| `cli.logLevel` | trace | Log level: error, warning, info, debug, trace |
-| `cli.colors` | true | Color output |
-| `cli.progressBars` | true | Show progress bars |
-| `cli.prompt` | true | Prompt for missing info |
-| `cli.quiet` | false | Suppress all output |
-| `cli.rejectUnauthorized` | true | Reject bad SSL certs |
-| `cli.width` | 100 | Text wrap width |
-| `cli.failOnWrongSDK` | false | Fail on SDK mismatch |
-| `cli.hideCharEncWarning` | false | Hide encoding warnings |
-| `cli.httpProxyServer` | - | Proxy server URL |
+| Option                   | Default | Description                                   |
+| ------------------------ | ------- | --------------------------------------------- |
+| `cli.logLevel`           | trace   | Log level: error, warning, info, debug, trace |
+| `cli.colors`             | true    | Color output                                  |
+| `cli.progressBars`       | true    | Show progress bars                            |
+| `cli.prompt`             | true    | Prompt for missing info                       |
+| `cli.quiet`              | false   | Suppress all output                           |
+| `cli.rejectUnauthorized` | true    | Reject bad SSL certs                          |
+| `cli.width`              | 100     | Text wrap width                               |
+| `cli.failOnWrongSDK`     | false   | Fail on SDK mismatch                          |
+| `cli.hideCharEncWarning` | false   | Hide encoding warnings                        |
+| `cli.httpProxyServer`    | -       | Proxy server URL                              |
 
 ### SDK Options
 
-| Option | Description |
-|--------|-------------|
+| Option                       | Description                        |
+| ---------------------------- | ---------------------------------- |
 | `sdk.defaultInstallLocation` | SDK install location (OS-specific) |
-| `sdk.selected` | Selected SDK version (REQUIRED) |
+| `sdk.selected`               | Selected SDK version (REQUIRED)    |
 
 ### Paths
 
-| Option | Description |
-|--------|-------------|
+| Option           | Description                    |
+| ---------------- | ------------------------------ |
 | `paths.commands` | Additional CLI command scripts |
-| `paths.hooks` | CLI hook scripts |
-| `paths.modules` | Module search paths |
-| `paths.plugins` | Plugin search paths |
-| `paths.sdks` | SDK search paths |
-| `paths.xcode` | Xcode installation paths |
+| `paths.hooks`    | CLI hook scripts               |
+| `paths.modules`  | Module search paths            |
+| `paths.plugins`  | Plugin search paths            |
+| `paths.sdks`     | SDK search paths               |
+| `paths.xcode`    | Xcode installation paths       |
 
 ### Java Options
 
-| Option | Description |
-|--------|-------------|
-| `java.home` | JDK directory |
-| `java.executables.java` | java executable path |
-| `java.executables.javac` | javac executable path |
+| Option                       | Description               |
+| ---------------------------- | ------------------------- |
+| `java.home`                  | JDK directory             |
+| `java.executables.java`      | java executable path      |
+| `java.executables.javac`     | javac executable path     |
 | `java.executables.jarsigner` | jarsigner executable path |
-| `java.executables.keytool` | keytool executable path |
+| `java.executables.keytool`   | keytool executable path   |
 
 ### Genymotion Options
 
-| Option | Description |
-|--------|-------------|
-| `genymotion.enabled` | Enable Genymotion support |
-| `genymotion.path` | Genymotion app directory |
-| `genymotion.executables.genymotion` | genymotion executable |
-| `genymotion.executables.player` | player executable |
-| `genymotion.executables.vboxmanage` | vboxmanage executable |
+| Option                              | Description               |
+| ----------------------------------- | ------------------------- |
+| `genymotion.enabled`                | Enable Genymotion support |
+| `genymotion.path`                   | Genymotion app directory  |
+| `genymotion.executables.genymotion` | genymotion executable     |
+| `genymotion.executables.player`     | player executable         |
+| `genymotion.executables.vboxmanage` | vboxmanage executable     |
 
 ### Application Options
 
-| Option | Description |
-|--------|-------------|
-| `app.idprefix` | Prefix for new app IDs |
-| `app.publisher` | Default publisher |
-| `app.url` | Default company URL |
-| `app.workspace` | Default workspace directory |
-| `app.skipAppIdValidation` | Skip app ID validation |
-| `app.skipVersionValidation` | Skip version validation |
+| Option                      | Description                 |
+| --------------------------- | --------------------------- |
+| `app.idprefix`              | Prefix for new app IDs      |
+| `app.publisher`             | Default publisher           |
+| `app.url`                   | Default company URL         |
+| `app.workspace`             | Default workspace directory |
+| `app.skipAppIdValidation`   | Skip app ID validation      |
+| `app.skipVersionValidation` | Skip version validation     |
 
 ---
 
@@ -343,17 +363,17 @@ adb devices
 
 ## Command Quick Reference
 
-| Command | Description |
-|---------|-------------|
-| `ti setup check` | Check environment setup |
-| `ti info` | Display system info |
-| `ti info -p <PLATFORM>` | Platform-specific info |
-| `ti config` | Display/set config |
-| `ti create` | Create new project |
-| `ti build` | Build project |
-| `ti clean` | Clean build folder |
-| `ti sdk list` | List installed SDKs |
-| `ti sdk select` | Select default SDK |
+| Command                 | Description             |
+| ----------------------- | ----------------------- |
+| `ti setup check`        | Check environment setup |
+| `ti info`               | Display system info     |
+| `ti info -p <PLATFORM>` | Platform-specific info  |
+| `ti config`             | Display/set config      |
+| `ti create`             | Create new project      |
+| `ti build`              | Build project           |
+| `ti clean`              | Clean build folder      |
+| `ti sdk list`           | List installed SDKs     |
+| `ti sdk select`         | Select default SDK      |
 
 ---
 

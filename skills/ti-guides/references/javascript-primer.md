@@ -63,8 +63,8 @@ JavaScript is the language of Titanium. It's a powerful, lightweight, dynamic ob
 
 **BAD:** Everything in global scope
 ```javascript
-var key = 'value';
-var foo = 'bar';
+const key = 'value';
+const foo = 'bar';
 
 function helper() {
     // help out
@@ -78,21 +78,21 @@ function info(msg) {
 
 **GOOD:** Single namespace
 ```javascript
-var myapp = {};  // Only ONE global variable
+const myapp = {};  // Only ONE global variable
 
 myapp.key = 'value';
 
-myapp.dosomething = function(foo) {
+myapp.dosomething = (foo) => {
     // do something
 };
 
 // Self-closing function for private members
-(function() {
+(() => {
     function helper() {
         // Private - not accessible globally
     }
 
-    myapp.info = function(msg) {
+    myapp.info = (msg) => {
         helper(msg);
         Ti.API.info(msg);
     };
@@ -105,7 +105,7 @@ myapp.info('Hello World');
 
 **BAD:** `==` converts types
 ```javascript
-var testme = '1';
+const testme = '1';
 if (testme == 1) {
     // Executes! '1' is converted to integer
 }
@@ -113,7 +113,7 @@ if (testme == 1) {
 
 **GOOD:** `===` checks both type and value
 ```javascript
-var testme = '1';
+const testme = '1';
 if (testme === 1) {
     // Does NOT execute
 }
@@ -123,16 +123,16 @@ if (testme === 1) {
 
 **BAD:** Checks array.length every iteration
 ```javascript
-var names = ['Jeff', 'Nolan', 'Marshall', 'Don'];
-for (var i = 0; i < names.length; i++) {
+const names = ['Jeff', 'Nolan', 'Marshall', 'Don'];
+for (let i = 0; i < names.length; i++) {
     process(names[i]);
 }
 ```
 
 **GOOD:** Cache length
 ```javascript
-var names = ['Jeff', 'Nolan', 'Marshall', 'Don'];
-for (var i = 0, j = names.length; i < j; i++) {
+const names = ['Jeff', 'Nolan', 'Marshall', 'Don'];
+for (let i = 0, j = names.length; i < j; i++) {
     process(names[i]);
 }
 ```
@@ -165,7 +165,7 @@ Compact conditional assignment:
 
 ```javascript
 // Instead of this:
-var xyz;
+let xyz;
 if (somecondition === somevalue) {
     xyz = 'abc';
 } else {
@@ -173,7 +173,7 @@ if (somecondition === somevalue) {
 }
 
 // Use this:
-var xyz = (somecondition === somevalue) ? 'abc' : '123';
+const xyz = (somecondition === somevalue) ? 'abc' : '123';
 ```
 
 ### Multiple Variable Declarations
@@ -182,12 +182,12 @@ Use commas instead of multiple `var` statements:
 
 ```javascript
 // Instead of this:
-var foo = true;
-var me = 'awesome';
-var great = 42;
+const foo = true;
+const me = 'awesome';
+const great = 42;
 
 // Use this:
-var foo = true,
+const foo = true,
     me = 'awesome',
     great = 42;
 ```
@@ -198,16 +198,16 @@ Encapsulate private variables and functions:
 
 **Ambiguous (not recommended):**
 ```javascript
-var myValue = function() {
+const myValue = (() => {
     return someValue;
-}();  // Looks like assigning function, not result
+})();  // Looks like assigning function, not result
 ```
 
 **Clear (recommended):**
 ```javascript
-var myValue = (function() {
+const myValue = (() => {
     // Private variables here
-    var privateVar = 'secret';
+    const privateVar = 'secret';
 
     return someValue;
 })();  // Clearly returns result, not function
@@ -220,14 +220,14 @@ Use `require()` for modular code:
 **myModule.js:**
 ```javascript
 // Private
-var privateData = 'secret';
+const privateData = 'secret';
 
 function privateHelper() {
     // Private function
 }
 
 // Public API
-exports.publicMethod = function() {
+exports.publicMethod = () => {
     privateHelper();
     return privateData;
 };
@@ -235,7 +235,7 @@ exports.publicMethod = function() {
 
 **app.js:**
 ```javascript
-var myModule = require('myModule');
+const myModule = require('myModule');
 myModule.publicMethod();
 ```
 
@@ -248,7 +248,7 @@ Titanium supports modern JavaScript (ES6/ES7+). Use these features:
 **Arrow Functions:**
 ```javascript
 // Old
-var self = this;
+const self = this;
 someArray.forEach(function(item) {
     self.process(item);
 });
@@ -262,27 +262,27 @@ someArray.forEach((item) => {
 **Template Literals:**
 ```javascript
 // Old
-var message = 'Hello ' + name + ', you have ' + count + ' messages';
+const message = 'Hello ' + name + ', you have ' + count + ' messages';
 
 // New
-var message = `Hello ${name}, you have ${count} messages`;
+const message = `Hello ${name}, you have ${count} messages`;
 ```
 
 **Destructuring:**
 ```javascript
 // Old
-var width = e.source.size.width;
-var height = e.source.size.height;
+const width = e.source.size.width;
+const height = e.source.size.height;
 
 // New
-var {width, height} = e.source.size;
+const {width, height} = e.source.size;
 ```
 
 **Spread Operator:**
 ```javascript
 // Old
-var arr = [1, 2, 3];
-var arr2 = arr.concat([4, 5]);
+const arr = [1, 2, 3];
+const arr2 = arr.concat([4, 5]);
 
 // New
 var arr2 = [...arr, 4, 5];
@@ -318,7 +318,7 @@ function test() {
 **Solution:** Declare variables at top of function
 ```javascript
 function test() {
-    var myVar;  // Declare first
+    let myVar;  // Declare first
     console.log(myVar);
     myVar = 'value';
 }
@@ -336,7 +336,7 @@ function test() {
 **Solution:** Always use `var`, `let`, or `const`
 ```javascript
 function test() {
-    var myVar = 'value';  // Local variable
+    const myVar = 'value';  // Local variable
 }
 ```
 
@@ -344,7 +344,7 @@ function test() {
 
 **Problem:** `this` changes in different contexts
 ```javascript
-var obj = {
+const obj = {
     value: 42,
     getValue: function() {
         setTimeout(function() {
@@ -356,10 +356,10 @@ var obj = {
 
 **Solution 1:** Store `this`
 ```javascript
-var obj = {
+const obj = {
     value: 42,
     getValue: function() {
-        var self = this;
+        const self = this;
         setTimeout(function() {
             console.log(self.value);  // Works!
         }, 100);
@@ -369,9 +369,9 @@ var obj = {
 
 **Solution 2:** Arrow function (ES6)
 ```javascript
-var obj = {
+const obj = {
     value: 42,
-    getValue: function() {
+    getValue() {
         setTimeout(() => {
             console.log(this.value);  // Works!
         }, 100);

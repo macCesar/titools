@@ -65,9 +65,9 @@ app/
 
 **Controller (JS):**
 ```javascript
-function doClick(e) {
+const doClick = (e) => {
     alert('Clicked!');
-}
+};
 
 $.index.open();
 ```
@@ -117,9 +117,9 @@ Resources/
 **app.js:**
 ```javascript
 // Single namespace pattern
-var app = {};
+const app = {};
 
-// Include components
+// Include components (Legacy)
 Ti.include('ui/ApplicationWindow.js');
 
 // Create and open window
@@ -132,13 +132,13 @@ app.mainWindow.open();
 // Extend namespace
 app.ui = app.ui || {};
 
-app.ui.createApplicationWindow = function() {
-    var win = Ti.UI.createWindow({
+app.ui.createApplicationWindow = () => {
+    const win = Ti.UI.createWindow({
         backgroundColor: 'white',
         title: 'My App'
     });
 
-    var label = Ti.UI.createLabel({
+    const label = Ti.UI.createLabel({
         text: 'Hello World',
         color: '#000'
     });
@@ -153,24 +153,24 @@ app.ui.createApplicationWindow = function() {
 **myModule.js:**
 ```javascript
 // Private variables
-var privateData = 'secret';
+const privateData = 'secret';
 
 // Public API
-exports.createWindow = function() {
+exports.createWindow = () => {
     return Ti.UI.createWindow({
         backgroundColor: 'white'
     });
 };
 
-exports.getData = function() {
+exports.getData = () => {
     return privateData;
 };
 ```
 
 **app.js:**
 ```javascript
-var myModule = require('myModule');
-var win = myModule.createWindow();
+const myModule = require('myModule');
+const win = myModule.createWindow();
 win.open();
 ```
 
@@ -195,15 +195,15 @@ win.open();
 
 ### Comparison
 
-| Feature | Alloy | Classic |
-|----------|-------|---------|
-| **Learning Curve** | Steeper (XML, TSS, MVC) | Easier (just JS) |
-| **Boilerplate** | Less (declarative) | More (imperative) |
-| **Structure** | Enforced (MVC) | Manual |
-| **Data Binding** | Built-in | Manual |
-| **Styling** | TSS (CSS-like) | Inline JS |
-| **Team Size** | Better for large teams | Flexible |
-| **Rapid Dev** | Faster (once learned) | Slower (more code) |
+| Feature            | Alloy                   | Classic            |
+| ------------------ | ----------------------- | ------------------ |
+| **Learning Curve** | Steeper (XML, TSS, MVC) | Easier (just JS)   |
+| **Boilerplate**    | Less (declarative)      | More (imperative)  |
+| **Structure**      | Enforced (MVC)          | Manual             |
+| **Data Binding**   | Built-in                | Manual             |
+| **Styling**        | TSS (CSS-like)          | Inline JS          |
+| **Team Size**      | Better for large teams  | Flexible           |
+| **Rapid Dev**      | Faster (once learned)   | Slower (more code) |
 
 ### Recommendation
 
@@ -228,16 +228,16 @@ win.open();
 Classic Titanium pattern with single global namespace:
 
 ```javascript
-var app = {
+const app = {
     models: {},
     views: {},
     controllers: {},
 
-    init: function() {
+    init() {
         // Initialize app
     },
 
-    run: function() {
+    run() {
         // Run app
     }
 };
@@ -252,11 +252,11 @@ Modern JavaScript pattern for Titanium:
 
 **models/user.js:**
 ```javascript
-exports.create = function(attrs) {
+exports.create = (attrs) => {
     return {
         name: attrs.name,
         email: attrs.email,
-        save: function() {
+        save() {
             // Save to database
         }
     };
@@ -265,10 +265,10 @@ exports.create = function(attrs) {
 
 **controllers/user.js:**
 ```javascript
-var User = require('models/user');
+const User = require('models/user');
 
-exports.register = function(data) {
-    var user = User.create(data);
+exports.register = (data) => {
+    const user = User.create(data);
     user.save();
     return user;
 };
@@ -291,12 +291,12 @@ Separate data access from business logic:
 
 **repositories/userRepository.js:**
 ```javascript
-exports.findById = function(id) {
+exports.findById = (id) => {
     // Database call
     return db.query('SELECT * FROM users WHERE id = ?', [id]);
 };
 
-exports.save = function(user) {
+exports.save = (user) => {
     // Insert/update
     return db.execute('INSERT INTO users ...');
 };
@@ -304,9 +304,9 @@ exports.save = function(user) {
 
 **services/userService.js:**
 ```javascript
-var repo = require('repositories/userRepository');
+const repo = require('repositories/userRepository');
 
-exports.register = function(data) {
+exports.register = (data) => {
     // Business logic
     if (!data.email) {
         throw new Error('Email required');

@@ -7,17 +7,17 @@ Modules in Titanium are created once per JavaScript context and then passed by r
 ### Example: Stateful Counter Module
 ```javascript
 // app/lib/counter.js
-var _count = 0
+let _count = 0
 
-exports.increment = function() {
+exports.increment = () => {
   _count++
 }
 
-exports.getCount = function() {
+exports.getCount = () => {
   return _count
 }
 
-exports.reset = function() {
+exports.reset = () => {
   _count = 0
 }
 ```
@@ -35,7 +35,7 @@ Titanium caches the object returned by `require()` and provides the same referen
 
 ```javascript
 // Good - factory pattern
-exports.createView = function(args) {
+exports.createView = (args) => {
   return Ti.UI.createView(args)
 }
 
@@ -67,8 +67,8 @@ const instance = new MyClass('World')
 
 ### Exports Object Pattern
 ```javascript
-exports.sayHello = function(name) {
-  Ti.API.info('Hello ' + name)
+exports.sayHello = (name) => {
+  Ti.API.info(`Hello ${name}`)
 }
 
 exports.version = 1.4
@@ -76,13 +76,15 @@ exports.version = 1.4
 
 ### Constructor Pattern (module.exports)
 ```javascript
-function Person(firstName, lastName) {
-  this.firstName = firstName
-  this.lastName = lastName
-}
+class Person {
+  constructor(firstName, lastName) {
+    this.firstName = firstName
+    this.lastName = lastName
+  }
 
-Person.prototype.fullName = function() {
-  return this.firstName + ' ' + this.lastName
+  fullName() {
+    return `${this.firstName} ${this.lastName}`
+  }
 }
 
 module.exports = Person
@@ -117,9 +119,9 @@ Any data a module needs must be passed during construction or initialization. Ne
 All modules have private scope. Variables declared within the module are private unless added to `exports`.
 
 ```javascript
-var _privateVar = 'secret' // Not accessible outside
+const _privateVar = 'secret' // Not accessible outside
 
-exports.publicMethod = function() {
+exports.publicMethod = () => {
   // Can access _privateVar
   return _privateVar
 }

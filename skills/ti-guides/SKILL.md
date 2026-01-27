@@ -1,11 +1,23 @@
 ---
 name: ti-guides
-description: "Master of Titanium SDK best practices, architecture, native access via Hyperloop, app distribution, and configuration. Use when Claude needs to: (1) Optimize memory and bridge efficiency, (2) Implement modular architecture (CommonJS/Alloy), (3) Access native APIs directly via Hyperloop, (4) Manage database transactions and image memory, (5) Standardize coding styles and conventions, (6) Distribute apps to Google Play/App Store, or (7) Configure tiapp.xml and CLI settings."
+description: "Master of Titanium SDK best practices, architecture, native access via Hyperloop, app distribution, and configuration. Use for: (1) Optimizing memory and bridge efficiency, (2) Implementing modular architecture (CommonJS/Alloy), (3) Accessing native APIs directly via Hyperloop, (4) Managing database transactions and image memory, (5) Standardizing coding styles and conventions, (6) Distributing apps to Google Play/App Store, (7) Configuring tiapp.xml and CLI settings."
 ---
 
 # Titanium SDK Guide Expert
 
 This skill ensures Titanium projects follow TiDev standards for stability, performance, and cross-platform reliability.
+
+## Table of Contents
+
+- [Titanium SDK Guide Expert](#titanium-sdk-guide-expert)
+  - [Table of Contents](#table-of-contents)
+  - [Core Workflow](#core-workflow)
+  - [Procedural Rules (Low Freedom)](#procedural-rules-low-freedom)
+  - [Reference Guides (Progressive Disclosure)](#reference-guides-progressive-disclosure)
+  - [Related Skills](#related-skills)
+  - [Response Format](#response-format)
+
+---
 
 ## Core Workflow
 
@@ -46,12 +58,12 @@ This skill ensures Titanium projects follow TiDev standards for stability, perfo
 
 For tasks beyond SDK fundamentals, use these complementary skills:
 
-| Task | Use This Skill |
-|------|----------------|
+| Task                                     | Use This Skill |
+| ---------------------------------------- | -------------- |
 | Project architecture, services, patterns | `alloy-expert` |
-| Native features (location, push, media) | `ti-howtos` |
-| Alloy CLI, configuration, debugging | `alloy-howtos` |
-| UI layouts, ListViews, gestures | `ti-ui` |
+| Native features (location, push, media)  | `ti-howtos`    |
+| Alloy CLI, configuration, debugging      | `alloy-howtos` |
+| UI layouts, ListViews, gestures          | `ti-ui`        |
 
 ## Response Format
 

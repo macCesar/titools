@@ -19,11 +19,11 @@ Sync adapters connect Backbone Models to persistent storage.
 ## 3. High-Performance Transformations
 - **Lazy Transformation**: Use `Object.defineProperty` in `extendModel` to compute transformations only when accessed.
   ```javascript
-  transform: function() {
-    const t = this.toJSON();
-    Object.defineProperty(t, 'friendlyDate', {
-      get: () => moment(t.date).fromNow()
-    });
-    return t;
-  }
+    transform() {
+      const t = this.toJSON();
+      Object.defineProperty(t, 'friendlyDate', {
+        get: () => moment(t.date).fromNow()
+      });
+      return t;
+    }
   ```

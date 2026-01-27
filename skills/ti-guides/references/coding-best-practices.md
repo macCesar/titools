@@ -27,10 +27,67 @@ Ti.App.fireEvent('my_event')
 
 ## 4. Performance
 - **Defer Script Loading**: Evaluate JavaScript only when needed. Don't `require` modules at startup if they are only for specific screens.
+
+**Lazy script loading example:**
+```javascript
+// must be loaded at launch
+const WindowOne = require('ui/WindowOne').WindowOne;
+const win1 = new WindowOne();
+win1.open();
+
+win1.addEventListener('click', () => {
+  // load window two JavaScript only when needed
+  const WindowTwo = require('ui/WindowTwo').WindowTwo;
+  const win2 = new WindowTwo();
+  win2.open();
+});
+```
+
 - **Bridge Efficiency**: Minimize requests for device properties like `Ti.Platform.osname`. Store them in a local variable once.
 - **Avoid Extending Ti Namespace**: Never add properties to `Ti.*` as it's a proxy system and leads to instability.
 
-## 5. Security Best Practices
+## 5. App Architecture Recommendations
+
+### Modular Components with CommonJS (Recommended)
+Titanium's primary recommended architecture. Discrete and independent building blocks that eliminate global variables.
+
+**MyModule.js**
+```javascript
+// Private variable
+const defaultMessage = "Hello world";
+
+exports.sayHello = (msg) => {
+  Ti.API.info('Hello ' + msg);
+};
+
+exports.helloWorld = () => {
+  Ti.API.info(defaultMessage);
+}
+```
+
+**app.js**
+```javascript
+const myModule = require('/MyModule');
+myModule.sayHello('User');
+```
+
+### Custom Objects as Components
+Popular for rapid deployment. Uses a namespace hierarchy.
+```javascript
+const myapp = {};
+(() => {
+  myapp.ui = {}; 
+  myapp.ui.createApplicationWindow = () => {
+    const win = Ti.UI.createWindow({ backgroundColor:'white' });
+    return win;
+  };
+})();
+```
+
+### Classical-based Patterns
+Not recommended as JavaScript is not a class-based language. It confuses classes and objects and is slower to implement in rapid prototyping.
+
+## 6. Security Best Practices
 - **No Sensitive Data in Non-JS Files**: JavaScript files are minified and obfuscated during build, but images, JSON files, SQLite databases, and other non-.js files are packaged as-is. APK and IPA files are essentially ZIP files that can be extracted.
 ```javascript
 // ❌ WRONG - API keys visible in app/assets/config.json
@@ -40,6 +97,6 @@ const config = require('assets/config.json')
 const API_KEY = Ti.App.Properties.getString('api_key')
 ```
 
-## 6. Multiplatform Strategies
+## 7. Multiplatform Strategies
 - **Code Branching**: Use for small differences.
 - **Platform Files**: Use `.ios.js` or `.android.js` for major logic differences to keep code readable.

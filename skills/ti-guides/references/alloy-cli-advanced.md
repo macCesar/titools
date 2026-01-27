@@ -72,7 +72,7 @@ Global initializer executed before any controllers. Perfect for:
 ### `alloy.jmk`
 Build configuration file for pre-compile and post-compile hooks:
 ```javascript
-task('pre:compile', function(event, logger) {
+task('pre:compile', (event, logger) => {
   // Run before compilation
   // Example: Auto-run PurgeTSS
 });
