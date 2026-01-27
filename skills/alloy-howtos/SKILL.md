@@ -1,22 +1,42 @@
 ---
 name: alloy-howtos
-description: Comprehensive Alloy MVC Framework guide covering best practices, CLI commands, configuration files, debugging, and code samples. Use when Claude needs to help with Alloy development tasks - creating/configuring Alloy projects, using Alloy CLI commands (new, generate, compile, etc.), configuring alloy.jmk/config.json/widget.json, debugging Alloy compilation or runtime errors, implementing conditional views and data-binding, following Alloy coding best practices and naming conventions, using Backbone.Events for communication instead of Ti.App.fireEvent, or creating custom XML tags for reusable components.
+description: Comprehensive Alloy MVC Framework guide covering best practices, CLI commands, configuration files, debugging, and code samples. Use for: (1) Creating or configuring Alloy projects, (2) Using Alloy CLI commands (new, generate, compile), (3) Configuring alloy.jmk/config.json/widget.json, (4) Debugging Alloy compilation or runtime errors, (5) Implementing conditional views and data-binding, (6) Following Alloy coding best practices and naming conventions, (7) Using Backbone.Events for communication instead of Ti.App.fireEvent, (8) Creating custom XML tags for reusable components.
 ---
 
 # Titanium Alloy How-tos
 
 Comprehensive guide for the Alloy MVC Framework in Titanium SDK.
 
+## Table of Contents
+
+- [Titanium Alloy How-tos](#titanium-alloy-how-tos)
+  - [Table of Contents](#table-of-contents)
+  - [Quick Reference](#quick-reference)
+  - [Critical Best Practices](#critical-best-practices)
+    - [Naming Conventions](#naming-conventions)
+    - [Global Events - Use Backbone.Events](#global-events---use-backboneevents)
+    - [Global Variables in Non-Controller Files](#global-variables-in-non-controller-files)
+  - [Conditional Views](#conditional-views)
+  - [Common Error Solutions](#common-error-solutions)
+  - [CLI Quick Reference](#cli-quick-reference)
+  - [Configuration Files Priority](#configuration-files-priority)
+  - [Custom XML Tags](#custom-xml-tags)
+  - [Resources](#resources)
+    - [references/](#references)
+  - [Related Skills](#related-skills)
+
+---
+
 ## Quick Reference
 
-| Topic | Reference |
-|-------|-----------|
-| Best Practices & Naming Conventions | [best_practices.md](references/best_practices.md) |
-| CLI Commands (new, generate, compile) | [cli_reference.md](references/cli_reference.md) |
-| Configuration Files (alloy.jmk, config.json) | [config_files.md](references/config_files.md) |
-| Custom XML Tags & Reusable Components | [custom_tags.md](references/custom_tags.md) |
-| Debugging & Common Errors | [debugging_troubleshooting.md](references/debugging_troubleshooting.md) |
-| Code Samples & Conditionals | [samples.md](references/samples.md) |
+| Topic                                        | Reference                                                               |
+| -------------------------------------------- | ----------------------------------------------------------------------- |
+| Best Practices & Naming Conventions          | [best_practices.md](references/best_practices.md)                       |
+| CLI Commands (new, generate, compile)        | [cli_reference.md](references/cli_reference.md)                         |
+| Configuration Files (alloy.jmk, config.json) | [config_files.md](references/config_files.md)                           |
+| Custom XML Tags & Reusable Components        | [custom_tags.md](references/custom_tags.md)                             |
+| Debugging & Common Errors                    | [debugging_troubleshooting.md](references/debugging_troubleshooting.md) |
+| Code Samples & Conditionals                  | [samples.md](references/samples.md)                                     |
 
 ## Critical Best Practices
 
@@ -35,7 +55,7 @@ Alloy.Events = _.clone(Backbone.Events);
 // Listener
 Alloy.Events.on('updateMainUI', refreshData);
 // Clean up on close
-$.controller.addEventListener('close', function() {
+$.controller.addEventListener('close', () => {
     Alloy.Events.off('updateMainUI');
 });
 
@@ -46,9 +66,9 @@ Alloy.Events.trigger('updateMainUI');
 ### Global Variables in Non-Controller Files
 Always require Alloy modules:
 ```javascript
-var Alloy = require('alloy');
-var Backbone = require('alloy/backbone');
-var _ = require('alloy/underscore')._;
+const Alloy = require('alloy');
+const Backbone = require('alloy/backbone');
+const _ = require('alloy/underscore')._;
 ```
 
 ## Conditional Views
@@ -82,11 +102,11 @@ Data-binding conditionals:
 
 ## Common Error Solutions
 
-| Error | Solution |
-|-------|----------|
-| `No app.js found` | Run `alloy compile --config platform=<platform>` |
-| Android assets not showing | Use absolute paths (prepend `/`) |
-| `Alloy is not defined` (non-controller) | Add `var Alloy = require('alloy');` |
+| Error                                   | Solution                                                |
+| --------------------------------------- | ------------------------------------------------------- |
+| `No app.js found`                       | Run `alloy compile --config platform=<platform>`        |
+| Android assets not showing              | Use absolute paths (prepend `/`)                        |
+| `Alloy is not defined` (non-controller) | Add `const Alloy = require('alloy');`                   |
 | iOS `invalid method passed to UIModule` | Creating Android-only object - use `platform` attribute |
 
 ## CLI Quick Reference
@@ -124,9 +144,9 @@ Create reusable components without widgets - just drop a file in `app/lib/`:
 
 **app/lib/checkbox.js**
 ```javascript
-exports.createCheckBox = function(args) {
-    var wrapper = Ti.UI.createView({ layout: "horizontal", checked: false });
-    var box = Ti.UI.createView({ width: 15, height: 15, borderWidth: 1 });
+exports.createCheckBox = args => {
+    const wrapper = Ti.UI.createView({ layout: "horizontal", checked: false });
+    const box = Ti.UI.createView({ width: 15, height: 15, borderWidth: 1 });
     // ... build component, return Ti.UI.* object
     return wrapper;
 };
@@ -157,9 +177,9 @@ Complete documentation for each topic area:
 
 For tasks beyond Alloy CLI and configuration, use these complementary skills:
 
-| Task | Use This Skill |
-|------|----------------|
-| Modern architecture, services, patterns | `alloy-expert` |
+| Task                                     | Use This Skill |
+| ---------------------------------------- | -------------- |
+| Modern architecture, services, patterns  | `alloy-expert` |
 | Alloy MVC concepts, models, data binding | `alloy-guides` |
-| SDK config, Hyperloop, app distribution | `ti-guides` |
-| Utility-first styling with PurgeTSS | `purgetss` |
+| SDK config, Hyperloop, app distribution  | `ti-guides`    |
+| Utility-first styling with PurgeTSS      | `purgetss`     |

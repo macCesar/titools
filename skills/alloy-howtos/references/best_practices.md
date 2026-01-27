@@ -1,6 +1,23 @@
 # Alloy Best Practices and Recommendations
 
-This guide provides recommendations for writing Alloy applications. It supplements the existing Titanium SDK Best Practices guide.
+This guide provides recommendations for writing Alloy applications. This guide supplements the existing Titanium SDK [Best Practices and Recommendations](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_Guide/Best_Practices_and_Recommendations/) guide, specifically focusing on Coding Best Practices and Style and Conventions.
+
+## Table of Contents
+
+- [Alloy Best Practices and Recommendations](#alloy-best-practices-and-recommendations)
+  - [Table of Contents](#table-of-contents)
+  - [Titanium-to-Alloy Guidance](#titanium-to-alloy-guidance)
+    - [Loading Libraries in Alloy](#loading-libraries-in-alloy)
+    - [Performance Best Practices](#performance-best-practices)
+    - [Project Organization](#project-organization)
+  - [Coding Style Best Practices](#coding-style-best-practices)
+    - [Naming Conventions](#naming-conventions)
+    - [Global Variables](#global-variables)
+    - [Global Events](#global-events)
+      - [Use Callbacks for Master-Child Communication](#use-callbacks-for-master-child-communication)
+      - [Use Backbone.Events for App-Wide Communication](#use-backboneevents-for-app-wide-communication)
+
+---
 
 ## Titanium-to-Alloy Guidance
 
@@ -29,7 +46,7 @@ Determine if it makes sense to bend Alloy around your existing organization, or 
 ### Naming Conventions
 
 - **Do not use double underscore prefixes** on variables, properties, or function names (e.g., `__foo`). They are reserved for Alloy and may cause conflicts and unexpected behavior.
-- **Do not use JavaScript reserved words as IDs.** See Titanium SDK Reserved Words for the complete list.
+- **Do not use JavaScript reserved words as IDs.** See [Titanium SDK Reserved Words](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_Guide/Best_Practices_and_Recommendations/Reserved_Words/) for the complete list.
 
 ### Global Variables
 
@@ -38,7 +55,9 @@ Do not declare global variables in app.js and use them in other files. This is a
 Instead, declare these in your JS files:
 
 ```javascript
-var Alloy = require('alloy'), Backbone = require('alloy/backbone'), _ = require('alloy/underscore')._;
+const Alloy = require('alloy');
+const Backbone = require('alloy/backbone');
+const _ = require('alloy/underscore')._;
 ```
 
 Safe pattern for non-controller files:
@@ -54,7 +73,7 @@ if (typeof _ === 'undefined') {
     var _ = require('alloy/underscore')._;
 }
 
-var loading = Alloy.createWidget("com.appcelerator.loading");
+const loading = Alloy.createWidget("com.appcelerator.loading");
 ```
 
 ### Global Events
@@ -76,7 +95,7 @@ function refreshData(value) {
 
 **child.js**
 ```javascript
-var args = arguments[0] || {};
+const args = arguments[0] || {};
 
 function refreshParent() {
     // Pass return value to parent
@@ -102,7 +121,7 @@ function refreshData(value) {
 }
 
 // Clean up when closing to avoid memory leaks
-$.controller_a.addEventListener('close', function() {
+$.controller_a.addEventListener('close', () => {
     Alloy.Events.off('updateMainUI');
 });
 ```
@@ -116,3 +135,4 @@ Alloy.Events.trigger('updateMainUI');
 ```javascript
 Alloy.createController('child').on('refresh', refreshData);
 ```
+This is a cleaner approach to cross-controller communication using Backbone's built-in event capabilities.

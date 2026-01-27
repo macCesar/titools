@@ -1,5 +1,19 @@
 # Alloy Samples
 
+## Table of Contents
+
+- [Alloy Samples](#alloy-samples)
+  - [Table of Contents](#table-of-contents)
+  - [Kitchen Sink](#kitchen-sink)
+  - [Controller Sample](#controller-sample)
+  - [Conditional Statements in Views](#conditional-statements-in-views)
+    - [The Problem with Traditional Approaches](#the-problem-with-traditional-approaches)
+    - [The Solution: IF Attributes in XML](#the-solution-if-attributes-in-xml)
+    - [Conditional Queries in TSS](#conditional-queries-in-tss)
+    - [Data-Binding with Conditional Queries](#data-binding-with-conditional-queries)
+
+---
+
 ## Kitchen Sink
 
 See the [KitchenSink-v2 application on GitHub](https://github.com/tidev/kitchensink-v2) for Alloy samples in a real app.
@@ -10,11 +24,11 @@ See the [KitchenSink-v2 application on GitHub](https://github.com/tidev/kitchens
 ```javascript
 // These "builtin" requires are detected by alloy compile process
 // Automatically included as Resources/alloy/animation.js and Resources/alloy/string.js
-var animation = require('alloy/animation'),
-  string = require('alloy/string');
+const animation = require('alloy/animation');
+const string = require('alloy/string');
 
 function shake(e) {
-    animation.shake($.mover, 0, function() {
+    animation.shake($.mover, 0, () => {
         alert("Shake ended.");
     });
 }
@@ -29,7 +43,7 @@ function trim(e) {
 
 if (OS_IOS) {
     function flip(e) {
-        var front, back;
+        let front, back;
         e.bubbleParent = false;
         if (e.source === $.back) {
             front = $.back;
@@ -38,7 +52,7 @@ if (OS_IOS) {
             front = $.front;
             back = $.back;
         }
-        animation.flipHorizontal(front, back, 500, function(e) {
+        animation.flipHorizontal(front, back, 500, (e) => {
             Ti.API.info('flipped');
         });
     }
@@ -54,23 +68,23 @@ if (!ENV_PROD) {
 
 ## Conditional Statements in Views
 
-### Problem
+Alloy separates business logic (controllers) from UI definition (XML/TSS). A common challenge is showing/hiding content based on app state (e.g., login status).
 
-Showing/hiding content based on conditions (e.g., login status) traditionally causes rendering issues:
+### The Problem with Traditional Approaches
 
-**Approach 1: show/hide (problematic)**
+**Approach 1: show/hide (in controller)**
 ```javascript
 if (Alloy.Globals.isLoggedIn()) {
     $.loggedIn.show();
     $.notLoggedIn.hide();
 } else {
-    $.loggedIn.hide(); // Bug in original - should be hide()
+    $.loggedIn.hide();
     $.notLoggedIn.show();
 }
 ```
-Problem: Both views render initially, causing white space.
+**Problem:** Both views render initially when the window opens. If the user isn't logged in, there's a big white space where the logged-in view was originally placed before it was hidden.
 
-**Approach 2: setHeight (works but messy)**
+**Approach 2: setHeight (in controller)**
 ```javascript
 if (Alloy.Globals.isLoggedIn()) {
     $.loggedIn.setHeight(Ti.UI.SIZE);
@@ -80,16 +94,18 @@ if (Alloy.Globals.isLoggedIn()) {
     $.notLoggedIn.setHeight(Ti.UI.SIZE);
 }
 ```
+**Problem:** This works but is messy and forces you to manage specific height values (`Ti.UI.SIZE`) in JavaScript logic, which should ideally stay in TSS.
 
-### Solution: IF Attributes in XML
+### The Solution: IF Attributes in XML
 
-Use IF attributes within the XML View:
+Use `if` attributes directly within the XML View. These conditions are evaluated **before** rendering, providing a smoother experience.
 
 **index.xml**
 ```xml
 <Alloy>
     <Window>
-        <View class="container indent">
+        <View>
+            <!-- Only one of these will ever be rendered -->
             <View if="Alloy.Globals.isLoggedIn()" id="notLoggedIn" class="vertical">
                  <Label text="Not logged in" />
             </View>
@@ -101,10 +117,10 @@ Use IF attributes within the XML View:
 </Alloy>
 ```
 
-Benefits:
-- Only one view renders (no white space)
-- Condition evaluated before rendering
-- Smoother app experience
+**Benefits:**
+- **No White Space:** Only the view that matches the condition is rendered to the UI.
+- **Pre-rendering Evaluation:** The UI is correct from the first frame.
+- **Cleaner Code:** No need for visibility logic in your controllers.
 
 ### Conditional Queries in TSS
 
