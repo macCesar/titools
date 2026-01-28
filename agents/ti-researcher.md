@@ -1,6 +1,6 @@
 ---
 name: ti-researcher
-description: Deep-dive research specialist for Titanium SDK and Alloy. Use proactively when analyzing codebases, researching implementations, or exploring architectural questions. Cross-references all titanium-* skills to provide comprehensive answers with specific file/line references.
+description: Deep-dive research specialist for Titanium SDK and Alloy that preloads all 7 titanium-* skills. Use proactively when analyzing codebases, researching implementations, or exploring architectural questions. Cross-references all titanium-* skills to provide comprehensive answers with specific file/line references. TRIGGER KEYWORDS: 'analyze codebase', 'research', 'codebase analysis', 'architecture review', 'multi-feature research', 'cross-skill questions', 'platform differences', 'compare', 'explore', 'investigate', 'deep dive', 'comprehensive analysis', 'identify patterns', 'review architecture'.
 skills:
   - alloy-expert
   - alloy-guides
