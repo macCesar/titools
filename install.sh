@@ -190,7 +190,7 @@ else
     echo -e "  ${CYAN}q)${NC} Quit"
     echo ""
 
-    read -p "Enter your choice: " choice
+    read -p "Enter your choice: " choice < /dev/tty
 
     case $choice in
         a|A)
