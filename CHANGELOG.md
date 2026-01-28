@@ -4,6 +4,36 @@ All notable changes to Titanium SDK Skills will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.6.3] - 2026-01-28
+
+### Fixed
+- **Auto-triggering**: All 7 skill descriptions now explicitly mention "Titanium" at the beginning
+  - Previous descriptions assumed Titanium context but Claude Code needs explicit keywords
+  - alloy-expert: "Architecture..." → "**Titanium** Alloy architecture..."
+  - purgetss: "PurgeTSS utility..." → "**Titanium** PurgeTSS utility..."
+  - ti-ui: "UI/UX patterns..." → "**Titanium** SDK UI/UX patterns..."
+  - ti-howtos: "Native feature..." → "**Titanium** SDK native feature..."
+  - ti-guides: "Official SDK..." → "**Titanium** SDK official..."
+  - alloy-guides: "Official Alloy..." → "**Titanium** Alloy MVC..."
+  - alloy-howtos: "Alloy CLI..." → "**Titanium** Alloy CLI..."
+- **Missing symlinks**: Created symlinks for ti-guides, ti-howtos, ti-ui in ~/.claude/skills/
+  - These 3 skills were installed in ~/.agents/skills/ but not symlinked to Claude Code
+  - All 7 skills are now properly available to Claude Code
+
+## [1.6.2] - 2026-01-28
+
+### Removed
+- **Detection scripts**: Removed all `assets/detect.js` files from all 7 skills
+  - These scripts were never used by Claude Code's auto-triggering mechanism
+  - Auto-triggering uses the `description` field in skill.md frontmatter, not external scripts
+  - Eliminates confusion about how skill activation works
+  - Removed references from README.md and CHANGELOG.md
+
+### Changed
+- **README.md**: Removed manual detection command examples (lines 182-183, 555)
+  - Users should mention technologies explicitly in prompts instead
+  - Aligns documentation with actual auto-triggering mechanism
+
 ## [1.6.1] - 2026-01-28
 
 ### Changed
@@ -87,7 +117,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   - `purgetss`: Detects if project uses PurgeTSS (checks for `purgetss/` folder, `config.cjs`, `tailwind.tss`)
   - `alloy-*` skills: Detects Alloy vs Classic projects (checks for `app/` vs `Resources/` structure)
   - `ti-*` skills: Detects Titanium projects (checks for `tiapp.xml`)
-- **Detection scripts**: `assets/detect.js` for each skill with CLI usage (`node skills/[name]/assets/detect.js`)
+- **Detection scripts**: All `assets/detect.js` scripts removed (unused - auto-detection works via skill description matching)
 - **MANDATORY INVOCATION section** to all skills with explicit invocation instructions
 - **Project Detection section** to all skills explaining auto-detection behavior
 - **AUTO-DETECTION** notation to all skill descriptions for transparency
