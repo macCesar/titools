@@ -1,8 +1,48 @@
 # Layouts, Positioning, and View Hierarchy
 
+## 🚨 CRITICAL: Platform-Specific Properties Require Modifiers
+
+:::danger NEVER use platform-specific properties directly
+**Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties WITHOUT modifiers will:**
+
+1. **Add iOS code to Android builds** → compilation failures
+2. **Add Android code to iOS builds** → compilation failures
+3. **Create invalid cross-platform code**
+
+**REAL EXAMPLE of the damage:**
+```javascript
+// ❌ WRONG - Adds Ti.UI.iOS to Android project
+const win = Ti.UI.createWindow({
+  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT  // FAILS on Android!
+})
+```
+
+**CORRECT approaches:**
+
+**Option 1 - TSS modifier (Alloy projects):**
+```tss
+// ✅ CORRECT - Only adds to iOS
+"#mainWindow[platform=ios]": {
+  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
+}
+```
+
+**Option 2 - Conditional code:**
+```javascript
+if (OS_IOS) {
+  $.mainWindow.statusBarStyle = Ti.UI.iOS.StatusBar.LIGHT_CONTENT
+}
+```
+
+**Common platform-specific properties that REQUIRE modifiers:**
+- iOS: `statusBarStyle`, `modalStyle`, `modalTransitionStyle`, any `Ti.UI.iOS.*`
+- Android: `actionBar` config, any `Ti.Android.*` constant
+:::
+
 ## Table of Contents
 
 - [Layouts, Positioning, and View Hierarchy](#layouts-positioning-and-view-hierarchy)
+  - [🚨 CRITICAL: Platform-Specific Properties Require Modifiers](#-critical-platform-specific-properties-require-modifiers)
   - [Table of Contents](#table-of-contents)
   - [1. Units of Measurement](#1-units-of-measurement)
     - [Available Units](#available-units)
