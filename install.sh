@@ -1,15 +1,18 @@
 #!/bin/bash
 
-# Titanium SDK Skills Installer
-# Installs to ~/.agents/skills/ and creates symlinks for detected platforms
+# Titanium SDK Skills & Agents Installer
+# Installs skills to ~/.agents/skills/ and agents to ~/.claude/agents/
+# Creates symlinks for detected platforms
 # Compatible with: Claude Code, Gemini CLI, Codex CLI
 
 set -e
 
 REPO_URL="https://github.com/macCesar/titanium-sdk-skills"
 SKILLS=(alloy-expert purgetss ti-ui ti-howtos ti-guides alloy-guides alloy-howtos)
+AGENTS=(titanium-researcher)
 AGENTS_DIR="$HOME/.agents"
 AGENTS_SKILLS_DIR="$AGENTS_DIR/skills"
+CLAUDE_AGENTS_DIR="$HOME/.claude/agents"
 
 # Colors
 RED='\033[0;31m'
@@ -47,7 +50,8 @@ while [[ $# -gt 0 ]]; do
             echo ""
             echo "This installer:"
             echo "  1. Installs skills to ~/.agents/skills/ (central location)"
-            echo "  2. Creates symlinks in detected AI CLI directories"
+            echo "  2. Installs agents to ~/.claude/agents/ (Claude Code)"
+            echo "  3. Creates symlinks in detected AI CLI directories"
             echo ""
             exit 0
             ;;
@@ -117,6 +121,36 @@ install_to_agents() {
     echo -e "${GREEN}Done${NC}"
 }
 
+# Install agents to Claude Code
+install_agents() {
+    local repo_dir="$1"
+
+    # Only install agents if Claude Code is detected
+    if [ ! -d "$HOME/.claude" ]; then
+        return
+    fi
+
+    echo -ne "Installing agents to $CLAUDE_AGENTS_DIR... "
+    mkdir -p "$CLAUDE_AGENTS_DIR"
+
+    for agent in "${AGENTS[@]}"; do
+        local agent_src="$repo_dir/agents/$agent.md"
+        local agent_dest="$CLAUDE_AGENTS_DIR/$agent.md"
+
+        if [ -f "$agent_src" ]; then
+            # Remove existing file/symlink
+            if [ -e "$agent_dest" ] || [ -L "$agent_dest" ]; then
+                rm -f "$agent_dest"
+            fi
+            # Copy agent to Claude agents directory
+            cp "$agent_src" "$agent_dest"
+            echo -e "${GREEN}✓${NC} $agent"
+        fi
+    done
+
+    echo -e "${GREEN}Done${NC}"
+}
+
 # Create symlinks for detected platforms
 create_symlinks() {
     for i in "$@"; do
@@ -155,8 +189,13 @@ if [ -n "$CUSTOM_PATH" ]; then
     git clone --depth 1 --quiet "$REPO_URL" "$TMP_DIR/repo" 2>/dev/null || { echo -e "${RED}Failed${NC}"; exit 1; }
     echo -e "${GREEN}Done${NC}"
     install_to_agents "$TMP_DIR/repo"
+    install_agents "$TMP_DIR/repo"
     SKILLS_LIST=$(printf '%s, ' "${SKILLS[@]}" | sed 's/, $//')
-    echo -e "\n${GREEN}✓ Installed:${NC} $SKILLS_LIST"
+    echo -e "\n${GREEN}✓ Skills:${NC} $SKILLS_LIST"
+    if [ -d "$HOME/.claude" ] && [ ${#AGENTS[@]} -gt 0 ]; then
+        AGENTS_LIST=$(printf '%s, ' "${AGENTS[@]}" | sed 's/, $//')
+        echo -e "${GREEN}✓ Agents:${NC} $AGENTS_LIST"
+    fi
     echo ""
     echo "Skills are in: $AGENTS_SKILLS_DIR"
     echo ""
@@ -249,13 +288,23 @@ fi
 # Install to central agents directory
 install_to_agents "$REPO_DIR"
 
+# Install agents to Claude Code
+install_agents "$REPO_DIR"
+
 # Create symlinks for selected platforms
 create_symlinks "${SELECTED_INDICES[@]}"
 
 SKILLS_LIST=$(printf '%s, ' "${SKILLS[@]}" | sed 's/, $//')
-echo -e "\n${GREEN}✓ Installed:${NC} $SKILLS_LIST"
+echo -e "\n${GREEN}✓ Skills:${NC} $SKILLS_LIST"
+if [ -d "$HOME/.claude" ] && [ ${#AGENTS[@]} -gt 0 ]; then
+    AGENTS_LIST=$(printf '%s, ' "${AGENTS[@]}" | sed 's/, $//')
+    echo -e "${GREEN}✓ Agents:${NC} $AGENTS_LIST"
+fi
 echo ""
 echo "Skills location: $AGENTS_SKILLS_DIR"
+if [ -d "$HOME/.claude" ] && [ ${#AGENTS[@]} -gt 0 ]; then
+    echo "Agents location: $CLAUDE_AGENTS_DIR"
+fi
 echo "Symlinks created in: ${PLATFORM_DISPLAY[*]}"
 echo ""
 echo "Start using them by asking about Titanium SDK development!"
@@ -264,4 +313,5 @@ echo "Examples:"
 echo "  \"Create a login screen with PurgeTSS styling\""
 echo "  \"How do I structure an Alloy app?\""
 echo "  \"Implement push notifications\""
+echo "  \"Use the titanium-researcher agent to analyze this codebase\""
 echo ""
