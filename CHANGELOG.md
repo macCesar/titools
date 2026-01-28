@@ -4,6 +4,21 @@ All notable changes to Titanium SDK Skills will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.6.1] - 2026-01-28
+
+### Changed
+- **ti-researcher agent model**: Upgraded from `haiku` to `sonnet` for improved analysis capabilities
+  - Sonnet provides better reasoning for complex codebase analysis tasks
+  - Maintains fast performance while delivering more comprehensive research results
+- **ti-researcher agent description**: Removed non-standard `TRIGGER KEYWORDS:` block from frontmatter
+  - Keywords now integrated naturally in description for better Claude Code compatibility
+  - Aligns with official Claude Code subagent format standards
+
+### Added
+- **ti-researcher Usage Examples section**: Documented example prompts for automatic and manual activation
+  - Helps users understand how to trigger the agent effectively
+  - Includes both proactive and explicit invocation patterns
+
 ## [1.6.0] - 2026-01-28
 
 ### Changed

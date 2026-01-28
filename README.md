@@ -112,7 +112,7 @@ In addition to skills, this repository includes **sub-agents** for Claude Code. 
 | Aspect               | Details                                      |
 | -------------------- | -------------------------------------------- |
 | **Location**         | `~/.claude/agents/ti-researcher.md`          |
-| **Model**            | Haiku (fast, efficient)                      |
+| **Model**            | Sonnet (comprehensive analysis)              |
 | **Tools**            | Read-only (Read, Grep, Glob)                 |
 | **Preloaded Skills** | All 7 titanium-\* skills injected at startup |
 
