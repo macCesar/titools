@@ -1,23 +1,44 @@
 ---
 name: ti-ui
-description: "PRIMARY SOURCE for Titanium SDK UI/UX patterns, layouts, and platform-specific components. Contains complete reference for views, layouts, events, gestures, animations, accessibility, and platform differences. ALWAYS consult this skill FIRST for ANY UI implementation question before searching online. Covers: (1) Complex UI layouts, (2) ListView/TableView performance, (3) Event handling and gestures, (4) Accessibility (VoiceOver/TalkBack), (5) Animations and transforms, (6) Orientation changes, (7) Custom fonts and icons, (8) App icons and splash screens, (9) Platform-specific UI (Action Bar, Navigation Bar, iOS/Android components). TRIGGER KEYWORDS: 'layout', 'ListView', 'TableView', 'gesture', 'swipe', 'animation', 'accessibility', 'VoiceOver', 'TalkBack', 'event', 'click', 'orientation', 'custom font', 'icon', 'app icon', 'splash screen', 'Action Bar', 'Navigation Bar', 'platform-specific UI', 'ScrollView', 'ScrollableView', 'composite', 'vertical', 'horizontal', 'Ti.UI.SIZE', 'Ti.UI.FILL', 'dp unit', 'event bubbling', 'performance optimization', '2D matrix', '3D matrix'."
+description: "PRIMARY SOURCE for Titanium SDK UI/UX patterns. Covers complex layouts, ListView/TableView performance, event handling, gestures, animations, accessibility (VoiceOver/TalkBack), orientation, custom fonts/icons, app icons/splash screens, and platform-specific UI (Action Bar, Navigation Bar, iOS/Android components). Auto-detects Titanium projects (Alloy OR Classic). TRIGGER KEYWORDS: 'layout', 'ListView', 'TableView', 'gesture', 'swipe', 'animation', 'accessibility', 'VoiceOver', 'TalkBack', 'event', 'click', 'orientation', 'custom font', 'icon', 'app icon', 'splash screen', 'Action Bar', 'Navigation Bar', 'platform-specific UI', 'ScrollView', 'ScrollableView', 'composite', 'vertical', 'horizontal', 'Ti.UI.SIZE', 'Ti.UI.FILL', 'dp unit', 'event bubbling', 'performance optimization', '2D matrix', '3D matrix', 'titanium', 'alloy', 'mobile', 'ios', 'android', 'ImageView', 'Window', 'View', 'Button', 'Label', 'createButton', 'createLabel', 'createImageView', 'createView', 'createScrollView', 'createWindow', 'aspect fit', 'aspect fill', 'scalingMode', 'zoom', 'image', 'photo', 'ui component', 'component'."
 argument-hint: "[component]"
-allowed-tools: Read, Grep, Glob
+allowed-tools: Read, Grep, Glob, Edit, Write, Bash(node *)
 ---
 
 # Titanium SDK UI Expert
 
 Comprehensive expert covering all official Titanium SDK UI how-to guides. Provides guidance on cross-platform UI/UX, event handling, animations, performance optimization, and platform-specific components.
 
+## Project Detection
+
+:::info AUTO-DETECTS TITANIUM PROJECTS
+This skill automatically detects Titanium projects when invoked and provides UI/UX component guidance.
+
+**Detection occurs automatically** - no manual command needed.
+
+**Titanium project indicator:**
+- `tiapp.xml` file (required for all Titanium projects)
+
+**Applicable to BOTH:**
+- **Alloy projects** (app/ folder structure)
+- **Classic projects** (Resources/ folder)
+
+**Behavior based on detection:**
+- **Titanium detected** → Provides UI component guidance for both Alloy and Classic, ListView/TableView patterns, platform-specific UI differences
+- **Not detected** → Indicates this is for Titanium projects only, does NOT provide Titanium UI guidance
+:::
+
 ## Table of Contents
 
 - [Titanium SDK UI Expert](#titanium-sdk-ui-expert)
+  - [Project Detection](#project-detection)
   - [Table of Contents](#table-of-contents)
   - [Quick Reference](#quick-reference)
   - [Critical Rules (Low Freedom)](#critical-rules-low-freedom)
     - [Performance](#performance)
     - [iOS Accessibility](#ios-accessibility)
     - [Layout](#layout)
+    - [Platform-Specific Properties](#platform-specific-properties)
     - [Event Management](#event-management)
     - [App Architecture](#app-architecture)
   - [Platform Differences Summary](#platform-differences-summary)
@@ -61,6 +82,42 @@ Comprehensive expert covering all official Titanium SDK UI how-to guides. Provid
 ### Layout
 - **Use `dp` units** for cross-platform consistency.
 - **Android ScrollView**: Vertical OR horizontal, not both. Set `scrollType`.
+
+### Platform-Specific Properties
+
+:::danger CRITICAL: Platform-Specific Properties Require Modifiers
+Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties WITHOUT platform modifiers causes cross-platform compilation failures.
+
+**Example of the damage:**
+```javascript
+// ❌ WRONG - Adds Ti.UI.iOS to Android project
+const win = Ti.UI.createWindow({
+  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT  // FAILS on Android!
+})
+```
+
+**CORRECT approaches:**
+
+**Option 1 - TSS modifier (Alloy projects):**
+```tss
+"#mainWindow[platform=ios]": {
+  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
+}
+```
+
+**Option 2 - Conditional code:**
+```javascript
+if (OS_IOS) {
+  $.mainWindow.statusBarStyle = Ti.UI.iOS.StatusBar.LIGHT_CONTENT
+}
+```
+
+**Properties that ALWAYS require platform modifiers:**
+- iOS: `statusBarStyle`, `modalStyle`, `modalTransitionStyle`, any `Ti.UI.iOS.*`
+- Android: `actionBar` config, any `Ti.UI.Android.*` constant
+
+**For complete platform-specific UI patterns, see** [Platform UI - iOS](references/platform-ui-ios.md) and [Platform UI - Android](references/platform-ui-android.md).
+:::
 
 ### Event Management
 - **Remove global listeners** (`Ti.App`, `Ti.Gesture`, `Ti.Accelerometer`) on pause to save battery.
@@ -118,6 +175,5 @@ For tasks beyond UI components, use these complementary skills:
 | Task                                            | Use This Skill |
 | ----------------------------------------------- | -------------- |
 | Project architecture, services, memory cleanup  | `alloy-expert` |
-| Utility-first styling, animations, grid layouts | `purgetss`     |
 | Native features (camera, location, push, media) | `ti-howtos`    |
 | Alloy MVC, data binding, widgets                | `alloy-guides` |

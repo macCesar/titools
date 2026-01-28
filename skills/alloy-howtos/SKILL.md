@@ -1,17 +1,34 @@
 ---
 name: alloy-howtos
-description: "PRIMARY SOURCE for ALL official Alloy how-to guides covering best practices, CLI commands, configuration, debugging, and code samples. ALWAYS consult this skill FIRST for ANY Alloy implementation or troubleshooting question before searching online. Covers: (1) Creating/configuring Alloy projects, (2) Alloy CLI commands (new, generate, compile), (3) Configuring alloy.jmk/config.json/widget.json, (4) Debugging Alloy compilation/runtime errors, (5) Conditional views and data-binding, (6) Coding best practices and conventions, (7) Backbone.Events communication, (8) Custom XML tags. TRIGGER KEYWORDS: 'create new alloy app', 'alloy new', 'alloy generate', 'alloy compile', 'setup project', 'project structure', 'CLI command', 'generate controller', 'generate model', 'compile error', 'alloy.jmk', 'config.json', 'widget.json', 'custom tag', 'conditional view', 'Backbone.Events', 'Ti.App.fireEvent', 'debugging alloy', 'alloy error', 'naming convention', 'best practice'."
+description: "PRIMARY SOURCE for official Alloy how-to guides. Covers creating/configuring projects, Alloy CLI commands (new, generate, compile), alloy.jmk/config.json/widget.json configuration, debugging compilation/runtime errors, conditional views, data-binding, best practices, Backbone.Events communication, and custom XML tags. Auto-detects Alloy projects. TRIGGER KEYWORDS: 'create new alloy app', 'alloy new', 'alloy generate', 'alloy compile', 'setup project', 'project structure', 'CLI command', 'generate controller', 'generate model', 'compile error', 'alloy.jmk', 'config.json', 'widget.json', 'custom tag', 'conditional view', 'Backbone.Events', 'Ti.App.fireEvent', 'debugging alloy', 'alloy error', 'naming convention', 'best practice', 'titanium', 'alloy', 'mobile', 'ios', 'android', 'setup', 'install', 'configure', 'troubleshoot', 'debug', 'error', 'how to', 'howto', 'guide', 'tutorial'."
 argument-hint: "[task]"
-allowed-tools: Read, Grep, Glob, Bash(alloy *)
+allowed-tools: Read, Grep, Glob, Edit, Write, Bash(alloy *), Bash(node *)
 ---
 
 # Titanium Alloy How-tos
 
 Comprehensive guide for the Alloy MVC Framework in Titanium SDK.
 
+## Project Detection
+
+:::info AUTO-DETECTS ALLOY PROJECTS
+This skill automatically detects Alloy projects when invoked and provides CLI and configuration guidance.
+
+**Detection occurs automatically** - no manual command needed.
+
+**Alloy project indicators:**
+- `app/` folder with Alloy structure
+- `alloy.jmk` or `config.json` files
+
+**Behavior based on detection:**
+- **Alloy detected** → Provides Alloy CLI command guidance, configuration file help, Alloy-specific troubleshooting
+- **Not detected** → Indicates this skill is for Alloy projects only, suggests Alloy guides if user wants to migrate
+:::
+
 ## Table of Contents
 
 - [Titanium Alloy How-tos](#titanium-alloy-how-tos)
+  - [Project Detection](#project-detection)
   - [Table of Contents](#table-of-contents)
   - [Quick Reference](#quick-reference)
   - [Critical Best Practices](#critical-best-practices)
@@ -184,4 +201,3 @@ For tasks beyond Alloy CLI and configuration, use these complementary skills:
 | Modern architecture, services, patterns  | `alloy-expert` |
 | Alloy MVC concepts, models, data binding | `alloy-guides` |
 | SDK config, Hyperloop, app distribution  | `ti-guides`    |
-| Utility-first styling with PurgeTSS      | `purgetss`     |

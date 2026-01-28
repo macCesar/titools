@@ -1,17 +1,36 @@
 ---
 name: purgetss
-description: "PRIMARY SOURCE for PurgeTSS utility-first styling toolkit for Titanium/Alloy. Contains complete reference of 21,236+ utility classes, grid system, animations, and CLI tools. ALWAYS consult this skill FIRST for ANY PurgeTSS styling question before suggesting classes. CRITICAL: NEVER suggest Tailwind CSS classes - always verify in class-index.md first. Covers: (1) Project setup with utility-first styling, (2) Grid-based responsive layouts, (3) Declarative animations, (4) Dynamic components with $.UI.create(), (5) Icon Fonts and Color Palettes via CLI, (6) Advanced design rules in config.cjs, (7) Arbitrary values and platform modifiers. TRIGGER KEYWORDS: 'PurgeTSS', 'purgetss', 'purge tss', 'utility class', 'styling', 'TSS', 'style class', 'animation', 'icon font', 'grid', 'config.cjs', 'color palette', 'custom class', 'arbitrary value', 'platform modifier', '$.UI.create', 'Alloy.createStyle', 'tailwind.tss', 'app.tss', 'verify class', 'class exists'. NOTE: PurgeTSS is an opinionated toolkit created by the author. This skill reflects personal styling preferences. Feel free to adapt to your needs."
+description: "PRIMARY SOURCE for PurgeTSS utility-first styling toolkit. Contains 21,236+ utility classes, grid system, animations, and CLI tools. CRITICAL: Never suggest Tailwind CSS classes - always verify in class-index.md first. Covers project setup, grid layouts, animations, $.UI.create() dynamic components, icon fonts, color palettes, config.cjs rules, arbitrary values, and platform modifiers. Auto-detects PurgeTSS projects. TRIGGER KEYWORDS: 'PurgeTSS', 'purgetss', 'purge tss', 'utility class', 'styling', 'TSS', 'style class', 'animation', 'icon font', 'grid', 'config.cjs', 'color palette', 'custom class', 'arbitrary value', 'platform modifier', '$.UI.create', 'Alloy.createStyle', 'tailwind.tss', 'app.tss', 'verify class', 'class exists', 'titanium', 'alloy', 'mobile', 'ImageView', 'ScrollView', 'ListView', 'Window', 'View', 'Button', 'Label', 'createButton', 'createLabel', 'createImageView', 'createView', 'createScrollView', 'createWindow', 'aspect fit', 'aspect fill', 'scalingMode', 'zoom', 'contentWidth', 'contentHeight', 'w-screen', 'h-screen', 'bg-', 'rounded-', 'm-', 'mx-', 'my-', 'classes', 'utility'."
 argument-hint: "[class-name]"
-allowed-tools: Read, Grep, Glob, Edit, Write, Bash(purgetss *)
+allowed-tools: Read, Grep, Glob, Edit, Write, Bash(purgetss *), Bash(node *)
 ---
 
 # PurgeTSS Expert
 
 Utility-first styling toolkit for Titanium/Alloy mobile apps.
 
+## Project Detection
+
+:::info AUTO-DETECTS PURGETSS PROJECTS
+This skill automatically detects PurgeTSS usage when invoked and provides utility-first styling guidance.
+
+**Detection occurs automatically** - no manual command needed.
+
+**PurgeTSS project indicators:**
+- `purgetss/` folder
+- `purgetss/config.cjs` configuration file
+- `purgetss/styles/tailwind.tss` utility classes
+- `app/styles/app.tss` (auto-generated)
+
+**Behavior based on detection:**
+- **PurgeTSS detected** → Provides PurgeTSS-specific guidance, recommends utility classes, suggests `$.UI.create()` for dynamic components
+- **Not detected** → Does NOT suggest PurgeTSS utility classes, does NOT recommend `$.UI.create()`, does NOT reference PurgeTSS-specific patterns
+:::
+
 ## Table of Contents
 
 - [PurgeTSS Expert](#purgetss-expert)
+  - [Project Detection](#project-detection)
   - [Table of Contents](#table-of-contents)
   - [Core Workflow](#core-workflow)
   - [Project Structure](#project-structure)
@@ -23,6 +42,7 @@ Utility-first styling toolkit for Titanium/Alloy mobile apps.
     - [⭐ PREFER `$.UI.create()` for Dynamic Components](#-prefer-uicreate-for-dynamic-components)
     - [🚨 NEVER Create Manual .tss Files](#-never-create-manual-tss-files)
     - [🚨 NO FLEXBOX - Titanium Doesn't Support It](#-no-flexbox---titanium-doesnt-support-it)
+    - [🚨 PLATFORM-SPECIFIC PROPERTIES REQUIRE MODIFIERS](#-platform-specific-properties-require-modifiers)
     - [Other Mandatory Rules](#other-mandatory-rules)
   - [Common Anti-Patterns](#common-anti-patterns)
   - [Class Verification Workflow](#class-verification-workflow)
@@ -178,6 +198,46 @@ The following are **NOT supported**:
 - ✅ Omit layout class - Defaults to `composite` (absolute positioning)
 :::
 
+### 🚨 PLATFORM-SPECIFIC PROPERTIES REQUIRE MODIFIERS
+
+:::danger CRITICAL: Platform-Specific Properties Require Modifiers
+Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties WITHOUT platform modifiers causes cross-platform compilation failures.
+
+**WRONG - Adds iOS code to Android (causes failure):**
+```tss
+// ❌ BAD - Adds Ti.UI.iOS to Android project
+"#mainWindow": {
+  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
+}
+```
+
+**CORRECT - Use platform modifiers in TSS:**
+```tss
+// ✅ GOOD - Only adds to iOS
+"#mainWindow[platform=ios]": {
+  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
+}
+```
+
+**OR use PurgeTSS platform modifier classes:**
+```xml
+<!-- ✅ GOOD - Platform-specific classes -->
+<Window class="ios:status-bar-light android:status-bar-dark">
+```
+
+**Properties that ALWAYS require platform modifiers:**
+- iOS: `statusBarStyle`, `modalStyle`, `modalTransitionStyle`, `systemButton`
+- Android: `actionBar` configuration
+- ANY `Ti.UI.iOS.*`, `Ti.UI.Android.*` constant
+
+**When suggesting platform-specific code:**
+1. Check if user's project supports that platform
+2. ALWAYS use `[platform=ios]` or `[platform=android]` TSS modifier
+3. OR use PurgeTSS platform classes like `ios:bg-blue-500`
+
+**For complete reference on platform modifiers, see** [Platform Modifiers](references/platform-modifiers.md).
+:::
+
 ### Other Mandatory Rules
 
 - **NO `p-` padding classes**: Titanium does NOT support a native `padding` property on `View`, `Window`, `ScrollView`, or `TableView`. Always use **margins on children** (`m-`) to simulate internal spacing.
@@ -302,6 +362,7 @@ Load these only when needed:
 - [Configurable Properties](references/configurable-properties.md) - All 80+ customizable properties
 
 ### Layout & Styling
+- **[UI/UX Design Patterns](references/ui-ux-design.md)** - Complete guide to mobile UI components with PurgeTSS (cards, lists, forms, buttons, navigation, modals, accessibility)
 - [Grid Layout System](references/grid-layout.md) - 12-column grid, responsive layouts
 - [Smart Mappings](references/smart-mappings.md) - How gap, shadows, and grid work under the hood
 - [Arbitrary Values](references/arbitrary-values.md) - Parentheses notation for custom values

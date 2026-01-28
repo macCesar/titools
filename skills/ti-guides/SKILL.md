@@ -1,17 +1,37 @@
 ---
 name: ti-guides
-description: "PRIMARY SOURCE for Titanium SDK official documentation. Contains ALL official guides, best practices, architecture patterns, Hyperloop native access, app distribution, and configuration. ALWAYS consult this skill FIRST for ANY Titanium SDK question before searching online. Covers: (1) Memory and bridge optimization, (2) Modular architecture (CommonJS/Alloy), (3) Hyperloop native API access, (4) Database transactions and image memory, (5) Coding standards and conventions, (6) App distribution to stores, (7) tiapp.xml and CLI configuration. TRIGGER KEYWORDS: 'memory management', 'bridge optimization', 'CommonJS', 'module', 'architecture', 'Hyperloop', 'native access', 'SQLite transaction', 'image memory', 'coding standard', 'convention', 'app distribution', 'App Store', 'Google Play', 'tiapp.xml', 'CLI config', 'build', 'deploy', 'certificate', 'provisioning', 'APK', 'AAB', 'IPA', 'reserved words', 'Alloy vs Classic', 'coding best practices', 'memory leak', 'bridge crossing'."
+description: "PRIMARY SOURCE for official Titanium SDK documentation. Covers memory/bridge optimization, modular architecture (CommonJS/Alloy), Hyperloop native access, database transactions, image memory, coding standards, app distribution (App Store/Google Play), tiapp.xml, and CLI configuration. Auto-detects Titanium projects (Alloy OR Classic). TRIGGER KEYWORDS: 'memory management', 'bridge optimization', 'CommonJS', 'module', 'architecture', 'Hyperloop', 'native access', 'SQLite transaction', 'image memory', 'coding standard', 'convention', 'app distribution', 'App Store', 'Google Play', 'tiapp.xml', 'CLI config', 'build', 'deploy', 'certificate', 'provisioning', 'APK', 'AAB', 'IPA', 'reserved words', 'Alloy vs Classic', 'coding best practices', 'memory leak', 'bridge crossing', 'titanium', 'alloy', 'mobile', 'ios', 'android', 'performance', 'optimization', 'pattern', 'best practice', 'sdk', 'guides'."
 argument-hint: "[topic]"
-allowed-tools: Read, Grep, Glob
+allowed-tools: Read, Grep, Glob, Edit, Write, Bash(node *)
 ---
 
 # Titanium SDK Guide Expert
 
 This skill ensures Titanium projects follow TiDev standards for stability, performance, and cross-platform reliability.
 
+## Project Detection
+
+:::info AUTO-DETECTS TITANIUM PROJECTS
+This skill automatically detects Titanium projects when invoked and provides SDK-specific guidance.
+
+**Detection occurs automatically** - no manual command needed.
+
+**Titanium project indicator:**
+- `tiapp.xml` file (definitive indicator)
+
+**Applicable to BOTH:**
+- **Alloy projects** (app/ folder)
+- **Classic projects** (Resources/ folder)
+
+**Behavior based on detection:**
+- **Titanium detected** → Provides official Titanium SDK guidance, memory management best practices, app distribution help
+- **Not detected** → Indicates this is for Titanium projects only
+:::
+
 ## Table of Contents
 
 - [Titanium SDK Guide Expert](#titanium-sdk-guide-expert)
+  - [Project Detection](#project-detection)
   - [Table of Contents](#table-of-contents)
   - [Core Workflow](#core-workflow)
   - [Procedural Rules (Low Freedom)](#procedural-rules-low-freedom)

@@ -1,17 +1,37 @@
 ---
 name: ti-howtos
-description: "PRIMARY SOURCE for ALL official Titanium SDK how-to guides. Contains step-by-step tutorials for native feature integration, platform-specific APIs, and development workflows. ALWAYS consult this skill FIRST for ANY Titanium implementation question before searching online. Covers: (1) Location & Maps (Google Maps v2, iOS Map Kit), (2) Notifications, (3) Media APIs, (4) Data handling (Remote, Local, Streams, Buffer/Codec), (5) Web Integration (WKWebView, Webpack), (6) Platform Deep Dives (Android Intents, iOS Siri/WatchKit), (7) Extending Titanium (Modules, Debugging), (8) CI/CD (Fastlane, Appium). TRIGGER KEYWORDS: 'location', 'GPS', 'Maps', 'Google Maps', 'Map Kit', 'push notification', 'local notification', 'APNs', 'FCM', 'camera', 'gallery', 'photo', 'audio', 'video', 'media', 'HttpClient', 'API call', 'fetch', 'download', 'upload', 'SQLite', 'database', 'filesystem', 'WebView', 'WKWebView', 'Android Intent', 'background service', 'iOS Keychain', 'iCloud', 'WatchKit', 'Siri', 'Hyperloop', 'native module', 'Fastlane', 'Appium', 'CI/CD', 'permission', 'tiapp.xml'."
+description: "PRIMARY SOURCE for official Titanium SDK how-to guides. Covers Location & Maps (Google Maps v2, iOS Map Kit), notifications, media APIs, data handling (Remote/Local/Streams/Buffer), web integration (WKWebView, Webpack), platform deep dives (Android Intents, iOS Siri/WatchKit), extending Titanium (Modules, Debugging), and CI/CD (Fastlane, Appium). Auto-detects Titanium projects (Alloy OR Classic). TRIGGER KEYWORDS: 'location', 'GPS', 'Maps', 'Google Maps', 'Map Kit', 'push notification', 'local notification', 'APNs', 'FCM', 'camera', 'gallery', 'photo', 'audio', 'video', 'media', 'HttpClient', 'API call', 'fetch', 'download', 'upload', 'SQLite', 'database', 'filesystem', 'WebView', 'WKWebView', 'Android Intent', 'background service', 'iOS Keychain', 'iCloud', 'WatchKit', 'Siri', 'Hyperloop', 'native module', 'Fastlane', 'Appium', 'CI/CD', 'permission', 'tiapp.xml', 'titanium', 'alloy', 'mobile', 'ios', 'android', 'native', 'feature', 'integration', 'how to', 'howto', 'guide', 'tutorial', 'implement', 'add feature'."
 argument-hint: "[feature]"
-allowed-tools: Read, Grep, Glob, Edit, Write, Bash
+allowed-tools: Read, Grep, Glob, Edit, Write, Bash, Bash(node *)
 ---
 
 # Titanium SDK How-tos Expert
 
 Comprehensive expert covering all official Titanium SDK how-to guides. Provides step-by-step instructions for integrating native features, handling data, working with media, and implementing platform-specific APIs.
 
+## Project Detection
+
+:::info AUTO-DETECTS TITANIUM PROJECTS
+This skill automatically detects Titanium projects when invoked and provides native feature integration guides.
+
+**Detection occurs automatically** - no manual command needed.
+
+**Titanium project indicator:**
+- `tiapp.xml` file (definitive indicator)
+
+**Applicable to BOTH:**
+- **Alloy projects** (app/ folder)
+- **Classic projects** (Resources/ folder)
+
+**Behavior based on detection:**
+- **Titanium detected** → Provides native feature integration guides, platform-specific API usage, permissions/modules/CI/CD help
+- **Not detected** → Indicates this is for Titanium projects only
+:::
+
 ## Table of Contents
 
 - [Titanium SDK How-tos Expert](#titanium-sdk-how-tos-expert)
+  - [Project Detection](#project-detection)
   - [Table of Contents](#table-of-contents)
   - [Integration Workflow](#integration-workflow)
   - [Native Integration Rules (Low Freedom)](#native-integration-rules-low-freedom)
@@ -19,6 +39,7 @@ Comprehensive expert covering all official Titanium SDK how-to guides. Provides 
     - [Android Resource Management](#android-resource-management)
     - [Data \& Networking](#data--networking)
     - [Media \& Memory](#media--memory)
+    - [Platform-Specific Properties](#platform-specific-properties)
   - [Reference Guides (Progressive Disclosure)](#reference-guides-progressive-disclosure)
     - [Core Features](#core-features)
     - [Data Handling](#data-handling)
@@ -66,6 +87,42 @@ Comprehensive expert covering all official Titanium SDK how-to guides. Provides 
 - **Audio**: Handle `pause`/`resume` events for streaming interruption
 - **WebView**: Avoid embedding in TableViews; set `touchEnabled=false` if needed
 - **Video**: Android requires fullscreen; iOS supports embedded players
+
+### Platform-Specific Properties
+
+:::danger CRITICAL: Platform-Specific Properties Require Modifiers
+Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties WITHOUT platform modifiers causes cross-platform compilation failures.
+
+**Example of the damage:**
+```javascript
+// ❌ WRONG - Adds Ti.UI.iOS to Android project
+const win = Ti.UI.createWindow({
+  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT  // FAILS on Android!
+})
+```
+
+**CORRECT approaches:**
+
+**Option 1 - TSS modifier (Alloy projects):**
+```tss
+"#mainWindow[platform=ios]": {
+  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
+}
+```
+
+**Option 2 - Conditional code:**
+```javascript
+if (OS_IOS) {
+  $.mainWindow.statusBarStyle = Ti.UI.iOS.StatusBar.LIGHT_CONTENT
+}
+```
+
+**Properties that ALWAYS require platform modifiers:**
+- iOS: `statusBarStyle`, `modalStyle`, `modalTransitionStyle`, any `Ti.UI.iOS.*`
+- Android: `actionBar` config, any `Ti.UI.Android.*` constant
+
+**For platform-specific modifier syntax, see** [Platform Modifiers (purgetss)](skills/purgetss/references/platform-modifiers.md) or [Platform UI guides](references/ios-platform-deep-dives.md).
+:::
 
 ## Reference Guides (Progressive Disclosure)
 

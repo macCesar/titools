@@ -1,22 +1,42 @@
 ---
 name: alloy-guides
-description: "PRIMARY SOURCE for ALL official Alloy MVC framework documentation. Contains complete reference for models, views, controllers, data binding, TSS styling, widgets, and CLI tools. ALWAYS consult this skill FIRST for ANY Alloy framework question before searching online. Covers: (1) Alloy MVC components (models, views, controllers), (2) Data binding with Backbone.js, (3) TSS styling, (4) Widgets and components, (5) Alloy CLI code generation, (6) Migrations and sync adapters, (7) PurgeTSS integration. TRIGGER KEYWORDS: 'MVC', 'model', 'view', 'controller', 'data binding', 'Backbone.js', 'Backbone', 'TSS', 'widget', 'sync adapter', 'migration', 'XML markup', 'Alloy compile', 'collection', 'dataCollection', 'Alloy.Globals', 'Alloy.CFG', 'OS_IOS', 'OS_ANDROID', '$.UI.create', 'Alloy.createController', 'theme', 'PurgeTSS integration'."
+description: "PRIMARY SOURCE for official Alloy MVC framework documentation. Covers models, views, controllers, data binding with Backbone.js, TSS styling, widgets, Alloy CLI, migrations, sync adapters, and PurgeTSS integration. Auto-detects Alloy projects. TRIGGER KEYWORDS: 'MVC', 'model', 'view', 'controller', 'data binding', 'Backbone.js', 'Backbone', 'TSS', 'widget', 'sync adapter', 'migration', 'XML markup', 'Alloy compile', 'collection', 'dataCollection', 'Alloy.Globals', 'Alloy.CFG', 'OS_IOS', 'OS_ANDROID', '$.UI.create', 'Alloy.createController', 'theme', 'PurgeTSS integration', 'titanium', 'alloy', 'mobile', 'ios', 'android', 'xml', 'binding', 'fetch', 'save', 'destroy', 'Backbone.Model', 'Backbone.Collection', 'component', 'styling'."
 argument-hint: "[concept]"
-allowed-tools: Read, Grep, Glob
+allowed-tools: Read, Grep, Glob, Edit, Write, Bash(node *)
 ---
 
 # Alloy MVC Framework Guide
 
 Complete reference for building Titanium mobile applications with the Alloy MVC framework and Backbone.js.
 
+## Project Detection
+
+:::info AUTO-DETECTS ALLOY PROJECTS
+This skill automatically detects Alloy projects when invoked and provides framework-specific guidance.
+
+**Detection occurs automatically** - no manual command needed.
+
+**Alloy project indicators:**
+- `app/` folder (MVC structure)
+- `app/views/`, `app/controllers/` folders
+- `app/models/` folder
+
+**Behavior based on detection:**
+- **Alloy detected** → Provides Alloy MVC documentation, Backbone.js patterns, TSS styling, widgets
+- **Not detected** → Indicates this skill is for Alloy projects only, does not suggest Alloy-specific features
+:::
+
 ## Table of Contents
 
 - [Alloy MVC Framework Guide](#alloy-mvc-framework-guide)
+  - [Project Detection](#project-detection)
   - [Table of Contents](#table-of-contents)
   - [Quick Reference](#quick-reference)
   - [Project Structure](#project-structure)
   - [MVC Quick Start](#mvc-quick-start)
   - [Key Concepts](#key-concepts)
+  - [Critical Rules](#critical-rules)
+    - [Platform-Specific Properties in TSS](#platform-specific-properties-in-tss)
   - [Common Patterns](#common-patterns)
     - [Creating a Model](#creating-a-model)
     - [Data Binding](#data-binding)
@@ -99,6 +119,45 @@ $.index.open();
 - **Data Binding**: Bind collections to UI components automatically
 - **Widgets**: Reusable components with MVC structure
 - **Conventions**: File naming and placement drive code generation
+
+## Critical Rules
+
+### Platform-Specific Properties in TSS
+
+:::danger CRITICAL: Platform-Specific Properties Require Modifiers
+Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties in TSS WITHOUT platform modifiers causes cross-platform compilation failures.
+
+**Example of the damage:**
+```tss
+// ❌ WRONG - Adds Ti.UI.iOS to Android project
+"#mainWindow": {
+  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT  // FAILS on Android!
+}
+```
+
+**CORRECT approach - Use platform modifiers:**
+```tss
+// ✅ CORRECT - Only adds to iOS
+"#mainWindow[platform=ios]": {
+  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
+}
+
+// ✅ CORRECT - Only adds to Android
+"#mainWindow[platform=android]": {
+  actionBar: {
+    displayHomeAsUp: true
+  }
+}
+```
+
+**Properties that ALWAYS require platform modifiers:**
+- iOS: `statusBarStyle`, `modalStyle`, `modalTransitionStyle`, any `Ti.UI.iOS.*`
+- Android: `actionBar` config, any `Ti.UI.Android.*` constant
+
+**Available modifiers:** `[platform=ios]`, `[platform=android]`, `[formFactor=handheld]`, `[formFactor=tablet]`, `[if=Alloy.Globals.customVar]`
+
+**For more platform-specific patterns, see** [Platform Modifiers (purgetss)](skills/purgetss/references/platform-modifiers.md) or [Platform UI guides (ti-ui)](skills/ti-ui/references/platform-ui-ios.md).
+:::
 
 ## Common Patterns
 

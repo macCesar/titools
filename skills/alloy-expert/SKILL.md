@@ -1,17 +1,41 @@
 ---
 name: alloy-expert
-description: "EXPERT-LEVEL Titanium SDK + Alloy architecture and implementation guidance following PurgeTSS standards. Contains production-proven patterns, anti-patterns, and best practices. ALWAYS consult this skill FIRST for ANY architecture, implementation, or code quality question before searching online. Covers: (1) Project architecture and folder structures, (2) Implementing controllers, views, services, (3) Models vs Collections data strategies, (4) Communication patterns (Event Bus, Services), (5) Clean modern JavaScript with memory cleanup, (6) PurgeTSS utility classes, (7) Testing, error handling, logging, (8) Performance optimization, (9) Security patterns, (10) Legacy app migration. TRIGGER KEYWORDS: 'architecture', 'folder structure', 'project structure', 'controller', 'view', 'model', 'collection', 'service', 'API', 'lib/', 'memory leak', 'cleanup', 'performance', 'security', 'pattern', 'best practice', 'convention', 'PurgeTSS', 'styling', 'Event Bus', 'Backbone.Events', 'navigation', 'repository', 'singleton', 'factory', 'migration', 'testing', 'error handling', 'logging'. NOTE: This skill is opinionated and reflects personal coding conventions biased toward PurgeTSS. Feel free to adapt patterns to your style."
+description: "EXPERT-LEVEL architecture and implementation guidance for Titanium Alloy. Covers project structure, controllers/views/services, models vs collections, communication patterns, PurgeTSS styling, memory cleanup, testing, performance, security, and migration. Auto-detects Alloy projects. For Classic projects, indicates incompatibility. TRIGGER KEYWORDS: 'architecture', 'folder structure', 'project structure', 'controller', 'view', 'model', 'collection', 'service', 'API', 'lib/', 'memory leak', 'cleanup', 'performance', 'security', 'pattern', 'best practice', 'convention', 'PurgeTSS', 'styling', 'Event Bus', 'Backbone.Events', 'navigation', 'repository', 'singleton', 'factory', 'migration', 'testing', 'error handling', 'logging', 'titanium', 'alloy', 'mobile', 'ios', 'android', 'app.js', 'alloy.js', 'Ti.UI.create', '$.UI.create', 'XML', 'TSS', 'widget', 'migrate', 'refactor', 'code quality'. NOTE: This skill reflects PurgeTSS-based conventions."
 argument-hint: "[architecture-topic]"
-allowed-tools: Read, Grep, Glob, Edit, Write, Bash(git *)
+allowed-tools: Read, Grep, Glob, Edit, Write, Bash(git *), Bash(node *)
 ---
 
 # Titanium Alloy Expert
 
 Complete architectural and implementation guidance for building scalable, maintainable Titanium Alloy applications with PurgeTSS styling.
 
+## Project Detection
+
+:::info AUTO-DETECTS ALLOY VS CLASSIC PROJECTS
+This skill automatically detects project type when invoked and provides appropriate guidance.
+
+**Detection occurs automatically** - no manual command needed.
+
+**Alloy project indicators:**
+- `app/` folder (MVC structure)
+- `app/views/`, `app/controllers/` folders
+- `alloy.jmk` or `config.json` files
+
+**Classic project indicators:**
+- `Resources/` folder with `app.js` at root
+- No `app/` folder structure
+
+**Behavior based on detection:**
+- **Alloy detected** → Provides Alloy-specific architecture patterns, MVC folder structure, Backbone.js patterns
+- **Classic detected** → Indicates incompatibility, does not suggest Alloy-specific patterns, recommends migration or Classic resources
+- **Unknown** → Asks user to clarify project type
+:::
+
 ## Table of Contents
 
 - [Titanium Alloy Expert](#titanium-alloy-expert)
+  - [MANDATORY INVOCATION](#mandatory-invocation)
+  - [Project Detection](#project-detection)
   - [Table of Contents](#table-of-contents)
   - [Workflow](#workflow)
   - [Quick Start Example](#quick-start-example)
@@ -106,6 +130,34 @@ exports.Navigation = {
 - **TESTABLE**: Inject dependencies, avoid hard coupling
 
 ## PurgeTSS Rules (Low Freedom)
+
+:::danger CRITICAL: Platform-Specific Properties Require Modifiers
+Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties WITHOUT platform modifiers causes cross-platform compilation failures.
+
+**Example of the damage:**
+```tss
+// ❌ WRONG - Adds Ti.UI.iOS to Android project
+"#mainWindow": {
+  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT  // FAILS on Android!
+}
+```
+
+**CORRECT - Always use platform modifiers:**
+```tss
+// ✅ CORRECT - Only adds to iOS
+"#mainWindow[platform=ios]": {
+  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
+}
+```
+
+**Properties that ALWAYS require platform modifiers:**
+- iOS: `statusBarStyle`, `modalStyle`, `modalTransitionStyle`, any `Ti.UI.iOS.*`
+- Android: `actionBar` configuration, any `Ti.UI.Android.*` constant
+
+**Available modifiers:** `[platform=ios]`, `[platform=android]`, `[formFactor=handheld]`, `[formFactor=tablet]`, `[if=Alloy.Globals.customVar]`
+
+**For more platform-specific patterns, see** [Platform Modifiers (purgetss)](skills/purgetss/references/platform-modifiers.md) or [Platform UI guides (ti-ui)](skills/ti-ui/references/platform-ui-ios.md).
+:::
 
 | WRONG                          | CORRECT             | Why                           |
 | ------------------------------ | ------------------- | ----------------------------- |
