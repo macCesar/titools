@@ -4,6 +4,26 @@ All notable changes to Titanium SDK Skills will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.6.0] - 2026-01-28
+
+### Changed
+- **Refactored skill descriptions** across all 7 skills (from ~100 to ~37 words each, -63% average)
+  - Removed explicit `TRIGGER KEYWORDS:` block (redundant - keywords integrated naturally)
+  - Removed shared generic keywords: `titanium`, `alloy`, `mobile`, `ios`, `android` (caused ambiguity)
+  - Removed component keywords: `ImageView`, `Button`, `Label`, etc. (not specific to single skill)
+  - Removed generic terms: `how to`, `guide`, `tutorial`, `implement` (redundant)
+  - Kept skill-specific keywords for better discrimination
+  - Descriptions now use natural language instead of keyword lists
+
+### Improved
+- **Auto-triggering precision**: Shorter, more specific descriptions reduce false positives
+- **Keyword discrimination**: Each skill now has unique, non-overlapping trigger terms
+- **Description clarity**: Natural language flows better than explicit keyword lists
+
+### Fixed
+- **Keyword pollution**: v1.5.0 added shared keywords to all skills, causing trigger ambiguity
+- **Missing keyword**: `analyze` was not in any skill (still not present - use specific terms like "architecture review" instead)
+
 ## [1.5.0] - 2026-01-28
 
 ### Changed
