@@ -679,7 +679,7 @@ ant dist
 ### Ti_slack Marketplace
 
 Search for existing modules at:
-- https://marketplace.appcelerator.com/
+- https://fromzerotoapp.com/modules/
 - https://github.com/search?q=titanium+module
 
 ### Popular Third-Party Modules

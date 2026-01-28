@@ -34,8 +34,8 @@ Guide for obtaining, installing, and using Titanium modules to extend app functi
 
 ### Sources of Modules
 
-**Official Appcelerator Modules:**
-- **Enterprise Extensions** - Available to paid subscribers
+**Official Modules:**
+- **Enterprise Extensions**
   - InAppBilling (Android)
   - StoreKit (iOS)
   - Barcode (iOS/Android)
@@ -50,9 +50,9 @@ Guide for obtaining, installing, and using Titanium modules to extend app functi
   - And many more
 
 **Community Modules:**
-- **gitTio** - Lists all Titanium modules on GitHub
-  - http://gitt.io/
-- Individual developer projects (check GitHub)
+- **From Zero To App** - Lists Titanium modules
+  - https://fromzerotoapp.com/modules/
+- Curated list of modules maintained by Michael Gangolf
 
 **Marketplace:**
 - Appcelerator Marketplace is no longer in use

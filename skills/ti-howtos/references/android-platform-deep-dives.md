@@ -154,7 +154,7 @@ const intent = Ti.Android.createIntent({
 ```javascript
 const intent = Ti.Android.createIntent({
   action: Ti.Android.ACTION_VIEW,
-  data: 'https://www.appcelerator.com'
+  data: 'https://titaniumsdk.com'
 });
 Ti.Android.currentActivity.startActivity(intent);
 ```

@@ -5,35 +5,35 @@ Complete reference for Titanium app configuration files. `tiapp.xml` is the main
 ## tiapp.xml Structure
 
 ```xml
-<ti:app xmlns:ti="http://ti.appcelerator.org">
-    <id>com.appcelerator.helloWorld</id>
-    <name>helloWorld</name>
-    <version>1.0.1</version>
-    <icon>appicon.png</icon>
-    <fullscreen>false</fullscreen>
-    <navbar-hidden>false</navbar-hidden>
-    <analytics>false</analytics>
-    <guid>GUID</guid>
+<ti:app xmlns:ti="http://ti.tidev.io">
+  <id>com.titaniumsdk.helloWorld</id>
+  <name>helloWorld</name>
+  <version>1.0.1</version>
+  <icon>appicon.png</icon>
+  <fullscreen>false</fullscreen>
+  <navbar-hidden>false</navbar-hidden>
+  <analytics>false</analytics>
+  <guid>GUID</guid>
   <ios>
-        <plist>
-            <dict>
-            <key>UISupportedInterfaceOrientations~iphone</key>
-                <array>
-              <string>Ti.UI.PORTRAIT</string>
-            </array>
-            <key>UISupportedInterfaceOrientations~ipad</key>
-                <array>
-              <string>Ti.UI.PORTRAIT</string>
-              <string>Ti.UI.UPSIDE_PORTRAIT</string>
-              <string>Ti.UI.LANDSCAPE_LEFT</string>
-              <string>Ti.UI.LANDSCAPE_RIGHT</string>
-            </array>
-            </dict>
-        </plist>
+    <plist>
+      <dict>
+        <key>UISupportedInterfaceOrientations~iphone</key>
+        <array>
+          <string>Ti.UI.PORTRAIT</string>
+        </array>
+        <key>UISupportedInterfaceOrientations~ipad</key>
+        <array>
+          <string>Ti.UI.PORTRAIT</string>
+          <string>Ti.UI.UPSIDE_PORTRAIT</string>
+          <string>Ti.UI.LANDSCAPE_LEFT</string>
+          <string>Ti.UI.LANDSCAPE_RIGHT</string>
+        </array>
+      </dict>
+    </plist>
   </ios>
   <android xmlns:android="http://schemas.android.com/apk/res/android">
-        <tool-api-level>10</tool-api-level>
-        <abi>all</abi>
+    <tool-api-level>10</tool-api-level>
+    <abi>all</abi>
   </android>
   <modules/>
 </ti:app>
@@ -364,7 +364,7 @@ Ad-hoc [AndroidManifest.xml](http://developer.android.com/guide/topics/manifest/
       <dict>
         <key>com.apple.security.application-groups</key>
         <array>
-          <string>group.com.appcelerator.mycoolapp</string>
+          <string>group.com.titaniumsdk.mycoolapp</string>
         </array>
       </dict>
     </entitlements>
@@ -399,7 +399,7 @@ Ad-hoc [AndroidManifest.xml](http://developer.android.com/guide/topics/manifest/
   <dict>
     <key>com.apple.security.application-groups</key>
     <array>
-      <string>group.com.appcelerator.mycoolapp</string>
+      <string>group.com.titaniumsdk.mycoolapp</string>
     </array>
   </dict>
 </entitlements>

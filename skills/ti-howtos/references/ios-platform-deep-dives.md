@@ -90,7 +90,7 @@ Create this file in `app/assets/iphone/` (Alloy) or `Resources/iphone/` (Classic
 ## 2. Background Services & Silent Push
 
 ### Overview
-iOS allows limited background execution. For large downloads, use the `com.appcelerator.urlSession` module.
+iOS allows limited background execution. For large downloads, use the `com.titaniumsdk.urlSession` module.
 
 ### Silent Push (Background Update)
 Allows waking up the app to download content without showing a notification to the user.

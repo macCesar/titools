@@ -48,7 +48,7 @@ Apple deprecated UIWebView. Titanium now uses WKWebView as the underlying implem
 #### Remote URL
 ```javascript
 const webview = Ti.UI.createWebView({
-  url: 'https://www.appcelerator.com'
+  url: 'https://titaniumsdk.com'
 });
 win.add(webview);
 win.open();

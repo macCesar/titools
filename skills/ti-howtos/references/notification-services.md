@@ -188,8 +188,8 @@ Ti.Android.NotificationManager.cancelAll();
 ```javascript
 const intent = Ti.Android.createIntent({
     action: Ti.Android.ACTION_MAIN,
-    className: 'com.appcelerator.testapp.MyappActivity',  // ProjectName + Activity
-    packageName: 'com.appcelerator.testapp'
+    className: 'com.titaniumsdk.testapp.MyappActivity',  // ProjectName + Activity
+    packageName: 'com.titaniumsdk.testapp'
 });
 intent.flags |= Ti.Android.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Ti.Android.FLAG_ACTIVITY_SINGLE_TOP;
 intent.addCategory(Ti.Android.CATEGORY_LAUNCHER);

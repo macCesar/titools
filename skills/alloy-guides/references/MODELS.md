@@ -19,7 +19,7 @@ For models, collections and sync adapters, these guides only provides informatio
 
 ### Models
 
-In Alloy, models inherit from the [Backbone.Model](http://docs.appcelerator.com/backbone/0.9.2/#Model) class. They contain the interactive data and logic used to control and access it. Models are specified with JavaScript files, which provide a table schema, adapter configuration and logic to extend the Backbone.Model class. Models are automatically defined and available in the controller scope as the name of the JavaScript file.
+In Alloy, models inherit from the [Backbone.Model](https://backbonejs.org/#Model-View-separation) class. They contain the interactive data and logic used to control and access it. Models are specified with JavaScript files, which provide a table schema, adapter configuration and logic to extend the Backbone.Model class. Models are automatically defined and available in the controller scope as the name of the JavaScript file.
 
 The JavaScript file exports a definition object comprised of three different objects. The first object, called `config`, defines the table schema and adapter information. The next two objects `extendModel` and `extendCollection` define functions to extend, override or implement the Backbone.Model and Backbone.Collection classes, respectively.
 
@@ -491,7 +491,7 @@ In Alloy, collection data can be synchronized to a view object, or a single mode
 
 #### Collection-View Binding
 
-To enable collection-view binding, create a global singleton or controller-specific collection using the [Collection tag](https://docs.appcelerator.com/platform/latest/#!/guide/Alloy_XML_Markup-section-35621525_AlloyXMLMarkup-CollectionElement) in the XML markup of the main view, then add the view object you want to bind data to. The following Titanium view objects support binding to a Collection:
+To enable collection-view binding, create a global singleton or controller-specific collection using the [Collection tag](https://titaniumsdk.com/guide/Alloy_Framework/Alloy_Guide/Alloy_Views/Alloy_XML_Markup.html#collection-element) in the XML markup of the main view, then add the view object you want to bind data to. The following Titanium view objects support binding to a Collection:
 
 | View Object    | Since Alloy version | Add data binding attributes to...              | Repeater Object to map model attributes to view properties                     |
 | -------------- | ------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------ |
@@ -602,7 +602,7 @@ The following example demonstrates how to add basic collection-view binding to a
 
 #### Model-View Binding
 
-To bind a single model to a component, create a global singleton or controller-specific model using the [Model tag](https://docs.appcelerator.com/platform/latest/#!/guide/Alloy_XML_Markup-section-35621525_AlloyXMLMarkup-ModelElement) in the XML markup of the main view and map the model attribute to the view component. To map the attribute to the view component, prefix the model name or id to the attribute, then enclose it with curly brackets or braces ('{' and '}').
+To bind a single model to a component, create a global singleton or controller-specific model using the [Model tag](https://titaniumsdk.com/guide/Alloy_Framework/Alloy_Guide/Alloy_Views/Alloy_XML_Markup.html#model-element) in the XML markup of the main view and map the model attribute to the view component. To map the attribute to the view component, prefix the model name or id to the attribute, then enclose it with curly brackets or braces ('{' and '}').
 
 To do complex transformations on the model attributes, extend the model prototype with a `transform()` function. It should return the modified model as a JSON object.
 
@@ -632,7 +632,7 @@ In Alloy, a sync adapter allows you to store and load your models to a persisten
 
 #### Backbone Sync
 
-Backbone syncs your models to persistent storage devices based on the implementation of the [Backbone.sync method](http://docs.appcelerator.com/backbone/0.9.2/#Sync). Since Backbone's primary use is for web applications, by default, the Backbone.sync method executes RESTful JSON requests to a URL specified by the Model.urlRoot or Collection.url attribute, when these classes are created.
+Backbone syncs your models to persistent storage devices based on the implementation of the [Backbone.sync method](https://titaniumsdk.com/guide/Alloy_Framework/Alloy_Guide/Alloy_Models/Alloy_Sync_Adapters_and_Migrations.html). Since Backbone's primary use is for web applications, by default, the Backbone.sync method executes RESTful JSON requests to a URL specified by the Model.urlRoot or Collection.url attribute, when these classes are created.
 
 The sync method depends on calls to other Backbone methods as described in the table below.
 
@@ -731,8 +731,6 @@ The sync adapter exports three functions:
 * `module.exports.afterModelCreate` (optional) - execute code after creating the Backbone.Model class. First passed parameter is the newly created Backbone.Model class. Second passed parameter is the name of the Alloy Model file.
 
 * `module.exports.sync` - implement the Backbone.sync method.
-
-For a sample of an adapter, refer to the [BookClient](https://github.com/appcelerator-developer-relations/BookClient) project which syncs with the [BookService](https://github.com/appcelerator-developer-relations/BookService) project.
 
 ### Migrations
 

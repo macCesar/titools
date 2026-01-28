@@ -123,7 +123,6 @@ See **`hyperloop-native-access.md`** for native module development:
 ### IDE Support
 
 - **[VS Code](https://code.visualstudio.com/)** - With Titanium extensions
-- **[Appcelerator Studio](https://titaniumsdk.com/studio)** - Official IDE (legacy)
 
 ### CLI Tools
 
@@ -149,8 +148,8 @@ See **`cli-reference.md`** for complete CLI documentation.
 
 ### Report Bugs
 
-- **[GitHub Issues](https://github.com/tidev/titanium-mobile/issues)** - Bug reports
-- **[JIRA](https://jira.appcelerator.org/)** - Legacy issue tracker (Appcelerator)
+- **[GitHub Issues](https://github.com/tidev/titanium-sdk/issues)** - Bug reports
+- **[JIRA Archive](https://github.com/tidev/jira-archive)** - Legacy issue tracker (Appcelerator)
 
 ### Contribute Code
 

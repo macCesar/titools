@@ -73,7 +73,7 @@ if (typeof _ === 'undefined') {
     var _ = require('alloy/underscore')._;
 }
 
-const loading = Alloy.createWidget("com.appcelerator.loading");
+const loading = Alloy.createWidget("com.titaniumsdk.loading");
 ```
 
 ### Global Events

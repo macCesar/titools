@@ -538,7 +538,6 @@ For continuous integration (CI/CD) pipelines, automated deployment, and function
 
 ## Resources
 
-- **Memory Management Lab** - [AppLeak sample project](https://github.com/appcelerator-developer-relations/appc-sample-app-leak)
 - **Video:** Your Apps are Leaking (Codestrong 2011)
-- **Android DDMS Docs** - https://developer.android.com/studio/profile/am
+- **Android DDMS Docs** - https://minimum-viable-product.github.io/marshmallow-docs/tools/debugging/ddms.html
 - **iOS Instruments Guide** - Apple Developer Documentation

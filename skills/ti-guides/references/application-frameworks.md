@@ -12,7 +12,7 @@ Framework options and architectural patterns for Titanium applications.
 
 ## Alloy Framework
 
-**Alloy** is the official MVC framework for Titanium, developed by Appcelerator (now TiDev).
+**Alloy** is the official MVC framework for Titanium, developed by TiDev.
 
 ### What is Alloy?
 

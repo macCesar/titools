@@ -500,4 +500,3 @@ See **Titanium_Boilerplates** folder for:
 - **RESTe:** https://github.com/jasonkneen/reste
 - **Fastlane:** https://fastlane.tools
 - **Alloy Framework:** See alloy-guides skill
-- **Sample Apps:** https://github.com/appcelerator-samples
