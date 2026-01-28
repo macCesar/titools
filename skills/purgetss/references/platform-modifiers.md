@@ -6,6 +6,7 @@ Platform and Device modifiers (also called variants or prefixes) allow you to sp
 
 - [Platform and Device Modifiers](#platform-and-device-modifiers)
   - [Table of Contents](#table-of-contents)
+  - [🚨 CRITICAL: Platform-Specific Properties Require Modifiers](#-critical-platform-specific-properties-require-modifiers)
   - [Available Modifiers](#available-modifiers)
     - [Platform Modifiers](#platform-modifiers)
     - [Device (Form Factor) Modifiers](#device-form-factor-modifiers)
@@ -46,6 +47,64 @@ Platform and Device modifiers (also called variants or prefixes) allow you to sp
   - [Complete Example](#complete-example)
 
 ---
+
+## 🚨 CRITICAL: Platform-Specific Properties Require Modifiers
+
+:::danger NEVER use platform-specific properties directly
+**Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties WITHOUT modifiers will:**
+
+1. **Add iOS code to Android builds** → compilation failures
+2. **Add Android code to iOS builds** → compilation failures
+3. **Create invalid cross-platform code**
+4. **Confuse developers** who don't understand the error
+
+**REAL EXAMPLE of the damage:**
+```javascript
+// ❌ WRONG - Adds Ti.UI.iOS to Android project
+"#mainWindow": {
+  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT  // FAILS on Android!
+}
+```
+
+**Error message:**
+```
+[ERROR] Ti.UI iOS is not defined
+```
+
+**CORRECT approaches:**
+
+**Option 1 - TSS modifier (RECOMMENDED for PurgeTSS):**
+```tss
+// ✅ CORRECT - Only adds to iOS
+"#mainWindow[platform=ios]": {
+  statusBarStyle: Ti.UI.iOS.StatusBar.LIST_VIEW_EDIT_ACTION_STYLE_NORMAL
+}
+```
+
+**Option 2 - Platform modifier classes:**
+```xml
+<!-- ✅ CORRECT -->
+<Window class="ios:status-bar-light android:status-bar-dark">
+```
+
+**Option 3 - Conditional controller logic:**
+```javascript
+if (OS_IOS) {
+  $.mainWindow.statusBarStyle = Ti.UI.iOS.StatusBar.LIGHT_CONTENT
+}
+```
+
+**Common platform-specific properties that REQUIRE modifiers:**
+- iOS: `statusBarStyle`, `modalStyle`, `modalTransitionStyle`, `systemButton`, any `Ti.UI.iOS.*`
+- Android: `actionBar` config, any `Ti.Android.*` constant
+
+**When suggesting platform-specific code, ALWAYS:**
+1. Check if user's project supports that platform
+2. Use `[platform=ios]` or `[platform=android]` TSS modifier
+3. OR use PurgeTSS platform classes: `ios:prop-*`, `android:prop-*`
+4. OR use conditional `OS_IOS` / `OS_ANDROID` checks in controllers
+
+:::
 
 ## Available Modifiers
 
