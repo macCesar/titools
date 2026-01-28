@@ -70,7 +70,7 @@ ls -la ~/.claude/skills/
 **Claude Code (agents):**
 ```bash
 ls -la ~/.claude/agents/
-# Should show: titanium-researcher.md
+# Should show: ti-researcher.md
 ```
 
 **Gemini CLI:**
@@ -105,13 +105,13 @@ gemini skills list
 
 In addition to skills, this repository includes **sub-agents** for Claude Code. Sub-agents run in isolated contexts and are ideal for research tasks that produce verbose output.
 
-### titanium-researcher
+### ti-researcher
 
 **Deep-dive research specialist that preloads all 7 titanium-\* skills.**
 
 | Aspect               | Details                                      |
 | -------------------- | -------------------------------------------- |
-| **Location**         | `~/.claude/agents/titanium-researcher.md`    |
+| **Location**         | `~/.claude/agents/ti-researcher.md`    |
 | **Model**            | Haiku (fast, efficient)                      |
 | **Tools**            | Read-only (Read, Grep, Glob)                 |
 | **Preloaded Skills** | All 7 titanium-\* skills injected at startup |
@@ -121,15 +121,15 @@ In addition to skills, this repository includes **sub-agents** for Claude Code. 
 | Use Case                     | Use This                           | Why                                                  |
 | ---------------------------- | ---------------------------------- | ---------------------------------------------------- |
 | Quick inline reference       | `/alloy-expert`, `/purgetss`, etc. | Runs in main conversation, interactive               |
-| Analyzing an entire codebase | `titanium-researcher` agent        | Isolates verbose output, cross-references all skills |
-| Multi-feature research       | `titanium-researcher` agent        | Preloads all skills for comprehensive answers        |
+| Analyzing an entire codebase | `ti-researcher` agent        | Isolates verbose output, cross-references all skills |
+| Multi-feature research       | `ti-researcher` agent        | Preloads all skills for comprehensive answers        |
 | Step-by-step implementation  | Skills directly                    | Task-oriented guidance                               |
-| Architecture review          | `titanium-researcher` agent        | Read-only analysis across all documentation          |
+| Architecture review          | `ti-researcher` agent        | Read-only analysis across all documentation          |
 
 **Example prompts for the agent:**
 
 ```
-"Use the titanium-researcher agent to analyze this codebase's architecture"
+"Use the ti-researcher agent to analyze this codebase's architecture"
 "Research how to implement location + push + background sync together"
 "Compare ListView vs TableView for my use case with PurgeTSS styling"
 "Review this Alloy app and identify anti-patterns"
@@ -453,7 +453,7 @@ Help me migrate it to modern Alloy with PurgeTSS."
 
 ### Codebase Analysis (Using Agent)
 ```
-"Use the titanium-researcher agent to analyze this project:
+"Use the ti-researcher agent to analyze this project:
 - Review the overall architecture
 - Identify memory leak patterns
 - Check for PurgeTSS anti-patterns
@@ -536,7 +536,7 @@ rm -rf ~/.gemini/skills/{alloy-expert,purgetss,ti-ui,ti-howtos,ti-guides,alloy-g
 rm -rf ~/.codex/skills/{alloy-expert,purgetss,ti-ui,ti-howtos,ti-guides,alloy-guides,alloy-howtos}
 
 # Remove agent from Claude Code
-rm -f ~/.claude/agents/titanium-researcher.md
+rm -f ~/.claude/agents/ti-researcher.md
 
 # Remove Titanium SDK skills from central directory (ONLY removes our skills)
 for skill in alloy-expert purgetss ti-ui ti-howtos ti-guides alloy-guides alloy-howtos; do
