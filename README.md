@@ -111,7 +111,7 @@ In addition to skills, this repository includes **sub-agents** for Claude Code. 
 
 | Aspect               | Details                                      |
 | -------------------- | -------------------------------------------- |
-| **Location**         | `~/.claude/agents/ti-researcher.md`    |
+| **Location**         | `~/.claude/agents/ti-researcher.md`          |
 | **Model**            | Haiku (fast, efficient)                      |
 | **Tools**            | Read-only (Read, Grep, Glob)                 |
 | **Preloaded Skills** | All 7 titanium-\* skills injected at startup |
@@ -121,10 +121,10 @@ In addition to skills, this repository includes **sub-agents** for Claude Code. 
 | Use Case                     | Use This                           | Why                                                  |
 | ---------------------------- | ---------------------------------- | ---------------------------------------------------- |
 | Quick inline reference       | `/alloy-expert`, `/purgetss`, etc. | Runs in main conversation, interactive               |
-| Analyzing an entire codebase | `ti-researcher` agent        | Isolates verbose output, cross-references all skills |
-| Multi-feature research       | `ti-researcher` agent        | Preloads all skills for comprehensive answers        |
+| Analyzing an entire codebase | `ti-researcher` agent              | Isolates verbose output, cross-references all skills |
+| Multi-feature research       | `ti-researcher` agent              | Preloads all skills for comprehensive answers        |
 | Step-by-step implementation  | Skills directly                    | Task-oriented guidance                               |
-| Architecture review          | `ti-researcher` agent        | Read-only analysis across all documentation          |
+| Architecture review          | `ti-researcher` agent              | Read-only analysis across all documentation          |
 
 **Example prompts for the agent:**
 
