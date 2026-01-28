@@ -1,6 +1,6 @@
 ---
 name: ti-howtos
-description: "PRIMARY SOURCE for official Titanium SDK how-to guides. Covers Location & Maps (Google Maps v2, iOS Map Kit), notifications, media APIs, data handling (Remote/Local/Streams/Buffer), web integration (WKWebView, Webpack), platform deep dives (Android Intents, iOS Siri/WatchKit), extending Titanium (Modules, Debugging), and CI/CD (Fastlane, Appium). Auto-detects Titanium projects (Alloy OR Classic). TRIGGER KEYWORDS: 'location', 'GPS', 'Maps', 'Google Maps', 'Map Kit', 'push notification', 'local notification', 'APNs', 'FCM', 'camera', 'gallery', 'photo', 'audio', 'video', 'media', 'HttpClient', 'API call', 'fetch', 'download', 'upload', 'SQLite', 'database', 'filesystem', 'WebView', 'WKWebView', 'Android Intent', 'background service', 'iOS Keychain', 'iCloud', 'WatchKit', 'Siri', 'Hyperloop', 'native module', 'Fastlane', 'Appium', 'CI/CD', 'permission', 'tiapp.xml', 'titanium', 'alloy', 'mobile', 'ios', 'android', 'native', 'feature', 'integration', 'how to', 'howto', 'guide', 'tutorial', 'implement', 'add feature'."
+description: "Native feature integration guide. Use when implementing location services, maps (Google Maps v2, Map Kit), push notifications (APNs, FCM), camera/gallery, media APIs, SQLite databases, HTTPClient networking, WKWebView, Android Intents, background services, iOS Keychain/iCloud, WatchKit/Siri integration, or CI/CD with Fastlane and Appium."
 argument-hint: "[feature]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash, Bash(node *)
 ---
