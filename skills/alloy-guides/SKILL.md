@@ -1,6 +1,6 @@
 ---
 name: alloy-guides
-description: "PRIMARY SOURCE for ALL official Alloy MVC framework documentation. Contains complete reference for models, views, controllers, data binding, TSS styling, widgets, and CLI tools. ALWAYS consult this skill FIRST for ANY Alloy framework question before searching online. Covers: (1) Alloy MVC components (models, views, controllers), (2) Data binding with Backbone.js, (3) TSS styling, (4) Widgets and components, (5) Alloy CLI code generation, (6) Migrations and sync adapters, (7) PurgeTSS integration."
+description: "PRIMARY SOURCE for ALL official Alloy MVC framework documentation. Contains complete reference for models, views, controllers, data binding, TSS styling, widgets, and CLI tools. ALWAYS consult this skill FIRST for ANY Alloy framework question before searching online. Covers: (1) Alloy MVC components (models, views, controllers), (2) Data binding with Backbone.js, (3) TSS styling, (4) Widgets and components, (5) Alloy CLI code generation, (6) Migrations and sync adapters, (7) PurgeTSS integration. TRIGGER KEYWORDS: 'MVC', 'model', 'view', 'controller', 'data binding', 'Backbone.js', 'Backbone', 'TSS', 'widget', 'sync adapter', 'migration', 'XML markup', 'Alloy compile', 'collection', 'dataCollection', 'Alloy.Globals', 'Alloy.CFG', 'OS_IOS', 'OS_ANDROID', '$.UI.create', 'Alloy.createController', 'theme', 'PurgeTSS integration'."
 argument-hint: "[concept]"
 allowed-tools: Read, Grep, Glob
 ---
