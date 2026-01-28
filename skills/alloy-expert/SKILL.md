@@ -1,6 +1,6 @@
 ---
 name: alloy-expert
-description: "EXPERT-LEVEL architecture and implementation guidance for Titanium Alloy. Covers project structure, controllers/views/services, models vs collections, communication patterns, PurgeTSS styling, memory cleanup, testing, performance, security, and migration. Auto-detects Alloy projects. For Classic projects, indicates incompatibility. TRIGGER KEYWORDS: 'architecture', 'folder structure', 'project structure', 'controller', 'view', 'model', 'collection', 'service', 'API', 'lib/', 'memory leak', 'cleanup', 'performance', 'security', 'pattern', 'best practice', 'convention', 'PurgeTSS', 'styling', 'Event Bus', 'Backbone.Events', 'navigation', 'repository', 'singleton', 'factory', 'migration', 'testing', 'error handling', 'logging', 'titanium', 'alloy', 'mobile', 'ios', 'android', 'app.js', 'alloy.js', 'Ti.UI.create', '$.UI.create', 'XML', 'TSS', 'widget', 'migrate', 'refactor', 'code quality'. NOTE: This skill reflects PurgeTSS-based conventions."
+description: "Architecture and implementation patterns for Alloy projects. Use when designing project structure, creating controllers/views/services, choosing models vs collections, implementing communication patterns, handling memory cleanup, testing, or migrating legacy apps. Detects Alloy vs Classic projects automatically."
 argument-hint: "[architecture-topic]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(git *), Bash(node *)
 ---
@@ -34,7 +34,6 @@ This skill automatically detects project type when invoked and provides appropri
 ## Table of Contents
 
 - [Titanium Alloy Expert](#titanium-alloy-expert)
-  - [MANDATORY INVOCATION](#mandatory-invocation)
   - [Project Detection](#project-detection)
   - [Table of Contents](#table-of-contents)
   - [Workflow](#workflow)

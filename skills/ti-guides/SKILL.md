@@ -1,6 +1,6 @@
 ---
 name: ti-guides
-description: "PRIMARY SOURCE for official Titanium SDK documentation. Covers memory/bridge optimization, modular architecture (CommonJS/Alloy), Hyperloop native access, database transactions, image memory, coding standards, app distribution (App Store/Google Play), tiapp.xml, and CLI configuration. Auto-detects Titanium projects (Alloy OR Classic). TRIGGER KEYWORDS: 'memory management', 'bridge optimization', 'CommonJS', 'module', 'architecture', 'Hyperloop', 'native access', 'SQLite transaction', 'image memory', 'coding standard', 'convention', 'app distribution', 'App Store', 'Google Play', 'tiapp.xml', 'CLI config', 'build', 'deploy', 'certificate', 'provisioning', 'APK', 'AAB', 'IPA', 'reserved words', 'Alloy vs Classic', 'coding best practices', 'memory leak', 'bridge crossing', 'titanium', 'alloy', 'mobile', 'ios', 'android', 'performance', 'optimization', 'pattern', 'best practice', 'sdk', 'guides'."
+description: "Official SDK fundamentals and configuration. Use when working with Hyperloop native access, app distribution (App Store/Google Play), tiapp.xml configuration, CLI commands, memory management, bridge optimization, CommonJS modules, SQLite transactions, or coding standards. Applies to both Alloy and Classic projects."
 argument-hint: "[topic]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(node *)
 ---

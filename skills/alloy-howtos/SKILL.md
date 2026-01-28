@@ -1,6 +1,6 @@
 ---
 name: alloy-howtos
-description: "PRIMARY SOURCE for official Alloy how-to guides. Covers creating/configuring projects, Alloy CLI commands (new, generate, compile), alloy.jmk/config.json/widget.json configuration, debugging compilation/runtime errors, conditional views, data-binding, best practices, Backbone.Events communication, and custom XML tags. Auto-detects Alloy projects. TRIGGER KEYWORDS: 'create new alloy app', 'alloy new', 'alloy generate', 'alloy compile', 'setup project', 'project structure', 'CLI command', 'generate controller', 'generate model', 'compile error', 'alloy.jmk', 'config.json', 'widget.json', 'custom tag', 'conditional view', 'Backbone.Events', 'Ti.App.fireEvent', 'debugging alloy', 'alloy error', 'naming convention', 'best practice', 'titanium', 'alloy', 'mobile', 'ios', 'android', 'setup', 'install', 'configure', 'troubleshoot', 'debug', 'error', 'how to', 'howto', 'guide', 'tutorial'."
+description: "Alloy CLI and configuration guide. Use when creating projects, running alloy commands (new, generate, compile), configuring alloy.jmk or config.json, debugging compilation errors, creating conditional views, using Backbone.Events for communication, or writing custom XML tags."
 argument-hint: "[task]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(alloy *), Bash(node *)
 ---
