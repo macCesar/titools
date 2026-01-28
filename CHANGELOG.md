@@ -4,6 +4,20 @@ All notable changes to Titanium SDK Skills will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.1.0] - 2025-01-27
+
+### Added
+- **alloy-expert**: "How to create a new Alloy project?" entry to Quick Decision Matrix
+- **ti-guides**: `--alloy` flag documentation to `ti create` command reference
+- **alloy-guides**: New "Creating a New Application" section recommending `ti create --alloy`
+
+### Changed
+- **Project creation documentation**: Now recommends `ti create --alloy` instead of `--classic` + `alloy new` pattern
+- **URL updates**: Migrated docs.appcelerator.com links to titaniumsdk.com
+- **Namespace updates**: Changed `com.appcelerator.*` examples to `com.titaniumsdk.*`
+- **Repository links**: Updated to tidev organization (current Titanium SDK maintainers)
+- **Removed legacy references**: Removed Appcelerator Studio IDE reference
+
 ## [1.1.0] - 2025-01-26
 
 ### Added
