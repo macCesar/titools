@@ -4,6 +4,23 @@ All notable changes to Titanium SDK Skills will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.3.0] - 2025-01-28
+
+### Added
+- **TRIGGER KEYWORDS** to all 7 skills and ti-researcher agent for improved AI discoverability
+  - Explicit trigger phrases in YAML `description` field help match user queries to skills
+  - Keywords based on skill-creator best practices for cross-platform compatibility
+- **ti-researcher**: Added trigger keywords for codebase analysis and research scenarios
+
+### Changed
+- **All skills**: Removed HTML comment trigger sections (only YAML description is used for matching)
+  - Per skill-creator guidance: body content only loads AFTER skill triggers
+  - Trigger keywords now centralized in YAML `description` field
+- **Skill discoverability**: Enhanced with explicit user intent patterns (create, setup, debug, style, etc.)
+
+### Removed
+- **skills/TRIGGER-PATTERNS.md**: Redundant reference file (triggers now in each skill's description)
+
 ## [1.2.0] - 2025-01-28
 
 ### Added
