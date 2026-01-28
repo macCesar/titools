@@ -1,6 +1,6 @@
 ---
 name: ti-ui
-description: "UI/UX patterns and components. Use when working with layouts, ListView/TableView performance optimization, event handling and bubbling, gestures (swipe, pinch), animations, accessibility (VoiceOver/TalkBack), orientation changes, custom fonts/icons, app icons/splash screens, or platform-specific UI (Action Bar, Navigation Bar)."
+description: "Titanium SDK UI/UX patterns and components expert. Use when working with, reviewing, analyzing, or examining Titanium layouts, ListView/TableView performance optimization, event handling and bubbling, gestures (swipe, pinch), animations, accessibility (VoiceOver/TalkBack), orientation changes, custom fonts/icons, app icons/splash screens, or platform-specific UI (Action Bar, Navigation Bar)."
 argument-hint: "[component]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(node *)
 ---

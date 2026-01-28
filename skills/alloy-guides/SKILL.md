@@ -1,6 +1,6 @@
 ---
 name: alloy-guides
-description: "Official Alloy MVC framework reference. Use when working with models, views, controllers, Backbone.js data binding, TSS styling, widgets, Alloy CLI, sync adapters, migrations, or MVC compilation. Explains how Backbone.js models and collections work in Alloy."
+description: "Titanium Alloy MVC official framework reference. Use when working with, reviewing, analyzing, or examining Alloy models, views, controllers, Backbone.js data binding, TSS styling, widgets, Alloy CLI, sync adapters, migrations, or MVC compilation. Explains how Backbone.js models and collections work in Alloy."
 argument-hint: "[concept]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(node *)
 ---

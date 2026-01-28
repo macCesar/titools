@@ -1,6 +1,6 @@
 ---
 name: alloy-expert
-description: "Architecture and implementation patterns for Alloy projects. Use when designing project structure, creating controllers/views/services, choosing models vs collections, implementing communication patterns, handling memory cleanup, testing, or migrating legacy apps. Detects Alloy vs Classic projects automatically."
+description: "Titanium Alloy architecture and implementation expert. Use when designing, reviewing, analyzing, or examining Alloy project structure, creating controllers/views/services, choosing models vs collections, implementing communication patterns, handling memory cleanup, testing, auditing code, or migrating legacy apps. Detects Alloy vs Classic projects automatically."
 argument-hint: "[architecture-topic]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(git *), Bash(node *)
 ---

@@ -1,6 +1,6 @@
 ---
 name: alloy-howtos
-description: "Alloy CLI and configuration guide. Use when creating projects, running alloy commands (new, generate, compile), configuring alloy.jmk or config.json, debugging compilation errors, creating conditional views, using Backbone.Events for communication, or writing custom XML tags."
+description: "Titanium Alloy CLI and configuration guide. Use when creating, reviewing, analyzing, or examining Alloy projects, running alloy commands (new, generate, compile), configuring alloy.jmk or config.json, debugging compilation errors, creating conditional views, using Backbone.Events for communication, or writing custom XML tags."
 argument-hint: "[task]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(alloy *), Bash(node *)
 ---

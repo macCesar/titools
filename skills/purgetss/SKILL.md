@@ -1,6 +1,6 @@
 ---
 name: purgetss
-description: "PurgeTSS utility-first styling toolkit. Use when styling UI with utility classes, configuring config.cjs, creating dynamic components with $.UI.create(), building animations, using grid layouts, setting up icon fonts, or working with TSS styles. Never suggest Tailwind CSS classes - verify in class-index.md first."
+description: "Titanium PurgeTSS utility-first styling toolkit. Use when styling, reviewing, analyzing, or examining Titanium UI with utility classes, configuring config.cjs, creating dynamic components with $.UI.create(), building animations, using grid layouts, setting up icon fonts, or working with TSS styles. Never suggest Tailwind CSS classes - verify in class-index.md first."
 argument-hint: "[class-name]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(purgetss *), Bash(node *)
 ---
