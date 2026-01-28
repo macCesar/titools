@@ -151,10 +151,35 @@ Skills are **automatically activated** based on your questions. Just ask natural
 
 The AI will automatically use:
 - `alloy-expert` → Architecture and controller structure
-- `purgetss` → Styling classes and animations
+- `purgetss` → Styling classes and animations (if PurgeTSS detected)
 - `ti-howtos` → Secure token storage
 
 **You don't need to call skills explicitly** - the AI reads skill descriptions and loads the appropriate knowledge when needed.
+
+### Project Detection
+
+All skills now include **automatic project detection** to ensure compatibility:
+
+| Skill            | What It Detects       | How It Works                                                  |
+| ---------------- | --------------------- | ------------------------------------------------------------- |
+| **purgetss**     | PurgeTSS installation | Checks for `purgetss/` folder, `config.cjs`, `tailwind.tss`   |
+| **alloy-expert** | Alloy vs Classic      | Checks for `app/` (Alloy) vs `Resources/` (Classic) structure |
+| **alloy-guides** | Alloy projects        | Checks for `app/views/`, `app/controllers/`                   |
+| **alloy-howtos** | Alloy projects        | Checks for `alloy.jmk`, `config.json`                         |
+| **ti-ui**        | Titanium projects     | Checks for `tiapp.xml` (both Alloy & Classic)                 |
+| **ti-guides**    | Titanium projects     | Checks for `tiapp.xml` (both Alloy & Classic)                 |
+| **ti-howtos**    | Titanium projects     | Checks for `tiapp.xml` (both Alloy & Classic)                 |
+
+**Why this matters:**
+- PurgeTSS suggestions are **only provided** if PurgeTSS is installed
+- Alloy-specific patterns are **only suggested** for Alloy projects
+- Classic Titanium projects won't receive inappropriate Alloy advice
+
+You can manually run detection:
+```bash
+node ~/.agents/skills/purgetss/assets/detect.js
+node ~/.agents/skills/alloy-expert/assets/detect.js
+```
 
 ### Skill Hierarchy
 
@@ -244,6 +269,7 @@ The AI will automatically use:
 ```
 
 **Critical rules:**
+- **Platform-specific properties REQUIRE modifiers** (e.g., `[platform=ios]`) to prevent cross-platform build failures
 - NO flexbox (`flex-row`, `justify-between`) → use `horizontal`/`vertical`
 - NO `w-full` → use `w-screen`
 - NO `p-*` on Views → use `m-*` on children
@@ -509,6 +535,22 @@ If the AI doesn't seem to use Titanium knowledge:
 1. Mention "Titanium" or "Alloy" explicitly in your prompt
 2. Be more specific about what you're building
 3. Reference the technology stack
+4. Try explicit invocation: "Use the purgetss skill for styling questions"
+
+### Getting Wrong Suggestions?
+
+If the AI suggests patterns you don't use (e.g., PurgeTSS when you're not using it):
+1. The skill may not have detected your project type correctly
+2. Run detection manually: `node ~/.agents/skills/[skill-name]/assets/detect.js`
+3. Reinstall skills after project structure changes
+4. Explicitly mention your stack: "I'm using Classic Titanium, not Alloy"
+
+### PurgeTSS Not Detected?
+
+If the purgetss skill doesn't activate for your PurgeTSS project:
+1. Verify `purgetss/` folder exists in project root
+2. Check that `purgetss/config.cjs` exists
+3. Run: `node ~/.agents/skills/purgetss/assets/detect.js` in your project directory
 
 ### Wrong Advice?
 

@@ -4,6 +4,68 @@ All notable changes to Titanium SDK Skills will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.5.0] - 2026-01-28
+
+### Changed
+- **Shortened frontmatter descriptions** across all 7 skills (from ~400 to ~60 words each)
+  - Improves auto-triggering precision by reducing metadata noise
+  - Detailed coverage info moved to SKILL.md body for better progressive disclosure
+  - All TRIGGER KEYWORDS preserved for discoverability
+- **Removed MANDATORY INVOCATION sections** from all 7 skills
+  - Confidence in TRIGGER KEYWORDS for reliable auto-triggering
+  - Eliminates tension between "mandatory" and "automatic" invocation
+  - Reduces SKILL.md size and context usage
+- **Standardized platform-specific property warnings** across all 5 affected skills
+  - Consistent format and structure for critical warnings
+  - Added cross-references to related skills for expanded content
+  - Maintains warnings in each skill for independence (no shared dependencies)
+- **Improved project detection documentation** across all 7 skills
+  - Clarified that detection is automatic (no manual command needed)
+  - Documented behavior based on detection results
+  - Better explanation of what happens when project type is detected/not detected
+
+### Improved
+- **Auto-triggering accuracy**: Shorter descriptions = more precise matching
+- **Consistency**: Standardized warning format across skills
+- **Clarity**: Detect.js integration now clearly explained as automatic
+- **Best practices**: Changes follow skill-creator guidelines for optimal skill design
+
+## [1.4.0] - 2025-01-28
+
+### Added
+- **CRITICAL Platform-Specific Property Warnings**: Added comprehensive warnings across all skills about using platform modifiers
+  - `purgetss/SKILL.md`: Added "PLATFORM-SPECIFIC PROPERTIES REQUIRE MODIFIERS" critical section
+  - `purgetss/references/platform-modifiers.md`: Added "🚨 CRITICAL" warning at top of file
+  - `ti-ui/SKILL.md`: Added "Platform-Specific Properties" to Critical Rules section
+  - `ti-ui/references/layouts-and-positioning.md`: Added "🚨 CRITICAL" warning at top of file
+  - `alloy-guides/SKILL.md`: Added new "Critical Rules" section with platform-specific property warnings
+  - `alloy-guides/references/VIEWS_STYLES.md`: Added critical warning in Platform-Specific Styles section
+  - `ti-howtos/SKILL.md`: Added "Platform-Specific Properties" to Native Integration Rules section
+  - Warnings explain the Michael Gangolf issue: iOS code added to Android build causing failures
+  - Shows WRONG vs CORRECT patterns for all affected properties
+- **Project Detection System**: All 7 skills now auto-detect project type before providing guidance
+  - `purgetss`: Detects if project uses PurgeTSS (checks for `purgetss/` folder, `config.cjs`, `tailwind.tss`)
+  - `alloy-*` skills: Detects Alloy vs Classic projects (checks for `app/` vs `Resources/` structure)
+  - `ti-*` skills: Detects Titanium projects (checks for `tiapp.xml`)
+- **Detection scripts**: `assets/detect.js` for each skill with CLI usage (`node skills/[name]/assets/detect.js`)
+- **MANDATORY INVOCATION section** to all skills with explicit invocation instructions
+- **Project Detection section** to all skills explaining auto-detection behavior
+- **AUTO-DETECTION** notation to all skill descriptions for transparency
+- **Expanded TRIGGER KEYWORDS**: Added common Titanium/Alloy terms (`titanium`, `alloy`, `mobile`, `ios`, `android`, `ImageView`, `ScrollView`, `ListView`, `Window`, `View`, `Button`, `Label`, `createButton`, `createLabel`, `createImageView`, `createView`, `createScrollView`, `createWindow`, `aspect fit`, `aspect fill`, `scalingMode`, `zoom`, `contentWidth`, `contentHeight`, `w-screen`, `h-screen`, `bg-`, `rounded-`, `m-`, `mx-`, `my-`, `classes`, `utility`)
+- **Bash(node *)** to all skills' `allowed-tools` for detection script execution
+- **Edit, Write** to `alloy-guides`, `alloy-howtos`, `ti-ui`, `ti-guides` (previously read-only)
+
+### Changed
+- **Skills now verify project compatibility** before suggesting patterns
+- **PurgeTSS skill**: Only suggests PurgeTSS classes when detected in project
+- **Alloy skills**: Only provides Alloy-specific guidance when Alloy structure detected
+- **Improved discoverability**: More trigger keywords mean skills activate more reliably
+- **All skills now capable of applying changes** (not just suggestions)
+
+### Fixed
+- **Inconsistent tool permissions**: Some skills could only suggest changes, now all can apply changes
+- **Classic Titanium projects**: Alloy skills now indicate incompatibility instead of suggesting wrong patterns
+
 ## [1.3.0] - 2025-01-28
 
 ### Added
