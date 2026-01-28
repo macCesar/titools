@@ -177,12 +177,6 @@ All skills now include **automatic project detection** to ensure compatibility:
 - Alloy-specific patterns are **only suggested** for Alloy projects
 - Classic Titanium projects won't receive inappropriate Alloy advice
 
-You can manually run detection:
-```bash
-node ~/.agents/skills/purgetss/assets/detect.js
-node ~/.agents/skills/alloy-expert/assets/detect.js
-```
-
 ### Skill Hierarchy
 
 `alloy-expert` acts as the **orchestrator**, delegating to specialized skills when needed:
@@ -543,16 +537,15 @@ If the AI doesn't seem to use Titanium knowledge:
 
 If the AI suggests patterns you don't use (e.g., PurgeTSS when you're not using it):
 1. The skill may not have detected your project type correctly
-2. Run detection manually: `node ~/.agents/skills/[skill-name]/assets/detect.js`
-3. Reinstall skills after project structure changes
-4. Explicitly mention your stack: "I'm using Classic Titanium, not Alloy"
+2. Explicitly mention your stack: "I'm using Classic Titanium, not Alloy"
+3. Be more specific about what you're building
 
 ### PurgeTSS Not Detected?
 
 If the purgetss skill doesn't activate for your PurgeTSS project:
 1. Verify `purgetss/` folder exists in project root
 2. Check that `purgetss/config.cjs` exists
-3. Run: `node ~/.agents/skills/purgetss/assets/detect.js` in your project directory
+3. Mention "PurgeTSS" explicitly in your prompt
 
 ### Wrong Advice?
 
