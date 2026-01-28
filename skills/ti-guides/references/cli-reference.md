@@ -56,22 +56,31 @@ ti build -p ios --config-file "/Users/me/customConfig.json"
 
 ### Create Project
 
+**For Alloy projects (recommended):**
+```bash
+ti create -t app --alloy --id <APP_ID> -n <APP_NAME> -p <PLATFORMS> -d <WORKSPACE> -u <URL>
+```
+
+**Example (Alloy):**
+```bash
+ti create -t app --alloy --id com.titaniumsdk.sample -n SampleProject -p android,ios -d ~/Documents/workspace -u https://titaniumsdk.com
+```
+
+**For Classic Titanium projects:**
 ```bash
 ti create -t app --id <APP_ID> -n <APP_NAME> -p <PLATFORMS> -d <WORKSPACE> -u <URL>
 ```
 
-**Example:**
-```bash
-ti create -t app --id com.appcelerator.sample -n SampleProject -p android,ios -d ~/Documents/workspace -u https://titaniumsdk.com
-```
-
 **Parameters:**
+- `--alloy`: Create an Alloy project (recommended for new projects)
 - `-t, --type`: Project type (`app`)
 - `--id`: App ID (reverse domain notation)
 - `-n, --name`: App name
 - `-p, --platforms`: Comma-separated platforms (`android`, `ios`, `ipad`, `iphone`)
 - `-d, --dir`: Workspace directory
 - `-u, --url`: App URL
+
+> **Note:** Always use the `--alloy` flag when creating new projects. The Alloy framework provides MVC structure, data binding, and modern development patterns. Use Classic (`--classic` or omitting `--alloy`) only when maintaining legacy projects.
 
 ### Build Project
 
@@ -388,6 +397,6 @@ adb devices
 
 ## References
 
-- [Titanium CLI GitHub](https://github.com/appcelerator/titanium-cli)
+- [Titanium CLI GitHub](https://github.com/tidev/titanium-cli)
 - [Android SDK Manager](http://developer.android.com/sdk)
-- [Xcode Downloads](https://developer.apple.com/xcode/downloads/)
+- [Xcode Downloads](https://apps.apple.com/us/app/xcode/id497799835?mt=12/)

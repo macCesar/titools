@@ -121,16 +121,17 @@ exports.Navigation = {
 
 ## Quick Decision Matrix
 
-| Question                      | Answer                                                  |
-| ----------------------------- | ------------------------------------------------------- |
-| Where does API call go?       | `lib/api/`                                              |
-| Where does business logic go? | `lib/services/`                                         |
-| Where do I store auth tokens? | Keychain (iOS) / KeyStore (Android) via service         |
-| Models or Collections?        | Collections for API data, Models for SQLite persistence |
-| Ti.App.fireEvent or EventBus? | **Always EventBus** (Backbone.Events)                   |
-| Direct navigation or service? | **Always Navigation service** (auto cleanup)            |
-| Manual TSS or PurgeTSS?       | **Always PurgeTSS utility classes**                     |
-| Controller 100+ lines?        | Extract logic to services                               |
+| Question                           | Answer                                                         |
+| ---------------------------------- | -------------------------------------------------------------- |
+| How to create a new Alloy project? | **`ti create -t app --alloy`** (not `--classic` + `alloy new`) |
+| Where does API call go?            | `lib/api/`                                                     |
+| Where does business logic go?      | `lib/services/`                                                |
+| Where do I store auth tokens?      | Keychain (iOS) / KeyStore (Android) via service                |
+| Models or Collections?             | Collections for API data, Models for SQLite persistence        |
+| Ti.App.fireEvent or EventBus?      | **Always EventBus** (Backbone.Events)                          |
+| Direct navigation or service?      | **Always Navigation service** (auto cleanup)                   |
+| Manual TSS or PurgeTSS?            | **Always PurgeTSS utility classes**                            |
+| Controller 100+ lines?             | Extract logic to services                                      |
 
 ## Reference Guides (Progressive Disclosure)
 

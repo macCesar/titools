@@ -22,20 +22,29 @@
 
 ## Creating a New Application
 
-To create an Alloy application, run the following command from your workspace directory:
+> **Recommended:** Use `ti create --alloy` to create a new Alloy project in one step.
 
+```bash
+ti create -t app --alloy --id com.example.myapp -n MyApp -p android,ios
+```
+
+This creates a complete Alloy project structure with the `app` folder containing controllers, views, styles, models, and migrations.
+
+**Alternative (interactive):**
 ```bash
 ti create
 ```
 
-You will be prompted to enter an application name and application ID.
+You will be prompted to enter an application name and application ID. When prompted for project type, select **Alloy**.
 
+**Legacy method (not recommended):**
 ```bash
+ti create
 cd PROJECTDIRECTORY
 alloy new
 ```
 
-A new skeleton Alloy project will be generated. A new Alloy project has a folder named `app` that contains the skeleton Alloy application.
+This two-step approach is discouraged in favor of using `--alloy` directly.
 
 ## Creating a New Application Using a Test Application
 
