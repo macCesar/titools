@@ -1,6 +1,6 @@
 ---
 name: ti-researcher
-description: Deep-dive research specialist for Titanium SDK and Alloy that preloads all 7 titanium-* skills. Use proactively when analyzing codebases, researching implementations, or exploring architectural questions. Cross-references all titanium-* skills to provide comprehensive answers with specific file/line references.
+description: Titanium SDK and Alloy research specialist. Preloads all 7 titanium-* skills for comprehensive analysis. Use proactively for: analyzing Titanium/Alloy codebases, reviewing Alloy app architecture, researching Titanium SDK implementations, exploring mobile app architectural questions, multi-feature research across Titanium APIs, cross-referencing framework patterns, or investigating platform-specific Titanium differences. Returns findings with specific file/line references from all documentation.
 skills:
   - alloy-expert
   - alloy-guides
@@ -95,12 +95,14 @@ You **cannot** modify files. If the user asks for changes, provide the research 
 ## Usage Examples
 
 **Automatic activation (proactive):**
-- "Analyze this Alloy codebase and identify architectural anti-patterns"
-- "Research the best way to implement location services in this Titanium project"
-- "Do a comprehensive analysis of the UI patterns used in this app"
-- "Explore the architecture of this project and identify areas for improvement"
+- "Analyze this **Titanium Alloy** codebase and identify architectural anti-patterns"
+- "Research the best way to implement location services in this **Titanium project**"
+- "Do a comprehensive analysis of the UI patterns used in this **Alloy app**"
+- "Explore the architecture of this **mobile app** and identify areas for improvement"
 
-**Manual activation:**
+> **Tip**: Include words like "Titanium", "Alloy", "mobile app", or "architecture review" to ensure the agent is triggered for Titanium-specific analysis.
+
+**Manual activation (always works):**
 - "Use the ti-researcher agent to analyze this codebase"
 - "Have ti-researcher investigate the architecture of this project"
 - "Use ti-researcher to research platform-specific differences for this feature"
