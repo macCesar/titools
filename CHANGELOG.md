@@ -4,6 +4,30 @@ All notable changes to Titanium SDK Skills will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.2.0] - 2025-01-28
+
+### Added
+- **ti-researcher sub-agent**: Deep-dive research specialist for Claude Code that preloads all 7 titanium-* skills
+  - Runs in isolated context with read-only tools (Read, Grep, Glob)
+  - Ideal for codebase analysis, multi-feature research, and cross-skill queries
+  - Uses Haiku model for fast, efficient research
+- **allowed-tools field**: All skills now specify which tools can be used without permission prompts
+- **argument-hint field**: All skills now have autocomplete hints for expected arguments
+- **.gitignore**: Added macOS (.DS_Store) and editor-specific files (vim, vscode, idea)
+
+### Changed
+- **install.sh**: Now installs both skills and sub-agents
+  - Skills → `~/.agents/skills/` (central location)
+  - Agents → `~/.claude/agents/` (Claude Code only)
+- **install.sh**: Cleaner output format with single-line progress indicators
+  - Before: Per-item checkmarks and "Done" messages
+  - After: `→ Installing skills... ✓` format
+- **README.md**: Added comprehensive agents section with usage guide and comparison table
+- **README.md**: Fixed uninstall command to only remove titanium-sdk-skills (was deleting entire `~/.agents/skills/` directory)
+
+### Fixed
+- **Installer**: Error indicator changed from "Failed" to ✗ for consistency with success ✓
+
 ## [1.1.0] - 2025-01-27
 
 ### Added
