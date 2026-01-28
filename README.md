@@ -33,7 +33,8 @@ Titanium SDK Skills Installer
 
 This installer:
   1. Installs skills to ~/.agents/skills/ (central location)
-  2. Creates symlinks in detected AI CLI directories
+  2. Installs agents to ~/.claude/agents/ (Claude Code)
+  3. Creates symlinks in detected AI CLI directories
 
 Select platform to install:
 
@@ -60,10 +61,16 @@ ls ~/.agents/skills/
 # Should show: alloy-expert, purgetss, ti-ui, ti-howtos, ti-guides, alloy-guides, alloy-howtos
 ```
 
-**Claude Code:**
+**Claude Code (skills):**
 ```bash
 ls -la ~/.claude/skills/
 # Should show symlinks pointing to ~/.agents/skills/
+```
+
+**Claude Code (agents):**
+```bash
+ls -la ~/.claude/agents/
+# Should show: titanium-researcher.md
 ```
 
 **Gemini CLI:**
@@ -91,6 +98,46 @@ gemini skills list
 | **alloy-howtos** | Alloy CLI & debugging         | Project setup, CLI commands, errors     |
 
 > **Note:** `ti-guides`, `ti-howtos`, `ti-ui`, `alloy-guides`, and `alloy-howtos` are based on **official Titanium SDK and Alloy documentation**. `alloy-expert` and `purgetss` are opinionated and reflect personal coding conventions (biased toward PurgeTSS).
+
+---
+
+## Agents (Claude Code Only)
+
+In addition to skills, this repository includes **sub-agents** for Claude Code. Sub-agents run in isolated contexts and are ideal for research tasks that produce verbose output.
+
+### titanium-researcher
+
+**Deep-dive research specialist that preloads all 7 titanium-\* skills.**
+
+| Aspect               | Details                                      |
+| -------------------- | -------------------------------------------- |
+| **Location**         | `~/.claude/agents/titanium-researcher.md`    |
+| **Model**            | Haiku (fast, efficient)                      |
+| **Tools**            | Read-only (Read, Grep, Glob)                 |
+| **Preloaded Skills** | All 7 titanium-\* skills injected at startup |
+
+**When to use the agent vs skills:**
+
+| Use Case                     | Use This                           | Why                                                  |
+| ---------------------------- | ---------------------------------- | ---------------------------------------------------- |
+| Quick inline reference       | `/alloy-expert`, `/purgetss`, etc. | Runs in main conversation, interactive               |
+| Analyzing an entire codebase | `titanium-researcher` agent        | Isolates verbose output, cross-references all skills |
+| Multi-feature research       | `titanium-researcher` agent        | Preloads all skills for comprehensive answers        |
+| Step-by-step implementation  | Skills directly                    | Task-oriented guidance                               |
+| Architecture review          | `titanium-researcher` agent        | Read-only analysis across all documentation          |
+
+**Example prompts for the agent:**
+
+```
+"Use the titanium-researcher agent to analyze this codebase's architecture"
+"Research how to implement location + push + background sync together"
+"Compare ListView vs TableView for my use case with PurgeTSS styling"
+"Review this Alloy app and identify anti-patterns"
+```
+
+**Key difference:**
+- **Skills** = Interactive help during development (inline, conversational)
+- **Agents** = Isolated research tasks (returns summary, keeps verbose output separate)
 
 ---
 
@@ -404,6 +451,15 @@ Help me migrate it to modern Alloy with PurgeTSS."
 "I'm getting 'Alloy is not defined' in my lib file. How do I fix it?"
 ```
 
+### Codebase Analysis (Using Agent)
+```
+"Use the titanium-researcher agent to analyze this project:
+- Review the overall architecture
+- Identify memory leak patterns
+- Check for PurgeTSS anti-patterns
+- Suggest improvements"
+```
+
 ---
 
 ## Best Practices
@@ -474,13 +530,18 @@ Ask the AI to:
 ## Uninstall
 
 ```bash
-# Remove symlinks from all platforms
+# Remove skill symlinks from all platforms
 rm -rf ~/.claude/skills/{alloy-expert,purgetss,ti-ui,ti-howtos,ti-guides,alloy-guides,alloy-howtos}
 rm -rf ~/.gemini/skills/{alloy-expert,purgetss,ti-ui,ti-howtos,ti-guides,alloy-guides,alloy-howtos}
 rm -rf ~/.codex/skills/{alloy-expert,purgetss,ti-ui,ti-howtos,ti-guides,alloy-guides,alloy-howtos}
 
-# Remove central skills directory
-rm -rf ~/.agents/skills/
+# Remove agent from Claude Code
+rm -f ~/.claude/agents/titanium-researcher.md
+
+# Remove Titanium SDK skills from central directory (ONLY removes our skills)
+for skill in alloy-expert purgetss ti-ui ti-howtos ti-guides alloy-guides alloy-howtos; do
+    rm -rf ~/.agents/skills/"$skill"
+done
 ```
 
 ---
