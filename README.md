@@ -129,11 +129,13 @@ In addition to skills, this repository includes **sub-agents** for Claude Code. 
 **Example prompts for the agent:**
 
 ```
-"Use the ti-researcher agent to analyze this codebase's architecture"
-"Research how to implement location + push + background sync together"
+"Use the ti-researcher agent to analyze this Alloy codebase's architecture"
+"Research how to implement location + push + background sync together in Titanium"
 "Compare ListView vs TableView for my use case with PurgeTSS styling"
-"Review this Alloy app and identify anti-patterns"
+"Review this Titanium mobile app and identify anti-patterns"
 ```
+
+> **Tip**: For automatic activation, include words like "Titanium", "Alloy", or "mobile app" in your prompt to ensure the specialized agent is used instead of generic code analysis.
 
 **Key difference:**
 - **Skills** = Interactive help during development (inline, conversational)

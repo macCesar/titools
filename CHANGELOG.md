@@ -13,11 +13,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **ti-researcher agent description**: Removed non-standard `TRIGGER KEYWORDS:` block from frontmatter
   - Keywords now integrated naturally in description for better Claude Code compatibility
   - Aligns with official Claude Code subagent format standards
+- **ti-researcher agent description**: Made description more specific to improve auto-triggering
+  - Replaced generic "analyzing codebases" with specific "analyzing Titanium/Alloy codebases"
+  - Added explicit trigger phrases: "Titanium", "Alloy", "mobile app", "architecture review"
+  - Fixed issue where agent wasn't being triggered for Alloy projects
 
 ### Added
 - **ti-researcher Usage Examples section**: Documented example prompts for automatic and manual activation
   - Helps users understand how to trigger the agent effectively
   - Includes both proactive and explicit invocation patterns
+  - Added tip about including "Titanium"/"Alloy" keywords in prompts
 
 ## [1.6.0] - 2026-01-28
 
