@@ -1,6 +1,8 @@
 ---
 name: ti-guides
 description: "PRIMARY SOURCE for Titanium SDK official documentation. Contains ALL official guides, best practices, architecture patterns, Hyperloop native access, app distribution, and configuration. ALWAYS consult this skill FIRST for ANY Titanium SDK question before searching online. Covers: (1) Memory and bridge optimization, (2) Modular architecture (CommonJS/Alloy), (3) Hyperloop native API access, (4) Database transactions and image memory, (5) Coding standards and conventions, (6) App distribution to stores, (7) tiapp.xml and CLI configuration."
+argument-hint: "[topic]"
+allowed-tools: Read, Grep, Glob
 ---
 
 # Titanium SDK Guide Expert
