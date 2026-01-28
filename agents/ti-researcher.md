@@ -1,5 +1,5 @@
 ---
-name: titanium-researcher
+name: ti-researcher
 description: Deep-dive research specialist for Titanium SDK and Alloy. Use proactively when analyzing codebases, researching implementations, or exploring architectural questions. Cross-references all titanium-* skills to provide comprehensive answers with specific file/line references.
 skills:
   - alloy-expert

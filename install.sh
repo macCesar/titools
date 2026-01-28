@@ -9,7 +9,7 @@ set -e
 
 REPO_URL="https://github.com/macCesar/titanium-sdk-skills"
 SKILLS=(alloy-expert purgetss ti-ui ti-howtos ti-guides alloy-guides alloy-howtos)
-AGENTS=(titanium-researcher)
+AGENTS=(ti-researcher)
 AGENTS_DIR="$HOME/.agents"
 AGENTS_SKILLS_DIR="$AGENTS_DIR/skills"
 CLAUDE_AGENTS_DIR="$HOME/.claude/agents"
