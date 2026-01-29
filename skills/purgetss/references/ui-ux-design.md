@@ -88,6 +88,7 @@ A comprehensive guide to building beautiful, accessible, and performant mobile U
     - [Icon with Text Patterns](#icon-with-text-patterns)
       - [Icon with Label](#icon-with-label)
       - [Circular Icon Button](#circular-icon-button)
+      - [Header with Icon Buttons](#header-with-icon-buttons)
       - [Icon Badge](#icon-badge)
       - [Icon Group](#icon-group)
   - [6. Accessibility](#6-accessibility)
@@ -421,14 +422,32 @@ Buttons trigger actions and are primary interactive elements.
 #### Icon Button
 
 ```xml
+<!-- EFFICIENT: Single Label with icon, size, and styling -->
+<Label class="rounded-full-12 bg-brand-500 fa-solid fa-plus text-center text-xl text-white" />
+
+<!-- ALTERNATIVE: View + Label (more verbose) -->
 <View class="bg-brand-500 h-12 w-12 rounded-full">
   <Label class="center fas fa-plus text-xl text-white" />
 </View>
 ```
 
+:::tip SINGLE-LABEL ICON BUTTONS
+For circular icon buttons, you can use a single `Label` with:
+- `rounded-full-XX` (includes size) - Creates the circle and sets dimensions
+- Font Awesome icon class (e.g., `fa-solid fa-plus`)
+- `text-center` - Centers the icon
+- Background color and text color
+
+This eliminates the need for a wrapper `View`, reducing DOM depth.
+:::
+
 #### Floating Action Button (FAB)
 
 ```xml
+<!-- SIMPLIFIED: Single Label with positioning -->
+<Label class="rounded-full-14 bg-brand-500 fa-solid fa-plus absolute bottom-6 right-6 text-center text-2xl text-white shadow-lg" />
+
+<!-- ALTERNATIVE: View wrapper approach -->
 <View class="absolute bottom-6 right-6">
   <View class="bg-brand-500 h-14 w-14 rounded-full shadow-lg">
     <Label class="center fas fa-plus text-2xl text-white" />
@@ -1073,10 +1092,37 @@ Font Awesome 7 uses style prefixes for different icon sets:
 #### Circular Icon Button
 
 ```xml
+<!-- EFFICIENT: Single Label approach -->
+<Label class="rounded-full-12 bg-brand-500 fa-solid fa-plus text-center text-xl text-white" />
+
+<!-- ALTERNATIVE: View wrapper (more verbose) -->
 <View class="bg-brand-500 h-12 w-12 rounded-full">
   <Label class="center fas fa-plus text-xl text-white" />
 </View>
 ```
+
+#### Header with Icon Buttons
+
+```xml
+<!-- Container with auto width - items will be centered -->
+<View class="horizontal mx-3 mt-3 w-auto">
+  <!-- Icon buttons with horizontal spacing -->
+  <Label id="backButton" class="rounded-full-12 fa-solid fa-arrow-left mx-1 bg-white/20 text-center text-xl text-white" />
+  <Label id="shareButton" class="rounded-full-12 fa-solid fa-share-nodes mx-1 bg-white/20 text-center text-xl text-white" />
+  <Label id="favoriteButton" class="rounded-full-12 fa-solid fa-heart mx-1 bg-white/20 text-center text-xl text-white" />
+</View>
+
+<!-- To shift all items to one side, add ml-xx or mr-xx to the container -->
+<View class="horizontal ml-0 mr-3 mt-3 w-auto">
+  <Label class="rounded-full-12 fa-solid fa-arrow-left ... mx-1 bg-white/20" />
+  <Label class="rounded-full-12 fa-solid fa-share-nodes ... mx-1 bg-white/20" />
+</View>
+```
+
+**Key pattern:**
+- `horizontal w-auto` - Container takes width of children, centers them in available space
+- `mx-1` on each child - Consistent horizontal spacing between icons
+- `ml-0`/`mr-3` on container - Shifts the entire group to left/right edge
 
 #### Icon Badge
 
@@ -1112,10 +1158,8 @@ All interactive elements should have accessibility labels:
 <!-- Button with label -->
 <Button class="bg-brand-500 text-white" title="Save" accessibilityLabel="Save changes" />
 
-<!-- Icon button with label -->
-<View class="bg-brand-500 h-12 w-12 rounded-full" accessibilityLabel="Add new item">
-  <Label class="center fas fa-plus text-white" accessibilityHidden="true" />
-</View>
+<!-- Icon button with label (simplified) -->
+<Label class="rounded-full-12 bg-brand-500 fa-solid fa-plus text-center text-white" accessibilityLabel="Add new item" />
 
 <!-- Image with label -->
 <ImageView image="/images/avatar.jpg" accessibilityLabel="User avatar" />
@@ -1129,10 +1173,8 @@ Ensure touch targets are at least 44dp for iOS and 48dp for Android:
 <!-- Minimum touch target (44dp) -->
 <Button class="min-w-44 min-h-44 bg-brand-500" title="Button" />
 
-<!-- Icon button with proper touch target -->
-<View class="h-12 w-12" accessibilityLabel="Settings">
-  <Label class="center fas fa-cog text-xl" />
-</View>
+<!-- Icon button with proper touch target (simplified) -->
+<Label class="rounded-full-12 fa-solid fa-cog text-center text-xl" accessibilityLabel="Settings" />
 ```
 
 ### Color Contrast
