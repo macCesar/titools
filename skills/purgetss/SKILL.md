@@ -40,7 +40,7 @@ This skill automatically detects PurgeTSS usage when invoked and provides utilit
   - [Quick Start](#quick-start)
   - [Critical Rules (Low Freedom)](#critical-rules-low-freedom)
     - [⭐ PREFER `$.UI.create()` for Dynamic Components](#-prefer-uicreate-for-dynamic-components)
-    - [🚨 NEVER Create Manual .tss Files](#-never-create-manual-tss-files)
+    - [🚨 RESPECT USER FILES](#-respect-user-files)
     - [🚨 NO FLEXBOX - Titanium Doesn't Support It](#-no-flexbox---titanium-doesnt-support-it)
     - [🚨 PLATFORM-SPECIFIC PROPERTIES REQUIRE MODIFIERS](#-platform-specific-properties-require-modifiers)
     - [Other Mandatory Rules](#other-mandatory-rules)
@@ -174,15 +174,16 @@ const view = Ti.UI.createView({
 See [Dynamic Component Creation](references/dynamic-component-creation.md) for complete guide.
 :::
 
-### 🚨 NEVER Create Manual .tss Files
+### 🚨 RESPECT USER FILES
+**NEVER delete any existing `.tss` files** (like `index.tss`, `detail.tss`) or other project files without explicit user consent.
 
-:::danger DEFEATS PURPOSE OF PURGETSS
-**PurgeTSS automatically generates ALL styles.**
-
-- **DO NOT** create `app/styles/index.tss`, `login.tss`, or ANY manual `.tss` files
-- **ONLY** use utility classes in XML views
-- PurgeTSS parses XML → extracts used classes → generates clean `app.tss`
-:::
+**How to handle migration to PurgeTSS:**
+1. **ONLY** replace custom classes with PurgeTSS utility classes if the user explicitly requests it.
+2. When requested:
+    - Analyze the definitions in the existing `.tss` files.
+    - Update the XML/Controller components with equivalent PurgeTSS utility classes.
+    - **WAIT** for user confirmation before suggesting or performing any file deletion.
+3. If the user prefers keeping manual `.tss` files for specific styles, respect that choice and only use PurgeTSS for new or requested changes.
 
 ### 🚨 NO FLEXBOX - Titanium Doesn't Support It
 
