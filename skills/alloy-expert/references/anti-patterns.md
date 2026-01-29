@@ -91,18 +91,43 @@
 **Problem:** Defeats the purpose of PurgeTSS which auto-generates a single optimized `app.tss`.
 **Solution:** Use ONLY utility classes in XML. Delete all manual `.tss` files except `_app.tss`.
 
+## 16. Using `lib/` Prefix in Require Statements
+**Symptom:** `const service = require('lib/services/picsum')`
+**Problem:** Alloy flattens the `lib/` folder during build. Files in `app/lib/services/` become `Resources/iphone/services/`.
+**Solution:** Omit the `lib/` prefix: `const service = require('services/picsum')`
+
+## 17. Wrong Window ID in Controller
+**Symptom:** Using `$.index.open()` when the Window has `id="mainWindow"`.
+**Problem:** Alloy generates `$` references from XML IDs. If Window is `id="mainWindow"`, `$.index` doesn't exist.
+**Solution:** Match the ID: `$.mainWindow.open()`
+
+## 18. Using `Ti.UI.createNotification`
+**Symptom:** `Ti.UI.createNotification({ message: 'Hi' }).show()`
+**Problem:** This API doesn't exist in Titanium. Causes "invalid method" error.
+**Solution:** Use `Ti.UI.createAlertDialog` for simple messages, or create custom toast views.
+
+## 19. Using Nonexistent iOS Share APIs
+**Symptom:** `Ti.UI.iOS.createActivityPopover` or `alloy/social` with wrong methods.
+**Problem:** These APIs either don't exist or have changed. Causes runtime errors.
+**Solution:**
+- iOS: Use `Ti.UI.iOS.createDocumentViewer` for files, or simple `Ti.UI.createOptionDialog` + `Ti.UI.Clipboard` for links
+- Android: Use `Ti.Android.createIntent` with ACTION_SEND
+
 ---
 
 ## Quick Reference Table
 
-| Anti-Pattern      | Why It Fails             | Correct Approach        |
-| ----------------- | ------------------------ | ----------------------- |
-| `flex-row`        | Flexbox not supported    | `horizontal`            |
-| `flex-col`        | Flexbox not supported    | `vertical`              |
-| `justify-*`       | Flexbox not supported    | Use margins/positioning |
-| `p-4` on View     | No padding on containers | `m-4` on children       |
-| `w-full`          | Doesn't exist            | `w-screen`              |
-| `rounded-full`    | Needs size suffix        | `rounded-full-12`       |
-| `composite` class | Already default          | Omit it                 |
-| `w-[100px]`       | Wrong syntax             | `w-(100px)`             |
-| Manual `.tss`     | Overwritten by PurgeTSS  | Use utility classes     |
+| Anti-Pattern         | Why It Fails             | Correct Approach        |
+| -------------------- | ------------------------ | ----------------------- |
+| `flex-row`           | Flexbox not supported    | `horizontal`            |
+| `flex-col`           | Flexbox not supported    | `vertical`              |
+| `justify-*`          | Flexbox not supported    | Use margins/positioning |
+| `p-4` on View        | No padding on containers | `m-4` on children       |
+| `w-full`             | Doesn't exist            | `w-screen`              |
+| `rounded-full`       | Needs size suffix        | `rounded-full-12`       |
+| `composite` class    | Already default          | Omit it                 |
+| `w-[100px]`          | Wrong syntax             | `w-(100px)`             |
+| Manual `.tss`        | Overwritten by PurgeTSS  | Use utility classes     |
+| `lib/` prefix        | lib/ is flattened        | Use path without lib/   |
+| `$.index.open()`     | Wrong ID reference       | Use actual Window ID    |
+| `createNotification` | API doesn't exist        | `createAlertDialog`     |

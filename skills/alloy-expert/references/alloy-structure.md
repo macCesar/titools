@@ -40,6 +40,43 @@ app/
     └── utilities.tss       # All utility classes
 ```
 
+## lib/ Folder and Module Require Paths
+
+:::danger CRITICAL: lib/ Folder is FLATTENED During Build
+When Alloy compiles, the **entire `lib/` folder is flattened to the root of Resources**. This means:
+- `app/lib/services/picsum.js` → `Resources/iphone/services/picsum.js`
+- `app/lib/api/client.js` → `Resources/iphone/api/client.js`
+
+**Therefore, require statements should NOT include `lib/` prefix:**
+```javascript
+// ❌ WRONG - Will fail at runtime
+const client = require('lib/api/client')
+
+// ✅ CORRECT - Path relative to flattened lib/
+const client = require('api/client')
+const picsum = require('services/picsum')
+```
+
+**This applies to:**
+- All files in `app/lib/` (services, api, helpers, etc.)
+- Cross-references within lib/ files
+- Controller requires of lib/ files
+
+**Example project structure:**
+```
+app/
+├── lib/
+│   ├── services/
+│   │   ├── picsum.js     # require('services/logger')
+│   │   ├── navigation.js # require('services/logger')
+│   │   └── logger.js
+│   └── api/
+│       └── client.js     # require('services/logger')
+├── controllers/
+│   └── index.js          # require('services/picsum')
+```
+:::
+
 ## Data Layer: Two Approaches
 
 ### Approach A: Alloy Models (app/models/) - For Persistence

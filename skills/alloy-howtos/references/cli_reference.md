@@ -147,6 +147,48 @@ Compiler options reference the `event.alloyConfig` object in [Build Configuratio
 
 Use `titanium build` command to run Alloy projects. See [Titanium Command-Line Interface Reference](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_Guide/Titanium_Command-Line_Interface_Reference/).
 
+:::tip COMMON ti build PITFALLS
+
+**❌ Using `-C` flag without UDID:**
+```bash
+# WRONG - Prompts for simulator selection interactively
+ti build -p ios -T simulator -C
+```
+
+**✅ Correct approach for simulator:**
+```bash
+# GOOD - Runs on default simulator
+ti build -p ios -T simulator
+```
+
+**❌ Using `--no-prompt` incorrectly:**
+```bash
+# Still may prompt for device selection if not specific
+ti build -p ios --no-prompt
+```
+
+**✅ Always specify target:**
+```bash
+# GOOD - Clear target specification
+ti build -p ios -T simulator --no-prompt
+```
+
+**Common patterns:**
+```bash
+# iOS Simulator (most common during development)
+ti build -p ios -T simulator
+
+# iOS Device (requires UDID)
+ti build -p ios -T device -V <udid>
+
+# Android Emulator
+ti build -p android -T emulator
+
+# Build only (don't run)
+ti build -p ios -T simulator --build-only
+```
+:::
+
 ### i18n-extract
 
 Extracts i18n keys from TSS and JS files to strings.xml.

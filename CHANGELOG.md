@@ -4,6 +4,48 @@ All notable changes to Titanium SDK Skills will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.6.5] - 2026-01-28
+
+### Added
+- **purgetss/references/ui-ux-design.md**: Added simplified icon button pattern examples
+  - Single `Label` approach for circular icon buttons using `rounded-full-XX`
+  - Eliminates need for wrapper `View`, reduces DOM depth
+  - New "Header with Positioned Icon Buttons" example showing `ml-0`/`mr-2` positioning
+  - Updated FAB (Floating Action Button) with simplified pattern
+  - Added `SINGLE-LABEL ICON BUTTONS` tip box explaining the pattern
+
+### Changed
+- **purgetss/references/ui-ux-design.md**: Updated all icon button examples across sections
+  - Icon Button section shows both simplified and verbose approaches
+  - Circular Icon Button (Icons section) updated with simplified pattern
+  - Accessibility examples updated with simplified pattern
+  - Touch Target Sizes updated with simplified pattern
+
+## [1.6.4] - 2026-01-28
+
+### Fixed
+- **alloy-expert/references/alloy-structure.md**: Added critical documentation about `lib/` folder flattening
+  - Alloy flattens `app/lib/` to `Resources/iphone/` during build
+  - Require statements must omit `lib/` prefix: `require('services/picsum')` not `require('lib/services/picsum')`
+  - Prevents "Module not found" errors at runtime
+- **alloy-expert/references/anti-patterns.md**: Added 4 new common pitfalls from real-world testing
+  - #16: Using `lib/` prefix in require statements
+  - #17: Wrong Window ID in Controller (`$.index.open()` vs `$.mainWindow.open()`)
+  - #18: Using non-existent `Ti.UI.createNotification` API
+  - #19: Using non-existent iOS Share APIs (`Ti.UI.iOS.createActivityPopover`)
+- **purgetss/SKILL.md**: Added two new documentation sections
+  - "NEW PROJECT: Clean Up Default app.tss" - Tip to delete default template for fresh start
+  - "CRITICAL: Understanding Layout Composition" - Visual examples of `vertical`, `horizontal`, `composite` layouts
+    - Addresses common issue where elements appear in unexpected positions
+    - Explains that each container's layout affects only direct children
+- **alloy-howtos/references/cli_reference.md**: Added "COMMON ti build PITFALLS" section
+  - Explains `-C` flag requires UDID, prompts interactively without it
+  - Documents correct patterns for simulator/device targeting
+  - Provides common build command examples
+
+### Changed
+- **alloy-expert/references/anti-patterns.md**: Updated Quick Reference Table with 3 new entries
+
 ## [1.6.3] - 2026-01-28
 
 ### Fixed

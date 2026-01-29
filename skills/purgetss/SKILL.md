@@ -149,6 +149,14 @@ purgetss create 'MyApp' -d -v fa
 # -v: Copy icon fonts (fa, mi, ms, f7)
 ```
 
+:::tip NEW PROJECT: Clean Up Default app.tss
+For new projects created with `purgetss create`, the default `app/styles/app.tss` contains a large commented template.
+
+**You can safely DELETE this file** - PurgeTSS will regenerate it on the first build with only the classes you actually use, and create a clean `_app.tss` backup.
+
+This prevents carrying around unnecessary commented code and ensures a fresh start.
+:::
+
 ## Critical Rules (Low Freedom)
 
 ### ⭐ PREFER `$.UI.create()` for Dynamic Components
@@ -197,7 +205,39 @@ The following are **NOT supported**:
 - ✅ `horizontal` - Children left to right
 - ✅ `vertical` - Children top to bottom
 - ✅ Omit layout class - Defaults to `composite` (absolute positioning)
+
+:::tip CRITICAL: Understanding Layout Composition
+When building complex UIs, carefully choose the layout mode for each container:
+
+**`vertical`** - Stack elements top to bottom (most common):
+```xml
+<ScrollView class="vertical">
+  <View class="mb-4">Item 1</View>
+  <View class="mb-4">Item 2</View>
+  <View>Item 3</View>
+</ScrollView>
+```
+
+**`horizontal`** - Arrange elements left to right:
+```xml
+<View class="horizontal w-screen">
+  <Label text="Left" />
+  <View class="w-screen" />  <!-- Spacer -->
+  <Label text="Right" />
+</View>
+```
+
+**`composite`** (default) - Absolute positioning with `top`, `left`, etc.:
+```xml
+<View class="w-screen h-screen">
+  <View class="absolute top-0 left-0 bg-red-500 wh-12" />
+  <View class="absolute bottom-0 right-0 bg-blue-500 wh-12" />
+</View>
+```
+
+**Common Issue:** If you see elements appearing in unexpected positions (e.g., a header bar "behind" content), check if parent containers have conflicting layout modes. Each container's layout affects its direct children only.
 :::
+
 
 ### 🚨 PLATFORM-SPECIFIC PROPERTIES REQUIRE MODIFIERS
 
