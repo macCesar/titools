@@ -160,7 +160,7 @@ This command will overwrite existing `extensions.json` and `settings.json` files
 
 ### `purgetss build` (alias: `b`)
 
-Manually regenerates `tailwind.tss` based on `config.cjs`.
+Manually regenerates `utilities.tss` based on `config.cjs`.
 
 ```bash
 purgetss build
@@ -171,7 +171,7 @@ purgetss b
 **Use cases:**
 - After updating `config.cjs`
 - After adding custom fonts to `purgetss/fonts/`
-- When `tailwind.tss` seems out of sync
+- When `utilities.tss` seems out of sync
 
 ### `purgetss watch` (alias: `w`)
 
@@ -560,7 +560,7 @@ purgetss s [hexcode] [name] [options]
 - `-j, --json` - Logs a JSON compatible structure for `config.json`
 
 :::info
-More than 66% of all `tailwind.tss` classes are related to color properties, making a tool like `shades` a valuable addition to PurgeTSS for extending color choices!
+More than 66% of all `utilities.tss` classes are related to color properties, making a tool like `shades` a valuable addition to PurgeTSS for extending color choices!
 :::
 
 **Basic usage:**
@@ -793,7 +793,7 @@ Use `sudo-update` only if standard `npm install -g` requires sudo on your system
 | `purgetss init`                 | `i`   | Create fresh config.cjs                     |
 | `purgetss create`               | `c`   | New Alloy project with PurgeTSS             |
 | `purgetss install-dependencies` | `id`  | Install dev dependencies and VS Code config |
-| `purgetss build`                | `b`   | Regenerate tailwind.tss                     |
+| `purgetss build`                | `b`   | Regenerate utilities.tss                    |
 | `purgetss watch`                | `w`   | Toggle auto-purge                           |
 | `purgetss icon-library`         | `il`  | Install icon fonts                          |
 | `purgetss build-fonts`          | `bf`  | Generate custom font classes                |
@@ -817,7 +817,7 @@ purgetss create 'MyApp' --dependencies --vendor=fa,mi
 # 3. cd app.workspace/"MyApp" - changes to the newly created folder
 # 4. alloy new - converts it to an Alloy Project
 # 5. purgetss w - autoruns purgetss every time you compile
-# 6. purgetss b - builds a new ./purgetss/styles/tailwind.tss file
+# 6. purgetss b - builds a new ./purgetss/styles/utilities.tss file
 # 7. [--vendor=fa,mi] - copies the selected fonts, including CommonJS module into ./app/lib/
 # 8. [--dependencies] - installs:
 #    - npm i -D tailwindcss && npx tailwindcss init
@@ -845,7 +845,7 @@ purgetss icon-library -v=fa,mi -m
 # Install dev dependencies
 purgetss install-dependencies
 
-# Build the initial tailwind.tss
+# Build the initial utilities.tss
 purgetss build
 ```
 

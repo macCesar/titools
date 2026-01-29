@@ -232,7 +232,7 @@ theme: {
 
 ## Platform-Specific Classes
 
-Several classes in `tailwind.tss` are platform-specific to prevent polluting objects with properties that are not specific to a particular platform.
+Several classes in `utilities.tss` are platform-specific to prevent polluting objects with properties that are not specific to a particular platform.
 
 :::caution IMPORTANT
 To properly apply these platform styles when creating custom rules, you **must specify the platform variant** in the `apply` directive.

@@ -83,7 +83,7 @@
 
 ## 14. Square Brackets for Arbitrary Values
 **Symptom:** Using `w-[100px]` or `bg-[#ff0000]` with square brackets.
-**Problem:** PurgeTSS uses parentheses, not square brackets (Tailwind syntax).
+**Problem:** PurgeTSS uses parentheses, not square brackets.
 **Solution:** Use parentheses: `w-(100px)`, `bg-(#ff0000)`.
 
 ## 15. Creating Manual .tss Files Per Controller

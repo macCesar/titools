@@ -100,7 +100,7 @@ Installs `purgetss.ui.js` in `app/lib/`.
 $.myAnimation.play($.myView)
 ```
 
-**You can set any position, size, colors, transformation, and opacity classes from `tailwind.tss`.**
+**You can set any position, size, colors, transformation, and opacity classes from `utilities.tss`.**
 
 ---
 
@@ -444,7 +444,7 @@ To simplify things, we are restricting the types of animations that can be appli
 
 To control how `drag:` and `drop:` modifiers are applied, you can use either the `drag-animate` (default) or `drag-apply` class. The `drag-animate` class will animate the properties, while the `drag-apply` class will apply them immediately.
 
-```css title="tailwind.tss"
+```css title="utilities.tss"
 /* Component(s): For the Animation Component */
 /* Property(ies): draggingType */
 .drag-apply { draggingType: 'apply' }

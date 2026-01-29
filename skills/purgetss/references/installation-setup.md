@@ -94,15 +94,15 @@ PurgeTSS creates a `purgetss` folder at the root of your project:
 ├─ fonts/              # Place custom font files (.ttf, .otf) here
 ├─ styles/
 │  ├─ definitions.css # Used for VS Code IntelliSense
-│  └─ tailwind.tss    # All PurgeTSS utility classes
+│  └─ utilities.tss    # All PurgeTSS utility classes
 └─ config.cjs         # Your project's theme configuration
 ```
 
 **File descriptions:**
 
 - **`config.cjs`**: Where you customize colors, spacing, fonts, border radius, and add custom rules for Ti Elements
-- **`styles/tailwind.tss`**: All Tailwind-like utility classes + any custom classes from `config.cjs`
-- **`styles/definitions.css`**: Special CSS file incorporating ALL classes from `tailwind.tss`, `_app.tss`, remaining `.tss` files, and `fonts.tss`. Used by VS Code extension for IntelliSense
+- **`styles/utilities.tss`**: All Tailwind-like utility classes + any custom classes from `config.cjs`
+- **`styles/definitions.css`**: Special CSS file incorporating ALL classes from `utilities.tss`, `_app.tss`, remaining `.tss` files, and `fonts.tss`. Used by VS Code extension for IntelliSense
 - **`fonts/`**: Directory for custom fonts (Icon, Serif, Sans-Serif, Cursive, Fantasy, Monospace). Use `purgetss build-fonts` after adding fonts
 
 #### 3. app.tss Backup
@@ -298,7 +298,7 @@ appc run --liveview
 
 **Solutions:**
 1. Run `purgetss build` manually after config changes
-2. Check that `tailwind.tss` was regenerated
+2. Check that `utilities.tss` was regenerated
 3. Verify your config syntax is correct (no trailing commas, etc.)
 
 ## First Run Example
@@ -343,7 +343,7 @@ PurgeTSS includes example files to get you started:
 4. Compile your app as usual
 5. Use `liveview` for faster iteration
 
-For more examples, see the [Tailwind TSS Sample App](https://github.com/macCesar/tailwind.tss-sample-app).
+For more examples, see the [Tailwind TSS Sample App](https://github.com/macCesar/utilities.tss-sample-app).
 
 ## Troubleshooting
 

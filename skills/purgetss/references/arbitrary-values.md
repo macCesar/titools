@@ -32,7 +32,7 @@ Sometimes, you may need a specific value that is not included among the default 
 :::info
 **To generate an arbitrary style, you can use *parenthesis notation* with almost any default utility classes.**
 
-Unfortunately, you cannot use square bracket notation like in Tailwind, because Titanium handles platform and conditional statements in `.tss` files differently.
+You cannot use square bracket notation, because Titanium handles platform and conditional statements in `.tss` files differently.
 :::
 
 ## Color Properties

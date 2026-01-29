@@ -37,7 +37,7 @@ app/
 ./purgetss/
 ├── config.cjs             # PurgeTSS theme configuration
 └── styles/
-    └── tailwind.tss       # All utility classes
+    └── utilities.tss       # All utility classes
 ```
 
 ## Data Layer: Two Approaches

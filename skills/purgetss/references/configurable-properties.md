@@ -59,7 +59,7 @@ Complete list of all properties that can be customized in `config.cjs` under the
 
 ## Color Properties (50+ properties)
 
-All color properties inherit values from `theme.colors` and support the full Tailwind color palette plus any custom colors you define.
+All color properties inherit values from `theme.colors` and support a full color palette plus any custom colors you define.
 
 ### Background Colors
 - `backgroundColor` - Main background color

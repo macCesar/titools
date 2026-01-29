@@ -1,10 +1,10 @@
 # PurgeTSS Class Index
 
-**Based on the actual PurgeTSS `tailwind.tss` file - 21,236 unique utility classes across 364 unique prefixes covering 416 Titanium properties**
+**Based on the actual PurgeTSS `utilities.tss` file - 21,236 unique utility classes across 364 unique prefixes covering 416 Titanium properties**
 
 Before suggesting ANY class, verify it exists:
 ```bash
-grep -E "PATTERN" ./purgetss/styles/tailwind.tss
+grep -E "PATTERN" ./purgetss/styles/utilities.tss
 ```
 
 ## Table of Contents
@@ -16,8 +16,8 @@ grep -E "PATTERN" ./purgetss/styles/tailwind.tss
       - [1. Basic Conversion: camelCase → kebab-case](#1-basic-conversion-camelcase--kebab-case)
       - [2. Boolean Properties: `property` and `property-false`](#2-boolean-properties-property-and-property-false)
       - [3. Color Properties: Special Word Replacements](#3-color-properties-special-word-replacements)
-      - [4. Tailwind CSS Compatibility Classes](#4-tailwind-css-compatibility-classes)
-    - [Finding Properties in tailwind.tss](#finding-properties-in-tailwindtss)
+      - [4. No kebab-case Conversion](#4-no-kebab-case-conversion)
+    - [Finding Properties in utilities.tss](#finding-properties-in-utilitiestss)
   - [Multiple Properties Grouped Together](#multiple-properties-grouped-together)
   - [All 416 Titanium Properties with Classes](#all-416-titanium-properties-with-classes)
     - [A-E](#a-e)
@@ -45,7 +45,7 @@ grep -E "PATTERN" ./purgetss/styles/tailwind.tss
     - [Display \& Sizing](#display--sizing)
     - [Media \& Video](#media--video)
     - [Other Special Prefixes](#other-special-prefixes)
-  - [PROHIBITED: Tailwind Classes (DO NOT EXIST)](#prohibited-tailwind-classes-do-not-exist)
+  - [PROHIBITED: CSS Classes (DO NOT EXIST)](#prohibited-css-classes-do-not-exist)
   - [All 364 Unique Prefixes (Alphabetical)](#all-364-unique-prefixes-alphabetical)
   - [Quick Verification Commands](#quick-verification-commands)
   - [When to Use Direct Properties (No Classes)](#when-to-use-direct-properties-no-classes)
@@ -102,9 +102,9 @@ returnKeyType              → return-key-type-*
 - `TextColor` → `text-`
 - `TintColor` → `tint-`
 
-#### 4. Tailwind CSS Compatibility Classes
+#### 4. No kebab-case Conversion
 
-Some properties use Tailwind CSS class names directly (no kebab-case conversion):
+Some properties use distinct class names (no kebab-case conversion):
 
 ```javascript
 // Property: autocapitalization
@@ -114,7 +114,7 @@ Some properties use Tailwind CSS class names directly (no kebab-case conversion)
 '.sentences':              { autocapitalization: Ti.UI.TEXT_AUTOCAPITALIZATION_SENTENCES }
 ```
 
-### Finding Properties in tailwind.tss
+### Finding Properties in utilities.tss
 
 Each property section in the file includes documentation:
 
@@ -136,16 +136,16 @@ Each property section in the file includes documentation:
 Search for any property to see its available classes:
 ```bash
 # Find by property name
-grep -A 20 "// Property: keyboardType" ./purgetss/styles/tailwind.tss
+grep -A 20 "// Property: keyboardType" ./purgetss/styles/utilities.tss
 
 # Find by multiple properties
-grep -A 20 "// Property(ies): contentWidth, contentHeight" ./purgetss/styles/tailwind.tss
+grep -A 20 "// Property(ies): contentWidth, contentHeight" ./purgetss/styles/utilities.tss
 
 # Find by component
-grep -B 2 "Component(s): Ti.UI.TextField" ./purgetss/styles/tailwind.tss
+grep -B 2 "Component(s): Ti.UI.TextField" ./purgetss/styles/utilities.tss
 
 # Find all properties for a component
-grep -B 2 "Component(s):.*Ti.UI.ListView" ./purgetss/styles/tailwind.tss | grep "// Property"
+grep -B 2 "Component(s):.*Ti.UI.ListView" ./purgetss/styles/utilities.tss | grep "// Property"
 ```
 
 ---
@@ -1224,9 +1224,9 @@ The following properties have PurgeTSS utility classes. Each property name conve
 
 ---
 
-## PROHIBITED: Tailwind Classes (DO NOT EXIST)
+## PROHIBITED: CSS Classes (DO NOT EXIST)
 
-| Tailwind          | Issue                             | PurgeTSS Alternative                        |
+| CSS Class         | Issue                             | PurgeTSS Alternative                        |
 | ----------------- | --------------------------------- | ------------------------------------------- |
 | `flex-row`        | Flexbox not supported             | `horizontal`                                |
 | `flex-col`        | Flexbox not supported             | `vertical`                                  |
@@ -1289,28 +1289,28 @@ white, will, wobble, wraps, x, y, yellow, z, zinc, zoom
 
 ```bash
 # Search for a specific prefix
-grep -o "'\.[a-zA-Z0-9_/-]*':" ./purgetss/styles/tailwind.tss | sed "s/'\.//;s/':$//" | grep "^bg-" | sort -u
+grep -o "'\.[a-zA-Z0-9_/-]*':" ./purgetss/styles/utilities.tss | sed "s/'\.//;s/':$//" | grep "^bg-" | sort -u
 
 # Search for keyboard classes
-grep -o "'\.[a-zA-Z0-9_/-]*':" ./purgetss/styles/tailwind.tss | sed "s/'\.//;s/':$//" | grep "^keyboard-type-" | sort -u
+grep -o "'\.[a-zA-Z0-9_/-]*':" ./purgetss/styles/utilities.tss | sed "s/'\.//;s/':$//" | grep "^keyboard-type-" | sort -u
 
 # Search for text classes
-grep -o "'\.[a-zA-Z0-9_/-]*':" ./purgetss/styles/tailwind.tss | sed "s/'\.//;s/':$//" | grep "^text-" | sort -u
+grep -o "'\.[a-zA-Z0-9_/-]*':" ./purgetss/styles/utilities.tss | sed "s/'\.//;s/':$//" | grep "^text-" | sort -u
 
 # Search for margin classes
-grep -o "'\.[a-zA-Z0-9_/-]*':" ./purgetss/styles/tailwind.tss | sed "s/'\.//;s/':$//" | grep "^m-" | sort -u
+grep -o "'\.[a-zA-Z0-9_/-]*':" ./purgetss/styles/utilities.tss | sed "s/'\.//;s/':$//" | grep "^m-" | sort -u
 
 # Search for boolean/state classes
-grep -o "'\.[a-zA-Z0-9_/-]*':" ./purgetss/styles/tailwind.tss | sed "s/'\.//;s/':$//" | grep -E "^(editable|enabled|visible|hidden)$"
+grep -o "'\.[a-zA-Z0-9_/-]*':" ./purgetss/styles/utilities.tss | sed "s/'\.//;s/':$//" | grep -E "^(editable|enabled|visible|hidden)$"
 
 # Count total classes
-grep -o "'\.[a-zA-Z0-9_/-']*':" ./purgetss/styles/tailwind.tss | wc -l
+grep -o "'\.[a-zA-Z0-9_/-']*':" ./purgetss/styles/utilities.tss | wc -l
 
 # Count unique classes
-grep -o "'\.[a-zA-Z0-9_/-']*':" ./purgetss/styles/tailwind.tss | sort -u | wc -l
+grep -o "'\.[a-zA-Z0-9_/-']*':" ./purgetss/styles/utilities.tss | sort -u | wc -l
 
 # Get all unique prefixes
-grep -o "'\.[a-zA-Z0-9_/-']*':" ./purgetss/styles/tailwind.tss | sed "s/'\.//;s/':$//" | while read line; do echo "${line%%-*}"; done | sort -u
+grep -o "'\.[a-zA-Z0-9_/-']*':" ./purgetss/styles/utilities.tss | sed "s/'\.//;s/':$//" | while read line; do echo "${line%%-*}"; done | sort -u
 ```
 
 ---

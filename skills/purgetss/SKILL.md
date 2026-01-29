@@ -1,6 +1,6 @@
 ---
 name: purgetss
-description: "Titanium PurgeTSS utility-first styling toolkit. Use when styling, reviewing, analyzing, or examining Titanium UI with utility classes, configuring config.cjs, creating dynamic components with $.UI.create(), building animations, using grid layouts, setting up icon fonts, or working with TSS styles. Never suggest Tailwind CSS classes - verify in class-index.md first."
+description: "Titanium PurgeTSS utility-first styling toolkit. Use when styling, reviewing, analyzing, or examining Titanium UI with utility classes, configuring config.cjs, creating dynamic components with $.UI.create(), building animations, using grid layouts, setting up icon fonts, or working with TSS styles. Never suggest other CSS framework classes - verify in class-index.md first."
 argument-hint: "[class-name]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(purgetss *), Bash(node *)
 ---
@@ -19,7 +19,7 @@ This skill automatically detects PurgeTSS usage when invoked and provides utilit
 **PurgeTSS project indicators:**
 - `purgetss/` folder
 - `purgetss/config.cjs` configuration file
-- `purgetss/styles/tailwind.tss` utility classes
+- `purgetss/styles/utilities.tss` utility classes
 - `app/styles/app.tss` (auto-generated)
 
 **Behavior based on detection:**
@@ -36,7 +36,7 @@ This skill automatically detects PurgeTSS usage when invoked and provides utilit
   - [Project Structure](#project-structure)
     - [Understanding `app.tss` vs `_app.tss`](#understanding-apptss-vs-_apptss)
     - [Checking for Unused/Unsupported Classes](#checking-for-unusedunsupported-classes)
-    - [How `tailwind.tss` Works](#how-tailwindtss-works)
+    - [How `utilities.tss` Works](#how-utilitiestss-works)
   - [Quick Start](#quick-start)
   - [Critical Rules (Low Freedom)](#critical-rules-low-freedom)
     - [⭐ PREFER `$.UI.create()` for Dynamic Components](#-prefer-uicreate-for-dynamic-components)
@@ -72,7 +72,7 @@ This skill automatically detects PurgeTSS usage when invoked and provides utilit
 ├─ fonts/              # Custom font files (.ttf, .otf)
 ├─ styles/
 │  ├─ definitions.css  # For VS Code IntelliSense
-│  └─ tailwind.tss     # All PurgeTSS utility classes
+│  └─ utilities.tss     # All PurgeTSS utility classes
 └─ config.cjs          # Theme configuration
 
 ./app/styles/
@@ -115,7 +115,7 @@ At the **end of every generated `app.tss`**, look for this section:
 ```
 
 **These are classes used in your XMLs or Controllers that have NO definition anywhere:**
-- Not in `tailwind.tss` (generated from PurgeTSS utilities)
+- Not in `utilities.tss` (generated from PurgeTSS utilities)
 - Not in `_app.tss` (your custom styles)
 - Not in any other `.tss` file in the `styles/` folder
 
@@ -127,10 +127,10 @@ At the **end of every generated `app.tss`**, look for this section:
 **As part of any analysis, ALWAYS check the end of `app.tss` and report any unused/unsupported classes to the user!**
 :::
 
-### How `tailwind.tss` Works
+### How `utilities.tss` Works
 
-:::info TAILWIND.TSS REGENERATION
-`./purgetss/styles/tailwind.tss` contains ALL available PurgeTSS utility classes.
+:::info UTILITIES.TSS REGENERATION
+`./purgetss/styles/utilities.tss` contains ALL available PurgeTSS utility classes.
 
 **It regenerates when `./purgetss/config.cjs` changes** - this is where you define:
 - Custom colors
@@ -298,9 +298,9 @@ const view = $.UI.create('View', {
 ## Class Verification Workflow
 
 :::danger CRITICAL: VERIFY CLASSES BEFORE SUGGESTING
-**NEVER guess or hallucinate classes based on Tailwind CSS knowledge!**
+**NEVER guess or hallucinate classes based on other CSS Frameworks knowledge!**
 
-PurgeTSS shares naming with Tailwind CSS but has DIFFERENT classes for Titanium.
+PurgeTSS shares naming with some CSS Frameworks but has DIFFERENT classes for Titanium.
 Always verify a class exists before suggesting it.
 :::
 
@@ -316,10 +316,10 @@ Always verify a class exists before suggesting it.
 
 3. **Search the project when unsure**
    ```bash
-   # Search for a class pattern in the project's tailwind.tss
-   grep -E "keyboard-type-" ./purgetss/styles/tailwind.tss
-   grep -E "return-key-type-" ./purgetss/styles/tailwind.tss
-   grep -E "^'bg-" ./purgetss/styles/tailwind.tss
+   # Search for a class pattern in the project's utilities.tss
+   grep -E "keyboard-type-" ./purgetss/styles/utilities.tss
+   grep -E "return-key-type-" ./purgetss/styles/utilities.tss
+   grep -E "^'bg-" ./purgetss/styles/utilities.tss
    ```
 
 4. **After making changes**

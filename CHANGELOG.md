@@ -114,7 +114,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   - Warnings explain the Michael Gangolf issue: iOS code added to Android build causing failures
   - Shows WRONG vs CORRECT patterns for all affected properties
 - **Project Detection System**: All 7 skills now auto-detect project type before providing guidance
-  - `purgetss`: Detects if project uses PurgeTSS (checks for `purgetss/` folder, `config.cjs`, `tailwind.tss`)
+  - `purgetss`: Detects if project uses PurgeTSS (checks for `purgetss/` folder, `config.cjs`, `utilities.tss`)
   - `alloy-*` skills: Detects Alloy vs Classic projects (checks for `app/` vs `Resources/` structure)
   - `ti-*` skills: Detects Titanium projects (checks for `tiapp.xml`)
 - **Detection scripts**: All `assets/detect.js` scripts removed (unused - auto-detection works via skill description matching)

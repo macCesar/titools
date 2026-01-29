@@ -164,7 +164,7 @@ All skills now include **automatic project detection** to ensure compatibility:
 
 | Skill            | What It Detects       | How It Works                                                  |
 | ---------------- | --------------------- | ------------------------------------------------------------- |
-| **purgetss**     | PurgeTSS installation | Checks for `purgetss/` folder, `config.cjs`, `tailwind.tss`   |
+| **purgetss**     | PurgeTSS installation | Checks for `purgetss/` folder, `config.cjs`, `utilities.tss`  |
 | **alloy-expert** | Alloy vs Classic      | Checks for `app/` (Alloy) vs `Resources/` (Classic) structure |
 | **alloy-guides** | Alloy projects        | Checks for `app/views/`, `app/controllers/`                   |
 | **alloy-howtos** | Alloy projects        | Checks for `alloy.jmk`, `config.json`                         |
