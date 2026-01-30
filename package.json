@@ -1,0 +1,64 @@
+{
+  "name": "@maccesar/titools",
+  "version": "2.0.0",
+  "description": "Titanium SDK skills and agents for AI coding assistants (Claude Code, Gemini CLI, Codex CLI)",
+  "main": "lib/index.js",
+  "type": "module",
+  "bin": {
+    "titools": "./bin/titools.js"
+  },
+  "scripts": {
+    "test": "node --test test/**/*.test.js",
+    "lint": "eslint lib/**/*.js",
+    "format": "prettier --write lib/**/*.js"
+  },
+  "keywords": [
+    "titanium",
+    "titanium-sdk",
+    "alloy",
+    "purgetss",
+    "ai",
+    "claude",
+    "gemini",
+    "codex",
+    "skills",
+    "agents",
+    "mobile",
+    "ios",
+    "android"
+  ],
+  "author": "César Estrada <maccesar@gmail.com> (https://github.com/macCesar)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/macCesar/titools.git"
+  },
+  "bugs": {
+    "url": "https://github.com/macCesar/titools/issues"
+  },
+  "homepage": "https://github.com/macCesar/titools#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.0.0",
+    "fs-extra": "^11.2.0",
+    "inquirer": "^9.2.0",
+    "node-fetch": "^3.3.0",
+    "ora": "^8.0.0",
+    "tar": "^6.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.0"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "skills/",
+    "agents/",
+    "AGENTS-TEMPLATE.md",
+    "scripts/titools-docs"
+  ]
+}

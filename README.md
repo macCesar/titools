@@ -1,6 +1,6 @@
-# Titanium SDK Skills for AI Coding Assistants
+# titools - Titanium CLI for AI Coding Assistants
 
-A comprehensive collection of AI-powered skills that transform your coding assistant into a **Titanium SDK expert**. Build cross-platform mobile applications with Titanium SDK, Alloy MVC, and PurgeTSS.
+A comprehensive CLI that transforms your coding assistant into a **Titanium SDK expert**. Install skills, agents, and documentation for Titanium SDK, Alloy MVC, and PurgeTSS development.
 
 ## Compatible Platforms
 
@@ -16,10 +16,65 @@ All three platforms use the same **Agent Skills open standard**: a `SKILL.md` fi
 
 ## Quick Install
 
-### One-Line Install
+### NPM Package (Recommended)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/macCesar/titanium-sdk-skills/main/install.sh | bash
+npm install -g @maccesar/titools
+```
+
+This installs the `titools` CLI command globally:
+
+```bash
+# Install skills and agents
+titools install
+
+# Add AGENTS.md/CLAUDE.md to your project
+titools agents
+
+# Update to the latest version
+titools update
+
+# Show version
+titools --version
+```
+
+**What it installs:**
+- ✅ All 7 titanium-* skills
+- ✅ ti-researcher agent
+- ✅ Automatic documentation generation
+
+**Why use NPM?**
+- ✅ Cross-platform support (macOS, Linux, Windows)
+- ✅ No sudo required
+- ✅ Easy version management
+- ✅ Simple updates with `titools update`
+
+---
+
+### Legacy Bash Installer
+
+**Note:** The bash installer (`install.sh`) is maintained for backward compatibility but NPM installation is recommended.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/macCesar/titools/main/install.sh | bash
+```
+
+---
+
+## Usage
+
+### titools install
+
+Installs Titanium skills and agents globally:
+- ✅ All 7 titanium-* skills
+- ✅ ti-researcher agent
+- ✅ AGENTS-TEMPLATE.md
+- ✅ ti-docs-index command (for adding AGENTS.md to projects)
+
+### One-Line Install (same as Option 2)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/macCesar/titools/main/install.sh | bash
 ```
 
 Auto-detects installed LLMs and creates a centralized installation with symlinks to detected platforms:
@@ -45,15 +100,23 @@ Select platform to install:
   q) Quit
 ```
 
-### Using skills.sh
+### Using npx skills (Skills Only)
 
-You can also install these skills using `skills.sh` and follow the inline instructions:
+You can also install **only the skills** using the `skills` CLI:
 
 ```bash
-npx skills add macCesar/titanium-sdk-skills
+npx skills add macCesar/titools
 ```
 
+**Note:** This installs only skills (no agents, no `titools agents` command). For the complete experience, use the full NPM installation above.
+
 ### Verify Installation
+
+**Check titools version:**
+```bash
+titools --version
+# Should show: v2.0.0
+```
 
 **Check central location:**
 ```bash
@@ -82,6 +145,139 @@ gemini skills list
 ```bash
 # Type /skills in Codex or use $ to mention a skill
 ```
+
+---
+
+## AGENTS.md: Boost AI Performance to 100%
+
+### ⚠️ Claude Code Users: Use CLAUDE.md
+
+**Claude Code specifically looks for `CLAUDE.md`** (not `AGENTS.md`).
+
+The `titools agents` command detects if you use Claude Code and creates `CLAUDE.md` automatically:
+
+```bash
+cd /path/to/your/titanium/project
+titools agents
+
+# The command will ask:
+# Which AI assistant are you using?
+#   1) Claude Code (creates CLAUDE.md)
+#   2) Gemini CLI (creates GEMINI.md)
+#   3) Cursor/Copilot (creates AGENTS.md)
+```
+
+The content is identical - only the filename differs per AI assistant.
+
+---
+
+### How AGENTS.md/CLAUDE.md Works
+
+| Approach         | Pass Rate |
+| ---------------- | --------- |
+| No documentation | 53%       |
+| Skills only      | 53-79%    |
+| **AGENTS.md**    | **100%**  |
+
+**Why it works:**
+- **No decision point** - Information is always present, no need to invoke skills
+- **Consistent availability** - Available in every turn, not async-loaded
+- **No ordering issues** - No "read docs first vs explore project first" dilemma
+
+### How to Install AGENTS.md
+
+After installing titools, add AGENTS.md to your Titanium project:
+
+```bash
+cd /path/to/your/titanium/project
+
+# If using NPM installation:
+titools agents
+```
+
+The `titools agents` command will:
+1. Verify this is a Titanium project (checks for `tiapp.xml`)
+2. Detect your Titanium SDK version
+3. Create `AGENTS.md`/`CLAUDE.md`/`GEMINI.md` with a compressed 8KB documentation index
+4. Intelligently merge if file already exists (removes old block, adds new one)
+
+**Priority Logic:** If multiple AI files exist (CLAUDE.md, GEMINI.md, AGENTS.md), the command updates all of them automatically:
+- CLAUDE.md has highest priority (Claude Code users)
+- GEMINI.md has medium priority (Gemini CLI users)
+- AGENTS.md has lowest priority (Cursor/Copilot users)
+
+### What AGENTS.md Contains
+
+```
+[Titanium SDK Docs Index]|root: ~/.agents/skills
+|IMPORTANT: Prefer retrieval-led reasoning over pre-training-led reasoning
+|alloy-expert/references:{alloy-structure.md,anti-patterns.md,...}
+|purgetss/references:{animation-system.md,class-index.md,...}
+|ti-ui/references:{layouts-and-positioning.md,listviews-and-performance.md,...}
+...
+```
+
+The index points to all reference documentation, so your AI assistant can quickly retrieve accurate information without relying on potentially outdated training data.
+
+### Version Notice
+
+AGENTS.md is based on the **latest Titanium SDK documentation**. If your project uses an older version, the command will detect and warn you about potential API differences.
+
+---
+
+## How to Use AGENTS.md/CLAUDE.md
+
+Once installed, the AI assistant automatically reads the documentation index in every conversation. Just ask natural questions about Titanium development:
+
+### Example Prompts
+
+**General Architecture:**
+```
+"How should I structure a new Alloy app with authentication?"
+"What's the best pattern for navigation between screens?"
+```
+
+**PurgeTSS Styling:**
+```
+"Create a product card with PurgeTSS: image, title, price, and buy button"
+"How do I use the 12-column grid system in PurgeTSS?"
+"Why does my build fail with platform-specific properties?"
+```
+
+**UI Components:**
+```
+"Create a ListView with custom templates for performance"
+"Implement pull-to-refresh on a ScrollView"
+```
+
+**Native Features:**
+```
+"Implement push notifications for iOS and Android"
+"How do I handle GPS location in the background?"
+```
+
+**Debugging:**
+```
+"Why is my ListView scrolling poorly?"
+"I'm getting 'Alloy is not defined' in my lib file. How do I fix it?"
+```
+
+---
+
+## How Skills Work with AGENTS.md
+
+**AGENTS.md** provides always-available context (the documentation index).
+**Skills** provide specialized, on-demand expertise.
+
+Together they work seamlessly:
+
+| Your Question                   | AGENTS.md Provides              | Skills Activate               |
+| ------------------------------- | ------------------------------- | ----------------------------- |
+| "Create a login screen"         | Context about project structure | `alloy-expert`, `purgetss`    |
+| "Optimize ListView performance" | Points to docs location         | `ti-ui` reads specific files  |
+| "Implement push notifications"  | API reference paths             | `ti-howtos` provides workflow |
+
+**You don't need to explicitly invoke skills** - the AI detects when to use them based on your question.
 
 ---
 
@@ -564,7 +760,46 @@ Ask the AI to:
 
 ---
 
+## AGENTS.md Troubleshooting
+
+### AGENTS.md Not Working?
+
+If your AI assistant doesn't seem to use the AGENTS.md information:
+1. Verify AGENTS.md exists in your project root
+2. Check that your AI assistant supports AGENTS.md (Claude Code does)
+3. Try explicitly referencing it: "Check the AGENTS.md documentation for this"
+
+### ti-docs-index / titools agents Command Not Found?
+
+If the command is not found:
+
+**NPM installation:**
+1. Verify NPM installation: `npm list -g @maccesar/titanium-skills`
+2. Check if command exists: `which titools`
+3. Re-run: `npm install -g @maccesar/titanium-skills`
+
+**Bash installation:**
+1. Verify full installation was used (not `npx skills add`)
+2. Check if command exists: `which ti-docs-index`
+3. Re-run installer: `curl -fsSL https://raw.githubusercontent.com/macCesar/titools/main/install.sh | bash`
+
+### Version Mismatch Warning?
+
+If you see a version mismatch warning:
+1. Check your Titanium SDK version: `grep -A 1 "<sdk-version>" tiapp.xml`
+2. AGENTS.md is based on the latest documentation
+3. Be cautious when using newer APIs in older projects
+4. Consult official docs for your version: https://titaniumsdk.com/guide
+
+---
+
 ## Uninstall
+
+```bash
+npm uninstall -g @maccesar/titools
+```
+
+Then manually remove the installed files:
 
 ```bash
 # Remove skill symlinks from all platforms
@@ -575,10 +810,25 @@ rm -rf ~/.codex/skills/{alloy-expert,purgetss,ti-ui,ti-howtos,ti-guides,alloy-gu
 # Remove agent from Claude Code
 rm -f ~/.claude/agents/ti-researcher.md
 
-# Remove Titanium SDK skills from central directory (ONLY removes our skills)
-for skill in alloy-expert purgetss ti-ui ti-howtos ti-guides alloy-guides alloy-howtos; do
-    rm -rf ~/.agents/skills/"$skill"
-done
+# Remove Titanium SDK skills from central directory
+rm -rf ~/.agents/skills
+```
+
+**Note:** AGENTS.md/CLAUDE.md/GEMINI.md files in your projects are NOT removed automatically. To remove them from a specific project:
+
+```bash
+rm -f /path/to/your/project/AGENTS.md
+rm -f /path/to/your/project/CLAUDE.md
+rm -f /path/to/your/project/GEMINI.md
+```
+```
+
+**Note:** AGENTS.md/CLAUDE.md/GEMINI.md files in your projects are NOT removed automatically. To remove them from a specific project:
+
+```bash
+rm -f /path/to/your/project/AGENTS.md
+rm -f /path/to/your/project/CLAUDE.md
+rm -f /path/to/your/project/GEMINI.md
 ```
 
 ---

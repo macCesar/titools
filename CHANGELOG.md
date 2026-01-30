@@ -1,8 +1,54 @@
 # Changelog
 
-All notable changes to Titanium SDK Skills will be documented in this file.
+All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+
+## [2.0.0] - 2026-01-30
+
+### Breaking Changes
+- **Package renamed**: `@maccesar/titanium-skills` → `@maccesar/titools`
+- **Repository renamed**: `macCesar/titanium-sdk-skills` → `macCesar/titools`
+- **New CLI**: Complete NPM package with `titools` command
+- **New command**: `titools agents` replaces `ti-docs-index` script
+- **Version management**: Package version now used in documentation blocks (e.g., `<!-- TITANIUM-KNOWLEDGE-v2.0.0 -->`)
+
+### Added
+- **NPM package**: Full CLI implementation with Node.js
+  - `titools install` - Install skills and agents globally
+  - `titools agents` - Add AGENTS.md/CLAUDE.md/GEMINI.md to projects
+  - `titools update` - Update to latest version from GitHub
+  - `titools --version` - Show version
+- **Cross-platform support**: Works on macOS, Linux, Windows
+- **Smart content preservation**: `titools agents` preserves existing file content
+- **Priority logic**: Automatically updates all AI files when multiple exist (CLAUDE.md > GEMINI.md > AGENTS.md)
+- **Version detection**: Blocks include package version for tracking
+
+### Removed
+- **AGENTS-TEMPLATE.md**: No longer needed (content generated dynamically by CLI)
+- **ti-docs-index script**: Replaced by `titools agents` command
+
+### Fixed
+- **Symlink creation**: Fixed callback/promises issue in symlink creation
+- **Permission handling**: Gracefully handles permission errors when writing to protected directories
+
+### Migration from v1.x
+```bash
+# Uninstall old version
+npm uninstall -g @maccesar/titanium-skills
+
+# Install new version
+npm install -g @maccesar/titools
+
+# Run install
+titools install
+
+# Update your projects
+cd /path/to/your/titanium/project
+titools agents
+```
+
+---
 
 ## [1.6.5] - 2026-01-28
 
