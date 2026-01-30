@@ -56,7 +56,7 @@ titools --version
 **Note:** The bash installer (`install.sh`) is maintained for backward compatibility but NPM installation is recommended.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/macCesar/titools/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/macCesar/titools/main/legacy/install.sh | bash
 ```
 
 ---
@@ -68,13 +68,12 @@ curl -fsSL https://raw.githubusercontent.com/macCesar/titools/main/install.sh | 
 Installs Titanium skills and agents globally:
 - ✅ All 7 titanium-* skills
 - ✅ ti-researcher agent
-- ✅ AGENTS-TEMPLATE.md
-- ✅ ti-docs-index command (for adding AGENTS.md to projects)
+- ✅ AGENTS-TEMPLATE.md (template for documentation generation)
 
 ### One-Line Install (same as Option 2)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/macCesar/titools/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/macCesar/titools/main/legacy/install.sh | bash
 ```
 
 Auto-detects installed LLMs and creates a centralized installation with symlinks to detected platforms:
@@ -781,7 +780,7 @@ If the command is not found:
 **Bash installation:**
 1. Verify full installation was used (not `npx skills add`)
 2. Check if command exists: `which ti-docs-index`
-3. Re-run installer: `curl -fsSL https://raw.githubusercontent.com/macCesar/titools/main/install.sh | bash`
+3. Re-run installer: `curl -fsSL https://raw.githubusercontent.com/macCesar/titools/main/legacy/install.sh | bash`
 
 ### Version Mismatch Warning?
 
