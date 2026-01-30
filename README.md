@@ -51,16 +51,6 @@ titools --version
 
 ---
 
-### Legacy Bash Installer
-
-**Note:** The bash installer (`install.sh`) is maintained for backward compatibility but NPM installation is recommended.
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/macCesar/titools/main/legacy/install.sh | bash
-```
-
----
-
 ## Usage
 
 ### titools install
@@ -69,35 +59,6 @@ Installs Titanium skills and agents globally:
 - ✅ All 7 titanium-* skills
 - ✅ ti-researcher agent
 - ✅ AGENTS-TEMPLATE.md (template for documentation generation)
-
-### One-Line Install (same as Option 2)
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/macCesar/titools/main/legacy/install.sh | bash
-```
-
-Auto-detects installed LLMs and creates a centralized installation with symlinks to detected platforms:
-
-```
-Titanium SDK Skills Installer
-
-✓ Claude Code detected
-✓ Gemini CLI detected
-✓ Codex CLI detected
-
-This installer:
-  1. Installs skills to ~/.agents/skills/ (central location)
-  2. Installs agents to ~/.claude/agents/ (Claude Code)
-  3. Creates symlinks in detected AI CLI directories
-
-Select platform to install:
-
-  a) All detected platforms
-  1) Claude Code only
-  2) Gemini CLI only
-  3) Codex CLI only
-  q) Quit
-```
 
 ### Using npx skills (Skills Only)
 
@@ -780,7 +741,7 @@ If the command is not found:
 **Bash installation:**
 1. Verify full installation was used (not `npx skills add`)
 2. Check if command exists: `which ti-docs-index`
-3. Re-run installer: `curl -fsSL https://raw.githubusercontent.com/macCesar/titools/main/legacy/install.sh | bash`
+3. Re-run installer: `curl -fsSL https://raw.githubusercontent.com/macCesar/titools/main/install.sh | bash`
 
 ### Version Mismatch Warning?
 
@@ -844,6 +805,18 @@ rm -f /path/to/your/project/GEMINI.md
 - Use progressive disclosure (details in references)
 - Include concrete examples
 - Test with real sessions
+
+---
+
+## Legacy Installation (Not Recommended)
+
+The bash installer is maintained for backward compatibility but **NPM installation is strongly recommended**.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/macCesar/titools/main/install.sh | bash
+```
+
+Use this only if you cannot use NPM for any reason.
 
 ---
 
