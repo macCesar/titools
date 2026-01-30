@@ -47,7 +47,7 @@
     "inquirer": "^9.2.0",
     "node-fetch": "^3.3.0",
     "ora": "^8.0.0",
-    "tar": "^6.2.0"
+    "tar": "^7.4.3"
   },
   "devDependencies": {
     "eslint": "^8.57.0",
