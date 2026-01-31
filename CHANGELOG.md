@@ -4,6 +4,12 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.0.5] - 2026-01-30
+
+### Fixed
+- **Block Management**: Updated block detection and removal to be version-agnostic using regex. This prevents duplicating documentation blocks in `AGENTS.md`/`CLAUDE.md`/`GEMINI.md` when the package version changes.
+- **Documentation**: Updated CHANGELOG and AGENTS-TEMPLATE version references to reflect recent releases.
+
 ## [2.0.4] - 2026-01-30
 
 ### Changed
