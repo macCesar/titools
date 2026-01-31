@@ -4,6 +4,17 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+# Changelog
+
+All notable changes to titools will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+
+## [2.0.7] - 2026-01-30
+
+### Fixed
+- **Block Management (Global Cleanup)**: Updated `addOrUpdateBlock` to perform a global search and removal of all existing Titanium knowledge blocks before adding the new one. This ensures that any duplicated blocks from previous versions are completely cleaned up.
+
 ## [2.0.6] - 2026-01-30
 
 ### Fixed
