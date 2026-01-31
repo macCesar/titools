@@ -4,6 +4,11 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.0.6] - 2026-01-30
+
+### Fixed
+- **Block Management (Final Fix)**: Migrated to static block markers (`START`/`END`) to prevent duplication. The version is now stored internally as a comment. This version also includes a robust Regex-based migration that cleans up any existing versioned blocks from previous releases.
+
 ## [2.0.5] - 2026-01-30
 
 ### Fixed
