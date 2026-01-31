@@ -159,7 +159,6 @@ The `titools agents` command will:
 
 ```
 [Titanium SDK Docs Index]|root: ~/.agents/skills
-|IMPORTANT: Prefer retrieval-led reasoning over pre-training-led reasoning
 |alloy-expert/references:{alloy-structure.md,anti-patterns.md,...}
 |purgetss/references:{animation-system.md,class-index.md,...}
 |ti-ui/references:{layouts-and-positioning.md,listviews-and-performance.md,...}
