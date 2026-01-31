@@ -4,6 +4,27 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.0.4] - 2026-01-30
+
+### Changed
+- **Compressed Index**: Removed redundant "IMPORTANT" message from inside the compressed block (already present in Markdown header)
+- **Token Efficiency**: Reduced block size for better AI performance
+
+## [2.0.3] - 2026-01-30
+
+### Fixed
+- **Compatibility**: Used named import for `tar` package to support v7.x API changes
+
+## [2.0.2] - 2026-01-30
+
+### Refactored
+- **Modernized**: Removed `node-fetch` dependency in favor of native `fetch` (requires Node.js 18+)
+
+## [2.0.1] - 2026-01-30
+
+### Fixed
+- **Security**: Updated `tar` dependency to v7.4.3 to address vulnerabilities
+
 ## [2.0.0] - 2026-01-30
 
 ### Breaking Changes
