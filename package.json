@@ -1,6 +1,6 @@
 {
   "name": "@maccesar/titools",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "Titanium SDK skills and agents for AI coding assistants (Claude Code, Gemini CLI, Codex CLI)",
   "main": "lib/index.js",
   "type": "module",
