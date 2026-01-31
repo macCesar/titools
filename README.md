@@ -709,76 +709,50 @@ Ask the AI to:
 
 ---
 
-## AGENTS.md Troubleshooting
+## Troubleshooting
 
-### AGENTS.md Not Working?
-
-If your AI assistant doesn't seem to use the AGENTS.md information:
-1. Verify AGENTS.md exists in your project root
-2. Check that your AI assistant supports AGENTS.md (Claude Code does)
-3. Try explicitly referencing it: "Check the AGENTS.md documentation for this"
-
-### ti-docs-index / titools agents Command Not Found?
+### titools command not found?
 
 If the command is not found:
+```bash
+# Verify installation
+npm list -g @maccesar/titools
 
-**NPM installation:**
-1. Verify NPM installation: `npm list -g @maccesar/titanium-skills`
-2. Check if command exists: `which titools`
-3. Re-run: `npm install -g @maccesar/titanium-skills`
+# Re-install
+npm install -g @maccesar/titools
+```
 
-**Bash installation:**
-1. Verify full installation was used (not `npx skills add`)
-2. Check if command exists: `which ti-docs-index`
-3. Re-run installer: `curl -fsSL https://raw.githubusercontent.com/macCesar/titools/main/install.sh | bash`
+### AGENTS.md not working?
 
-### Version Mismatch Warning?
+If your AI doesn't use the AGENTS.md information:
+1. Verify AGENTS.md/CLAUDE.md exists in your project root
+2. Check that your AI supports these files (Claude Code does)
+3. Try explicitly referencing: "Check the AGENTS.md documentation"
 
-If you see a version mismatch warning:
-1. Check your Titanium SDK version: `grep -A 1 "<sdk-version>" tiapp.xml`
-2. AGENTS.md is based on the latest documentation
-3. Be cautious when using newer APIs in older projects
-4. Consult official docs for your version: https://titaniumsdk.com/guide
+### Version mismatch warning?
+
+AGENTS.md is based on the latest documentation. Be cautious when using newer APIs in older projects.
 
 ---
 
 ## Uninstall
 
 ```bash
+# Remove the CLI
 npm uninstall -g @maccesar/titools
+
+# Remove skills and agents
+titools uninstall
 ```
 
-Then manually remove the installed files:
-
-```bash
-# Remove skill symlinks from all platforms
-rm -rf ~/.claude/skills/{alloy-expert,purgetss,ti-ui,ti-howtos,ti-guides,alloy-guides,alloy-howtos}
-rm -rf ~/.gemini/skills/{alloy-expert,purgetss,ti-ui,ti-howtos,ti-guides,alloy-guides,alloy-howtos}
-rm -rf ~/.codex/skills/{alloy-expert,purgetss,ti-ui,ti-howtos,ti-guides,alloy-guides,alloy-howtos}
-
-# Remove agent from Claude Code
-rm -f ~/.claude/agents/ti-researcher.md
-
-# Remove Titanium SDK skills from central directory
-rm -rf ~/.agents/skills
-```
-
-**Note:** AGENTS.md/CLAUDE.md/GEMINI.md files in your projects are NOT removed automatically. To remove them from a specific project:
+**Note:** AGENTS.md/CLAUDE.md/GEMINI.md files in your projects are NOT removed. To remove them manually:
 
 ```bash
 rm -f /path/to/your/project/AGENTS.md
 rm -f /path/to/your/project/CLAUDE.md
 rm -f /path/to/your/project/GEMINI.md
 ```
-```
 
-**Note:** AGENTS.md/CLAUDE.md/GEMINI.md files in your projects are NOT removed automatically. To remove them from a specific project:
-
-```bash
-rm -f /path/to/your/project/AGENTS.md
-rm -f /path/to/your/project/CLAUDE.md
-rm -f /path/to/your/project/GEMINI.md
-```
 
 ---
 
