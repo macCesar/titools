@@ -60,22 +60,11 @@ Installs Titanium skills and agents globally:
 - ✅ ti-researcher agent
 - ✅ AGENTS-TEMPLATE.md (template for documentation generation)
 
-### Using npx skills (Skills Only)
-
-You can also install **only the skills** using the `skills` CLI:
-
-```bash
-npx skills add macCesar/titools
-```
-
-**Note:** This installs only skills (no agents, no `titools agents` command). For the complete experience, use the full NPM installation above.
-
 ### Verify Installation
 
 **Check titools version:**
 ```bash
 titools --version
-# Should show: v2.0.0
 ```
 
 **Check central location:**
