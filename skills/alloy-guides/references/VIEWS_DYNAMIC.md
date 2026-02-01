@@ -1,17 +1,5 @@
 # Dynamic Styles
 
-## Table of Contents
-
-- [Dynamic Styles](#dynamic-styles)
-  - [Table of Contents](#table-of-contents)
-  - [Introduction](#introduction)
-  - [Define Class Styles](#define-class-styles)
-  - [Generate a Dynamic Style](#generate-a-dynamic-style)
-    - [Equivalent Code Outside Controller](#equivalent-code-outside-controller)
-  - [Modify TSS Classes](#modify-tss-classes)
-  - [Autostyle](#autostyle)
-    - [Why Autostyle is Needed](#why-autostyle-is-needed)
-
 ## Introduction
 
 Since Alloy 1.2.0, Alloy supports changing styles dynamically or during runtime. There are two methods to support dynamic styling in Alloy. You can either generate a dynamic style dictionary that can be passed to `applyProperties` or a create method, or modify TSS class styles to an existing component on the fly.

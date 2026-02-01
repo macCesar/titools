@@ -2,44 +2,6 @@
 
 Practical tutorials and guides for building real-world Titanium applications.
 
-## Table of Contents
-
-- [Titanium SDK Tutorials](#titanium-sdk-tutorials)
-  - [Table of Contents](#table-of-contents)
-  - [RESTe - API Integration](#reste---api-integration)
-    - [Overview](#overview)
-    - [Installation](#installation)
-    - [Basic Configuration](#basic-configuration)
-    - [Usage](#usage)
-    - [Backbone.js Models/Collections](#backbonejs-modelscollections)
-    - [Important Notes](#important-notes)
-    - [Mock Data (On-The-Fly)](#mock-data-on-the-fly)
-    - [Resources](#resources)
-  - [Camera App Tutorial](#camera-app-tutorial)
-    - [Basic Camera Access](#basic-camera-access)
-    - [Photo Gallery](#photo-gallery)
-    - [Saving Images](#saving-images)
-  - [Geolocation Tutorial](#geolocation-tutorial)
-    - [Basic Location](#basic-location)
-    - [Continuous Tracking](#continuous-tracking)
-    - [Reverse Geocoding](#reverse-geocoding)
-  - [Alloy Controller Chaining](#alloy-controller-chaining)
-    - [Pattern Overview](#pattern-overview)
-    - [Basic Pattern](#basic-pattern)
-    - [Benefits](#benefits)
-  - [Build Automation with Fastlane](#build-automation-with-fastlane)
-    - [Overview](#overview-1)
-    - [Installing Fastlane](#installing-fastlane)
-    - [Basic Fastfile](#basic-fastfile)
-    - [Usage](#usage-1)
-    - [Advanced Options](#advanced-options)
-  - [Additional Tutorials](#additional-tutorials)
-    - [Alloy Boilerplates](#alloy-boilerplates)
-    - [Complete Sample Apps](#complete-sample-apps)
-  - [Resources](#resources-1)
-
----
-
 ## RESTe - API Integration
 
 ### Overview

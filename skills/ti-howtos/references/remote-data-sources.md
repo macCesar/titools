@@ -1,40 +1,5 @@
 # Remote Data Sources
 
-## Table of Contents
-
-- [Remote Data Sources](#remote-data-sources)
-  - [Table of Contents](#table-of-contents)
-  - [1. HTTPClient and Request Lifecycle](#1-httpclient-and-request-lifecycle)
-    - [Basic Pattern](#basic-pattern)
-    - [HTTP Methods](#http-methods)
-    - [Setting Headers](#setting-headers)
-    - [XHR Lifecycle States](#xhr-lifecycle-states)
-    - [Progress Monitoring](#progress-monitoring)
-  - [2. Working with JSON Data](#2-working-with-json-data)
-    - [Receiving JSON](#receiving-json)
-    - [Sending JSON](#sending-json)
-    - [Important Limitation](#important-limitation)
-  - [3. Working with XML Data](#3-working-with-xml-data)
-    - [Parsing XML](#parsing-xml)
-    - [Common DOM Methods](#common-dom-methods)
-    - [Important: Know Your DTD](#important-know-your-dtd)
-  - [4. File Uploads and Downloads](#4-file-uploads-and-downloads)
-    - [File Upload](#file-upload)
-    - [File Download (Cross-Platform)](#file-download-cross-platform)
-    - [File Storage Locations](#file-storage-locations)
-  - [5. Sockets](#5-sockets)
-    - [Creating a TCP Socket](#creating-a-tcp-socket)
-    - [Socket Listening (Android/iOS)](#socket-listening-androidios)
-  - [6. Dealing with SOAP Web Services](#6-dealing-with-soap-web-services)
-    - [Manual Approach (SOAP Envelope)](#manual-approach-soap-envelope)
-  - [7. SSL Certificate \& Security Manager](#7-ssl-certificate--security-manager)
-    - [SSL Pinning (TiSDK 3.3.0+)](#ssl-pinning-tisdk-330)
-    - [Android: addTrustManager](#android-addtrustmanager)
-  - [CORS Considerations for Mobile Web](#cors-considerations-for-mobile-web)
-  - [Best Practices](#best-practices)
-
----
-
 ## 1. HTTPClient and Request Lifecycle
 
 ### Basic Pattern
@@ -315,7 +280,7 @@ Unlike standard certificate validation, Pinning ensures the app only communicate
 const xhr = Ti.Network.createHTTPClient({
     validatesSecureCertificate: true,
     // securityManager allows implementing custom validation logic
-    securityManager: mySecurityModule 
+    securityManager: mySecurityModule
 });
 ```
 

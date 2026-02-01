@@ -6,40 +6,6 @@ The opacity modifier allows you to add transparency to **ANY color property** by
 You can add an **opacity modifier to ANY of the available color properties** by adding an **opacity value** between 0 and 100 to the end of the color name separated by a slash ( / ).
 :::
 
-## Table of Contents
-
-- [Opacity Modifier](#opacity-modifier)
-  - [Table of Contents](#table-of-contents)
-  - [Basic Syntax](#basic-syntax)
-  - [How It Works](#how-it-works)
-  - [Usage in XML](#usage-in-xml)
-    - [Background Colors](#background-colors)
-    - [Text Colors](#text-colors)
-    - [Border Colors](#border-colors)
-    - [All Color Properties](#all-color-properties)
-  - [Usage with `@apply` Directive](#usage-with-apply-directive)
-  - [Complete List of Supported Color Properties](#complete-list-of-supported-color-properties)
-    - [Background Properties](#background-properties)
-    - [Text Properties](#text-properties)
-    - [Border Properties](#border-properties)
-    - [UI Element Properties](#ui-element-properties)
-    - [Navigation Properties](#navigation-properties)
-    - [Indicator Properties](#indicator-properties)
-    - [Tint Properties](#tint-properties)
-    - [Miscellaneous Properties](#miscellaneous-properties)
-  - [Opacity Value Reference](#opacity-value-reference)
-  - [Common Patterns](#common-patterns)
-    - [Hover/Active States](#hoveractive-states)
-    - [Disabled Appearance](#disabled-appearance)
-    - [Overlay/Backdrop](#overlaybackdrop)
-    - [Glassmorphism Effect](#glassmorphism-effect)
-    - [Gradient Fades](#gradient-fades)
-  - [Limitations](#limitations)
-  - [Performance Considerations](#performance-considerations)
-  - [Combining with Arbitrary Colors](#combining-with-arbitrary-colors)
-
----
-
 ## Basic Syntax
 
 ```xml

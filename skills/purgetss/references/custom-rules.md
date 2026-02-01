@@ -6,20 +6,6 @@ Custom rules in PurgeTSS allow you to style **Titanium elements**, **IDs**, and 
 This feature is particularly useful for meeting visual and design requirements across multiple platforms (iOS and Android).
 :::
 
-## Table of Contents
-
-- [Custom Rules for Ti Elements, IDs, and Classes](#custom-rules-for-ti-elements-ids-and-classes)
-  - [Table of Contents](#table-of-contents)
-  - [Naming Conventions](#naming-conventions)
-  - [Modifier Keys](#modifier-keys)
-    - [Platform, Device, and Conditional Blocks](#platform-device-and-conditional-blocks)
-  - [Property Values](#property-values)
-  - [Config Example](#config-example)
-  - [Generated TSS Output](#generated-tss-output)
-  - [Complete Styling Example](#complete-styling-example)
-
----
-
 ## Naming Conventions
 
 | Target Type     | Naming Convention  | Example                             |

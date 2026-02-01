@@ -2,7 +2,6 @@
 
 Framework options and architectural patterns for Titanium applications.
 
-## Table of Contents
 1. [Alloy Framework](#alloy-framework)
 2. [Classic Titanium](#classic-titanium)
 3. [Choosing a Framework](#choosing-a-framework)

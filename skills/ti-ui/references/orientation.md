@@ -1,39 +1,5 @@
 # Orientation
 
-## Table of Contents
-
-- [Orientation](#orientation)
-  - [Table of Contents](#table-of-contents)
-  - [1. Overview](#1-overview)
-  - [2. Orientation Modes](#2-orientation-modes)
-    - [Supported Orientations](#supported-orientations)
-  - [3. Locking Orientation](#3-locking-orientation)
-    - [Lock to Specific Orientation](#lock-to-specific-orientation)
-    - [Android Orientation Values](#android-orientation-values)
-    - [Runtime Orientation Lock (iOS)](#runtime-orientation-lock-ios)
-  - [4. Handling Orientation Changes](#4-handling-orientation-changes)
-    - [Detect Orientation Change](#detect-orientation-change)
-    - [Window Orientation Events](#window-orientation-events)
-  - [5. Adapting UI to Orientation](#5-adapting-ui-to-orientation)
-    - [Responsive Layout Example](#responsive-layout-example)
-    - [Orientation-Specific Components](#orientation-specific-components)
-  - [6. Platform Differences](#6-platform-differences)
-    - [iOS Orientation](#ios-orientation)
-    - [Android Orientation](#android-orientation)
-  - [7. Checking Current Orientation](#7-checking-current-orientation)
-  - [8. Disabling Orientation Change](#8-disabling-orientation-change)
-    - [Disable All Rotation](#disable-all-rotation)
-    - [Disable Rotation for Specific Window (iOS)](#disable-rotation-for-specific-window-ios)
-  - [9. Orientation Lock During Specific Operation](#9-orientation-lock-during-specific-operation)
-    - [Temporarily Lock Orientation](#temporarily-lock-orientation)
-  - [10. Best Practices](#10-best-practices)
-  - [11. Common Issues](#11-common-issues)
-    - [Orientation Not Changing](#orientation-not-changing)
-    - [UI Doesn't Adapt](#ui-doesnt-adapt)
-    - [Upside-Down Orientation](#upside-down-orientation)
-
----
-
 ## 1. Overview
 
 Orientation refers to whether the app displays in portrait or landscape mode, and how to handle orientation changes.

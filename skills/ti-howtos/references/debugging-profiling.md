@@ -2,54 +2,6 @@
 
 Comprehensive guide for debugging Titanium apps, managing memory, finding leaks, and using native debugging tools.
 
-## Table of Contents
-
-- [Debugging and Profiling](#debugging-and-profiling)
-  - [Table of Contents](#table-of-contents)
-  - [Debugging Overview](#debugging-overview)
-    - [Essential Elements of Debugging](#essential-elements-of-debugging)
-    - [Debugging Techniques](#debugging-techniques)
-  - [Memory Management](#memory-management)
-    - [How JavaScript Manages Memory](#how-javascript-manages-memory)
-    - [How Titanium Manages Memory](#how-titanium-manages-memory)
-    - [Releasing Memory Properly](#releasing-memory-properly)
-    - [Parent-Child Relationships](#parent-child-relationships)
-    - [Platform Memory Limits](#platform-memory-limits)
-  - [Memory Leak Detection](#memory-leak-detection)
-    - [Common Leak Sources](#common-leak-sources)
-    - [Debugging Memory on iOS (Instruments)](#debugging-memory-on-ios-instruments)
-    - [Debugging Memory on Android (DDMS)](#debugging-memory-on-android-ddms)
-  - [Android Debugging Tools](#android-debugging-tools)
-    - [DDMS (Dalvik Debug Monitor Service)](#ddms-dalvik-debug-monitor-service)
-      - [Log Output with DDMS](#log-output-with-ddms)
-      - [Simulate Network Conditions](#simulate-network-conditions)
-      - [Simulate Calls/SMS](#simulate-callssms)
-      - [Set GPS Coordinates](#set-gps-coordinates)
-      - [File System Exploration](#file-system-exploration)
-      - [Memory Monitoring](#memory-monitoring)
-    - [ADB (Android Debug Bridge)](#adb-android-debug-bridge)
-      - [Log Output](#log-output)
-      - [File System](#file-system)
-      - [Transfer Files](#transfer-files)
-      - [Access SQLite Databases](#access-sqlite-databases)
-    - [Creating Emulators](#creating-emulators)
-    - [Modifying Emulators](#modifying-emulators)
-  - [iOS Debugging Tools](#ios-debugging-tools)
-    - [Instruments](#instruments)
-    - [Xcode Build Debugging](#xcode-build-debugging)
-    - [Console Logs](#console-logs)
-  - [6. Automation and UI Testing](#6-automation-and-ui-testing)
-  - [Best Practices](#best-practices)
-    - [Memory Management](#memory-management-1)
-    - [Debugging](#debugging)
-    - [Performance](#performance)
-  - [Platform-Specific Notes](#platform-specific-notes)
-    - [Android](#android)
-    - [iOS](#ios)
-  - [Resources](#resources)
-
----
-
 ## Debugging Overview
 
 ### Essential Elements of Debugging

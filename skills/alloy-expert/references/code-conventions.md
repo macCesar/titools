@@ -1,4 +1,4 @@
-# PurgeTSS & Code Conventions
+# TSS Styling & Code Conventions
 
 ## Module System: CommonJS (NOT ES6 modules)
 
@@ -6,11 +6,11 @@ Titanium uses **CommonJS** for modules. Do NOT use ES6 `import`/`export`:
 
 ```javascript
 // CORRECT - CommonJS
-const { Navigation } = require('lib/services/navigation')
+const { Navigation } = require('services/navigation')
 exports.Navigation = { /* ... */ }
 
 // WRONG - ES6 modules (won't work in Titanium)
-import { Navigation } from 'lib/services/navigation'
+import { Navigation } from 'services/navigation'
 export const Navigation = { /* ... */ }
 ```
 
@@ -33,27 +33,176 @@ const users = fetchUsers()
 const name = user.name
 ```
 
-## Styling with PurgeTSS (Utility-First)
-Use utility classes for layout, colors, typography, and spacing. Avoid manual TSS files.
+## Styling with TSS
+
+### TSS File Organization
+
+Every controller can have a matching TSS file. Alloy also supports a global `app.tss`.
+
+```
+app/styles/
+├── app.tss              # Global styles (applied to ALL controllers)
+├── index.tss            # Styles for index controller only
+└── user/
+    ├── profile.tss      # Styles for user/profile controller
+    └── settings.tss
+```
+
+**Style cascade (priority low → high):**
+1. `app.tss` — global base styles
+2. `<controller>.tss` — controller-specific styles
+3. Theme overrides (`app/themes/<name>/styles/`)
+
+### Selector Types
+
+```tss
+/* Element selector — applies to ALL elements of this type */
+"Label": { color: '#111827', font: { fontSize: 16 } }
+"Window": { backgroundColor: '#ffffff' }
+"TextField": { height: 48, borderRadius: 8 }
+
+/* Class selector — reusable, apply via class="..." in XML */
+".card": { borderRadius: 12, backgroundColor: '#fff', borderWidth: 1, borderColor: '#e5e7eb' }
+".btn-primary": { backgroundColor: '#2563eb', color: '#fff', height: 48, borderRadius: 8 }
+".text-secondary": { color: '#6b7280' }
+
+/* ID selector — unique to one element */
+"#loginButton": { bottom: 24, left: 16, right: 16 }
+"#headerTitle": { font: { fontSize: 24, fontWeight: 'bold' } }
+```
+
+**When to use each:**
+
+| Selector            | Use for                     | Example                |
+| ------------------- | --------------------------- | ---------------------- |
+| Element (`"Label"`) | App-wide defaults           | Base font, color       |
+| Class (`".card"`)   | Reusable patterns (3+ uses) | Cards, buttons, inputs |
+| ID (`"#name"`)      | Unique element positioning  | Specific layout needs  |
+
+### Class Selectors in XML
 
 ```xml
-<!-- GOOD: PurgeTSS Utility Classes -->
-<View class="vertical h-auto w-screen bg-gray-100">
-  <Label class="m-4 text-xl font-bold text-blue-600" text="L('welcome')" />
+<!-- Combine multiple classes -->
+<View class="card mt-md mx-md">
+  <Label class="text-secondary" text="L('subtitle')" />
+  <Button class="btn-primary" title="L('action')" />
 </View>
 ```
 
-**Critical PurgeTSS Rules:**
-- NO `flex-row`/`flex-col` → Use `horizontal`/`vertical`
-- NO `w-full` → Use `w-screen`
-- NO `p-*` on Views → Use `m-*` on children
-- NO `justify-*`/`items-center` → Use margins/positioning
+Classes defined in `app.tss` are available in every controller. Classes in `<controller>.tss` are only available in that controller.
 
-## Platform & Device Modifiers
-Leverage PurgeTSS modifiers instead of writing conditional logic in controllers.
+### ID + Class Combined
+
+When an element has both an ID and classes, properties merge with ID taking priority:
+
+```tss
+/* app.tss */
+".btn-primary": { backgroundColor: '#2563eb', color: '#fff', height: 48 }
+
+/* user/profile.tss */
+"#saveButton": { bottom: 24, left: 16, right: 16 }
+```
 
 ```xml
-<View class="ios:mt-10 tablet:mt-20 mt-5" />
+<!-- Gets btn-primary styles + saveButton positioning -->
+<Button id="saveButton" class="btn-primary" title="L('save')" />
+```
+
+### Building a Design System in app.tss
+
+Define reusable style classes for consistency:
+
+```tss
+/* app.tss — Design System */
+
+/* === Layout === */
+".row": { layout: 'horizontal', width: Ti.UI.FILL, height: Ti.UI.SIZE }
+".col": { layout: 'vertical', width: Ti.UI.FILL, height: Ti.UI.SIZE }
+
+/* === Spacing === */
+".mt-sm": { top: 8 }
+".mt-md": { top: 16 }
+".mt-lg": { top: 24 }
+".mx-md": { left: 16, right: 16 }
+".mx-lg": { left: 24, right: 24 }
+
+/* === Typography === */
+".text-title": { font: { fontSize: 24, fontWeight: 'bold' } }
+".text-body": { font: { fontSize: 16 } }
+".text-caption": { font: { fontSize: 14 }, color: '#6b7280' }
+
+/* === Components === */
+".card": {
+  backgroundColor: '#fff',
+  borderRadius: 12,
+  borderWidth: 1,
+  borderColor: '#e5e7eb',
+  width: Ti.UI.FILL,
+  height: Ti.UI.SIZE
+}
+
+".input": {
+  height: 48,
+  width: Ti.UI.FILL,
+  borderRadius: 8,
+  borderWidth: 1,
+  borderColor: '#d1d5db',
+  backgroundColor: '#fff',
+  paddingLeft: 12,
+  font: { fontSize: 16 }
+}
+
+".btn-primary": {
+  backgroundColor: '#2563eb',
+  color: '#fff',
+  height: 48,
+  width: Ti.UI.FILL,
+  borderRadius: 8,
+  font: { fontSize: 16, fontWeight: 'bold' }
+}
+```
+
+### Complete Example
+
+```xml
+<!-- views/feature/list.xml -->
+<View id="container">
+  <Label id="welcomeLabel" text="L('welcome')" />
+</View>
+```
+
+```tss
+/* styles/feature/list.tss */
+"#container": {
+  layout: 'vertical',
+  height: Ti.UI.SIZE,
+  width: Ti.UI.FILL,
+  backgroundColor: '#f3f4f6'
+}
+
+"#welcomeLabel": {
+  left: 16,
+  right: 16,
+  font: { fontSize: 20, fontWeight: 'bold' },
+  color: '#2563eb'
+}
+```
+
+### Titanium Layout Rules
+
+- Three layout modes: `layout: 'horizontal'`, `layout: 'vertical'`, and composite (default — no `layout` needed)
+- NO padding on container Views — use margins on children instead
+- `width: Ti.UI.FILL` fills available space, `width: Ti.UI.SIZE` wraps content
+- `height: Ti.UI.SIZE` is essential for vertical layouts with dynamic content
+- Use percentage widths (`width: '50%'`) for proportional column layouts
+
+## Platform & Device Modifiers
+Use TSS platform modifiers instead of writing conditional logic in controllers.
+
+```tss
+"#header[platform=ios]": { top: 40 }
+"#header[platform=android]": { top: 20 }
+"#header[formFactor=tablet]": { top: 80 }
 ```
 
 ## applyProperties() Pattern
@@ -94,41 +243,23 @@ Use `L()` for all text and always include `accessibilityLabel` for interactive e
 
 ```xml
 <Label text="L('welcome_message')" accessibilityLabel="Welcome Header" />
-<ImageView class="fa-solid fa-user" accessibilityLabel="User Profile Picture" />
+<ImageView image="/images/user.png" accessibilityLabel="User Profile Picture" />
 ```
 
-## Icon Fonts (PurgeTSS Workflow)
-Integrate icons using classes generated by `purgetss build-fonts`. Classes are mapped to both `text` and `title` properties.
+## Percentage-Based Layouts
+Use percentage widths in TSS for responsive column layouts.
 
 ```xml
-<Label class="fa-solid fa-envelope mr-2 text-gray-400" />
-<Button class="fas fa-play" title="L('play')" />
-```
-
-## Grid System
-Use PurgeTSS percentage-based grid for alignments.
-
-```xml
-<View class="horizontal w-screen">
-  <View class="w-8/12 bg-red-500" />
-  <View class="w-4/12 bg-blue-500" />
+<View id="row">
+  <View id="colLeft" />
+  <View id="colRight" />
 </View>
 ```
 
-For true grid layouts, use the Grid component:
-```xml
-<View class="grid-cols-3 gap-2">
-  <View class="bg-red-500" />
-  <View class="bg-blue-500" />
-  <View class="bg-green-500" />
-</View>
-```
-
-## Animation Component
-PurgeTSS includes an Animation component (`purgetss.ui`) for 2D Matrix transformations.
-
-```xml
-<Animation id="myAnim" module="purgetss.ui" class="close:opacity-0 duration-500 open:opacity-100" />
+```tss
+"#row": { layout: 'horizontal', width: Ti.UI.FILL }
+"#colLeft": { width: '66.66%', backgroundColor: '#ef4444' }
+"#colRight": { width: '33.33%', backgroundColor: '#3b82f6' }
 ```
 
 ## Naming Conventions
@@ -149,8 +280,10 @@ app/
 │   └── helpers/
 │       └── dateHelper.js
 ├── views/
+│   ├── index.xml             # match controller path exactly
 │   └── user/
-│       └── profile.xml       # match controller path exactly
+│       ├── profile.xml
+│       └── settings.xml
 ```
 
 ### Variables and Functions
@@ -227,7 +360,7 @@ exports.updateUser = async function(id, data) { /* ... */ }
 exports.deleteUser = async function(id) { /* ... */ }
 
 // Usage
-const { getUser, updateUser } = require('lib/api/userApi')
+const { getUser, updateUser } = require('api/userApi')
 ```
 
 ### Default Export (For Classes/Singletons)
@@ -242,7 +375,7 @@ class Logger {
 module.exports = new Logger()
 
 // Usage
-const logger = require('lib/services/logger')
+const logger = require('services/logger')
 ```
 
 ### Mixed Exports
@@ -263,7 +396,7 @@ exports.Events = {
 module.exports = EventBus
 
 // Usage
-const EventBus = require('lib/services/eventBus')
+const EventBus = require('services/eventBus')
 const { Events } = EventBus
 ```
 
@@ -275,7 +408,7 @@ exports.productApi = require('./productApi').productApi
 exports.orderApi = require('./orderApi').orderApi
 
 // Usage - cleaner imports
-const { userApi, productApi } = require('lib/api')
+const { userApi, productApi } = require('api')
 ```
 
 ### CommonJS Compatibility

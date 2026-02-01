@@ -2,7 +2,6 @@
 
 Community resources, support channels, tools, and learning materials for Titanium developers.
 
-## Table of Contents
 1. [Developer Support](#developer-support)
 2. [Example Code](#example-code)
 3. [Community Modules](#community-modules)

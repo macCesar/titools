@@ -1,43 +1,5 @@
 # iOS UI Components and Conventions
 
-## Table of Contents
-
-- [iOS UI Components and Conventions](#ios-ui-components-and-conventions)
-  - [Table of Contents](#table-of-contents)
-  - [1. Overview](#1-overview)
-  - [2. iPad-Only UI Components](#2-ipad-only-ui-components)
-    - [Popover](#popover)
-    - [Popover Events](#popover-events)
-    - [SplitWindow](#splitwindow)
-    - [SplitWindow in Portrait](#splitwindow-in-portrait)
-  - [3. Badges](#3-badges)
-    - [App Icon Badge](#app-icon-badge)
-    - [Tab Badge](#tab-badge)
-    - [Accessing Preferences in App](#accessing-preferences-in-app)
-      - [Dynamic Quick Actions](#dynamic-quick-actions)
-      - [Handling Quick Actions](#handling-quick-actions)
-    - [Peek and Pop](#peek-and-pop)
-      - [Enabling Peek and Pop](#enabling-peek-and-pop)
-      - [Preview Action Styles](#preview-action-styles)
-  - [6. Navigation Bar (iOS)](#6-navigation-bar-ios)
-    - [NavigationWindow](#navigationwindow)
-    - [Toolbar](#toolbar)
-    - [System Buttons](#system-buttons)
-  - [7. Tab Bar](#7-tab-bar)
-    - [Creating Tab Bar](#creating-tab-bar)
-    - [Tab Bar Customization (iOS)](#tab-bar-customization-ios)
-  - [8. Activity Indicator](#8-activity-indicator)
-    - [iOS-Specific Location](#ios-specific-location)
-  - [9. Platform Best Practices](#9-platform-best-practices)
-    - [Follow iOS Human Interface Guidelines](#follow-ios-human-interface-guidelines)
-    - [iOS-Specific Patterns](#ios-specific-patterns)
-  - [10. Common Issues](#10-common-issues)
-    - [Settings Not Appearing](#settings-not-appearing)
-    - [3D Touch Not Working](#3d-touch-not-working)
-    - [SplitWindow Issues](#splitwindow-issues)
-
----
-
 ## 1. Overview
 
 iOS offers several UI components and conventions that differ from Android. This guide covers iPad-specific controls, app badges, Settings integration, 3D Touch, and iOS-specific navigation patterns.

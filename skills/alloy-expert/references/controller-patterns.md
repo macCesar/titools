@@ -1,91 +1,69 @@
-# PurgeTSS Implementation Patterns
+# Alloy Controller Patterns
 
-## Standard PurgeTSS View Template
+## Titanium Layout Rules
 
-```xml
-<!-- views/user/card.xml -->
-<Alloy>
-  <View class="border-(1) m-2 rounded-xl border-gray-200 bg-white shadow-md">
-    <View class="horizontal m-3 w-screen">
-      <Label class="fa-solid fa-user-circle text-4xl text-blue-500" />
-      <View class="vertical ml-3">
-        <Label id="name" class="text-lg font-bold text-gray-900" />
-        <Label id="email" class="text-sm text-gray-500" />
-      </View>
-    </View>
-    <Button class="mx-3 mb-3 mt-4 h-10 w-screen rounded-md bg-blue-600 font-medium text-white"
-      title="L('view_profile')"
-      onClick="onViewProfile"
-    />
-  </View>
-</Alloy>
-```
+- Use `layout: 'horizontal'` for left-to-right
+- Use `layout: 'vertical'` for top-to-bottom
+- Omit `layout` for composite (absolute positioning — the default)
+- Use margins on children instead of padding on parent
 
-**PurgeTSS Layout Rules:**
-- Use `horizontal` (not `flex-row`) for left-to-right
-- Use `vertical` (not `flex-col`) for top-to-bottom
-- Omit layout class for composite (absolute positioning)
-- Use `m-*` on children instead of `p-*` on parent
-- Use `border-(1)` with parentheses for arbitrary values
+> For a complete View + TSS + Controller example, see the Quick Start in SKILL.md.
 
-## Animation Component Usage
+## Animation Usage
 
-Always prefer the PurgeTSS Animation component over manual matrix calculations.
-
-```xml
-<Animation id="myAnim" module="purgetss.ui" class="close:opacity-0 duration-500 open:opacity-100" />
-```
+Use `Ti.UI.createAnimation()` for UI transitions.
 
 ```javascript
 // controllers/user/card.js
 function show() {
-  $.myAnim.open($.container)
+  $.container.opacity = 0
+  $.container.animate(Ti.UI.createAnimation({
+    opacity: 1,
+    duration: 500,
+    curve: Ti.UI.ANIMATION_CURVE_EASE_OUT
+  }))
 }
 
-function hide() {
-  $.myAnim.close($.container, () => {
-    $.container.applyProperties({ visible: false })
+function hide(callback) {
+  $.container.animate(Ti.UI.createAnimation({
+    opacity: 0,
+    duration: 500,
+    curve: Ti.UI.ANIMATION_CURVE_EASE_OUT
+  }), () => {
+    $.container.visible = false
+    if (callback) callback()
   })
 }
 ```
 
-## Draggable Method
-Use the `draggable` method to convert views into draggable elements.
+## Dynamic Styling
 
-```javascript
-$.myAnim.draggable([$.red, $.green, $.blue])
-```
-
-## Dynamic Styling with Classes
-
-To change styles dynamically, use `classes` instead of individual property updates.
+To change styles dynamically, use `applyProperties()` to batch updates.
 
 ```javascript
 function setStatus(isActive) {
   $.statusLabel.applyProperties({
-    classes: isActive ? ['text-green-500'] : ['text-red-500'],
+    color: isActive ? '#22c55e' : '#ef4444',
     text: isActive ? L('active') : L('inactive')
   })
 }
 ```
 
-## Grid System
+## Percentage-Based Layouts
 
-Use PurgeTSS percentage-based widths for responsive layouts.
+Use percentage widths in TSS for responsive column layouts.
 
 ```xml
-<!-- Horizontal layout with percentage widths -->
-<View class="horizontal w-screen">
-  <View class="h-20 w-8/12 bg-red-100" />
-  <View class="h-20 w-4/12 bg-blue-100" />
+<View id="row">
+  <View id="colLeft" />
+  <View id="colRight" />
 </View>
+```
 
-<!-- Or use the grid-cols system -->
-<View class="w-screen grid-cols-3 gap-2">
-  <View class="h-20 bg-red-100" />
-  <View class="h-20 bg-blue-100" />
-  <View class="h-20 bg-green-100" />
-</View>
+```tss
+"#row": { layout: 'horizontal', width: Ti.UI.FILL }
+"#colLeft": { height: 80, width: '66.66%', backgroundColor: '#fee2e2' }
+"#colRight": { height: 80, width: '33.33%', backgroundColor: '#dbeafe' }
 ```
 
 ## Controller Lifecycle Patterns
@@ -129,27 +107,27 @@ $.cleanup = cleanup
 ```xml
 <!-- views/user/edit.xml -->
 <Alloy>
-  <Window class="vertical bg-white">
-    <ScrollView class="wh-screen vertical">
-      <View class="vertical mt-4 h-auto w-screen">
-        <Label class="ml-4 text-sm text-gray-500" text="L('name_label')" />
+  <Window id="editWindow">
+    <ScrollView id="scrollView">
+      <View id="formContainer">
+        <Label id="nameLabel" text="L('name_label')" />
         <TextField id="nameField"
-          class="border-(1) return-key-type-next mx-4 mt-1 h-12 w-screen rounded-lg border-gray-300 bg-gray-50 px-3"
           hintText="L('name_hint')"
+          returnKeyType="Ti.UI.RETURNKEY_NEXT"
           onReturn="focusNextField"
         />
 
-        <Label class="ml-4 mt-4 text-sm text-gray-500" text="L('email_label')" />
+        <Label id="emailLabel" text="L('email_label')" />
         <TextField id="emailField"
-          class="border-(1) keyboard-type-email return-key-type-done mx-4 mt-1 h-12 w-screen rounded-lg border-gray-300 bg-gray-50 px-3"
           hintText="L('email_hint')"
+          keyboardType="Ti.UI.KEYBOARD_TYPE_EMAIL"
+          returnKeyType="Ti.UI.RETURNKEY_DONE"
           onReturn="submitForm"
         />
 
-        <Label id="errorLabel" class="ml-4 mt-2 hidden text-sm text-red-500" />
+        <Label id="errorLabel" />
 
         <Button id="submitBtn"
-          class="bg-primary mx-4 mt-6 h-14 w-screen rounded-xl font-bold text-white"
           title="L('save')"
           onClick="submitForm"
         />
@@ -157,6 +135,18 @@ $.cleanup = cleanup
     </ScrollView>
   </Window>
 </Alloy>
+```
+
+```tss
+/* styles/user/edit.tss */
+"#editWindow": { layout: 'vertical', backgroundColor: '#fff' }
+"#scrollView": { layout: 'vertical', width: Ti.UI.FILL, height: Ti.UI.FILL }
+"#formContainer": { layout: 'vertical', top: 16, height: Ti.UI.SIZE, width: Ti.UI.FILL }
+"Label": { left: 16, font: { fontSize: 14 }, color: '#6b7280' }
+"TextField": { left: 16, right: 16, top: 4, height: 48, borderRadius: 8, borderWidth: 1, borderColor: '#d1d5db', backgroundColor: '#f9fafb', paddingLeft: 12 }
+"#emailLabel": { top: 16 }
+"#errorLabel": { top: 8, color: '#ef4444', visible: false }
+"#submitBtn": { left: 16, right: 16, top: 24, height: 56, borderRadius: 12, backgroundColor: '#2563eb', color: '#fff', font: { fontWeight: 'bold' } }
 ```
 
 ```javascript
@@ -220,24 +210,33 @@ function setLoading(isLoading) {
 
 ```xml
 <!-- Skeleton loading pattern -->
-<View id="loadingState" class="wh-screen vertical">
-  <View class="mx-4 mt-4 h-20 w-screen animate-pulse rounded-lg bg-gray-200" />
-  <View class="mx-4 mt-4 h-4 w-8/12 animate-pulse rounded bg-gray-200" />
-  <View class="mx-4 mt-2 h-4 w-6/12 animate-pulse rounded bg-gray-200" />
+<View id="loadingState">
+  <View id="skeleton1" />
+  <View id="skeleton2" />
+  <View id="skeleton3" />
 </View>
 
-<View id="contentState" class="wh-screen hidden">
+<View id="contentState">
   <!-- Actual content here -->
 </View>
 
-<View id="errorState" class="wh-screen vertical hidden">
-  <Label class="fa-solid fa-exclamation-circle mt-20 text-6xl text-gray-400" />
-  <Label class="mt-4 text-lg text-gray-500" text="L('error_loading')" />
-  <Button class="bg-primary mt-4 h-10 rounded-lg px-6 text-white"
-    title="L('retry')"
-    onClick="loadData"
-  />
+<View id="errorState">
+  <ImageView id="errorIcon" image="/images/error.png" />
+  <Label id="errorMsg" text="L('error_loading')" />
+  <Button id="retryBtn" title="L('retry')" onClick="loadData" />
 </View>
+```
+
+```tss
+"#loadingState": { layout: 'vertical', width: Ti.UI.FILL, height: Ti.UI.FILL }
+"#skeleton1": { left: 16, right: 16, top: 16, height: 80, borderRadius: 8, backgroundColor: '#e5e7eb' }
+"#skeleton2": { left: 16, top: 16, height: 16, width: '66%', borderRadius: 4, backgroundColor: '#e5e7eb' }
+"#skeleton3": { left: 16, top: 8, height: 16, width: '50%', borderRadius: 4, backgroundColor: '#e5e7eb' }
+"#contentState": { width: Ti.UI.FILL, height: Ti.UI.FILL, visible: false }
+"#errorState": { layout: 'vertical', width: Ti.UI.FILL, height: Ti.UI.FILL, visible: false }
+"#errorIcon": { top: 80, width: 64, height: 64 }
+"#errorMsg": { top: 16, font: { fontSize: 18 }, color: '#6b7280' }
+"#retryBtn": { top: 16, height: 40, borderRadius: 8, backgroundColor: '#2563eb', color: '#fff', left: 24, right: 24 }
 ```
 
 ```javascript
@@ -331,7 +330,7 @@ function openModal(route, params) {
 ```xml
 <!-- views/main.xml -->
 <Alloy>
-  <TabGroup id="tabGroup" class="bg-white">
+  <TabGroup id="tabGroup">
     <Tab title="L('home')" icon="/images/tab_home.png">
       <Require src="home/index" />
     </Tab>
@@ -347,8 +346,8 @@ function openModal(route, params) {
 
 ```javascript
 // controllers/main.js
-// Tab styling is handled in XML with PurgeTSS classes:
-// <TabGroup id="tabGroup" class="tabs-bg-white active-tint-blue-500" />
+// Tab styling is handled in the TSS file:
+// "#tabGroup": { backgroundColor: '#fff', activeTintColor: '#3b82f6' }
 
 // Handle tab changes
 $.tabGroup.addEventListener('focus', (e) => {
@@ -409,21 +408,20 @@ function closeWindow(window, animated = true) {
 ```xml
 <!-- views/contacts/list.xml -->
 <Alloy>
-  <Window class="bg-gray-50">
+  <Window id="contactsWindow">
     <SearchBar id="searchBar"
-      class="w-screen"
       hintText="L('search_contacts')"
       showCancel="true"
     />
 
-    <ListView id="listView" class="wh-screen" top="50">
+    <ListView id="listView" top="50">
       <Templates>
         <ItemTemplate name="contact" height="64">
-          <View class="horizontal h-16 w-screen bg-white">
-            <Label bindId="avatar" class="fa-solid fa-user-circle ml-4 text-3xl text-gray-400" />
-            <View class="vertical ml-3">
-              <Label bindId="name" class="text-base font-semibold" />
-              <Label bindId="phone" class="text-sm text-gray-500" />
+          <View id="contactRow">
+            <ImageView bindId="avatar" id="contactAvatar" image="/images/user-circle.png" />
+            <View id="contactInfo">
+              <Label bindId="name" id="contactName" />
+              <Label bindId="phone" id="contactPhone" />
             </View>
           </View>
         </ItemTemplate>
@@ -433,6 +431,18 @@ function closeWindow(window, animated = true) {
     </ListView>
   </Window>
 </Alloy>
+```
+
+```tss
+/* styles/contacts/list.tss */
+"#contactsWindow": { backgroundColor: '#f9fafb' }
+"#searchBar": { width: Ti.UI.FILL }
+"#listView": { width: Ti.UI.FILL, height: Ti.UI.FILL }
+"#contactRow": { layout: 'horizontal', height: 64, width: Ti.UI.FILL, backgroundColor: '#fff' }
+"#contactAvatar": { left: 16, width: 36, height: 36 }
+"#contactInfo": { layout: 'vertical', left: 12 }
+"#contactName": { font: { fontSize: 16, fontWeight: 'semibold' } }
+"#contactPhone": { font: { fontSize: 14 }, color: '#6b7280' }
 ```
 
 ```javascript
@@ -494,7 +504,7 @@ $.cleanup = cleanup
 ## Pull-to-Refresh Pattern
 
 ```xml
-<ListView id="listView" class="wh-screen">
+<ListView id="listView">
   <RefreshControl id="refreshControl" onRefresh="onRefresh" />
   <ListSection id="section" />
 </ListView>

@@ -1,26 +1,5 @@
 # Alloy Concepts
 
-## Table of Contents
-
-- [Alloy Concepts](#alloy-concepts)
-  - [Table of Contents](#table-of-contents)
-  - [Overview](#overview)
-  - [Model-View-Controller](#model-view-controller)
-    - [Alloy: MVC with Backbone](#alloy-mvc-with-backbone)
-  - [Alloy and the Titanium SDK](#alloy-and-the-titanium-sdk)
-    - [Titanium SDK to Alloy Mapping](#titanium-sdk-to-alloy-mapping)
-  - [Convention over Configuration](#convention-over-configuration)
-    - [Platform-Specific Resources](#platform-specific-resources)
-  - [Widgets](#widgets)
-  - [Builtins](#builtins)
-  - [Compilation Process](#compilation-process)
-    - [Cleanup](#cleanup)
-    - [Build Configuration](#build-configuration)
-    - [Alloy Framework, Assets, and Lib](#alloy-framework-assets-and-lib)
-    - [Model-View-Controller and Widget Generation](#model-view-controller-and-widget-generation)
-    - [Main Application](#main-application)
-    - [Code Optimization](#code-optimization)
-
 ## Overview
 
 This guide covers the important concepts related to the Alloy framework, including the model-view-controller framework, convention-over-configuration design, widgets, and built-in support from Backbone.js and Underscore.js.

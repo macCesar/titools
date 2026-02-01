@@ -4,58 +4,60 @@
 
 Before migrating, evaluate the current codebase:
 
-| Area        | Signs of Legacy Code                               | Target State                    |
-| ----------- | -------------------------------------------------- | ------------------------------- |
-| Styling     | Manual `.tss` files, inline attributes             | PurgeTSS utility classes        |
-| Controllers | 200+ lines, API calls, business logic              | Thin orchestrators (<100 lines) |
-| Events      | `Ti.App.fireEvent` everywhere                      | Backbone.Events or StateStore   |
-| Navigation  | Direct `Alloy.createController().getView().open()` | Navigation service              |
-| Data        | Scattered `Ti.App.Properties`, no collections      | Centralized state + Collections |
+| Area        | Signs of Legacy Code                               | Target State                                  |
+| ----------- | -------------------------------------------------- | --------------------------------------------- |
+| Styling     | Inline attributes, scattered styles                | Organized TSS files (per-controller + global) |
+| Controllers | 200+ lines, API calls, business logic              | Thin orchestrators (<100 lines)               |
+| Events      | `Ti.App.fireEvent` everywhere                      | Backbone.Events or StateStore                 |
+| Navigation  | Direct `Alloy.createController().getView().open()` | Navigation service                            |
+| Data        | Scattered `Ti.App.Properties`, no collections      | Centralized state + Collections               |
 
-## Phase 1: PurgeTSS Integration
+## Phase 1: TSS Organization
 
-**Goal**: Migrate from manual TSS to utility-first styling.
+**Goal**: Migrate from inline styling and scattered styles to well-organized TSS files.
 
-### Step 1: Initialize PurgeTSS
+### Step 1: Audit Existing Styles
 
+Find all inline attributes and consolidate into TSS files:
 ```bash
-# In existing project
-cd your-app
-purgetss init
+# Find inline styling in XML views
+grep -r 'backgroundColor=' app/views/
+grep -r 'font=' app/views/
+grep -r 'color=' app/views/
 ```
 
-### Step 2: Backup Existing Styles
-
-PurgeTSS automatically backs up `app.tss` to `_app.tss`. Your custom styles are preserved.
-
-### Step 3: Migrate Views Incrementally
+### Step 2: Move Inline Attributes to TSS
 
 ```xml
-<!-- BEFORE: Manual styling -->
-<View id="header">
-  <Label id="title" text="Welcome" />
+<!-- BEFORE: Inline attributes -->
+<View id="header" backgroundColor="#fff" height="60" top="0">
+  <Label id="title" text="Welcome" color="#333" font="{fontSize:18, fontWeight:'bold'}" />
 </View>
+```
 
-<!-- styles/index.tss -->
+```xml
+<!-- AFTER: Clean XML + TSS file -->
+<View id="header">
+  <Label id="title" text="L('welcome')" />
+</View>
+```
+
+```tss
+/* styles/index.tss */
 "#header": { backgroundColor: "#fff", height: 60, top: 0 }
 "#title": { color: "#333", font: { fontSize: 18, fontWeight: "bold" } }
 ```
 
-```xml
-<!-- AFTER: PurgeTSS classes -->
-<View class="top-0 h-16 bg-white">
-  <Label class="text-lg font-bold text-gray-800" text="Welcome" />
-</View>
+### Step 3: Organize TSS Structure
 
-<!-- No manual TSS needed - delete #header and #title styles -->
+1. Use `app.tss` for global styles (shared across all views)
+2. Use per-controller TSS files for view-specific styles
+3. Use class selectors for reusable style patterns:
+```tss
+/* app.tss - Global reusable styles */
+".card": { borderRadius: 12, backgroundColor: '#fff' }
+".btn-primary": { backgroundColor: '#2563eb', color: '#fff', height: 44, borderRadius: 8 }
 ```
-
-### Step 4: Remove Manual TSS Files
-
-Once a view is fully migrated to utility classes:
-1. Remove corresponding entries from `_app.tss`
-2. Delete any controller-specific `.tss` files
-3. Run `purgetss` to regenerate `app.tss`
 
 ## Phase 2: Service Layer Extraction
 
@@ -263,7 +265,7 @@ const { user } = appStore.getState()
 
 Recommended sequence to minimize risk:
 
-1. **PurgeTSS** - Visual only, no logic changes
+1. **TSS Organization** - Visual only, no logic changes
 2. **Service Layer** - Extract logic without changing behavior
 3. **Navigation Service** - Centralize with cleanup
 4. **Event System** - Replace Ti.App events

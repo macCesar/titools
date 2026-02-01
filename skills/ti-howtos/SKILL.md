@@ -28,31 +28,6 @@ This skill automatically detects Titanium projects when invoked and provides nat
 - **Not detected** → Indicates this is for Titanium projects only
 :::
 
-## Table of Contents
-
-- [Titanium SDK How-tos Expert](#titanium-sdk-how-tos-expert)
-  - [Project Detection](#project-detection)
-  - [Table of Contents](#table-of-contents)
-  - [Integration Workflow](#integration-workflow)
-  - [Native Integration Rules (Low Freedom)](#native-integration-rules-low-freedom)
-    - [iOS Permissions](#ios-permissions)
-    - [Android Resource Management](#android-resource-management)
-    - [Data \& Networking](#data--networking)
-    - [Media \& Memory](#media--memory)
-    - [Platform-Specific Properties](#platform-specific-properties)
-  - [Reference Guides (Progressive Disclosure)](#reference-guides-progressive-disclosure)
-    - [Core Features](#core-features)
-    - [Data Handling](#data-handling)
-    - [Media \& Content](#media--content)
-    - [Web Integration](#web-integration)
-    - [Platform-Specific (Android)](#platform-specific-android)
-    - [Platform-Specific (iOS)](#platform-specific-ios)
-    - [Advanced \& DevOps](#advanced--devops)
-  - [Related Skills](#related-skills)
-  - [Response Format](#response-format)
-
----
-
 ## Integration Workflow
 
 1.  **Requirement Check**: Identify needed permissions, `tiapp.xml` configurations, and module dependencies.
@@ -121,7 +96,7 @@ if (OS_IOS) {
 - iOS: `statusBarStyle`, `modalStyle`, `modalTransitionStyle`, any `Ti.UI.iOS.*`
 - Android: `actionBar` config, any `Ti.UI.Android.*` constant
 
-**For platform-specific modifier syntax, see** [Platform Modifiers (purgetss)](skills/purgetss/references/platform-modifiers.md) or [Platform UI guides](references/ios-platform-deep-dives.md).
+**For platform-specific modifier syntax in TSS, see** [Code Conventions (alloy-expert)](skills/alloy-expert/references/code-conventions.md#platform--device-modifiers) or [Platform UI guides](references/ios-platform-deep-dives.md).
 :::
 
 ## Reference Guides (Progressive Disclosure)

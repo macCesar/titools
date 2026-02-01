@@ -2,34 +2,6 @@
 
 Guide for obtaining, installing, and using Titanium modules to extend app functionality.
 
-## Table of Contents
-
-- [Using Modules](#using-modules)
-  - [Table of Contents](#table-of-contents)
-  - [Obtaining Modules](#obtaining-modules)
-    - [Sources of Modules](#sources-of-modules)
-  - [Installing Modules](#installing-modules)
-    - [Single Project Installation](#single-project-installation)
-    - [Global Installation (All Projects)](#global-installation-all-projects)
-  - [Configuring Your App](#configuring-your-app)
-    - [Updating tiapp.xml](#updating-tiappxml)
-    - [Selecting Module Versions](#selecting-module-versions)
-    - [Enable Debugger (for native modules)](#enable-debugger-for-native-modules)
-  - [Using a Module](#using-a-module)
-    - [Loading the Module (ES5)](#loading-the-module-es5)
-    - [Loading the Module (ES6+)](#loading-the-module-es6)
-    - [Using Module Functionality](#using-module-functionality)
-    - [Module Patterns](#module-patterns)
-  - [Troubleshooting](#troubleshooting)
-    - ["Requested module not found"](#requested-module-not-found)
-    - [Version Conflicts](#version-conflicts)
-    - [Platform-Specific Issues](#platform-specific-issues)
-    - [Clean Build](#clean-build)
-  - [Best Practices](#best-practices)
-  - [Module Development](#module-development)
-
----
-
 ## Obtaining Modules
 
 ### Sources of Modules

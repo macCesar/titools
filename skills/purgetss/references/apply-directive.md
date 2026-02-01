@@ -1,23 +1,5 @@
 # The `apply` Directive
 
-## Table of Contents
-
-- [The `apply` Directive](#the-apply-directive)
-  - [Table of Contents](#table-of-contents)
-  - [Create Complex Classes and IDs](#create-complex-classes-and-ids)
-  - [Set Any ID, Class, or Ti Element](#set-any-id-class-or-ti-element)
-  - [Use Any of the Default Classes](#use-any-of-the-default-classes)
-  - [Use Arbitrary Values](#use-arbitrary-values)
-  - [Use Any Newly Defined Class in config.cjs](#use-any-newly-defined-class-in-configcjs)
-  - [Set a String of Classes or an Array of Classes](#set-a-string-of-classes-or-an-array-of-classes)
-  - [Combine with Any Platform, Device, or Conditional-Block Properties](#combine-with-any-platform-device-or-conditional-block-properties)
-  - [Platform-Specific Classes](#platform-specific-classes)
-    - [Omitting the Platform Variant](#omitting-the-platform-variant)
-  - [Complete Example with Platform Variants](#complete-example-with-platform-variants)
-  - [Composing Component Libraries](#composing-component-libraries)
-
----
-
 ## Create Complex Classes and IDs
 
 :::info

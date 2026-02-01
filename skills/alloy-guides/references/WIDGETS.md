@@ -1,21 +1,5 @@
 # Alloy Widgets
 
-## Table of Contents
-
-- [Alloy Widgets](#alloy-widgets)
-  - [Table of Contents](#table-of-contents)
-  - [Introduction](#introduction)
-  - [Using Widgets](#using-widgets)
-  - [Creating Widgets](#creating-widgets)
-  - [Assets and Libs](#assets-and-libs)
-  - [Configuration](#configuration)
-  - [Controllers](#controllers)
-  - [Models](#models)
-  - [Styles](#styles)
-  - [Themes](#themes)
-  - [Views](#views)
-  - [Widgets](#widgets)
-
 ## Introduction
 
 Widgets are self-contained components that can be easily dropped into Alloy-powered Titanium projects. They were conceived as a way to reuse code in multiple applications or to be used multiple times in the same application. Widgets have their own views, controllers, styles and assets and are laid out the same as the `app` directory in the Alloy project.

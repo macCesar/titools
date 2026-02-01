@@ -28,26 +28,6 @@ This skill automatically detects Titanium projects when invoked and provides UI/
 - **Not detected** → Indicates this is for Titanium projects only, does NOT provide Titanium UI guidance
 :::
 
-## Table of Contents
-
-- [Titanium SDK UI Expert](#titanium-sdk-ui-expert)
-  - [Project Detection](#project-detection)
-  - [Table of Contents](#table-of-contents)
-  - [Quick Reference](#quick-reference)
-  - [Critical Rules (Low Freedom)](#critical-rules-low-freedom)
-    - [Performance](#performance)
-    - [iOS Accessibility](#ios-accessibility)
-    - [Layout](#layout)
-    - [Platform-Specific Properties](#platform-specific-properties)
-    - [Event Management](#event-management)
-    - [App Architecture](#app-architecture)
-  - [Platform Differences Summary](#platform-differences-summary)
-  - [UI Design Workflow](#ui-design-workflow)
-  - [Searching References](#searching-references)
-  - [Related Skills](#related-skills)
-
----
-
 ## Quick Reference
 
 | Topic                            | Reference                                                               |

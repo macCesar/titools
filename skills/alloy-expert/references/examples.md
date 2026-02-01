@@ -1,4 +1,4 @@
-# PurgeTSS Implementation Examples (Alloy + PurgeTSS)
+# Alloy Implementation Examples
 
 ## API Client Service
 Standard logic for network requests.
@@ -64,30 +64,26 @@ exports.definition = {
 }
 ```
 
-## Fully Styled & Accessible View (PurgeTSS)
-Applying PurgeTSS classes while maintaining accessibility.
+## Fully Styled & Accessible View
+Applying TSS styles while maintaining accessibility.
 
 ```xml
 <!-- views/login.xml -->
 <Alloy>
-  <Window class="vertical bg-gray-50">
-    <Animation id="myAnim" module="purgetss.ui" class="close:opacity-0 duration-500 open:opacity-100" />
-
+  <Window id="loginWindow">
     <!-- Spacer to center content -->
-    <View class="h-auto" />
+    <View id="topSpacer" />
 
-    <Label class="text-primary fa-solid fa-lock mx-6 mb-10 text-4xl"
+    <ImageView id="lockIcon" image="/images/lock.png"
       accessibilityLabel="L('login_icon_label')"
     />
 
     <TextField id="email"
-      class="border-(1) mx-6 h-12 w-screen rounded-lg border-gray-300 bg-white"
       hintText="L('email_hint')"
       accessibilityLabel="L('email_label')"
     />
 
     <Button id="submit"
-      class="bg-primary mx-6 mt-10 h-14 w-screen rounded-xl font-bold text-white"
       title="L('login_button')"
       accessibilityLabel="L('login_button')"
       accessibilityHint="L('login_hint')"
@@ -95,16 +91,25 @@ Applying PurgeTSS classes while maintaining accessibility.
     />
 
     <!-- Spacer to center content -->
-    <View class="h-auto" />
+    <View id="bottomSpacer" />
   </Window>
 </Alloy>
 ```
 
+```tss
+/* styles/login.tss */
+"#loginWindow": { layout: 'vertical', backgroundColor: '#f9fafb' }
+"#topSpacer": { height: Ti.UI.SIZE }
+"#lockIcon": { left: 24, right: 24, bottom: 40, width: 48, height: 48 }
+"#email": { left: 24, right: 24, height: 48, borderRadius: 8, borderWidth: 1, borderColor: '#d1d5db', backgroundColor: '#fff' }
+"#submit": { left: 24, right: 24, top: 40, height: 56, borderRadius: 12, backgroundColor: '#2563eb', color: '#fff', font: { fontWeight: 'bold' } }
+"#bottomSpacer": { height: Ti.UI.SIZE }
+```
+
 **Notes:**
-- Use `vertical` layout on Window (not `flex-col`)
-- Use `mx-6` for horizontal padding (not `p-6` on parent)
-- Use `w-screen` for full width (not `w-full`)
-- Use `border-(1)` with parentheses for arbitrary border width
+- Use `layout: 'vertical'` on Window for top-to-bottom content flow
+- Use margins on children for spacing (NOT padding on parent)
+- Use `Ti.UI.FILL` for full-width elements
 
 ## Cleanup Pattern in Controller
 Critical for memory management and avoiding leaks.
@@ -128,13 +133,23 @@ function cleanup() {
 $.cleanup = cleanup
 ```
 
-## Animation Component Usage
-Using the toolkit for UI transformations via the `<Animation>` component.
+## Animation Usage
+Using `Ti.UI.createAnimation()` for UI transformations.
 
 ```javascript
 // Inside any controller
 function shakeError(element) {
-  $.myAnim.play(element, 'animate-shake duration-200')
+  const shake = Ti.UI.createAnimation({ duration: 50 })
+  const offset = 10
+
+  shake.transform = Ti.UI.createMatrix2D().translate(offset, 0)
+  element.animate(shake, () => {
+    shake.transform = Ti.UI.createMatrix2D().translate(-offset, 0)
+    element.animate(shake, () => {
+      shake.transform = Ti.UI.createMatrix2D()
+      element.animate(shake)
+    })
+  })
 }
 ```
 
@@ -196,18 +211,18 @@ exports.productService = {
 ```xml
 <!-- views/products/list.xml -->
 <Alloy>
-  <Window class="bg-gray-50">
-    <ListView id="listView" class="wh-screen">
+  <Window id="productsWindow">
+    <ListView id="listView">
       <RefreshControl id="refresh" onRefresh="onRefresh" />
 
       <Templates>
         <ItemTemplate name="product" height="80">
-          <View class="horizontal mb-2 h-20 w-screen bg-white">
-            <ImageView bindId="image" class="wh-16 ml-3 rounded-lg" />
-            <View class="vertical ml-3 w-auto">
-              <Label bindId="name" class="text-base font-semibold" />
-              <Label bindId="price" class="text-sm text-green-600" />
-              <Label bindId="stock" class="text-xs text-gray-400" />
+          <View id="productRow">
+            <ImageView bindId="image" id="productImg" />
+            <View id="productInfo">
+              <Label bindId="name" id="productName" />
+              <Label bindId="price" id="productPrice" />
+              <Label bindId="stock" id="productStock" />
             </View>
           </View>
         </ItemTemplate>
@@ -223,14 +238,22 @@ exports.productService = {
       </ListSection>
     </ListView>
 
-    <Button id="addBtn"
-      class="bg-primary rounded-full-14 absolute bottom-6 right-6 shadow-lg"
-      onClick="onAddProduct"
-    >
-      <Label class="fa-solid fa-plus text-xl text-white" />
-    </Button>
+    <Button id="addBtn" onClick="onAddProduct" title="+" />
   </Window>
 </Alloy>
+```
+
+```tss
+/* styles/products/list.tss */
+"#productsWindow": { backgroundColor: '#f9fafb' }
+"#listView": { width: Ti.UI.FILL, height: Ti.UI.FILL }
+"#productRow": { layout: 'horizontal', bottom: 8, height: 80, width: Ti.UI.FILL, backgroundColor: '#fff' }
+"#productImg": { left: 12, width: 64, height: 64, borderRadius: 8 }
+"#productInfo": { layout: 'vertical', left: 12 }
+"#productName": { font: { fontSize: 16, fontWeight: 'semibold' } }
+"#productPrice": { font: { fontSize: 14 }, color: '#16a34a' }
+"#productStock": { font: { fontSize: 12 }, color: '#9ca3af' }
+"#addBtn": { position: 'absolute', bottom: 24, right: 24, width: 56, height: 56, borderRadius: 28, backgroundColor: '#2563eb', color: '#fff', font: { fontSize: 24 } }
 ```
 
 ```javascript
@@ -283,37 +306,48 @@ $.cleanup = cleanup
 ```xml
 <!-- views/contacts/list.xml -->
 <Alloy>
-  <Window class="bg-white">
+  <Window id="contactsWindow">
     <!-- Search and Filter Bar -->
-    <View class="horizontal h-14 w-screen bg-gray-100">
+    <View id="searchFilterBar">
       <SearchBar id="searchBar"
-        class="h-10 w-8/12"
         hintText="L('search')"
         showCancel="true"
       />
       <Button id="filterBtn"
-        class="h-10 w-4/12"
         title="L('filter')"
         onClick="showFilters"
       />
     </View>
 
     <!-- Active Filters -->
-    <ScrollView id="filterTags" class="horizontal hidden h-10 w-screen">
+    <ScrollView id="filterTags">
       <!-- Dynamically populated filter tags -->
     </ScrollView>
 
-    <ListView id="listView" class="wh-screen">
+    <ListView id="listView">
       <ListSection id="section" />
     </ListView>
 
     <!-- Empty State -->
-    <View id="emptyState" class="wh-screen vertical hidden">
-      <Label class="fa-solid fa-search mt-20 text-6xl text-gray-300" />
-      <Label class="mt-4 text-lg text-gray-500" text="L('no_results')" />
+    <View id="emptyState">
+      <ImageView id="emptyIcon" image="/images/search.png" />
+      <Label id="emptyLabel" text="L('no_results')" />
     </View>
   </Window>
 </Alloy>
+```
+
+```tss
+/* styles/contacts/list.tss */
+"#contactsWindow": { backgroundColor: '#fff' }
+"#searchFilterBar": { layout: 'horizontal', height: 56, width: Ti.UI.FILL, backgroundColor: '#f3f4f6' }
+"#searchBar": { height: 40, width: '66%' }
+"#filterBtn": { height: 40, width: '34%' }
+"#filterTags": { layout: 'horizontal', height: 40, width: Ti.UI.FILL, visible: false }
+"#listView": { width: Ti.UI.FILL, height: Ti.UI.FILL }
+"#emptyState": { layout: 'vertical', width: Ti.UI.FILL, height: Ti.UI.FILL, visible: false }
+"#emptyIcon": { top: 80, width: 64, height: 64 }
+"#emptyLabel": { top: 16, font: { fontSize: 18 }, color: '#6b7280' }
 ```
 
 ```javascript
@@ -426,78 +460,103 @@ $.cleanup = cleanup
 ```xml
 <!-- views/auth/register.xml -->
 <Alloy>
-  <Window class="vertical bg-white">
-    <ScrollView class="wh-screen vertical" contentHeight="Ti.UI.SIZE">
-      <View class="vertical mt-8 h-auto w-screen">
+  <Window id="registerWindow">
+    <ScrollView id="scrollView" contentHeight="Ti.UI.SIZE">
+      <View id="formContainer">
         <!-- Logo -->
-        <ImageView class="wh-24" image="/images/logo.png" />
+        <ImageView id="logo" image="/images/logo.png" />
 
         <!-- Title -->
-        <Label class="mt-6 text-2xl font-bold" text="L('create_account')" />
+        <Label id="titleLabel" text="L('create_account')" />
 
         <!-- Name Field -->
-        <View class="mx-4 mt-6 w-screen">
-          <Label class="text-sm text-gray-600" text="L('full_name')" />
-          <TextField id="nameField"
-            class="border-(1) return-key-type-next mt-1 h-12 w-screen rounded-lg border-gray-300 px-3"
-            autocorrect="false"
+        <View id="nameGroup">
+          <Label id="nameLabel" text="L('full_name')" />
+          <TextField id="nameField" autocorrect="false"
+            returnKeyType="Ti.UI.RETURNKEY_NEXT"
           />
-          <Label id="nameError" class="mt-1 hidden text-xs text-red-500" />
+          <Label id="nameError" />
         </View>
 
         <!-- Email Field -->
-        <View class="mx-4 mt-4 w-screen">
-          <Label class="text-sm text-gray-600" text="L('email')" />
+        <View id="emailGroup">
+          <Label id="emailLabel" text="L('email')" />
           <TextField id="emailField"
-            class="border-(1) keyboard-type-email return-key-type-next mt-1 h-12 w-screen rounded-lg border-gray-300 px-3"
+            keyboardType="Ti.UI.KEYBOARD_TYPE_EMAIL"
+            returnKeyType="Ti.UI.RETURNKEY_NEXT"
             autocapitalization="none"
           />
-          <Label id="emailError" class="mt-1 hidden text-xs text-red-500" />
+          <Label id="emailError" />
         </View>
 
         <!-- Password Field -->
-        <View class="mx-4 mt-4 w-screen">
-          <Label class="text-sm text-gray-600" text="L('password')" />
-          <TextField id="passwordField"
-            class="border-(1) return-key-type-next mt-1 h-12 w-screen rounded-lg border-gray-300 px-3"
-            passwordMask="true"
+        <View id="passwordGroup">
+          <Label id="passwordLabel" text="L('password')" />
+          <TextField id="passwordField" passwordMask="true"
+            returnKeyType="Ti.UI.RETURNKEY_NEXT"
           />
-          <Label id="passwordError" class="mt-1 hidden text-xs text-red-500" />
-          <Label class="mt-1 text-xs text-gray-400" text="L('password_hint')" />
+          <Label id="passwordError" />
+          <Label id="passwordHint" text="L('password_hint')" />
         </View>
 
         <!-- Confirm Password -->
-        <View class="mx-4 mt-4 w-screen">
-          <Label class="text-sm text-gray-600" text="L('confirm_password')" />
-          <TextField id="confirmField"
-            class="border-(1) return-key-type-done mt-1 h-12 w-screen rounded-lg border-gray-300 px-3"
-            passwordMask="true"
+        <View id="confirmGroup">
+          <Label id="confirmLabel" text="L('confirm_password')" />
+          <TextField id="confirmField" passwordMask="true"
+            returnKeyType="Ti.UI.RETURNKEY_DONE"
           />
-          <Label id="confirmError" class="mt-1 hidden text-xs text-red-500" />
+          <Label id="confirmError" />
         </View>
 
         <!-- Terms Checkbox -->
-        <View class="horizontal mx-4 mt-6 w-screen">
-          <Switch id="termsSwitch" class="w-12" />
-          <Label class="ml-2 w-auto text-sm text-gray-600" text="L('accept_terms')" />
+        <View id="termsRow">
+          <Switch id="termsSwitch" />
+          <Label id="termsLabel" text="L('accept_terms')" />
         </View>
 
         <!-- Register Button -->
         <Button id="registerBtn"
-          class="bg-primary mx-4 mt-6 h-14 w-screen rounded-xl font-bold text-white"
           title="L('register')"
           onClick="onRegister"
         />
 
         <!-- Login Link -->
-        <View class="horizontal mt-4">
-          <Label class="text-sm text-gray-600" text="L('have_account')" />
-          <Label class="text-primary ml-1 text-sm" text="L('login')" onClick="goToLogin" />
+        <View id="loginRow">
+          <Label id="haveAccountLabel" text="L('have_account')" />
+          <Label id="loginLink" text="L('login')" onClick="goToLogin" />
         </View>
       </View>
     </ScrollView>
   </Window>
 </Alloy>
+```
+
+```tss
+/* styles/auth/register.tss */
+"#registerWindow": { layout: 'vertical', backgroundColor: '#fff' }
+"#scrollView": { layout: 'vertical', width: Ti.UI.FILL, height: Ti.UI.FILL }
+"#formContainer": { layout: 'vertical', top: 32, height: Ti.UI.SIZE, width: Ti.UI.FILL }
+"#logo": { width: 96, height: 96 }
+"#titleLabel": { top: 24, font: { fontSize: 24, fontWeight: 'bold' } }
+".fieldGroup": { layout: 'vertical', left: 16, right: 16, top: 16, width: Ti.UI.FILL }
+"#nameGroup": { layout: 'vertical', left: 16, right: 16, top: 24, width: Ti.UI.FILL }
+"#emailGroup": { layout: 'vertical', left: 16, right: 16, top: 16, width: Ti.UI.FILL }
+"#passwordGroup": { layout: 'vertical', left: 16, right: 16, top: 16, width: Ti.UI.FILL }
+"#confirmGroup": { layout: 'vertical', left: 16, right: 16, top: 16, width: Ti.UI.FILL }
+"Label": { font: { fontSize: 14 }, color: '#4b5563' }
+"TextField": { top: 4, height: 48, width: Ti.UI.FILL, borderRadius: 8, borderWidth: 1, borderColor: '#d1d5db', paddingLeft: 12 }
+"#nameError": { top: 4, font: { fontSize: 12 }, color: '#ef4444', visible: false }
+"#emailError": { top: 4, font: { fontSize: 12 }, color: '#ef4444', visible: false }
+"#passwordError": { top: 4, font: { fontSize: 12 }, color: '#ef4444', visible: false }
+"#passwordHint": { top: 4, font: { fontSize: 12 }, color: '#9ca3af' }
+"#confirmError": { top: 4, font: { fontSize: 12 }, color: '#ef4444', visible: false }
+"#termsRow": { layout: 'horizontal', left: 16, right: 16, top: 24, width: Ti.UI.FILL }
+"#termsSwitch": { width: 48 }
+"#termsLabel": { left: 8 }
+"#registerBtn": { left: 16, right: 16, top: 24, height: 56, borderRadius: 12, backgroundColor: '#2563eb', color: '#fff', font: { fontWeight: 'bold' } }
+"#loginRow": { layout: 'horizontal', top: 16 }
+"#haveAccountLabel": { font: { fontSize: 14 }, color: '#4b5563' }
+"#loginLink": { left: 4, font: { fontSize: 14 }, color: '#2563eb' }
 ```
 
 ```javascript
@@ -642,7 +701,7 @@ $.cleanup = cleanup
 ```xml
 <!-- views/main.xml -->
 <Alloy>
-  <TabGroup id="tabGroup" class="tabs-bg-white active-tint-blue-500">
+  <TabGroup id="tabGroup">
 
     <Tab id="homeTab" title="L('home')" icon="/images/icons/home.png">
       <Require src="tabs/home" />

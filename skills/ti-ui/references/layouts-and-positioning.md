@@ -39,45 +39,6 @@ if (OS_IOS) {
 - Android: `actionBar` config, any `Ti.Android.*` constant
 :::
 
-## Table of Contents
-
-- [Layouts, Positioning, and View Hierarchy](#layouts-positioning-and-view-hierarchy)
-  - [🚨 CRITICAL: Platform-Specific Properties Require Modifiers](#-critical-platform-specific-properties-require-modifiers)
-  - [Table of Contents](#table-of-contents)
-  - [1. Units of Measurement](#1-units-of-measurement)
-    - [Available Units](#available-units)
-    - [Density-Independent Pixels (dp)](#density-independent-pixels-dp)
-    - [Best Practice](#best-practice)
-  - [2. Positioning Properties](#2-positioning-properties)
-    - [Edge-Based Positioning](#edge-based-positioning)
-    - [Center Positioning](#center-positioning)
-    - [Dynamic Sizing](#dynamic-sizing)
-  - [3. Layout Modes](#3-layout-modes)
-    - [Composite (Default)](#composite-default)
-    - [Vertical Layout](#vertical-layout)
-    - [Horizontal Layout](#horizontal-layout)
-  - [4. Auto-Size Behaviors](#4-auto-size-behaviors)
-    - [Ti.UI.SIZE](#tiuisize)
-    - [Ti.UI.FILL](#tiuifill)
-    - [Component Defaults](#component-defaults)
-    - [Auto-Size in Layout Modes](#auto-size-in-layout-modes)
-  - [5. Combining Layouts](#5-combining-layouts)
-    - [Nested Layouts](#nested-layouts)
-  - [6. View Hierarchy and Z-Index](#6-view-hierarchy-and-z-index)
-    - [Stacking Order](#stacking-order)
-    - [Explicit Z-Index](#explicit-z-index)
-  - [7. Common Layout Patterns](#7-common-layout-patterns)
-    - [Full-Screen Overlay](#full-screen-overlay)
-    - [Centered Content](#centered-content)
-    - [Bottom-Aligned Content](#bottom-aligned-content)
-    - [Percentage-Based Layout](#percentage-based-layout)
-  - [8. Platform Considerations](#8-platform-considerations)
-    - [Android Density-Specific Resources](#android-density-specific-resources)
-    - [iOS Asset Catalog](#ios-asset-catalog)
-  - [Best Practices](#best-practices)
-
----
-
 ## 1. Units of Measurement
 
 ### Available Units

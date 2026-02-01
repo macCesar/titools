@@ -1,43 +1,5 @@
 # Event Handling
 
-## Table of Contents
-
-- [Event Handling](#event-handling)
-  - [Table of Contents](#table-of-contents)
-  - [1. Event Listener Pattern](#1-event-listener-pattern)
-    - [Basic Pattern](#basic-pattern)
-    - [Controlling Event Bubbling](#controlling-event-bubbling)
-    - [Bubbling Example](#bubbling-example)
-  - [3. Firing Events](#3-firing-events)
-    - [Fire Custom Event](#fire-custom-event)
-    - [Listening to App Events](#listening-to-app-events)
-    - [Memory Warning](#memory-warning)
-  - [5. Touch Events](#5-touch-events)
-    - [Touch Event Lifecycle](#touch-event-lifecycle)
-    - [Touch Enabled](#touch-enabled)
-  - [6. Named vs Anonymous Functions](#6-named-vs-anonymous-functions)
-    - [Anonymous Function (One-time use)](#anonymous-function-one-time-use)
-    - [Named Function (Reusable)](#named-function-reusable)
-  - [7. Removing Event Listeners](#7-removing-event-listeners)
-    - [Must Match Function Signature](#must-match-function-signature)
-  - [8. Android Hardware Button Events](#8-android-hardware-button-events)
-    - [Available Events](#available-events)
-    - [Handling Back Button](#handling-back-button)
-    - [Note: Window Types](#note-window-types)
-  - [9. Android Menu](#9-android-menu)
-    - [Create Options Menu](#create-options-menu)
-  - [10. Event Listener Best Practices](#10-event-listener-best-practices)
-    - [Define Before Event May Fire](#define-before-event-may-fire)
-    - [Global Event Memory Leaks](#global-event-memory-leaks)
-    - [Remove Listeners on Window Close](#remove-listeners-on-window-close)
-  - [11. Special Considerations](#11-special-considerations)
-    - [Platform-Specific Events](#platform-specific-events)
-    - [Event Naming](#event-naming)
-    - [Custom Properties on Events](#custom-properties-on-events)
-  - [Best Practices Summary](#best-practices-summary)
-
----
-
 ## 1. Event Listener Pattern
 
 ### Basic Pattern

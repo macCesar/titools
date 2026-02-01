@@ -2,27 +2,6 @@
 
 Guide for implementing native maps on Android using the `ti.map` module (v2).
 
-## Table of Contents
-
-- [Google Maps v2 for Android](#google-maps-v2-for-android)
-  - [Table of Contents](#table-of-contents)
-  - [1. Initial Configuration](#1-initial-configuration)
-    - [Module Installation](#module-installation)
-    - [Obtaining an API Key (Google Cloud Console)](#obtaining-an-api-key-google-cloud-console)
-      - [Get SHA-1 (Debug)](#get-sha-1-debug)
-    - [Configure tiapp.xml](#configure-tiappxml)
-  - [2. Google Play Services Verification](#2-google-play-services-verification)
-  - [3. Using the Map View](#3-using-the-map-view)
-    - [Basic Creation](#basic-creation)
-    - [Map Types](#map-types)
-  - [4. Advanced Annotations (Pins)](#4-advanced-annotations-pins)
-    - [Available Pin Colors](#available-pin-colors)
-  - [5. Routes (Polylines)](#5-routes-polylines)
-  - [6. Critical Events](#6-critical-events)
-  - [7. Limitations and Troubleshooting](#7-limitations-and-troubleshooting)
-
----
-
 ## 1. Initial Configuration
 
 ### Module Installation

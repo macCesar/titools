@@ -2,19 +2,6 @@
 
 Custom tags allow you to create reusable UI components without the overhead of widgets. They are an incredibly fast way to build a suite of controls that are as easy to use as dropping a file into the `app/lib` folder.
 
-## Table of Contents
-
-- [Creating Custom Tags in Titanium with Alloy](#creating-custom-tags-in-titanium-with-alloy)
-  - [Table of Contents](#table-of-contents)
-  - [Why Use Custom Tags?](#why-use-custom-tags)
-  - [Basic Setup](#basic-setup)
-  - [Robust Example: CheckBox](#robust-example-checkbox)
-  - [Global Module Override](#global-module-override)
-  - [Key Points](#key-points)
-  - [Custom Tags vs Widgets](#custom-tags-vs-widgets)
-
----
-
 ## Why Use Custom Tags?
 
 When building cross-platform applications, you often need specific UI controls (like a web-style checkbox) that don't exist natively. You have three main approaches:

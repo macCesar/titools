@@ -6,38 +6,6 @@ The PurgeTSS grid system is a layout tool with utilities to lay out columns and 
 **PurgeTSS grid does NOT work like CSS Grid.** Titanium lacks native CSS Grid support. The PurgeTSS grid system is an abstraction using `horizontal` and `vertical` layouts with percentage widths and margins.
 :::
 
-## Table of Contents
-
-- [Grid Layout System](#grid-layout-system)
-  - [Table of Contents](#table-of-contents)
-  - [Basic Structure](#basic-structure)
-  - [Column Grid](#column-grid)
-    - [`.grid-cols-{n}`](#grid-cols-n)
-    - [`.col-span-{n}`](#col-span-n)
-  - [Row Grid](#row-grid)
-    - [`.grid-rows-{n}`](#grid-rows-n)
-    - [`.row-span-{n}`](#row-span-n)
-  - [Gutter Utilities](#gutter-utilities)
-    - [Available Gap Utilities](#available-gap-utilities)
-  - [Direction Utilities](#direction-utilities)
-  - [Alignment Utilities](#alignment-utilities)
-  - [Common Layout Patterns](#common-layout-patterns)
-    - [Two-Column Layout](#two-column-layout)
-    - [Three-Column Layout](#three-column-layout)
-    - [Sidebar + Main Content](#sidebar--main-content)
-    - [Asymmetric Layout](#asymmetric-layout)
-  - [Grid System Pitfalls and Solutions](#grid-system-pitfalls-and-solutions)
-    - [Problem: Gap Breaks Percentage Widths](#problem-gap-breaks-percentage-widths)
-    - [Problem: Grid Without w-screen](#problem-grid-without-w-screen)
-    - [Problem: Missing Gap Container](#problem-missing-gap-container)
-  - [When to Use Grid vs. Manual Layout](#when-to-use-grid-vs-manual-layout)
-    - [Use Grid System When:](#use-grid-system-when)
-    - [Use Manual Layout When:](#use-manual-layout-when)
-  - [Complete Utility Reference](#complete-utility-reference)
-  - [Real-World Example](#real-world-example)
-
----
-
 ## Basic Structure
 
 This is the most basic layout for using the grid system:

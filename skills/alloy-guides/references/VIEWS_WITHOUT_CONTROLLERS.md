@@ -1,13 +1,5 @@
 # Views without Controllers
 
-## Table of Contents
-
-- [Views without Controllers](#views-without-controllers)
-  - [Table of Contents](#table-of-contents)
-  - [Introduction](#introduction)
-  - [XML Markup](#xml-markup)
-  - [Controller Code](#controller-code)
-
 ## Introduction
 
 Views can be created without controllers with an optional style sheet. These views can be used as building blocks to create a GUI. After you have defined your controller-less views, the application can either require in these views using markup or can dynamically generate these views in the controller code.

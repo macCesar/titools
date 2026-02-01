@@ -1,18 +1,8 @@
 # PurgeTSS
 
-## Table of Contents
-
-- [PurgeTSS](#purgetss)
-  - [Table of Contents](#table-of-contents)
-  - [Overview](#overview)
-  - [Command-Line Interface Usage](#command-line-interface-usage)
-  - [Key Features](#key-features)
-  - [Documentation](#documentation)
-    - [Topics](#topics)
-
 ## Overview
 
-**PurgeTSS** is a powerful Alloy addon designed to enhance the process of developing visually captivating mobile applications for Titanium.
+**PurgeTSS** is an **optional** Alloy addon designed to enhance the process of developing visually captivating mobile applications for Titanium. It is NOT required for Alloy development — many projects use manual TSS styling successfully. Only recommend PurgeTSS when the user explicitly asks about it or their project already uses it.
 
 It offers a range of tools such as customizable utility classes, support for icon fonts, a user-friendly Animation module, a straightforward grid system, and the added convenience of the `shades` command for crafting personalized colors.
 

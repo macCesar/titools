@@ -2,31 +2,6 @@
 
 Sometimes, you may need a specific value that is not included among the default values, or that you only need to use once in your project and do not want to include in the `config.cjs` file. In these cases, you can use **arbitrary values**.
 
-## Table of Contents
-
-- [Arbitrary Values in PurgeTSS](#arbitrary-values-in-purgetss)
-  - [Table of Contents](#table-of-contents)
-  - [Parentheses Notation](#parentheses-notation)
-  - [Color Properties](#color-properties)
-    - [Example with Generated Output](#example-with-generated-output)
-    - [Additional Examples](#additional-examples)
-    - [Complete List of Color Properties](#complete-list-of-color-properties)
-  - [Spacing Properties](#spacing-properties)
-    - [Example with Generated Output](#example-with-generated-output-1)
-    - [Unit Conversion Rules](#unit-conversion-rules)
-    - [Additional Examples](#additional-examples-1)
-    - [Complete List of Spacing Properties](#complete-list-of-spacing-properties)
-  - [Miscellaneous Properties](#miscellaneous-properties)
-    - [Examples](#examples)
-    - [Complete List of Miscellaneous Properties](#complete-list-of-miscellaneous-properties)
-  - [Real-World Examples](#real-world-examples)
-    - [Credit Card Component](#credit-card-component)
-    - [Front Cover Example](#front-cover-example)
-    - [Menu Bar Example](#menu-bar-example)
-  - [Tips for Using Arbitrary Values](#tips-for-using-arbitrary-values)
-
----
-
 ## Parentheses Notation
 
 :::info

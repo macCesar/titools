@@ -1,41 +1,5 @@
 # Web Content Integration
 
-## Table of Contents
-
-- [Web Content Integration](#web-content-integration)
-  - [Table of Contents](#table-of-contents)
-  - [1. The WebView Component](#1-the-webview-component)
-    - [WKWebView (Titanium SDK 8.0.0+)](#wkwebview-titanium-sdk-800)
-    - [Basic WebView Creation](#basic-webview-creation)
-      - [Remote URL](#remote-url)
-      - [Local HTML](#local-html)
-      - [Inline HTML](#inline-html)
-    - [Local Web Content with Assets](#local-web-content-with-assets)
-    - [WebView Properties and Methods](#webview-properties-and-methods)
-      - [Navigation](#navigation)
-      - [Load Control](#load-control)
-      - [Data Handling](#data-handling)
-      - [Events](#events)
-  - [2. Communication Between WebViews and Titanium](#2-communication-between-webviews-and-titanium)
-    - [Local Web Content Communication](#local-web-content-communication)
-      - [Logging from WebView](#logging-from-webview)
-      - [Bidirectional Events with Ti.App](#bidirectional-events-with-tiapp)
-    - [Remote Web Content Communication](#remote-web-content-communication)
-      - [Using evalJS() for Remote Content](#using-evaljs-for-remote-content)
-      - [Passing Data to Remote Content](#passing-data-to-remote-content)
-  - [3. Performance and Interaction Concerns](#3-performance-and-interaction-concerns)
-    - [WebView Performance](#webview-performance)
-    - [WebView in TableViews](#webview-in-tableviews)
-    - [WebView in Scrollable Components](#webview-in-scrollable-components)
-    - [Viewport Meta Tag](#viewport-meta-tag)
-  - [4. WebView Use Cases](#4-webview-use-cases)
-    - [Authentication Flows](#authentication-flows)
-    - [Canvas and Graphics](#canvas-and-graphics)
-  - [5. WKWebView-Specific Considerations](#5-wkwebview-specific-considerations)
-  - [Best Practices Summary](#best-practices-summary)
-
----
-
 ## 1. The WebView Component
 
 ### WKWebView (Titanium SDK 8.0.0+)

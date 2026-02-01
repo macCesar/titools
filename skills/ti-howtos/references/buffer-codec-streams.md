@@ -2,25 +2,6 @@
 
 Guide for advanced binary data manipulation and data flows in Titanium SDK.
 
-## Table of Contents
-
-- [Buffer, Codec, and Streams](#buffer-codec-and-streams)
-  - [Table of Contents](#table-of-contents)
-  - [1. Titanium.Buffer](#1-titaniumbuffer)
-    - [Creating Buffers](#creating-buffers)
-    - [Common Operations](#common-operations)
-  - [2. Titanium.Codec](#2-titaniumcodec)
-    - [Encoding Numbers](#encoding-numbers)
-    - [Decoding Strings](#decoding-strings)
-  - [3. Streams](#3-streams)
-    - [Stream Types](#stream-types)
-    - [Example: BufferStream](#example-bufferstream)
-    - [Example: FileStream (Chunk-based reading)](#example-filestream-chunk-based-reading)
-    - [Example: BlobStream (Camera to File)](#example-blobstream-camera-to-file)
-  - [4. Best Practices](#4-best-practices)
-
----
-
 ## 1. Titanium.Buffer
 
 Buffers are mutable and resizable containers for bytes (byte arrays).
@@ -118,16 +99,16 @@ Ti.Media.showCamera({
             source: e.media,
             mode: Ti.Stream.MODE_READ
         });
-        
+
         const outfile = Ti.Filesystem.getFile(Ti.Filesystem.applicationDataDirectory, 'photo.jpg');
         const outstream = outfile.open(Ti.Filesystem.MODE_WRITE);
-        
+
         const buffer = Ti.createBuffer({ length: 4096 });
         let readBytes = 0;
         while ((readBytes = instream.read(buffer)) > 0) {
             outstream.write(buffer, 0, readBytes);
         }
-        
+
         instream.close();
         outstream.close();
     }

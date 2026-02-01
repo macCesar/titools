@@ -1,68 +1,5 @@
 # iOS Platform Deep Dives
 
-## Table of Contents
-
-- [iOS Platform Deep Dives](#ios-platform-deep-dives)
-  - [Table of Contents](#table-of-contents)
-  - [1. iOS 17+ Privacy Requirements (Critical)](#1-ios-17-privacy-requirements-critical)
-    - [PrivacyInfo.xcprivacy File](#privacyinfoxcprivacy-file)
-  - [2. Background Services \& Silent Push](#2-background-services--silent-push)
-    - [Overview](#overview)
-    - [Silent Push (Background Update)](#silent-push-background-update)
-  - [3. iCloud Services \& Backup Control](#3-icloud-services--backup-control)
-    - [Disable Individual Backup (Best Practice)](#disable-individual-backup-best-practice)
-    - [Recursive Folder Backup Disable](#recursive-folder-backup-disable)
-  - [4. WatchKit \& Ti.WatchSession](#4-watchkit--tiwatchsession)
-    - [Activate Session](#activate-session)
-    - [Send Message (Immediate)](#send-message-immediate)
-    - [Receive Data from Watch](#receive-data-from-watch)
-  - [5. SiriKit \& Siri Intents](#5-sirikit--siri-intents)
-    - [Configuration in tiapp.xml](#configuration-in-tiappxml)
-    - [Siri Extensions](#siri-extensions)
-  - [6. Spotlight Search (Core Spotlight)](#6-spotlight-search-core-spotlight)
-  - [7. Core Motion Module](#7-core-motion-module)
-    - [Overview](#overview-1)
-    - [Basic Workflow](#basic-workflow)
-    - [Coordinate System](#coordinate-system)
-    - [Accelerometer](#accelerometer)
-    - [Gyroscope](#gyroscope)
-    - [Magnetometer](#magnetometer)
-    - [Device Motion](#device-motion)
-    - [Activity API](#activity-api)
-    - [Pedometer](#pedometer)
-    - [Core Motion Best Practices](#core-motion-best-practices)
-  - [3. Spotlight Search](#3-spotlight-search)
-    - [Overview](#overview-2)
-    - [Creating Searchable Items](#creating-searchable-items)
-    - [Indexing Items](#indexing-items)
-    - [Deleting from Index](#deleting-from-index)
-    - [Handling Search Results](#handling-search-results)
-    - [Best Practices](#best-practices)
-  - [8. Handoff User Activities](#8-handoff-user-activities)
-    - [Handling Incoming Handoff](#handling-incoming-handoff)
-    - [Invalidating Activities](#invalidating-activities)
-    - [Declaring Activity Types in tiapp.xml](#declaring-activity-types-in-tiappxml)
-  - [5. iCloud Services](#5-icloud-services)
-    - [Keychain Storage](#keychain-storage)
-    - [Document Picker](#document-picker)
-    - [CloudKit](#cloudkit)
-  - [6. WatchKit Integration](#6-watchkit-integration)
-    - [Overview](#overview-3)
-    - [Integration Steps](#integration-steps)
-    - [Watch Connectivity](#watch-connectivity)
-  - [7. SiriKit Integration](#7-sirikit-integration)
-    - [Overview](#overview-4)
-    - [Supported Intents (iOS 10+)](#supported-intents-ios-10)
-    - [Implementation](#implementation)
-    - [Voice Shortcuts (iOS 12+)](#voice-shortcuts-ios-12)
-  - [8. Additional iOS Features](#8-additional-ios-features)
-    - [3D Touch (Force Touch)](#3d-touch-force-touch)
-    - [Haptic Feedback](#haptic-feedback)
-    - [Document Interaction](#document-interaction)
-  - [Best Practices Summary](#best-practices-summary)
-
----
-
 ## 1. iOS 17+ Privacy Requirements (Critical)
 Apple requires declaring the use of certain APIs to prevent "fingerprinting".
 
@@ -108,7 +45,7 @@ Allows waking up the app to download content without showing a notification to t
 Ti.App.iOS.addEventListener('silentpush', (e) => {
     // Start download or update
     Ti.API.info(`Data received: ${JSON.stringify(e)}`);
-    
+
     // Mandatory to call upon completion (max 30 seconds)
     Ti.App.iOS.endBackgroundHandler(e.handlerId);
 });
@@ -416,7 +353,6 @@ MotionActivity.queryActivity({
 
 ```javascript
 const Pedometer = CoreMotion.createPedometer();
-
 
 if (Pedometer.isStepCountingAvailable()) {
   // Start live updates

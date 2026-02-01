@@ -1,53 +1,5 @@
 # Android UI Components and Conventions
 
-## Table of Contents
-
-- [Android UI Components and Conventions](#android-ui-components-and-conventions)
-  - [Table of Contents](#table-of-contents)
-  - [1. Action Bar](#1-action-bar)
-    - [Overview](#overview)
-    - [Enabling Action Bar](#enabling-action-bar)
-    - [Creating Action Bar (Programmatic)](#creating-action-bar-programmatic)
-    - [Action Bar with App Icon](#action-bar-with-app-icon)
-    - [Action View (Custom Layout)](#action-view-custom-layout)
-  - [2. Android Themes](#2-android-themes)
-    - [Overview](#overview-1)
-    - [Titanium Material Themes (SDK 10.0.0+)](#titanium-material-themes-sdk-1000)
-    - [Material 3 Themes (SDK 12.0.0+)](#material-3-themes-sdk-1200)
-    - [Applying Themes](#applying-themes)
-    - [Custom Theme](#custom-theme)
-    - [Color Palette Attributes](#color-palette-attributes)
-    - [Hiding Action Bar](#hiding-action-bar)
-    - [Theme Requirements](#theme-requirements)
-  - [3. Options Menu](#3-options-menu)
-    - [Legacy Options Menu](#legacy-options-menu)
-    - [Context Menu (Long Press)](#context-menu-long-press)
-  - [4. Status Bar Notifications](#4-status-bar-notifications)
-    - [Notifications](#notifications)
-    - [Notification Channels (Android 8.0+)](#notification-channels-android-80)
-    - [Clearing Notifications](#clearing-notifications)
-  - [5. Progress Bars](#5-progress-bars)
-    - [Horizontal Progress Bar](#horizontal-progress-bar)
-    - [Spinner (Indeterminate Progress)](#spinner-indeterminate-progress)
-  - [6. Tab Groups and Tabs](#6-tab-groups-and-tabs)
-    - [Native Android Tabs](#native-android-tabs)
-    - [Tab Badges](#tab-badges)
-  - [7. Hardware Back Button Handling](#7-hardware-back-button-handling)
-    - [Handling Back Button](#handling-back-button)
-    - [Exit Confirmation Dialog](#exit-confirmation-dialog)
-  - [8. Notification Drawer](#8-notification-drawer)
-    - [Display Notification](#display-notification)
-  - [9. Android UI Conventions](#9-android-ui-conventions)
-    - [Back Button Behavior](#back-button-behavior)
-    - [Up/Down Navigation](#updown-navigation)
-    - [App Shortcuts](#app-shortcuts)
-  - [10. Material Design Components](#10-material-design-components)
-    - [Using AppCompat v7](#using-appcompat-v7)
-    - [Material Design Components](#material-design-components)
-  - [Best Practices](#best-practices)
-
----
-
 ## 1. Action Bar
 
 ### Overview

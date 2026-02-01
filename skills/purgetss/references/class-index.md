@@ -7,52 +7,6 @@ Before suggesting ANY class, verify it exists:
 grep -E "PATTERN" ./purgetss/styles/utilities.tss
 ```
 
-## Table of Contents
-
-- [PurgeTSS Class Index](#purgetss-class-index)
-  - [Table of Contents](#table-of-contents)
-  - [PurgeTSS Naming Conventions](#purgetss-naming-conventions)
-    - [How Classes Are Generated from Titanium Properties](#how-classes-are-generated-from-titanium-properties)
-      - [1. Basic Conversion: camelCase → kebab-case](#1-basic-conversion-camelcase--kebab-case)
-      - [2. Boolean Properties: `property` and `property-false`](#2-boolean-properties-property-and-property-false)
-      - [3. Color Properties: Special Word Replacements](#3-color-properties-special-word-replacements)
-      - [4. No kebab-case Conversion](#4-no-kebab-case-conversion)
-    - [Finding Properties in utilities.tss](#finding-properties-in-utilitiestss)
-  - [Multiple Properties Grouped Together](#multiple-properties-grouped-together)
-  - [All 416 Titanium Properties with Classes](#all-416-titanium-properties-with-classes)
-    - [A-E](#a-e)
-    - [F-L](#f-l)
-    - [M-P](#m-p)
-    - [R-Z](#r-z)
-  - [Class Categories by Prefix (Complete Inventory)](#class-categories-by-prefix-complete-inventory)
-    - [Layout \& Structure](#layout--structure)
-    - [Spacing (Margins \& Padding)](#spacing-margins--padding)
-    - [Positioning](#positioning)
-    - [Colors (Background)](#colors-background)
-    - [Colors (Text \& Foreground)](#colors-text--foreground)
-    - [Borders \& Radius](#borders--radius)
-    - [Typography](#typography)
-    - [Accessibility](#accessibility)
-    - [Input \& Keyboard](#input--keyboard)
-    - [Boolean \& State Classes](#boolean--state-classes)
-    - [Text Transformation](#text-transformation)
-    - [Opacity](#opacity)
-    - [Transformation \& Animation](#transformation--animation)
-    - [Shadows \& Elevation](#shadows--elevation)
-    - [Z-Index \& Overflow](#z-index--overflow)
-    - [Status Bar \& Navigation](#status-bar--navigation)
-    - [UI Component States](#ui-component-states)
-    - [Display \& Sizing](#display--sizing)
-    - [Media \& Video](#media--video)
-    - [Other Special Prefixes](#other-special-prefixes)
-  - [PROHIBITED: CSS Classes (DO NOT EXIST)](#prohibited-css-classes-do-not-exist)
-  - [All 364 Unique Prefixes (Alphabetical)](#all-364-unique-prefixes-alphabetical)
-  - [Quick Verification Commands](#quick-verification-commands)
-  - [When to Use Direct Properties (No Classes)](#when-to-use-direct-properties-no-classes)
-  - [Key Insights from Real Data](#key-insights-from-real-data)
-
----
-
 ## PurgeTSS Naming Conventions
 
 ### How Classes Are Generated from Titanium Properties

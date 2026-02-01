@@ -1,52 +1,5 @@
 # Animation, Matrices, and Transitions
 
-## Table of Contents
-
-- [Animation, Matrices, and Transitions](#animation-matrices-and-transitions)
-  - [Table of Contents](#table-of-contents)
-  - [1. Overview](#1-overview)
-  - [2. Basic Animations](#2-basic-animations)
-    - [Property Animation Syntax](#property-animation-syntax)
-    - [Animation Properties](#animation-properties)
-    - [Animation Curves (Easing)](#animation-curves-easing)
-    - [Reversing Animation](#reversing-animation)
-    - [Repeating Animation](#repeating-animation)
-  - [3. 2D Matrix Animations](#3-2d-matrix-animations)
-    - [Basic 2D Transform](#basic-2d-transform)
-    - [2D Matrix Methods](#2d-matrix-methods)
-    - [Sequential Transformations](#sequential-transformations)
-    - [Identity (Reset) Transform](#identity-reset-transform)
-  - [4. 3D Matrix Animations (iOS Only)](#4-3d-matrix-animations-ios-only)
-    - [Basic 3D Transform](#basic-3d-transform)
-    - [3D Matrix Methods](#3d-matrix-methods)
-    - [Flip Card Effect](#flip-card-effect)
-  - [5. iOS Transitions](#5-ios-transitions)
-    - [Transition Constants](#transition-constants)
-    - [View Transition](#view-transition)
-    - [Window Transition (NavigationWindow)](#window-transition-navigationwindow)
-  - [6. Dynamic Animations (iOS Only)](#6-dynamic-animations-ios-only)
-    - [Gravity Animation](#gravity-animation)
-    - [Attachment (Spring) Behavior](#attachment-spring-behavior)
-    - [Push Behavior](#push-behavior)
-  - [7. Animation Events](#7-animation-events)
-    - [Animation Lifecycle](#animation-lifecycle)
-    - [Stopping Animations](#stopping-animations)
-  - [8. Common Animation Patterns](#8-common-animation-patterns)
-    - [Fade In/Out](#fade-inout)
-    - [Slide In](#slide-in)
-    - [Pulse Animation](#pulse-animation)
-    - [Shake Animation](#shake-animation)
-    - [Bounce In](#bounce-in)
-  - [9. Performance Considerations](#9-performance-considerations)
-    - [DO:](#do)
-    - [DON'T:](#dont)
-    - [Bad vs Good](#bad-vs-good)
-  - [10. Platform Differences](#10-platform-differences)
-    - [iOS vs Android](#ios-vs-android)
-  - [Best Practices](#best-practices)
-
----
-
 ## 1. Overview
 
 Animations add visual interest and professionalism to apps when used appropriately. Titanium supports:

@@ -1,28 +1,5 @@
 # Accessibility (a11y) Deep Dive
 
-## Table of Contents
-
-- [Accessibility (a11y) Deep Dive](#accessibility-a11y-deep-dive)
-  - [Table of Contents](#table-of-contents)
-  - [1. Overview](#1-overview)
-  - [2. Core Accessibility Properties](#2-core-accessibility-properties)
-    - [Basic Usage](#basic-usage)
-    - [Android TalkBack](#android-talkback)
-    - [Star Rating Example](#star-rating-example)
-    - [Toggle Button Example](#toggle-button-example)
-  - [6. System-Level Accessibility Events](#6-system-level-accessibility-events)
-    - [Monitor Accessibility Changes](#monitor-accessibility-changes)
-    - [Code Patterns](#code-patterns)
-    - [Accessibility First Development](#accessibility-first-development)
-  - [9. External Resources](#9-external-resources)
-  - [10. Common Issues](#10-common-issues)
-    - [Issue: VoiceOver Can't Access Children](#issue-voiceover-cant-access-children)
-    - [Issue: TalkBack Doesn't Speak Text](#issue-talkback-doesnt-speak-text)
-    - [Issue: Complex Custom Controls Not Accessible](#issue-complex-custom-controls-not-accessible)
-    - [Issue: State Changes Not Announced](#issue-state-changes-not-announced)
-
----
-
 ## 1. Overview
 
 Accessibility ensures your app is usable by everyone, including users with visual, hearing, and motor disabilities. Titanium supports both Android TalkBack and iOS VoiceOver spoken feedback systems.

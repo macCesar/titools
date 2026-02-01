@@ -2,123 +2,6 @@
 
 A comprehensive guide to building beautiful, accessible, and performant mobile UIs using Titanium SDK and PurgeTSS utility classes.
 
-## Table of Contents
-
-- [UI/UX Design Patterns for Titanium SDK with PurgeTSS](#uiux-design-patterns-for-titanium-sdk-with-purgetss)
-  - [Table of Contents](#table-of-contents)
-  - [1. Common UI Components](#1-common-ui-components)
-    - [Cards](#cards)
-      - [Elevated Card](#elevated-card)
-      - [Outlined Card](#outlined-card)
-      - [Card with Image Overlay](#card-with-image-overlay)
-      - [Horizontal Card](#horizontal-card)
-    - [Lists](#lists)
-      - [Simple List Item](#simple-list-item)
-      - [List with Avatar](#list-with-avatar)
-      - [List with Actions](#list-with-actions)
-      - [List with Dividers](#list-with-dividers)
-      - [ListView with Custom Template](#listview-with-custom-template)
-    - [Forms](#forms)
-      - [Text Input](#text-input)
-      - [Text Area](#text-area)
-      - [Password Input](#password-input)
-      - [Select/Dropdown (using Picker)](#selectdropdown-using-picker)
-      - [Switch Toggle](#switch-toggle)
-      - [Slider](#slider)
-      - [Form with Validation States](#form-with-validation-states)
-      - [Form Section](#form-section)
-    - [Buttons](#buttons)
-      - [Primary Button](#primary-button)
-      - [Secondary Button](#secondary-button)
-      - [Outline Button](#outline-button)
-      - [Text Button](#text-button)
-      - [Icon Button](#icon-button)
-      - [Floating Action Button (FAB)](#floating-action-button-fab)
-      - [Button with Icon](#button-with-icon)
-      - [Button Group](#button-group)
-      - [Button Sizes](#button-sizes)
-    - [Navigation Bars](#navigation-bars)
-      - [Top Navigation Bar with Title](#top-navigation-bar-with-title)
-      - [Navigation Bar with Actions](#navigation-bar-with-actions)
-      - [Tab Bar (Bottom)](#tab-bar-bottom)
-      - [Segment Control](#segment-control)
-      - [Breadcrumb Navigation](#breadcrumb-navigation)
-    - [Modals and Dialogs](#modals-and-dialogs)
-      - [Alert Dialog](#alert-dialog)
-      - [Full Screen Modal (iOS)](#full-screen-modal-ios)
-      - [Bottom Sheet (Android-style)](#bottom-sheet-android-style)
-    - [Toasts and Snackbars](#toasts-and-snackbars)
-      - [Simple Toast](#simple-toast)
-      - [Custom Snackbar](#custom-snackbar)
-      - [Success Toast](#success-toast)
-      - [Error Toast](#error-toast)
-  - [2. Layout Patterns](#2-layout-patterns)
-    - [Screen Structure](#screen-structure)
-      - [Standard Screen Layout](#standard-screen-layout)
-      - [Tab Bar Screen Structure](#tab-bar-screen-structure)
-    - [Spacing System](#spacing-system)
-      - [Margin Examples](#margin-examples)
-      - [Padding Examples](#padding-examples)
-      - [Gap (Spacing between children)](#gap-spacing-between-children)
-    - [Responsive Patterns](#responsive-patterns)
-      - [Responsive Grid](#responsive-grid)
-      - [Adaptive Layout (Tablet vs Phone)](#adaptive-layout-tablet-vs-phone)
-      - [Percentage-Based Widths](#percentage-based-widths)
-  - [3. Typography](#3-typography)
-    - [Font Scales](#font-scales)
-      - [Typography Examples](#typography-examples)
-    - [Font Weights](#font-weights)
-    - [Text Alignment and Truncation](#text-alignment-and-truncation)
-      - [Text Alignment](#text-alignment)
-      - [Text Truncation](#text-truncation)
-      - [Text Transformations](#text-transformations)
-  - [4. Colors and Themes](#4-colors-and-themes)
-    - [Semantic Color Naming](#semantic-color-naming)
-      - [Primary Colors](#primary-colors)
-      - [Semantic Colors](#semantic-colors)
-    - [Dark Mode Considerations](#dark-mode-considerations)
-    - [Platform-Specific Colors](#platform-specific-colors)
-      - [iOS System Colors](#ios-system-colors)
-      - [Material Design Colors](#material-design-colors)
-  - [5. Icons](#5-icons)
-    - [Font Awesome 7 Icon Fonts](#font-awesome-7-icon-fonts)
-    - [Icon Sizing and Alignment](#icon-sizing-and-alignment)
-      - [Icon Sizes](#icon-sizes)
-      - [Icon Colors](#icon-colors)
-    - [Icon with Text Patterns](#icon-with-text-patterns)
-      - [Icon with Label](#icon-with-label)
-      - [Circular Icon Button](#circular-icon-button)
-      - [Header with Icon Buttons](#header-with-icon-buttons)
-      - [Icon Badge](#icon-badge)
-      - [Icon Group](#icon-group)
-  - [6. Accessibility](#6-accessibility)
-    - [Accessibility Labels](#accessibility-labels)
-    - [Touch Target Sizes](#touch-target-sizes)
-    - [Color Contrast](#color-contrast)
-    - [Screen Reader Support](#screen-reader-support)
-  - [7. Performance Best Practices](#7-performance-best-practices)
-    - [ListView Performance](#listview-performance)
-    - [View Recycling](#view-recycling)
-    - [Batch Updates](#batch-updates)
-    - [Minimize Template Count](#minimize-template-count)
-  - [8. Platform-Specific Patterns](#8-platform-specific-patterns)
-    - [iOS Patterns](#ios-patterns)
-      - [Navigation Window](#navigation-window)
-      - [Tab Bar](#tab-bar)
-      - [iOS Swipe Actions](#ios-swipe-actions)
-    - [Android Patterns](#android-patterns)
-      - [Action Bar](#action-bar)
-      - [Back Button Handling](#back-button-handling)
-      - [Material Design Theme](#material-design-theme)
-      - [Notifications](#notifications)
-  - [Quick Reference Card](#quick-reference-card)
-    - [Common PurgeTSS Classes](#common-purgetss-classes)
-    - [Platform Modifiers](#platform-modifiers)
-  - [Best Practices Summary](#best-practices-summary)
-  - [Additional Resources](#additional-resources)
-
----
-
 ## 1. Common UI Components
 
 ### Cards
@@ -1464,6 +1347,473 @@ const notification = Ti.Android.createNotification({
 })
 
 Ti.Android.NotificationManager.notify(1, notification)
+```
+
+---
+
+## 8. Complete UI Patterns with Controllers
+
+These patterns demonstrate real-world UI implementations with both XML views and their corresponding controller JavaScript code.
+
+### Loading State Pattern (Skeleton)
+
+Show skeleton screens while loading data, then transition to content or error states.
+
+```xml
+<View id="loadingState" class="wh-screen vertical">
+  <View class="mx-4 mt-4 h-20 w-screen animate-pulse rounded-lg bg-gray-200" />
+  <View class="mx-4 mt-4 h-4 w-8/12 animate-pulse rounded bg-gray-200" />
+  <View class="mx-4 mt-2 h-4 w-6/12 animate-pulse rounded bg-gray-200" />
+</View>
+
+<View id="contentState" class="wh-screen hidden">
+  <!-- Actual content goes here -->
+  <Label class="mx-4 my-4 text-lg font-semibold text-gray-800" text="Content loaded!" />
+</View>
+
+<View id="errorState" class="wh-screen vertical hidden">
+  <Label class="fa-solid fa-exclamation-circle mt-20 text-6xl text-gray-400" />
+  <Label class="mt-4 text-lg text-gray-500" text="L('error_loading')" />
+  <Button class="bg-primary mt-4 h-10 rounded-lg px-6 text-white" title="L('retry')" onClick="loadData" />
+</View>
+```
+
+```javascript
+// Controller
+function setState(state) {
+  const states = ['loadingState', 'contentState', 'errorState']
+  states.forEach(s => { $[s].visible = s === state })
+}
+
+async function loadData() {
+  setState('loadingState')
+  try {
+    const data = await api.fetchData()
+    renderContent(data)
+    setState('contentState')
+  } catch (error) {
+    setState('errorState')
+  }
+}
+
+// Initial load
+loadData()
+```
+
+### Pull-to-Refresh Pattern
+
+Enable users to refresh content by pulling down on a ListView.
+
+```xml
+<ListView id="listView" class="wh-screen">
+  <RefreshControl id="refreshControl" onRefresh="onRefresh" />
+  <ListSection id="section" />
+</ListView>
+```
+
+```javascript
+// Controller
+let isRefreshing = false
+
+async function onRefresh() {
+  if (isRefreshing) return
+  isRefreshing = true
+  try {
+    const data = await api.fetchLatest()
+    renderItems(data)
+  } catch (error) {
+    showError(error.message)
+  } finally {
+    $.refreshControl.endRefreshing()
+    isRefreshing = false
+  }
+}
+
+function renderItems(data) {
+  const items = data.map(item => ({
+    properties: { itemId: item.id },
+    title: { text: item.name }
+  }))
+  $.section.setItems(items)
+}
+```
+
+### SearchBar with ListView
+
+Implement debounced search with real-time filtering.
+
+```xml
+<Window class="bg-gray-50">
+  <SearchBar id="searchBar" class="w-screen" hintText="L('search_contacts')" showCancel="true" onChange="onSearchChange" onCancel="onSearchCancel" />
+  <ListView id="listView" class="wh-screen" top="50">
+    <Templates>
+      <ItemTemplate name="contact" height="64">
+        <View class="horizontal h-16 w-screen bg-white">
+          <Label bindId="avatar" class="fa-solid fa-user-circle ml-4 text-3xl text-gray-400" />
+          <View class="vertical ml-3">
+            <Label bindId="name" class="text-base font-semibold" />
+            <Label bindId="phone" class="text-sm text-gray-500" />
+          </View>
+        </View>
+      </ItemTemplate>
+    </Templates>
+    <ListSection id="section" />
+  </ListView>
+</Window>
+```
+
+```javascript
+// Controller
+let allContacts = []
+let searchTimeout = null
+
+function onSearchChange(e) {
+  clearTimeout(searchTimeout)
+  searchTimeout = setTimeout(() => {
+    filterContacts(e.value)
+  }, 300)
+}
+
+function onSearchCancel() {
+  $.searchBar.value = ''
+  filterContacts('')
+}
+
+function filterContacts(query) {
+  const q = query.toLowerCase().trim()
+  const filtered = q
+    ? allContacts.filter(c => c.name.toLowerCase().includes(q) || c.phone.includes(q))
+    : allContacts
+  renderContacts(filtered)
+}
+
+function renderContacts(contacts) {
+  $.section.items = contacts.map(c => ({
+    template: 'contact',
+    properties: { itemId: c.id },
+    name: { text: c.name },
+    phone: { text: c.phone }
+  }))
+}
+
+function cleanup() {
+  clearTimeout(searchTimeout)
+  $.destroy()
+}
+
+$.cleanup = cleanup
+
+// Load initial data
+async function loadContacts() {
+  try {
+    allContacts = await api.fetchContacts()
+    renderContacts(allContacts)
+  } catch (error) {
+    Ti.UI.createAlertDialog({
+      title: L('error'),
+      message: error.message
+    }).show()
+  }
+}
+
+loadContacts()
+```
+
+### Complete CRUD with ListView
+
+Full product list with create, read, update, and delete operations.
+
+```xml
+<Window class="bg-gray-50">
+  <ListView id="listView" class="wh-screen">
+    <RefreshControl id="refresh" onRefresh="onRefresh" />
+    <Templates>
+      <ItemTemplate name="product" height="80">
+        <View class="horizontal mb-2 h-20 w-screen bg-white">
+          <ImageView bindId="image" class="wh-16 ml-3 rounded-lg" />
+          <View class="vertical ml-3 w-auto">
+            <Label bindId="name" class="text-base font-semibold" />
+            <Label bindId="price" class="text-sm text-green-600" />
+            <Label bindId="stock" class="text-xs text-gray-400" />
+          </View>
+        </View>
+      </ItemTemplate>
+    </Templates>
+    <ListSection id="section" dataCollection="products">
+      <ListItem template="product" image:image="{imageUrl}" name:text="{name}" price:text="${price}" stock:text="{stock} in stock" />
+    </ListSection>
+  </ListView>
+
+  <Button id="addBtn" class="bg-primary rounded-full-14 absolute bottom-6 right-6 shadow-lg" onClick="onAddProduct">
+    <Label class="fa-solid fa-plus text-xl text-white" />
+  </Button>
+</Window>
+```
+
+```javascript
+// Controller
+const productService = require('/services/productService')
+
+// Handle item click
+function onItemClick(e) {
+  const item = e.section.getItemAt(e.itemIndex)
+  const productId = item.properties.itemId
+
+  const detailWin = Alloy.createController('productDetail', { id: productId }).getView()
+  detailWin.open()
+}
+
+// Refresh data
+async function onRefresh() {
+  try {
+    const products = await productService.fetchAll()
+    Alloy.Collections.products.reset(products)
+  } catch (error) {
+    showError(error.message)
+  } finally {
+    $.refresh.endRefreshing()
+  }
+}
+
+// Add new product
+function onAddProduct() {
+  const formWin = Alloy.createController('productForm', { mode: 'create' }).getView()
+  formWin.open({ modal: true })
+}
+
+// Show error message
+function showError(message) {
+  Ti.UI.createAlertDialog({
+    title: L('error'),
+    message: message
+  }).show()
+}
+
+// Event listeners
+$.listView.addEventListener('itemclick', onItemClick)
+
+// Cleanup
+function cleanup() {
+  $.listView.removeEventListener('itemclick', onItemClick)
+  $.destroy()
+}
+
+$.cleanup = cleanup
+
+// Load initial data
+onRefresh()
+```
+
+### Form with Real-Time Validation
+
+Registration form with field-level validation and error feedback.
+
+```xml
+<Window class="bg-gray-50">
+  <ScrollView class="wh-screen">
+    <View class="vertical">
+      <Label class="mx-4 mb-6 mt-6 text-2xl font-bold text-gray-800" text="L('create_account')" />
+
+      <!-- Name Field -->
+      <View class="mb-4">
+        <Label id="nameLabel" class="mx-4 mb-2 text-sm font-medium text-gray-700" text="L('full_name')" />
+        <TextField id="nameField" class="border-(1) return-key-type-next mx-4 mt-1 h-12 w-screen rounded-lg border-gray-300 px-3" hintText="L('enter_name')" onChange="validateName" />
+        <Label id="nameError" class="mx-4 mt-1 hidden text-xs text-red-500" />
+      </View>
+
+      <!-- Email Field -->
+      <View class="mb-4">
+        <Label id="emailLabel" class="mx-4 mb-2 text-sm font-medium text-gray-700" text="L('email')" />
+        <TextField id="emailField" class="border-(1) return-key-type-next mx-4 mt-1 h-12 w-screen rounded-lg border-gray-300 px-3" keyboardType="Ti.UI.KEYBOARD_TYPE_EMAIL" autocapitalization="Ti.UI.TEXT_AUTOCAPITALIZATION_NONE" hintText="L('enter_email')" onChange="validateEmail" />
+        <Label id="emailError" class="mx-4 mt-1 hidden text-xs text-red-500" />
+      </View>
+
+      <!-- Password Field -->
+      <View class="mb-4">
+        <Label id="passwordLabel" class="mx-4 mb-2 text-sm font-medium text-gray-700" text="L('password')" />
+        <TextField id="passwordField" class="border-(1) return-key-type-done mx-4 mt-1 h-12 w-screen rounded-lg border-gray-300 px-3" passwordMask="true" hintText="L('enter_password')" onChange="validatePassword" />
+        <Label id="passwordError" class="mx-4 mt-1 hidden text-xs text-red-500" />
+      </View>
+
+      <!-- Terms Switch -->
+      <View class="horizontal mx-4 mb-6">
+        <Switch id="termsSwitch" onChange="validateTerms" />
+        <Label class="ml-3 text-sm text-gray-700" text="L('agree_to_terms')" />
+      </View>
+
+      <!-- Submit Button -->
+      <Button id="submitBtn" class="bg-primary mx-4 h-12 rounded-lg text-base font-semibold text-white" title="L('create_account')" onClick="onSubmit" enabled="false" />
+    </View>
+  </ScrollView>
+</Window>
+```
+
+```javascript
+// Controller
+const validationState = {
+  name: false,
+  email: false,
+  password: false,
+  terms: false
+}
+
+function validateName(e) {
+  const value = e.value.trim()
+  const isValid = value.length >= 2
+
+  if (!isValid && value.length > 0) {
+    $.nameError.text = L('name_too_short')
+    $.nameError.visible = true
+    $.nameField.borderColor = '#EF4444'
+    $.nameLabel.color = '#EF4444'
+  } else {
+    $.nameError.visible = false
+    $.nameField.borderColor = isValid ? '#10B981' : '#D1D5DB'
+    $.nameLabel.color = isValid ? '#10B981' : '#374151'
+  }
+
+  validationState.name = isValid
+  updateSubmitButton()
+}
+
+function validateEmail(e) {
+  const value = e.value.trim()
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  const isValid = emailRegex.test(value)
+
+  if (!isValid && value.length > 0) {
+    $.emailError.text = L('invalid_email')
+    $.emailError.visible = true
+    $.emailField.borderColor = '#EF4444'
+    $.emailLabel.color = '#EF4444'
+  } else {
+    $.emailError.visible = false
+    $.emailField.borderColor = isValid ? '#10B981' : '#D1D5DB'
+    $.emailLabel.color = isValid ? '#10B981' : '#374151'
+  }
+
+  validationState.email = isValid
+  updateSubmitButton()
+}
+
+function validatePassword(e) {
+  const value = e.value
+  const isValid = value.length >= 8
+
+  if (!isValid && value.length > 0) {
+    $.passwordError.text = L('password_too_short')
+    $.passwordError.visible = true
+    $.passwordField.borderColor = '#EF4444'
+    $.passwordLabel.color = '#EF4444'
+  } else {
+    $.passwordError.visible = false
+    $.passwordField.borderColor = isValid ? '#10B981' : '#D1D5DB'
+    $.passwordLabel.color = isValid ? '#10B981' : '#374151'
+  }
+
+  validationState.password = isValid
+  updateSubmitButton()
+}
+
+function validateTerms(e) {
+  validationState.terms = e.value
+  updateSubmitButton()
+}
+
+function updateSubmitButton() {
+  const allValid = Object.values(validationState).every(v => v === true)
+  $.submitBtn.enabled = allValid
+  $.submitBtn.opacity = allValid ? 1.0 : 0.5
+}
+
+async function onSubmit() {
+  if (!$.submitBtn.enabled) return
+
+  $.submitBtn.enabled = false
+  $.submitBtn.title = L('creating_account')
+
+  try {
+    const userData = {
+      name: $.nameField.value.trim(),
+      email: $.emailField.value.trim(),
+      password: $.passwordField.value
+    }
+
+    await api.createAccount(userData)
+
+    Ti.UI.createAlertDialog({
+      title: L('success'),
+      message: L('account_created')
+    }).show()
+
+    $.getView().close()
+  } catch (error) {
+    Ti.UI.createAlertDialog({
+      title: L('error'),
+      message: error.message
+    }).show()
+    $.submitBtn.enabled = true
+    $.submitBtn.title = L('create_account')
+  }
+}
+```
+
+### TabGroup Pattern
+
+Standard tab-based navigation with separate screens.
+
+```xml
+<!-- index.xml -->
+<TabGroup id="tabGroup" class="tabs-bg-white active-tint-blue-500">
+  <Tab title="L('home')" icon="/images/icons/home.png">
+    <Require src="tabs/home" />
+  </Tab>
+
+  <Tab title="L('search')" icon="/images/icons/search.png">
+    <Require src="tabs/search" />
+  </Tab>
+
+  <Tab title="L('favorites')" icon="/images/icons/heart.png">
+    <Require src="tabs/favorites" />
+  </Tab>
+
+  <Tab title="L('profile')" icon="/images/icons/user.png">
+    <Require src="tabs/profile" />
+  </Tab>
+</TabGroup>
+```
+
+```javascript
+// index.js
+$.tabGroup.open()
+
+function cleanup() {
+  $.destroy()
+}
+
+$.cleanup = cleanup
+```
+
+```xml
+<!-- tabs/home.xml -->
+<Window class="bg-gray-50">
+  <ScrollView class="wh-screen">
+    <View class="vertical">
+      <Label class="mx-4 my-4 text-2xl font-bold text-gray-800" text="L('home')" />
+      <!-- Home content -->
+    </View>
+  </ScrollView>
+</Window>
+```
+
+```xml
+<!-- tabs/search.xml -->
+<Window class="bg-gray-50">
+  <SearchBar id="searchBar" class="w-screen" hintText="L('search')" />
+  <ListView id="results" class="wh-screen" top="50">
+    <ListSection id="section" />
+  </ListView>
+</Window>
 ```
 
 ---

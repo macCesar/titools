@@ -1,47 +1,5 @@
 # Icons and Splash Screens
 
-## Table of Contents
-
-- [Icons and Splash Screens](#icons-and-splash-screens)
-  - [Table of Contents](#table-of-contents)
-  - [1. Overview](#1-overview)
-  - [2. Asset Locations](#2-asset-locations)
-  - [3. DefaultIcon.png (Recommended)](#3-defaulticonpng-recommended)
-  - [4. iOS Icons](#4-ios-icons)
-    - [App Icons](#app-icons)
-    - [Spotlight \& Settings Icons](#spotlight--settings-icons)
-    - [iOS Splash Screens](#ios-splash-screens)
-    - [iTunes Artwork (Ad-Hoc builds)](#itunes-artwork-ad-hoc-builds)
-    - [iTunes Connect Requirements](#itunes-connect-requirements)
-  - [5. Android Icons](#5-android-icons)
-    - [Launcher Icons](#launcher-icons)
-    - [Action Bar Icons](#action-bar-icons)
-    - [Notification Icons](#notification-icons)
-    - [Google Play Requirements](#google-play-requirements)
-  - [6. Android Splash Screens](#6-android-splash-screens)
-    - [Android 12+ (SDK 12.0.0+)](#android-12-sdk-1200)
-    - [Android \< 12 (Legacy)](#android--12-legacy)
-      - [Nine-Patch Images (Recommended)](#nine-patch-images-recommended)
-      - [Density-Specific Splash Screens](#density-specific-splash-screens)
-      - [Custom Theme Splash Screen](#custom-theme-splash-screen)
-  - [7. Localized Splash Screens](#7-localized-splash-screens)
-    - [Android Localization](#android-localization)
-    - [iOS Localization](#ios-localization)
-  - [8. Adaptive Icons (Android 8.0+)](#8-adaptive-icons-android-80)
-  - [9. Common Issues](#9-common-issues)
-    - [Build Fails - Missing Icons](#build-fails---missing-icons)
-    - [Android Splash Stretched/Distorted](#android-splash-stretcheddistorted)
-    - [iOS Icons Not Updating](#ios-icons-not-updating)
-    - [Android 12 Splash Not Showing Custom Image](#android-12-splash-not-showing-custom-image)
-  - [11. iOS Launch Files (Storyboards)](#11-ios-launch-files-storyboards)
-    - [Enabling Launch Storyboards](#enabling-launch-storyboards)
-    - [Customizing Background Color](#customizing-background-color)
-    - [Using Images in Storyboards](#using-images-in-storyboards)
-    - [Launch File Cache](#launch-file-cache)
-  - [Best Practices](#best-practices)
-
----
-
 ## 1. Overview
 
 App icons and splash screens are required for app store submissions and provide visual branding during app launch.

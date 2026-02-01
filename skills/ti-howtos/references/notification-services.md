@@ -2,53 +2,6 @@
 
 Comprehensive guide for local and push notifications on iOS and Android.
 
-## Table of Contents
-
-- [Push and Local Notifications](#push-and-local-notifications)
-  - [Table of Contents](#table-of-contents)
-  - [Local Notifications Android](#local-notifications-android)
-    - [Notification Display Locations](#notification-display-locations)
-    - [Create a Notification](#create-a-notification)
-    - [Sound](#sound)
-    - [Custom Layout with RemoteViews](#custom-layout-with-remoteviews)
-    - [Additional Properties](#additional-properties)
-    - [Update Notification](#update-notification)
-    - [Remove Notifications](#remove-notifications)
-    - [Respond to Notification Tap](#respond-to-notification-tap)
-    - [Schedule Future Notification (Background Service)](#schedule-future-notification-background-service)
-  - [Local Notifications iOS](#local-notifications-ios)
-    - [Notification Display Locations](#notification-display-locations-1)
-    - [Register for Notifications (iOS 8+)](#register-for-notifications-ios-8)
-    - [Schedule Local Notification](#schedule-local-notification)
-    - [Monitor Notifications](#monitor-notifications)
-    - [Cancel Notifications](#cancel-notifications)
-  - [Interactive Notifications iOS (iOS 8+)](#interactive-notifications-ios-ios-8)
-    - [Create Notification Actions](#create-notification-actions)
-    - [Create Notification Category](#create-notification-category)
-    - [Register Categories](#register-categories)
-    - [Monitor Interactive Notifications](#monitor-interactive-notifications)
-    - [Schedule Interactive Local Notification](#schedule-interactive-local-notification)
-    - [Send Interactive Push Notification](#send-interactive-push-notification)
-  - [Push Notifications](#push-notifications)
-    - [Overview](#overview)
-    - [Register for Push Notifications](#register-for-push-notifications)
-    - [Configure Push Services](#configure-push-services)
-    - [Push Notification Payload Format](#push-notification-payload-format)
-    - [Subscribe to Channels](#subscribe-to-channels)
-    - [Send Push Notifications](#send-push-notifications)
-    - [Best Practices](#best-practices)
-  - [Common Patterns](#common-patterns)
-    - [Check Notification Permissions](#check-notification-permissions)
-    - [PendingIntent for Notification Actions](#pendingintent-for-notification-actions)
-    - [Notification Groups (Android 7.0+)](#notification-groups-android-70)
-    - [Rich Notifications (iOS 10+)](#rich-notifications-ios-10)
-    - [Silent Push](#silent-push)
-  - [Platform-Specific Notes](#platform-specific-notes)
-    - [Android](#android)
-    - [iOS](#ios)
-
----
-
 ## Local Notifications Android
 
 ### Notification Display Locations

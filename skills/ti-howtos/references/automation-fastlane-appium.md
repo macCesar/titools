@@ -2,20 +2,6 @@
 
 Guide for setting up continuous integration pipelines, automatic testing, and deployment in Titanium.
 
-## Table of Contents
-
-- [Automation with Fastlane and Appium](#automation-with-fastlane-and-appium)
-  - [Table of Contents](#table-of-contents)
-  - [1. UI Testing with Appium](#1-ui-testing-with-appium)
-    - [Prerequisites](#prerequisites)
-    - [Test Example (Mocha + WebdriverIO)](#test-example-mocha--webdriverio)
-  - [2. Automation with Fastlane](#2-automation-with-fastlane)
-    - [Titanium Plugins](#titanium-plugins)
-    - [Fastfile Configuration](#fastfile-configuration)
-  - [3. CI/CD Best Practices](#3-cicd-best-practices)
-
----
-
 ## 1. UI Testing with Appium
 
 Appium allows for automated functional testing on real devices and simulators.

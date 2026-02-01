@@ -2,23 +2,6 @@
 
 This guide provides recommendations for writing Alloy applications. This guide supplements the existing Titanium SDK [Best Practices and Recommendations](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_Guide/Best_Practices_and_Recommendations/) guide, specifically focusing on Coding Best Practices and Style and Conventions.
 
-## Table of Contents
-
-- [Alloy Best Practices and Recommendations](#alloy-best-practices-and-recommendations)
-  - [Table of Contents](#table-of-contents)
-  - [Titanium-to-Alloy Guidance](#titanium-to-alloy-guidance)
-    - [Loading Libraries in Alloy](#loading-libraries-in-alloy)
-    - [Performance Best Practices](#performance-best-practices)
-    - [Project Organization](#project-organization)
-  - [Coding Style Best Practices](#coding-style-best-practices)
-    - [Naming Conventions](#naming-conventions)
-    - [Global Variables](#global-variables)
-    - [Global Events](#global-events)
-      - [Use Callbacks for Master-Child Communication](#use-callbacks-for-master-child-communication)
-      - [Use Backbone.Events for App-Wide Communication](#use-backboneevents-for-app-wide-communication)
-
----
-
 ## Titanium-to-Alloy Guidance
 
 ### Loading Libraries in Alloy

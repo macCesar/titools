@@ -2,20 +2,6 @@
 
 Starting with Titanium SDK 9.1.0, Webpack is the default build engine for managing your project's assets and code.
 
-## Table of Contents
-
-- [Webpack Build Pipeline](#webpack-build-pipeline)
-  - [Table of Contents](#table-of-contents)
-  - [1. Key Benefits](#1-key-benefits)
-  - [2. The `@` Alias](#2-the--alias)
-  - [3. NPM Dependency Management](#3-npm-dependency-management)
-  - [4. Platform-Specific Files](#4-platform-specific-files)
-  - [5. Diagnostic Web UI](#5-diagnostic-web-ui)
-  - [6. Advanced Configuration](#6-advanced-configuration)
-  - [7. Known Limitations](#7-known-limitations)
-
----
-
 ## 1. Key Benefits
 - **Lightning-Fast Incremental Builds**: Only what changes is processed.
 - **Native NPM Support**: Install any NPM library in the root and use it directly.

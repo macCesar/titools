@@ -2,28 +2,6 @@
 
 The Alloy CLI is a command-line tool for managing and building Alloy projects.
 
-## Table of Contents
-
-- [Alloy Command-Line Interface Reference](#alloy-command-line-interface-reference)
-  - [Table of Contents](#table-of-contents)
-  - [Installation](#installation)
-    - [Manual Installation](#manual-installation)
-    - [Bleeding Edge Installation](#bleeding-edge-installation)
-  - [Commands](#commands)
-    - [new](#new)
-    - [generate](#generate)
-      - [Model Format](#model-format)
-    - [install](#install)
-    - [compile](#compile)
-    - [run](#run)
-    - [i18n-extract](#i18n-extract)
-    - [copy](#copy)
-    - [move](#move)
-    - [remove](#remove)
-  - [Additional Options](#additional-options)
-
----
-
 ## Installation
 
 The Alloy CLI is automatically installed when installing the `alloy` package.

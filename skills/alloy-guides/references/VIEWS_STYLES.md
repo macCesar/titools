@@ -1,18 +1,5 @@
 # Alloy Styles and Themes
 
-## Table of Contents
-
-- [Alloy Styles and Themes](#alloy-styles-and-themes)
-  - [Table of Contents](#table-of-contents)
-  - [Titanium Style Sheets](#titanium-style-sheets)
-  - [Global Styles](#global-styles)
-  - [Platform-Specific Styles](#platform-specific-styles)
-  - [Custom Query Styles](#custom-query-styles)
-    - [Example Using Custom Properties](#example-using-custom-properties)
-    - [Example Using Conditional Statements](#example-using-conditional-statements)
-  - [Themes](#themes)
-  - [Style Priorities](#style-priorities)
-
 ## Titanium Style Sheets
 
 The Titanium Style Sheets (TSS) file uses a JSON-like syntax to define the attributes of elements in the XML files. All TSS attributes are the properties of the Titanium object.

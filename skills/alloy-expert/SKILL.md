@@ -7,7 +7,7 @@ allowed-tools: Read, Grep, Glob, Edit, Write, Bash(git *), Bash(node *)
 
 # Titanium Alloy Expert
 
-Complete architectural and implementation guidance for building scalable, maintainable Titanium Alloy applications with PurgeTSS styling.
+Complete architectural and implementation guidance for building scalable, maintainable Titanium Alloy applications.
 
 ## Project Detection
 
@@ -31,28 +31,6 @@ This skill automatically detects project type when invoked and provides appropri
 - **Unknown** → Asks user to clarify project type
 :::
 
-## Table of Contents
-
-- [Titanium Alloy Expert](#titanium-alloy-expert)
-  - [Project Detection](#project-detection)
-  - [Table of Contents](#table-of-contents)
-  - [Workflow](#workflow)
-  - [Quick Start Example](#quick-start-example)
-  - [Code Standards (Low Freedom)](#code-standards-low-freedom)
-  - [PurgeTSS Rules (Low Freedom)](#purgetss-rules-low-freedom)
-  - [Quick Decision Matrix](#quick-decision-matrix)
-  - [Reference Guides (Progressive Disclosure)](#reference-guides-progressive-disclosure)
-    - [Architecture](#architecture)
-    - [Implementation](#implementation)
-    - [Quality \& Reliability](#quality--reliability)
-    - [Performance \& Security](#performance--security)
-    - [Migration](#migration)
-  - [Specialized Titanium Skills](#specialized-titanium-skills)
-  - [Guiding Principles](#guiding-principles)
-  - [Response Format](#response-format)
-
----
-
 ## Workflow
 
 1. **Architecture**: Define structure (`lib/api`, `lib/services`, `lib/helpers`)
@@ -69,17 +47,26 @@ Minimal example following all conventions:
 **View (views/user/card.xml)**
 ```xml
 <Alloy>
-  <View class="m-2 rounded-xl bg-white shadow-md">
-    <View class="horizontal m-3 w-screen">
-      <Label class="fa-solid fa-user text-2xl text-blue-500" />
-      <Label id="name" class="ml-3 text-lg font-bold" />
+  <View id="cardContainer">
+    <View id="headerRow">
+      <ImageView id="userIcon" image="/images/user.png" />
+      <Label id="name" />
     </View>
-    <Button class="mx-3 mb-3 h-10 w-screen rounded-md bg-blue-600 text-white"
+    <Button id="viewProfileBtn"
       title="L('view_profile')"
       onClick="onViewProfile"
     />
   </View>
 </Alloy>
+```
+
+**Styles (styles/user/card.tss)**
+```tss
+"#cardContainer": { left: 8, right: 8, top: 8, height: Ti.UI.SIZE, borderRadius: 12, backgroundColor: '#fff' }
+"#headerRow": { layout: 'horizontal', left: 12, right: 12, top: 12, height: Ti.UI.SIZE, width: Ti.UI.FILL }
+"#userIcon": { width: 32, height: 32 }
+"#name": { left: 12, font: { fontSize: 18, fontWeight: 'bold' } }
+"#viewProfileBtn": { left: 12, right: 12, bottom: 12, height: 40, width: Ti.UI.FILL, borderRadius: 6, backgroundColor: '#2563eb', color: '#fff' }
 ```
 
 **Controller (controllers/user/card.js)**
@@ -128,7 +115,7 @@ exports.Navigation = {
 - **ERROR HANDLING**: Use AppError classes, log with context, never swallow errors
 - **TESTABLE**: Inject dependencies, avoid hard coupling
 
-## PurgeTSS Rules (Low Freedom)
+## Titanium Style Sheets Rules (Low Freedom)
 
 :::danger CRITICAL: Platform-Specific Properties Require Modifiers
 Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties WITHOUT platform modifiers causes cross-platform compilation failures.
@@ -155,22 +142,20 @@ Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties WITHOUT platform modifiers c
 
 **Available modifiers:** `[platform=ios]`, `[platform=android]`, `[formFactor=handheld]`, `[formFactor=tablet]`, `[if=Alloy.Globals.customVar]`
 
-**For more platform-specific patterns, see** [Platform Modifiers (purgetss)](skills/purgetss/references/platform-modifiers.md) or [Platform UI guides (ti-ui)](skills/ti-ui/references/platform-ui-ios.md).
+**For more platform-specific patterns, see the `ti-ui` skill.**
 :::
 
-| WRONG                          | CORRECT             | Why                           |
-| ------------------------------ | ------------------- | ----------------------------- |
-| `flex-row`                     | `horizontal`        | Flexbox not supported         |
-| `flex-col`                     | `vertical`          | Flexbox not supported         |
-| `p-4` on View                  | `m-4` on children   | No padding on containers      |
-| `justify-*`                    | margins/positioning | Flexbox not supported         |
-| `items-center` (for centering) | layout + sizing     | Different meaning in Titanium |
-| `rounded-full` (for circle)    | `rounded-full-12`   | Need size suffix (12×4=48px)  |
-| `border-[1px]`                 | `border-(1)`        | Parentheses, not brackets     |
+**Titanium layout system:**
+- Three layout modes: `layout: 'horizontal'`, `layout: 'vertical'`, and composite (default — no `layout` needed)
+- No padding on container Views — use margins on children instead
+- `width: Ti.UI.FILL` fills available space (preferred), `width: '100%'` = 100% of parent
+- `height: Ti.UI.SIZE` wraps content, `height: Ti.UI.FILL` fills available space
 
-**Note on `w-full` vs `w-screen`:**
-- `w-full` → `width: '100%'` (100% of parent container) - exists and valid
-- `w-screen` → `width: Ti.UI.FILL` (fills all available space) - use for full-width elements
+## Alloy Builtins Quick Reference
+
+Key builtins: `OS_IOS`/`OS_ANDROID` (compile-time), `Alloy.CFG` (config.json), `Alloy.Globals` (shared state), `$.args` (controller params), `$.destroy()` (cleanup bindings), `platform="ios"` / `formFactor="tablet"` (XML conditionals).
+
+For the complete reference with examples, see **[Alloy Builtins & Globals](references/alloy-builtins.md)**.
 
 ## Quick Decision Matrix
 
@@ -183,30 +168,35 @@ Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties WITHOUT platform modifiers c
 | Models or Collections?             | Collections for API data, Models for SQLite persistence        |
 | Ti.App.fireEvent or EventBus?      | **Always EventBus** (Backbone.Events)                          |
 | Direct navigation or service?      | **Always Navigation service** (auto cleanup)                   |
-| Manual TSS or PurgeTSS?            | **Always PurgeTSS utility classes**                            |
+| Inline styles or TSS files?        | **Always TSS files** (per-controller + `app.tss` for global)   |
 | Controller 100+ lines?             | Extract logic to services                                      |
 
 ## Reference Guides (Progressive Disclosure)
 
 ### Architecture
-- **[Structure & Organization](references/alloy-structure.md)**: Models vs Collections, folder maps, styling strategies, automatic cleanup
+- **[Structure & Organization](references/alloy-structure.md)**: Models vs Collections, folder maps, widget patterns, automatic cleanup
+- **[Alloy Builtins & Globals](references/alloy-builtins.md)**: OS_IOS/OS_ANDROID, Alloy.CFG, Alloy.Globals, $.args, compiler directives
 - **[ControllerAutoCleanup.js](assets/ControllerAutoCleanup.js)**: Drop-in utility for automatic controller cleanup (prevents memory leaks)
 - **[Architectural Patterns](references/patterns.md)**: Repository, Service Layer, Event Bus, Factory, Singleton
 - **[Contracts & Communication](references/contracts.md)**: Layer interaction examples and JSDoc specs
-- **[Anti-Patterns](references/anti-patterns.md)**: Fat controllers, flexbox classes, memory leaks, direct API calls
+- **[Anti-Patterns](references/anti-patterns.md)**: Fat controllers, memory leaks, inline styling, direct API calls
 
 ### Implementation
-- **[Code Conventions](references/code-conventions.md)**: ES6 features, PurgeTSS usage, accessibility
+- **[Code Conventions](references/code-conventions.md)**: ES6 features, TSS design system, accessibility
+- **[Theming & Dark Mode](references/theming.md)**: Theme system, Alloy.Globals palette, runtime switching, design tokens
 - **[Controller Patterns](references/controller-patterns.md)**: Templates, animation, dynamic styling
 - **[Examples](references/examples.md)**: API clients, SQL models, full screen examples
 
 ### Quality & Reliability
-- **[Testing](references/testing.md)**: Unit testing, mocking patterns, controller testing, test helpers
+- **[Unit & Integration Testing](references/testing-unit.md)**: Unit testing, mocking patterns, controller testing, test helpers
+- **[E2E Testing & CI/CD](references/testing-e2e-ci.md)**: Appium, WebdriverIO, GitHub Actions, Fastlane
 - **[Error Handling & Logging](references/error-handling.md)**: AppError classes, Logger service, validation
 
 ### Performance & Security
-- **[Performance Patterns](references/performance-patterns.md)**: ListView, bridge optimization, memory management, lazy loading
-- **[Security Patterns](references/security-patterns.md)**: Token storage, certificate pinning, encryption, OWASP
+- **[ListView & ScrollView Performance](references/performance-listview.md)**: ListView templates, data binding, image caching, ScrollView optimization
+- **[Performance Optimization](references/performance-optimization.md)**: Bridge crossings, memory management, animations, debounce/throttle, database
+- **[Security Fundamentals](references/security-fundamentals.md)**: Token storage, certificate pinning, encryption, HTTPS, OWASP
+- **[Device Security](references/security-device.md)**: Biometric auth, deep link validation, jailbreak/root detection
 - **[State Management](references/state-management.md)**: Centralized store, reactive patterns, synchronization
 
 ### Migration
@@ -218,7 +208,6 @@ For specific feature implementations, defer to these specialized skills:
 
 | Task                                                  | Use This Skill |
 | ----------------------------------------------------- | -------------- |
-| PurgeTSS setup, advanced styling, animations          | `purgetss`     |
 | Location, Maps, Push Notifications, Media APIs        | `ti-howtos`    |
 | UI layouts, ListViews, gestures, platform-specific UI | `ti-ui`        |
 | Alloy CLI, configuration files, debugging             | `alloy-howtos` |

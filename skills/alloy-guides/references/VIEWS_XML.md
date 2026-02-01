@@ -1,36 +1,5 @@
 # Alloy XML Markup
 
-## Table of Contents
-
-- [Alloy XML Markup](#alloy-xml-markup)
-  - [Table of Contents](#table-of-contents)
-  - [Introduction](#introduction)
-  - [Collection Element](#collection-element)
-    - [Creating a Singleton](#creating-a-singleton)
-    - [Creating an Instance](#creating-an-instance)
-  - [Model Element](#model-element)
-    - [Creating a Singleton](#creating-a-singleton-1)
-    - [Creating an Instance](#creating-an-instance-1)
-  - [Module Attribute](#module-attribute)
-  - [Module Element](#module-element)
-  - [Require Element](#require-element)
-    - [Including Views](#including-views)
-    - [Importing Widgets](#importing-widgets)
-    - [Passing Arguments](#passing-arguments)
-    - [Binding Events](#binding-events)
-    - [Adding Children Views](#adding-children-views)
-  - [Namespace](#namespace)
-  - [Conditional Code](#conditional-code)
-  - [Property Mapping](#property-mapping)
-    - [Proxy Properties](#proxy-properties)
-    - [Android ActionBar](#android-actionbar)
-    - [iOS Navigation Button Shorthand](#ios-navigation-button-shorthand)
-    - [iOS SystemButton Shorthand](#ios-systembutton-shorthand)
-    - [TextField Keyboard Shorthands](#textfield-keyboard-shorthands)
-  - [Event Handling](#event-handling)
-  - [Data Binding](#data-binding)
-  - [Non-Standard Syntax](#non-standard-syntax)
-
 ## Introduction
 
 In Alloy, the XML markup abstracts the Titanium SDK UI components, so you do not need to code the creation and setup of these components using JavaScript and the Titanium SDK API. All view files must be placed in the `app/views` folder of your project with the `.xml` file extension.

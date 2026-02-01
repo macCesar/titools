@@ -1,25 +1,5 @@
 # Alloy Tasks with the CLI
 
-## Table of Contents
-
-- [Alloy Tasks with the CLI](#alloy-tasks-with-the-cli)
-  - [Table of Contents](#table-of-contents)
-  - [Creating a New Application](#creating-a-new-application)
-  - [Creating a New Application Using a Test Application](#creating-a-new-application-using-a-test-application)
-  - [Generating Components](#generating-components)
-    - [Generating a Controller](#generating-a-controller)
-    - [Generating a View](#generating-a-view)
-    - [Generating a Style](#generating-a-style)
-    - [Generating a Model](#generating-a-model)
-    - [Generating a Migration](#generating-a-migration)
-    - [Generating a Widget](#generating-a-widget)
-    - [Generating alloy.jmk](#generating-alloyjmk)
-  - [Extracting Localization Strings](#extracting-localization-strings)
-  - [Compiling a Specific View-Controller](#compiling-a-specific-view-controller)
-  - [Building an Application](#building-an-application)
-  - [Installing Special Project Components](#installing-special-project-components)
-    - [Installing the Compiler Plugin](#installing-the-compiler-plugin)
-
 ## Creating a New Application
 
 > **Recommended:** Use `ti create --alloy` to create a new Alloy project in one step.

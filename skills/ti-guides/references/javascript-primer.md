@@ -2,7 +2,6 @@
 
 Essential JavaScript concepts, resources, and best practices for Titanium development.
 
-## Table of Contents
 1. [JavaScript Overview](#javascript-overview)
 2. [Learning Resources](#learning-resources)
 3. [Best Practices](#best-practices)

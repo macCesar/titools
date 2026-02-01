@@ -19,56 +19,6 @@ Previous versions of PurgeTSS included several icon font libraries such as Boots
 
 :::
 
-## Table of Contents
-
-- [Icon Fonts Libraries](#icon-fonts-libraries)
-  - [Table of Contents](#table-of-contents)
-  - [Installing Official Icon Fonts](#installing-official-icon-fonts)
-  - [Using Icon Fonts in XML](#using-icon-fonts-in-xml)
-    - [Font Awesome 7](#font-awesome-7)
-    - [Material Icons](#material-icons)
-    - [Material Symbols](#material-symbols)
-    - [Framework7 Icons](#framework7-icons)
-  - [Recreating Deleted Libraries](#recreating-deleted-libraries)
-    - [Step 1: Download the Libraries](#step-1-download-the-libraries)
-    - [Step 2: Place in fonts Folder](#step-2-place-in-fonts-folder)
-    - [Step 3: Run build-fonts Command](#step-3-run-build-fonts-command)
-      - [Generated fonts.tss Example](#generated-fontstss-example)
-    - [Renaming the Style Rule Name](#renaming-the-style-rule-name)
-  - [Using Custom Font Modules](#using-custom-font-modules)
-    - [Generated Module Structure](#generated-module-structure)
-    - [Usage in Controllers](#usage-in-controllers)
-  - [The --prefix Option](#the---prefix-option)
-    - [Example with Custom Prefix](#example-with-custom-prefix)
-  - [Icon Font Best Practices](#icon-font-best-practices)
-    - [1. Use Semantic Icon Names](#1-use-semantic-icon-names)
-    - [2. Combine with Styling Classes](#2-combine-with-styling-classes)
-    - [3. Use in Navigation](#3-use-in-navigation)
-    - [4. Dynamic Icons in Controllers](#4-dynamic-icons-in-controllers)
-  - [Font Assets Folder](#font-assets-folder)
-  - [Icon Sizing and Styling](#icon-sizing-and-styling)
-  - [Common Patterns](#common-patterns)
-    - [Icon with Text](#icon-with-text)
-    - [Circular Icon Button](#circular-icon-button)
-    - [Icon Badge](#icon-badge)
-    - [Social Media Icons](#social-media-icons)
-  - [Troubleshooting](#troubleshooting)
-    - [Icons Not Displaying](#icons-not-displaying)
-    - [Wrong Icon Character](#wrong-icon-character)
-    - [Icons Different on iOS vs Android](#icons-different-on-ios-vs-android)
-  - [Vendor-Specific Notes](#vendor-specific-notes)
-    - [Font Awesome 7](#font-awesome-7-1)
-    - [Font Awesome Pro](#font-awesome-pro)
-      - [Setting Up Font Awesome Pro](#setting-up-font-awesome-pro)
-      - [Pro Icon Styles](#pro-icon-styles)
-    - [Font Awesome 7 Beta](#font-awesome-7-beta)
-      - [Setting Up Font Awesome 7 Beta](#setting-up-font-awesome-7-beta)
-      - [Testing Beta Icons](#testing-beta-icons)
-    - [Material Icons vs Material Symbols](#material-icons-vs-material-symbols)
-  - [Complete Command Reference](#complete-command-reference)
-
----
-
 ## Installing Official Icon Fonts
 
 Use the `icon-library` command to download and install official icon fonts:

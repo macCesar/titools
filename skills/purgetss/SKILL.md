@@ -27,38 +27,6 @@ This skill automatically detects PurgeTSS usage when invoked and provides utilit
 - **Not detected** → Does NOT suggest PurgeTSS utility classes, does NOT recommend `$.UI.create()`, does NOT reference PurgeTSS-specific patterns
 :::
 
-## Table of Contents
-
-- [PurgeTSS Expert](#purgetss-expert)
-  - [Project Detection](#project-detection)
-  - [Table of Contents](#table-of-contents)
-  - [Core Workflow](#core-workflow)
-  - [Project Structure](#project-structure)
-    - [Understanding `app.tss` vs `_app.tss`](#understanding-apptss-vs-_apptss)
-    - [Checking for Unused/Unsupported Classes](#checking-for-unusedunsupported-classes)
-    - [How `utilities.tss` Works](#how-utilitiestss-works)
-  - [Quick Start](#quick-start)
-  - [Critical Rules (Low Freedom)](#critical-rules-low-freedom)
-    - [⭐ PREFER `$.UI.create()` for Dynamic Components](#-prefer-uicreate-for-dynamic-components)
-    - [🚨 RESPECT USER FILES](#-respect-user-files)
-    - [🚨 NO FLEXBOX - Titanium Doesn't Support It](#-no-flexbox---titanium-doesnt-support-it)
-    - [🚨 PLATFORM-SPECIFIC PROPERTIES REQUIRE MODIFIERS](#-platform-specific-properties-require-modifiers)
-    - [Other Mandatory Rules](#other-mandatory-rules)
-  - [Common Anti-Patterns](#common-anti-patterns)
-  - [Class Verification Workflow](#class-verification-workflow)
-    - [Verification Steps](#verification-steps)
-    - [What HAS Classes vs What DOESN'T](#what-has-classes-vs-what-doesnt)
-  - [Reference Guides](#reference-guides)
-    - [Essential References](#essential-references)
-    - [Setup \& Configuration](#setup--configuration)
-    - [Customization](#customization)
-    - [Layout \& Styling](#layout--styling)
-    - [Fonts \& Animations](#fonts--animations)
-  - [Examples](#examples)
-  - [Related Skills](#related-skills)
-
----
-
 ## Core Workflow
 
 1. **Setup**: `purgetss create 'name'` or `purgetss init` for existing projects
@@ -229,15 +197,14 @@ When building complex UIs, carefully choose the layout mode for each container:
 
 **`composite`** (default) - Absolute positioning with `top`, `left`, etc.:
 ```xml
-<View class="w-screen h-screen">
-  <View class="absolute top-0 left-0 bg-red-500 wh-12" />
-  <View class="absolute bottom-0 right-0 bg-blue-500 wh-12" />
+<View class="h-screen w-screen">
+  <View class="wh-12 absolute left-0 top-0 bg-red-500" />
+  <View class="wh-12 absolute bottom-0 right-0 bg-blue-500" />
 </View>
 ```
 
 **Common Issue:** If you see elements appearing in unexpected positions (e.g., a header bar "behind" content), check if parent containers have conflicting layout modes. Each container's layout affects its direct children only.
 :::
-
 
 ### 🚨 PLATFORM-SPECIFIC PROPERTIES REQUIRE MODIFIERS
 
@@ -395,6 +362,7 @@ Load these only when needed:
 ### Setup & Configuration
 - [Installation & Setup](references/installation-setup.md) - First run, VS Code, LiveView
 - [CLI Commands](references/cli-commands.md) - All `purgetss` commands
+- [Migration Guide](references/migration-guide.md) - Migrating existing apps from manual TSS to PurgeTSS
 
 ### Customization
 - [Deep Customization](references/customization-deep-dive.md) - config.cjs, colors, spacing, Ti Elements
@@ -410,6 +378,9 @@ Load these only when needed:
 - [Platform Modifiers](references/platform-modifiers.md) - ios:, android:, tablet:, handheld:
 - [Opacity Modifier](references/opacity-modifier.md) - Color transparency with /50 syntax
 - [Titanium Resets](references/titanium-resets.md) - Default styles for Ti elements
+
+### Performance
+- [Performance Tips](references/performance-tips.md) - Optimizing PurgeTSS apps (bridge crossings, ListView, animations)
 
 ### Fonts & Animations
 - [Icon Fonts](references/icon-fonts.md) - Font Awesome 7, Material Icons, custom icon libraries

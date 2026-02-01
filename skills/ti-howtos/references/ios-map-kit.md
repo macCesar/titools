@@ -2,25 +2,6 @@
 
 Guide for implementing native maps on iOS using the `ti.map` module.
 
-## Table of Contents
-
-- [iOS Map Kit](#ios-map-kit)
-  - [Table of Contents](#table-of-contents)
-  - [1. Initial Configuration](#1-initial-configuration)
-    - [Module Installation](#module-installation)
-    - [Location Permissions (Info.plist)](#location-permissions-infoplist)
-  - [2. Using the Map View](#2-using-the-map-view)
-    - [Basic Creation](#basic-creation)
-  - [3. 3D Camera (Perspective)](#3-3d-camera-perspective)
-  - [4. iOS Annotations](#4-ios-annotations)
-    - [System Buttons and Callouts](#system-buttons-and-callouts)
-    - [Center Offset](#center-offset)
-  - [5. Advanced Routes](#5-advanced-routes)
-    - [Overlay Levels](#overlay-levels)
-  - [6. Events](#6-events)
-
----
-
 ## 1. Initial Configuration
 
 ### Module Installation

@@ -339,7 +339,7 @@ $.cleanup = cleanup
 
 ```xml
 <!-- views/products/list.xml -->
-<ListView class="wh-screen">
+<ListView id="listView">
   <ListSection dataCollection="products">
     <ListItem title="{name}" subtitle="{description}" />
   </ListSection>

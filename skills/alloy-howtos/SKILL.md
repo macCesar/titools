@@ -25,27 +25,6 @@ This skill automatically detects Alloy projects when invoked and provides CLI an
 - **Not detected** → Indicates this skill is for Alloy projects only, suggests Alloy guides if user wants to migrate
 :::
 
-## Table of Contents
-
-- [Titanium Alloy How-tos](#titanium-alloy-how-tos)
-  - [Project Detection](#project-detection)
-  - [Table of Contents](#table-of-contents)
-  - [Quick Reference](#quick-reference)
-  - [Critical Best Practices](#critical-best-practices)
-    - [Naming Conventions](#naming-conventions)
-    - [Global Events - Use Backbone.Events](#global-events---use-backboneevents)
-    - [Global Variables in Non-Controller Files](#global-variables-in-non-controller-files)
-  - [Conditional Views](#conditional-views)
-  - [Common Error Solutions](#common-error-solutions)
-  - [CLI Quick Reference](#cli-quick-reference)
-  - [Configuration Files Priority](#configuration-files-priority)
-  - [Custom XML Tags](#custom-xml-tags)
-  - [Resources](#resources)
-    - [references/](#references)
-  - [Related Skills](#related-skills)
-
----
-
 ## Quick Reference
 
 | Topic                                        | Reference                                                               |

@@ -1,22 +1,5 @@
 # Alloy Controllers
 
-## Table of Contents
-
-- [Alloy Controllers](#alloy-controllers)
-  - [Table of Contents](#table-of-contents)
-  - [Overview](#overview)
-  - [Controllers](#controllers)
-    - [Events](#events)
-    - [Inheritance](#inheritance)
-    - [Conditional Code](#conditional-code)
-    - [Passing Arguments](#passing-arguments)
-    - [Global Namespace](#global-namespace)
-  - [Initializer File (alloy.js)](#initializer-file-alloyjs)
-  - [Library Code and CommonJS Modules](#library-code-and-commonjs-modules)
-    - [Specs Folder](#specs-folder)
-    - [Platform-Specific Library Folders](#platform-specific-library-folders)
-    - [Extending Alloy, Underscore.js and Backbone.js](#extending-alloy-underscorejs-and-backbonejs)
-
 ## Overview
 
 This topic covers how to write controller code as well as other JavaScript files excluding models. Some traditional Titanium development is required, since Alloy controllers make direct calls to the Titanium SDK API to manipulate UI objects and access non-UI APIs.

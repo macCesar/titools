@@ -28,19 +28,6 @@ This skill automatically detects Titanium projects when invoked and provides SDK
 - **Not detected** → Indicates this is for Titanium projects only
 :::
 
-## Table of Contents
-
-- [Titanium SDK Guide Expert](#titanium-sdk-guide-expert)
-  - [Project Detection](#project-detection)
-  - [Table of Contents](#table-of-contents)
-  - [Core Workflow](#core-workflow)
-  - [Procedural Rules (Low Freedom)](#procedural-rules-low-freedom)
-  - [Reference Guides (Progressive Disclosure)](#reference-guides-progressive-disclosure)
-  - [Related Skills](#related-skills)
-  - [Response Format](#response-format)
-
----
-
 ## Core Workflow
 
 1.  **Architecture Check**: Validate that the project follows a modular pattern (CommonJS or Alloy).

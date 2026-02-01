@@ -1,7 +1,5 @@
 # Alloy Models
 
-## Table of Contents
-
 1. [Overview](#overview)
 2. [Alloy Collection and Model Objects](#alloy-collection-and-model-objects)
 3. [Alloy Data Binding](#alloy-data-binding)

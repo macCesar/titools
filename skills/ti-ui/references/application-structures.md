@@ -1,51 +1,5 @@
 # Application Structures and Core Building Blocks
 
-## Table of Contents
-
-- [Application Structures and Core Building Blocks](#application-structures-and-core-building-blocks)
-  - [Table of Contents](#table-of-contents)
-  - [1. Overview](#1-overview)
-  - [2. Windows](#2-windows)
-    - [Window Concepts](#window-concepts)
-    - [Creating Windows](#creating-windows)
-    - [Window Events](#window-events)
-    - [Window Lifecycle](#window-lifecycle)
-  - [3. Views](#3-views)
-    - [View Concepts](#view-concepts)
-    - [Creating Views](#creating-views)
-    - [Common View Types](#common-view-types)
-    - [Adding Views to Windows](#adding-views-to-windows)
-    - [Removing Views](#removing-views)
-  - [4. TabGroups](#4-tabgroups)
-    - [Tab-Based Apps](#tab-based-apps)
-    - [Tab Properties](#tab-properties)
-    - [Window Titles vs Tab Titles](#window-titles-vs-tab-titles)
-    - [Tab Events](#tab-events)
-    - [Tab Recommendations](#tab-recommendations)
-    - [Tab-Based Applications](#tab-based-applications)
-    - [Navigation Bar Customization](#navigation-bar-customization)
-  - [7. Modal Windows](#7-modal-windows)
-    - [iOS Modal Windows](#ios-modal-windows)
-  - [8. Heavyweight vs Lightweight Windows](#8-heavyweight-vs-lightweight-windows)
-    - [Heavyweight Windows (Android)](#heavyweight-windows-android)
-    - [Lightweight Windows](#lightweight-windows)
-  - [9. Window Hierarchy and Stacking](#9-window-hierarchy-and-stacking)
-    - [Understanding the Stack](#understanding-the-stack)
-    - [Accessing the Stack](#accessing-the-stack)
-  - [10. Platform-Specific Navigation](#10-platform-specific-navigation)
-    - [Android Navigation Patterns](#android-navigation-patterns)
-    - [iOS Navigation Patterns](#ios-navigation-patterns)
-  - [11. Execution Contexts](#11-execution-contexts)
-    - [Lightweight Contexts](#lightweight-contexts)
-  - [12. Common Patterns](#12-common-patterns)
-    - [Drill-Down Navigation](#drill-down-navigation)
-    - [Modal Forms](#modal-forms)
-    - [Tab with Navigation](#tab-with-navigation)
-  - [13. Best Practices](#13-best-practices)
-  - [14. Platform Differences Summary](#14-platform-differences-summary)
-
----
-
 ## 1. Overview
 
 Titanium apps are built from three core components:

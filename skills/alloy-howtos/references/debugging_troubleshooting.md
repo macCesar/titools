@@ -1,24 +1,5 @@
 # Alloy Debugging and Troubleshooting
 
-## Table of Contents
-
-- [Alloy Debugging and Troubleshooting](#alloy-debugging-and-troubleshooting)
-  - [Table of Contents](#table-of-contents)
-  - [Overview](#overview)
-  - [Debugging](#debugging)
-    - [Compiler Error Messages](#compiler-error-messages)
-  - [Troubleshooting](#troubleshooting)
-    - [Error: No app.js Found](#error-no-appjs-found)
-    - [Android: Images, HTML and Assets Not Displaying](#android-images-html-and-assets-not-displaying)
-    - [Android Runtime Error: Cannot Call Method of Undefined](#android-runtime-error-cannot-call-method-of-undefined)
-    - [Android Runtime Error: Alloy is Not Defined](#android-runtime-error-alloy-is-not-defined)
-    - [iOS Application Error: Invalid Method Passed to UIModule](#ios-application-error-invalid-method-passed-to-uimodule)
-    - [iOS Application Error: Undefined is Not an Object](#ios-application-error-undefined-is-not-an-object)
-  - [Getting Help](#getting-help)
-  - [Submitting a Bug Report](#submitting-a-bug-report)
-
----
-
 ## Overview
 
 This guide covers debugging and troubleshooting Alloy applications.

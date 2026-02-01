@@ -1,32 +1,5 @@
 # Media APIs
 
-## Table of Contents
-
-- [Media APIs](#media-apis)
-  - [Table of Contents](#table-of-contents)
-  - [1. Audio APIs](#1-audio-apis)
-    - [Playing Basic Sounds (Ti.Media.Sound)](#playing-basic-sounds-timediasound)
-    - [Streaming Audio (Ti.Media.AudioPlayer)](#streaming-audio-timediaaudioplayer)
-    - [Recording Audio (Ti.Media.AudioRecorder)](#recording-audio-timediaaudiorecorder)
-  - [2. Video APIs (Ti.Media.VideoPlayer)](#2-video-apis-timediavideoplayer)
-    - [Cross-Platform Considerations](#cross-platform-considerations)
-    - [Basic Usage](#basic-usage)
-    - [Key Events](#key-events)
-  - [3. Camera and Photo Gallery APIs](#3-camera-and-photo-gallery-apis)
-    - [Camera (Ti.Media.showCamera)](#camera-timediashowcamera)
-    - [Gallery (Ti.Media.openPhotoGallery)](#gallery-timediaopenphotogallery)
-    - [Memory Management](#memory-management)
-  - [4. Images and ImageView APIs](#4-images-and-imageview-apis)
-    - [Background Images](#background-images)
-    - [ImageView Component](#imageview-component)
-    - [Density-Specific Images](#density-specific-images)
-    - [Flipbook Animations](#flipbook-animations)
-  - [Permissions Checklist](#permissions-checklist)
-    - [iOS (tiapp.xml)](#ios-tiappxml)
-    - [Android (tiapp.xml)](#android-tiappxml)
-
----
-
 ## 1. Audio APIs
 
 ### Playing Basic Sounds (Ti.Media.Sound)

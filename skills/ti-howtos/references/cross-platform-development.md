@@ -2,42 +2,6 @@
 
 Strategies and techniques for building Titanium apps that work on iOS and Android from a single codebase.
 
-## Table of Contents
-
-- [Cross-Platform Development](#cross-platform-development)
-  - [Table of Contents](#table-of-contents)
-  - [Philosophy](#philosophy)
-    - ["Write Once, Adapt Everywhere"](#write-once-adapt-everywhere)
-    - [Embrace the Platform](#embrace-the-platform)
-  - [Platform Identification](#platform-identification)
-    - [Platform Properties](#platform-properties)
-    - [Best Practice: Cache Platform Checks](#best-practice-cache-platform-checks)
-    - [Anti-Pattern: Don't Assume Binary](#anti-pattern-dont-assume-binary)
-  - [Coding Strategies](#coding-strategies)
-    - [1. Branching (For Mostly Similar Code)](#1-branching-for-mostly-similar-code)
-    - [2. Platform-Specific Files (For Mostly Different Code)](#2-platform-specific-files-for-mostly-different-code)
-    - [3. Single Execution Context (Recommended)](#3-single-execution-context-recommended)
-  - [Platform-Specific Resources](#platform-specific-resources)
-    - [Resource Overrides System](#resource-overrides-system)
-    - [Assets (Alloy)](#assets-alloy)
-  - [5. Webpack Build Pipeline (TiSDK 9.1.0+)](#5-webpack-build-pipeline-tisdk-910)
-    - [`@` Alias](#-alias)
-    - [NPM Support](#npm-support)
-  - [6. Internationalization (i18n)](#6-internationalization-i18n)
-    - [Using Localized Strings](#using-localized-strings)
-    - [Date and Currency Formatting](#date-and-currency-formatting)
-    - [Testing Localizations](#testing-localizations)
-  - [Platform-Specific APIs](#platform-specific-apis)
-    - [Example: Platform-Specific Properties](#example-platform-specific-properties)
-  - [Common Cross-Platform Patterns](#common-cross-platform-patterns)
-    - [Tab Groups](#tab-groups)
-    - [Navigation](#navigation)
-    - [Platform-Specific Event Handling](#platform-specific-event-handling)
-  - [Best Practices](#best-practices)
-  - [Resources](#resources)
-
----
-
 ## Philosophy
 
 ### "Write Once, Adapt Everywhere"

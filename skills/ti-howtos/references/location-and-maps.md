@@ -1,33 +1,5 @@
 # Location Services and Maps
 
-## Table of Contents
-
-- [Location Services and Maps](#location-services-and-maps)
-  - [Table of Contents](#table-of-contents)
-  - [1. GPS Position Tracking](#1-gps-position-tracking)
-    - [FusedLocationProvider (Android)](#fusedlocationprovider-android)
-    - [Accuracy Configuration](#accuracy-configuration)
-    - [Android Configuration Modes](#android-configuration-modes)
-    - [One-Time Position](#one-time-position)
-    - [Continuous Monitoring](#continuous-monitoring)
-    - [Lifecycle Management (Critical for Battery)](#lifecycle-management-critical-for-battery)
-    - [Compass/Heading](#compassheading)
-  - [Geocoding](#geocoding)
-    - [Forward Geocoding (Address → Coordinates)](#forward-geocoding-address--coordinates)
-    - [Reverse Geocoding (Coordinates → Places)](#reverse-geocoding-coordinates--places)
-  - [2. Native Maps (Platform-Specific Details)](#2-native-maps-platform-specific-details)
-  - [Common Map Patterns](#common-map-patterns)
-    - [Add Annotation After Map Creation](#add-annotation-after-map-creation)
-    - [Remove Annotation](#remove-annotation)
-    - [Remove All Annotations](#remove-all-annotations)
-    - [Select Annotation Programmatically](#select-annotation-programmatically)
-    - [Deselect Annotation](#deselect-annotation)
-    - [Set Region with Animation](#set-region-with-animation)
-    - [Zoom to Annotations](#zoom-to-annotations)
-    - [Best Practices](#best-practices)
-
----
-
 ## 1. GPS Position Tracking
 
 ### FusedLocationProvider (Android)

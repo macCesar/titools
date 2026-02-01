@@ -26,28 +26,6 @@ This skill automatically detects Alloy projects when invoked and provides framew
 - **Not detected** → Indicates this skill is for Alloy projects only, does not suggest Alloy-specific features
 :::
 
-## Table of Contents
-
-- [Alloy MVC Framework Guide](#alloy-mvc-framework-guide)
-  - [Project Detection](#project-detection)
-  - [Table of Contents](#table-of-contents)
-  - [Quick Reference](#quick-reference)
-  - [Project Structure](#project-structure)
-  - [MVC Quick Start](#mvc-quick-start)
-  - [Key Concepts](#key-concepts)
-  - [Critical Rules](#critical-rules)
-    - [Platform-Specific Properties in TSS](#platform-specific-properties-in-tss)
-  - [Common Patterns](#common-patterns)
-    - [Creating a Model](#creating-a-model)
-    - [Data Binding](#data-binding)
-    - [Platform-Specific Code](#platform-specific-code)
-    - [Widget Usage](#widget-usage)
-  - [Compilation Process](#compilation-process)
-  - [References](#references)
-  - [Related Skills](#related-skills)
-
----
-
 ## Quick Reference
 
 | Topic                                            | Reference File                                                          |
@@ -61,7 +39,7 @@ This skill automatically detects Alloy projects when invoked and provides framew
 | Controllers-less views, patterns                 | [VIEWS_WITHOUT_CONTROLLERS.md](references/VIEWS_WITHOUT_CONTROLLERS.md) |
 | Creating and using widgets                       | [WIDGETS.md](references/WIDGETS.md)                                     |
 | CLI commands, code generation                    | [CLI_TASKS.md](references/CLI_TASKS.md)                                 |
-| PurgeTSS integration and features                | [PURGETSS.md](references/PURGETSS.md)                                   |
+| PurgeTSS integration (optional addon)            | [PURGETSS.md](references/PURGETSS.md)                                   |
 
 ## Project Structure
 
@@ -156,7 +134,7 @@ Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties in TSS WITHOUT platform modi
 
 **Available modifiers:** `[platform=ios]`, `[platform=android]`, `[formFactor=handheld]`, `[formFactor=tablet]`, `[if=Alloy.Globals.customVar]`
 
-**For more platform-specific patterns, see** [Platform Modifiers (purgetss)](skills/purgetss/references/platform-modifiers.md) or [Platform UI guides (ti-ui)](skills/ti-ui/references/platform-ui-ios.md).
+**For more platform-specific patterns, see** [Code Conventions (alloy-expert)](skills/alloy-expert/references/code-conventions.md#platform--device-modifiers) or [Platform UI guides (ti-ui)](skills/ti-ui/references/platform-ui-ios.md).
 :::
 
 ## Common Patterns
@@ -206,9 +184,9 @@ Read detailed documentation from the reference files listed above based on your 
 
 For tasks beyond Alloy MVC basics, use these complementary skills:
 
-| Task                                      | Use This Skill |
-| ----------------------------------------- | -------------- |
-| Modern architecture, services, patterns   | `alloy-expert` |
-| Alloy CLI, config files, debugging errors | `alloy-howtos` |
-| Utility-first styling with PurgeTSS       | `purgetss`     |
-| Native features (location, push, media)   | `ti-howtos`    |
+| Task                                           | Use This Skill |
+| ---------------------------------------------- | -------------- |
+| Modern architecture, services, patterns        | `alloy-expert` |
+| Alloy CLI, config files, debugging errors      | `alloy-howtos` |
+| Utility-first styling with PurgeTSS (optional) | `purgetss`     |
+| Native features (location, push, media)        | `ti-howtos`    |

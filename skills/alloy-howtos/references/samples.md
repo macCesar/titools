@@ -1,19 +1,5 @@
 # Alloy Samples
 
-## Table of Contents
-
-- [Alloy Samples](#alloy-samples)
-  - [Table of Contents](#table-of-contents)
-  - [Kitchen Sink](#kitchen-sink)
-  - [Controller Sample](#controller-sample)
-  - [Conditional Statements in Views](#conditional-statements-in-views)
-    - [The Problem with Traditional Approaches](#the-problem-with-traditional-approaches)
-    - [The Solution: IF Attributes in XML](#the-solution-if-attributes-in-xml)
-    - [Conditional Queries in TSS](#conditional-queries-in-tss)
-    - [Data-Binding with Conditional Queries](#data-binding-with-conditional-queries)
-
----
-
 ## Kitchen Sink
 
 See the [KitchenSink-v2 application on GitHub](https://github.com/tidev/kitchensink-v2) for Alloy samples in a real app.

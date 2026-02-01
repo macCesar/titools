@@ -1,45 +1,5 @@
 # Gestures
 
-## Table of Contents
-
-- [Gestures](#gestures)
-  - [Table of Contents](#table-of-contents)
-  - [1. Overview](#1-overview)
-  - [2. Touch Events](#2-touch-events)
-    - [Touch Lifecycle](#touch-lifecycle)
-    - [Touch Event Properties](#touch-event-properties)
-    - [Android Note](#android-note)
-  - [3. Swipe Gesture](#3-swipe-gesture)
-    - [Basic Swipe](#basic-swipe)
-    - [Swipe Direction Detection](#swipe-direction-detection)
-    - [Swipe vs Scroll](#swipe-vs-scroll)
-  - [4. Pinch Gesture (iOS Only)](#4-pinch-gesture-ios-only)
-    - [Pinch to Zoom](#pinch-to-zoom)
-  - [5. Long Press Gesture](#5-long-press-gesture)
-    - [Basic Long Press](#basic-long-press)
-    - [Long Press Duration](#long-press-duration)
-    - [Android Long Press Convention](#android-long-press-convention)
-  - [6. Shake Gesture](#6-shake-gesture)
-    - [Detecting Shake](#detecting-shake)
-    - [Shake Example](#shake-example)
-    - [Testing Shake](#testing-shake)
-  - [7. Accelerometer as Input](#7-accelerometer-as-input)
-    - [Basic Accelerometer](#basic-accelerometer)
-    - [Accelerometer Properties](#accelerometer-properties)
-    - [Using Accelerometer for Control](#using-accelerometer-for-control)
-    - [Smoothing Accelerometer Data](#smoothing-accelerometer-data)
-  - [8. Gesture Lifecycle Management](#8-gesture-lifecycle-management)
-    - [Battery Considerations](#battery-considerations)
-  - [9. Platform-Specific Considerations](#9-platform-specific-considerations)
-    - [iOS](#ios)
-    - [Android](#android)
-  - [10. Best Practices](#10-best-practices)
-  - [11. Combining Gestures](#11-combining-gestures)
-    - [Multiple Gesture Types](#multiple-gesture-types)
-    - [Preventing Gesture Conflicts](#preventing-gesture-conflicts)
-
----
-
 ## 1. Overview
 
 Titanium supports various gestures beyond simple taps:

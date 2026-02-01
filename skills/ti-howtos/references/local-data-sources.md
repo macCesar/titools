@@ -1,41 +1,5 @@
 # Local Data Sources
 
-## Table of Contents
-
-- [Local Data Sources](#local-data-sources)
-  - [Table of Contents](#table-of-contents)
-  - [1. Filesystem Access and Storage](#1-filesystem-access-and-storage)
-    - [Modules Overview](#modules-overview)
-    - [Storage Locations](#storage-locations)
-    - [File Operations](#file-operations)
-      - [Getting a File Handle](#getting-a-file-handle)
-      - [Writing Files](#writing-files)
-      - [Reading Files](#reading-files)
-      - [Appending](#appending)
-      - [Creating/Copying](#creatingcopying)
-      - [Renaming](#renaming)
-      - [Deleting](#deleting)
-    - [Directory Operations](#directory-operations)
-    - [Case Sensitivity Warning](#case-sensitivity-warning)
-  - [2. SQLite Database](#2-sqlite-database)
-    - [Opening Databases](#opening-databases)
-    - [Querying Data](#querying-data)
-    - [Parameterized Queries](#parameterized-queries)
-    - [Data Modification](#data-modification)
-    - [**CRITICAL**: Always Close Connections](#critical-always-close-connections)
-  - [3. Properties API (Ti.App.Properties)](#3-properties-api-tiappproperties)
-    - [Overview](#overview)
-    - [Data Type Methods](#data-type-methods)
-    - [Usage Examples](#usage-examples)
-    - [Storing Complex Objects as JSON](#storing-complex-objects-as-json)
-    - [Platform Storage](#platform-storage)
-  - [4. Advanced Data Manipulation (Buffer, Codec, and Streams)](#4-advanced-data-manipulation-buffer-codec-and-streams)
-  - [5. Choosing a Persistence Strategy](#5-choosing-a-persistence-strategy)
-    - [Decision Guide](#decision-guide)
-    - [Best Practices](#best-practices)
-
----
-
 ## 1. Filesystem Access and Storage
 
 ### Modules Overview

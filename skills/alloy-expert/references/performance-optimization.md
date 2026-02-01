@@ -1,151 +1,10 @@
-# Performance Optimization Guide
-
-## Critical Rules
-
-1. **NEVER use `Ti.UI.SIZE` in ListView items** - Causes layout recalculation on every scroll
-2. **ALWAYS use fixed heights** - Pre-calculated heights enable fast scrolling
-3. **USE templates** - Reuse view instances instead of creating new ones
-4. **CACHE Ti.Platform properties** - Avoid repeated bridge crossings
-5. **USE applyProperties()** - Batch UI updates in a single call
-
-## ListView Performance
-
-### Optimized ListView Template
-
-```xml
-<!-- views/user/list.xml -->
-<Alloy>
-  <ListView class="wh-screen">
-    <Templates>
-      <!-- FIXED HEIGHT is critical for performance -->
-      <ItemTemplate name="userTemplate" height="64">
-        <View class="horizontal h-16 w-screen">
-          <ImageView bindId="avatar" class="rounded-full-12 ml-4" />
-          <View class="vertical ml-3">
-            <Label bindId="name" class="text-base font-bold" />
-            <Label bindId="email" class="text-sm text-gray-500" />
-          </View>
-        </View>
-      </ItemTemplate>
-    </Templates>
-
-    <ListSection id="section" dataCollection="users">
-      <ListItem template="userTemplate" avatar:image="{avatar}" name:text="{name}" email:text="{email}" />
-    </ListSection>
-  </ListView>
-</Alloy>
-```
-
-**PurgeTSS Layout Rules:**
-- Use `horizontal`/`vertical` for layout (NOT flexbox)
-- Use `m-*` on children for spacing (NOT `p-*` on parent)
-- Use `wh-screen` for full width + height
-
-### Efficient Data Binding
-
-```javascript
-// controllers/feed/list.js
-function renderItems(items) {
-  // Pre-format data to avoid calculation in render
-  const listItems = items.map(item => ({
-    template: 'feedTemplate',
-    properties: {
-      itemId: item.id,
-      searchableText: `${item.title} ${item.description}`
-    },
-    title: { text: item.title },
-    description: { text: item.description },
-    timestamp: { text: formatTimestamp(item.created_at) }
-  }))
-
-  // Single update
-  $.section.items = listItems
-}
-
-// Timestamp formatter (cache results)
-const timestampCache = new Map()
-
-function formatTimestamp(timestamp) {
-  if (timestampCache.has(timestamp)) {
-    return timestampCache.get(timestamp)
-  }
-
-  const formatted = new Date(timestamp).toLocaleString()
-  timestampCache.set(timestamp, formatted)
-
-  return formatted
-}
-```
-
-### Image Loading & Caching
-
-```javascript
-// lib/services/imageCache.js
-exports.ImageCache = {
-  _cache: new Map(),
-  _loading: new Map(),
-
-  // Get image at appropriate size for list item
-  getListThumbnail(url) {
-    const cacheKey = `thumb_${url}`
-
-    // Return cached if available
-    if (this._cache.has(cacheKey)) {
-      return this._cache.get(cacheKey)
-    }
-
-    // Check if already loading
-    if (this._loading.has(cacheKey)) {
-      return this._loading.get(cacheKey)
-    }
-
-    // Load and resize
-    const promise = this._loadAndResize(url, { width: 80, height: 80 })
-      .then(resized => {
-        this._cache.set(cacheKey, resized)
-        this._loading.delete(cacheKey)
-        return resized
-      })
-
-    this._loading.set(cacheKey, promise)
-
-    return promise
-  },
-
-  async _loadAndResize(url, size) {
-    return new Promise((resolve, reject) => {
-      const imageView = Ti.UI.createImageView({
-        image: url,
-        width: size.width,
-        height: size.height,
-        preventsDefaultAnimation: true
-      })
-
-      imageView.addEventListener('load', () => {
-        const blob = imageView.toImage()
-        const resized = blob.imageAsResized(size.width, size.height)
-        imageView.image = null
-        resolve(resized)
-      })
-
-      imageView.addEventListener('error', (e) => {
-        reject(e)
-      })
-    })
-  },
-
-  clear() {
-    this._cache.clear()
-    this._loading.clear()
-  }
-}
-```
+# Performance Optimization: Bridge, Memory, Animation & Timing
 
 ## Bridge Optimization
 
 ### Minimize Bridge Crossings
 
-Every JavaScript → Native call crosses a bridge. Minimize these:
+Every JavaScript -> Native call crosses a bridge. Minimize these:
 
 ```javascript
 // BAD: Multiple bridge crossings
@@ -176,14 +35,19 @@ $.nameLabel.applyProperties({
 })
 ```
 
-### Use PurgeTSS Classes
+### Use TSS Files Instead of Inline Attributes
 
 ```xml
-<!-- BAD: Inline styling = more bridge crossings -->
+<!-- BAD: Inline styling = scattered and hard to maintain -->
 <Label text="Hello" width="200" height="40" color="#000" font="{fontSize:16}" />
 
-<!-- GOOD: Single class application -->
-<Label text="Hello" class="h-10 w-1/2 text-base text-black" />
+<!-- GOOD: Style defined in TSS file -->
+<Label id="helloLabel" text="Hello" />
+```
+
+```tss
+/* In the corresponding .tss file */
+"#helloLabel": { width: 200, height: 40, color: '#000', font: { fontSize: 16 } }
 ```
 
 ## Memory Management
@@ -242,7 +106,7 @@ function cleanup() {
 $.cleanup = cleanup
 ```
 
-### Image Memory Management
+## Image Memory Management
 
 ```javascript
 // lib/services/imageManager.js
@@ -479,115 +343,6 @@ renderUsers(users)
 measure.end()
 ```
 
-## Performance Checklist
-
-| Area         | Check                                     |
-| ------------ | ----------------------------------------- |
-| **ListView** | Fixed heights on all templates            |
-| **ListView** | Using templates, not dynamic views        |
-| **ListView** | Image pre-sizing and caching              |
-| **Bridge**   | Cached Ti.Platform properties             |
-| **Bridge**   | Using applyProperties for updates         |
-| **Bridge**   | PurgeTSS classes instead of inline styles |
-| **Memory**   | All global listeners cleaned up           |
-| **Memory**   | Heavy objects nulled in cleanup           |
-| **Memory**   | Images resized appropriately              |
-| **Database** | Using transactions for batch ops          |
-| **Database** | Indexes on frequently queried columns     |
-| **Database** | ResultSets and DB handles closed          |
-
-## ScrollView Performance
-
-### Optimizing Large ScrollViews
-
-```xml
-<!-- Avoid: Creating many views at once -->
-<ScrollView class="wh-screen vertical">
-  <!-- DON'T: 100+ views created immediately -->
-</ScrollView>
-
-<!-- Better: Use ListView for list-like content -->
-<ListView class="wh-screen">
-  <!-- Views created on-demand as user scrolls -->
-</ListView>
-```
-
-### When You Must Use ScrollView
-
-```javascript
-// Lazy load content sections
-const sections = [
-  { id: 'header', height: 200 },
-  { id: 'featured', height: 300 },
-  { id: 'products', height: 400 },
-  { id: 'reviews', height: 500 }
-]
-
-let loadedSections = new Set()
-
-function init() {
-  // Load only visible sections initially
-  loadSection('header')
-
-  $.scrollView.addEventListener('scroll', onScroll)
-}
-
-function onScroll(e) {
-  const scrollY = e.y
-  const viewportHeight = $.scrollView.rect.height
-
-  sections.forEach(section => {
-    if (loadedSections.has(section.id)) return
-
-    // Check if section is about to be visible
-    const sectionTop = getSectionTop(section.id)
-
-    if (sectionTop < scrollY + viewportHeight + 100) {
-      loadSection(section.id)
-    }
-  })
-}
-
-function loadSection(sectionId) {
-  if (loadedSections.has(sectionId)) return
-
-  loadedSections.add(sectionId)
-
-  // Load content for this section
-  const container = $[sectionId + 'Container']
-  const content = createSectionContent(sectionId)
-  container.add(content)
-}
-```
-
-### ScrollView Memory Management
-
-```javascript
-// Release images when scrolled far away
-function onScroll(e) {
-  const scrollY = e.y
-  const viewportHeight = $.scrollView.rect.height
-
-  // Release images more than 2 screens away
-  const releaseThreshold = viewportHeight * 2
-
-  imageViews.forEach((img, index) => {
-    const imgTop = img.rect.y
-    const distance = Math.abs(imgTop - scrollY)
-
-    if (distance > releaseThreshold && img.image) {
-      // Store URL for later reload
-      img._originalUrl = img.image
-      img.image = null
-    } else if (distance < viewportHeight && img._originalUrl) {
-      // Reload when close to viewport
-      img.image = img._originalUrl
-      delete img._originalUrl
-    }
-  })
-}
-```
-
 ## Animation Performance
 
 ### 60fps Animation Rules
@@ -610,37 +365,48 @@ const animation = Ti.UI.createAnimation({
 $.view.animate(animation)
 ```
 
-### PurgeTSS Animation Component (Recommended)
-
-```xml
-<!-- Define animations with state modifiers -->
-<Animation id="fadeIn" module="purgetss.ui" class="close:opacity-0 duration-300 open:opacity-100" />
-<Animation id="fadeOut" module="purgetss.ui" class="close:opacity-100 duration-300 open:opacity-0" />
-<Animation id="slideInRight" module="purgetss.ui" class="close:translate-x-full duration-300 open:translate-x-0" />
-<Animation id="scalePress" module="purgetss.ui" class="close:scale-100 duration-150 open:scale-95" />
-```
+### Ti.UI.createAnimation (Recommended)
 
 ```javascript
-// Fade in/out
-$.fadeIn.open($.card)
-$.fadeOut.close($.card)
+// Fade in
+function fadeIn(view, callback) {
+  const animation = Ti.UI.createAnimation({
+    opacity: 1,
+    duration: 300,
+    curve: Ti.UI.ANIMATION_CURVE_EASE_OUT
+  })
+  if (callback) animation.addEventListener('complete', callback)
+  view.animate(animation)
+}
 
-// Slide animations
-$.slideInRight.open($.panel)
-$.slideInRight.close($.panel)
+// Fade out
+function fadeOut(view, callback) {
+  const animation = Ti.UI.createAnimation({
+    opacity: 0,
+    duration: 300,
+    curve: Ti.UI.ANIMATION_CURVE_EASE_OUT
+  })
+  if (callback) animation.addEventListener('complete', callback)
+  view.animate(animation)
+}
 
-// Scale animations (press effect)
-$.scalePress.open($.button)  // Scale down
-$.scalePress.close($.button) // Scale back up
+// Slide in from right
+function slideInRight(view) {
+  view.transform = Ti.UI.createMatrix2D().translate(Ti.Platform.displayCaps.platformWidth, 0)
+  view.animate(Ti.UI.createAnimation({
+    transform: Ti.UI.createMatrix2D(),
+    duration: 300,
+    curve: Ti.UI.ANIMATION_CURVE_EASE_OUT
+  }))
+}
 
 // Chained animations with callback
-$.fadeIn.open($.modal, () => {
-  // Animation complete, trigger next animation
-  $.slideInRight.open($.content)
+fadeIn($.modal, () => {
+  slideInRight($.content)
 })
 ```
 
-### Hardware-Accelerated Properties
+## Hardware-Accelerated Properties
 
 ```javascript
 // These properties are GPU-accelerated (fast):
@@ -672,7 +438,7 @@ const badAnimation = Ti.UI.createAnimation({
 })
 ```
 
-### Animation Cleanup
+## Animation Cleanup
 
 ```javascript
 // Always remove animation listeners
@@ -853,3 +619,21 @@ function cleanup() {
   $.destroy()
 }
 ```
+
+## Performance Checklist
+
+| Area          | Check                                   |
+| ------------- | --------------------------------------- |
+| **Bridge**    | Cached Ti.Platform properties           |
+| **Bridge**    | Using applyProperties for updates       |
+| **Bridge**    | TSS styles instead of inline attributes |
+| **Memory**    | All global listeners cleaned up         |
+| **Memory**    | Heavy objects nulled in cleanup         |
+| **Memory**    | Images resized appropriately            |
+| **Database**  | Using transactions for batch ops        |
+| **Database**  | Indexes on frequently queried columns   |
+| **Database**  | ResultSets and DB handles closed        |
+| **Animation** | Using native animations, not intervals  |
+| **Animation** | GPU-accelerated properties preferred    |
+| **Timing**    | Debounce on search/input                |
+| **Timing**    | Throttle on scroll/touch events         |

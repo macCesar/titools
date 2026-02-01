@@ -1,55 +1,5 @@
 # ListViews and Performance Optimization
 
-## Table of Contents
-
-- [ListViews and Performance Optimization](#listviews-and-performance-optimization)
-  - [Table of Contents](#table-of-contents)
-  - [1. Overview](#1-overview)
-    - [Core Concepts](#core-concepts)
-  - [2. Basic ListView Structure](#2-basic-listview-structure)
-    - [Declarative (Alloy XML)](#declarative-alloy-xml)
-    - [Programmatic Data Binding](#programmatic-data-binding)
-    - [Mapping External Data](#mapping-external-data)
-  - [3. Templates](#3-templates)
-    - [Default Template](#default-template)
-    - [Custom Templates](#custom-templates)
-    - [Multiple Templates](#multiple-templates)
-  - [4. Data Binding](#4-data-binding)
-    - [Binding Syntax](#binding-syntax)
-    - [Programmatic Binding with Custom Templates](#programmatic-binding-with-custom-templates)
-  - [5. Section Operations](#5-section-operations)
-    - [CRUD Methods](#crud-methods)
-    - [Example Operations](#example-operations)
-  - [6. Events](#6-events)
-    - [Item Click](#item-click)
-    - [Marker Events (Infinite Scroll)](#marker-events-infinite-scroll)
-    - [Template Element Events](#template-element-events)
-  - [7. Critical Performance Rules](#7-critical-performance-rules)
-    - [Rule 1: Avoid Ti.UI.SIZE in Templates](#rule-1-avoid-tiuisize-in-templates)
-    - [Rule 2: Cannot Access Children Directly](#rule-2-cannot-access-children-directly)
-    - [Rule 3: Minimize Template Count](#rule-3-minimize-template-count)
-    - [Rule 4: Use updateItemAt for Changes](#rule-4-use-updateitemat-for-changes)
-    - [Rule 5: Animations are Limited](#rule-5-animations-are-limited)
-  - [8. iOS Action Items (Swipe Actions)](#8-ios-action-items-swipe-actions)
-  - [9. Search](#9-search)
-  - [10. Performance Best Practices](#10-performance-best-practices)
-    - [DO:](#do)
-    - [DON'T:](#dont)
-  - [11. Transitioning from TableView](#11-transitioning-from-tableview)
-    - [Core Logic Differences](#core-logic-differences)
-    - [API Differences](#api-differences)
-  - [12. Common Patterns](#12-common-patterns)
-    - [Infinite Scroll with Markers](#infinite-scroll-with-markers)
-    - [Multiple Selection](#multiple-selection)
-    - [Section Index (A-Z)](#section-index-a-z)
-  - [13. Platform Differences](#13-platform-differences)
-    - [iOS vs Android](#ios-vs-android)
-    - [cacheSize (iOS)](#cachesize-ios)
-  - [14. Debugging](#14-debugging)
-    - [Common Issues](#common-issues)
-
----
-
 ## 1. Overview
 
 ListView is a data-oriented, high-performance replacement for TableView. It optimizes large datasets by recycling native views and managing the item lifecycle automatically.

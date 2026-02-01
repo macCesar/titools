@@ -2,32 +2,6 @@
 
 PurgeTSS automatically resets certain Titanium elements to facilitate UI layout. Understanding these resets is critical for effective PurgeTSS usage.
 
-## Table of Contents
-
-- [Titanium Element Resets](#titanium-element-resets)
-  - [Table of Contents](#table-of-contents)
-  - [The Three Default Resets](#the-three-default-resets)
-  - [View Reset: `Ti.UI.SIZE`](#view-reset-tiuisize)
-    - [What `Ti.UI.SIZE` Means](#what-tiuisize-means)
-    - [Practical Examples](#practical-examples)
-    - [View in Different Layouts](#view-in-different-layouts)
-  - [ImageView Reset: iOS Hi-Res](#imageview-reset-ios-hi-res)
-  - [Window Reset: White Background](#window-reset-white-background)
-  - [Width/Height Inheritance](#widthheight-inheritance)
-    - [Shared Spacing Scale](#shared-spacing-scale)
-    - [Combined Utilities (`wh-`)](#combined-utilities-wh-)
-    - [Color Inheritance](#color-inheritance)
-  - [Common Pitfalls](#common-pitfalls)
-    - [1. Assuming View fills parent](#1-assuming-view-fills-parent)
-    - [2. Padding on View/Window](#2-padding-on-viewwindow)
-    - [3. Not using w-screen for percentage calculations](#3-not-using-w-screen-for-percentage-calculations)
-    - [4. Confusion about h-screen](#4-confusion-about-h-screen)
-  - [Reset Behavior in Generated app.tss](#reset-behavior-in-generated-apptss)
-  - [Overriding Resets](#overriding-resets)
-  - [Summary Table](#summary-table)
-
----
-
 ## The Three Default Resets
 
 ```tss
@@ -57,7 +31,7 @@ The most important reset is for the `View` element. By default, `View` is set to
 - Expand to fill margins (`m-4`, `mx-2`, `mt-6 mb-4`, etc.)
 
 :::tip EXPLICIT SIZE VS NATIVE UNDEFINED
-In Titanium, most elements like `Label` and `Button` default to `SIZE` behavior, but their property values are `undefined`. 
+In Titanium, most elements like `Label` and `Button` default to `SIZE` behavior, but their property values are `undefined`.
 
 According to the **UI Composite Layout Behavior Spec**, if a dimension is `undefined` and you apply two opposite pins (e.g., `left` and `right` via `m-xx`), the motor will **compute the dimension based on the pins**, causing the element to stretch.
 

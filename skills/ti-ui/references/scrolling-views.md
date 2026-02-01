@@ -1,27 +1,5 @@
 # Scrolling Views
 
-## Table of Contents
-
-- [Scrolling Views](#scrolling-views)
-  - [Table of Contents](#table-of-contents)
-  - [1. ScrollView vs ScrollableView](#1-scrollview-vs-scrollableview)
-  - [2. ScrollView](#2-scrollview)
-    - [Creating a ScrollView](#creating-a-scrollview)
-    - [ScrollView Events](#scrollview-events)
-    - [Android ScrollView Direction](#android-scrollview-direction)
-  - [3. ScrollableView](#3-scrollableview)
-    - [Creating a ScrollableView](#creating-a-scrollableview)
-    - [ScrollableView Events](#scrollableview-events)
-    - [Image Gallery](#image-gallery)
-    - [Onboarding Wizard](#onboarding-wizard)
-    - [Long Form Content](#long-form-content)
-    - [Scrollable Form](#scrollable-form)
-    - [ScrollableView](#scrollableview)
-  - [8. Detecting Scroll Position](#8-detecting-scroll-position)
-  - [Best Practices](#best-practices)
-
----
-
 ## 1. ScrollView vs ScrollableView
 
 | Feature          | ScrollView                     | ScrollableView                   |

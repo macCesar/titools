@@ -2,52 +2,6 @@
 
 Platform and Device modifiers (also called variants or prefixes) allow you to specify different styles for an element depending on the platform (iOS or Android) and device (tablet or handheld) that the app is running on.
 
-## Table of Contents
-
-- [Platform and Device Modifiers](#platform-and-device-modifiers)
-  - [Table of Contents](#table-of-contents)
-  - [🚨 CRITICAL: Platform-Specific Properties Require Modifiers](#-critical-platform-specific-properties-require-modifiers)
-  - [Available Modifiers](#available-modifiers)
-    - [Platform Modifiers](#platform-modifiers)
-    - [Device (Form Factor) Modifiers](#device-form-factor-modifiers)
-  - [Usage in XML](#usage-in-xml)
-    - [Basic Platform Targeting](#basic-platform-targeting)
-    - [Combining with Arbitrary Values](#combining-with-arbitrary-values)
-    - [Multiple Modifiers on Same Element](#multiple-modifiers-on-same-element)
-  - [Generated TSS Output](#generated-tss-output)
-  - [Custom Conditional Modifiers](#custom-conditional-modifiers)
-    - [Syntax](#syntax)
-    - [Example with iPhone X Notch](#example-with-iphone-x-notch)
-    - [Setting Up Conditional Variables](#setting-up-conditional-variables)
-  - [Modifiers in config.cjs](#modifiers-in-configcjs)
-    - [Custom Class with Platform Variants](#custom-class-with-platform-variants)
-    - [Ti Element with Platform and Device Variants](#ti-element-with-platform-and-device-variants)
-    - [Complex Example with All Variants](#complex-example-with-all-variants)
-  - [Platform-Specific Properties](#platform-specific-properties)
-    - [iOS-Specific Properties](#ios-specific-properties)
-    - [Android-Specific Properties](#android-specific-properties)
-  - [Interaction Modifiers](#interaction-modifiers)
-    - [Active State Modifier](#active-state-modifier)
-  - [Best Practices](#best-practices)
-    - [1. Use Modifiers for Platform Differences](#1-use-modifiers-for-platform-differences)
-    - [2. Combine with Default Styles](#2-combine-with-default-styles)
-    - [3. Use Device Modifiers for Layout Adaptation](#3-use-device-modifiers-for-layout-adaptation)
-    - [4. Leverage config.cjs for Complex Platform Logic](#4-leverage-configcjs-for-complex-platform-logic)
-  - [Common Patterns](#common-patterns)
-    - [iOS Shadow / Android Elevation](#ios-shadow--android-elevation)
-    - [Different Font Sizes per Platform](#different-font-sizes-per-platform)
-    - [Safe Area Handling for iPhone X](#safe-area-handling-for-iphone-x)
-    - [Adaptive Spacing](#adaptive-spacing)
-    - [Platform-Specific Colors](#platform-specific-colors)
-  - [Troubleshooting](#troubleshooting)
-    - [Modifiers Not Applying](#modifiers-not-applying)
-    - [Conditional Modifiers Not Working](#conditional-modifiers-not-working)
-    - [Platform Detection Issues](#platform-detection-issues)
-  - [Modifier Reference Table](#modifier-reference-table)
-  - [Complete Example](#complete-example)
-
----
-
 ## 🚨 CRITICAL: Platform-Specific Properties Require Modifiers
 
 :::danger NEVER use platform-specific properties directly

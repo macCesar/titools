@@ -1,42 +1,5 @@
 # Dynamic Component Creation with PurgeTSS
 
-## Table of Contents
-
-- [Dynamic Component Creation with PurgeTSS](#dynamic-component-creation-with-purgetss)
-  - [Table of Contents](#table-of-contents)
-  - [Overview](#overview)
-  - [Method 1: `$.UI.create()` (Recommended)](#method-1-uicreate-recommended)
-    - [Basic Syntax](#basic-syntax)
-    - [Complete Example: Theme Card](#complete-example-theme-card)
-    - [Supported Components](#supported-components)
-    - [Classes Format Options](#classes-format-options)
-    - [Platform Modifiers in Dynamic Components](#platform-modifiers-in-dynamic-components)
-    - [Arbitrary Values](#arbitrary-values)
-    - [Adding Children Dynamically](#adding-children-dynamically)
-  - [Method 2: `Alloy.createStyle()` + `applyProperties()`](#method-2-alloycreatestyle--applyproperties)
-    - [When to Use This Method](#when-to-use-this-method)
-    - [Basic Syntax](#basic-syntax-1)
-    - [Complete Example](#complete-example)
-    - [Classes Format](#classes-format)
-  - [Comparison: Which Method to Use?](#comparison-which-method-to-use)
-  - [Real-World Examples](#real-world-examples)
-    - [Example 1: Dynamic Form Fields](#example-1-dynamic-form-fields)
-    - [Example 2: Dynamic List Items](#example-2-dynamic-list-items)
-    - [Example 3: Dynamic Theme Switching](#example-3-dynamic-theme-switching)
-    - [Example 4: Dynamic Icon Grid](#example-4-dynamic-icon-grid)
-  - [Important Notes](#important-notes)
-    - [PurgeTSS Processes Classes During Build](#purgetss-processes-classes-during-build)
-    - [Class Verification](#class-verification)
-    - [Platform-Specific Best Practices](#platform-specific-best-practices)
-  - [Anti-Patterns to Avoid](#anti-patterns-to-avoid)
-    - [❌ Don't Use `Ti.UI.create()` with Manual Styles](#-dont-use-tiuicreate-with-manual-styles)
-    - [✅ Use `$.UI.create()` with PurgeTSS Classes](#-use-uicreate-with-purgetss-classes)
-    - [❌ Don't Mix Styles and Classes](#-dont-mix-styles-and-classes)
-    - [✅ Use Only Classes (or Only Styles)](#-use-only-classes-or-only-styles)
-  - [Summary](#summary)
-
----
-
 ## Overview
 
 When creating components dynamically in Controllers (not declaratively in XML), PurgeTSS provides two powerful methods to apply utility classes:
@@ -413,6 +376,62 @@ if (OS_IOS) {
   classes.push('mx-2')
 }
 ```
+
+---
+
+## Dynamic Styling with `classes` Property
+
+You can change PurgeTSS classes dynamically at runtime using the `classes` property in `applyProperties()`:
+
+```javascript
+// Toggle status styling dynamically
+function setStatus(isActive) {
+  $.statusLabel.applyProperties({
+    classes: isActive ? ['text-green-500'] : ['text-red-500'],
+    text: isActive ? L('active') : L('inactive')
+  })
+}
+```
+
+### Conditional Styling Based on State
+
+```javascript
+// Loading state button
+function setLoading(isLoading) {
+  $.submitBtn.applyProperties({
+    enabled: !isLoading,
+    title: isLoading ? L('saving') : L('save')
+  })
+}
+
+// Error state on form field
+function showFieldError(field, errorLabel, hasError) {
+  $[field].applyProperties({
+    borderColor: hasError ? '#ef4444' : '#d1d5db'
+  })
+  $[errorLabel].applyProperties({
+    visible: hasError
+  })
+}
+```
+
+### Visibility Toggle Pattern
+
+```javascript
+// Show/hide views based on state
+function setState(state) {
+  const states = ['loadingState', 'contentState', 'errorState']
+  states.forEach(s => {
+    $[s].visible = s === state
+  })
+}
+```
+
+:::tip When to Use `classes` vs `applyProperties`
+- Use `classes` when you want to swap entire style sets (e.g., active/inactive states)
+- Use `applyProperties` with direct values when changing individual properties (e.g., text, enabled)
+- Combine both for complex state changes
+:::
 
 ---
 

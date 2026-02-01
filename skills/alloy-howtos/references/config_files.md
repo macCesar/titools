@@ -1,18 +1,5 @@
 # Alloy Configuration Files Reference
 
-## Table of Contents
-
-- [Alloy Configuration Files Reference](#alloy-configuration-files-reference)
-  - [Table of Contents](#table-of-contents)
-  - [Build Configuration File (alloy.jmk)](#build-configuration-file-alloyjmk)
-    - [Compiler Tasks (Event Names)](#compiler-tasks-event-names)
-    - [Event Object](#event-object)
-    - [Logger Object](#logger-object)
-    - [Objects](#objects)
-    - [Keys](#keys)
-
----
-
 ## Build Configuration File (alloy.jmk)
 
 Alloy provides hooks to customize compilation using a JS Makefile (JMK).

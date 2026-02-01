@@ -14,47 +14,6 @@ PurgeTSS provides a comprehensive suite of CLI commands for project setup, asset
 - **Improved Unicode Extraction**: Enhanced support for various Unicode formats and direct character mappings
 :::
 
-## Table of Contents
-
-- [PurgeTSS CLI Commands Guide](#purgetss-cli-commands-guide)
-  - [Table of Contents](#table-of-contents)
-  - [Setup Commands](#setup-commands)
-    - [`purgetss init` (alias: `i`)](#purgetss-init-alias-i)
-    - [`purgetss create` (alias: `c`)](#purgetss-create-alias-c)
-    - [`purgetss install-dependencies` (alias: `id`)](#purgetss-install-dependencies-alias-id)
-  - [Development Commands](#development-commands)
-    - [`purgetss build` (alias: `b`)](#purgetss-build-alias-b)
-    - [`purgetss watch` (alias: `w`)](#purgetss-watch-alias-w)
-  - [Asset Commands](#asset-commands)
-    - [`purgetss icon-library` (alias: `il`)](#purgetss-icon-library-alias-il)
-      - [CommonJS Module](#commonjs-module)
-      - [Font Awesome Pro](#font-awesome-pro)
-      - [Font Awesome 7 Beta](#font-awesome-7-beta)
-      - [Font Example File](#font-example-file)
-    - [`purgetss build-fonts` (alias: `bf`)](#purgetss-build-fonts-alias-bf)
-      - [For Text Fonts (Google Fonts, etc.)](#for-text-fonts-google-fonts-etc)
-      - [For Icon Fonts (Custom Libraries)](#for-icon-fonts-custom-libraries)
-      - [CommonJS Module for Custom Fonts](#commonjs-module-for-custom-fonts)
-  - [Utility Commands](#utility-commands)
-    - [`purgetss shades` (alias: `s`)](#purgetss-shades-alias-s)
-    - [`purgetss color-module` (alias: `cm`)](#purgetss-color-module-alias-cm)
-    - [`purgetss module` (alias: `m`)](#purgetss-module-alias-m)
-  - [Maintenance Commands](#maintenance-commands)
-    - [`purgetss update` (alias: `u`)](#purgetss-update-alias-u)
-    - [`purgetss sudo-update` (alias: `su`)](#purgetss-sudo-update-alias-su)
-  - [Command Quick Reference](#command-quick-reference)
-  - [Advanced Usage](#advanced-usage)
-    - [Combining Commands for New Projects](#combining-commands-for-new-projects)
-    - [Setting Up an Existing Project](#setting-up-an-existing-project)
-    - [Quick Reference: New Project Setup Commands](#quick-reference-new-project-setup-commands)
-    - [Safelist for Large Projects](#safelist-for-large-projects)
-    - [Disabling Specific Classes](#disabling-specific-classes)
-  - [Troubleshooting Commands](#troubleshooting-commands)
-    - [Verifying Installation](#verifying-installation)
-    - [Debug Mode](#debug-mode)
-
----
-
 ## Setup Commands
 
 ### `purgetss init` (alias: `i`)

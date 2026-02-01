@@ -76,7 +76,7 @@ Popular for rapid deployment. Uses a namespace hierarchy.
 ```javascript
 const myapp = {};
 (() => {
-  myapp.ui = {}; 
+  myapp.ui = {};
   myapp.ui.createApplicationWindow = () => {
     const win = Ti.UI.createWindow({ backgroundColor:'white' });
     return win;

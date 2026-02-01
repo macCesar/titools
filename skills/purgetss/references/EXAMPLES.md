@@ -2,23 +2,6 @@
 
 Complete examples of common patterns with anti-patterns and correct implementations.
 
-## Table of Contents
-
-- [PurgeTSS Examples - WRONG vs CORRECT](#purgetss-examples---wrong-vs-correct)
-  - [Table of Contents](#table-of-contents)
-  - [Titanium Layout Patterns](#titanium-layout-patterns)
-    - [Horizontal Row with Space Between](#horizontal-row-with-space-between)
-    - [Centered Content (Vertically and Horizontally)](#centered-content-vertically-and-horizontally)
-    - [Vertical Stack with Spacing](#vertical-stack-with-spacing)
-    - [Header with Left/Right Elements](#header-with-leftright-elements)
-    - [Available Layout Classes](#available-layout-classes)
-  - [Manual .tss Files Anti-Pattern](#manual-tss-files-anti-pattern)
-  - [Grid with Percentages](#grid-with-percentages)
-  - [Gap Usage](#gap-usage)
-  - [Layout Defaults](#layout-defaults)
-
----
-
 ## Titanium Layout Patterns
 
 :::danger NO FLEXBOX IN TITANIUM
@@ -218,6 +201,94 @@ alloy compile
 
 ---
 
+## Padding on Container Views
+
+**❌ WRONG (Padding on Views doesn't work in Titanium):**
+```xml
+<View class="p-4">
+  <Label text="Hello" />
+</View>
+```
+
+**✅ CORRECT (Use margins on children instead):**
+```xml
+<View>
+  <Label class="m-4" text="Hello" />
+</View>
+```
+
+**Why:** Titanium Views don't support padding properties. Use margins on child elements.
+
+---
+
+## `w-full` vs `w-screen`
+
+**❌ WRONG (Using percentage-based width):**
+```xml
+<View class="w-full">
+  <Label text="Full width" />
+</View>
+```
+
+**✅ CORRECT (Use Ti.UI.FILL):**
+```xml
+<View class="w-screen">
+  <Label text="Full width" />
+</View>
+```
+
+**Difference:**
+- `w-full` = `width: '100%'` (percentage of parent)
+- `w-screen` = `width: Ti.UI.FILL` (native fill constant)
+
+**Use `w-screen` for full-width elements** in Titanium.
+
+---
+
+## `rounded-full` Without Size
+
+**❌ WRONG (rounded-full alone doesn't exist):**
+```xml
+<View class="h-12 w-12 rounded-full" />
+```
+
+**✅ CORRECT (Use rounded-full-XX where XX × 4 = element size):**
+```xml
+<!-- For 48×48 circle, use rounded-full-12 (12 × 4 = 48) -->
+<View class="rounded-full-12" />
+```
+
+**Note:** `rounded-full-XX` already includes width and height. No need for separate `w-` or `h-` classes.
+
+**Examples:**
+- `rounded-full-8` = 32×32 circle
+- `rounded-full-12` = 48×48 circle
+- `rounded-full-16` = 64×64 circle
+
+---
+
+## Square Brackets for Arbitrary Values
+
+**❌ WRONG (Using square brackets like Tailwind CSS):**
+```xml
+<View class="w-[100px] bg-[#ff0000]" />
+```
+
+**✅ CORRECT (PurgeTSS uses parentheses):**
+```xml
+<View class="w-(100px) bg-(#ff0000)" />
+```
+
+**PurgeTSS syntax for arbitrary values uses `()` not `[]`.**
+
+**Examples:**
+- `w-(100px)` - Custom width
+- `bg-(#ff0000)` - Custom background color
+- `mt-(20dp)` - Custom margin top
+- `text-(#333333)` - Custom text color
+
+---
+
 ## Layout Defaults
 
 **❌ WRONG (Explicit composite class):**
@@ -245,3 +316,21 @@ alloy compile
 <!-- Omitting layout defaults to composite -->
 <View>
 ```
+
+---
+
+## Quick Reference Table
+
+| Anti-Pattern          | Why It Fails             | Correct Approach        |
+| --------------------- | ------------------------ | ----------------------- |
+| `flex-row`            | Flexbox not supported    | `horizontal`            |
+| `flex-col`            | Flexbox not supported    | `vertical`              |
+| `justify-*`           | Flexbox not supported    | Use margins/positioning |
+| `items-center`        | Flexbox not supported    | Use `center` class      |
+| `p-4` on View         | No padding on containers | `m-4` on children       |
+| `w-full`              | Percentage-based         | `w-screen` (Ti.UI.FILL) |
+| `rounded-full`        | Needs size suffix        | `rounded-full-12`       |
+| `composite` class     | Already default          | Omit it                 |
+| `w-[100px]`           | Wrong syntax             | `w-(100px)`             |
+| Manual `.tss`         | Overwritten by PurgeTSS  | Use utility classes     |
+| `gap` with `%` widths | Total exceeds 100%       | Use explicit margins    |
