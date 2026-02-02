@@ -13,29 +13,41 @@ describe('config', () => {
   });
 
   it('should export TITANIUM_KNOWLEDGE_VERSION', () => {
-    assert.strictEqual(config.TITANIUM_KNOWLEDGE_VERSION, 'v1.0.0');
+    assert.strictEqual(config.TITANIUM_KNOWLEDGE_VERSION, `v${config.PACKAGE_VERSION}`);
   });
 
   it('should export BLOCK_START and BLOCK_END', () => {
-    assert.ok(config.BLOCK_START.includes('TITANIUM-KNOWLEDGE'));
-    assert.strictEqual(config.BLOCK_END, '<!-- END-TITANIUM-KNOWLEDGE -->');
+    assert.strictEqual(config.BLOCK_START, '<!-- TITANIUM-KNOWLEDGE-START -->');
+    assert.strictEqual(config.BLOCK_END, '<!-- TITANIUM-KNOWLEDGE-END -->');
   });
 
   it('should export SKILLS array', () => {
     assert.ok(Array.isArray(config.SKILLS));
     assert.ok(config.SKILLS.length > 0);
-    assert.ok(config.SKILLS.includes('alloy-expert'));
+    assert.ok(config.SKILLS.includes('ti-expert'));
     assert.ok(config.SKILLS.includes('purgetss'));
+  });
+
+  it('should export LEGACY_SKILLS array', () => {
+    assert.ok(Array.isArray(config.LEGACY_SKILLS));
+    assert.ok(config.LEGACY_SKILLS.includes('alloy-expert'));
   });
 
   it('should export AGENTS array', () => {
     assert.ok(Array.isArray(config.AGENTS));
-    assert.ok(config.AGENTS.includes('ti-researcher'));
+    assert.ok(config.AGENTS.includes('ti-pro'));
   });
 
-  it('should export PLATFORMS array', () => {
-    assert.ok(Array.isArray(config.PLATFORMS));
-    assert.strictEqual(config.PLATFORMS.length, 3);
+  it('should export LEGACY_AGENTS array', () => {
+    assert.ok(Array.isArray(config.LEGACY_AGENTS));
+    assert.ok(config.LEGACY_AGENTS.includes('ti-researcher'));
+  });
+
+  it('should export getPlatforms', () => {
+    assert.strictEqual(typeof config.getPlatforms, 'function');
+    const platforms = config.getPlatforms();
+    assert.ok(Array.isArray(platforms));
+    assert.strictEqual(platforms.length, 3);
   });
 
   it('should export directory getter functions', () => {
