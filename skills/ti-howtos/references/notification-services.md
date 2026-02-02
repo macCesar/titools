@@ -150,6 +150,17 @@ intent.addCategory(Ti.Android.CATEGORY_LAUNCHER);
 notification.contentIntent = Ti.Android.createPendingIntent({intent: intent});
 ```
 
+### Delete Intent (Notification Cleared)
+
+```javascript
+// Execute intent when user clears notification
+notification.deleteIntent = Ti.Android.createPendingIntent({
+    intent: Ti.Android.createIntent({
+        action: 'com.myapp.NOTIFICATION_CLEARED'
+    })
+});
+```
+
 ### Schedule Future Notification (Background Service)
 
 **tiapp.xml:**
@@ -218,6 +229,13 @@ if (Ti.Platform.name === 'iPhone OS' && parseInt(Ti.Platform.version.split('.')[
         // Add 'categories' for interactive notifications
     });
 }
+```
+
+**Note**: iOS will show a system prompt asking the user to allow notifications on the first call. Check current settings with:
+```javascript
+Ti.App.iOS.addEventListener('usernotificationsettings', (e) => {
+    Ti.API.info(`Notification types allowed: ${e.types}`);
+});
 ```
 
 ### Schedule Local Notification
@@ -392,8 +410,14 @@ Ti.App.iOS.scheduleLocalNotification({
 
 Push notifications allow server-to-device communication. Infrastructure differs by platform:
 
-- **Android**: Firebase Cloud Messaging (FCM) or Google Cloud Messaging (GCM)
+- **Android**: Firebase Cloud Messaging (FCM)
 - **iOS**: Apple Push Notification service (APNs)
+
+> **Note**: The legacy Appcelerator Cloud Services (ACS/ArrowDB) push backend is no longer available. Use Firebase Cloud Messaging (FCM) for Android and Apple Push Notification service (APNs) for iOS, either directly or through a third-party service.
+
+> Google has deprecated Google Cloud Messaging (GCM) in favor of Firebase Cloud Messaging (FCM). All new implementations should use FCM.
+
+For FCM on Titanium, use the community Firebase Cloud Messaging module: `titanium-firebase-cloud-messaging` (by Hans Knöchel).
 
 ### Register for Push Notifications
 
@@ -416,18 +440,21 @@ Ti.Network.registerForPushNotifications({
 });
 ```
 
-### Configure Push Services
+### APNs Configuration (iOS)
 
-**Android (FCM/GCM):**
-1. Create project in Firebase Console or Google API Console
-2. Get API key/Sender ID
-3. Configure with your push provider (e.g., ArrowDB, ACS, or custom server)
+1. Register an **Explicit App ID** (not Wildcard) with Push Notifications enabled in Apple Developer Portal
+2. Generate an APNs certificate (Development for sandbox, Production for App Store)
+3. Export the certificate as PKCS#12 (.p12) from Keychain Access
+4. Upload the .p12 to your push service provider
+5. In your app, call `Ti.Network.registerForPushNotifications()` to get the device token
 
-**iOS (APNs):**
-1. Create App ID in Apple Developer Portal
-2. Enable Push Notifications
-3. Create SSL certificate (development/production)
-4. Configure with your push provider
+### FCM Configuration (Android)
+
+1. Create a project in Firebase Console
+2. Add your Android app (use your app's package name)
+3. Download `google-services.json` and place in project root
+4. Add the `titanium-firebase-cloud-messaging` module to tiapp.xml
+5. Register for push and obtain the FCM token
 
 ### Push Notification Payload Format
 
@@ -452,38 +479,9 @@ Ti.Network.registerForPushNotifications({
 }
 ```
 
-### Subscribe to Channels
-
-**Using Arrow/ACS:**
-```javascript
-Cloud.PushNotifications.subscribeToken({
-    device_token: deviceToken,
-    channel: 'news',
-    type: Ti.Platform.name === 'iPhone OS' ? 'ios' : 'android'
-}, (e) => {
-    if (e.success) {
-        Ti.API.info('Subscribed to news channel');
-    }
-});
-```
-
 ### Send Push Notifications
 
-**Using Arrow/ACS:**
-```javascript
-Cloud.PushNotifications.notify({
-    channel: 'news',
-    payload: 'Hello subscribers!',
-    title: 'News Update'
-}, (e) => {
-    if (e.success) {
-        Ti.API.info('Push sent successfully');
-    }
-});
-```
-
-**Direct API call:**
-Send to your push server with device tokens and payload.
+Send push notifications from your server using the FCM HTTP API or APNs. Collect device tokens from client registration and target them with your push payload.
 
 ### Best Practices
 
@@ -541,7 +539,7 @@ Use `UNMutableNotificationContent` with attachments (images, video, audio).
 
 ### Android
 
-- **Service lifecycle**: Services may be killed if app is swiped away
+- **Service lifecycle**: Services may be killed if app is swiped away. **Warning**: Android services may stop if the app is killed (user backs out or removes from recent apps). For critical notifications, use FCM push notifications instead of local services
 - **Notification channels**: Android 8.0+ requires notification channels
 - **Limitations**: Legacy MapView only supports single map view
 

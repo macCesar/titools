@@ -31,7 +31,7 @@ cd alloy
 
 ### new
 
-Creates a new Alloy project on an existing Titanium project.
+Creates a new Alloy project on top of an existing Titanium project (create the classic Titanium project first, then run this command from inside the project directory).
 
 ```bash
 alloy new [<project_path>] [<project_template>] [--force] [--no-colors]

@@ -107,8 +107,8 @@ const intent = Ti.Android.createIntent({
   action: 'com.example.MY_ACTION',
   type: 'text/plain'
 });
-intent.addExtra('message', 'Hello from Titanium');
-intent.addExtra('count', 42);
+intent.putExtra('message', 'Hello from Titanium');
+intent.putExtra('count', 42);
 ```
 
 ### Common Use Cases
@@ -137,8 +137,8 @@ const intent = Ti.Android.createIntent({
   action: Ti.Android.ACTION_SENDTO,
   data: 'mailto:user@example.com'
 });
-intent.addExtra(Ti.Android.EXTRA_SUBJECT, 'Hello');
-intent.addExtra(Ti.Android.EXTRA_TEXT, 'Email body');
+intent.putExtra(Ti.Android.EXTRA_SUBJECT, 'Hello');
+intent.putExtra(Ti.Android.EXTRA_TEXT, 'Email body');
 Ti.Android.currentActivity.startActivity(intent);
 ```
 
@@ -148,7 +148,7 @@ const intent = Ti.Android.createIntent({
   action: Ti.Android.ACTION_SEND,
   type: 'text/plain'
 });
-intent.addExtra(Ti.Android.EXTRA_TEXT, 'Check this out!');
+intent.putExtra(Ti.Android.EXTRA_TEXT, 'Check this out!');
 Ti.Android.currentActivity.startActivity(intent);
 ```
 
@@ -178,7 +178,37 @@ try {
 }
 ```
 
-## 2. Intent Filters
+### Intent Chooser
+Force the system to show an app chooser dialog (even if a default is set):
+```javascript
+const intent = Ti.Android.createIntent({
+    action: Ti.Android.ACTION_SEND,
+    type: 'text/plain'
+});
+intent.putExtra(Ti.Android.EXTRA_TEXT, 'Share this text');
+
+Ti.Android.currentActivity.startActivity(
+    Ti.Android.createIntentChooser(intent, 'Share via...')
+);
+```
+
+### Getting Results from Activities
+```javascript
+const intent = Ti.Android.createIntent({
+    action: 'android.media.action.IMAGE_CAPTURE'
+});
+
+Ti.Android.currentActivity.startActivityForResult(intent, (e) => {
+    if (e.resultCode === Ti.Android.RESULT_OK) {
+        const imageUri = e.intent.data;
+        Ti.API.info(`Captured image: ${imageUri}`);
+    } else if (e.resultCode === Ti.Android.RESULT_CANCELED) {
+        Ti.API.info('User canceled');
+    }
+});
+```
+
+## 5. Intent Filters
 
 ### Overview
 Intent Filters advertise your app's capability to handle certain actions and data types. Enable deep linking, file handling, and inter-app communication.
@@ -280,7 +310,7 @@ if (intent && intent.getData()) {
 }
 ```
 
-## 3. Broadcast Intents and Receivers
+## 6. Broadcast Intents and Receivers
 
 ### Overview
 Broadcast Intents allow system-wide or app-wide messaging. Apps can send broadcasts and register receivers to listen for them.
@@ -355,7 +385,7 @@ Ti.Android.registerBroadcastReceiver(networkReceiver, [
 const intent = Ti.Android.createIntent({
   action: 'com.myapp.CUSTOM_EVENT'
 });
-intent.addExtra('data', 'Custom data here');
+intent.putExtra('data', 'Custom data here');
 Ti.Android.currentActivity.sendBroadcast(intent);
 ```
 
@@ -394,7 +424,7 @@ Ti.Android.registerBroadcastReceiver(customReceiver, [
 </android>
 ```
 
-## 4. Android Services
+## 7. Android Services
 
 ### Overview
 Services are background components that run independently of the UI. Useful for long-running operations like music playback, location tracking, or network polling.
@@ -515,7 +545,7 @@ Ti.Android.currentActivity.addEventListener('destroy', () => {
 const intent = Ti.Android.createServiceIntent({
   url: 'myservice.js'
 });
-intent.addExtra('command', 'pause');
+intent.putExtra('command', 'pause');
 Ti.Android.startService(intent);
 
 // In service
@@ -525,7 +555,7 @@ if (command === 'pause') {
 }
 ```
 
-## 5. Android Permissions
+## 8. Android Permissions
 
 ### Runtime Permissions (Android 6.0+)
 
@@ -556,27 +586,6 @@ function checkPermission() {
 
 checkPermission();
 ```
-
-### Common Dangerous Permissions
-- `ACCESS_FINE_LOCATION` - GPS location
-- `ACCESS_COARSE_LOCATION` - Network location
-- `CAMERA` - Camera access
-- `READ_EXTERNAL_STORAGE` - Read files
-- `WRITE_EXTERNAL_STORAGE` - Write files
-- `RECORD_AUDIO` - Microphone
-- `CALL_PHONE` - Make phone calls
-- `SEND_SMS` / `READ_SMS` - SMS access
-
-## Best Practices
-
-1. **Always unregister** broadcast receivers when no longer needed
-2. **Stop services** explicitly to conserve battery
-3. **Use IntentService** for one-off background tasks
-4. **Use foreground services** for user-visible long operations
-5. **Handle runtime permissions** gracefully on Android 6.0+
-6. **Validate intent data** before processing
-7. **Use proper Intent Flags** for navigation behavior
-8. **Test intent filters** with ADB: `adb shell am start -W -a android.intent.action.VIEW -d "myapp://path"`
 
 ### Common Dangerous Permissions
 - `ACCESS_FINE_LOCATION` - GPS location

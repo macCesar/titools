@@ -47,6 +47,8 @@ Then, the controller can use `$.button1`, `$.button2` and `$.button3` to access 
 
 ::: warning ⚠️ Warning
 Unlike other style dictionaries in Alloy, when using the `updateViews()` method, you can only apply styles using IDs. Class and view component styles do not work with this method.
+
+Using the `Require` or `Widget` elements to include external views in the controller-less view does not work with this procedure — you can include the external views, but the styles cannot be updated with the `updateViews` method.
 :::
 
 For example:

@@ -11,7 +11,7 @@ Framework options and architectural patterns for Titanium applications.
 
 ## Alloy Framework
 
-**Alloy** is the official MVC framework for Titanium, developed by TiDev.
+**Alloy** is the official MVC framework for Titanium, originally developed by Appcelerator and now maintained by TiDev.
 
 ### What is Alloy?
 
@@ -77,6 +77,14 @@ $.index.open();
 - **Alloy CLI:** See `alloy-cli-advanced.md`
 - **Alloy Data:** See `alloy-data-mastery.md`
 - **Alloy Widgets:** See `alloy-widgets-and-themes.md`
+
+### Angular Integration
+
+Angular integration with Titanium SDK was under development but is no longer actively maintained.
+
+### React Community Framework
+
+A community-based React integration exists at https://github.com/nicolomonili/react-titanium (experimental).
 
 ### When to Use Alloy
 

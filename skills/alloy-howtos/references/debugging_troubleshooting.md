@@ -42,7 +42,7 @@ alloy compile --config platform=<platform>
 
 **Error:** `Uncaught ReferenceError: Alloy is not defined`
 
-**Cause:** Non-controller JavaScript files are not automatically wrapped by Alloy.
+**Cause:** Non-controller JavaScript files are not automatically wrapped by Alloy. See [best_practices.md](best_practices.md) for the safe require pattern for non-controller files.
 
 **Solution:** Require the 'alloy' module:
 ```javascript
@@ -67,14 +67,14 @@ const Alloy = require('alloy');
 
 ## Getting Help
 
-Use the [Titanium Community Questions and Answers Forum](https://developer.axway.com/develop-apps#DevelopApps_Engage):
+Use the [TiDev Community Slack](https://slack.tidev.io/) or [GitHub Discussions](https://github.com/tidev/titanium-sdk/discussions):
 - Include 'alloy' as a tag
 - Include the Alloy version (run `alloy --version`)
 - Include platform information
 
 ## Submitting a Bug Report
 
-Use [GitHub Issues](https://github.com/tidev/alloy/issues):
+Search [existing issues](https://github.com/tidev/alloy/issues) first to avoid duplicates. If none match, create a new issue:
 - Select 'Alloy' as the component
 - Include Alloy version (`alloy --version`)
 - Include environment information

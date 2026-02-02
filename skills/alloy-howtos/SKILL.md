@@ -177,6 +177,6 @@ For tasks beyond Alloy CLI and configuration, use these complementary skills:
 
 | Task                                     | Use This Skill |
 | ---------------------------------------- | -------------- |
-| Modern architecture, services, patterns  | `alloy-expert` |
+| Modern architecture, services, patterns  | `ti-expert`    |
 | Alloy MVC concepts, models, data binding | `alloy-guides` |
 | SDK config, Hyperloop, app distribution  | `ti-guides`    |

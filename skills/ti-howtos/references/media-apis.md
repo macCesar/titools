@@ -51,6 +51,13 @@ Ti.App.addEventListener('resume', () => { streamer.setPaused(false); });
 - `scalingMode`: Control fill/fit behavior
 
 ```javascript
+const videoPlayer = Ti.Media.createVideoPlayer({
+    url: 'movie.mp4',
+    scalingMode: Ti.Media.VIDEO_SCALING_ASPECT_FIT  // or ASPECT_FILL, MODE_FILL, NONE
+});
+```
+
+```javascript
 const player = Ti.Media.createVideoPlayer({
   url: 'movie.mp4',
   movieControlStyle: Ti.Media.VIDEO_CONTROL_EMBEDDED,
@@ -73,15 +80,86 @@ win.addEventListener('close', () => { player.stop(); });
 
 ## 3. Camera and Photo Gallery APIs
 
+### Camera Availability and Permissions
+
+Always check device support and permissions before opening the camera:
+
+```javascript
+if (!Ti.Media.isCameraSupported) {
+    Ti.API.warn('No camera available on this device');
+    return;
+}
+
+if (Ti.Media.hasCameraPermissions()) {
+    openCamera();
+} else {
+    Ti.Media.requestCameraPermissions((e) => {
+        if (e.success) {
+            openCamera();
+        } else {
+            Ti.API.error('Camera permission denied');
+        }
+    });
+}
+```
+
+**Required tiapp.xml keys (iOS)**:
+```xml
+<key>NSCameraUsageDescription</key>
+<string>We need camera access to take photos</string>
+<key>NSPhotoLibraryUsageDescription</key>
+<string>We need photo library access to save photos</string>
+```
+
 ### Camera (Ti.Media.showCamera)
 - Requires camera permission and usage descriptions
 - Success callback provides `event.media` (blob)
 - Use `saveToPhotoGallery: true` to automatically save
 - Handle `cancel` and `error` callbacks
 
+### Front and Rear Camera
+```javascript
+const cameras = Ti.Media.availableCameras;
+
+// Check if front camera exists
+if (cameras.indexOf(Ti.Media.CAMERA_FRONT) !== -1) {
+    Ti.Media.showCamera({
+        whichCamera: Ti.Media.CAMERA_FRONT,
+        // ... other options
+    });
+}
+
+// Switch camera programmatically
+Ti.Media.switchCamera(Ti.Media.CAMERA_REAR);
+```
+
+### Advanced Camera Options (iOS)
+| Property | Description |
+|---|---|
+| `autohide` | Auto-hide camera after capture (default: true) |
+| `animated` | Animate camera appearance |
+| `allowEditing` | Allow user to crop/edit after capture |
+| `mediaTypes` | Array: `MEDIA_TYPE_PHOTO`, `MEDIA_TYPE_VIDEO` |
+| `videoMaximumDuration` | Max video duration in milliseconds |
+| `videoQuality` | `QUALITY_HIGH`, `QUALITY_MEDIUM`, `QUALITY_LOW` |
+| `overlay` | Custom Ti.UI.View overlay on camera |
+| `showControls` | Show/hide default camera controls |
+
+When using a custom overlay, call `Ti.Media.takePicture()` to capture and `Ti.Media.hideCamera()` to dismiss.
+
 ### Gallery (Ti.Media.openPhotoGallery)
 - Success callback provides `event.media` (blob)
 - Note: `event.media` may contain only file info, use `Ti.Filesystem.getFile(event.media.nativePath)` to access actual file
+
+### iPad-Specific Gallery Options
+On iPad, the photo gallery opens as a popover. Configure its position:
+```javascript
+Ti.Media.openPhotoGallery({
+    popoverView: myButton,  // Anchor popover to this view
+    arrowDirection: Ti.UI.iPad.POPOVER_ARROW_DIRECTION_UP,
+    success: (e) => { /* ... */ }
+});
+```
 
 ### Memory Management
 - **Critical**: Use `imageAsResized()` on blobs to avoid memory exhaustion
@@ -104,6 +182,12 @@ Ti.Media.showCamera({
 - Scaled to fit component dimensions by default
 - **iOS**: Use `backgroundLeftCap` and `backgroundTopCap` to control stretch regions
 - **Android**: Supports remote URLs as background images; iOS does not
+
+### Image Stretching (Background Images)
+When using small images as backgrounds, iOS and Android stretch differently:
+- **`backgroundLeftCap`** (iOS): Number of pixels from the left that are NOT stretched. The middle section stretches.
+- **`backgroundTopCap`** (iOS): Number of pixels from the top that are NOT stretched.
+- **Android**: Supports remote URLs for background images; iOS does NOT.
 
 ### ImageView Component
 - `image` property accepts: URL, local path, or Ti.Filesystem.File object

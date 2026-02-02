@@ -117,6 +117,8 @@ button = null;  // Now button is destroyed
 - "Jetsam" process can terminate your app
 - "Jetsam" in crash logs = memory issue
 
+> **Important**: Memory ≠ storage. A 16GB device doesn't mean 16GB for your app. These limits may be higher on newer devices but always optimize for the lowest common denominator.
+
 ---
 
 ## Memory Leak Detection
@@ -407,11 +409,12 @@ window scale 0.75
 
 ### Instruments
 
-**Common Templates:**
-- **Allocations** - Memory usage
-- **Leaks** - Detect memory leaks
-- **Time Profiler** - CPU usage
-- **System Trace** - System-level events
+**Key Templates for Titanium Debugging:**
+- **Allocations** — Track object creation and live object counts. Look at "Persistent Bytes" (or "Live Bytes") and "#Persistent" (or "#Living") columns to track memory growth.
+- **Leaks** — Detect memory leaks in real-time. Shows objects that are allocated but never released.
+- **Time Profiler** — Identify CPU-intensive operations and bottlenecks.
+- **System Trace** — System-level events and thread activity.
+- **Zombies** — Detect messages sent to deallocated objects (debug builds only). Useful for tracking over-released objects.
 
 ### Xcode Build Debugging
 

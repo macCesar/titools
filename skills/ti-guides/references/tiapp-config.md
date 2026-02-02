@@ -19,14 +19,14 @@ Complete reference for Titanium app configuration files. `tiapp.xml` is the main
       <dict>
         <key>UISupportedInterfaceOrientations~iphone</key>
         <array>
-          <string>Ti.UI.PORTRAIT</string>
+          <string>UIInterfaceOrientationPortrait</string>
         </array>
         <key>UISupportedInterfaceOrientations~ipad</key>
         <array>
-          <string>Ti.UI.PORTRAIT</string>
-          <string>Ti.UI.UPSIDE_PORTRAIT</string>
-          <string>Ti.UI.LANDSCAPE_LEFT</string>
-          <string>Ti.UI.LANDSCAPE_RIGHT</string>
+          <string>UIInterfaceOrientationPortrait</string>
+          <string>UIInterfaceOrientationPortraitUpsideDown</string>
+          <string>UIInterfaceOrientationLandscapeLeft</string>
+          <string>UIInterfaceOrientationLandscapeRight</string>
         </array>
       </dict>
     </plist>
@@ -70,6 +70,13 @@ Complete reference for Titanium app configuration files. `tiapp.xml` is the main
 **Android warning**: If name starts with a digit, prefix activity name with underscore (e.g., `_2Foo`).
 
 ### Optional Elements
+
+#### `<defaultLang>`
+Sets the default language for Android i18n `strings.xml`. Android defaults to `en`. If you only use a single non-English i18n file, set this to that language.
+
+```xml
+<defaultLang>de</defaultLang>
+```
 
 #### `<copyright>`
 Application copyright.
@@ -201,6 +208,20 @@ Default unit for sizes/positions.
 ```
 
 **Values:** `system`, `cm`, `dip`/`dp`, `in`, `mm`, `px`
+
+#### `run-on-main-thread`
+**Since 5.1.0.** Run all JavaScript on the main thread instead of a secondary thread. Disabled by default in existing projects, enabled in new projects. Enabled automatically in SDK 7.0.0+.
+
+```xml
+<property name="run-on-main-thread" type="bool">true</property>
+```
+
+#### `allow-custom-keyboards`
+**Since 6.1.0.** Allow or disallow custom iOS 8+ keyboard extensions. Custom keyboards are allowed by default. Set to `false` to disallow them.
+
+```xml
+<property name="allow-custom-keyboards" type="bool">false</property>
+```
 
 #### `appc-sourcecode-encryption-policy`
 Encryption policy for app assets.
@@ -467,6 +488,10 @@ Settings for generated `Info.plist`. Uses key/value pairs.
     <string>audio</string>
     <string>location</string>
     <string>voip</string>
+    <string>newsstand-content</string>
+    <string>external-accessory</string>
+    <string>bluetooth-central</string>
+    <string>bluetooth-peripheral</string>
   </array>
 </dict>
 </plist>
@@ -480,8 +505,25 @@ Settings for generated `Info.plist`. Uses key/value pairs.
   <array>
     <string>telephony</string>
     <string>wifi</string>
-    <string>gps</string>
+    <string>sms</string>
+    <string>still-camera</string>
+    <string>auto-focus-camera</string>
+    <string>front-facing-camera</string>
+    <string>camera-flash</string>
+    <string>video-camera</string>
     <string>accelerometer</string>
+    <string>gyroscope</string>
+    <string>location-services</string>
+    <string>gps</string>
+    <string>magnetometer</string>
+    <string>gamekit</string>
+    <string>microphone</string>
+    <string>opengles-1</string>
+    <string>opengles-2</string>
+    <string>armv6</string>
+    <string>armv7</string>
+    <string>peer-peer</string>
+    <string>bluetooth-le</string>
   </array>
 </dict>
 </plist>

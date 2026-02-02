@@ -48,6 +48,9 @@ if (OS_IOS) {
 | `dp` / `dip` | Density-independent pixels | **Recommended** for cross-platform          |
 | `px`         | Absolute pixels            | Use sparingly - varies by screen density    |
 | `%`          | Percentage of parent size  | Relative to parent's dimension              |
+| `mm`         | Millimeters                | Absolute physical unit                      |
+| `cm`         | Centimeters                | Absolute physical unit                      |
+| `in`         | Inches                     | Absolute physical unit                      |
 | `system`     | Platform default           | iOS = dip, Android = px (unless configured) |
 
 ### Density-Independent Pixels (dp)
@@ -59,6 +62,24 @@ if (OS_IOS) {
 - xxhdpi (480 dpi): 1dp = 3px
 
 **iOS**: Effectively `1dip = 1px` on non-retina, `1dip = 2px` on retina
+
+### Default Units in tiapp.xml
+
+You can set app-wide default units via the `ti.ui.defaultunit` property in `tiapp.xml`:
+
+```xml
+<property name="ti.ui.defaultunit" type="string">dp</property>
+```
+
+When set, numeric values without explicit units (e.g., `width: 100`) use this unit instead of the platform default.
+
+### Platform Coordinate Grid Differences
+
+> **Important**: iOS and Android use different default coordinate systems:
+> - **iOS** uses a density-independent grid (e.g., 320×480 dip for iPhone classic, 1024×768 for iPad). Values are always in dip.
+> - **Android** uses a pixel-based grid by default (varies by device: HVGA 320×480px, WVGA800 480×800px, etc.).
+>
+> This is why setting `ti.ui.defaultunit` to `dp` is recommended for cross-platform consistency — it normalizes Android's behavior to match iOS's density-independent approach.
 
 ### Best Practice
 
@@ -143,6 +164,8 @@ container.add(view2);
 Stacking order controlled by:
 - Addition order
 - `zIndex` property (higher = on top)
+
+> **Android limitation**: `zIndex` is only supported by composite layouts. The `zIndex` property is ignored by horizontal and vertical layouts.
 
 ### Vertical Layout
 
@@ -242,6 +265,18 @@ const view = Ti.UI.createView({
 | Switch          | WebView         |                                        |
 | TextField       | ScrollableView  |                                        |
 
+### ScrollView Auto-Sizing
+
+When a `ScrollView`'s `contentWidth` or `contentHeight` is set to `"auto"` or `Ti.UI.SIZE`, the scroll view's content area grows based on the bottom/right offsets of its child views:
+
+```javascript
+const scrollView = Ti.UI.createScrollView({
+  contentWidth: 'auto',
+  contentHeight: 'auto',
+  layout: 'vertical'
+});
+```
+
 ### Auto-Size in Layout Modes
 
 In `vertical`/`horizontal` layouts:
@@ -309,6 +344,18 @@ const view2 = Ti.UI.createView({
 
 win.add(view1);
 win.add(view2);  // view2 appears on top of view1
+```
+
+### The `size` Property and `postlayout` Event
+
+The read-only `size` property provides the width and height of a view after layout. This property won't return accurate values until a `postlayout` event has been received:
+
+```javascript
+const view = Ti.UI.createView({ width: '50%', height: Ti.UI.SIZE });
+
+view.addEventListener('postlayout', () => {
+  Ti.API.info(`Actual size: ${view.size.width}x${view.size.height}`);
+});
 ```
 
 ### Explicit Z-Index

@@ -382,6 +382,9 @@ Load these only when needed:
 ### Performance
 - [Performance Tips](references/performance-tips.md) - Optimizing PurgeTSS apps (bridge crossings, ListView, animations)
 
+### Components
+- [TiKit UI Components](references/tikit-components.md) - Ready-to-use Alerts, Avatars, Buttons, Cards, Tabs built with PurgeTSS
+
 ### Fonts & Animations
 - [Icon Fonts](references/icon-fonts.md) - Font Awesome 7, Material Icons, custom icon libraries
 - [Animation Component](references/animation-system.md) - Declarative `<Animation>` API
@@ -407,7 +410,7 @@ For tasks beyond styling, use these complementary skills:
 
 | Task                                         | Use This Skill |
 | -------------------------------------------- | -------------- |
-| Project architecture, services, controllers  | `alloy-expert` |
+| Project architecture, services, controllers  | `ti-expert`    |
 | Complex UI components, ListViews, gestures   | `ti-ui`        |
 | Alloy MVC concepts, data binding, TSS syntax | `alloy-guides` |
 | Native features (camera, location, push)     | `ti-howtos`    |

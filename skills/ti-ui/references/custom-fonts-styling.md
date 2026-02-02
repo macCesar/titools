@@ -315,6 +315,15 @@ const attr = Ti.UI.createAttributedString({
 
 **iOS**: Supports same styles and patterns as Underline.
 
+**iOS Strikethrough Color** (iOS 7+):
+```javascript
+{
+  type: Ti.UI.ATTRIBUTE_STRIKETHROUGH_COLOR,
+  value: 'red',
+  range: [start, length]
+}
+```
+
 ### Links (iOS 7+)
 
 ```javascript

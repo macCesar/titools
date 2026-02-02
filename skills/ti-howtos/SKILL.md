@@ -96,7 +96,7 @@ if (OS_IOS) {
 - iOS: `statusBarStyle`, `modalStyle`, `modalTransitionStyle`, any `Ti.UI.iOS.*`
 - Android: `actionBar` config, any `Ti.UI.Android.*` constant
 
-**For platform-specific modifier syntax in TSS, see** [Code Conventions (alloy-expert)](skills/alloy-expert/references/code-conventions.md#platform--device-modifiers) or [Platform UI guides](references/ios-platform-deep-dives.md).
+**For platform-specific modifier syntax in TSS, see** [Code Conventions (ti-expert)](skills/ti-expert/references/code-conventions.md#platform--device-modifiers) or [Platform UI guides](references/ios-platform-deep-dives.md).
 :::
 
 ## Reference Guides (Progressive Disclosure)
@@ -136,7 +136,7 @@ For tasks beyond native feature integration, use these complementary skills:
 
 | Task                                           | Use This Skill |
 | ---------------------------------------------- | -------------- |
-| Project architecture, services, memory cleanup | `alloy-expert` |
+| Project architecture, services, memory cleanup | `ti-expert`    |
 | UI layouts, ListViews, gestures, animations    | `ti-ui`        |
 | Hyperloop, app distribution, tiapp.xml config  | `ti-guides`    |
 | Alloy MVC, models, data binding                | `alloy-guides` |

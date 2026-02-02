@@ -12,6 +12,18 @@ Titanium modules are based on a native class hierarchy that communicates with Ja
 ### Proxy-View Relationship
 The `ViewProxy` maintains properties in JS even if the native view does not exist yet. When the view is added to the hierarchy, the Proxy instantiates the native `View` and passes all accumulated properties to it.
 
+### Threading Considerations
+- JavaScript in Titanium is **single-threaded**. All JS callbacks execute on the JS runtime thread.
+- Native modules can use background threads for heavy work, but UI operations must happen on the main/UI thread.
+- On iOS, each Window with a `url` property gets its own JavaScript context and thread — avoid this pattern.
+- Use `@Kroll.method(runOnUiThread=true)` (Android) to ensure a method runs on the UI thread.
+
+### Key Android Kroll Annotations
+- `@Kroll.method` — expose a Java method to JavaScript
+- `@Kroll.getProperty` / `@Kroll.setProperty` — expose getter/setter properties
+- `@Kroll.onAppCreate` — annotate a static method to run when the app process starts
+- `propertyAccessors` element in `@Kroll.proxy` — auto-generate getter/setter methods
+
 ## 2. Module Debugging in Xcode (iOS)
 
 You can debug your native module directly within a Titanium project:

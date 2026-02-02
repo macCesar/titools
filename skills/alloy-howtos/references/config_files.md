@@ -42,7 +42,64 @@ task('post:compile', (event, logger) => {
 | `appJSFile`    | String  | *(compile:app.js only)* Absolute path to `app.js`                                                                                                                                                                   |
 
 ### Logger Object
-...
+
+The `logger` object provides methods and properties to control compilation log output.
+
+#### Properties
+
+| Property        | Type    | Description                                     |
+| --------------- | ------- | ----------------------------------------------- |
+| `DEBUG`         | Number  | READONLY. Output all log messages.              |
+| `INFO`          | Number  | READONLY. Output all except debug messages.     |
+| `WARN`          | Number  | READONLY. Output only warning and error.        |
+| `ERROR`         | Number  | READONLY. Output only error messages.           |
+| `NONE`          | Number  | READONLY. Disable log messages.                 |
+| `logLevel`      | Number  | Sets which log messages to output.              |
+| `showTimestamp` | Boolean | If `true`, outputs timestamp with log messages. |
+| `stripColors`   | Boolean | If `true`, suppresses color output.             |
+
+#### Methods
+
+| Method               | Description                    |
+| -------------------- | ------------------------------ |
+| `debug(msg: String)` | Outputs a debug log message.   |
+| `info(msg: String)`  | Outputs an info log message.   |
+| `warn(msg: String)`  | Outputs a warning log message. |
+| `error(msg: String)` | Outputs an error log message.  |
+
+---
+
+## Global Initializer (alloy.js)
+
+**Location:** `app/alloy.js`
+
+Executed before any controllers load. Use it to set up globals and singletons.
+
+**Common uses:**
+- Creating `Alloy.Collections` (e.g., `Alloy.Collections.myModel = Alloy.createCollection('myModel');`)
+- Setting up `Alloy.Globals` (shared references, utility functions)
+- Initializing singletons (analytics, logging, network managers)
+- Configuring global event listeners
+
+**Example:**
+```javascript
+// app/alloy.js
+Alloy.Globals.loading = Alloy.createWidget('com.example.loading');
+Alloy.Collections.users = Alloy.createCollection('user');
+
+// Global utility
+Alloy.Globals.alert = (title, message) => {
+    Ti.UI.createAlertDialog({ title, message }).show();
+};
+```
+
+---
+
+## Project Configuration File (config.json)
+
+**Location:** `app/config.json`
+
+Alloy uses `config.json` to specify global values, conditional environment and platform values, and widget dependencies.
 ### Objects
 
 | Object            | Description                                                 |
@@ -58,7 +115,34 @@ task('post:compile', (event, logger) => {
 | `backbone`        | Backbone.js version: `0.9.2` (default), `1.1.2`, or `1.3.3` |
 
 **Precedence:** `os` > `env` > `global`. Combinations (e.g., `os:ios env:production`) override single values.
-...
+
+**Runtime Access:** Values are accessible at runtime via `Alloy.CFG.<key>`.
+
+**Example:**
+
+```json
+{
+    "global": { "foo": 1 },
+    "env:development": { "foo": 2 },
+    "env:test": { "foo": 3 },
+    "env:production": { "foo": 4 },
+    "os:ios env:production": { "foo": 5 },
+    "os:ios env:development": { "foo": 6 },
+    "os:ios env:test": { "foo": 7 },
+    "os:android": { "foo": 8 },
+    "dependencies": {
+        "com.foo.widget": "1.0"
+    }
+}
+```
+
+Accessing values: `Ti.API.info(Alloy.CFG.foo)` — on iPhone simulator this returns `6`.
+
+---
+
+## Widget Configuration File (widget.json)
+
+**Location:** Root directory of the widget. Follows the npm `package.json` format with a few exceptions.
 ### Keys
 
 | Key                    | Type   | Required | Description                           |

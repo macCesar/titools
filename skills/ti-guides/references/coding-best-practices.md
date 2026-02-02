@@ -1,5 +1,7 @@
 # Coding Best Practices
 
+The recommended standard for Titanium apps is a single-context, modular pattern with well-structured code and well-organized resources.
+
 ## 1. Scope Management
 - **Avoid Global Scope**: Global variables are not automatically garbage collected and can cause naming conflicts.
 - **Always use `let` or `const`**: (Original guide says `var`, but modernization rules apply). Omitting declarations places variables in the global scope.
@@ -40,16 +42,23 @@ win1.addEventListener('click', () => {
   const WindowTwo = require('ui/WindowTwo').WindowTwo;
   const win2 = new WindowTwo();
   win2.open();
+
+  win2.addEventListener('click', () => {
+    // load window three JavaScript only when needed
+    const WindowThree = require('ui/WindowThree').WindowThree;
+    const win3 = new WindowThree();
+    win3.open();
+  });
 });
 ```
 
 - **Bridge Efficiency**: Minimize requests for device properties like `Ti.Platform.osname`. Store them in a local variable once.
-- **Avoid Extending Ti Namespace**: Never add properties to `Ti.*` as it's a proxy system and leads to instability.
+- **Avoid Extending Ti Namespace**: Ti namespace objects are proxy representations of native OS components. Properties set on them may be stored on the proxy but won't be passed to the native object. Arrays stored on proxies return copies, not live references. There is no guarantee properties will persist across SDK versions. Use native modules instead to extend core functionality.
 
 ## 5. App Architecture Recommendations
 
 ### Modular Components with CommonJS (Recommended)
-Titanium's primary recommended architecture. Discrete and independent building blocks that eliminate global variables.
+Titanium's primary recommended architecture. Discrete and independent building blocks that eliminate global variables. See `commonjs-advanced.md` for detailed module patterns and path resolution.
 
 **MyModule.js**
 ```javascript
@@ -72,7 +81,8 @@ myModule.sayHello('User');
 ```
 
 ### Custom Objects as Components
-Popular for rapid deployment. Uses a namespace hierarchy.
+Popular for rapid deployment. Uses a namespace hierarchy. However, this pattern is less performant than CommonJS modules. Memory management can be difficult as object references may persist after they're no longer needed.
+
 ```javascript
 const myapp = {};
 (() => {

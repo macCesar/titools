@@ -115,8 +115,8 @@ The following are the constants defined by Alloy for use in the controller code:
 * `ENV_DEV` : true if the current compiler target is built for development (running in the simulator or emulator)
 * `ENV_TEST` : true if the current compiler target is built for testing on a device
 * `ENV_PRODUCTION` : true if the current compiler target is built for production (running after a packaged installation)
-* `DIST_ADHOC` (since Alloy 1.4.0) : true if the current compiler target is built for iOS Ad Hoc distribution
-* `DIST_STORE` (since Alloy 1.4.0) : true if the current compiler target is built for deployment to the Google Play Store or iTunes App Store
+* `DIST_ADHOC` (since Alloy 1.4.0) : true if the current compiler target is built for iOS Ad Hoc distribution, for example, if you set the `-T dist-adhoc` option when building with the Titanium CLI. Note that `ENV_PRODUCTION` will be true too since this deployment is only for production builds.
+* `DIST_STORE` (since Alloy 1.4.0) : true if the current compiler target is built for deployment to the Google Play Store or iTunes App Store, for example, if you set the `-T dist-appstore` or `-T dist-playstore` option. Note that `ENV_PRODUCTION` will be true too since this deployment is only for production builds.
 
 For example, since iOS devices do not include a back button, the application can conditionally add one to a window controller:
 

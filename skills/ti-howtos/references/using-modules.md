@@ -27,8 +27,10 @@ Guide for obtaining, installing, and using Titanium modules to extend app functi
 - Curated list of modules maintained by Michael Gangolf
 
 **Marketplace:**
-- Appcelerator Marketplace is no longer in use
-- Contact marketplace-admin@axway.com for previously purchased modules
+> **Note**: The original Appcelerator Marketplace is no longer available. Find community modules on GitHub and npm. A curated list is at [From Zero to App](https://fromzerotoapp.com/modules/).
+
+### Pre-installed Modules
+Some modules ship with the SDK and don't need separate installation: `ti.map`, `ti.identity`, `ti.webdialog`, `ti.applesignin`
 
 ---
 

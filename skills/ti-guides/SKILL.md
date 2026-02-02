@@ -69,7 +69,7 @@ For tasks beyond SDK fundamentals, use these complementary skills:
 
 | Task                                     | Use This Skill |
 | ---------------------------------------- | -------------- |
-| Project architecture, services, patterns | `alloy-expert` |
+| Project architecture, services, patterns | `ti-expert`    |
 | Native features (location, push, media)  | `ti-howtos`    |
 | Alloy CLI, configuration, debugging      | `alloy-howtos` |
 | UI layouts, ListViews, gestures          | `ti-ui`        |

@@ -56,6 +56,23 @@ const text = Ti.Codec.decodeString({
 });
 ```
 
+### Supported Types and Charsets
+
+**Numeric types**: `TYPE_BYTE`, `TYPE_SHORT`, `TYPE_INT`, `TYPE_LONG`, `TYPE_FLOAT`, `TYPE_DOUBLE`
+
+**String charsets**: `CHARSET_UTF8`, `CHARSET_UTF16`, `CHARSET_UTF16BE`, `CHARSET_UTF16LE`, `CHARSET_ISO_LATIN1`
+
+### Position Parameter
+The `position` parameter controls where encoding/decoding starts in the buffer:
+```javascript
+Ti.Codec.encodeNumber({
+    source: 42,
+    dest: buffer,
+    position: 4,  // start writing at byte 4
+    type: Ti.Codec.TYPE_INT
+});
+```
+
 ## 3. Streams
 
 Streams allow reading and writing data in a serialized and memory-efficient way.
@@ -64,6 +81,8 @@ Streams allow reading and writing data in a serialized and memory-efficient way.
 1. **BufferStream**: For reading/writing in memory buffers.
 2. **FileStream**: For file operations (more efficient than `file.read()`).
 3. **BlobStream**: Read-only for Blob objects (images, camera).
+
+**Stream modes**: `Ti.Filesystem.MODE_READ`, `Ti.Filesystem.MODE_WRITE`, `Ti.Filesystem.MODE_APPEND`
 
 ### Example: BufferStream
 ```javascript

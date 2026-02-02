@@ -34,6 +34,19 @@ scrollView.add(content);
 win.add(scrollView);
 ```
 ...
+### ScrollView Properties
+
+| Property                                      | Description                                                         | Platform |
+| --------------------------------------------- | ------------------------------------------------------------------- | -------- |
+| `contentWidth` / `contentHeight`              | Size of the scrollable content area                                 | All      |
+| `scrollType`                                  | `'vertical'` or `'horizontal'` (Android only — see below)           | Android  |
+| `showHorizontalScrollIndicator`               | Show/hide horizontal scroll indicator                               | All      |
+| `showVerticalScrollIndicator`                 | Show/hide vertical scroll indicator                                 | All      |
+| `zoomScale` / `minZoomScale` / `maxZoomScale` | Zoom level (values 0–1)                                             | iOS      |
+| `horizontalBounce` / `verticalBounce`         | Enable/disable bounce effect at edges                               | iOS      |
+| `canCancelEvents`                             | Allow ScrollView to cancel touch events in children (default: true) | iOS      |
+| `scrollable`                                  | Enable/disable scrolling                                            | All      |
+
 ### ScrollView Events
 
 ```javascript
@@ -55,7 +68,7 @@ scrollView.addEventListener('scrollEnd', (e) => {
 ...
 ### Android ScrollView Direction
 
-Android ScrollView can be vertical OR horizontal, not both:
+Android ScrollView can be vertical OR horizontal, not both. If you don't set `scrollType`, Android auto-detects: if width equals contentWidth it defaults to vertical; if height equals contentHeight it defaults to horizontal. If Titanium cannot determine the direction, a warning is logged to the console.
 
 ```javascript
 // Explicit horizontal scroll

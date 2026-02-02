@@ -29,7 +29,10 @@ const table = Ti.UI.createTableView({
   width: Ti.UI.FILL,
   backgroundColor: 'white',
   rowHeight: 50,
-  separatorColor: '#ccc'
+  minRowHeight: 40,
+  maxRowHeight: 80,
+  separatorColor: '#ccc',
+  scrollable: true  // Set false to disable scrolling
 });
 
 win.add(table);
@@ -339,7 +342,8 @@ table.deleteRow(3);  // Delete row at index 3
 
 // Clear all rows
 table.setData([]);
-// NOT: table.data = null (causes issues)
+// NOT: table.data = null or undefined (causes unexpected behavior)
+// Use table.setData([]) or table.data = [] to clear
 ```
 
 ### Updating Specific Row

@@ -145,14 +145,59 @@ tab1.setBadge(null);
 tab1.badge = null;
 ```
 ...
+### Settings.bundle Integration
+
+iOS apps can expose user-configurable settings in the device's Settings app using a Settings.bundle.
+
+**Setup**:
+- Place the bundle at `platform/iphone/Settings.bundle/` (SDK 1.8+)
+- The bundle contains `Root.plist`, which defines the settings UI (toggles, text fields, groups, etc.)
+- Edit `Root.plist` using Xcode's Property List editor for a visual interface
+
+**Key conventions**: Settings keys typically use the `_preference` suffix (e.g., `username_preference`, `enabled_preference`).
+
 ### Accessing Preferences in App
 
 ```javascript
+// Read a preference set in iOS Settings app
+const username = Ti.App.Properties.getString('username_preference');
+
 // Must match the "Key" value from Root.plist
 const name = Ti.App.Properties.getString('name_preference');
 const enabled = Ti.App.Properties.getBool('enabled_preference');
 ```
 ...
+#### Static Quick Actions (via tiapp.xml)
+
+Static shortcuts are defined in `tiapp.xml` and available immediately when the app is installed.
+
+- **Required keys**: `UIApplicationShortcutItemTitle`, `UIApplicationShortcutItemType`
+- **Optional keys**: `UIApplicationShortcutItemSubtitle`, `UIApplicationShortcutItemIconType`, `UIApplicationShortcutItemIconFile`, `UIApplicationShortcutItemUserInfo`
+
+```xml
+<ios>
+  <plist>
+    <dict>
+      <key>UIApplicationShortcutItems</key>
+      <array>
+        <dict>
+          <key>UIApplicationShortcutItemTitle</key>
+          <string>New Message</string>
+          <key>UIApplicationShortcutItemType</key>
+          <string>com.app.newmessage</string>
+          <key>UIApplicationShortcutItemIconType</key>
+          <string>UIApplicationShortcutIconTypeCompose</string>
+        </dict>
+      </array>
+    </dict>
+  </plist>
+</ios>
+```
+
+Quick action titles and subtitles can be localized using `i18n/LANG/app.xml` (not `strings.xml`). Use the localized key as the value in `tiapp.xml`.
+
+To use custom images for quick action icons, enable app thinning in `tiapp.xml` with `<use-app-thinning>true</use-app-thinning>` inside the `<ios>` element.
+
 #### Dynamic Quick Actions
 
 ```javascript
@@ -246,6 +291,24 @@ Ti.UI.iOS.PREVIEW_ACTION_STYLE_DEFAULT
 Ti.UI.iOS.PREVIEW_ACTION_STYLE_SELECTED  // Blue background
 Ti.UI.iOS.PREVIEW_ACTION_STYLE_DESTRUCTIVE  // Red background
 ```
+
+#### Peek and Pop Details
+
+- Use the `contentHeight` property on the preview context to control the peek preview height (e.g., `contentHeight: 400` as shown above).
+- Use `Ti.UI.iOS.createPreviewActionGroup()` to group related preview actions into a submenu:
+
+```javascript
+const subAction1 = Ti.UI.iOS.createPreviewAction({ title: 'Copy', style: Ti.UI.iOS.PREVIEW_ACTION_STYLE_DEFAULT });
+const subAction2 = Ti.UI.iOS.createPreviewAction({ title: 'Move', style: Ti.UI.iOS.PREVIEW_ACTION_STYLE_DEFAULT });
+
+const actionGroup = Ti.UI.iOS.createPreviewActionGroup({
+  title: 'Organize',
+  style: Ti.UI.iOS.PREVIEW_ACTION_STYLE_DEFAULT,
+  actions: [subAction1, subAction2]
+});
+```
+
+> **Important**: 3D Touch features (Peek and Pop, quick actions with force) can ONLY be tested on physical devices with 3D Touch hardware. The iOS Simulator does not support force touch.
 
 ## 6. Navigation Bar (iOS)
 

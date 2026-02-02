@@ -345,6 +345,8 @@ library.on('change:title', e => {
 This only works if the Backbone method fires the change event and does not enable `{silent: true}` as an option.
 :::
 
+If you want to suppress an update, specify `{silent: true}` in the `options` parameters when calling Backbone methods to change model data. The data-bound view will not be updated to reflect the changes.
+
 ### Bind Deep Object Properties
 
 You can bind deep object properties:
@@ -375,6 +377,16 @@ You can bind models and properties that use names with special characters like d
 <Alloy>
     <Model src="my-model">
     <Label text="['my-model']['my-property']" />
+</Alloy>
+```
+
+### Use $.args Values in XML (CLI 7.1.0+)
+
+Since CLI 7.1.0, values passed at creation time can be used directly in XML:
+
+```xml
+<Alloy>
+    <Label text="$.args.foo" />
 </Alloy>
 ```
 
@@ -423,6 +435,10 @@ exports.definition = {
     }
 };
 ```
+
+::: warning ⚠️ Warning
+The `transform` method must return **all** bound properties, not just the transformed ones. Until Alloy 1.8.1, simple collection data binding did not require this and automatically fell back to the model attributes.
+:::
 
 ### Lazy Transformation (Performance Tip)
 
@@ -509,7 +525,7 @@ You need to specify additional attributes in the markup, which are only specific
 * `dataCollection`: specifies the collection singleton or instance to bind to the table. This is the name of the model file for singletons or the ID prefixed with the controller symbol ('$') for instances.
 * `dataTransform`: specifies an optional callback to use to format model attributes. The passed argument is a model and the return value is a modified model as a JSON object.
 * `dataFilter`: specifies an optional callback to use to filter data in the collection. The passed argument is a collection and the return value is an array of models.
-* `dataFunction`: set to an arbitrary identifier (name) for a function call. Use this identifier to call a function in the controller to manually update the view.
+* `dataFunction`: set to an arbitrary identifier (name) for a function call. This is not a declared function in the controller. This attribute creates an alias to access the underlying binding function, which is part of the Alloy data-view binding framework. Use this identifier to call a function in the controller to manually update the view.
 
 Next, create a repeater object (refer to the table above) and place it inline with the view object with the `dataCollection` attribute, or place it in a separate view and use the `Require` tag to import it.
 
@@ -523,6 +539,16 @@ In the controller code of the repeater object, you can use the special variable 
 ```
 $.win.addEventListener("close", () => {
     $.destroy();
+});
+```
+
+For global singletons, to properly release them you should also remove event handlers with `off()` and set the reference to null:
+
+```javascript
+$.win.addEventListener("close", () => {
+    $.destroy();
+    Alloy.Collections.book.off();
+    Alloy.Collections.book = null;
 });
 ```
 :::
@@ -632,6 +658,8 @@ In Alloy, a sync adapter allows you to store and load your models to a persisten
 
 Backbone syncs your models to persistent storage devices based on the implementation of the [Backbone.sync method](https://titaniumsdk.com/guide/Alloy_Framework/Alloy_Guide/Alloy_Models/Alloy_Sync_Adapters_and_Migrations.html). Since Backbone's primary use is for web applications, by default, the Backbone.sync method executes RESTful JSON requests to a URL specified by the Model.urlRoot or Collection.url attribute, when these classes are created.
 
+Models are accessed from persistent storage based on the `id` attribute. To override this, set the `idAttribute` property of the model. The `cid` (client ID) is a special property of models that is automatically assigned when they are first created. Client IDs are useful when the model has not yet been saved to the server and does not have its real `id` yet.
+
 The sync method depends on calls to other Backbone methods as described in the table below.
 
 | **Backbone Method**                                              | **Sync CRUD Method** | **Equivalent HTTP Method** | **Equivalent SQL Method** |
@@ -647,7 +675,7 @@ The sync method depends on calls to other Backbone methods as described in the t
 Alloy provides a few ready-made sync adapters. In the 'adapter' object, set the 'type' to use one of the following:
 
 * `sql` for the SQLite database on the Android and iOS platform.
-* `properties` for storing data locally in the Titanium SDK context.
+* `properties` for storing data locally in the Titanium SDK context. You do not need to define the `columns` object in the `config` object. If defined, the object is ignored.
 * `localStorage` for HTML5 localStorage on the Mobile Web platform. Deprecated since Alloy 1.5.0. Use the `properties` adapter instead.
 
 These adapters are part of Alloy and are copied to the `Resources/alloy/sync` folder during compilation. These sync adapters assign the `id` attribute of the models, which means if you assign an ID when creating a model, it is overridden by any sync operations.
@@ -704,11 +732,11 @@ exports.definition = {
 
 **Specify columns property as primary ID**
 
-Define the `idAttribute` key-value pair in the `config.adapter` object to use a `config.columns` key as the primary ID for the SQLite table.
+Define the `idAttribute` key-value pair in the `config.adapter` object to use a `config.columns` key as the primary ID for the SQLite table. If this key is not set, Alloy creates the `alloy_id` column in the table and generates a default GUID as the model ID.
 
 **Specify a migration to use**
 
-Define the `migration` key-value pair in the `config.adapter` object to specify the database version to use. The value of this key is the datatime code of the migration file. Alloy upgrades or rolls back the database based on this value.
+Define the `migration` key-value pair in the `config.adapter` object to specify the database version to use. The value of this key is the datetime code of the migration file. Alloy upgrades or rolls back the database based on this value. If left undefined, Alloy upgrades the database based on the newest migration file.
 
 **Specify a database to use**
 
@@ -716,7 +744,7 @@ Define the `db_name` key-value pair in the `config.adapter` object to specify th
 
 **Specify a database file to preload**
 
-Define the `db_file` key-value pair in the `config.adapter` object to specify the database file ('myfile.sqlite') to preload. Place this file in the `app/assets` directory of your Alloy project.
+Define the `db_file` key-value pair in the `config.adapter` object to specify the database file ('myfile.sqlite') to preload. Place this file in the `app/assets` directory of your Alloy project. Alloy creates a database using the name of the database file minus the file extension if one does not exist.
 
 ### Custom Sync Adapters
 
@@ -732,7 +760,9 @@ The sync adapter exports three functions:
 
 ### Migrations
 
-A migration is a description of incremental changes to a database, which takes your database from version 1 to version X, with a migration file for each step in the evolution of your database schema.
+A migration is a description of incremental changes to a database, which takes your database from version 1 to version X, with a migration file for each step in the evolution of your database schema. This is helpful to keep different versions of a database in sync. For example, when version 7 of your application is deployed, migrations are able to successfully update the database from versions 1 through 6. Currently, migrations are only used with the `sql` sync adapter.
+
+The `migration.up` function upgrades the database from the previous version, while the `migration.down` function rolls back the changes to the previous version.
 
 In Alloy, migrations are defined by JavaScript files located in the `app/migrations` folder of the project. The file should be named the same as the model JavaScript file prefixed with 'YYYYMMDDHHmmss_' (datetime code followed by an underscore), for example, `20120610049877_book.js`. Alloy applies the migrations from oldest to newest, according to the datetime code at the beginning of the file name.
 
@@ -783,7 +813,7 @@ migration.down = migrator => {
 
 #### Migration Rollback Example
 
-Suppose later, you want to include some additional information for your books, such as an ISBN. The below migration file upgrades or rolls back the changes. Since SQLite does not support the DROP COLUMN operation, the migration needs to create a temporary table to hold the data, drop the new database, create the old database, then copy the data back.
+Suppose later, you want to include some additional information for your books, such as an ISBN. The below migration file upgrades or rolls back the changes. Since SQLite does not support the DROP COLUMN operation, the migration needs to create a temporary table to hold the data, drop the new database, create the old database, then copy the data back. Note: if `idAttribute` is not specified, Alloy creates the `alloy_id` column and this column needs to be copied over as part of the migration.
 
 **app/migrations/20130118069778_book.js**
 
@@ -984,7 +1014,9 @@ To use Backbone 1.1.2 to support Alloy Model and Collections objects, open the p
 
 #### Model APIs
 
-**Validation**: Model validation is now only enforced with the `save()` method. Previously, models were also validated with the `set()` method. To force validation when the `set()` method is called, pass `{validate: true}` to the method or extend the Model class.
+**Validation**: Model validation is now only enforced with the `save()` method. Previously, models were also validated with the `set()` method. To force validation when the `set()` method is called, pass `{validate: true}` to the method or extend the Model class. Additionally, validation now occurs even during 'silent' changes (passing `{silent: true}` to methods). Previously, it would not. Failed validations return the `invalid` event. Previously, a failed model validation would return the `error` event.
+
+**Parse Method**: All `parse` methods now run after a `fetch`. You cannot change the `id` of a model during `parse`. The `parse` method receives `options` as a second parameter.
 
 **Other Changes**:
 

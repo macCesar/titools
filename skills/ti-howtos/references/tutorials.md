@@ -29,7 +29,7 @@ const api = new reste();
 
 api.config({
     debug: true,                    // Console logging
-    errorsAsObjects: true,          // Return errors as objects (1.4.5+)
+    errorsAsObjects: true,          // Return errors as objects (1.4.5+) — WARNING: breaks apps written for 1.4.4 that handle errors differently
     autoValidateParams: false,      // Throw error if params missing
     validatesSecureCertificate: false,
     timeout: 4000,
@@ -131,6 +131,19 @@ Alloy.Collections.videos.fetch({
 </TableView>
 ```
 
+### RESTe Advanced Features
+
+- **Caching**: Built-in response caching support
+- **Promises**: Use with `q.js` for Promise-based API calls
+- **Mock data**: Create models/collections on-the-fly for testing:
+```javascript
+const mockUser = api.createModel('users', {
+    id: 1,
+    name: 'Test User'
+});
+```
+- **Backbone.js binding**: Use RESTe models directly with Alloy data binding without `<Model>` tags
+
 ### Important Notes
 
 - **Don't use `<Model>` or `<Collection>` tags** with RESTe
@@ -162,6 +175,29 @@ const videoCollection = api.createCollection('videos', [
 ---
 
 ## Camera App Tutorial
+
+### Camera Permissions Setup
+
+**iOS** — add to tiapp.xml plist:
+```xml
+<key>NSCameraUsageDescription</key>
+<string>This app needs camera access to take photos</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>This app needs microphone access for video recording</string>
+```
+
+**Android**: Camera permissions are automatically added by the build system when using `Ti.Media.showCamera()`.
+
+Always check permissions at runtime:
+```javascript
+if (!Ti.Media.hasCameraPermissions()) {
+    Ti.Media.requestCameraPermissions((e) => {
+        if (e.success) openCamera();
+    });
+} else {
+    openCamera();
+}
+```
 
 ### Basic Camera Access
 
@@ -237,6 +273,31 @@ Ti.Media.saveToPhotoGallery({
 
 ## Geolocation Tutorial
 
+### Geolocation Permissions Setup
+
+**iOS** — add to tiapp.xml plist:
+```xml
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>We need your location to show nearby places</string>
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>We need your location for background tracking</string>
+```
+
+**Android** — add to tiapp.xml manifest:
+```xml
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+```
+
+Runtime permission check:
+```javascript
+if (!Ti.Geolocation.hasLocationPermissions(Ti.Geolocation.AUTHORIZATION_WHEN_IN_USE)) {
+    Ti.Geolocation.requestLocationPermissions(Ti.Geolocation.AUTHORIZATION_WHEN_IN_USE, (e) => {
+        if (e.success) startTracking();
+    });
+}
+```
+
 ### Basic Location
 
 ```javascript
@@ -281,6 +342,23 @@ Ti.Geolocation.reverseGeocoder(37.389569, -122.050212, (e) => {
         });
     }
 });
+```
+
+### Accuracy Tuning
+
+```javascript
+// iOS: minimum distance before firing event
+Ti.Geolocation.distanceFilter = 10; // meters
+
+// Android: use FusedLocationProvider for better battery (requires ti.playservices module)
+// Automatically enabled with SDK 7.1.0+ when ti.playservices is present
+
+// Android: custom location rules
+Ti.Geolocation.Android.addLocationRule(Ti.Geolocation.Android.createLocationRule({
+    provider: Ti.Geolocation.Android.PROVIDER_GPS,
+    accuracy: 100, // meters
+    minAge: 1000   // milliseconds
+}));
 ```
 
 ---

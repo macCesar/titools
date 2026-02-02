@@ -1,5 +1,7 @@
 # Alloy Tasks with the CLI
 
+Alloy provides command-line interface (CLI) tasks to create a new project, generate skeleton components such as controllers and models, and compile the source files into the Titanium project.
+
 ## Creating a New Application
 
 > **Recommended:** Use `ti create --alloy` to create a new Alloy project in one step.
@@ -68,7 +70,7 @@ To generate a style for a view-controller:
 alloy generate style <name> [--widgetname <widget_name>]
 ```
 
-Alloy uses the id and attribute names in the markup file to populate the skeleton style file. This creates `app/styles/<name>.tss`.
+Alloy uses the id and attribute names in the markup file to populate the skeleton style file. This creates `app/styles/<name>.tss`. If you add new `id` or `class` attributes to the markup file, running either of these commands updates the style file with the new attributes.
 
 To generate style files for all view-controllers:
 
@@ -84,7 +86,7 @@ To generate a model:
 alloy generate model <name> <adapter> [<col_name_1>:<col_type_1> <col_name_2>:<col_type_2> ...] [-o path_to_project/app]
 ```
 
-The fourth parameter selects the adapter type: `sql` for SQLite or `properties` for local storage.
+The fourth parameter selects the adapter type: `sql` for SQLite or `properties` for local storage. The fifth parameter defines the table schema. This is required for `sql` and `properties` adapter types.
 
 This creates `app/models/<name>.js`, and `app/migrations/DATETIME_<name>.js` if the adapter type is 'sql'.
 
@@ -128,8 +130,8 @@ alloy extract-i18n [language] [--apply]
 
 **Parameters**:
 
-* `language` – Optional. Two-letter language code (`en` or `es`). Default is `en`.
-* `--apply` – Optional. Writes new entries to `strings.xml`. Without it, displays a preview.
+* `language` – Optional. Two-letter language code (`en`, `es`, etc.). Default is `en`.
+* `--apply` – Optional. Writes new entries to `strings.xml`. Without it, displays a preview. This is a safe operation: it only adds new entries and never removes existing ones.
 
 Supported functions:
 
@@ -177,7 +179,15 @@ Running with `--apply`:
 alloy extract-i18n --apply
 ```
 
-Generates `app/i18n/en/strings.xml`:
+Generates `app/i18n/en/strings.xml`.
+
+To generate strings for another language, pass the language code:
+
+```bash
+alloy extract-i18n es --apply
+```
+
+This generates `app/i18n/es/strings.xml`.
 
 ```xml
 <resources>

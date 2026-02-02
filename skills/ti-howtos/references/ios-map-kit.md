@@ -27,13 +27,15 @@ Add the mandatory usage descriptions in `tiapp.xml`:
 </ios>
 ```
 
+> **iOS 11+**: You must include both `NSLocationWhenInUseUsageDescription` AND `NSLocationAlwaysAndWhenInUseUsageDescription` in your plist. Users can choose "When in Use" even when your app requests "Always" authorization.
+
 ## 2. Using the Map View
 
 ### Basic Creation
 ```javascript
 const MapModule = require('ti.map');
 const mapView = MapModule.createView({
-    mapType: MapModule.NORMAL_TYPE,
+    mapType: MapModule.NORMAL_TYPE, // Also: SATELLITE_TYPE, HYBRID_TYPE, STANDARD_TYPE (alias for NORMAL_TYPE with labels)
     userLocation: true,
     rotatesEnabled: true, // Allow two-finger rotation
     region: {
@@ -48,6 +50,8 @@ const mapView = MapModule.createView({
 ## 3. 3D Camera (Perspective)
 
 iOS allows tilting and rotating the map programmatically for 3D views.
+
+> **Important**: The map view must be visible on screen before using camera APIs. Wait for the map's `complete` event before calling `animateCamera()` or setting camera properties.
 
 ```javascript
 const myCam = MapModule.createCamera({
@@ -84,7 +88,7 @@ const bridge = MapModule.createAnnotation({
     // iOS system buttons in the callout
     leftButton: Ti.UI.iOS.SystemButton.INFO_DARK,
     rightButton: Ti.UI.iOS.SystemButton.CONTACT_ADD,
-    canShowCallout: true // Default is true
+    canShowCallout: true // Controls whether tapping the annotation shows the callout bubble (default: true)
 });
 
 mapView.addAnnotation(bridge);
@@ -105,20 +109,29 @@ const customPin = MapModule.createAnnotation({
 Control if the route goes above labels or above roads.
 ```javascript
 const route = MapModule.createRoute({
-    points: [...],
-    color: 'blue',
+    points: routePoints,
+    color: '#00f',
     width: 4,
-    // OVERLAY_LEVEL_ABOVE_LABELS or OVERLAY_LEVEL_ABOVE_ROADS
-    level: MapModule.OVERLAY_LEVEL_ABOVE_LABELS
+    level: MapModule.OVERLAY_LEVEL_ABOVE_LABELS  // default
+    // or MapModule.OVERLAY_LEVEL_ABOVE_ROADS (below labels)
 });
 ```
 
 ## 6. Events
+
+Key map events: `click`, `complete` (map loaded), `regionchanged`, `pinchangedragstate`.
+
 Same as Android, but with specialized `clicksource` for system buttons:
 ```javascript
 mapView.addEventListener('click', (e) => {
     if (e.clicksource === 'leftButton' || e.clicksource === 'rightButton') {
         Ti.API.info('Callout button clicked');
+    }
+});
+
+mapView.addEventListener('pinchangedragstate', (e) => {
+    if (e.annotation.dragState === MapModule.ANNOTATION_DRAG_STATE_END) {
+        Ti.API.info(`Dropped at: ${e.annotation.latitude}, ${e.annotation.longitude}`);
     }
 });
 ```

@@ -92,7 +92,7 @@ The main TSS file is called `widget.tss` instead of `index.tss`.
 
 ## Themes
 
-Widget themes work the same as project themes except for the placement of the files. Inside your theme folder (`app/themes/<THEME_NAME>`), create `widgets/<WIDGET_NAME>` folders, where `<THEME_NAME>` is the name of the theme and `<WIDGET_NAME>` is the name of the widget.
+Widget themes work the same as project themes except for the placement of the files. Inside your theme folder (`app/themes/<THEME_NAME>`), create `widgets/<WIDGET_NAME>` folders, where `<THEME_NAME>` is the name of the theme and `<WIDGET_NAME>` is the name of the widget. When using a theme, the files in these folders replace the files in the widget's folders.
 
 Create two folders, `assets` and `styles`, to place your custom images and styles for your widget, respectively.
 

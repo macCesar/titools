@@ -124,6 +124,20 @@ This is powerful for adding default colors or properties (like a black default c
 | Return value  | Must return a `Ti.UI.*` component (View, Button, Label, etc.) |
 | Arguments     | Receives all XML/TSS attributes in a single `args` object     |
 
+## Using Custom Tags Without Alloy XML
+
+You can also use custom tags from plain JavaScript via `require()`:
+
+```javascript
+const checkbox = require("checkbox").createCheckBox({
+    caption: "I agree",
+    underline: true
+});
+win.add(checkbox);
+```
+
+This works because custom tags are standard CommonJS modules — the `module` attribute in XML is just a convenience.
+
 ## Custom Tags vs Widgets
 
 | Custom Tags                           | Widgets                                  |

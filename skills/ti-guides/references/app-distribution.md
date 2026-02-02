@@ -39,7 +39,7 @@ ti build -p android -T dist-playstore -K ~/android.keystore -P secret -L foo -O 
 
 **Output files:**
 - `.apk` - Legacy format (still supported)
-- `.aab` - Android App Bundle (preferred, smaller downloads)
+- `.aab` - Android App Bundle (preferred, smaller downloads). Requires Titanium 9.0.0+. An AAB file cannot be installed directly on a device; it is a publishing format for Google Play only. Once uploaded, Google Play generates multiple device-specific APKs split by CPU architecture and image density, allowing smaller downloads.
 
 ### 4. Verify APK Signing
 
@@ -81,7 +81,7 @@ adb uninstall com.your.appid
 </android>
 ```
 
-- `versionCode`: Integer, must increment for each update
+- `versionCode`: Must be a 32-bit integer (whole number), must increment for each update. Cannot be a floating point number.
 - `versionName`: String, any format you prefer
 
 ### 7. SD Card Installation
@@ -100,13 +100,18 @@ Values: `preferExternal`, `auto`, `internalOnly`
 
 ### 1. Distribution Types
 
-- **App Store**: Public distribution via iTunes Store
-- **Ad Hoc**: Limited testing (max 100 devices)
+- **App Store**: Public distribution via App Store (formerly known as iTunes Connect, now App Store Connect)
+- **Ad Hoc**: Limited testing (max 100 devices per year; devices cannot be removed once registered, so use care when registering)
 - **In House**: Enterprise distribution for employees (Enterprise program only)
 
 ### 2. Create Distribution Certificate
 
-1. Log in to [Apple Developer Member Center](https://developer.apple.com/membercenter/)
+**Certificate types:**
+- **Development certificate**: Each developer on the team can have their own, used for building test versions.
+- **Distribution certificate**: A single certificate for the entire team. Only the Team Agent (the account owner who oversees final distribution) can create it. This ensures developers cannot publish the final app without authorization.
+
+**Steps:**
+1. Log in to [Apple Developer Member Center](https://developer.apple.com/membercenter/) as Team Agent or Admin
 2. Go to **Certificates, Identifiers & Profiles** > **Certificates**
 3. Click **+** > **App Store and Ad Hoc**
 4. Create a CSR (Certificate Signing Request) in Keychain Access
@@ -124,9 +129,11 @@ Values: `preferExternal`, `auto`, `internalOnly`
 6. Name profile (include "distribution" or "ad hoc")
 7. Download `.mobileprovision` and install (drag to Xcode icon)
 
-### 4. Create App ID on iTunes Connect
+### 4. Create App ID on App Store Connect
 
-1. Log in to [iTunes Connect](https://itunesconnect.apple.com)
+App Store Connect (formerly iTunes Connect) is the app distribution management portal.
+
+1. Log in to App Store Connect
 2. **Manage Your Apps** > **Add New App**
 3. Provide:
    - App name
@@ -172,11 +179,11 @@ ti build -p ios -T dist-appstore -R "Pseudo, Inc." -P "AAAAAAAA-0000-9999-8888-7
 
 The CLI installs the package to Xcode's Organizer.
 
-### 6. Upload to iTunes Connect
+### 6. Upload to App Store Connect
 
 1. Open Xcode > **Window** > **Organizer**
 2. Select your app archive
-3. Click **Verify** (validates against iTunes Connect app definition)
+3. Click **Verify** (validates against App Store Connect app definition)
 4. Click **Submit** (uploads app)
 5. Status changes to **Waiting for Review**
 
@@ -192,7 +199,38 @@ Testers need:
 3. Select device > **Installed Apps** > **+**
 4. Select IPA file
 
-### 8. App Store Requirements
+### 8. App Thinning (iOS)
+
+App Thinning optimizes your application by reducing its installed size on devices.
+
+**Slicing (Asset Catalog):**
+- Installs only the assets needed for the specific device (e.g., @2x images for non-Plus iPhones, @3x for Plus/Pro models)
+- When enabled, Titanium automatically adds all PNG and JPEG images to an Asset Catalog
+- Images with matching suffixes (@2x, @3x, etc.) are grouped into one imageset
+- **Important limitation**: When slicing is enabled, you cannot access images from the filesystem using `Ti.Filesystem` or path/URL-based access. Only use image names (without path) in ImageView and similar APIs.
+- Icons and launch images are always added to the Asset Catalog
+
+**Enable slicing in tiapp.xml:**
+```xml
+<ti:app>
+  <ios>
+    <use-app-thinning>true</use-app-thinning>
+  </ios>
+</ti:app>
+```
+
+By default, slicing is disabled.
+
+**Bitcode:**
+- Submits partially compiled code to App Store Connect, which then optimizes and compiles for specific architectures
+- Currently disabled in Titanium because all frameworks (including third-party modules) must have bitcode enabled
+
+**On-Demand Resources:**
+- Resources tagged into groups, stored on Apple servers, downloaded when needed by the app
+- iOS purges on-demand resources when device disk space is low
+- Titanium SDK does not currently provide a way to tag on-demand resources
+
+### 9. App Store Requirements
 
 Apple's guidelines include:
 - Apps must be useful, well-designed, and error-free

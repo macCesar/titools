@@ -104,6 +104,14 @@ Android and Mobile Web use case-sensitive filesystems. File names referenced in 
 
 ## 2. SQLite Database
 
+### Installing a Pre-populated Database
+Ship a database with your app and install it on first launch:
+```javascript
+// Copies db from Resources/ (or app/assets/) to applicationDataDirectory
+const db = Ti.Database.install('seeds/mydata.sqlite', 'mydata');
+// On subsequent launches, install() just opens the existing database
+```
+
 ### Opening Databases
 
 ```javascript
@@ -152,7 +160,8 @@ db.execute(`INSERT INTO users (name, age) VALUES ('${name}', ${age})`);
 ```javascript
 // INSERT
 db.execute('INSERT INTO users (name, age) VALUES (?, ?)', ['Jane', 30]);
-const lastId = db.lastInsertRowId;  // Get inserted ID
+const lastId = db.lastInsertRowId;    // ID of the last inserted row
+const affected = db.rowsAffected;     // number of rows changed by last statement
 
 // UPDATE
 db.execute('UPDATE users SET age = ? WHERE name = ?', [31, 'Jane']);
@@ -161,6 +170,41 @@ const rowsAffected = db.rowsAffected;
 // DELETE
 db.execute('DELETE FROM users WHERE age < ?', [18]);
 ```
+
+### Transactions for Batch Operations
+Use transactions to dramatically improve performance for multiple inserts/updates:
+```javascript
+const db = Ti.Database.open('mydb');
+db.execute('BEGIN');
+try {
+    for (let i = 0; i < items.length; i++) {
+        db.execute('INSERT INTO products (name, price) VALUES (?, ?)', items[i].name, items[i].price);
+    }
+    db.execute('COMMIT');
+} catch (e) {
+    db.execute('ROLLBACK');
+    Ti.API.error(`Transaction failed: ${e.message}`);
+}
+db.close();
+```
+
+> **Performance**: Wrapping 1000 inserts in a transaction can be 10-100x faster than individual inserts.
+
+### SQLite Limitations
+- No `FULL OUTER JOIN` support — use `LEFT JOIN` with `UNION`
+- Limited `ALTER TABLE` — can only `ADD COLUMN` or `RENAME TABLE`, cannot drop/modify columns
+- No built-in referential integrity (foreign key enforcement) — enable with `PRAGMA foreign_keys = ON`
+- No native boolean type — use INTEGER (0/1)
+
+### Disable iCloud Backup for Databases (iOS)
+iOS automatically backs up databases to iCloud. For large or recreatable databases, disable this:
+```javascript
+const db = Ti.Database.open('mydb');
+db.file.setRemoteBackup(false);
+db.close();
+```
+
+> **Important**: Apple may reject apps that back up large recreatable data to iCloud.
 
 ### **CRITICAL**: Always Close Connections
 

@@ -134,7 +134,7 @@ Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties in TSS WITHOUT platform modi
 
 **Available modifiers:** `[platform=ios]`, `[platform=android]`, `[formFactor=handheld]`, `[formFactor=tablet]`, `[if=Alloy.Globals.customVar]`
 
-**For more platform-specific patterns, see** [Code Conventions (alloy-expert)](skills/alloy-expert/references/code-conventions.md#platform--device-modifiers) or [Platform UI guides (ti-ui)](skills/ti-ui/references/platform-ui-ios.md).
+**For more platform-specific patterns, see** [Code Conventions (ti-expert)](skills/ti-expert/references/code-conventions.md#platform--device-modifiers) or [Platform UI guides (ti-ui)](skills/ti-ui/references/platform-ui-ios.md).
 :::
 
 ## Common Patterns
@@ -186,7 +186,7 @@ For tasks beyond Alloy MVC basics, use these complementary skills:
 
 | Task                                           | Use This Skill |
 | ---------------------------------------------- | -------------- |
-| Modern architecture, services, patterns        | `alloy-expert` |
+| Modern architecture, services, patterns        | `ti-expert`    |
 | Alloy CLI, config files, debugging errors      | `alloy-howtos` |
 | Utility-first styling with PurgeTSS (optional) | `purgetss`     |
 | Native features (location, push, media)        | `ti-howtos`    |

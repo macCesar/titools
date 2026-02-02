@@ -44,7 +44,7 @@ JavaScript is the language of Titanium. It's a powerful, lightweight, dynamic ob
 - **[MDN JavaScript Guide](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide)** - Comprehensive JavaScript documentation
 - **[Douglas Crockford's Resources](http://javascript.crockford.com/)** - From the creator of JSON and JSLint
 - **[JavaScript in 10 Minutes](https://github.com/spencertipping/js-in-ten-minutes)** - Dense advanced guide
-- **[Google JavaScript Style Guide](http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml)** - Code style guidelines
+- **[Google JavaScript Style Guide](https://google.github.io/styleguide/jsguide.html)** - Code style guidelines
 - **[Learning Advanced JavaScript](http://ejohn.org/apps/learn/)** - By John Resig (jQuery creator)
 
 ### Print Books (Recommended)
@@ -136,6 +136,8 @@ for (let i = 0, j = names.length; i < j; i++) {
 }
 ```
 
+This is especially important when working with Titanium proxy objects (representing native OS structures), where checking length on each iteration has additional overhead.
+
 **Even better:** ES6 `for...of`
 ```javascript
 for (const name of names) {
@@ -160,7 +162,7 @@ const z = 30;       // Cannot be reassigned
 
 ### Ternary Operator
 
-Compact conditional assignment:
+Compact conditional assignment. Value after `?` is assigned if the condition is true; value after `:` if false.
 
 ```javascript
 // Instead of this:

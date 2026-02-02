@@ -66,7 +66,7 @@ The previous style sheet defines various class and markup element styles for lab
 
 To generate a dynamic style, use the controller's `createStyle` method by passing it a dictionary with TSS classes. This method returns a dictionary that can be passed to the view object's `applyProperties` method or a create view object method.
 
-You can use the controller's `UI.create` method to create a view component that is dynamically styled.
+You can use the controller's `UI.create` method to create a view component that is dynamically styled. The `UI.create` method accepts the element name (such as `Button`) or the full API name (such as `Ti.UI.Button`). You can optionally add additional properties inline specific to the component in the dictionary parameter.
 
 **app/views/dialog.xml**
 
@@ -156,7 +156,11 @@ Note that code outside of the dialog view-controller is using the instance varia
 
 ## Modify TSS Classes
 
-To modify the TSS classes of an object that has already been created, use the controller's `addClass`, `removeClass` and `resetClass` methods, which adds, removes or resets the TSS classes of a view object, respectively.
+To modify the TSS classes of an object that has already been created, use the controller's `addClass`, `removeClass` and `resetClass` methods, which adds, removes or resets the TSS classes of a view object, respectively. As the classes are modified using these API calls, the view is automatically updated. To take advantage of these APIs, you need to enable autostyle for the components or else the view may not update properly.
+
+::: warning ⚠️ Warning
+Using the `Require` or `Widget` elements to include external views in a controller-less view does not work with the `updateViews` method — you can include the external views, but the styles cannot be updated.
+:::
 
 Pass a reference to the view object as the first parameter, then pass the classes to add or remove as an array or space-separated string as the second parameter. You can optionally specify inline properties as an optional third parameter.
 
@@ -228,3 +232,5 @@ $.removeClass($.label, "coloronly"); // --> appears red and 24dp (not black!)
 ```
 
 With autostyle enabled, the styles update as expected when classes are added or removed.
+
+**Workarounds without autostyle:** If you cannot enable autostyle, you can either create a default class that defines all possible properties (so removing a class reverts to the defaults), or pass in the optional inline properties as the third parameter to `addClass`/`removeClass`/`resetClass` to explicitly set the desired values.

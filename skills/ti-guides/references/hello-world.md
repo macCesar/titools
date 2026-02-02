@@ -40,6 +40,7 @@ Choose template:
 - All lowercase (Android issues with uppercase)
 - No Java keywords (`case`, `package`, etc.)
 - Cannot change after publishing
+- **Platform Relationship**: On iOS, the App ID must match the Bundle Identifier; on Android, it serves as the Application Package Name
 
 ## Project Structure
 
@@ -54,11 +55,13 @@ MyApp/
 ├── platform/              # Platform-specific files
 │   ├── android/
 │   └── ios/
-├── Resources/             # Classic Titanium resources
+├── Resources/             # Code files and graphics with platform-specific subdirectories
+│   ├── android/          # Android-specific assets
+│   └── iphone/           # iOS-specific assets
 ├── i18n/                  # Internationalization
 ├── tiapp.xml             # App configuration
 ├── config.json           # Alloy config
-└── app.js                # Classic entry point
+└── app.js                # Bootstrap file loaded first when app launches
 ```
 
 ## Running Your App

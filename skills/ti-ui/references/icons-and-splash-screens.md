@@ -51,6 +51,8 @@ Place a single `DefaultIcon.png` (1024x1024px) in project root. Titanium auto-ge
 | Universal retina     | Settings  | 58x58      | `appicon-Small@2x.png`    |
 | iPhone 6 Plus+       | Settings  | 87x87      | `appicon-Small@3x.png`    |
 
+**App Thinning note:** Application icons and launch images are added to the Asset Catalog to support App Thinning. Due to this change, you cannot reference launch image assets from the filesystem (e.g., you cannot set `backgroundImage` to a launch image file).
+
 ### iOS Splash Screens
 
 | Device                                  | Dimensions | Filename                         |
@@ -107,7 +109,9 @@ Place a single `DefaultIcon.png` (1024x1024px) in project root. Titanium auto-ge
 | hdpi    | 240 | 72x72      | `platform/android/res/drawable-hdpi/appicon.png`    |
 | xhdpi   | 320 | 96x96      | `platform/android/res/drawable-xhdpi/appicon.png`   |
 | xxhdpi  | 480 | 144x144    | `platform/android/res/drawable-xxhdpi/appicon.png`  |
-| xxxhdpi | 640 | 192x192    | `platform/android/res/drawable-xxxhdpi/appicon.png` |
+| xxxhdpi | 640 | 512x512    | `platform/android/res/drawable-xxxhdpi/appicon.png` |
+
+The filename must match the `icon` element in your tiapp.xml file. By default, newly created projects use `Resources/android/appicon.png`.
 
 ### Action Bar Icons
 
@@ -119,6 +123,17 @@ Place a single `DefaultIcon.png` (1024x1024px) in project root. Titanium auto-ge
 | xhdpi   | 48x48      | `Resources/android/images/res-xhdpi/`   | `app/assets/android/images/res-xhdpi/`   |
 | xxhdpi  | 72x72      | `Resources/android/images/res-xxhdpi/`  | `app/assets/android/images/res-xxhdpi/`  |
 | xxxhdpi | 144x144    | `Resources/android/images/res-xxxhdpi/` | `app/assets/android/images/res-xxxhdpi/` |
+
+### Small and Contextual Icons
+
+Used for notification status bar icons and other small UI elements:
+
+| Density | Dimensions |
+| ------- | ---------- |
+| ldpi    | 12x12      |
+| mdpi    | 16x16      |
+| hdpi    | 24x24      |
+| xhdpi   | 32x32      |
 
 ### Notification Icons
 
@@ -180,7 +195,9 @@ Android 12 uses app icon as splash screen automatically. Use **Adaptive Icons** 
 
 ### Android < 12 (Legacy)
 
-Use `default.png` or nine-patch images.
+Use `default.png` or nine-patch images. Android uses `default.png` (lowercase 'd') for the splash screen filename. This is different from iOS which uses uppercase `Default.png`.
+
+**Warning:** Do not use `<supports-screens/>` with `android:anyDensity` set to false, as this can cause scaling issues with splash screens.
 
 #### Nine-Patch Images (Recommended)
 
@@ -302,6 +319,8 @@ platform/android/res/
 ## 9. Common Issues
 
 ### Build Fails - Missing Icons
+
+If any app icon files are missing, the build will fail. If launch image files (prefixed with `Default`) are missing, the build will NOT fail. If you have a `DefaultIcon.png` in the project root, the Titanium SDK will auto-generate any missing iTunesArtwork files.
 
 **Solution:** Add `DefaultIcon.png` (1024x1024) to project root for auto-generation.
 

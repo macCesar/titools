@@ -154,6 +154,6 @@ For tasks beyond UI components, use these complementary skills:
 
 | Task                                            | Use This Skill |
 | ----------------------------------------------- | -------------- |
-| Project architecture, services, memory cleanup  | `alloy-expert` |
+| Project architecture, services, memory cleanup  | `ti-expert`    |
 | Native features (camera, location, push, media) | `ti-howtos`    |
 | Alloy MVC, data binding, widgets                | `alloy-guides` |

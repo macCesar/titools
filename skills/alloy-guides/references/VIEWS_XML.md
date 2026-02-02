@@ -26,8 +26,8 @@ The following table lists the attributes for the UI components:
 
 | Attribute      | Description                                                                                        |
 | -------------- | -------------------------------------------------------------------------------------------------- |
-| `id`           | Identifies UI elements in the controller (prefixed with `$.`) and style sheet (prefixed with `#`). |
-| `class`        | Applies additional styles (prefixed with `.` in the TSS file).                                     |
+| `id`           | Identifies UI elements in the controller (prefixed with `$.`) and style sheet (prefixed with `#`). IDs should be unique per view but are not global, so multiple views can have components with the same ID. |
+| `class`        | Applies additional styles (prefixed with `.` in the TSS file). Overwrites the element style but not the id style. |
 | `autoStyle`    | Enables the autostyle feature for dynamic styling.                                                 |
 | `formFactor`   | Acts as a compiler directive for size-specific view components (`handheld` or `tablet`).           |
 | `if`           | Use a custom query to apply additional styles to the element.                                      |
@@ -169,7 +169,7 @@ exports.createFoo = args => {
 
 ## Module Element
 
-You can also include a view from a native module using the `Module` XML element.
+You can also include a view from a native module using the `Module` XML element. The `method` attribute specifies which creation method to call. If omitted, defaults to `createView`.
 
 **app/views/index.xml**
 
@@ -198,7 +198,7 @@ The `Require` XML element has two uses: including external views and importing w
 
 ### Including Views
 
-Views may be included in other views using the `Require` element. Specify the `type` attribute as `view` and the `src` attribute should be the view file minus the `.xml` extension.
+Views may be included in other views using the `Require` element. Specify the `type` attribute as `view` and the `src` attribute should be the view file minus the `.xml` extension. If you omit the `type` attribute, Alloy assumes it is implicitly set to `view`.
 
 **app/views/index.xml**
 
@@ -224,12 +224,12 @@ aboutView.url = 'http://www.google.com';
 
 ### Importing Widgets
 
-Within a view in the regular Alloy project space (`app/views`), use the `<Widget>` tag to import the widget into the application.
+Within a view in the regular Alloy project space (`app/views`), use the `<Widget>` tag to import the widget into the application. For Alloy 1.4.x and prior, you need to assign the `src` attribute to the widget's name (the `id` in `widget.json`).
 
 **To import a widget:**
 
 1. Copy the widget to the `app/widgets` folder.
-2. Add the `<Widget>` tag in the XML and specify its `src` attribute as the folder name of the widget.
+2. Add the `<Widget>` tag in the XML and specify its `src` attribute as the folder name of the widget. Use the `name` attribute to import a specific view-controller instead of the default `widget.xml`/`widget.js`.
 3. Update the `dependencies` object in the `config.json` file.
 
 **app/views/index.xml**
@@ -354,6 +354,8 @@ For UI objects that belong to a specific platform, use the `platform` attribute:
 <SplitWindow platform="ios"/>
 ```
 
+Additionally, use the alias `Ti` for `Titanium` when specifying namespaces.
+
 Many of the Titanium view proxies not part of the `Titanium.UI` namespace do not require that the `ns` attribute be explicitly set. The following elements are implicitly mapped to a namespace:
 
 | Element          | Namespace     |
@@ -397,7 +399,7 @@ Add the `platform`, `formFactor` and `if` attributes to apply XML elements based
 
 ## Property Mapping
 
-Each Titanium UI object property is defined as an attribute in the XML and TSS file if it accepts a string, boolean, number or Titanium SDK constant.
+Each Titanium UI object property is defined as an attribute in the XML and TSS file if it accepts a string, boolean, number or Titanium SDK constant. Setting properties in the XML overrides the settings in the TSS file. Node text can also be used to define the `Label` text and `Button` title properties.
 
 ```xml
 <Label borderWidth="1" borderColor="red" color="red" width="Ti.UI.FILL">Hello, World!</Label>
@@ -452,9 +454,21 @@ You can set ActionBar properties in the `ActionBar` element.
 </Alloy>
 ```
 
+**app/styles/index.tss**
+
+```javascript
+"#editItem": {
+    showAsAction: Ti.Android.SHOW_AS_ACTION_ALWAYS
+},
+"#actionbar": {
+    displayHomeAsUp: true,
+    icon: "/images/actionicon.png"
+}
+```
+
 ### iOS Navigation Button Shorthand
 
-When specifying either the `LeftNavButton` or `RightNavButton` element, you can define the `Button` attributes directly.
+When specifying either the `LeftNavButton` or `RightNavButton` element, you can define the `Button` attributes directly. This also works with iPad `Popover` objects. Note that you cannot use node text to define the button title with this shorthand.
 
 **app/views/index.xml**
 
@@ -481,11 +495,17 @@ When specifying the `systemButton` attribute, you do not need to use the `Ti.UI.
 
 ### TextField Keyboard Shorthands
 
-When specifying the `keyboardType` or `returnKeyType` for a TextField:
+When specifying the `keyboardType` or `returnKeyType` for a TextField, you can use shorthand constants without the full namespace:
 
 ```xml
 <TextField id="txt" keyboardType="DECIMAL_PAD" returnKeyType="DONE"/>
+<!-- Instead of -->
+<TextField id="txt" keyboardType="Titanium.UI.KEYBOARD_DECIMAL_PAD" returnKeyType="Titanium.UI.RETURNKEY_DONE"/>
+```
 
+This also works in TSS:
+
+```javascript
 "#txt": {
   keyboardType: "DECIMAL_PAD",
   returnKeyType: "DONE"

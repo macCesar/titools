@@ -158,7 +158,7 @@ As with views, separate styles may be defined based on the platform and device s
 
 **To specify platform or device size conditionals:**
 
-1. Place a set of square brackets (`[]`) directly after the name of the markup element, class name or id name in the TSS file.
+1. Place a set of square brackets (`[]`) **directly** after the name of the markup element, class name or id name in the TSS file. **Do NOT place a space between the name and brackets. The condition statements will be ignored.**
 2. Inside the brackets:
    * `platform` attribute: assign a platform (`android`, `ios`). Comma separate to OR values. Prepend with `!` to negate.
    * `formFactor` attribute: assign a device size (`handheld` or `tablet`).
@@ -190,7 +190,9 @@ Alternatively, create subfolders named as the platform in the `styles` directory
 
 ## Custom Query Styles
 
-You can create custom queries to select which styles to apply in both the TSS and XML files.
+You can create custom queries to select which styles to apply in both the TSS and XML files. Custom query styles override all styles (class, id, and markup element styles), except styles defined as attributes in the XML file.
+
+You may use the `if` attribute in combination with the `platform` and `formFactor` attributes. You can only add **one** custom query to the `if` attribute. The `if` attribute does **not** support multiple queries or the not operator (`!`).
 
 **To use a custom query:**
 
@@ -329,16 +331,16 @@ Themes provide a way to overwrite or modify files for a specific brand of your a
 
 To create a theme, create a folder called `themes` in your Alloy `app` directory. In the `themes` folder, create a folder for your theme.
 
-| Folder or Filename | Merges or Overwrites             |
-| ------------------ | -------------------------------- |
-| config.json        | merges                           |
-| i18n               | merges folders and files         |
-| assets             | merges folders, overwrites files |
-| lib                | merges folders, overwrites files |
-| platform           | merges folders, overwrites files |
-| styles             | merges folders and files         |
-| widgets/\*/assets  | merges folders, overwrites files |
-| widgets/\*/styles  | merges folders and files         |
+| Folder or Filename | Merges or Overwrites             | Supported Since         |
+| ------------------ | -------------------------------- | ----------------------- |
+| config.json        | merges                           | Alloy 1.4.0             |
+| i18n               | merges folders and files         | Alloy 1.4.0             |
+| assets             | merges folders, overwrites files | Alloy 1.4.0             |
+| lib                | merges folders, overwrites files | Alloy 1.7.6 / CLI 5.0.0 |
+| platform           | merges folders, overwrites files | Alloy 1.7.6 / CLI 5.0.0 |
+| styles             | merges folders and files         | Alloy 1.4.0             |
+| widgets/\*/assets  | merges folders, overwrites files | Alloy 1.4.0             |
+| widgets/\*/styles  | merges folders and files         | Alloy 1.4.0             |
 
 To use a theme, add it to your `config.json`:
 

@@ -149,6 +149,34 @@ const items = [
 $.dynamicListView.sections[0].setItems(items);
 ```
 
+### iOS Built-in Templates (iOS Only)
+
+iOS provides four built-in templates that can be used without defining custom `ItemTemplate`:
+
+| Constant                            | Layout                                                          |
+| ----------------------------------- | --------------------------------------------------------------- |
+| `Ti.UI.LIST_ITEM_TEMPLATE_DEFAULT`  | Left-justified title only (this is the default)                 |
+| `Ti.UI.LIST_ITEM_TEMPLATE_SUBTITLE` | Title with subtitle below in smaller gray text                  |
+| `Ti.UI.LIST_ITEM_TEMPLATE_SETTINGS` | Left-justified title on left, right-justified subtitle on right |
+| `Ti.UI.LIST_ITEM_TEMPLATE_CONTACTS` | Right-justified title with left-justified subtitle              |
+
+```javascript
+const section = Ti.UI.createListSection({
+  items: [
+    { properties: { title: 'Title', subtitle: 'Subtitle' } }
+  ]
+});
+
+const listView = Ti.UI.createListView({
+  sections: [section],
+  defaultItemTemplate: Ti.UI.LIST_ITEM_TEMPLATE_SUBTITLE
+});
+```
+
+### Supported Template View Classes
+
+The following views can be used as child elements in custom templates: ActivityIndicator, Button, ImageView, Label, MaskedImage, ProgressBar, Slider, Switch, TextArea, TextField.
+
 ## 4. Data Binding
 
 ### Binding Syntax
@@ -210,6 +238,22 @@ section.replaceItemsAt(2, 3, replacementItems);
 section.deleteItemsAt(10, 2);
 ```
 
+### Row Animation (iOS)
+
+You can pass animation styles to append/delete/insert/replace/update methods:
+
+```javascript
+section.deleteItemsAt(0, 1, {
+  animationStyle: Ti.UI.iOS.RowAnimationStyle.LEFT
+});
+
+section.appendItems(newItems, {
+  animationStyle: Ti.UI.iOS.RowAnimationStyle.FADE
+});
+```
+
+Available styles: `Ti.UI.iOS.RowAnimationStyle.BOTTOM`, `FADE`, `LEFT`, `NONE`, `RIGHT`, `TOP`.
+
 ## 6. Events
 
 ### Item Click
@@ -258,6 +302,29 @@ function markerReached(e) {
 
 $.myList.addEventListener('marker', markerReached);
 ```
+
+Since SDK 4.1.0, use `addMarker()` to add additional markers after the initial `setMarker()`:
+
+```javascript
+$.myList.addMarker({ sectionIndex: 0, itemIndex: 149 });
+```
+
+### Scroll Events
+
+Since SDK 4.1.0, use `scrollstart` and `scrollend` events to monitor scrolling:
+
+```javascript
+$.myList.addEventListener('scrollstart', (e) => {
+  Ti.API.info(`Scroll started at section ${e.firstVisibleSectionIndex}, item ${e.firstVisibleItemIndex}`);
+  Ti.API.info(`Visible items: ${e.visibleItemCount}`);
+});
+
+$.myList.addEventListener('scrollend', (e) => {
+  Ti.API.info(`Scroll ended at section ${e.firstVisibleSectionIndex}, item ${e.firstVisibleItemIndex}`);
+});
+```
+
+Event properties: `firstVisibleSectionIndex`, `firstVisibleItemIndex`, `visibleItemCount`.
 
 ### Template Element Events
 
@@ -382,32 +449,71 @@ ListView items have limited animation support. For complex animations, consider 
 ```javascript
 const section = $.myList.sections[0];
 
-// Define edit actions
-const deleteAction = Ti.UI.iOS.createListViewDeleteOptions({
-  title: 'Delete'
-});
-
-const moreAction = Ti.UI.iOS.createListViewEditAction({
-  title: 'More',
-  backgroundColor: 'blue',
-  style: Ti.UI.iOS.LIST_VIEW_EDIT_ACTION_STYLE_NORMAL
-});
-
-// Enable editing
-section.editActions = [deleteAction, moreAction];
+// Define edit actions as plain objects with title, style, and optional color
+section.editActions = [
+  {
+    title: 'Delete',
+    style: Ti.UI.iOS.ROW_ACTION_STYLE_DESTRUCTIVE
+  },
+  {
+    title: 'More',
+    color: 'blue',
+    style: Ti.UI.iOS.ROW_ACTION_STYLE_NORMAL
+  }
+];
 section.canEdit = true;
 
-// Handle actions
+// Handle actions — e.action is the title STRING of the tapped action
 $.myList.addEventListener('editaction', (e) => {
-  if (e.action === deleteAction) {
-    section.deleteItemsAt(e.itemIndex, 1);
-  } else if (e.action === moreAction) {
+  if (e.action === 'Delete') {
+    e.section.deleteItemsAt(e.itemIndex, 1);
+  } else if (e.action === 'More') {
     // Handle more action
+    Ti.API.info(`More tapped on item ${e.itemIndex} in section ${e.sectionIndex}`);
   }
 });
 ```
 
-## 9. Search
+**Available action styles:**
+- `Ti.UI.iOS.ROW_ACTION_STYLE_DEFAULT` — gray background
+- `Ti.UI.iOS.ROW_ACTION_STYLE_DESTRUCTIVE` — red background (default)
+- `Ti.UI.iOS.ROW_ACTION_STYLE_NORMAL` — custom color background
+
+**Event properties:** `action` (string — the title), `itemId`, `itemIndex`, `section`, `sectionIndex`.
+
+## 9. Editing Mode (iOS)
+
+Set the `editing` property to toggle edit mode, allowing users to delete and reorder items:
+
+```javascript
+// Toggle edit mode
+$.myList.editing = true;
+
+// Auto-remove sections that become empty during editing
+$.myList.pruneSectionsOnEdit = true;
+```
+
+### Delete Event
+
+Fires when a user deletes an item in edit mode:
+
+```javascript
+$.myList.addEventListener('delete', (e) => {
+  Ti.API.info(`Deleted item ${e.itemIndex} from section ${e.sectionIndex}`);
+});
+```
+
+### Move Event
+
+Fires when a user reorders an item in edit mode:
+
+```javascript
+$.myList.addEventListener('move', (e) => {
+  Ti.API.info(`Moved item from ${e.itemIndex} to ${e.targetItemIndex}`);
+});
+```
+
+## 10. Search
 
 ```javascript
 const searchView = Ti.UI.createSearchBar({
@@ -427,7 +533,30 @@ const items = [
 ];
 ```
 
-## 10. Performance Best Practices
+### Search Properties
+
+- `keepSectionsInSearch: true` — preserves section headers while filtering search results.
+- `caseInsensitiveSearch: true` — enables case-insensitive search filtering.
+
+```javascript
+const listView = Ti.UI.createListView({
+  searchView: searchView,
+  keepSectionsInSearch: true,
+  caseInsensitiveSearch: true
+});
+```
+
+### No Results Event
+
+Since SDK 3.3.0, when items are filtered using `searchView` or `searchText`, the `noresults` event fires when search returns no results:
+
+```javascript
+$.myList.addEventListener('noresults', (e) => {
+  Ti.API.info('No matching items found');
+});
+```
+
+## 11. Performance Best Practices
 
 ### DO:
 - Use fixed heights in templates
@@ -444,7 +573,7 @@ const items = [
 - Add complex animations to list items
 - Ignore the "recycled" nature of views
 
-## 11. Transitioning from TableView
+## 12. Transitioning from TableView
 
 ### Core Logic Differences
 
@@ -472,7 +601,7 @@ const items = [
 - `appendRow`, `deleteRow`, `deselectRow`, `insertRowAfter`, `insertRowBefore`, `selectRow`, `updateRow`, `scrollToIndex`.
 - *Alternatives*: Use `scrollToItem` and `selectItem` (iOS). For row manipulation, use the containing `ListSection`.
 
-## 12. Common Patterns
+## 13. Common Patterns
 
 ### Infinite Scroll with Markers
 
@@ -533,7 +662,7 @@ $.myList.addEventListener('itemclick', (e) => {
 $.myList.sectionIndexTitles = ["A", "B", "C", ...];
 ```
 
-## 13. Platform Differences
+## 14. Platform Differences
 
 ### iOS vs Android
 
@@ -545,6 +674,41 @@ $.myList.sectionIndexTitles = ["A", "B", "C", ...];
 | Default template image | Left side    | Right side    |
 | cacheSize property     | Supported    | Not supported |
 
+### Grouped Style (iOS)
+
+Set `style: Ti.UI.iOS.ListViewStyle.GROUPED` to display sections as separate visual groups with rounded corners and inset spacing:
+
+```javascript
+const listView = Ti.UI.createListView({
+  style: Ti.UI.iOS.ListViewStyle.GROUPED,
+  sections: [sectionA, sectionB]
+});
+```
+
+### Pull-to-Refresh (iOS)
+
+The `pull` event fires when the user pulls past the top of the list, and `pullend` fires when the user releases. Use the `pullView` property to set a custom pull-to-refresh view:
+
+```javascript
+const pullView = Ti.UI.createView({
+  height: 60,
+  backgroundColor: '#eee'
+});
+pullView.add(Ti.UI.createLabel({ text: 'Pull to refresh...' }));
+
+$.myList.pullView = pullView;
+
+$.myList.addEventListener('pull', (e) => {
+  // User is pulling — update UI as needed
+  pullView.children[0].text = e.active ? 'Release to refresh...' : 'Pull to refresh...';
+});
+
+$.myList.addEventListener('pullend', (e) => {
+  // User released — trigger data refresh
+  refreshData();
+});
+```
+
 ### cacheSize (iOS)
 
 ```javascript
@@ -552,7 +716,7 @@ $.myList.sectionIndexTitles = ["A", "B", "C", ...];
 $.myList.cacheSize = 3;  // Default
 ```
 
-## 14. Debugging
+## 15. Debugging
 
 ### Common Issues
 

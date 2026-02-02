@@ -23,6 +23,8 @@ Ti.Geolocation.headingFilter = 5;   // degrees - only fire if heading changed X 
 Ti.Geolocation.preferredProvider = Ti.Geolocation.PROVIDER_GPS; // or PROVIDER_NETWORK
 ```
 
+> **Note**: On many Android devices, a low-precision "passive" location provider is always enabled, even when the user disables GPS and Network providers. Therefore `Ti.Geolocation.locationServicesEnabled` may always return `true` on these devices.
+
 ### Android Configuration Modes
 
 **Simple Mode** (ACCURACY_HIGH/LOW):
@@ -40,6 +42,34 @@ const providerGps = Ti.Geolocation.Android.createLocationProvider({
 Ti.Geolocation.Android.addLocationProvider(providerGps);
 Ti.Geolocation.Android.manualMode = true;
 ```
+
+### Location Permissions
+
+```javascript
+// Check permissions
+if (Ti.Geolocation.hasLocationPermissions(Ti.Geolocation.AUTHORIZATION_WHEN_IN_USE)) {
+    startTracking();
+} else {
+    Ti.Geolocation.requestLocationPermissions(Ti.Geolocation.AUTHORIZATION_WHEN_IN_USE, (e) => {
+        if (e.success) {
+            startTracking();
+        } else {
+            Ti.API.error(`Permission denied: ${e.error}`);
+        }
+    });
+}
+```
+
+**iOS plist keys** (tiapp.xml):
+```xml
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>We need your location to show nearby places</string>
+<!-- For background location: -->
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>We need background location for navigation</string>
+```
+
+> **Note (iOS 11+)**: You must include `NSLocationAlwaysAndWhenInUseUsageDescription` even when requesting "Always" permission. Users can still choose "When in Use" even if your app requests "Always".
 
 ### One-Time Position
 
@@ -119,6 +149,12 @@ Ti.Geolocation.addEventListener('heading', (e) => {
 });
 ```
 
+The heading event object includes:
+- `heading.magneticHeading` — degrees relative to magnetic north
+- `heading.trueHeading` — degrees relative to true north (requires location)
+- `heading.accuracy` — deviation in degrees (lower is better)
+- `heading.x`, `heading.y`, `heading.z` — raw magnetometer data (microteslas)
+
 ---
 
 ## Geocoding
@@ -130,6 +166,17 @@ Ti.Geolocation.forwardGeocoder('440 Bernardo Ave Mountain View CA', (e) => {
     if (e.success) {
         Ti.API.info(`Lat: ${e.latitude}, Lon: ${e.longitude}`);
     }
+});
+```
+
+**With error handling:**
+```javascript
+Ti.Geolocation.forwardGeocoder('1600 Amphitheatre Pkwy, Mountain View, CA', (e) => {
+    if (!e.success || e.error) {
+        Ti.API.error(`Geocoding failed: ${e.error}`);
+        return;
+    }
+    Ti.API.info(`Lat: ${e.latitude}, Lng: ${e.longitude}`);
 });
 ```
 

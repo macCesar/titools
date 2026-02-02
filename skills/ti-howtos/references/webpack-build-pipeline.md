@@ -1,6 +1,6 @@
 # Webpack Build Pipeline
 
-Starting with Titanium SDK 9.1.0, Webpack is the default build engine for managing your project's assets and code.
+Webpack integration is available as an **alternative build pipeline** starting with Titanium SDK 9.1.0. It is not mandatory — projects work without it. When enabled, Webpack manages your project's assets and code bundling.
 
 ## 1. Key Benefits
 - **Lightning-Fast Incremental Builds**: Only what changes is processed.
@@ -49,7 +49,34 @@ When doing `import { func } from '@/utils'`, Webpack will select the correct ver
 Webpack includes a web interface to analyze the build and asset sizes.
 Default URL: `http://localhost:1732/webpack/latest/web`
 
-## 6. Advanced Configuration
+## 6. Project Plugins
+Webpack support is powered by plugins that handle different project types. Plugins are automatically selected based on your project:
+
+| Plugin                             | Purpose                 |
+| ---------------------------------- | ----------------------- |
+| `@appcd/webpack-plugin-alloy`      | Alloy project support   |
+| `@appcd/webpack-plugin-classic`    | Classic project support |
+| `@appcd/webpack-plugin-babel`      | Babel transpilation     |
+| `@appcd/webpack-plugin-typescript` | TypeScript support      |
+
+### Custom Plugin Configuration
+Plugins can be customized using the `webpack-chain` API in your project's `webpack.config.js`:
+
+```javascript
+module.exports = (api) => {
+    // Add a custom alias
+    api.chainWebpack((config) => {
+        config.resolve.alias.set('@utils', api.resolve('app/lib/utils'));
+    });
+};
+```
+
+Common customizations:
+- **Add alias**: `config.resolve.alias.set(name, path)`
+- **Add loader**: `config.module.rule(name).use(name).loader(loader)`
+- **Delete plugin**: `config.plugins.delete(name)`
+
+## 7. Advanced Configuration
 You can extend the configuration via plugins in `package.json`:
 ```json
 {
@@ -59,6 +86,29 @@ You can extend the configuration via plugins in `package.json`:
 }
 ```
 
-## 7. Known Limitations
+## 8. Global Configuration
+Configure Webpack daemon settings in `~/.appcelerator/appcd/config.json`:
+```json
+{
+    "webpack": {
+        "inactivityTimeout": 600000
+    }
+}
+```
+
+## 9. Troubleshooting
+
+**Build seems stuck**: The Webpack daemon may need a restart:
+```bash
+appcd exec /webpack/latest/stop
+```
+
+**View build logs**:
+```bash
+appcd logcat "*webpack*"
+```
+
+## 10. Known Limitations
 - **Hyperloop**: Currently not compatible with the Webpack pipeline.
-- **Alloy.jmk**: Older makefiles are ignored by Webpack.
+- **Alloy.jmk**: Build hooks are not supported — use Webpack plugins instead.
+- First build may be slower due to daemon startup.

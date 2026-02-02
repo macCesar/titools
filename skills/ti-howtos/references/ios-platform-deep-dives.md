@@ -51,6 +51,65 @@ Ti.App.iOS.addEventListener('silentpush', (e) => {
 });
 ```
 
+### Background Fetch
+```javascript
+// Enable in tiapp.xml:
+// <key>UIBackgroundModes</key>
+// <array><string>fetch</string></array>
+
+// Set minimum fetch interval
+Ti.App.iOS.setMinimumBackgroundFetchInterval(Ti.App.iOS.BACKGROUNDFETCHINTERVAL_MIN);
+
+Ti.App.iOS.addEventListener('backgroundfetch', (e) => {
+    // Fetch new data
+    Ti.API.info('Background fetch triggered');
+
+    // Must call endBackgroundHandler when done (max 30 seconds)
+    Ti.App.iOS.endBackgroundHandler(e.handlerId);
+});
+
+// To disable background fetch:
+// Ti.App.iOS.setMinimumBackgroundFetchInterval(Ti.App.iOS.BACKGROUNDFETCHINTERVAL_NEVER);
+```
+
+### URL Session Module
+For large downloads that continue even if the app is suspended, use the `com.titaniumsdk.urlSession` module:
+
+```javascript
+const urlSession = require('com.titaniumsdk.urlSession');
+
+const config = urlSession.createSessionConfiguration({
+    identifier: 'com.myapp.downloads'
+});
+
+const session = urlSession.createSession({
+    configuration: config
+});
+
+// Start a download task
+session.downloadTask({
+    url: 'https://example.com/largefile.zip'
+});
+
+// Monitor progress
+session.addEventListener('downloadprogress', (e) => {
+    Ti.API.info(`Progress: ${e.totalBytesWritten}/${e.totalBytesExpectedToWrite}`);
+});
+
+session.addEventListener('downloadcompleted', (e) => {
+    Ti.API.info(`Download saved to: ${e.data}`);
+});
+
+session.addEventListener('sessioncompleted', (e) => {
+    if (!e.success) {
+        Ti.API.error(`Session error: ${e.errorDescription}`);
+    }
+});
+
+// Invalidate session when no longer needed
+session.invalidateAndCancel();
+```
+
 ## 3. iCloud Services & Backup Control
 
 ### Disable Individual Backup (Best Practice)
@@ -102,6 +161,25 @@ Ti.WatchSession.addEventListener('receivemessage', (e) => {
 });
 ```
 
+### Provisioning Profiles for Watch
+Both the iOS app and WatchKit extension need separate provisioning profiles. Configure in tiapp.xml:
+```xml
+<ios>
+    <extensions>
+        <extension projectPath="extensions/WatchApp/WatchApp.xcodeproj">
+            <target name="WatchApp Extension">
+                <provisioning-profiles>
+                    <device>WATCH_DEV_PROFILE_UUID</device>
+                    <dist-appstore>WATCH_DIST_PROFILE_UUID</dist-appstore>
+                </provisioning-profiles>
+            </target>
+        </extension>
+    </extensions>
+</ios>
+```
+
+> **Note**: For Xcode 8+, ensure your Team ID matches across all targets.
+
 ## 5. SiriKit & Siri Intents
 
 Allows your app to respond to Siri voice commands (Messaging, Payments, Workouts).
@@ -127,6 +205,16 @@ Requires creating an **Intents Extension** in Xcode and adding it to the `extens
     </extensions>
 </ios>
 ```
+
+### Implementation Steps
+1. **Register App ID** with SiriKit capability in Apple Developer Portal
+2. **Create Intent Extension** in Xcode (File > New > Target > Intents Extension)
+3. **Configure entitlements** — add `com.apple.developer.siri` entitlement
+4. **Add extension to project** — place in `extensions/` folder
+5. **Register in tiapp.xml** with provisioning profiles for the extension target
+6. **Handle intents** in the native extension code (Swift/Objective-C)
+
+> **Note**: SiriKit requires native code in the Intent Extension. The Titanium app receives results via `continueactivity` events.
 
 ## 6. Spotlight Search (Core Spotlight)
 
@@ -388,105 +476,6 @@ Pedometer.queryPedometerData({
 4. **Handle errors gracefully** - Sensor may fail or be unavailable
 5. **Test on physical device** - Sensors don't work in simulator
 
-## 3. Spotlight Search
-
-### Overview
-Spotlight Search allows iOS to index your app's content, making it searchable from the home screen.
-
-### Creating Searchable Items
-
-```javascript
-var SearchableItem = Ti.App.iOS.SearchableItem;
-
-var item1 = SearchableItem.createSearchableItem({
-  uniqueIdentifier: 'article-123',
-  domainIdentifier: 'articles',
-  title: 'Titanium SDK Guide',
-  contentDescription: 'Complete guide to Titanium SDK development',
-  thumbnail: articleThumbnailImage,  // Ti.Blob
-  keywords: ['titanium', 'mobile', 'javascript', 'ios', 'android']
-});
-
-var item2 = SearchableItem.createSearchableItem({
-  uniqueIdentifier: 'product-456',
-  domainIdentifier: 'products',
-  title: 'Product Name',
-  contentDescription: 'Product description here',
-  keywords: ['product', 'shopping']
-});
-```
-
-### Indexing Items
-
-```javascript
-var SearchableIndex = Ti.App.iOS.SearchableIndex;
-
-SearchableIndex.indexSearchableItems([item1, item2], function(e) {
-  if (e.success) {
-    Ti.API.info('Indexing successful');
-  } else {
-    Ti.API.error('Indexing failed: ' + e.error);
-  }
-});
-```
-
-### Deleting from Index
-
-```javascript
-// Delete specific items
-SearchableIndex.deleteSearchableItemsWithIdentifiers(['article-123'], function(e) {
-  if (e.success) {
-    Ti.API.info('Deleted successfully');
-  }
-});
-
-// Delete all items in domain
-SearchableIndex.deleteSearchableItemsWithDomainIdentifiers(['articles'], function(e) {
-  if (e.success) {
-    Ti.API.info('Deleted all articles');
-  }
-});
-
-// Delete all
-SearchableIndex.deleteAllSearchableItems(function(e) {
-  if (e.success) {
-    Ti.API.info('Cleared index');
-  }
-});
-```
-
-### Handling Search Results
-
-When user taps a Spotlight result, your app opens with the `continueactivity` event:
-
-```javascript
-Ti.App.iOS.addEventListener('continueactivity', function(e) {
-  if (e.activityType === 'com.apple.core SpotlightQuery') {
-    var identifier = e.userInfo.identifier;
-    var domain = e.userInfo.domainIdentifier;
-
-    Ti.API.info('Spotlight search selected: ' + identifier);
-
-    // Navigate to appropriate content
-    if (domain === 'articles') {
-      openArticle(identifier);
-    } else if (domain === 'products') {
-      openProduct(identifier);
-    }
-  }
-});
-```
-
-**Important**: Use `NSUserActivityTypes` in tiapp.xml to declare supported activity types.
-
-### Best Practices
-
-1. **Index relevant content** - Don't index everything
-2. **Use meaningful keywords** - Help users find content
-3. **Provide thumbnails** - Improve visual recognition
-4. **Keep index updated** - Re-index when content changes
-5. **Delete obsolete items** - Don't clutter search results
-
 ## 8. Handoff User Activities
 
 ```javascript
@@ -537,126 +526,13 @@ UserActivity.invalidate();
 </array>
 ```
 
-## 5. iCloud Services
+### Requirements
+- Both devices must be signed into the same iCloud account
+- Bluetooth LE must be enabled on both devices
+- Both devices must be on the same Wi-Fi network
+- Test with Safari first to verify Handoff works between your devices
 
-### Keychain Storage
-
-Securely sync small pieces of data (passwords, tokens) across user's devices.
-
-```javascript
-// Store value
-Ti.App.iOS.setKeychainItem('username', 'john@example.com');
-Ti.App.iOS.setKeychainItem('authToken', 'abc123token');
-
-// Retrieve value
-var username = Ti.App.iOS.getKeychainItem('username');
-
-// Remove value
-Ti.App.iOS.removeKeychainItem('authToken');
-```
-
-**Use for**: Syncing user credentials, preferences, small data.
-
-**Requires** iCloud capability enabled in Xcode project.
-
-### Document Picker
-
-```javascript
-const DocumentPicker = Ti.UI.iOS.createDocumentPicker({
-  mode: Ti.UI.iOS.DOCUMENT_PICKER_MODE_OPEN
-});
-
-DocumentPicker.addEventListener('select', (e) => {
-  const url = e.url;  // File URL
-  Ti.API.info(`Selected: ${url}`);
-
-  // Read file
-  const file = Ti.Filesystem.getFile(url);
-  const contents = file.read();
-});
-
-DocumentPicker.addEventListener('cancel', function(e) {
-  Ti.API.info('Document picker canceled');
-});
-
-// Show picker
-DocumentPicker.show();
-```
-
-**Modes**:
-- `DOCUMENT_PICKER_MODE_OPEN` - Open existing document
-- `DOCUMENT_PICKER_MODE_EXPORT` - Export to document provider
-- `DOCUMENT_PICKER_MODE_IMPORT` - Import copy of document
-- `DOCUMENT_PICKER_MODE_MOVE` - Move document to app's sandbox
-
-### CloudKit
-
-For more complex iCloud data sync, consider using CloudKit modules or Hyperloop.
-
-## 6. WatchKit Integration
-
-### Overview
-Integrate Apple Watch apps built in Xcode with Titanium app.
-
-### Integration Steps
-
-1. **Create WatchKit app** in Xcode
-2. **Add App Group** to both iOS and Watch targets
-3. **Use App Group** for shared data:
-
-```javascript
-// In Titanium app, use App Group container
-var container = 'group.com.myapp.shared';
-var sharedDefaults = Ti.App.iOS.createUserDefaults({ suiteName: container });
-
-sharedDefaults.setString('watchData', JSON.stringify(data));
-```
-
-4. **Watch app reads shared data** using same App Group container
-
-### Watch Connectivity
-
-For bidirectional communication, use Watch Connectivity framework via Hyperloop or modules.
-
-## 7. SiriKit Integration
-
-### Overview
-SiriKit allows your app to handle specific intents via Siri voice commands.
-
-### Supported Intents (iOS 10+)
-- Messaging (send/read messages)
-- Payments (send/request money)
-- Workouts (start/stop/pause/resume)
-- Rides (book ride)
-- Photo (search/send photos)
-- VoIP calling
-
-### Implementation
-
-Requires native module or Hyperloop to implement Intent Extension.
-
-**Basic steps**:
-1. Define supported intents in tiapp.xml
-2. Create Intent Extension in Xcode
-3. Handle intents in extension code
-4. Provide UI for Siri interaction
-
-### Voice Shortcuts (iOS 12+)
-
-Add custom voice shortcuts for app actions:
-
-```javascript
-var INVoiceShortcut = Ti.UI.iOS.createINVoiceShortcut({
-  phrase: 'Open My Article',
-  activityType: 'com.myapp.reading-article',
-  userInfo: { articleId: '123' }
-});
-
-// Present to user for recording
-INVoiceShortcut.present();
-```
-
-## 8. Additional iOS Features
+## 9. Additional iOS Features
 
 ### 3D Touch (Force Touch)
 

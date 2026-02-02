@@ -79,3 +79,18 @@ end
 2. **Environment Lanes**: Define separate lanes for `beta`, `production`, and `test`.
 3. **Profile Management**: Use Fastlane Match to sync certificates and provisioning profiles across the team.
 4. **Snapshots**: Use Fastlane's `snapshot` action to automate App Store screenshot generation.
+
+## 4. Unit Testing with TiUnit
+
+For unit tests (non-UI), consider **TiUnit**, a Jasmine-based testing framework for Titanium:
+- Runs tests inside the app context
+- Supports standard Jasmine `describe`/`it`/`expect` syntax
+- Can be integrated into CI pipelines
+
+## 5. Broader CI/CD Options
+
+Beyond Fastlane and Appium, Titanium apps can integrate with:
+- **Jenkins** — for build orchestration and pipeline management
+- **SonarQube** — for code quality analysis
+- **AWS Device Farm** — for testing on real devices in the cloud
+- **Nexus/Artifactory** — for build artifact archiving and versioning

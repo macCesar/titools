@@ -30,6 +30,19 @@ Best-of-breed apps feel **native** on each platform:
 
 **Develop for both platforms from the start** - much more efficient than porting later.
 
+### Android Platform Key Concepts
+- **Screen sizes**: Classified as small, normal, large, xlarge (measured in dp). Use density-independent resources.
+- **Screen densities**: ldpi (~120 dpi), mdpi (~160 dpi), hdpi (~240 dpi), xhdpi (~320 dpi), xxhdpi (~480 dpi), xxxhdpi (~640 dpi)
+- **Activities**: Each heavy-weight Window maps to an Android Activity. Titanium auto-manages the Activity lifecycle.
+- **Intents**: Used for inter-app and intra-app communication. See [android-platform-deep-dives.md](android-platform-deep-dives.md).
+- **Back button**: Hardware/software back button closes current Window by default. Override with `window.addEventListener('androidback', ...)`.
+
+### iOS Platform Key Concepts
+- **Human Interface Guidelines**: Apple enforces design standards through App Store review. Follow iOS conventions for navigation, tab bars, and gestures.
+- **One-button design**: No hardware back or menu buttons — all navigation must be in the UI (NavigationWindow, back buttons).
+- **Frameworks**: Titanium wraps UIKit, Foundation, MapKit, and other Cocoa Touch frameworks. Access additional frameworks via Hyperloop.
+- **Developer account**: Requires paid Apple Developer Program membership for device testing and App Store distribution.
+
 ---
 
 ## Platform Identification
@@ -113,7 +126,14 @@ const ui = require('ui');
 // Carga: /android/ui.js en Android, /iphone/ui.js en iOS
 ```
 
-### 3. Single Execution Context (Recommended)
+### 3. Execution Contexts
+
+Titanium supports single-context and multi-context applications:
+
+- **Single context (recommended)**: All windows share one JavaScript runtime. Use `require()` for modules and `Alloy.createController()` for views.
+- **Multi-context (legacy)**: Using `Ti.UI.createWindow({ url: 'other.js' })` creates a separate JavaScript context. Variables are NOT shared between contexts.
+
+> **Avoid multi-context apps.** Use CommonJS modules and `require()` instead. If you must communicate across contexts, use `Ti.App.fireEvent()` and `Ti.App.addEventListener()`.
 
 **Avoid multiple contexts:**
 ```javascript
@@ -181,6 +201,30 @@ For more details on optimization, diagnostics, and build Web UI, see:
 
 ## 6. Internationalization (i18n)
 
+### i18n Directory Structure
+```
+i18n/
+├── en/
+│   ├── strings.xml      <!-- Default language -->
+│   └── app.xml          <!-- App name localization (Android) -->
+├── es/
+│   ├── strings.xml
+│   └── app.xml
+└── ja/
+    └── strings.xml
+```
+
+Use ISO 639-1 language codes (en, es, ja) and optionally ISO 3166-1 region codes (en-GB, pt-BR).
+
+### strings.xml Format
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="welcome_message">Welcome to my app</string>
+    <string name="login_button">Log In</string>
+</resources>
+```
+
 ### Using Localized Strings
 
 **Basic usage:**
@@ -188,6 +232,15 @@ For more details on optimization, diagnostics, and build Web UI, see:
 // Two equivalent methods
 const str1 = L('welcome_message');
 const str2 = Ti.Locale.getString('welcome_message');
+
+// With a default fallback
+const withDefault = L('missing_key', 'Default text');
+```
+
+**In Alloy XML views — use `titleid` instead of `title`:**
+```xml
+<Button titleid="login_button" />
+<Label textid="welcome_message" />
 ```
 
 **String formatting:**
@@ -200,6 +253,18 @@ const formatted = String.format(L('format_test'), 'Kevin');
 const formatted = String.format(L('ordered'), 'Jeff', 'Kevin');
 // Result: "Hi Jeff, my name is Kevin"
 ```
+
+### Localizing the App Name
+
+**iOS (SDK 3.2.0+)**: Set `<key>CFBundleDisplayName</key>` in `i18n/LANG/app.xml`
+
+**Android**: Use `<string name="appname">Mi App</string>` in `i18n/LANG/strings.xml`
+
+### Localizing Images and Files
+
+Two approaches:
+1. **Platform folders**: Place localized images in `app/assets/iphone/LANG.lproj/` (iOS) or `app/assets/android/images/` with language qualifiers (Android)
+2. **Code-based**: Load different assets based on `Ti.Locale.currentLanguage`
 
 ### Date and Currency Formatting
 
@@ -215,6 +280,8 @@ const price = String.formatCurrency(1234.56);
 // Decimal
 const amount = String.formatDecimal(1234.56);
 ```
+
+> **Warning (Android)**: `String.formatDate()` may produce incorrect translations or field ordering on some Android versions. Consider using JavaScript's `Date` methods directly as a workaround.
 
 ### Testing Localizations
 

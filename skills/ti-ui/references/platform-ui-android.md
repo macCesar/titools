@@ -82,7 +82,34 @@ activity.onPrepareOptionsMenu = (e) => {
   const menu = e.menu;
   // Modify items based on state
 };
+
+// Force menu recreation (useful when menu items need to change dynamically)
+activity.invalidateOptionsMenu();
 ```
+
+### Action Bar Properties
+
+```javascript
+const activity = Ti.Android.currentActivity;
+const actionBar = activity.actionBar;
+
+// Show the "up" affordance arrow next to the home icon
+actionBar.displayHomeAsUp = true;
+
+// Customize icon and logo
+actionBar.icon = '/images/actionbar_icon.png';
+actionBar.logo = '/images/actionbar_logo.png';
+
+// Handle home icon/logo clicks
+actionBar.onHomeIconItemSelected = () => {
+  // Navigate up or open navigation drawer
+  win.close();
+};
+```
+
+### Refreshing the Options Menu
+
+Call `activity.invalidateOptionsMenu()` to force `onCreateOptionsMenu` to be called again. This is useful when menu items need to change dynamically (e.g., when the user switches tabs or a state change requires different menu options).
 
 ### Action Bar with App Icon
 
@@ -262,6 +289,8 @@ win.addEventListener('open', () => {
 ```
 
 ### Theme Requirements
+
+> **Warning:** SDK 10.0.0+ requires material-based themes. Using non-material themes will cause a runtime error. Do NOT name your custom theme file `theme.xml` — this will overwrite Titanium's built-in theme file. Use descriptive names like `mytheme.xml`.
 
 - SDK 10.0.0+ requires material-based themes (runtime error otherwise)
 - Place custom themes in `platform/android/res/values/`
@@ -574,6 +603,91 @@ Android 7.1+ app shortcuts:
 - `FloatingActionButton` - Circular action button
 
 These can be accessed via Hyperloop or custom modules.
+
+## 11. Toast Notifications
+
+Toast notifications display brief messages at the bottom of the screen that automatically disappear.
+
+```javascript
+const toast = Ti.UI.createNotification({
+  message: 'Item saved successfully',
+  duration: Ti.UI.NOTIFICATION_DURATION_LONG
+});
+toast.show();
+```
+
+### Positioning
+
+Use `offsetX` and `offsetY` to reposition the toast from its default location:
+
+```javascript
+const toast = Ti.UI.createNotification({
+  message: 'Custom position',
+  duration: Ti.UI.NOTIFICATION_DURATION_SHORT,
+  offsetX: 0,
+  offsetY: 100
+});
+toast.show();
+```
+
+**Duration options:**
+- `Ti.UI.NOTIFICATION_DURATION_SHORT` — Short display time
+- `Ti.UI.NOTIFICATION_DURATION_LONG` — Longer display time
+
+## 12. HTML Labels and Linkification
+
+### HTML Content in Labels
+
+Use the `html` property on Labels to render inline HTML content:
+
+```javascript
+const label = Ti.UI.createLabel({
+  html: '<b>Bold</b> and <i>italic</i> text',
+  autoLink: Ti.UI.AUTOLINK_ALL
+});
+```
+
+### Auto-Link Constants
+
+The `autoLink` property automatically detects and linkifies content:
+
+| Constant                         | Description                   |
+| -------------------------------- | ----------------------------- |
+| `Ti.UI.AUTOLINK_ALL`             | Linkify all detected patterns |
+| `Ti.UI.AUTOLINK_EMAIL_ADDRESSES` | Linkify email addresses       |
+| `Ti.UI.AUTOLINK_MAP_ADDRESSES`   | Linkify street addresses      |
+| `Ti.UI.AUTOLINK_PHONE_NUMBERS`   | Linkify phone numbers         |
+| `Ti.UI.AUTOLINK_URLS`            | Linkify web URLs              |
+
+You can combine multiple constants using bitwise OR:
+
+```javascript
+const label = Ti.UI.createLabel({
+  text: 'Call 555-1234 or visit example.com',
+  autoLink: Ti.UI.AUTOLINK_PHONE_NUMBERS | Ti.UI.AUTOLINK_URLS
+});
+```
+
+## 13. Nine-Patch Images
+
+Nine-patch images (`.9.png`) define stretchable regions that adapt to different screen sizes and content.
+
+### Key Points
+
+- Files use the `.9.png` extension
+- Only work as `backgroundImage` (not as regular images)
+- Define stretchable regions so the image scales without distortion
+- Reference **without** the `.9` in code — Android resolves it automatically
+- Create with the Android SDK's `draw9patch` tool
+
+```javascript
+const button = Ti.UI.createButton({
+  title: 'Submit',
+  backgroundImage: '/images/button_bg.png',  // actual file: button_bg.9.png
+  width: Ti.UI.SIZE,
+  height: Ti.UI.SIZE
+});
+```
 
 ## Best Practices
 

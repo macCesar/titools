@@ -12,18 +12,38 @@ element.addEventListener('event_type', (e) => {
 });
 ```
 ...
+### Events That Bubble
+
+All user input events defined by `Ti.UI.View` bubble up the view hierarchy: `click`, `dblclick`, `doubletap`, `longclick`, `longpress`, `pinch`, `singletap`, `swipe`, `touchcancel`, `touchend`, `touchmove`, `touchstart`, `twofingertap`. The **only** `Ti.UI.View` event that does NOT bubble is `postlayout`.
+
+> **Event synonyms**: `singletap` is a synonym for `click`, and `doubletap` is a synonym for `dblclick`.
+
+Events representing view-specific state — such as `focus`, `scroll`, and `postlayout` — do **not** bubble. Only user input events bubble.
+
+### Bubbling Boundaries
+
+Bubbling stops at these special container boundaries: `Window`, `NavigationWindow`, `SplitWindow`, `Tab`, and `TabGroup`.
+
+Note that `TableViewSection` is a logical (non-view) container that still participates in bubbling — events from rows bubble through the section to the `TableView`.
+
+### Native Event Handling Precedence
+
+Event bubbling happens after native event handling. Native UI effects (such as highlighting) have already occurred before any event handler fires.
+
 ### Controlling Event Bubbling
 
 ```javascript
 // Check if event bubbles
 Ti.API.info(`Bubbles: ${e.bubbles}`);
 
-// Stop further bubbling
+// Stop further bubbling — cancelBubble is always false when an event handler is invoked
 e.cancelBubble = true;
 
 // Prevent view from bubbling to parent
 view.bubbleParent = false;
 ```
+
+> **Note**: Multiple events of different types are treated separately. If the user lifting their finger triggers `touchend`, `singletap`, and `click`, setting `cancelBubble` on one does not affect the others.
 
 ### Bubbling Example
 
@@ -218,7 +238,7 @@ win.addEventListener('androidback', (e) => {
 
 ### Note: Window Types
 
-Since 3.2.0, all windows are heavyweight by default and can receive hardware button events.
+Since 3.2.0, all windows are heavyweight by default and you cannot control the type of window created. All windows can receive hardware button events.
 
 ## 9. Android Menu
 
@@ -321,6 +341,16 @@ Some events only work on certain platforms:
 - `pinch` - iOS only
 - `globalPoint` property - iOS only
 - Hardware buttons - Android only
+
+### Shake Event
+
+The `Ti.Gesture` module enables listening for the `shake` event, which fires when the device detects a shake motion:
+
+```javascript
+Ti.Gesture.addEventListener('shake', (e) => {
+  Ti.API.info(`Device shaken at timestamp: ${e.timestamp}`);
+});
+```
 
 ### Event Naming
 

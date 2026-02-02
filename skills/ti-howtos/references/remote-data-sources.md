@@ -160,6 +160,8 @@ if (file.exists()) {
 }
 ```
 
+> **Note**: When uploading from the photo gallery, `event.media` returns a Blob. For file uploads from the filesystem, use `Ti.Filesystem.getFile(path).read()` to get the Blob.
+
 ### File Download (Cross-Platform)
 
 **Option 1**: Write manually to filesystem
@@ -181,6 +183,11 @@ xhr.send();
 ```
 
 **Option 2**: iOS-only automatic saving with `file` property
+
+**iOS-only**: Use `xhr.file` to save downloads directly to a file without buffering in memory:
+```javascript
+xhr.file = Ti.Filesystem.getFile(Ti.Filesystem.applicationDataDirectory, 'download.zip');
+```
 
 ```javascript
 const xhr = Ti.Network.createHTTPClient({
@@ -243,6 +250,8 @@ listenSocket.listen();
 listenSocket.accept(); // Asynchronous, waits for next connection
 ```
 
+> **Platform Note**: On iOS, `Ti.Platform.address` returns the WiFi interface address. On Android, only the loopback address (`127.0.0.1`) is available for listening sockets.
+
 ## 6. Dealing with SOAP Web Services
 
 Although JSON is recommended, you can consume legacy SOAP services using a "low-tech" approach by sending the XML envelope manually.
@@ -281,6 +290,17 @@ const xhr = Ti.Network.createHTTPClient({
     validatesSecureCertificate: true,
     // securityManager allows implementing custom validation logic
     securityManager: mySecurityModule
+});
+```
+
+### SSL Certificate Store (Android)
+```javascript
+const certificateStore = require('ti.certificatestore');
+const httpClient = Ti.Network.createHTTPClient({
+    securityManager: certificateStore.createX509CertificatePinningSecurityManager([{
+        url: 'https://api.example.com',
+        serverCertificate: 'api_cert.der'
+    }])
 });
 ```
 

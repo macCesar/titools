@@ -3,9 +3,8 @@
 ## 1. The WebView Component
 
 ### WKWebView (Titanium SDK 8.0.0+)
-Apple deprecated UIWebView. Titanium now uses WKWebView as the underlying implementation.
 
-**Important**: WKWebView has some behavioral differences compared to the original UIWebView.
+> **Important**: As of Titanium SDK 8.0.0, WKWebView is the only supported web view on iOS. Apple deprecated UIWebView and it has been removed. WKWebView has behavioral differences you must account for.
 
 ### Basic WebView Creation
 
@@ -68,7 +67,10 @@ Local content can include CSS, JS, and images. Paths are relative to Resources (
 - `url` - Local or remote URL
 - `html` - Inline HTML string
 - `scalesPageToFit` - Boolean to scale content to dimensions
-- `setBasicAuthentication(username, password)` - HTTP authentication
+- `setBasicAuthentication(host, username, password)` - HTTP authentication
+  ```javascript
+  webView.setBasicAuthentication('myDomain.com', 'username', 'password');
+  ```
 
 #### Events
 - `beforeload` - Fires before loading begins (`e.url` contains the source)
@@ -141,6 +143,8 @@ button.addEventListener('click', () => {
 ### Remote Web Content Communication
 
 **Critical**: Titanium statements (Ti.API, Ti.App) do NOT work in remote HTML content.
+
+> **Warning**: On iOS 12.0+, calling `evalJS()` synchronously from certain contexts can cause a deadlock. Always prefer the callback-based async version.
 
 #### Using evalJS() for Remote Content
 
@@ -223,6 +227,12 @@ For mobile-optimized content, use the viewport meta tag:
 
 ## 4. WebView Use Cases
 
+### Common WebView Use Cases
+- **HTML forms**: WebViews provide auto-scroll to focused fields, next/previous navigation, and native keyboard integration — often better than building forms in native UI.
+- **Rich text / HTML email**: Render styled content that would be difficult with native labels.
+- **Canvas / graphics**: HTML5 Canvas provides 2D drawing capabilities not available in native Titanium APIs.
+- **OAuth flows**: Load third-party auth pages (Google, Facebook) inside a WebView and intercept redirects.
+
 ### Authentication Flows
 Many OAuth providers use WebView for login (like the Facebook module).
 
@@ -253,13 +263,22 @@ For complex graphics, use HTML5 Canvas:
 </script>
 ```
 
-## 5. WKWebView-Specific Considerations
+## 5. WKWebView Behavioral Differences (iOS)
 
-1. **Cookie Management**: WKWebView has separate cookie storage.
-2. **localStorage/SessionStorage**: Not shared with native app.
-3. **Asynchronous evalJS**: In modern iOS versions, async usage is preferred to avoid blocking.
-
-For detailed WKWebView information, refer to the official migration guide and specific behaviors.
+- **Cookies**: WKWebView uses a separate cookie store from `Ti.Network`. Cookies set via HTTPClient are not automatically shared with WebViews.
+- **localStorage/sessionStorage**: NOT shared between the native app and the WebView. Each WKWebView has its own storage.
+- **evalJS is async**: On iOS 12.0+, synchronous `evalJS()` can cause deadlocks. Use the callback form instead:
+  ```javascript
+  webView.evalJS('document.title', (result) => {
+      Ti.API.info(`Title: ${result}`);
+  });
+  ```
+- **Viewport meta tag required**: WKWebView requires an explicit viewport tag to scale content properly:
+  ```html
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  ```
+- **Custom fonts**: Must use a special `@font-face` path format in WKWebView CSS. Fonts must be in the app bundle and referenced correctly.
+- **Remote HTML limitations**: `Ti.API`, `Ti.App.fireEvent()`, and other Titanium calls do NOT work in remotely-loaded HTML pages. Only local HTML files can communicate with the Titanium runtime.
 
 ## Best Practices Summary
 
