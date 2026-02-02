@@ -419,7 +419,7 @@ All skills now include **automatic project detection** to ensure compatibility:
 
 ```
                     ┌─────────────────┐
-                    │  ti-expert   │
+                    │  ti-expert      │
                     │  (Start Here)   │
                     └────────┬────────┘
                              │

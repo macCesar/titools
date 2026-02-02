@@ -4,11 +4,38 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-# Changelog
+## [2.2.0] - 2026-02-02
 
-All notable changes to titools will be documented in this file.
+### Added
+- **ti-expert skill**: New skill replacing `alloy-expert` with 19 reference files + 1 asset (ControllerAutoCleanup.js) and new `cli-expert.md` reference
+- **ti-pro agent**: New agent replacing `ti-researcher` for deep-dive research with all 7 skills preloaded
+- **purgetss/references/tikit-components.md**: New reference for TiKit component integration
+- **lib/cleanup.js**: New module for legacy artifact cleanup
+- **test/cleanup.test.js, test/cli.test.js**: New test files for cleanup and CLI functionality
+- **AGENTS-VERCEL-RESEARCH.md**: Research document on AGENTS.md effectiveness (based on Vercel's evaluation)
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+### Changed
+- **CLI refactor**: Migrated from `inquirer` to `@inquirer/prompts`, updated all dependencies to latest versions
+- **CLI commands**: Simplified and streamlined `install`, `sync`, `update`, and `remove` commands
+- **install.sh**: Simplified bash installer
+- **Skill renames**: `alloy-expert` → `ti-expert`, agent `ti-researcher` → `ti-pro` throughout all code and documentation
+- **All 7 skills updated**: Expanded and improved reference documentation across all skills
+- **ti-guides**: Removed 3 Alloy-specific references (moved to alloy-guides/alloy-howtos), expanded Hyperloop and CLI reference docs, added new references (android-manifest.md, reserved-words.md, resources.md)
+- **ti-howtos**: Expanded notification services, media APIs, tutorials, and platform deep-dives
+- **ti-ui**: Expanded ListView performance, platform UI (Android/iOS), accessibility, orientation, and layouts docs
+- **alloy-guides**: Updated all reference files with improved examples and clarity
+- **alloy-howtos**: Expanded config_files.md with detailed configuration patterns
+- **EXAMPLE-PROMPTS.md**: Rewrote all prompts as realistic developer requests, fixed incorrect reference file names
+- **README.md**: Documented all CLI options for every command, fixed reference file counts, fixed EXAMPLE-PROMPTS.md path, merged duplicate Troubleshooting sections
+- **CHANGELOG.md**: Fixed duplicate header, renamed all legacy references to current names
+- **package.json**: Bumped to v2.2.0, updated all dependencies
+
+### Removed
+- **alloy-expert skill**: Replaced by `ti-expert` (legacy cleanup on install/update)
+- **ti-researcher agent**: Replaced by `ti-pro` (legacy cleanup on install/update)
+- **AGENTS-TEMPLATE.md**: No longer needed (content generated dynamically by CLI)
+- **scripts/ti-docs-index**: Replaced by CLI commands
+- **ti-guides/references/alloy-cli-advanced.md, alloy-data-mastery.md, alloy-widgets-and-themes.md**: Content moved to appropriate alloy-* skills
 
 ## [2.0.7] - 2026-01-30
 
@@ -24,7 +51,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 - **Block Management**: Updated block detection and removal to be version-agnostic using regex. This prevents duplicating documentation blocks in `AGENTS.md`/`CLAUDE.md`/`GEMINI.md` when the package version changes.
-- **Documentation**: Updated CHANGELOG and AGENTS-TEMPLATE version references to reflect recent releases.
+- **Documentation**: Updated CHANGELOG and AGENTS research references to reflect recent releases.
 
 ## [2.0.4] - 2026-01-30
 
@@ -68,7 +95,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Version detection**: Blocks include package version for tracking
 
 ### Removed
-- **AGENTS-TEMPLATE.md**: No longer needed (content generated dynamically by CLI)
+- **AGENTS-VERCEL-RESEARCH.md**: Informational only (content now generated dynamically by CLI)
 - **ti-docs-index script**: Replaced by `titools agents` command
 
 ### Fixed
@@ -113,11 +140,11 @@ titools agents
 ## [1.6.4] - 2026-01-28
 
 ### Fixed
-- **alloy-expert/references/alloy-structure.md**: Added critical documentation about `lib/` folder flattening
+- **ti-expert/references/alloy-structure.md**: Added critical documentation about `lib/` folder flattening
   - Alloy flattens `app/lib/` to `Resources/iphone/` during build
   - Require statements must omit `lib/` prefix: `require('services/picsum')` not `require('lib/services/picsum')`
   - Prevents "Module not found" errors at runtime
-- **alloy-expert/references/anti-patterns.md**: Added 4 new common pitfalls from real-world testing
+- **ti-expert/references/anti-patterns.md**: Added 4 new common pitfalls from real-world testing
   - #16: Using `lib/` prefix in require statements
   - #17: Wrong Window ID in Controller (`$.index.open()` vs `$.mainWindow.open()`)
   - #18: Using non-existent `Ti.UI.createNotification` API
@@ -133,14 +160,14 @@ titools agents
   - Provides common build command examples
 
 ### Changed
-- **alloy-expert/references/anti-patterns.md**: Updated Quick Reference Table with 3 new entries
+- **ti-expert/references/anti-patterns.md**: Updated Quick Reference Table with 3 new entries
 
 ## [1.6.3] - 2026-01-28
 
 ### Fixed
 - **Auto-triggering**: All 7 skill descriptions now explicitly mention "Titanium" at the beginning
   - Previous descriptions assumed Titanium context but Claude Code needs explicit keywords
-  - alloy-expert: "Architecture..." → "**Titanium** Alloy architecture..."
+  - ti-expert: "Architecture..." → "**Titanium** Alloy architecture..."
   - purgetss: "PurgeTSS utility..." → "**Titanium** PurgeTSS utility..."
   - ti-ui: "UI/UX patterns..." → "**Titanium** SDK UI/UX patterns..."
   - ti-howtos: "Native feature..." → "**Titanium** SDK native feature..."
@@ -168,19 +195,19 @@ titools agents
 ## [1.6.1] - 2026-01-28
 
 ### Changed
-- **ti-researcher agent model**: Upgraded from `haiku` to `sonnet` for improved analysis capabilities
+- **ti-pro agent model**: Upgraded from `haiku` to `sonnet` for improved analysis capabilities
   - Sonnet provides better reasoning for complex codebase analysis tasks
   - Maintains fast performance while delivering more comprehensive research results
-- **ti-researcher agent description**: Removed non-standard `TRIGGER KEYWORDS:` block from frontmatter
+- **ti-pro agent description**: Removed non-standard `TRIGGER KEYWORDS:` block from frontmatter
   - Keywords now integrated naturally in description for better Claude Code compatibility
   - Aligns with official Claude Code subagent format standards
-- **ti-researcher agent description**: Made description more specific to improve auto-triggering
+- **ti-pro agent description**: Made description more specific to improve auto-triggering
   - Replaced generic "analyzing codebases" with specific "analyzing Titanium/Alloy codebases"
   - Added explicit trigger phrases: "Titanium", "Alloy", "mobile app", "architecture review"
   - Fixed issue where agent wasn't being triggered for Alloy projects
 
 ### Added
-- **ti-researcher Usage Examples section**: Documented example prompts for automatic and manual activation
+- **ti-pro Usage Examples section**: Documented example prompts for automatic and manual activation
   - Helps users understand how to trigger the agent effectively
   - Includes both proactive and explicit invocation patterns
   - Added tip about including "Titanium"/"Alloy" keywords in prompts
@@ -270,10 +297,10 @@ titools agents
 ## [1.3.0] - 2025-01-28
 
 ### Added
-- **TRIGGER KEYWORDS** to all 7 skills and ti-researcher agent for improved AI discoverability
+- **TRIGGER KEYWORDS** to all 7 skills and ti-pro agent for improved AI discoverability
   - Explicit trigger phrases in YAML `description` field help match user queries to skills
   - Keywords based on skill-creator best practices for cross-platform compatibility
-- **ti-researcher**: Added trigger keywords for codebase analysis and research scenarios
+- **ti-pro**: Added trigger keywords for codebase analysis and research scenarios
 
 ### Changed
 - **All skills**: Removed HTML comment trigger sections (only YAML description is used for matching)
@@ -287,7 +314,7 @@ titools agents
 ## [1.2.0] - 2025-01-28
 
 ### Added
-- **ti-researcher sub-agent**: Deep-dive research specialist for Claude Code that preloads all 7 titanium-* skills
+- **ti-pro sub-agent**: Deep-dive research specialist for Claude Code that preloads all 7 titanium-* skills
   - Runs in isolated context with read-only tools (Read, Grep, Glob)
   - Ideal for codebase analysis, multi-feature research, and cross-skill queries
   - Uses Haiku model for fast, efficient research
@@ -311,7 +338,7 @@ titools agents
 ## [1.1.0] - 2025-01-27
 
 ### Added
-- **alloy-expert**: "How to create a new Alloy project?" entry to Quick Decision Matrix
+- **ti-expert**: "How to create a new Alloy project?" entry to Quick Decision Matrix
 - **ti-guides**: `--alloy` flag documentation to `ti create` command reference
 - **alloy-guides**: New "Creating a New Application" section recommending `ti create --alloy`
 
@@ -327,7 +354,7 @@ titools agents
 ### Added
 - **Centralized installer architecture**: Skills now install to `~/.agents/skills/` with symlinks to detected AI platforms
 - **Local repository support**: Installer can use local repo when running from source directory
-- **ControllerAutoCleanup.js**: Reusable utility asset for automatic controller memory cleanup in alloy-expert
+- **ControllerAutoCleanup.js**: Reusable utility asset for automatic controller memory cleanup in ti-expert
 - **PurgeTSS class-index.md**: Complete inventory of 21,236 utility classes across 364 prefixes and 416 properties
 - **PurgeTSS dynamic-component-creation.md**: Guide for `$.UI.create()` and `Alloy.createStyle()` runtime usage
 - **ti-howtos automation-fastlane-appium.md**: CI/CD automation with Fastlane and Appium testing
@@ -339,7 +366,7 @@ titools agents
 ### Changed
 - **Enhanced all SKILL.md descriptions**: Emphasized as PRIMARY SOURCE to improve LLM discoverability
 - **Enhanced all SKILL.md files**: Added comprehensive table of contents and structured formatting
-- **Improved alloy-expert**: Expanded ES6+ patterns, security, testing, and performance documentation
+- **Improved ti-expert**: Expanded ES6+ patterns, security, testing, and performance documentation
 - **Enhanced purgetss**: Clarified `app.tss` vs `_app.tss` workflow, strengthened animation and grid docs
 - **Improved ti-guides**: Updated coding best practices and CommonJS patterns
 - **Enhanced ti-howtos**: Restructured location/maps content, improved platform deep-dives
@@ -348,7 +375,7 @@ titools agents
 - **Improved alloy-howtos**: Strengthened CLI, config, and debugging documentation
 
 ### Added
-- **Opinionated disclaimers**: alloy-expert and purgetss now include notes reflecting personal coding preferences
+- **Opinionated disclaimers**: ti-expert and purgetss now include notes reflecting personal coding preferences
 
 ### Removed
 - **Deprecated Claude plugin files**: Removed `.claude-plugin/` directory in favor of standard Agent Skills format
@@ -380,7 +407,7 @@ titools agents
 
 ### Added
 - Initial release with 7 specialized skills:
-  - **alloy-expert**: Architecture + Implementation patterns (merged from alloy-architect and alloy-engineer)
+  - **ti-expert**: Architecture + Implementation patterns (merged from alloy-architect and alloy-engineer)
   - **purgetss**: Utility-first styling toolkit
   - **ti-ui**: UI/UX patterns and platform components
   - **ti-howtos**: Native feature integration
@@ -393,4 +420,4 @@ titools agents
 
 ### Notes
 - Some skills are **opinionated** and **biased** toward PurgeTSS (created by the author)
-- `alloy-expert` and `purgetss` reflect personal coding conventions
+- `ti-expert` and `purgetss` reflect personal coding conventions
