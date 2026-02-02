@@ -25,13 +25,13 @@ npm install -g @maccesar/titools
 This installs the `titools` CLI command globally:
 
 ```bash
-# Install skills and agents
+# Install knowledge packages and platform links
 titools install
 
-# Add AGENTS.md/CLAUDE.md to your project
-titools agents
+# Sync knowledge index files in your project
+titools sync
 
-# Update to the latest version
+# Update knowledge packages and agent (and refresh existing knowledge index files)
 titools update
 
 # Show version
@@ -40,7 +40,7 @@ titools --version
 
 **What it installs:**
 - ✅ All 7 titanium-* skills
-- ✅ ti-researcher agent
+- ✅ ti-pro agent
 - ✅ Automatic documentation generation
 
 **Why use NPM?**
@@ -55,10 +55,119 @@ titools --version
 
 ### titools install
 
-Installs Titanium skills and agents globally:
-- ✅ All 7 titanium-* skills
-- ✅ ti-researcher agent
-- ✅ AGENTS-TEMPLATE.md (template for documentation generation)
+Installs Titanium knowledge packages and platform links.
+
+```bash
+titools install [options]
+```
+
+**Options:**
+| Option          | Description                                                         |
+| --------------- | ------------------------------------------------------------------- |
+| `-l, --local`   | Install skills locally in the current project (`./.agents/skills/`) |
+| `-a, --all`     | Install to all detected platforms without prompting                 |
+| `--path <path>` | Install to a custom path (skips symlink setup)                      |
+
+**What it does:**
+- ✅ Installs all 7 titanium-* skills (global or local)
+- ✅ Installs ti-pro agent for Claude Code
+- ✅ Creates symlinks from platform directories to central skills
+- ✅ Detects installed AI platforms and lets you choose which to link
+- ✅ Cleans up legacy artifacts (`alloy-expert` skill, `ti-researcher` agent)
+- ✅ If run inside a Titanium project, prompts to sync knowledge index files
+
+Run inside a Titanium project to install locally or globally from anywhere.
+
+### Recommended Setup Flow
+
+Start in a Titanium project so the instruction files can be created/updated:
+
+```bash
+# 1) Create a Titanium project
+ti create
+
+# 2) Enter the project
+cd /path/to/your/project
+
+# 3) Install knowledge packages (global or local)
+titools install
+
+# 4) Sync knowledge index files (AGENTS.md/CLAUDE.md/GEMINI.md)
+titools sync
+```
+
+### titools sync
+
+Updates the Titanium knowledge index inside your project's instruction files.
+
+```bash
+titools sync [path] [options]
+```
+
+**Arguments:**
+| Argument | Description                                  |
+| -------- | -------------------------------------------- |
+| `[path]` | Project path (defaults to current directory) |
+
+**Options:**
+| Option          | Description                                |
+| --------------- | ------------------------------------------ |
+| `-f, --force`   | Overwrite existing files without prompting |
+| `-v, --verbose` | Show detailed diagnostics                  |
+
+**What it does:**
+- Detects Titanium SDK version from `tiapp.xml`
+- Prompts you to select which files to sync: `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`
+- Inserts or updates a compressed knowledge index block in selected files
+- Removes knowledge blocks from unselected files
+- Creates files if they don't exist
+- Only works inside a Titanium project (requires `tiapp.xml`)
+
+### titools update
+
+Updates installed knowledge packages and agent to the latest version.
+
+```bash
+titools update [options]
+```
+
+**Options:**
+| Option        | Description                                |
+| ------------- | ------------------------------------------ |
+| `-l, --local` | Update local skills in the current project |
+
+**What it does:**
+- Checks GitHub for the latest version
+- Downloads and installs updated skills and agents
+- Updates platform symlinks for all detected platforms
+- Cleans up legacy artifacts (`alloy-expert` skill, `ti-researcher` agent)
+- Auto-syncs knowledge index files in Titanium projects
+- If only local **or** global skills exist, updates that location automatically
+- If both exist, prompts you to choose
+
+> Note: This updates knowledge packages/agent and refreshes existing knowledge index files, not the CLI binary itself. To update the CLI, use `npm update -g @maccesar/titools`.
+
+### titools remove
+
+Removes knowledge packages, agents, symlinks, and knowledge index blocks.
+
+```bash
+titools remove [options]
+```
+
+**Options:**
+| Option        | Description                                  |
+| ------------- | -------------------------------------------- |
+| `-l, --local` | Remove local skills from the current project |
+
+**What it does:**
+- Detects all installed components (skills, agents, symlinks, knowledge blocks)
+- Prompts you to select what to remove:
+  - ti-pro agent for Claude Code
+  - Knowledge index blocks from instruction files (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`)
+  - Skills from global (`~/.agents/skills/`) or project directory
+  - Platform symlinks from global or project directory
+- Removes both current and legacy artifacts
 
 ### Verify Installation
 
@@ -67,10 +176,10 @@ Installs Titanium skills and agents globally:
 titools --version
 ```
 
-**Check central location:**
+**Check central location (global install):**
 ```bash
 ls ~/.agents/skills/
-# Should show: alloy-expert, purgetss, ti-ui, ti-howtos, ti-guides, alloy-guides, alloy-howtos
+# Should show: ti-expert, purgetss, ti-ui, ti-howtos, ti-guides, alloy-guides, alloy-howtos
 ```
 
 **Claude Code (skills):**
@@ -82,7 +191,7 @@ ls -la ~/.claude/skills/
 **Claude Code (agents):**
 ```bash
 ls -la ~/.claude/agents/
-# Should show: ti-researcher.md
+# Should show: ti-pro.md
 ```
 
 **Gemini CLI:**
@@ -97,69 +206,52 @@ gemini skills list
 
 ---
 
-## AGENTS.md: Boost AI Performance to 100%
+## Knowledge Index: Boost AI Performance
 
-### ⚠️ Claude Code Users: Use CLAUDE.md
+**File selection per assistant:**
+- Claude Code → `CLAUDE.md`
+- Gemini CLI → `GEMINI.md`
+- Codex CLI / others → `AGENTS.md`
 
-**Claude Code specifically looks for `CLAUDE.md`** (not `AGENTS.md`).
-
-The `titools agents` command detects if you use Claude Code and creates `CLAUDE.md` automatically:
+Run this inside your Titanium project:
 
 ```bash
 cd /path/to/your/titanium/project
-titools agents
-
-# The command will ask:
-# Which AI assistant are you using?
-#   1) Claude Code (creates CLAUDE.md)
-#   2) Gemini CLI (creates GEMINI.md)
-#   3) Cursor/Copilot (creates AGENTS.md)
+titools sync
 ```
-
-The content is identical - only the filename differs per AI assistant.
 
 ---
 
-### How AGENTS.md/CLAUDE.md Works
+### How the Knowledge Index Works
 
-| Approach         | Pass Rate |
-| ---------------- | --------- |
-| No documentation | 53%       |
-| Skills only      | 53-79%    |
-| **AGENTS.md**    | **100%**  |
+| Approach            | Reported Pass Rate |
+| ------------------- | ------------------ |
+| No documentation    | 53%                |
+| Skills only         | 53-79%             |
+| **Knowledge index** | **100%**           |
 
-**Why it works:**
+**Why it works (per Vercel’s evaluation):**
 - **No decision point** - Information is always present, no need to invoke skills
 - **Consistent availability** - Available in every turn, not async-loaded
 - **No ordering issues** - No "read docs first vs explore project first" dilemma
 
-### How to Install AGENTS.md
+For details, see `AGENTS-VERCEL-RESEARCH.md`.
 
-After installing titools, add AGENTS.md to your Titanium project:
+### How to Sync the Knowledge Index
 
-```bash
-cd /path/to/your/titanium/project
-
-# If using NPM installation:
-titools agents
-```
-
-The `titools agents` command will:
+The `titools sync` command will:
 1. Verify this is a Titanium project (checks for `tiapp.xml`)
 2. Detect your Titanium SDK version
-3. Create `AGENTS.md`/`CLAUDE.md`/`GEMINI.md` with a compressed 8KB documentation index
+3. Update `AGENTS.md`/`CLAUDE.md`/`GEMINI.md` with a compressed knowledge index
 4. Intelligently merge if file already exists (removes old block, adds new one)
 
-**Priority Logic:** If multiple AI files exist (CLAUDE.md, GEMINI.md, AGENTS.md), the command updates all of them automatically:
-- CLAUDE.md has highest priority (Claude Code users)
-- GEMINI.md has medium priority (Gemini CLI users)
-- AGENTS.md has lowest priority (Cursor/Copilot users)
+**Selection behavior:** The command lets you choose which instruction files to sync and preselects any files that already contain a knowledge block.
 
-### What AGENTS.md Contains
+### What the Knowledge Index Contains
 
 ```
 [Titanium SDK Docs Index]|root: ~/.agents/skills
-|alloy-expert/references:{alloy-structure.md,anti-patterns.md,...}
+|ti-expert/references:{alloy-structure.md,anti-patterns.md,...}
 |purgetss/references:{animation-system.md,class-index.md,...}
 |ti-ui/references:{layouts-and-positioning.md,listviews-and-performance.md,...}
 ...
@@ -169,11 +261,11 @@ The index points to all reference documentation, so your AI assistant can quickl
 
 ### Version Notice
 
-AGENTS.md is based on the **latest Titanium SDK documentation**. If your project uses an older version, the command will detect and warn you about potential API differences.
+The knowledge index is based on the **latest Titanium SDK documentation**. If your project uses an older version, the command will detect and warn you about potential API differences.
 
 ---
 
-## How to Use AGENTS.md/CLAUDE.md
+## How to Use the Knowledge Index
 
 Once installed, the AI assistant automatically reads the documentation index in every conversation. Just ask natural questions about Titanium development:
 
@@ -182,46 +274,46 @@ Once installed, the AI assistant automatically reads the documentation index in 
 **General Architecture:**
 ```
 "How should I structure a new Alloy app with authentication?"
-"What's the best pattern for navigation between screens?"
+"What’s a solid pattern for navigation between screens?"
 ```
 
 **PurgeTSS Styling:**
 ```
-"Create a product card with PurgeTSS: image, title, price, and buy button"
-"How do I use the 12-column grid system in PurgeTSS?"
-"Why does my build fail with platform-specific properties?"
+"Can you create a product card with PurgeTSS (image, title, price, buy button)?"
+"How do I use the 12‑column grid system in PurgeTSS?"
+"Explain why my build fails with platform‑specific properties."
 ```
 
 **UI Components:**
 ```
-"Create a ListView with custom templates for performance"
-"Implement pull-to-refresh on a ScrollView"
+"How do I build a high‑performance ListView with custom templates?"
+"Implement pull‑to‑refresh on a ScrollView."
 ```
 
 **Native Features:**
 ```
-"Implement push notifications for iOS and Android"
-"How do I handle GPS location in the background?"
+"How do I implement push notifications for iOS and Android?"
+"Handle GPS location in the background."
 ```
 
 **Debugging:**
 ```
 "Why is my ListView scrolling poorly?"
-"I'm getting 'Alloy is not defined' in my lib file. How do I fix it?"
+"Fix “Alloy is not defined” in my lib file."
 ```
 
 ---
 
-## How Skills Work with AGENTS.md
+## How Skills Work with the Knowledge Index
 
-**AGENTS.md** provides always-available context (the documentation index).
+The knowledge index provides always-available context (the documentation index).
 **Skills** provide specialized, on-demand expertise.
 
 Together they work seamlessly:
 
-| Your Question                   | AGENTS.md Provides              | Skills Activate               |
+| Your Question                   | Knowledge Index Provides        | Skills Activate               |
 | ------------------------------- | ------------------------------- | ----------------------------- |
-| "Create a login screen"         | Context about project structure | `alloy-expert`, `purgetss`    |
+| "Create a login screen"         | Context about project structure | `ti-expert`, `ti-ui`          |
 | "Optimize ListView performance" | Points to docs location         | `ti-ui` reads specific files  |
 | "Implement push notifications"  | API reference paths             | `ti-howtos` provides workflow |
 
@@ -233,7 +325,7 @@ Together they work seamlessly:
 
 | Skill            | Purpose                       | Best For                                |
 | ---------------- | ----------------------------- | --------------------------------------- |
-| **alloy-expert** | Architecture + Implementation | Starting point for most tasks           |
+| **ti-expert**    | Architecture + Implementation | Starting point for most tasks           |
 | **purgetss**     | Utility-first styling         | UI styling and animations               |
 | **ti-ui**        | UI/UX patterns                | Complex layouts, ListViews, platform UI |
 | **ti-howtos**    | Native feature integration    | Location, Push, Media, Platform APIs    |
@@ -241,7 +333,7 @@ Together they work seamlessly:
 | **alloy-guides** | Alloy MVC reference           | Models, Views, Controllers, Widgets     |
 | **alloy-howtos** | Alloy CLI & debugging         | Project setup, CLI commands, errors     |
 
-> **Note:** `ti-guides`, `ti-howtos`, `ti-ui`, `alloy-guides`, and `alloy-howtos` are based on **official Titanium SDK and Alloy documentation**. `alloy-expert` and `purgetss` are opinionated and reflect personal coding conventions (biased toward PurgeTSS).
+> **Note:** `ti-guides`, `ti-howtos`, `ti-ui`, `alloy-guides`, and `alloy-howtos` are based on **official Titanium SDK and Alloy documentation**. `ti-expert` and `purgetss` are opinionated and reflect personal coding conventions (biased toward PurgeTSS).
 
 ---
 
@@ -249,34 +341,34 @@ Together they work seamlessly:
 
 In addition to skills, this repository includes **sub-agents** for Claude Code. Sub-agents run in isolated contexts and are ideal for research tasks that produce verbose output.
 
-### ti-researcher
+### ti-pro
 
 **Deep-dive research specialist that preloads all 7 titanium-\* skills.**
 
 | Aspect               | Details                                      |
 | -------------------- | -------------------------------------------- |
-| **Location**         | `~/.claude/agents/ti-researcher.md`          |
+| **Location**         | `~/.claude/agents/ti-pro.md`                 |
 | **Model**            | Sonnet (comprehensive analysis)              |
 | **Tools**            | Read-only (Read, Grep, Glob)                 |
 | **Preloaded Skills** | All 7 titanium-\* skills injected at startup |
 
 **When to use the agent vs skills:**
 
-| Use Case                     | Use This                           | Why                                                  |
-| ---------------------------- | ---------------------------------- | ---------------------------------------------------- |
-| Quick inline reference       | `/alloy-expert`, `/purgetss`, etc. | Runs in main conversation, interactive               |
-| Analyzing an entire codebase | `ti-researcher` agent              | Isolates verbose output, cross-references all skills |
-| Multi-feature research       | `ti-researcher` agent              | Preloads all skills for comprehensive answers        |
-| Step-by-step implementation  | Skills directly                    | Task-oriented guidance                               |
-| Architecture review          | `ti-researcher` agent              | Read-only analysis across all documentation          |
+| Use Case                     | Use This                        | Why                                                  |
+| ---------------------------- | ------------------------------- | ---------------------------------------------------- |
+| Quick inline reference       | `/ti-expert`, `/purgetss`, etc. | Runs in main conversation, interactive               |
+| Analyzing an entire codebase | `ti-pro` agent                  | Isolates verbose output, cross-references all skills |
+| Multi-feature research       | `ti-pro` agent                  | Preloads all skills for comprehensive answers        |
+| Step-by-step implementation  | Skills directly                 | Task-oriented guidance                               |
+| Architecture review          | `ti-pro` agent                  | Read-only analysis across all documentation          |
 
 **Example prompts for the agent:**
 
 ```
-"Use the ti-researcher agent to analyze this Alloy codebase's architecture"
-"Research how to implement location + push + background sync together in Titanium"
-"Compare ListView vs TableView for my use case with PurgeTSS styling"
-"Review this Titanium mobile app and identify anti-patterns"
+"Can you use the ti-pro agent to analyze this Alloy codebase’s architecture?"
+"Can you research how to combine location, push, and background sync in Titanium?"
+"Can you compare ListView vs TableView performance for my use case?"
+"Review this Titanium mobile app and identify anti‑patterns."
 ```
 
 > **Tip**: For automatic activation, include words like "Titanium", "Alloy", or "mobile app" in your prompt to ensure the specialized agent is used instead of generic code analysis.
@@ -292,11 +384,11 @@ In addition to skills, this repository includes **sub-agents** for Claude Code. 
 Skills are **automatically activated** based on your questions. Just ask naturally:
 
 ```
-"Create a login screen with email validation and animations"
+"Can you create a login screen with email validation and animations?"
 ```
 
 The AI will automatically use:
-- `alloy-expert` → Architecture and controller structure
+- `ti-expert` → Architecture and controller structure
 - `purgetss` → Styling classes and animations (if PurgeTSS detected)
 - `ti-howtos` → Secure token storage
 
@@ -309,7 +401,7 @@ All skills now include **automatic project detection** to ensure compatibility:
 | Skill            | What It Detects       | How It Works                                                  |
 | ---------------- | --------------------- | ------------------------------------------------------------- |
 | **purgetss**     | PurgeTSS installation | Checks for `purgetss/` folder, `config.cjs`, `utilities.tss`  |
-| **alloy-expert** | Alloy vs Classic      | Checks for `app/` (Alloy) vs `Resources/` (Classic) structure |
+| **ti-expert**    | Alloy vs Classic      | Checks for `app/` (Alloy) vs `Resources/` (Classic) structure |
 | **alloy-guides** | Alloy projects        | Checks for `app/views/`, `app/controllers/`                   |
 | **alloy-howtos** | Alloy projects        | Checks for `alloy.jmk`, `config.json`                         |
 | **ti-ui**        | Titanium projects     | Checks for `tiapp.xml` (both Alloy & Classic)                 |
@@ -323,11 +415,11 @@ All skills now include **automatic project detection** to ensure compatibility:
 
 ### Skill Hierarchy
 
-`alloy-expert` acts as the **orchestrator**, delegating to specialized skills when needed:
+`ti-expert` acts as the **orchestrator**, delegating to specialized skills when needed:
 
 ```
                     ┌─────────────────┐
-                    │  alloy-expert   │
+                    │  ti-expert   │
                     │  (Start Here)   │
                     └────────┬────────┘
                              │
@@ -354,7 +446,7 @@ All skills now include **automatic project detection** to ensure compatibility:
 
 ## Skill Details
 
-### alloy-expert
+### ti-expert
 
 **The primary skill for Titanium Alloy development.** Start here for most tasks.
 
@@ -371,16 +463,16 @@ All skills now include **automatic project detection** to ensure compatibility:
 **Example prompts:**
 ```
 "How should I structure a new Titanium Alloy app with authentication?"
-"Create a user service that fetches data from an API"
-"What's the best pattern for navigation between screens?"
-"How do I prevent memory leaks in my controllers?"
-"Migrate this classic Titanium code to modern Alloy patterns"
+"Create a user service that fetches data from an API."
+"What’s the best pattern for navigation between screens?"
+"Prevent memory leaks in my controllers."
+"Migrate classic Titanium code to modern Alloy patterns."
+"What’s a clean way to organize services in an Alloy app?"
 ```
 
 **Key features:**
-- PurgeTSS rules built-in (correct classes)
 - Quick decision matrix for common questions
-- 13 reference guides for deep dives
+- 18 reference guides for deep dives
 - Delegates to specialized skills when needed
 
 ---
@@ -400,12 +492,12 @@ All skills now include **automatic project detection** to ensure compatibility:
 
 **Example prompts:**
 ```
-"Set up PurgeTSS in my existing Alloy project"
-"Create a responsive 12-column grid layout"
-"Add a fade-in animation when my view appears"
-"Configure custom colors in config.cjs"
+"How do I set up PurgeTSS in my existing Alloy project?"
+"Create a responsive 12‑column grid layout."
+"Add a fade‑in animation when my view appears."
+"How do I configure custom colors in config.cjs?"
 "How do I use Font Awesome 7 icons?"
-"Style this button differently on iOS vs Android"
+"Style this button differently on iOS vs Android."
 ```
 
 **Critical rules:**
@@ -434,12 +526,12 @@ All skills now include **automatic project detection** to ensure compatibility:
 
 **Example prompts:**
 ```
-"Create a high-performance ListView with custom templates"
-"Handle swipe gestures on table rows"
-"Set up app icons for all iOS and Android densities"
-"Implement pull-to-refresh on a ScrollView"
-"Make my app accessible for VoiceOver users"
-"Configure the Android Action Bar with custom menu items"
+"How do I create a high‑performance ListView with custom templates?"
+"Handle swipe gestures on table rows."
+"Set up app icons for all iOS and Android densities."
+"Implement pull‑to‑refresh on a ScrollView."
+"How do I make my app accessible for VoiceOver users?"
+"How do I configure the Android Action Bar with custom menu items?"
 ```
 
 **Key rules:**
@@ -470,13 +562,14 @@ All skills now include **automatic project detection** to ensure compatibility:
 
 **Example prompts:**
 ```
-"Implement battery-efficient GPS tracking"
-"Set up push notifications for iOS and Android"
-"Capture and resize photos from the camera"
-"Download files with progress indicator"
-"Store sensitive data in iOS Keychain"
-"Create an Android background service"
-"Integrate with Apple Watch using WatchKit"
+"How do I implement battery‑efficient GPS tracking?"
+"How do I set up push notifications for iOS and Android?"
+"How do I capture and resize photos from the camera?"
+"Download files with a progress indicator."
+"How should I store sensitive data in iOS Keychain?"
+"Create an Android background service."
+"Integrate with Apple Watch using WatchKit."
+"Handle background location updates on iOS."
 ```
 
 **Key rules:**
@@ -503,12 +596,12 @@ All skills now include **automatic project detection** to ensure compatibility:
 
 **Example prompts:**
 ```
-"Access native iOS APIs using Hyperloop"
-"Configure tiapp.xml for production build"
-"Prepare my app for Google Play submission"
-"Create a native Android module"
-"Optimize bridge crossings for better performance"
-"What are the reserved words I should avoid?"
+"How do I access native iOS APIs using Hyperloop?"
+"Configure tiapp.xml for a production build."
+"What do I need for Google Play submission?"
+"How do I create a native Android module?"
+"Optimize bridge crossings for better performance."
+"List reserved words I should avoid."
 ```
 
 ---
@@ -529,11 +622,11 @@ All skills now include **automatic project detection** to ensure compatibility:
 
 **Example prompts:**
 ```
-"Explain how Alloy data binding works"
-"Create a model with SQLite adapter"
-"Bind a collection to a TableView"
-"Build a reusable widget"
-"What's the TSS syntax for platform-specific styles?"
+"Explain how Alloy data binding works."
+"How do I create a model with the SQLite adapter?"
+"Bind a collection to a TableView."
+"How do I build a reusable widget?"
+"Show the TSS syntax for platform‑specific styles."
 "How does the Alloy compilation process work?"
 ```
 
@@ -554,12 +647,12 @@ All skills now include **automatic project detection** to ensure compatibility:
 
 **Example prompts:**
 ```
-"Generate a new model with CLI"
-"Configure alloy.jmk build hooks"
-"Fix 'No app.js found' error"
-"Create conditional views based on user state"
-"Build a custom XML tag without widgets"
-"Set up Backbone.Events for global communication"
+"How do I generate a new model with the CLI?"
+"Configure alloy.jmk build hooks."
+"How do I fix “No app.js found”?"
+"Create conditional views based on user state."
+"How do I build a custom XML tag without widgets?"
+"Set up Backbone.Events for global communication."
 ```
 
 **Key rules:**
@@ -574,12 +667,12 @@ All skills now include **automatic project detection** to ensure compatibility:
 ### Starting a New Project
 ```
 "I'm starting a new Titanium Alloy app for a food delivery service.
-Help me set up the project structure."
+Can you help me set up the project structure?"
 ```
 
 ### UI Development
 ```
-"Create a product listing screen with:
+"Can you create a product listing screen with:
 - Pull-to-refresh
 - Infinite scroll pagination
 - Image caching
@@ -588,7 +681,7 @@ Help me set up the project structure."
 
 ### API Integration
 ```
-"Build a complete authentication flow:
+"Can you build a complete authentication flow with:
 - Login/Register screens
 - JWT token management
 - Secure storage
@@ -597,33 +690,31 @@ Help me set up the project structure."
 
 ### Performance Optimization
 ```
-"My app is slow. The ListView scrolls poorly and
-the app uses too much memory. Help me optimize it."
+"My app is slow — the ListView scrolls poorly and memory usage is high. How do I optimize it?"
 ```
 
 ### Migration
 ```
-"I have a legacy Titanium classic app from 2015.
-Help me migrate it to modern Alloy with PurgeTSS."
+"I have a legacy Titanium classic app from 2015. Can you help me migrate it to modern Alloy?"
 ```
 
 ### Platform-Specific Features
 ```
-"Implement Apple Sign-In for iOS and Google Sign-In for Android"
+"How do I implement Apple Sign‑In for iOS and Google Sign‑In for Android?"
 ```
 
 ### Debugging
 ```
-"I'm getting 'Alloy is not defined' in my lib file. How do I fix it?"
+"How do I fix “Alloy is not defined” in my lib file?"
 ```
 
 ### Codebase Analysis (Using Agent)
 ```
-"Use the ti-researcher agent to analyze this project:
-- Review the overall architecture
-- Identify memory leak patterns
-- Check for PurgeTSS anti-patterns
-- Suggest improvements"
+"Use the ti-pro agent to analyze this project and:
+- review the overall architecture
+- identify memory leak patterns
+- check for common anti‑patterns
+- suggest improvements"
 ```
 
 ---
@@ -632,10 +723,10 @@ Help me migrate it to modern Alloy with PurgeTSS."
 
 ### 1. Be Specific
 Instead of: "Make a list"
-Try: "Create a ListView with user avatars, names, and swipe actions"
+Try: "Can you create a ListView with user avatars, names, and swipe actions?"
 
 ### 2. Provide Context
-Instead of: "Fix the error"
+Instead of: "How do I fix this error?"
 Try: "I'm getting this error when compiling: [error message]. Here's my code: [code]"
 
 ### 3. Ask for Architecture First
@@ -649,7 +740,7 @@ Then follow up with implementation details.
 ### 5. Reference Existing Code
 "Here's my current controller. How can I improve memory management?"
 
-> **More examples:** See [Example Prompts](docs/EXAMPLE-PROMPTS.md) for detailed prompts that test each skill's capabilities.
+> **More examples:** See [Example Prompts](EXAMPLE-PROMPTS.md) for detailed prompts that test each skill's capabilities.
 
 ---
 
@@ -657,11 +748,11 @@ Then follow up with implementation details.
 
 | Skill        | SKILL.md                      | References                                            |
 | ------------ | ----------------------------- | ----------------------------------------------------- |
-| alloy-expert | Architecture + Implementation | 14 files (patterns, testing, security, assets, etc.)  |
-| purgetss     | Setup + Critical Rules        | 17 files (grid, animations, icons, class-index, etc.) |
-| ti-ui        | UI Rules + Platform Diffs     | 13 files (layouts, lists, gestures, etc.)             |
-| ti-howtos    | Integration Workflow          | 12 files (location, media, maps, automation, etc.)    |
-| ti-guides    | Core Workflow                 | 10 files (hyperloop, distribution, etc.)              |
+| ti-expert    | Architecture + Implementation | 19 refs + 1 asset (patterns, testing, security, etc.) |
+| purgetss     | Setup + Critical Rules        | 21 files (grid, animations, icons, class-index, etc.) |
+| ti-ui        | UI Rules + Platform Diffs     | 14 files (layouts, lists, gestures, etc.)             |
+| ti-howtos    | Integration Workflow          | 18 files (location, media, maps, automation, etc.)    |
+| ti-guides    | Core Workflow                 | 14 files (hyperloop, distribution, etc.)              |
 | alloy-guides | MVC Quick Start               | 10 files (models, views, widgets, etc.)               |
 | alloy-howtos | Best Practices                | 6 files (CLI, config, debugging, etc.)                |
 
@@ -703,12 +794,8 @@ If the AI suggests incorrect patterns (like flexbox):
 Ask the AI to:
 ```
 "Show me the reference documentation for ListView performance"
-"What does the alloy-expert skill say about memory cleanup?"
+"What does the ti-expert skill say about memory cleanup?"
 ```
-
----
-
-## Troubleshooting
 
 ### titools command not found?
 
@@ -721,16 +808,16 @@ npm list -g @maccesar/titools
 npm install -g @maccesar/titools
 ```
 
-### AGENTS.md not working?
+### Knowledge index not working?
 
-If your AI doesn't use the AGENTS.md information:
-1. Verify AGENTS.md/CLAUDE.md exists in your project root
-2. Check that your AI supports these files (Claude Code does)
+If your AI doesn't use the knowledge index information:
+1. Verify AGENTS.md/CLAUDE.md/GEMINI.md exists in your project root
+2. Check that your AI supports these files
 3. Try explicitly referencing: "Check the AGENTS.md documentation"
 
 ### Version mismatch warning?
 
-AGENTS.md is based on the latest documentation. Be cautious when using newer APIs in older projects.
+The knowledge index is based on the latest documentation. Be cautious when using newer APIs in older projects.
 
 ---
 
@@ -740,17 +827,11 @@ AGENTS.md is based on the latest documentation. Be cautious when using newer API
 # Remove the CLI
 npm uninstall -g @maccesar/titools
 
-# Remove skills and agents
-titools uninstall
+# Remove knowledge packages and agent
+titools remove
 ```
 
-**Note:** AGENTS.md/CLAUDE.md/GEMINI.md files in your projects are NOT removed. To remove them manually:
-
-```bash
-rm -f /path/to/your/project/AGENTS.md
-rm -f /path/to/your/project/CLAUDE.md
-rm -f /path/to/your/project/GEMINI.md
-```
+**Note:** `titools remove` can remove the knowledge index blocks from your project files, but it does not delete the files themselves.
 
 
 ---
