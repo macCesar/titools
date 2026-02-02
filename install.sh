@@ -8,8 +8,10 @@
 set -e
 
 REPO_URL="https://github.com/macCesar/titanium-sdk-skills"
-SKILLS=(alloy-expert purgetss ti-ui ti-howtos ti-guides alloy-guides alloy-howtos)
-AGENTS=(ti-researcher)
+SKILLS=(ti-expert purgetss ti-ui ti-howtos ti-guides alloy-guides alloy-howtos)
+AGENTS=(ti-pro)
+LEGACY_AGENTS=(ti-researcher)
+LEGACY_SKILLS=(alloy-expert)
 AGENTS_DIR="$HOME/.agents"
 AGENTS_SKILLS_DIR="$AGENTS_DIR/skills"
 CLAUDE_AGENTS_DIR="$HOME/.claude/agents"
@@ -117,6 +119,13 @@ install_to_agents() {
         fi
     done
 
+    for legacy_skill in "${LEGACY_SKILLS[@]}"; do
+        local legacy_dest="$AGENTS_SKILLS_DIR/$legacy_skill"
+        if [ -e "$legacy_dest" ] || [ -L "$legacy_dest" ]; then
+            rm -rf "$legacy_dest"
+        fi
+    done
+
     echo -e "${GREEN}✓${NC}"
 }
 
@@ -146,96 +155,16 @@ install_agents() {
         fi
     done
 
+    for legacy_agent in "${LEGACY_AGENTS[@]}"; do
+        local legacy_dest="$CLAUDE_AGENTS_DIR/$legacy_agent.md"
+        if [ -e "$legacy_dest" ] || [ -L "$legacy_dest" ]; then
+            rm -f "$legacy_dest"
+        fi
+    done
+
     echo -e "${GREEN}✓${NC}"
 }
 
-# Install AGENTS-TEMPLATE.md
-install_agents_template() {
-    local repo_dir="$1"
-
-    echo -ne "${CYAN}→${NC} Installing AGENTS-TEMPLATE.md... "
-    mkdir -p "$AGENTS_DIR"
-
-    local template_src="$repo_dir/AGENTS-TEMPLATE.md"
-    local template_dest="$AGENTS_DIR/AGENTS-TEMPLATE.md"
-
-    # Copy template
-    if [ -f "$template_src" ]; then
-        cp "$template_src" "$template_dest"
-        echo -e "${GREEN}✓${NC}"
-    else
-        # Download from GitHub if not in local repo
-        curl -fsSL -o "$template_dest" \
-            "https://raw.githubusercontent.com/macCesar/titanium-sdk-skills/main/AGENTS-TEMPLATE.md"
-        echo -e "${GREEN}✓${NC}"
-    fi
-}
-
-# Install ti-docs-index command
-install_ti_docs_index() {
-    local repo_dir="$1"
-
-    echo -ne "${CYAN}→${NC} Installing ti-docs-index command... "
-
-    local script_src="$repo_dir/scripts/ti-docs-index"
-    local script_dest
-
-    # Detect OS and choose installation path
-    if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
-        # Windows (Git Bash, MSYS2)
-        mkdir -p "$HOME/bin" 2>/dev/null
-        script_dest="$HOME/bin/ti-docs-index"
-    else
-        # Unix/macOS
-        script_dest="/usr/local/bin/ti-docs-index"
-    fi
-
-    # Check if script exists in local repo
-    if [ -f "$script_src" ]; then
-        if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
-            # Windows: no sudo needed
-            cp "$script_src" "$script_dest" 2>/dev/null || {
-                echo -e "${YELLOW}⚠${NC} (failed)"
-                return
-            }
-        else
-            # Unix/macOS: try with sudo, fallback without
-            sudo cp "$script_src" "$script_dest" 2>/dev/null || {
-                cp "$script_src" "$script_dest" 2>/dev/null || {
-                    echo -e "${YELLOW}⚠${NC} (requires sudo, skipping)"
-                    return
-                }
-            }
-        fi
-    else
-        # Download from GitHub
-        if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
-            curl -fsSL -o "$script_dest" \
-                "https://raw.githubusercontent.com/macCesar/titanium-sdk-skills/main/scripts/ti-docs-index" 2>/dev/null || {
-                echo -e "${YELLOW}⚠${NC} (failed to download)"
-                return
-            }
-        else
-            sudo curl -fsSL -o "$script_dest" \
-                "https://raw.githubusercontent.com/macCesar/titanium-sdk-skills/main/scripts/ti-docs-index" 2>/dev/null || {
-                curl -fsSL -o "$script_dest" \
-                    "https://raw.githubusercontent.com/macCesar/titanium-sdk-skills/main/scripts/ti-docs-index" 2>/dev/null || {
-                    echo -e "${YELLOW}⚠${NC} (failed to download)"
-                    return
-                }
-            }
-        fi
-    fi
-
-    # Make executable
-    if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
-        chmod +x "$script_dest" 2>/dev/null
-    else
-        sudo chmod +x "$script_dest" 2>/dev/null || chmod +x "$script_dest" 2>/dev/null
-    fi
-
-    echo -e "${GREEN}✓${NC} (${script_dest})"
-}
 
 # Create symlinks for detected platforms
 create_symlinks() {
@@ -263,6 +192,13 @@ create_symlinks() {
             fi
         done
 
+        for legacy_skill in "${LEGACY_SKILLS[@]}"; do
+            local legacy_link="$platform_path/$legacy_skill"
+            if [ -e "$legacy_link" ] || [ -L "$legacy_link" ]; then
+                rm -rf "$legacy_link"
+            fi
+        done
+
         echo -e "${GREEN}✓${NC}"
     done
 }
@@ -276,8 +212,6 @@ if [ -n "$CUSTOM_PATH" ]; then
     echo -e "${GREEN}✓${NC}"
     install_to_agents "$TMP_DIR/repo"
     install_agents "$TMP_DIR/repo"
-    install_agents_template "$TMP_DIR/repo"
-    install_ti_docs_index "$TMP_DIR/repo"
     SKILLS_LIST=$(printf '%s, ' "${SKILLS[@]}" | sed 's/, $//')
     echo -e "\n${GREEN}✓${NC} Skills: $SKILLS_LIST"
     if [ -d "$HOME/.claude" ] && [ ${#AGENTS[@]} -gt 0 ]; then
@@ -286,8 +220,7 @@ if [ -n "$CUSTOM_PATH" ]; then
     fi
     echo -e "${GREEN}✓${NC} AGENTS.md support installed"
     echo ""
-    echo -e "${BLUE}▸${NC} Add AGENTS.md to your project: ${CYAN}ti-docs-index${NC}"
-    echo -e "${BLUE}▸${NC} Improves AI: ${RED}53%${NC} → ${GREEN}100%${NC}"
+    echo -e "${BLUE}▸${NC} Add AGENTS.md to your project: ${CYAN}titools agents${NC}"
     if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
         echo -e "${YELLOW}▸${NC} Windows: Ensure ~/bin is in your PATH"
     fi
@@ -377,11 +310,6 @@ install_to_agents "$REPO_DIR"
 # Install agents to Claude Code
 install_agents "$REPO_DIR"
 
-# Install AGENTS-TEMPLATE.md
-install_agents_template "$REPO_DIR"
-
-# Install ti-docs-index command
-install_ti_docs_index "$REPO_DIR"
 
 # Create symlinks for selected platforms
 create_symlinks "${SELECTED_INDICES[@]}"
@@ -394,8 +322,7 @@ if [ -d "$HOME/.claude" ] && [ ${#AGENTS[@]} -gt 0 ]; then
 fi
 echo -e "${GREEN}✓${NC} AGENTS.md support installed"
 echo ""
-echo -e "${BLUE}▸${NC} Add AGENTS.md to your project: ${CYAN}ti-docs-index${NC}"
-echo -e "${BLUE}▸${NC} Improves AI: ${RED}53%${NC} → ${GREEN}100%${NC}"
+echo -e "${BLUE}▸${NC} Add AGENTS.md to your project: ${CYAN}titools agents${NC}"
 if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
     echo -e "${YELLOW}▸${NC} Windows: Ensure ~/bin is in your PATH"
 fi
