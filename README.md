@@ -1,6 +1,48 @@
 # titools - Titanium CLI for AI Coding Assistants
 
-A comprehensive CLI that transforms your coding assistant into a **Titanium SDK expert**. Install skills, agents, and documentation for Titanium SDK, Alloy MVC, and PurgeTSS development.
+A CLI that gives your AI coding assistant real Titanium SDK knowledge. One command installs 7 specialized skills, a research agent, and 100+ reference files for Titanium SDK, Alloy MVC, and PurgeTSS.
+
+Without `titools`, AI assistants fall back on general training data, often outdated or just wrong when it comes to Titanium-specific patterns. With `titools`, your assistant gets actual framework knowledge: Alloy architecture, memory cleanup patterns, PurgeTSS utility classes, platform-specific APIs. Based on [Vercel's research on AGENTS.md](https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals), they found that the knowledge index approach achieved a 100% pass rate, compared to 53–79% using skills alone.
+
+`titools` handles the rest: install skills globally or per-project, sync a compressed knowledge index into your project files, update documentation, and keep Claude Code, Gemini CLI, and Codex CLI in sync. Building a new app, chasing a performance bug, fixing a broken build, migrating a legacy project, the right Titanium knowledge is there in every conversation.
+
+---
+
+## Quick Setup
+
+```bash
+# 1) Install the CLI
+npm install -g @maccesar/titools
+
+# 2) Install skills globally
+titools install
+
+# 3) Go to your Titanium project
+cd /path/to/your/project
+
+# 4) Sync the knowledge index into your project files
+titools sync
+
+# 5) Start your AI coding assistant
+claude   # or gemini, or codex
+
+# 6) Ask away!
+# "My ListView with 500 items scrolls like garbage on Android. How do I fix it?"
+# "How should I structure a new app with login, signup, and a dashboard?"
+```
+
+**What gets installed:**
+- ✅ All 7 titanium-* skills to `~/.agents/skills/`
+- ✅ ti-pro agent for Claude Code
+- ✅ Platform symlinks (Claude Code, Gemini CLI, Codex CLI)
+- ✅ Knowledge index in your project's `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`
+
+**Why NPM?**
+- ✅ Cross-platform (macOS, Linux, Windows)
+- ✅ No sudo required
+- ✅ Simple updates with `titools update`
+
+---
 
 ## Compatible Platforms
 
@@ -14,216 +56,11 @@ All three platforms use the same **Agent Skills open standard**: a `SKILL.md` fi
 
 ---
 
-## Quick Install
-
-### NPM Package (Recommended)
-
-```bash
-npm install -g @maccesar/titools
-```
-
-This installs the `titools` CLI command globally:
-
-```bash
-# Install knowledge packages and platform links
-titools install
-
-# Sync knowledge index files in your project
-titools sync
-
-# Update knowledge packages and agent (and refresh existing knowledge index files)
-titools update
-
-# Show version
-titools --version
-```
-
-**What it installs:**
-- ✅ All 7 titanium-* skills
-- ✅ ti-pro agent
-- ✅ Automatic documentation generation
-
-**Why use NPM?**
-- ✅ Cross-platform support (macOS, Linux, Windows)
-- ✅ No sudo required
-- ✅ Easy version management
-- ✅ Simple updates with `titools update`
-
----
-
-## Usage
-
-### titools install
-
-Installs Titanium knowledge packages and platform links.
-
-```bash
-titools install [options]
-```
-
-**Options:**
-| Option          | Description                                                         |
-| --------------- | ------------------------------------------------------------------- |
-| `-l, --local`   | Install skills locally in the current project (`./.agents/skills/`) |
-| `-a, --all`     | Install to all detected platforms without prompting                 |
-| `--path <path>` | Install to a custom path (skips symlink setup)                      |
-
-**What it does:**
-- ✅ Installs all 7 titanium-* skills (global or local)
-- ✅ Installs ti-pro agent for Claude Code
-- ✅ Creates symlinks from platform directories to central skills
-- ✅ Detects installed AI platforms and lets you choose which to link
-- ✅ Cleans up legacy artifacts (`alloy-expert` skill, `ti-researcher` agent)
-- ✅ If run inside a Titanium project, prompts to sync knowledge index files
- - ✅ Warns Gemini users if local skills override existing global Gemini skills
-
-Run inside a Titanium project to install locally or globally from anywhere.
-
-### Recommended Setup Flow
-
-Start in a Titanium project so the instruction files can be created/updated:
-
-```bash
-# 1) Create a Titanium project
-ti create
-
-# 2) Enter the project
-cd /path/to/your/project
-
-# 3) Install knowledge packages (global or local)
-titools install
-
-# 4) Sync knowledge index files (AGENTS.md/CLAUDE.md/GEMINI.md)
-titools sync
-```
-
-### titools sync
-
-Updates the Titanium knowledge index inside your project's instruction files.
-
-```bash
-titools sync [path] [options]
-```
-
-**Arguments:**
-| Argument | Description                                  |
-| -------- | -------------------------------------------- |
-| `[path]` | Project path (defaults to current directory) |
-
-**Options:**
-| Option          | Description                                |
-| --------------- | ------------------------------------------ |
-| `-f, --force`   | Overwrite existing files without prompting |
-| `-v, --verbose` | Show detailed diagnostics                  |
-
-**What it does:**
-- Detects Titanium SDK version from `tiapp.xml`
-- Prompts you to select which files to sync: `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`
-- Inserts or updates a compressed knowledge index block in selected files
-- Removes knowledge blocks from unselected files
-- Creates files if they don't exist
-- Only works inside a Titanium project (requires `tiapp.xml`)
-
-### titools update
-
-Updates installed knowledge packages and agent to the latest version.
-
-```bash
-titools update [options]
-```
-
-**Options:**
-| Option        | Description                                |
-| ------------- | ------------------------------------------ |
-| `-l, --local` | Update local skills in the current project |
-
-**What it does:**
-- Checks GitHub for the latest version
-- Downloads and installs updated skills and agents
-- Updates platform symlinks for all detected platforms
-- Cleans up legacy artifacts (`alloy-expert` skill, `ti-researcher` agent)
-- Auto-syncs knowledge index files in Titanium projects
-- If only local **or** global skills exist, updates that location automatically
-- If both exist, prompts you to choose
-
-> Note: This updates knowledge packages/agent and refreshes existing knowledge index files, not the CLI binary itself. To update the CLI, use `npm update -g @maccesar/titools`.
-
-### titools remove
-
-Removes knowledge packages, agents, symlinks, and knowledge index blocks.
-
-```bash
-titools remove [options]
-```
-
-**Options:**
-| Option        | Description                                  |
-| ------------- | -------------------------------------------- |
-| `-l, --local` | Remove local skills from the current project |
-
-**What it does:**
-- Detects all installed components (skills, agents, symlinks, knowledge blocks)
-- Prompts you to select what to remove:
-  - ti-pro agent for Claude Code
-  - Knowledge index blocks from instruction files (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`)
-  - Skills from global (`~/.agents/skills/`) or project directory
-  - Platform symlinks from global or project directory
-- Removes both current and legacy artifacts
-
-### Verify Installation
-
-**Check titools version:**
-```bash
-titools --version
-```
-
-**Check central location (global install):**
-```bash
-ls ~/.agents/skills/
-# Should show: ti-expert, purgetss, ti-ui, ti-howtos, ti-guides, alloy-guides, alloy-howtos
-```
-
-**Claude Code (skills):**
-```bash
-ls -la ~/.claude/skills/
-# Should show symlinks pointing to ~/.agents/skills/
-```
-
-**Claude Code (agents):**
-```bash
-ls -la ~/.claude/agents/
-# Should show: ti-pro.md
-```
-
-**Gemini CLI:**
-```bash
-gemini skills list
-```
-
-**Codex CLI:**
-```bash
-# Type /skills in Codex or use $ to mention a skill
-```
-
----
-
 ## Knowledge Index: Boost AI Performance
 
-**File selection per assistant:**
-- Claude Code → `CLAUDE.md`
-- Gemini CLI → `GEMINI.md`
-- Codex CLI / others → `AGENTS.md`
+The knowledge index is a compressed documentation map that gets injected into your project's instruction files. It tells the AI **where** all the Titanium reference docs are, so it can retrieve accurate information instead of relying on potentially outdated training data.
 
-Run this inside your Titanium project:
-
-```bash
-cd /path/to/your/titanium/project
-titools sync
-```
-
----
-
-### How the Knowledge Index Works
+### Why It Works
 
 | Approach            | Reported Pass Rate |
 | ------------------- | ------------------ |
@@ -231,24 +68,16 @@ titools sync
 | Skills only         | 53-79%             |
 | **Knowledge index** | **100%**           |
 
-**Why it works (per Vercel’s evaluation):**
-- **No decision point** - Information is always present, no need to invoke skills
-- **Consistent availability** - Available in every turn, not async-loaded
-- **No ordering issues** - No "read docs first vs explore project first" dilemma
+Per [Vercel's evaluation](https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals):
+- **No decision point** — Information is always present, no need to invoke skills
+- **Consistent availability** — Available in every turn, not async-loaded
+- **No ordering issues** — No "read docs first vs explore project first" dilemma
 
 For details, see `AGENTS-VERCEL-RESEARCH.md`.
 
-### How to Sync the Knowledge Index
+### What Gets Generated
 
-The `titools sync` command will:
-1. Verify this is a Titanium project (checks for `tiapp.xml`)
-2. Detect your Titanium SDK version
-3. Update `AGENTS.md`/`CLAUDE.md`/`GEMINI.md` with a compressed knowledge index
-4. Intelligently merge if file already exists (removes old block, adds new one)
-
-**Selection behavior:** The command lets you choose which instruction files to sync and preselects any files that already contain a knowledge block.
-
-### What the Knowledge Index Contains
+The `titools sync` command generates a block like this inside your project files:
 
 ```
 [Titanium SDK Docs Index]|root: ~/.agents/skills
@@ -258,57 +87,15 @@ The `titools sync` command will:
 ...
 ```
 
-The index points to all reference documentation, so your AI assistant can quickly retrieve accurate information without relying on potentially outdated training data.
+**File selection per assistant:**
+- Claude Code → `CLAUDE.md`
+- Gemini CLI → `GEMINI.md`
+- Codex CLI / others → `AGENTS.md`
 
-### Version Notice
+### How Skills and the Knowledge Index Work Together
 
-The knowledge index is based on the **latest Titanium SDK documentation**. If your project uses an older version, the command will detect and warn you about potential API differences.
-
----
-
-## How to Use the Knowledge Index
-
-Once installed, the AI assistant automatically reads the documentation index in every conversation. Just ask natural questions about Titanium development:
-
-### Example Prompts
-
-**General Architecture:**
-```
-"How should I structure a new Alloy app with authentication?"
-"What’s a solid pattern for navigation between screens?"
-```
-
-**PurgeTSS Styling:**
-```
-"Can you create a product card with PurgeTSS (image, title, price, buy button)?"
-"How do I use the 12‑column grid system in PurgeTSS?"
-"Explain why my build fails with platform‑specific properties."
-```
-
-**UI Components:**
-```
-"How do I build a high‑performance ListView with custom templates?"
-"Implement pull‑to‑refresh on a ScrollView."
-```
-
-**Native Features:**
-```
-"How do I implement push notifications for iOS and Android?"
-"Handle GPS location in the background."
-```
-
-**Debugging:**
-```
-"Why is my ListView scrolling poorly?"
-"Fix “Alloy is not defined” in my lib file."
-```
-
----
-
-## How Skills Work with the Knowledge Index
-
-The knowledge index provides always-available context (the documentation index).
-**Skills** provide specialized, on-demand expertise.
+The knowledge index provides **always-available context** (the documentation map).
+**Skills** provide **specialized, on-demand expertise** (the actual knowledge).
 
 Together they work seamlessly:
 
@@ -318,7 +105,11 @@ Together they work seamlessly:
 | "Optimize ListView performance" | Points to docs location         | `ti-ui` reads specific files  |
 | "Implement push notifications"  | API reference paths             | `ti-howtos` provides workflow |
 
-**You don't need to explicitly invoke skills** - the AI detects when to use them based on your question.
+**You don't need to explicitly invoke skills** — the AI detects when to use them based on your question.
+
+### Version Notice
+
+The knowledge index is based on the **latest Titanium SDK documentation**. If your project uses an older version, the command will detect and warn you about potential API differences.
 
 ---
 
@@ -366,7 +157,7 @@ In addition to skills, this repository includes **sub-agents** for Claude Code. 
 **Example prompts for the agent:**
 
 ```
-"Can you use the ti-pro agent to analyze this Alloy codebase’s architecture?"
+"Can you use the ti-pro agent to analyze this Alloy codebase's architecture?"
 "Can you research how to combine location, push, and background sync in Titanium?"
 "Can you compare ListView vs TableView performance for my use case?"
 "Review this Titanium mobile app and identify anti‑patterns."
@@ -465,10 +256,10 @@ All skills now include **automatic project detection** to ensure compatibility:
 ```
 "How should I structure a new Titanium Alloy app with authentication?"
 "Create a user service that fetches data from an API."
-"What’s the best pattern for navigation between screens?"
+"What's the best pattern for navigation between screens?"
 "Prevent memory leaks in my controllers."
 "Migrate classic Titanium code to modern Alloy patterns."
-"What’s a clean way to organize services in an Alloy app?"
+"What's a clean way to organize services in an Alloy app?"
 ```
 
 **Key features:**
@@ -650,7 +441,7 @@ All skills now include **automatic project detection** to ensure compatibility:
 ```
 "How do I generate a new model with the CLI?"
 "Configure alloy.jmk build hooks."
-"How do I fix “No app.js found”?"
+"How do I fix "No app.js found"?"
 "Create conditional views based on user state."
 "How do I build a custom XML tag without widgets?"
 "Set up Backbone.Events for global communication."
@@ -663,15 +454,17 @@ All skills now include **automatic project detection** to ensure compatibility:
 
 ---
 
-## Usage Examples
+## Usage Examples and Best Practices
 
-### Starting a New Project
+### Example Prompts
+
+**Starting a New Project:**
 ```
 "I'm starting a new Titanium Alloy app for a food delivery service.
 Can you help me set up the project structure?"
 ```
 
-### UI Development
+**UI Development:**
 ```
 "Can you create a product listing screen with:
 - Pull-to-refresh
@@ -680,7 +473,7 @@ Can you help me set up the project structure?"
 - Swipe-to-delete"
 ```
 
-### API Integration
+**API Integration:**
 ```
 "Can you build a complete authentication flow with:
 - Login/Register screens
@@ -689,27 +482,27 @@ Can you help me set up the project structure?"
 - Auto-refresh tokens"
 ```
 
-### Performance Optimization
+**Performance Optimization:**
 ```
 "My app is slow — the ListView scrolls poorly and memory usage is high. How do I optimize it?"
 ```
 
-### Migration
+**Migration:**
 ```
 "I have a legacy Titanium classic app from 2015. Can you help me migrate it to modern Alloy?"
 ```
 
-### Platform-Specific Features
+**Platform-Specific Features:**
 ```
 "How do I implement Apple Sign‑In for iOS and Google Sign‑In for Android?"
 ```
 
-### Debugging
+**Debugging:**
 ```
-"How do I fix “Alloy is not defined” in my lib file?"
+"How do I fix "Alloy is not defined" in my lib file?"
 ```
 
-### Codebase Analysis (Using Agent)
+**Codebase Analysis (Using Agent):**
 ```
 "Use the ti-pro agent to analyze this project and:
 - review the overall architecture
@@ -718,30 +511,168 @@ Can you help me set up the project structure?"
 - suggest improvements"
 ```
 
----
+### Tips for Better Results
 
-## Best Practices
-
-### 1. Be Specific
-Instead of: "Make a list"
-Try: "Can you create a ListView with user avatars, names, and swipe actions?"
-
-### 2. Provide Context
-Instead of: "How do I fix this error?"
-Try: "I'm getting this error when compiling: [error message]. Here's my code: [code]"
-
-### 3. Ask for Architecture First
-For complex features, start with:
-"How should I architect a real-time chat feature?"
-Then follow up with implementation details.
-
-### 4. Mention Constraints
-"Build a settings screen. Must work offline and sync when connected."
-
-### 5. Reference Existing Code
-"Here's my current controller. How can I improve memory management?"
+1. **Be specific** — Instead of "Make a list", try "Can you create a ListView with user avatars, names, and swipe actions?"
+2. **Provide context** — Instead of "How do I fix this error?", try "I'm getting this error when compiling: [error message]. Here's my code: [code]"
+3. **Ask for architecture first** — For complex features, start with "How should I architect a real-time chat feature?" then follow up with implementation details
+4. **Mention constraints** — "Build a settings screen. Must work offline and sync when connected."
+5. **Reference existing code** — "Here's my current controller. How can I improve memory management?"
 
 > **More examples:** See [Example Prompts](EXAMPLE-PROMPTS.md) for detailed prompts that test each skill's capabilities.
+
+---
+
+## CLI Reference
+
+### titools install
+
+Installs Titanium skills, agents, and platform symlinks.
+
+```bash
+titools install [options]
+```
+
+**Options:**
+| Option          | Description                                                         |
+| --------------- | ------------------------------------------------------------------- |
+| `-l, --local`   | Install skills locally in the current project (`./.agents/skills/`) |
+| `-a, --all`     | Install to all detected platforms without prompting                 |
+| `--path <path>` | Install to a custom path (skips symlink setup)                      |
+
+**Behavior depends on where you run it:**
+
+| Context                        | Behavior                                                                  |
+| ------------------------------ | ------------------------------------------------------------------------- |
+| **Outside a Titanium project** | Installs skills **globally** to `~/.agents/skills/`                       |
+| **Inside a Titanium project**  | Prompts you to choose: **Global** or **Local** installation               |
+| **With `--local` flag**        | Installs skills **locally** to `./.agents/skills/` in the current project |
+
+**What it does:**
+- ✅ Installs all 7 titanium-* skills (global or local depending on context)
+- ✅ Installs ti-pro agent for Claude Code
+- ✅ Detects installed AI platforms and lets you choose which to link
+- ✅ Creates symlinks from platform directories to central skills
+- ✅ Cleans up legacy artifacts (`alloy-expert` skill, `ti-researcher` agent)
+- ✅ If run inside a Titanium project, prompts to run `titools sync` afterward
+- ✅ Warns Gemini users if local skills override existing global Gemini skills
+
+### titools sync
+
+Generates a compressed knowledge index inside your project's instruction files (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`).
+
+> **Important:** This command only works inside a Titanium project (requires `tiapp.xml`). The knowledge index is project-specific — it detects your SDK version and points to the installed skill references.
+
+```bash
+titools sync [path] [options]
+```
+
+**Arguments:**
+| Argument | Description                                  |
+| -------- | -------------------------------------------- |
+| `[path]` | Project path (defaults to current directory) |
+
+**Options:**
+| Option          | Description                                |
+| --------------- | ------------------------------------------ |
+| `-f, --force`   | Overwrite existing files without prompting |
+| `-v, --verbose` | Show detailed diagnostics                  |
+
+**What it does:**
+- Verifies you're inside a Titanium project (`tiapp.xml`)
+- Detects Titanium SDK version from `tiapp.xml`
+- Prompts you to select which files to sync: `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`
+- Inserts or updates a compressed knowledge index block in selected files
+- Removes knowledge blocks from unselected files
+- Creates files if they don't exist
+
+### titools update
+
+Updates installed skills and agents to the latest version.
+
+```bash
+titools update [options]
+```
+
+**Options:**
+| Option        | Description                                |
+| ------------- | ------------------------------------------ |
+| `-l, --local` | Update local skills in the current project |
+
+**Behavior depends on where you run it:**
+
+| Context                                                             | Behavior                                                        |
+| ------------------------------------------------------------------- | --------------------------------------------------------------- |
+| **Outside a Titanium project**                                      | Updates **global** skills in `~/.agents/skills/` (if installed) |
+| **Inside a Titanium project** (local skills only)                   | Updates **local** skills automatically                          |
+| **Inside a Titanium project** (both local and global)               | Prompts you to choose: **Global** or **Local**                  |
+| **Inside a Titanium project** (with existing knowledge index files) | Also refreshes `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`              |
+
+**What it does:**
+- Checks GitHub for the latest version
+- Downloads and installs updated skills and agents
+- Updates platform symlinks for all detected platforms
+- Cleans up legacy artifacts (`alloy-expert` skill, `ti-researcher` agent)
+- Auto-syncs knowledge index files if they exist in the current project
+
+> Note: This updates knowledge packages and agents, not the CLI binary itself. To update the CLI, use `npm update -g @maccesar/titools`.
+
+### titools remove
+
+Removes skills, agents, symlinks, and knowledge index blocks.
+
+```bash
+titools remove [options]
+```
+
+**Options:**
+| Option        | Description                                  |
+| ------------- | -------------------------------------------- |
+| `-l, --local` | Remove local skills from the current project |
+
+**What it does:**
+- Detects all installed components (skills, agents, symlinks, knowledge blocks)
+- Prompts you to select what to remove:
+  - ti-pro agent for Claude Code
+  - Knowledge index blocks from instruction files (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`)
+  - Skills from global (`~/.agents/skills/`) or project directory
+  - Platform symlinks from global or project directory
+- Removes both current and legacy artifacts
+
+### Verify Installation
+
+**Check titools version:**
+```bash
+titools --version
+```
+
+**Check central location (global install):**
+```bash
+ls ~/.agents/skills/
+# Should show: ti-expert, purgetss, ti-ui, ti-howtos, ti-guides, alloy-guides, alloy-howtos
+```
+
+**Claude Code (skills):**
+```bash
+ls -la ~/.claude/skills/
+# Should show symlinks pointing to ~/.agents/skills/
+```
+
+**Claude Code (agents):**
+```bash
+ls -la ~/.claude/agents/
+# Should show: ti-pro.md
+```
+
+**Gemini CLI:**
+```bash
+gemini skills list
+```
+
+**Codex CLI:**
+```bash
+# Type /skills in Codex or use $ to mention a skill
+```
 
 ---
 
@@ -833,7 +764,6 @@ titools remove
 ```
 
 **Note:** `titools remove` can remove the knowledge index blocks from your project files, but it does not delete the files themselves.
-
 
 ---
 
