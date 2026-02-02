@@ -75,6 +75,7 @@ titools install [options]
 - ✅ Detects installed AI platforms and lets you choose which to link
 - ✅ Cleans up legacy artifacts (`alloy-expert` skill, `ti-researcher` agent)
 - ✅ If run inside a Titanium project, prompts to sync knowledge index files
+ - ✅ Warns Gemini users if local skills override existing global Gemini skills
 
 Run inside a Titanium project to install locally or globally from anywhere.
 
