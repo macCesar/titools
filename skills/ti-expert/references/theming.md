@@ -263,26 +263,68 @@ exports.ThemeService = {
 }
 ```
 
-### Semantic Colors (iOS)
+### Semantic Colors (Cross-Platform)
 
-Titanium supports iOS semantic colors that automatically adapt to Dark Mode:
+Titanium provides a cross-platform semantic colors API for Dark Mode support. Define colors in a `semantic.colors.json` file:
 
-```tss
-/* These colors automatically switch in Dark Mode */
-"#label": {
-  color: Ti.UI.fetchSemanticColor('label')
-}
+**File location:**
+- **Classic apps**: `Resources/semantic.colors.json`
+- **Alloy apps**: `app/assets/semantic.colors.json`
 
-"#bg": {
-  backgroundColor: Ti.UI.fetchSemanticColor('systemBackground')
+```json
+{
+  "textColor": {
+    "dark": {
+      "color": "#ff85e2",
+      "alpha": "50"
+    },
+    "light": "#ff1f1f"
+  },
+  "backgroundColor": {
+    "dark": "#1a1a2e",
+    "light": "#ffffff"
+  },
+  "primaryColor": {
+    "dark": {
+      "color": "#4ade80",
+      "alpha": "100"
+    },
+    "light": {
+      "color": "#22c55e",
+      "alpha": "100"
+    }
+  }
 }
 ```
 
-Available semantic colors: `label`, `secondaryLabel`, `systemBackground`, `secondarySystemBackground`, `separator`, `systemFill`, etc.
+**Using semantic colors:**
+
+```tss
+/* Reference via Ti.UI.fetchSemanticColor() */
+"#label": {
+  color: Ti.UI.fetchSemanticColor('textColor')
+}
+
+"#container": {
+  backgroundColor: Ti.UI.fetchSemanticColor('backgroundColor')
+}
+```
+
+```javascript
+// Or use color names directly as property values
+$.label.color = 'textColor';
+$.container.backgroundColor = 'backgroundColor';
+```
+
+**How it works:**
+- On iOS 13+ it uses the native system method that checks the user's system-wide Dark Mode setting
+- On all other platforms it checks `Ti.UI.semanticColorType` and returns the correct color variant
+- Alpha can be set from 0.0-100.0 (integer or float)
+- Light values can use hex with alpha via ARGB/AARRGGBB format
 
 :::tip When to use Semantic Colors vs Alloy.Globals
-- **Semantic Colors**: Quick adaptation for iOS only. No Android support.
-- **Alloy.Globals palette**: Cross-platform, full control, consistent behavior on both platforms. **Recommended.**
+- **Semantic Colors**: Built-in Dark Mode support, automatic switching, simpler setup. Works cross-platform.
+- **Alloy.Globals palette**: More control over when/how themes switch, easier to add custom themes beyond light/dark, runtime theme changes with UI rebuild.
 :::
 
 ---
