@@ -4,6 +4,13 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.2.2] - 2026-02-02
+
+### Changed
+- **Knowledge index format**: Removed code blocks and descriptive text wrapper — index is now injected as direct content per Vercel's research findings
+- **MANDATORY instruction**: Added explicit directive stating training data is outdated and reference files are the single source of truth
+- **Docs**: Updated README and AGENTS-VERCEL-RESEARCH.md examples to reflect the new index format
+
 ## [2.2.1] - 2026-02-02
 
 ### Changed
