@@ -8,7 +8,7 @@
 
 </div>
 
-A CLI that gives your AI coding assistant access to Titanium SDK knowledge. One command installs 7 specialized skills, a research agent, and 100+ reference files for Titanium SDK, Alloy MVC, and PurgeTSS.
+A CLI that gives your AI coding assistant access to **Titanium SDK** knowledge. One command installs 7 specialized skills, a research agent, and 100+ reference files for Titanium SDK, Alloy MVC, and PurgeTSS.
 
 Without `titools`, assistants fall back on general training data, which is often outdated or off-target for Titanium. With `titools`, your assistant can reference Alloy architecture, memory cleanup patterns, PurgeTSS utility classes, and platform-specific APIs.
 
@@ -124,13 +124,13 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 
 | Skill        | Purpose                       | Best For                                |
 | ------------ | ----------------------------- | --------------------------------------- |
-| ti-expert    | Architecture + Implementation | Starting point for most tasks           |
-| purgetss     | Utility-first styling         | UI styling and animations               |
-| ti-ui        | UI/UX patterns                | Complex layouts, ListViews, platform UI |
-| ti-howtos    | Native feature integration    | Location, Push, Media, Platform APIs    |
-| ti-guides    | SDK fundamentals              | Hyperloop, distribution, configuration  |
 | alloy-guides | Alloy MVC reference           | Models, Views, Controllers, Widgets     |
 | alloy-howtos | Alloy CLI & debugging         | Project setup, CLI commands, errors     |
+| purgetss     | Utility-first styling         | UI styling and animations               |
+| ti-expert    | Architecture + Implementation | Starting point for most tasks           |
+| ti-guides    | SDK fundamentals              | Hyperloop, distribution, configuration  |
+| ti-howtos    | Native feature integration    | Location, Push, Media, Platform APIs    |
+| ti-ui        | UI/UX patterns                | Complex layouts, ListViews, platform UI |
 
 Note: `ti-guides`, `ti-howtos`, `ti-ui`, `alloy-guides`, and `alloy-howtos` are based on official Titanium SDK and Alloy documentation. `ti-expert` and `purgetss` are opinionated and reflect personal coding conventions (biased toward PurgeTSS).
 

@@ -1,34 +1,34 @@
-# Why AGENTS.md? (Based on Vercel's Research)
+# Why AGENTS.md? (Based on Vercel's research)
 
-This document explains why we use AGENTS.md/CLAUDE.md with compressed documentation indexes instead of relying solely on skills for AI coding assistants.
+This explains why we use AGENTS.md or CLAUDE.md with a compressed docs index instead of relying only on skills.
 
-## The Problem: Skills Alone Underperform
+## The problem: skills alone underperform
 
-Based on [Vercel's research](https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals), using skills alone achieves only a **53-79% pass rate** on coding tasks.
+Vercel reports that skills-only setups hit a **53-79% pass rate** on coding tasks.
 
-### Why Skills Underperform
+### Why skills underperform
 
 | Issue               | Description                                           |
 | ------------------- | ----------------------------------------------------- |
-| **Decision point**  | AI must decide WHEN to invoke a skill (often doesn't) |
-| **Async loading**   | Skills loaded on-demand, not always available         |
-| **Ordering issues** | "Explore first vs read docs first" dilemma            |
-| **Fragile prompts** | Performance depends on exact prompt wording           |
+| **Decision point**  | The model has to decide when to invoke a skill        |
+| **Async loading**   | Skills load on-demand, so they are not always present |
+| **Ordering issues** | "Explore first" vs "read docs first" tradeoff         |
+| **Fragile prompts** | Results depend on exact prompt wording                |
 
-## The Solution: AGENTS.md with Compressed Index
+## The fix: AGENTS.md with a compressed index
 
-Vercel reported that using AGENTS.md with a compressed documentation index achieved a **100% pass rate** in their evaluation.
+Vercel reports that AGENTS.md plus a compressed documentation index hit a **100% pass rate** in their evals.
 
-### Why It Works
+### Why it works
 
-1. **No decision point** - Information is always present, no need to invoke skills
-2. **Consistent availability** - Available in every turn, not async-loaded
-3. **No ordering issues** - No "read docs first vs explore project first" dilemma
-4. **Passive context** - Already in context, doesn't depend on prompt wording
+1. **No decision point**: the info is already there
+2. **Consistent availability**: present every turn, not async
+3. **No ordering issues**: no docs vs project exploration dilemma
+4. **Passive context**: not dependent on the prompt
 
-### Performance Comparison
+### Performance comparison
 
-| Approach            | Pass Rate |
+| Approach            | Pass rate |
 | ------------------- | --------- |
 | No documentation    | 53%       |
 | Skills only         | 53-79%    |
@@ -36,9 +36,9 @@ Vercel reported that using AGENTS.md with a compressed documentation index achie
 
 ## Implementation for Titanium SDK
 
-### The Compressed Index Format
+### Compressed index format
 
-The index uses a compressed format that maps skills to their reference documentation:
+The index maps skills to their reference docs:
 
 ```
 [Titanium SDK Docs Index]|root: ~/.agents/skills
@@ -47,56 +47,56 @@ The index uses a compressed format that maps skills to their reference documenta
 |ti-ui/references:{listviews-and-performance.md,layouts-and-positioning.md,...}
 ```
 
-**How the AI uses it:**
-- Need ListView performance tips? Read `~/.agents/skills/ti-ui/references/listviews-and-performance.md`
-- Need PurgeTSS grid system? Read `~/.agents/skills/purgetss/references/grid-layout.md`
+How the assistant should use it:
 - Need Backbone.Models patterns? Read `~/.agents/skills/alloy-guides/references/MODELS.md`
+- Need the PurgeTSS grid system? Read `~/.agents/skills/purgetss/references/grid-layout.md`
+- Need ListView performance tips? Read `~/.agents/skills/ti-ui/references/listviews-and-performance.md`
 
-### Skill Overview
+### Skill overview
 
-| Skill            | Purpose                       | Best For                                      |
+| Skill            | Purpose                       | Best for                                      |
 | ---------------- | ----------------------------- | --------------------------------------------- |
-| **ti-expert**    | Architecture + Implementation | Starting point for most Alloy tasks           |
+| **alloy-guides** | Alloy MVC reference           | Models, views, controllers, widgets           |
+| **alloy-howtos** | Alloy CLI and debugging       | Project setup, CLI commands, errors           |
 | **purgetss**     | Utility-first styling         | UI styling, animations, grid layouts          |
-| **ti-ui**        | UI/UX patterns                | Layouts, ListViews, gestures, platform UI     |
-| **ti-howtos**    | Native feature integration    | Location, Push, Media, platform-specific APIs |
+| **ti-expert**    | Architecture + implementation | Starting point for most Alloy tasks           |
 | **ti-guides**    | SDK fundamentals              | Hyperloop, distribution, tiapp.xml, CLI       |
-| **alloy-guides** | Alloy MVC reference           | Models, Views, Controllers, Widgets           |
-| **alloy-howtos** | Alloy CLI & debugging         | Project setup, CLI commands, errors           |
+| **ti-howtos**    | Native feature integration    | Location, push, media, platform-specific APIs |
+| **ti-ui**        | UI/UX patterns                | Layouts, ListViews, gestures, platform UI     |
 
-### For Complex Workflows
+### For complex workflows
 
 The **ti-pro** agent (installed in `~/.claude/agents/`) handles:
 - Codebase architecture analysis
 - Multi-feature research across Titanium APIs
 - Cross-referencing framework patterns
-- Platform-specific differences investigation
+- Platform-specific differences
 
-It preloads all 7 titanium-* skills for comprehensive analysis.
+It preloads all 7 titanium-* skills for broader coverage.
 
-## How to Use
+## How to use
 
-### For Titanium Projects
+### For Titanium projects
 
-Run the `titools sync` command in your Titanium project root:
+Run `titools sync` from your project root:
 
 ```bash
 cd /path/to/your/titanium/project
 titools sync
 ```
 
-This creates/updates:
-- `CLAUDE.md` (for Claude Code)
-- `GEMINI.md` (for Gemini CLI)
-- `AGENTS.md` (for Cursor/Copilot)
+This creates or updates:
+- `AGENTS.md` (Codex CLI and others)
+- `CLAUDE.md` (Claude Code)
+- `GEMINI.md` (Gemini CLI)
 
-### What Gets Generated
+### What gets generated
 
-The generated file contains:
+The generated file includes:
 
-1. **Version marker** - Tracks which version of the docs
-2. **Compressed index** - Maps all skills to their reference files
-3. **Block boundaries** - For automatic updates
+1. **Version marker**: tracks docs version
+2. **Block boundaries**: support automatic updates
+3. **Compressed index**: maps skills to reference files
 
 Example output:
 
@@ -124,46 +124,46 @@ This knowledge index is based on the latest Titanium SDK documentation.
 <!-- END-TITANIUM-KNOWLEDGE -->
 ```
 
-### Updating the Index
+### Updating the index
 
-When you update titools, simply re-run the command:
+When you update titools, re-run:
 
 ```bash
 titools update      # Update skills and docs
-titools sync      # Regenerate index in your project
+titools sync        # Regenerate index in your project
 ```
 
-The old block is automatically replaced with the new version.
+The block is replaced automatically.
 
-## Version Notice
+## Version notice
 
-The knowledge index is based on the **latest Titanium SDK documentation**.
+The index is based on the **latest Titanium SDK docs**.
 
-**To check your project's version:**
+To check your project's version:
 ```bash
 grep -A 1 "<sdk-version>" tiapp.xml
 ```
 
-**If there's a version mismatch:**
+If there's a mismatch:
 - Newer APIs may not exist in your version
-- Older deprecated patterns may still be valid for you
-- Always verify against your version's official docs: https://titaniumsdk.com/guide
+- Older deprecated patterns may still be valid
+- Verify against your version's official docs: https://titaniumsdk.com/guide
 
-## Key Takeaways from Vercel's Research
+## Key takeaways from Vercel's research
 
-1. **Passive context > Active retrieval** - Information that's always present outperforms information that must be actively loaded
-2. **No activation needed** - The AI doesn't need to decide when to use a skill
-3. **Consistent behavior** - Same information every time, regardless of prompt wording
-4. **100% pass rate** - AGENTS.md approach achieved perfect performance on evaluated tasks
+1. **Passive context beats active retrieval**: always-present info performs better than info that must be loaded
+2. **No activation needed**: the model does not need to decide when to use a skill
+3. **Consistent behavior**: same inputs every time, regardless of prompt wording
+4. **100% pass rate**: AGENTS.md approach achieved perfect performance in their evals
 
 ## References
 
-- [Vercel's Blog: agents.md Outperforms Skills in Our Agent Evals](https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals)
+- [Vercel's blog: AGENTS.md outperforms skills in our agent evals](https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals)
 - [Repository: macCesar/titools](https://github.com/macCesar/titools)
 
 ## Maintenance
 
-This approach is maintained in the [titools](https://github.com/macCesar/titools) project.
+This approach is maintained in [titools](https://github.com/macCesar/titools).
 
 To update your installation:
 ```bash
