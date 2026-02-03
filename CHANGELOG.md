@@ -4,6 +4,25 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.2.4] - 2026-02-03
+
+### Fixed
+- **update command**: Fixed bug where `titools update` would exit without syncing skills when CLI version matched GitHub version
+  - Previously: "Already up to date" → exited immediately without updating skill files
+  - Now: "CLI is up to date" → syncs skills, agents, and symlinks from installed package
+- **update command**: Now only updates symlinks for platforms that already have them installed (respects user's initial platform selection)
+
+### Changed
+- **update command flow**: Two-stage update process
+  - If newer version on GitHub → prompts user to run `npm update -g @maccesar/titools` first
+  - If CLI is current → syncs skills from installed package without downloading from GitHub
+- **update command**: Agents are now only synced if Claude Code has existing symlinks
+
+## [2.2.3] - 2026-02-02
+
+### Added
+- **Semantic colors API**: New cross-platform semantic colors for Dark Mode support in `ti-ui` skill
+
 ## [2.2.2] - 2026-02-02
 
 ### Changed

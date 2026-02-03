@@ -619,13 +619,14 @@ Behavior depends on where you run it:
 | Inside a Titanium project (with existing knowledge index files) | Also refreshes `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`          |
 
 What it does:
-- Checks GitHub for the latest version
-- Downloads and installs updated skills and agents
-- Updates platform symlinks for all detected platforms
-- Cleans up legacy artifacts (`alloy-expert` skill, `ti-researcher` agent)
-- Auto-syncs knowledge index files if they exist in the current project
+1. Checks GitHub for the latest CLI version
+2. If a newer version exists → prompts you to update the CLI first with `npm update -g @maccesar/titools`
+3. If CLI is current → syncs skills and agents from the installed package (no download needed)
+4. Updates platform symlinks only for platforms that already have them
+5. Cleans up legacy artifacts (`alloy-expert` skill, `ti-researcher` agent)
+6. Auto-syncs knowledge index files if they exist in the current project
 
-Note: This updates knowledge packages and agents, not the CLI binary itself. To update the CLI, use `npm update -g @maccesar/titools`.
+Note: This command syncs knowledge packages and agents from your installed CLI. To get new features, first update the CLI with `npm update -g @maccesar/titools`, then run `titools update`.
 
 ### titools remove
 
