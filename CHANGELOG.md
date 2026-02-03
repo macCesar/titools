@@ -4,12 +4,20 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [2.2.5] - 2026-02-03
+## [2.2.6] - 2026-02-03
 
 ### Added
 - **GitHub Actions CI/CD**: Automatic npm publish when package.json changes on main branch
   - Uses OIDC Trusted Publishing (no tokens required)
   - Auto-creates GitHub Release with generated notes
+
+### Changed
+- **package-lock.json**: Now tracked in git for reproducible CI/CD builds
+
+## [2.2.5] - 2026-02-03
+
+### Skipped
+- Build failed due to missing package-lock.json in CI
 
 ## [2.2.4] - 2026-02-03
 
