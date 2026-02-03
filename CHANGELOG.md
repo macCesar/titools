@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 - **ti-expert skill**: New skill replacing `alloy-expert` with 19 reference files + 1 asset (ControllerAutoCleanup.js) and new `cli-expert.md` reference
-- **ti-pro agent**: New agent replacing `ti-researcher` for deep-dive research with all 7 skills preloaded
+- **ti-pro agent**: New agent replacing `ti-researcher` for deep-dive research with all 7 skills preloaded and `Bash` tool access
 - **purgetss/references/tikit-components.md**: New reference for TiKit component integration
 - **lib/cleanup.js**: New module for legacy artifact cleanup
 - **test/cleanup.test.js, test/cli.test.js**: New test files for cleanup and CLI functionality
