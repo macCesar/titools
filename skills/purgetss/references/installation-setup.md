@@ -8,6 +8,13 @@ PurgeTSS must be installed globally and initialized within each Titanium Alloy p
 PurgeTSS has been thoroughly tested and proven to be compatible with Node 20.0.0 or higher.
 :::
 
+## Upgrade Notes (v7.3.x)
+
+- `tailwind.tss` was renamed to `utilities.tss`. Update any scripts or paths that reference the old filename.
+- PurgeTSS validates XML syntax before processing and reports line-level errors (for example, missing `<`).
+- `deviceInfo()` now works in both Alloy and Classic projects (no `Alloy.isTablet`/`Alloy.isHandheld` dependency).
+- If upgrades behave oddly, try a clean reinstall: `npm uninstall -g purgetss && npm install -g purgetss`.
+
 ## Global Installation
 
 Install PurgeTSS globally on your machine using NPM:
@@ -69,7 +76,7 @@ PurgeTSS creates a `purgetss` folder at the root of your project:
 **File descriptions:**
 
 - **`config.cjs`**: Where you customize colors, spacing, fonts, border radius, and add custom rules for Ti Elements
-- **`styles/utilities.tss`**: All Tailwind-like utility classes + any custom classes from `config.cjs`
+- **`styles/utilities.tss`**: All utility classes + any custom classes from `config.cjs`
 - **`styles/definitions.css`**: Special CSS file incorporating ALL classes from `utilities.tss`, `_app.tss`, remaining `.tss` files, and `fonts.tss`. Used by VS Code extension for IntelliSense
 - **`fonts/`**: Directory for custom fonts (Icon, Serif, Sans-Serif, Cursive, Fantasy, Monospace). Use `purgetss build-fonts` after adding fonts
 
