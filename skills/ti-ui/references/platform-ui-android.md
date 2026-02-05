@@ -1,14 +1,14 @@
-# Android UI Components and Conventions
+# Android UI components and conventions
 
-## 1. Action Bar
+## 1. Action bar
 
 ### Overview
 
-The Action Bar is a key Android UI component that appears at the top of the screen. It provides actions, navigation, and app branding.
+The action bar sits at the top of the screen. It shows actions, navigation, and app branding.
 
-### Enabling Action Bar
+### Enable the action bar
 
-**In tiapp.xml**:
+In `tiapp.xml`:
 
 ```xml
 <android>
@@ -26,7 +26,7 @@ The Action Bar is a key Android UI component that appears at the top of the scre
 </android>
 ```
 
-### Creating Action Bar (Programmatic)
+### Create the action bar (programmatic)
 
 ```javascript
 const activity = Ti.Android.currentActivity;
@@ -87,7 +87,7 @@ activity.onPrepareOptionsMenu = (e) => {
 activity.invalidateOptionsMenu();
 ```
 
-### Action Bar Properties
+### Action bar properties
 
 ```javascript
 const activity = Ti.Android.currentActivity;
@@ -107,11 +107,11 @@ actionBar.onHomeIconItemSelected = () => {
 };
 ```
 
-### Refreshing the Options Menu
+### Refresh the options menu
 
-Call `activity.invalidateOptionsMenu()` to force `onCreateOptionsMenu` to be called again. This is useful when menu items need to change dynamically (e.g., when the user switches tabs or a state change requires different menu options).
+Call `activity.invalidateOptionsMenu()` to force `onCreateOptionsMenu` to run again. This is useful when menu items need to change at runtime, for example after a tab switch or a state change.
 
-### Action Bar with App Icon
+### Action bar with app icon
 
 ```javascript
 const activity = Ti.Android.currentActivity;
@@ -129,7 +129,7 @@ activity.onCreateOptionsMenu = (e) => {
 };
 ```
 
-### Action View (Custom Layout)
+### Action view (custom layout)
 
 ```javascript
 activity.onCreateOptionsMenu = (e) => {
@@ -164,13 +164,13 @@ activity.onCreateOptionsMenu = (e) => {
 };
 ```
 
-## 2. Android Themes
+## 2. Android themes
 
 ### Overview
 
-Themes control the visual style of Android apps. Titanium 10.0.0+ **requires** material-based themes.
+Themes control the visual style of Android apps. Titanium 10.0.0+ requires material-based themes.
 
-### Titanium Material Themes (SDK 10.0.0+)
+### Titanium material themes (SDK 10.0.0+)
 
 | Theme                                | Description                           |
 | ------------------------------------ | ------------------------------------- |
@@ -184,7 +184,7 @@ Themes control the visual style of Android apps. Titanium 10.0.0+ **requires** m
 | `Theme.AppDerived.Fullscreen`        | Inherits app theme, fullscreen        |
 | `Theme.AppDerived.Translucent`       | Transparent background                |
 
-### Material 3 Themes (SDK 12.0.0+)
+### Material 3 themes (SDK 12.0.0+)
 
 ```xml
 <!-- tiapp.xml -->
@@ -201,7 +201,8 @@ Themes control the visual style of Android apps. Titanium 10.0.0+ **requires** m
 | `Theme.Titanium.Material3.DayNight.NoTitleBar` | No action bar                  |
 | `Theme.Titanium.Material3.DayNight.Fullscreen` | No action/status bar           |
 
-**Custom Material 3 theme:**
+Custom Material 3 theme:
+
 ```xml
 <!-- platform/android/res/values/mytheme.xml -->
 <resources>
@@ -209,9 +210,10 @@ Themes control the visual style of Android apps. Titanium 10.0.0+ **requires** m
 </resources>
 ```
 
-### Applying Themes
+### Apply themes
 
-**Global (tiapp.xml):**
+Global (`tiapp.xml`):
+
 ```xml
 <android xmlns:android="http://schemas.android.com/apk/res/android">
   <manifest>
@@ -220,14 +222,15 @@ Themes control the visual style of Android apps. Titanium 10.0.0+ **requires** m
 </android>
 ```
 
-**Per-window (JavaScript):**
+Per-window (JavaScript):
+
 ```javascript
 const win = Ti.UI.createWindow({
   theme: 'Theme.AppDerived.Fullscreen'
 });
 ```
 
-### Custom Theme
+### Custom theme
 
 ```xml
 <!-- platform/android/res/values/mytheme.xml -->
@@ -245,7 +248,8 @@ const win = Ti.UI.createWindow({
 </resources>
 ```
 
-**Dark theme variant (values-night/):**
+Dark theme variant (`values-night/`):
+
 ```xml
 <!-- platform/android/res/values-night/mytheme.xml -->
 <resources>
@@ -256,7 +260,7 @@ const win = Ti.UI.createWindow({
 </resources>
 ```
 
-### Color Palette Attributes
+### Color palette attributes
 
 | Attribute                    | Description                |
 | ---------------------------- | -------------------------- |
@@ -269,14 +273,16 @@ const win = Ti.UI.createWindow({
 | `android:navigationBarColor` | Bottom nav bar (API 21+)   |
 | `android:textColorPrimary`   | Primary text color         |
 
-### Hiding Action Bar
+### Hide the action bar
 
-**Via theme (recommended):**
+Via theme (recommended):
+
 ```xml
 <application android:theme="@style/Theme.AppDerived.NoTitleBar"/>
 ```
 
-**Via JavaScript:**
+Via JavaScript:
+
 ```javascript
 const win = Ti.UI.createWindow({
   theme: 'Theme.AppDerived.NoTitleBar'
@@ -288,19 +294,19 @@ win.addEventListener('open', () => {
 });
 ```
 
-### Theme Requirements
+### Theme requirements
 
-> **Warning:** SDK 10.0.0+ requires material-based themes. Using non-material themes will cause a runtime error. Do NOT name your custom theme file `theme.xml` — this will overwrite Titanium's built-in theme file. Use descriptive names like `mytheme.xml`.
+Warning: SDK 10.0.0+ requires material-based themes. Using non-material themes will cause a runtime error. Do not name your custom theme file `theme.xml`. This will overwrite Titanium's built-in theme file. Use names like `mytheme.xml`.
 
 - SDK 10.0.0+ requires material-based themes (runtime error otherwise)
 - Place custom themes in `platform/android/res/values/`
-- Do NOT name file `theme.xml` (overwrites Titanium's)
+- Do not name the file `theme.xml` (overwrites Titanium's)
 - Use `values-v<api>` for version-specific themes
 - Use `values-night` for dark mode variants
 
-## 3. Options Menu
+## 3. Options menu
 
-### Legacy Options Menu
+### Legacy options menu
 
 ```javascript
 const activity = Ti.Android.currentActivity;
@@ -326,7 +332,7 @@ activity.onOptionsItemSelected = (e) => {
 };
 ```
 
-### Context Menu (Long Press)
+### Context menu (long press)
 
 ```javascript
 const view = Ti.UI.createView({
@@ -344,7 +350,7 @@ function registerForContextMenu() {
 }
 ```
 
-## 4. Status Bar Notifications
+## 4. Status bar notifications
 
 ### Notifications
 
@@ -366,7 +372,7 @@ const notification = Ti.Android.createNotification({
 Ti.Android.NotificationManager.notify(1, notification);
 ```
 
-### Notification Channels (Android 8.0+)
+### Notification channels (Android 8.0+)
 
 ```javascript
 // Create notification channel for Android 8.0+
@@ -393,7 +399,7 @@ const notification = Ti.Android.createNotification({
 Ti.Android.NotificationManager.notify(1, notification);
 ```
 
-### Clearing Notifications
+### Clear notifications
 
 ```javascript
 // Cancel specific notification
@@ -403,9 +409,9 @@ Ti.Android.NotificationManager.cancel(1);
 Ti.Android.NotificationManager.cancelAll();
 ```
 
-## 5. Progress Bars
+## 5. Progress bars
 
-### Horizontal Progress Bar
+### Horizontal progress bar
 
 ```javascript
 const progressBar = Ti.UI.createProgressBar({
@@ -426,7 +432,7 @@ progressBar.message = 'Loading...';
 progressBar.show();
 ```
 
-### Spinner (Indeterminate Progress)
+### Spinner (indeterminate progress)
 
 ```javascript
 const activityIndicator = Ti.UI.createActivityIndicator({
@@ -441,9 +447,9 @@ activityIndicator.show();
 activityIndicator.hide();
 ```
 
-## 6. Tab Groups and Tabs
+## 6. Tab groups and tabs
 
-### Native Android Tabs
+### Native Android tabs
 
 ```javascript
 const tabGroup = Ti.UI.createTabGroup({
@@ -455,7 +461,7 @@ tabGroup.addEventListener('open', (e) => {
 });
 ```
 
-### Tab Badges
+### Tab badges
 
 ```javascript
 const tab = Titanium.UI.createTab({
@@ -471,9 +477,9 @@ tab.badge = 5;
 tab.badge = null;  // or tab.setBadge(null);
 ```
 
-## 7. Hardware Back Button Handling
+## 7. Hardware back button handling
 
-### Handling Back Button
+### Handle back button
 
 ```javascript
 const win = Ti.UI.createWindow();
@@ -495,7 +501,7 @@ function canGoBack() {
 }
 ```
 
-### Exit Confirmation Dialog
+### Exit confirmation dialog
 
 ```javascript
 function showExitConfirmation() {
@@ -517,9 +523,9 @@ function showExitConfirmation() {
 }
 ```
 
-## 8. Notification Drawer
+## 8. Notification drawer
 
-### Display Notification
+### Display notification
 
 ```javascript
 const notification = Ti.Android.createNotification({
@@ -535,32 +541,32 @@ const notification = Ti.Android.createNotification({
 Ti.Android.NotificationManager.notify(1, notification);
 ```
 
-## 9. Android UI Conventions
+## 9. Android UI conventions
 
-### Back Button Behavior
+### Back button behavior
 
 Standard Android conventions:
-- **Back button** = Navigate back in hierarchy
-- **Long press back** = Show recent apps menu (system behavior)
+- Back button = navigate back in hierarchy
+- Long press back = show recent apps menu (system behavior)
 - Apps should handle back button unless:
 
   1. It's the root activity (app would exit)
   2. User is in a task that shouldn't be interrupted
   3. Confirmation needed (destructive action)
 
-### Up/Down Navigation
+### Up and down navigation
 
 Traditional Android navigation uses:
-- **Up button** = Navigate up in hierarchy
-- **Menu button** = Show options menu
-- **Home button** = Go to home (backgrounds app)
+- Up button = navigate up in hierarchy
+- Menu button = show options menu
+- Home button = go to home (backgrounds app)
 
 Modern apps may:
-- Use Navigation Component (jetpack)
-- Use up button for "back" navigation pattern
+- Use Navigation Component (Jetpack)
+- Use up button for a back-style pattern
 - Implement custom up navigation
 
-### App Shortcuts
+### App shortcuts
 
 Android 7.1+ app shortcuts:
 
@@ -577,7 +583,7 @@ Android 7.1+ app shortcuts:
 </activity>
 ```
 
-## 10. Material Design Components
+## 10. Material design components
 
 ### Using AppCompat v7
 
@@ -593,9 +599,9 @@ Android 7.1+ app shortcuts:
 </android>
 ```
 
-### Material Design Components
+### Material design components
 
-- `Toolbar` - Replaces Action Bar (recommended)
+- `Toolbar` - Replaces action bar (recommended)
 - `CardView` - Cards with elevation
 - `RecyclerView` - Advanced list component
 - `CoordinatorLayout` - Complex layout coordination
@@ -604,7 +610,7 @@ Android 7.1+ app shortcuts:
 
 These can be accessed via Hyperloop or custom modules.
 
-## 11. Toast Notifications
+## 11. Toast notifications
 
 Toast notifications display brief messages at the bottom of the screen that automatically disappear.
 
@@ -630,15 +636,15 @@ const toast = Ti.UI.createNotification({
 toast.show();
 ```
 
-**Duration options:**
-- `Ti.UI.NOTIFICATION_DURATION_SHORT` — Short display time
-- `Ti.UI.NOTIFICATION_DURATION_LONG` — Longer display time
+Duration options:
+- `Ti.UI.NOTIFICATION_DURATION_SHORT` - Short display time
+- `Ti.UI.NOTIFICATION_DURATION_LONG` - Longer display time
 
-## 12. HTML Labels and Linkification
+## 12. HTML labels and linkification
 
-### HTML Content in Labels
+### HTML content in labels
 
-Use the `html` property on Labels to render inline HTML content:
+Use the `html` property on labels to render inline HTML content:
 
 ```javascript
 const label = Ti.UI.createLabel({
@@ -647,9 +653,9 @@ const label = Ti.UI.createLabel({
 });
 ```
 
-### Auto-Link Constants
+### Auto-link constants
 
-The `autoLink` property automatically detects and linkifies content:
+The `autoLink` property detects and linkifies content:
 
 | Constant                         | Description                   |
 | -------------------------------- | ----------------------------- |
@@ -668,17 +674,17 @@ const label = Ti.UI.createLabel({
 });
 ```
 
-## 13. Nine-Patch Images
+## 13. Nine-patch images
 
 Nine-patch images (`.9.png`) define stretchable regions that adapt to different screen sizes and content.
 
-### Key Points
+### Key points
 
 - Files use the `.9.png` extension
 - Only work as `backgroundImage` (not as regular images)
 - Define stretchable regions so the image scales without distortion
-- Reference **without** the `.9` in code — Android resolves it automatically
-- Create with the Android SDK's `draw9patch` tool
+- Reference without the `.9` in code. Android resolves it automatically
+- Create with the Android SDK `draw9patch` tool
 
 ```javascript
 const button = Ti.UI.createButton({
@@ -689,13 +695,13 @@ const button = Ti.UI.createButton({
 });
 ```
 
-## Best Practices
+## Best practices
 
-1. **Follow Material Design guidelines** for modern Android apps
-2. **Use AppCompat v7** for consistent styling across Android versions
-3. **Handle back button** to prevent unexpected app exits
-4. **Use appropriate themes** that match your brand/design
-5. **Test on multiple Android versions** - Theme support varies
-6. **Consider accessibility** - Ensure content descriptions are set
-7. **Use notification channels** for Android 8.0+ apps
-8. **Test on physical devices** - Some features don't work in emulator
+1. Follow Material Design guidelines for modern Android apps
+2. Use AppCompat v7 for consistent styling across Android versions
+3. Handle back button to prevent unexpected app exits
+4. Use themes that match your brand/design
+5. Test on multiple Android versions because theme support varies
+6. Consider accessibility and set content descriptions
+7. Use notification channels for Android 8.0+ apps
+8. Test on physical devices. Some features do not work in the emulator

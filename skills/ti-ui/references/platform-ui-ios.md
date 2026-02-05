@@ -1,14 +1,14 @@
-# iOS UI Components and Conventions
+# iOS UI components and conventions
 
 ## 1. Overview
 
-iOS offers several UI components and conventions that differ from Android. This guide covers iPad-specific controls, app badges, Settings integration, 3D Touch, and iOS-specific navigation patterns.
+iOS has UI components and patterns that differ from Android. This guide covers iPad-only controls, badges, Settings integration, 3D Touch, and iOS navigation patterns.
 
-## 2. iPad-Only UI Components
+## 2. iPad-only UI components
 
 ### Popover
 
-Popovers present content temporarily without taking over the entire screen. Used for menus, options, or detail views.
+Popovers show temporary content without taking over the whole screen. Use them for menus, options, or detail views.
 
 ```javascript
 const button = Ti.UI.createButton({
@@ -32,7 +32,7 @@ const popoverContent = Ti.UI.createView({
 });
 popover.add(popoverContent);
 
-button.addEventListener('click', (e) => {
+button.addEventListener('click', () => {
   popover.show({
     view: button,  // Anchor to this view
     animated: true
@@ -41,15 +41,15 @@ button.addEventListener('click', (e) => {
 
 win.add(button);
 ```
-...
-### Popover Events
+
+### Popover events
 
 ```javascript
-popover.addEventListener('hide', (e) => {
+popover.addEventListener('hide', () => {
   Ti.API.info('Popover hidden');
 });
 
-popover.addEventListener('show', (e) => {
+popover.addEventListener('show', () => {
   Ti.API.info('Popover shown');
 });
 
@@ -59,7 +59,7 @@ popover.hide();
 
 ### SplitWindow
 
-SplitWindow manages master-detail interface (left pane list, right pane details). iPad only.
+SplitWindow manages a master-detail layout (left list, right detail). It is iPad only.
 
 ```javascript
 // Master (left) window
@@ -94,10 +94,10 @@ const splitwin = Ti.UI.iPad.createSplitWindow({
 
 splitwin.open();
 ```
-...
-### SplitWindow in Portrait
 
-By default, master view hides in portrait. To show master view:
+### SplitWindow in portrait
+
+By default, the master view is hidden in portrait. To show it:
 
 ```javascript
 splitwin.addEventListener('visible', (e) => {
@@ -110,7 +110,7 @@ splitwin.addEventListener('visible', (e) => {
 
 ## 3. Badges
 
-### App Icon Badge
+### App icon badge
 
 ```javascript
 // Set badge to number
@@ -122,7 +122,7 @@ Ti.UI.iOS.appBadge = null;
 // Note: Setting to 0 still displays "0"
 ```
 
-### Tab Badge
+### Tab badge
 
 ```javascript
 const tabGroup = Ti.UI.createTabGroup();
@@ -144,19 +144,19 @@ tab1.badge = 5;
 tab1.setBadge(null);
 tab1.badge = null;
 ```
-...
-### Settings.bundle Integration
 
-iOS apps can expose user-configurable settings in the device's Settings app using a Settings.bundle.
+## 4. Settings.bundle integration
 
-**Setup**:
+iOS apps can expose user settings in the Settings app using a Settings.bundle.
+
+Setup:
 - Place the bundle at `platform/iphone/Settings.bundle/` (SDK 1.8+)
 - The bundle contains `Root.plist`, which defines the settings UI (toggles, text fields, groups, etc.)
 - Edit `Root.plist` using Xcode's Property List editor for a visual interface
 
-**Key conventions**: Settings keys typically use the `_preference` suffix (e.g., `username_preference`, `enabled_preference`).
+Key conventions: Settings keys typically use the `_preference` suffix, for example `username_preference` or `enabled_preference`.
 
-### Accessing Preferences in App
+### Access preferences in the app
 
 ```javascript
 // Read a preference set in iOS Settings app
@@ -166,13 +166,15 @@ const username = Ti.App.Properties.getString('username_preference');
 const name = Ti.App.Properties.getString('name_preference');
 const enabled = Ti.App.Properties.getBool('enabled_preference');
 ```
-...
-#### Static Quick Actions (via tiapp.xml)
 
-Static shortcuts are defined in `tiapp.xml` and available immediately when the app is installed.
+## 5. Quick Actions and 3D Touch
 
-- **Required keys**: `UIApplicationShortcutItemTitle`, `UIApplicationShortcutItemType`
-- **Optional keys**: `UIApplicationShortcutItemSubtitle`, `UIApplicationShortcutItemIconType`, `UIApplicationShortcutItemIconFile`, `UIApplicationShortcutItemUserInfo`
+### Static Quick Actions (via tiapp.xml)
+
+Static shortcuts are defined in `tiapp.xml` and available immediately after install.
+
+- Required keys: `UIApplicationShortcutItemTitle`, `UIApplicationShortcutItemType`
+- Optional keys: `UIApplicationShortcutItemSubtitle`, `UIApplicationShortcutItemIconType`, `UIApplicationShortcutItemIconFile`, `UIApplicationShortcutItemUserInfo`
 
 ```xml
 <ios>
@@ -198,7 +200,7 @@ Quick action titles and subtitles can be localized using `i18n/LANG/app.xml` (no
 
 To use custom images for quick action icons, enable app thinning in `tiapp.xml` with `<use-app-thinning>true</use-app-thinning>` inside the `<ios>` element.
 
-#### Dynamic Quick Actions
+### Dynamic Quick Actions
 
 ```javascript
 if (Ti.UI.iOS.forceTouchSupported) {
@@ -223,13 +225,13 @@ if (Ti.UI.iOS.forceTouchSupported) {
 }
 ```
 
-#### Handling Quick Actions
+### Handle quick actions
 
 ```javascript
 Ti.App.iOS.addEventListener('shortcutitemclick', (e) => {
   Ti.API.info(`Shortcut clicked: ${e.itemtype}`);
 
-  switch(e.itemtype) {
+  switch (e.itemtype) {
     case 'com.myapp.add':
       addNewItem();
       break;
@@ -243,11 +245,11 @@ Ti.App.iOS.addEventListener('shortcutitemclick', (e) => {
 });
 ```
 
-### Peek and Pop
+### Peek and pop
 
-Peek provides a preview of content, Pop opens it fully.
+Peek shows a preview, Pop opens the full view.
 
-#### Enabling Peek and Pop
+#### Enable peek and pop
 
 ```javascript
 if (Ti.UI.iOS.forceTouchSupported) {
@@ -256,11 +258,11 @@ if (Ti.UI.iOS.forceTouchSupported) {
   const detail = Alloy.createController('detail').getView();
 
   const shareAction = Ti.UI.iOS.createPreviewAction({
-    title: "Share",
+    title: 'Share',
     style: Ti.UI.iOS.PREVIEW_ACTION_STYLE_DEFAULT
   });
 
-  shareAction.addEventListener('click', (e) => {
+  shareAction.addEventListener('click', () => {
     // Handle share action
   });
 
@@ -284,7 +286,7 @@ if (Ti.UI.iOS.forceTouchSupported) {
 }
 ```
 
-#### Preview Action Styles
+#### Preview action styles
 
 ```javascript
 Ti.UI.iOS.PREVIEW_ACTION_STYLE_DEFAULT
@@ -292,9 +294,9 @@ Ti.UI.iOS.PREVIEW_ACTION_STYLE_SELECTED  // Blue background
 Ti.UI.iOS.PREVIEW_ACTION_STYLE_DESTRUCTIVE  // Red background
 ```
 
-#### Peek and Pop Details
+#### Peek and pop details
 
-- Use the `contentHeight` property on the preview context to control the peek preview height (e.g., `contentHeight: 400` as shown above).
+- Use `contentHeight` on the preview context to control preview height (for example `contentHeight: 400`).
 - Use `Ti.UI.iOS.createPreviewActionGroup()` to group related preview actions into a submenu:
 
 ```javascript
@@ -308,9 +310,9 @@ const actionGroup = Ti.UI.iOS.createPreviewActionGroup({
 });
 ```
 
-> **Important**: 3D Touch features (Peek and Pop, quick actions with force) can ONLY be tested on physical devices with 3D Touch hardware. The iOS Simulator does not support force touch.
+Important: 3D Touch features (peek and pop, quick actions with force) can only be tested on physical devices with 3D Touch hardware. The iOS Simulator does not support force touch.
 
-## 6. Navigation Bar (iOS)
+## 6. Navigation bar (iOS)
 
 ### NavigationWindow
 
@@ -358,7 +360,7 @@ const toolbar = Ti.UI.createToolbar({
 win.add(toolbar);
 ```
 
-### System Buttons
+### System buttons
 
 ```javascript
 Ti.UI.iOS.SystemButton.DONE
@@ -371,9 +373,9 @@ Ti.UI.iOS.SystemButton.FIXED_SPACE
 // ... and more
 ```
 
-## 7. Tab Bar
+## 7. Tab bar
 
-### Creating Tab Bar
+### Create a tab bar
 
 ```javascript
 const tabGroup = Ti.UI.createTabGroup();
@@ -396,7 +398,7 @@ tabGroup.addTab(tab2);
 tabGroup.open();
 ```
 
-### Tab Bar Customization (iOS)
+### Tab bar customization (iOS)
 
 ```javascript
 tabGroup.setActiveTabIconColor('blue');
@@ -409,7 +411,7 @@ win1.tabBarHidden = true;
 tabGroup.tabsStyle = Ti.UI.iOS.TABS_STYLE_BOTTOM;
 ```
 
-## 8. Activity Indicator
+## 8. Activity indicator
 
 ```javascript
 const activityIndicator = Ti.UI.createActivityIndicator({
@@ -425,7 +427,7 @@ activityIndicator.show();
 activityIndicator.hide();
 ```
 
-### iOS-Specific Location
+### iOS-specific location
 
 ```javascript
 const activityIndicator = Ti.UI.createActivityIndicator({
@@ -435,7 +437,7 @@ const activityIndicator = Ti.UI.createActivityIndicator({
 });
 ```
 
-## 9. Platform Best Practices
+## 9. Platform best practices
 
 ### Follow iOS Human Interface Guidelines
 
@@ -445,7 +447,7 @@ const activityIndicator = Ti.UI.createActivityIndicator({
 - Use Popovers for auxiliary content (iPad)
 - Respect 3D Touch conventions
 
-### iOS-Specific Patterns
+### iOS-specific patterns
 
 ```javascript
 // Use system buttons for standard actions
@@ -465,30 +467,30 @@ const view = Ti.UI.createView({
 });
 ```
 
-## 10. Common Issues
+## 10. Common issues
 
-### Settings Not Appearing
+### Settings not appearing
 
-**Problem**: Settings not visible in Settings app
+Problem: Settings are not visible in the Settings app.
 
-**Solutions**:
-1. Clean and rebuild project
+Solutions:
+1. Clean and rebuild the project
 2. Check plist syntax
-3. Ensure Settings.bundle is in platform/iphone/
-4. Kill and relaunch Settings app
+3. Ensure Settings.bundle is in `platform/iphone/`
+4. Kill and relaunch the Settings app
 
-### 3D Touch Not Working
+### 3D Touch not working
 
-**Problem**: 3D Touch features don't respond
+Problem: 3D Touch features do not respond.
 
-**Solutions**:
-1. Must test on physical 3D Touch device
+Solutions:
+1. Test on a physical device with 3D Touch hardware
 2. Check `Ti.UI.iOS.forceTouchSupported` before using
 3. Ensure iOS 9 or later
 4. Verify `previewContext` is properly attached
 
-### SplitWindow Issues
+### SplitWindow issues
 
-**Problem**: Master view not visible in portrait
+Problem: Master view is not visible in portrait.
 
-**Solution**: This is default behavior. Use `showMasterViewInPopover()` or handle via NavigationWindow.
+Solution: This is default behavior. Use `showMasterViewInPopover()` or handle it via NavigationWindow.

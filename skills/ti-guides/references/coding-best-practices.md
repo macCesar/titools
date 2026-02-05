@@ -1,36 +1,40 @@
-# Coding Best Practices
+# Coding best practices
 
-The recommended standard for Titanium apps is a single-context, modular pattern with well-structured code and well-organized resources.
+Titanium apps are easiest to maintain when they use a single-context, modular pattern with clear structure and organized resources.
 
-## 1. Scope Management
-- **Avoid Global Scope**: Global variables are not automatically garbage collected and can cause naming conflicts.
-- **Always use `let` or `const`**: (Original guide says `var`, but modernization rules apply). Omitting declarations places variables in the global scope.
+## 1. Scope management
 
-## 2. Memory Leak Prevention
-- **Global Event Listeners**: Listeners on `Ti.App`, `Ti.Geolocation`, etc., will leak memory if they reference locally scoped objects unless explicitly removed.
+- Avoid global scope. Global variables are not automatically garbage collected and can create naming conflicts.
+- Always use `let` or `const`. The original guide uses `var`, but modern code should not. Omitting declarations places variables in global scope.
+
+## 2. Memory leak prevention
+
+- Listeners on `Ti.App`, `Ti.Geolocation`, and similar globals can leak memory if they reference local objects and are not removed.
 ```javascript
-// ANTI-PATTERN
+// Anti-pattern
 Ti.App.addEventListener('data:sync', (e) => {
   localView.text = e.text // localView is now leaked
 })
 ```
-- **Rule**: Global events should only handle global objects. Always `removeEventListener` during cleanup.
+- Rule: global events should only handle global objects. Always `removeEventListener` during cleanup.
 
-## 3. Event Naming Conventions
-- **No Spaces in Event Names**: Using spaces in custom event names causes issues with Backbone.js and other libraries that use spaces as delimiters.
+## 3. Event naming conventions
+
+- Do not use spaces in event names. Spaces can cause issues with Backbone.js and other libraries that split event names on spaces.
 ```javascript
-// ❌ WRONG - may fire multiple times
+// Wrong - may fire multiple times
 Ti.App.fireEvent('my event')
 
-// ✅ CORRECT - use colon or underscore
+// Correct - use colon or underscore
 Ti.App.fireEvent('my:event')
 Ti.App.fireEvent('my_event')
 ```
 
 ## 4. Performance
-- **Defer Script Loading**: Evaluate JavaScript only when needed. Don't `require` modules at startup if they are only for specific screens.
 
-**Lazy script loading example:**
+- Defer script loading. Only `require` modules when you need them.
+
+Lazy script loading example:
 ```javascript
 // must be loaded at launch
 const WindowOne = require('ui/WindowOne').WindowOne;
@@ -52,15 +56,16 @@ win1.addEventListener('click', () => {
 });
 ```
 
-- **Bridge Efficiency**: Minimize requests for device properties like `Ti.Platform.osname`. Store them in a local variable once.
-- **Avoid Extending Ti Namespace**: Ti namespace objects are proxy representations of native OS components. Properties set on them may be stored on the proxy but won't be passed to the native object. Arrays stored on proxies return copies, not live references. There is no guarantee properties will persist across SDK versions. Use native modules instead to extend core functionality.
+- Bridge efficiency: minimize requests for device properties like `Ti.Platform.osname`. Store them in a local variable.
+- Avoid extending the `Ti` namespace. `Ti` objects are proxies to native components. Properties set on them may not reach the native object, arrays return copies, and persistence across SDK versions is not guaranteed. Use modules instead.
 
-## 5. App Architecture Recommendations
+## 5. App architecture recommendations
 
-### Modular Components with CommonJS (Recommended)
-Titanium's primary recommended architecture. Discrete and independent building blocks that eliminate global variables. See `commonjs-advanced.md` for detailed module patterns and path resolution.
+### Modular components with CommonJS (recommended)
 
-**MyModule.js**
+Titanium's primary recommended architecture. It uses discrete modules and avoids globals. See `commonjs-advanced.md` for module patterns and path resolution.
+
+MyModule.js:
 ```javascript
 // Private variable
 const defaultMessage = "Hello world";
@@ -74,14 +79,15 @@ exports.helloWorld = () => {
 }
 ```
 
-**app.js**
+app.js:
 ```javascript
 const myModule = require('/MyModule');
 myModule.sayHello('User');
 ```
 
-### Custom Objects as Components
-Popular for rapid deployment. Uses a namespace hierarchy. However, this pattern is less performant than CommonJS modules. Memory management can be difficult as object references may persist after they're no longer needed.
+### Custom objects as components
+
+Popular for rapid deployment. It uses a namespace hierarchy. This pattern is less efficient than CommonJS modules, and object references can persist after they are no longer needed.
 
 ```javascript
 const myapp = {};
@@ -94,19 +100,22 @@ const myapp = {};
 })();
 ```
 
-### Classical-based Patterns
-Not recommended as JavaScript is not a class-based language. It confuses classes and objects and is slower to implement in rapid prototyping.
+### Classical-based patterns
 
-## 6. Security Best Practices
-- **No Sensitive Data in Non-JS Files**: JavaScript files are minified and obfuscated during build, but images, JSON files, SQLite databases, and other non-.js files are packaged as-is. APK and IPA files are essentially ZIP files that can be extracted.
+Not recommended. JavaScript is not class-based in the same way, and this approach adds overhead during rapid prototyping.
+
+## 6. Security best practices
+
+- Do not store sensitive data in non-JS files. JavaScript files are minified and obfuscated, but images, JSON, SQLite databases, and other non-JS files are packaged as-is. APK and IPA files are ZIP files that can be extracted.
 ```javascript
-// ❌ WRONG - API keys visible in app/assets/config.json
+// Wrong - API keys visible in app/assets/config.json
 const config = require('assets/config.json')
 
-// ✅ CORRECT - Store in code or use secure storage
+// Correct - store in code or use secure storage
 const API_KEY = Ti.App.Properties.getString('api_key')
 ```
 
-## 7. Multiplatform Strategies
-- **Code Branching**: Use for small differences.
-- **Platform Files**: Use `.ios.js` or `.android.js` for major logic differences to keep code readable.
+## 7. Multiplatform strategies
+
+- Code branching: use for small differences.
+- Platform files: use `.ios.js` or `.android.js` for major logic differences so code stays readable.

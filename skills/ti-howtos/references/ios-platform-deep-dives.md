@@ -1,9 +1,9 @@
-# iOS Platform Deep Dives
+# iOS platform deep dives
 
-## 1. iOS 17+ Privacy Requirements (Critical)
-Apple requires declaring the use of certain APIs to prevent "fingerprinting".
+## 1. iOS 17+ privacy requirements (critical)
+Apple requires declaring the use of certain APIs to prevent fingerprinting.
 
-### PrivacyInfo.xcprivacy File
+### PrivacyInfo.xcprivacy file
 Create this file in `app/assets/iphone/` (Alloy) or `Resources/iphone/` (Classic):
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -22,17 +22,17 @@ Create this file in `app/assets/iphone/` (Alloy) or `Resources/iphone/` (Classic
 </dict>
 </plist>
 ```
-*Common categories: `UserDefaults` (Ti.App.Properties), `FileTimestamp` (file.createdAt), `SystemBootTime`.*
+Common categories: `UserDefaults` (Ti.App.Properties), `FileTimestamp` (file.createdAt), `SystemBootTime`.
 
-## 2. Background Services & Silent Push
+## 2. Background services and silent push
 
 ### Overview
 iOS allows limited background execution. For large downloads, use the `com.titaniumsdk.urlSession` module.
 
-### Silent Push (Background Update)
-Allows waking up the app to download content without showing a notification to the user.
+### Silent push (background update)
+Wakes up the app to download content without showing a notification.
 
-**tiapp.xml**:
+`tiapp.xml`:
 ```xml
 <key>UIBackgroundModes</key>
 <array>
@@ -40,18 +40,18 @@ Allows waking up the app to download content without showing a notification to t
 </array>
 ```
 
-**app.js**:
+`app.js`:
 ```javascript
 Ti.App.iOS.addEventListener('silentpush', (e) => {
-    // Start download or update
-    Ti.API.info(`Data received: ${JSON.stringify(e)}`);
+  // Start download or update
+  Ti.API.info(`Data received: ${JSON.stringify(e)}`);
 
-    // Mandatory to call upon completion (max 30 seconds)
-    Ti.App.iOS.endBackgroundHandler(e.handlerId);
+  // Mandatory to call upon completion (max 30 seconds)
+  Ti.App.iOS.endBackgroundHandler(e.handlerId);
 });
 ```
 
-### Background Fetch
+### Background fetch
 ```javascript
 // Enable in tiapp.xml:
 // <key>UIBackgroundModes</key>
@@ -61,58 +61,58 @@ Ti.App.iOS.addEventListener('silentpush', (e) => {
 Ti.App.iOS.setMinimumBackgroundFetchInterval(Ti.App.iOS.BACKGROUNDFETCHINTERVAL_MIN);
 
 Ti.App.iOS.addEventListener('backgroundfetch', (e) => {
-    // Fetch new data
-    Ti.API.info('Background fetch triggered');
+  // Fetch new data
+  Ti.API.info('Background fetch triggered');
 
-    // Must call endBackgroundHandler when done (max 30 seconds)
-    Ti.App.iOS.endBackgroundHandler(e.handlerId);
+  // Must call endBackgroundHandler when done (max 30 seconds)
+  Ti.App.iOS.endBackgroundHandler(e.handlerId);
 });
 
 // To disable background fetch:
 // Ti.App.iOS.setMinimumBackgroundFetchInterval(Ti.App.iOS.BACKGROUNDFETCHINTERVAL_NEVER);
 ```
 
-### URL Session Module
-For large downloads that continue even if the app is suspended, use the `com.titaniumsdk.urlSession` module:
+### URL Session module
+For large downloads that continue even if the app is suspended, use `com.titaniumsdk.urlSession`:
 
 ```javascript
 const urlSession = require('com.titaniumsdk.urlSession');
 
 const config = urlSession.createSessionConfiguration({
-    identifier: 'com.myapp.downloads'
+  identifier: 'com.myapp.downloads'
 });
 
 const session = urlSession.createSession({
-    configuration: config
+  configuration: config
 });
 
 // Start a download task
 session.downloadTask({
-    url: 'https://example.com/largefile.zip'
+  url: 'https://example.com/largefile.zip'
 });
 
 // Monitor progress
 session.addEventListener('downloadprogress', (e) => {
-    Ti.API.info(`Progress: ${e.totalBytesWritten}/${e.totalBytesExpectedToWrite}`);
+  Ti.API.info(`Progress: ${e.totalBytesWritten}/${e.totalBytesExpectedToWrite}`);
 });
 
 session.addEventListener('downloadcompleted', (e) => {
-    Ti.API.info(`Download saved to: ${e.data}`);
+  Ti.API.info(`Download saved to: ${e.data}`);
 });
 
 session.addEventListener('sessioncompleted', (e) => {
-    if (!e.success) {
-        Ti.API.error(`Session error: ${e.errorDescription}`);
-    }
+  if (!e.success) {
+    Ti.API.error(`Session error: ${e.errorDescription}`);
+  }
 });
 
 // Invalidate session when no longer needed
 session.invalidateAndCancel();
 ```
 
-## 3. iCloud Services & Backup Control
+## 3. iCloud services and backup control
 
-### Disable Individual Backup (Best Practice)
+### Disable individual backup (best practice)
 Apple rejects apps that upload unnecessary data to iCloud. Disable backup for temporary or recreatable files.
 
 ```javascript
@@ -120,49 +120,49 @@ const file = Ti.Filesystem.getFile(Ti.Filesystem.applicationDataDirectory, 'cach
 file.remoteBackup = false; // Prevents upload to iCloud/iTunes
 ```
 
-### Recursive Folder Backup Disable
+### Recursive folder backup disable
 ```javascript
 function disableiCloudBackup(folder) {
-    const dir = Ti.Filesystem.getFile(folder);
-    const files = dir.getDirectoryListing();
-    files.forEach((name) => {
-        const f = Ti.Filesystem.getFile(folder, name);
-        f.remoteBackup = false;
-        if (f.isDirectory()) disableiCloudBackup(f.nativePath);
-    });
+  const dir = Ti.Filesystem.getFile(folder);
+  const files = dir.getDirectoryListing();
+  files.forEach((name) => {
+    const f = Ti.Filesystem.getFile(folder, name);
+    f.remoteBackup = false;
+    if (f.isDirectory()) disableiCloudBackup(f.nativePath);
+  });
 }
 ```
 
-## 4. WatchKit & Ti.WatchSession
+## 4. WatchKit and Ti.WatchSession
 
 For watchOS 2+, use `Ti.WatchSession` for bidirectional communication.
 
-### Activate Session
+### Activate session
 ```javascript
 if (Ti.WatchSession.isSupported) {
-    Ti.WatchSession.activateSession();
+  Ti.WatchSession.activateSession();
 }
 ```
 
-### Send Message (Immediate)
+### Send message (immediate)
 ```javascript
 if (Ti.WatchSession.isReachable) {
-    Ti.WatchSession.sendMessage({
-        orderId: '123',
-        status: 'shipped'
-    });
+  Ti.WatchSession.sendMessage({
+    orderId: '123',
+    status: 'shipped'
+  });
 }
 ```
 
-### Receive Data from Watch
+### Receive data from Watch
 ```javascript
 Ti.WatchSession.addEventListener('receivemessage', (e) => {
-    Ti.API.info(`Message from Watch: ${e.message}`);
+  Ti.API.info(`Message from Watch: ${e.message}`);
 });
 ```
 
-### Provisioning Profiles for Watch
-Both the iOS app and WatchKit extension need separate provisioning profiles. Configure in tiapp.xml:
+### Provisioning profiles for Watch
+Both the iOS app and WatchKit extension need separate provisioning profiles. Configure in `tiapp.xml`:
 ```xml
 <ios>
     <extensions>
@@ -178,9 +178,9 @@ Both the iOS app and WatchKit extension need separate provisioning profiles. Con
 </ios>
 ```
 
-> **Note**: For Xcode 8+, ensure your Team ID matches across all targets.
+Note: for Xcode 8+, ensure your Team ID matches across all targets.
 
-## 5. SiriKit & Siri Intents
+## 5. SiriKit and Siri intents
 
 Allows your app to respond to Siri voice commands (Messaging, Payments, Workouts).
 
@@ -190,8 +190,8 @@ Allows your app to respond to Siri voice commands (Messaging, Payments, Workouts
 <string>Siri will use your voice to send messages in this app.</string>
 ```
 
-### Siri Extensions
-Requires creating an **Intents Extension** in Xcode and adding it to the `extensions/` folder of your project. Then register it in `tiapp.xml`:
+### Siri extensions
+Create an Intents Extension in Xcode and add it to the `extensions/` folder. Then register it in `tiapp.xml`:
 ```xml
 <ios>
     <extensions>
@@ -206,46 +206,46 @@ Requires creating an **Intents Extension** in Xcode and adding it to the `extens
 </ios>
 ```
 
-### Implementation Steps
-1. **Register App ID** with SiriKit capability in Apple Developer Portal
-2. **Create Intent Extension** in Xcode (File > New > Target > Intents Extension)
-3. **Configure entitlements** — add `com.apple.developer.siri` entitlement
-4. **Add extension to project** — place in `extensions/` folder
-5. **Register in tiapp.xml** with provisioning profiles for the extension target
-6. **Handle intents** in the native extension code (Swift/Objective-C)
+### Implementation steps
+1. Register App ID with SiriKit capability in Apple Developer Portal.
+2. Create Intents Extension in Xcode (File > New > Target > Intents Extension).
+3. Configure entitlements (add `com.apple.developer.siri`).
+4. Add extension to project (place in `extensions/` folder).
+5. Register in `tiapp.xml` with provisioning profiles for the extension target.
+6. Handle intents in the native extension code (Swift/Objective-C).
 
-> **Note**: SiriKit requires native code in the Intent Extension. The Titanium app receives results via `continueactivity` events.
+Note: SiriKit requires native code in the Intent Extension. The Titanium app receives results via `continueactivity` events.
 
-## 6. Spotlight Search (Core Spotlight)
+## 6. Spotlight search (Core Spotlight)
 
-Indexes your app's content to appear in global iOS search results.
+Indexes your app content to appear in global iOS search results.
 
 ```javascript
 const itemAttr = Ti.App.iOS.createSearchableItemAttributeSet({
-    itemContentType: Ti.App.iOS.UTTYPE_TEXT,
-    title: 'My Article',
-    contentDescription: 'Content description...',
-    keywords: ['titanium', 'help']
+  itemContentType: Ti.App.iOS.UTTYPE_TEXT,
+  title: 'My Article',
+  contentDescription: 'Content description...',
+  keywords: ['titanium', 'help']
 });
 
 const item = Ti.App.iOS.createSearchableItem({
-    uniqueIdentifier: 'id-123',
-    domainIdentifier: 'articles',
-    attributeSet: itemAttr
+  uniqueIdentifier: 'id-123',
+  domainIdentifier: 'articles',
+  attributeSet: itemAttr
 });
 
 const indexer = Ti.App.iOS.createSearchableIndex();
 indexer.addToDefaultSearchableIndex([item], (e) => {
-    if (e.success) Ti.API.info('Indexed!');
+  if (e.success) Ti.API.info('Indexed!');
 });
 ```
 
-## 7. Core Motion Module
+## 7. Core Motion module
 
 ### Overview
 Core Motion provides access to hardware sensors: accelerometer, gyroscope, magnetometer, and more.
 
-**Requirements**:
+Requirements:
 - Add module to `tiapp.xml`:
 ```xml
 <modules>
@@ -253,10 +253,10 @@ Core Motion provides access to hardware sensors: accelerometer, gyroscope, magne
 </modules>
 ```
 
-- **Can only test on device** - not simulator
+- Can only test on device, not simulator
 - Motion Activity permission required for Activity API
 
-### Basic Workflow
+### Basic workflow
 
 1. Require the module:
 ```javascript
@@ -273,7 +273,7 @@ if (Accelerometer.isAccelerometerAvailable()) {
 
 3. Start updates:
 ```javascript
-Accelerometer.setAccelerometerUpdateInterval(1000);  // 1 second
+Accelerometer.setAccelerometerUpdateInterval(1000); // 1 second
 Accelerometer.startAccelerometerUpdates((e) => {
   if (e.success) {
     const data = e.acceleration;
@@ -287,11 +287,11 @@ Accelerometer.startAccelerometerUpdates((e) => {
 Accelerometer.stopAccelerometerUpdates();
 ```
 
-### Coordinate System
+### Coordinate system
 Hold device in portrait mode, screen facing you:
-- **X-axis**: Width (positive = right, negative = left)
-- **Y-axis**: Height (positive = up, negative = down)
-- **Z-axis**: Through screen (positive = toward screen, negative = behind)
+- X-axis: width (positive = right, negative = left)
+- Y-axis: height (positive = up, negative = down)
+- Z-axis: through screen (positive = toward screen, negative = behind)
 
 ### Accelerometer
 
@@ -312,7 +312,7 @@ if (Accelerometer.isAccelerometerAvailable()) {
 }
 ```
 
-**Use for**: Shake detection, device orientation, movement detection.
+Use for: shake detection, device orientation, movement detection.
 
 ### Gyroscope
 
@@ -332,11 +332,11 @@ if (Gyroscope.isGyroAvailable()) {
 }
 ```
 
-**Use for**: Rotation gestures, 3D motion tracking, enhanced UI.
+Use for: rotation gestures, 3D motion tracking, enhanced UI.
 
 ### Magnetometer
 
-Measures magnetic field strength (microteslas). Acts as digital compass.
+Measures magnetic field strength (microteslas). Acts as a digital compass.
 
 ```javascript
 var Magnetometer = CoreMotion.createMagnetometer();
@@ -349,11 +349,11 @@ if (Magnetometer.isMagnetometerAvailable()) {
 }
 ```
 
-**Use for**: Compass direction, magnetic field detection.
+Use for: compass direction, magnetic field detection.
 
-### Device Motion
+### Device motion
 
-Combines accelerometer, gyroscope, magnetometer for attitude and user acceleration.
+Combines accelerometer, gyroscope, and magnetometer for attitude and user acceleration.
 
 ```javascript
 var DeviceMotion = CoreMotion.createDeviceMotion();
@@ -383,16 +383,16 @@ if (DeviceMotion.isDeviceMotionAvailable()) {
 }
 ```
 
-**Attitude formats**:
+Attitude formats:
 - Pitch/Roll/Yaw (Euler angles)
 - Quaternion (w, x, y, z)
 - Rotation Matrix (m11-m33)
 
-**Reference Frames**:
-- `ATTITUDE_REFERENCE_FRAME_X_ARBITRARY_Z_VERTICAL` - Default
-- `ATTITUDE_REFERENCE_FRAME_X_ARBITRARY_CORRECTED_Z_VERTICAL` - Uses magnetometer for yaw
-- `ATTITUDE_REFERENCE_FRAME_X_MAGNETIC_NORTH_Z_VERTICAL` - Magnetic north
-- `ATTITUDE_REFERENCE_FRAME_X_TRUE_NORTH_Z_VERTICAL` - True north (requires location)
+Reference frames:
+- `ATTITUDE_REFERENCE_FRAME_X_ARBITRARY_Z_VERTICAL` - default
+- `ATTITUDE_REFERENCE_FRAME_X_ARBITRARY_CORRECTED_Z_VERTICAL` - uses magnetometer for yaw
+- `ATTITUDE_REFERENCE_FRAME_X_MAGNETIC_NORTH_Z_VERTICAL` - magnetic north
+- `ATTITUDE_REFERENCE_FRAME_X_TRUE_NORTH_Z_VERTICAL` - true north (requires location)
 
 ### Activity API
 
@@ -417,10 +417,10 @@ MotionActivity.startActivityUpdates((e) => {
 });
 ```
 
-**Query historical activity**:
+Query historical activity:
 ```javascript
 var endDate = new Date();
-var startDate = new Date(endDate.getTime() - 60 * 60 * 1000);  // 1 hour ago
+var startDate = new Date(endDate.getTime() - 60 * 60 * 1000); // 1 hour ago
 
 MotionActivity.queryActivity({
   start: startDate,
@@ -431,7 +431,7 @@ MotionActivity.queryActivity({
 });
 ```
 
-**Requires Motion Activity permission** in tiapp.xml:
+Requires Motion Activity permission in `tiapp.xml`:
 ```xml
 <key>NSMotionUsageDescription</key>
 <string>Need motion data for fitness tracking</string>
@@ -445,7 +445,7 @@ const Pedometer = CoreMotion.createPedometer();
 if (Pedometer.isStepCountingAvailable()) {
   // Start live updates
   Pedometer.startPedometerUpdates({
-    start: new Date(new Date().getTime() - (60 * 60 * 1000))  // From 1 hour ago
+    start: new Date(new Date().getTime() - (60 * 60 * 1000)) // From 1 hour ago
   }, (e) => {
     Ti.API.info(`Steps: ${e.numberOfSteps}`);
     Ti.API.info(`Distance: ${e.distance} meters`);
@@ -456,7 +456,7 @@ if (Pedometer.isStepCountingAvailable()) {
 
 // Query historical data
 var endDate = new Date();
-var startDate = new Date(endDate.getTime() - 24 * 60 * 60 * 1000);  // 24 hours ago
+var startDate = new Date(endDate.getTime() - 24 * 60 * 60 * 1000); // 24 hours ago
 
 Pedometer.queryPedometerData({
   start: startDate,
@@ -466,17 +466,17 @@ Pedometer.queryPedometerData({
 });
 ```
 
-**Use for**: Fitness apps, step challenges, activity tracking.
+Use for: fitness apps, step challenges, activity tracking.
 
-### Core Motion Best Practices
+### Core Motion best practices
 
-1. **Always check availability** - Not all devices have all sensors
-2. **Set appropriate update intervals** - High frequency = more CPU/battery
-3. **Stop updates when not needed** - Conserve battery
-4. **Handle errors gracefully** - Sensor may fail or be unavailable
-5. **Test on physical device** - Sensors don't work in simulator
+1. Always check availability; not all devices have all sensors.
+2. Set appropriate update intervals; high frequency means more CPU/battery.
+3. Stop updates when not needed to conserve battery.
+4. Handle errors gracefully; sensors can fail or be unavailable.
+5. Test on physical devices; sensors do not work in simulator.
 
-## 8. Handoff User Activities
+## 8. Handoff user activities
 
 ```javascript
 const UserActivity = Ti.App.iOS.createUserActivity({
@@ -486,14 +486,14 @@ const UserActivity = Ti.App.iOS.createUserActivity({
     articleId: '123',
     scrollPosition: 450
   },
-  webpageURL: 'https://myapp.com/articles/123'  // For web fallback
+  webpageURL: 'https://myapp.com/articles/123' // For web fallback
 });
 
 // Mark as current activity
 UserActivity.becomeCurrent();
 ```
 
-### Handling Incoming Handoff
+### Handling incoming Handoff
 
 ```javascript
 Ti.App.iOS.addEventListener('continueactivity', function(e) {
@@ -508,14 +508,14 @@ Ti.App.iOS.addEventListener('continueactivity', function(e) {
 });
 ```
 
-### Invalidating Activities
+### Invalidating activities
 
 ```javascript
 // When user closes article
 UserActivity.invalidate();
 ```
 
-### Declaring Activity Types in tiapp.xml
+### Declaring activity types in tiapp.xml
 
 ```xml
 <key>NSUserActivityTypes</key>
@@ -532,7 +532,7 @@ UserActivity.invalidate();
 - Both devices must be on the same Wi-Fi network
 - Test with Safari first to verify Handoff works between your devices
 
-## 9. Additional iOS Features
+## 9. Additional iOS features
 
 ### 3D Touch (Force Touch)
 
@@ -551,7 +551,7 @@ if (Ti.Platform.forceTouchSupported) {
 }
 ```
 
-### Haptic Feedback
+### Haptic feedback
 
 ```javascript
 // Generate haptic feedback
@@ -567,7 +567,7 @@ generator.selectionChanged();
 generator.notificationOccurred(Ti.UI.iOS.HAPTIC_FEEDBACK_TYPE_SUCCESS);
 ```
 
-### Document Interaction
+### Document interaction
 
 Open documents in other apps:
 
@@ -583,13 +583,13 @@ docController.addEventListener('complete', function(e) {
 win.add(docController);
 ```
 
-## Best Practices Summary
+## Best practices summary
 
-1. **Background Services**: Use sparingly, stop when done
-2. **Core Motion**: Always check availability, test on device
-3. **Spotlight**: Index content as it changes
-4. **Handoff**: Provide web URL fallback
-5. **iCloud**: Use for small synced data, not large files
-6. **SiriKit**: Requires native extension, use only if beneficial
-7. **Permissions**: Always include usage descriptions in tiapp.xml
-8. **Testing**: Many features require physical device testing
+1. Background services: use sparingly; stop when done.
+2. Core Motion: check availability and test on device.
+3. Spotlight: index content as it changes.
+4. Handoff: provide a web URL fallback.
+5. iCloud: use for small synced data, not large files.
+6. SiriKit: requires native extension; use only if beneficial.
+7. Permissions: always include usage descriptions in `tiapp.xml`.
+8. Testing: many features require physical device testing.

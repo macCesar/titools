@@ -1,214 +1,210 @@
-# Debugging and Profiling
+# Debugging and profiling
 
-Comprehensive guide for debugging Titanium apps, managing memory, finding leaks, and using native debugging tools.
+Guide to debugging Titanium apps, managing memory, finding leaks, and using native tools.
 
-## Debugging Overview
+## Debugging overview
 
-### Essential Elements of Debugging
+### Essential elements of debugging
 
-1. **Gather Information** - Clear, accurate description of the problem
-2. **Reproduce** - Consistent steps to recreate the issue
-3. **Deduce** - Logical reasoning to isolate the cause
-4. **Experiment** - Try fixes iteratively, track what works
-5. **Be Tenacious** - Methodical persistence wins
-6. **Track Work** - Document bugs and solutions
+1. Gather information: clear, accurate description of the problem
+2. Reproduce: consistent steps to recreate the issue
+3. Deduce: logical reasoning to isolate the cause
+4. Experiment: try fixes iteratively, track what works
+5. Be tenacious: methodical persistence wins
+6. Track work: document bugs and solutions
 
-### Debugging Techniques
+### Debugging techniques
 
-**1. Print Tracing (Logging)**
+1. Print tracing (logging)
 ```javascript
 Ti.API.info(`Variable value: ${myVar}`);
 Ti.API.warn('Warning message');
 Ti.API.error('Error occurred');
 Ti.API.log('info', 'Custom level message');
-Ti.API.debug('Debug info');  // Only in dev mode
+Ti.API.debug('Debug info'); // Only in dev mode
 ```
 
-**2. Crash Log Evaluation**
+2. Crash log evaluation
 - Build logs (compilation errors)
 - Runtime logs (app crashes)
 - Simulator/Emulator logs
 - Device logs
 
-**3. Interactive Debugging**
+3. Interactive debugging
 - Breakpoints in Studio/IDE
 - Variable inspection
 - Step-through execution
 
----
+## Memory management
 
-## Memory Management
+### How JavaScript manages memory
 
-### How JavaScript Manages Memory
-
-**Garbage Collection:** JavaScript uses automatic "mark and sweep" garbage collection.
+Garbage collection: JavaScript uses automatic mark-and-sweep.
 
 1. Interpreter scans memory periodically
 2. Marks objects with active references
 3. Destroys unmarked objects
 4. Frees their memory
 
-**Implication:** Objects with no references are automatically cleaned up.
+Implication: objects with no references are cleaned up automatically.
 
-### How Titanium Manages Memory
+### How Titanium manages memory
 
-Titanium is a **bridge** between JavaScript and native OS:
+Titanium bridges JavaScript and native OS objects:
 
 ```javascript
 // JavaScript object + Native proxy
-const button = Ti.UI.createButton({title: 'Click me'});
+const button = Ti.UI.createButton({ title: 'Click me' });
 ```
 
-**Key Rule:** Setting JavaScript object to `null` destroys BOTH the JavaScript object AND the native proxy.
+Key rule: setting a JavaScript object to `null` destroys both the JavaScript object and the native proxy.
 
-### Releasing Memory Properly
+### Releasing memory properly
 
-**Complete cleanup:**
+Complete cleanup:
 ```javascript
-let view = Ti.UI.createView({backgroundColor: 'white'});
+let view = Ti.UI.createView({ backgroundColor: 'white' });
 win.add(view);
 
-// Later: remove AND nullify
+// Later: remove and nullify
 win.remove(view);
-view = null;  // Critical: destroys native proxy
+view = null; // Destroys native proxy
 ```
 
-**Incomplete cleanup (MEMORY LEAK):**
+Incomplete cleanup (memory leak):
 ```javascript
-let view = Ti.UI.createView({backgroundColor: 'white'});
+let view = Ti.UI.createView({ backgroundColor: 'white' });
 win.add(view);
 
 // Later: only remove
-win.remove(view);  // view object STILL EXISTS in memory!
+win.remove(view); // view object still exists in memory
 ```
 
-### Parent-Child Relationships
+### Parent-child relationships
 
 ```javascript
 // Good: children not referenced elsewhere
 let view = Ti.UI.createView({
-    backgroundColor: 'white'
+  backgroundColor: 'white'
 });
-view.add(Ti.UI.createButton({title: 'Click'}));  // Anonymous child
+view.add(Ti.UI.createButton({ title: 'Click' })); // Anonymous child
 
 win.remove(view);
-view = null;  // Destroys view AND button
+view = null; // Destroys view and button
 
 // Bad: children referenced separately
-const button = Ti.UI.createButton({title: 'Click'});
-let view = Ti.UI.createView({backgroundColor: 'white'});
+const button = Ti.UI.createButton({ title: 'Click' });
+let view = Ti.UI.createView({ backgroundColor: 'white' });
 view.add(button);
 
 win.remove(view);
-view = null;  // Destroys view, BUT button still exists!
-button = null;  // Now button is destroyed
+view = null; // Destroys view, but button still exists
+button = null; // Now button is destroyed
 ```
 
-### Platform Memory Limits
+### Platform memory limits
 
-| Platform | Memory Limit                           |
+| Platform | Memory limit                           |
 | -------- | -------------------------------------- |
 | iPhone   | ~10% of system memory                  |
 | iPad     | 30-50 MB (smaller is better)           |
 | Android  | 24-32 MB heap (128 MB with large heap) |
 
-**iOS Notes:**
-- Apple doesn't publish exact limits
-- "Jetsam" process can terminate your app
-- "Jetsam" in crash logs = memory issue
+Notes for iOS:
+- Apple does not publish exact limits
+- The jetsam process can terminate your app
+- "Jetsam" in crash logs often means a memory issue
 
-> **Important**: Memory ≠ storage. A 16GB device doesn't mean 16GB for your app. These limits may be higher on newer devices but always optimize for the lowest common denominator.
+Important: memory is not storage. A 16GB device does not mean 16GB for your app. Limits may be higher on newer devices, but optimize for the lowest common denominator.
 
----
+## Memory leak detection
 
-## Memory Leak Detection
+### Common leak sources
 
-### Common Leak Sources
-
-**1. Global Event Listeners**
+1. Global event listeners
 ```javascript
-// LEAK: Listener keeps reference to window
+// Leak: listener keeps reference to window
 Ti.App.addEventListener('custom:event', (e) => {
-    // Uses window variables
+  // Uses window variables
 });
 ```
 
-**Fix: Remove listeners when closing window**
+Fix: remove listeners when closing window
 ```javascript
 const myHandler = (e) => {
-    // Handle event
+  // Handle event
 };
 
 Ti.App.addEventListener('custom:event', myHandler);
 
 win.addEventListener('close', () => {
-    Ti.App.removeEventListener('custom:event', myHandler);
+  Ti.App.removeEventListener('custom:event', myHandler);
 });
 ```
 
-**2. Objects in Closures**
+2. Objects in closures
 ```javascript
-// LEAK: Closure retains object reference
+// Leak: closure retains object reference
 function createWindow() {
-    const data = [];  // Large array
-    return Ti.UI.createWindow({
-        listener: () => {
-            data.push('more');  // Closure reference
-        }
-    });
+  const data = []; // Large array
+  return Ti.UI.createWindow({
+    listener: () => {
+      data.push('more'); // Closure reference
+    }
+  });
 }
 ```
 
-**Fix:** Pass data as argument instead of closure reference.
+Fix: pass data as an argument instead of keeping it in a closure.
 
-**3. Hidden Views**
+3. Hidden views
 ```javascript
-// LEAK: Hidden view still consumes memory
-view.visible = false;  // Not enough!
+// Leak: hidden view still consumes memory
+view.visible = false; // Not enough
 ```
 
-**Fix:** Remove and nullify when not needed
+Fix: remove and nullify when not needed
 ```javascript
 view.visible = false;
 parent.remove(view);
 view = null;
 ```
 
-### Debugging Memory on iOS (Instruments)
+### Debugging memory on iOS (Instruments)
 
-**Setup:**
+Setup:
 1. Open app in iOS Simulator
 2. Xcode → Open Developer Tool → Instruments
-3. Choose **Allocations** template
+3. Choose Allocations template
 4. Choose Target → Your App
 5. Click Record
 
-**Key Columns:**
-| Column                            | What it Shows            |
-| --------------------------------- | ------------------------ |
-| **Persistent Bytes** (Live Bytes) | Memory currently in use  |
-| **#Persistent** (#Living)         | Active object count      |
-| **#Transient** (#Transitory)      | Ready to garbage collect |
+Key columns:
+| Column                            | What it shows           |
+| --------------------------------- | ----------------------- |
+| Persistent Bytes (Live Bytes)     | Memory currently in use |
+| #Persistent (#Living)             | Active object count     |
+| #Transient (#Transitory)          | Ready to garbage collect |
 
-**Identifying Leaks:**
+Identifying leaks:
 1. Filter for `Ti` prefix (Titanium objects)
-2. Watch **#Living** as you use app
-3. If it grows continuously = leak
-4. **#Transitory** growing is OK (will be GC'd)
+2. Watch #Living as you use the app
+3. If it grows continuously, you have a leak
+4. #Transitory growing is fine (will be GC'd)
 
-**Example Workflow:**
+Example workflow:
 ```
 1. Filter: "TiUITableView" (table views)
 2. Open/close a table view screen
 3. Click "Cause GC" (garbage collection)
 4. Check if #Living returns to previous value
-5. If not = leak in that screen
+5. If not, the leak is in that screen
 ```
 
-### Debugging Memory on Android (DDMS)
+### Debugging memory on Android (DDMS)
 
-**Setup:**
-1. Add to tiapp.xml:
+Setup:
+1. Add to `tiapp.xml`:
 ```xml
 <android xmlns:android="http://schemas.android.com/apk/res/android">
     <manifest>
@@ -221,25 +217,23 @@ view = null;
 2. Build app for emulator
 3. Open DDMS (Android Device Monitor)
 
-**Monitoring:**
+Monitoring:
 1. Select your app process
-2. Click **Update Heap** button
-3. Click **Cause GC** to force garbage collection
-4. Watch **Allocated** and **# Objects** values
+2. Click Update Heap
+3. Click Cause GC to force garbage collection
+4. Watch Allocated and # Objects values
 
-**Identifying Leaks:**
+Identifying leaks:
 1. Note initial values after GC
 2. Exercise app (open/close screens)
-3. Click **Cause GC** again
-4. If values don't return to baseline = leak
+3. Click Cause GC again
+4. If values do not return to baseline, there is a leak
 
----
-
-## Android Debugging Tools
+## Android debugging tools
 
 ### DDMS (Dalvik Debug Monitor Service)
 
-**Features:**
+Features:
 - View log output
 - Explore file system
 - Simulate network conditions
@@ -247,49 +241,49 @@ view = null;
 - Set GPS coordinates
 - Monitor memory
 
-#### Log Output with DDMS
+#### Log output with DDMS
 
 1. Open DDMS
 2. Select device/emulator
 3. View log in lower pane
 4. Add filter: Log Tag = `TiAPI`
 
-#### Simulate Network Conditions
+#### Simulate network conditions
 
-**Emulator Control** panel:
+Emulator Control panel:
 - Voice/Data state (home, roaming)
 - Data speed and latency
 - Test app behavior in poor conditions
 
-#### Simulate Calls/SMS
+#### Simulate calls/SMS
 
-**Emulator Control** → Telephony Actions:
+Emulator Control → Telephony Actions:
 - Incoming voice call
 - Incoming SMS message
 - Test app interruption handling
 
-#### Set GPS Coordinates
+#### Set GPS coordinates
 
-**Emulator Control** → Location Controls:
+Emulator Control → Location Controls:
 - Enter latitude/longitude
 - Click Send
-- Emulator uses these as "current location"
+- Emulator uses these as current location
 
-#### File System Exploration
+#### File system exploration
 
-**Device** → File Explorer:
+Device → File Explorer:
 - Browse entire file system
 - Pull files (copy to computer)
 - Push files (copy to device)
 - Delete files
 
-#### Memory Monitoring
+#### Memory monitoring
 
-Less useful for Titanium (JavaScript runs in one process), but can show overall memory trends.
+Less useful for Titanium (JavaScript runs in one process), but it can show overall memory trends.
 
 ### ADB (Android Debug Bridge)
 
-#### Log Output
+#### Log output
 
 ```bash
 # View all logs
@@ -310,7 +304,7 @@ adb logcat -s TiAPI
 adb logcat | grep TiAPI
 ```
 
-#### File System
+#### File system
 
 ```bash
 # Open shell
@@ -324,7 +318,7 @@ cd /some/path
 exit
 ```
 
-#### Transfer Files
+#### Transfer files
 
 ```bash
 # Copy file TO device
@@ -334,7 +328,7 @@ adb push local.txt /sdcard/local.txt
 adb pull /sdcard/remote.txt local.txt
 ```
 
-#### Access SQLite Databases
+#### Access SQLite databases
 
 ```bash
 adb shell
@@ -352,9 +346,9 @@ SELECT * FROM tablename;
 .exit
 ```
 
-### Creating Emulators
+### Creating emulators
 
-**Command Line:**
+Command line:
 ```bash
 # List available targets
 android list targets
@@ -366,31 +360,31 @@ android create avd -n my_emulator -t 1 -s WVGA800 --abi x86
 emulator -avd my_emulator
 ```
 
-**AVD Manager (GUI):**
+AVD Manager (GUI):
 ```bash
 android avd
 ```
 
-1. Click **New**
+1. Click New
 2. Enter name, select device/target
 3. Choose x86 ABI if available
-4. Click **OK**
+4. Click OK
 
-### Modifying Emulators
+### Modifying emulators
 
-**Increase disk space:**
+Increase disk space:
 Edit `~/.android/avd/<NAME>.avd/config.ini`:
 ```
 disk.dataPartition.size=1024m
 ```
 
-**Resize emulator:**
+Resize emulator:
 1. Close emulator
 2. AVD Manager → Select emulator → Edit
 3. Change resolution
 4. Save
 
-**Scale on-the-fly:**
+Scale on-the-fly:
 ```bash
 # Get emulator port
 adb devices
@@ -403,96 +397,88 @@ telnet localhost 5560
 window scale 0.75
 ```
 
----
-
-## iOS Debugging Tools
+## iOS debugging tools
 
 ### Instruments
 
-**Key Templates for Titanium Debugging:**
-- **Allocations** — Track object creation and live object counts. Look at "Persistent Bytes" (or "Live Bytes") and "#Persistent" (or "#Living") columns to track memory growth.
-- **Leaks** — Detect memory leaks in real-time. Shows objects that are allocated but never released.
-- **Time Profiler** — Identify CPU-intensive operations and bottlenecks.
-- **System Trace** — System-level events and thread activity.
-- **Zombies** — Detect messages sent to deallocated objects (debug builds only). Useful for tracking over-released objects.
+Key templates for Titanium debugging:
+- Allocations: track object creation and live object counts. Look at Persistent Bytes (Live Bytes) and #Persistent (#Living).
+- Leaks: detect memory leaks in real time. Shows objects that are allocated but never released.
+- Time Profiler: identify CPU-intensive operations and bottlenecks.
+- System Trace: system-level events and thread activity.
+- Zombies: detect messages sent to deallocated objects (debug builds only). Useful for over-released objects.
 
-### Xcode Build Debugging
+### Xcode build debugging
 
-For native debugging, open Xcode project in `build/iphone`:
+For native debugging, open the Xcode project in `build/iphone`:
 1. Product → Profile
 2. Choose Instruments template
-3. More accurate than attaching to running process
+3. More accurate than attaching to a running process
 
-### Console Logs
+### Console logs
 
-**Viewing in Studio:**
+Viewing in Studio:
 - Console panel shows build/run output
 
-**Viewing separately:**
+Viewing separately:
 ```bash
 # For running apps
 tail -f ~/Library/Logs/CoreSimulator/<SIMULATOR_ID>/system.log
 ```
 
----
+## 6. Automation and UI testing
 
-## 6. Automation and UI Testing
+For CI/CD pipelines, automated deployment, and functional testing, see:
 
-For continuous integration (CI/CD) pipelines, automated deployment, and functional testing, see:
+- Automation with Fastlane and Appium: `automation-fastlane-appium.md`
 
-- [Automation with Fastlane and Appium](./automation-fastlane-appium.md): Lane configuration, testing with Mocha/WebdriverIO, and store submission.
+## Best practices
 
-## Best Practices
+### Memory management
 
-### Memory Management
-
-1. **Always nullify objects** after removing from view hierarchy
-2. **Remove event listeners** when closing windows
-3. **Avoid global variables** - use namespaces/CommonJS
-4. **Use single execution context** - not multiple url-based windows
-5. **Be careful with closures** - they retain references
-6. **Hide vs Remove** - hide for temporary, remove/nullify for permanent
+1. Always nullify objects after removing them from the view hierarchy.
+2. Remove event listeners when closing windows.
+3. Avoid global variables; use namespaces or CommonJS.
+4. Use a single execution context, not multiple URL-based windows.
+5. Be careful with closures; they retain references.
+6. Hide vs remove: hide for temporary, remove/nullify for permanent.
 
 ### Debugging
 
-1. **Log strategically** - remove sensitive logs before production
-2. **Use descriptive log messages** - include variable values
-3. **Test on real devices** - simulators can miss issues
-4. **Profile early and often** - don't wait until crash
-5. **Reproduce consistently** - can't fix what you can't reproduce
-6. **Keep track of bugs** - use issue tracker
+1. Log strategically and remove sensitive logs before production.
+2. Use descriptive log messages and include variable values.
+3. Test on real devices; simulators miss issues.
+4. Profile early and often; do not wait for crashes.
+5. Reproduce consistently; you cannot fix what you cannot reproduce.
+6. Keep track of bugs; use an issue tracker.
 
 ### Performance
 
-1. **Avoid excessive polling** - use events when possible
-2. **Defer loading** - load data as needed, not all at once
-3. **Optimize images** - compress and use appropriate sizes
-4. **Minimize bridge crossings** - cache platform checks
-5. **Test on slow networks** - simulate poor conditions
-6. **Profile before optimizing** - measure first, then fix hotspots
+1. Avoid excessive polling; use events when possible.
+2. Defer loading; load data as needed.
+3. Optimize images; compress and use appropriate sizes.
+4. Minimize bridge crossings; cache platform checks.
+5. Test on slow networks; simulate poor conditions.
+6. Profile before optimizing; measure first, then fix hotspots.
 
----
-
-## Platform-Specific Notes
+## Platform-specific notes
 
 ### Android
 
-- **debuggable flag** - Required for native debugging
-- **Large heap** - Enable in tiapp.xml if needed
-- **ProGuard** - Can obfuscate and optimize code
-- **Multidex** - May be needed for very large apps
+- Debuggable flag: required for native debugging
+- Large heap: enable in `tiapp.xml` if needed
+- ProGuard: can obfuscate and optimize code
+- Multidex: may be needed for very large apps
 
 ### iOS
 
-- **Instruments** - Most powerful tool for iOS profiling
-- **Zombies** - Instruments tool to find over-released objects
-- **Allocation tracker** - Shows object creation/lifecycle
-- **Time Profiler** - Identifies CPU bottlenecks
-
----
+- Instruments: most powerful tool for iOS profiling
+- Zombies: Instruments tool to find over-released objects
+- Allocation tracker: shows object creation and lifecycle
+- Time Profiler: identifies CPU bottlenecks
 
 ## Resources
 
-- **Video:** Your Apps are Leaking (Codestrong 2011)
-- **Android DDMS Docs** - https://minimum-viable-product.github.io/marshmallow-docs/tools/debugging/ddms.html
-- **iOS Instruments Guide** - Apple Developer Documentation
+- Video: Your Apps are Leaking (Codestrong 2011)
+- Android DDMS docs: https://minimum-viable-product.github.io/marshmallow-docs/tools/debugging/ddms.html
+- iOS Instruments guide: Apple Developer Documentation

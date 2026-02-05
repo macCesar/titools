@@ -354,7 +354,7 @@ For UI objects that belong to a specific platform, use the `platform` attribute:
 <SplitWindow platform="ios"/>
 ```
 
-Additionally, use the alias `Ti` for `Titanium` when specifying namespaces.
+Also, use the alias `Ti` for `Titanium` when specifying namespaces.
 
 Many of the Titanium view proxies not part of the `Titanium.UI` namespace do not require that the `ns` attribute be explicitly set. The following elements are implicitly mapped to a namespace:
 

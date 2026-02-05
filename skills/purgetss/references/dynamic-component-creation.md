@@ -2,7 +2,7 @@
 
 ## Overview
 
-When creating components dynamically in Controllers (not declaratively in XML), PurgeTSS provides two powerful methods to apply utility classes:
+When creating components dynamically in Controllers (not declaratively in XML), PurgeTSS provides two methods to apply utility classes:
 
 1. **`$.UI.create()`** - Create components with PurgeTSS classes (Recommended)
 2. **`Alloy.createStyle()` + `applyProperties()`** - Apply PurgeTSS styles to existing components

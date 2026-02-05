@@ -1,11 +1,11 @@
-# Unit Testing Guide for Titanium + Alloy
+# Unit testing guide for Titanium + Alloy
 
 > **OPTIONAL - Advanced Topic**
 > This guide covers automated testing, which is OPTIONAL for Titanium/Alloy projects.
 > Testing is useful for teams practicing CI/CD, projects with complex business logic, or refactoring confidence.
 > If you prefer manual testing on device, you can safely skip this guide.
 
-## What CAN Be Tested (Without Compiling)
+## What can be tested (Without Compiling)
 
 **Pure JavaScript Logic:**
 - Services (authService, navigationService, etc.)
@@ -13,7 +13,7 @@
 - Business logic (calculations, data transformations)
 - Models (with mocked database)
 
-## What CANNOT Be Easily Tested
+## What cannot be easily tested
 
 **Requires Compiled App:**
 - Controllers (UI interactions)
@@ -23,11 +23,11 @@
 
 ---
 
-## Testing Philosophy
+## Testing philosophy
 
 **Test behavior, not implementation.** Focus on what the code does from the outside, not how it achieves it internally.
 
-## Project Structure
+## Project structure
 
 ```
 app/
@@ -52,9 +52,9 @@ app/
 │   │   └── setup.js         # Test environment setup
 ```
 
-## Writing Testable Code
+## Writing testable code
 
-### Dependency Injection for Testability
+### Dependency injection for testability
 
 ```javascript
 // BAD: Hard to test - direct dependency
@@ -86,7 +86,7 @@ describe('getUser', () => {
 })
 ```
 
-## Unit Testing Services
+## Unit testing services
 
 ```javascript
 // specs/unit/services/authService.spec.js
@@ -147,7 +147,7 @@ describe('AuthService', () => {
 })
 ```
 
-## Unit Testing Helpers
+## Unit testing helpers
 
 ```javascript
 // specs/unit/helpers/i18n.spec.js
@@ -184,7 +184,7 @@ describe('i18n Helper', () => {
 })
 ```
 
-## Integration Testing Controllers
+## Integration testing controllers
 
 ```javascript
 // specs/integration/controllers/login.spec.js
@@ -270,7 +270,7 @@ describe('Login Controller', () => {
 })
 ```
 
-## Mock Factory
+## Mock factory
 
 ```javascript
 // lib/testing/mocks.js
@@ -326,7 +326,7 @@ exports.Mocks = {
 }
 ```
 
-## Test Helper Functions
+## Test helper functions
 
 ```javascript
 // lib/testing/helpers.js
@@ -373,7 +373,7 @@ exports.TestHelpers = {
 }
 ```
 
-## Test Setup Configuration
+## Test setup configuration
 
 ```javascript
 // lib/testing/setup.js
@@ -396,7 +396,7 @@ afterAll(() => {
 })
 ```
 
-## Running Tests
+## Running tests
 
 ```bash
 # Run specific test suite
@@ -409,18 +409,18 @@ titanium test --coverage
 titanium test --specs app/specs/unit/services/authService.spec.js
 ```
 
-## Anti-Patterns to Avoid
+## Anti-patterns to avoid
 
-| Anti-Pattern               | Problem                        | Solution                        |
+| Anti-Pattern | Problem | Solution |
 | -------------------------- | ------------------------------ | ------------------------------- |
-| Testing private methods    | Breaks on refactoring          | Test public interface only      |
-| Mocking everything         | Tests pass, code fails         | Mock only external dependencies |
-| No cleanup in tests        | Memory leaks, interference     | Always cleanup in afterEach     |
-| Testing XML/TSS            | Fragile, implementation detail | Test rendered behavior instead  |
-| Hard dependencies          | Untestable code                | Use dependency injection        |
-| Shared state between tests | Flaky tests                    | Reset state in beforeEach       |
+| Testing private methods | Breaks on refactoring | Test public interface only |
+| Mocking everything | Tests pass, code fails | Mock only external dependencies |
+| No cleanup in tests | Memory leaks, interference | Always cleanup in afterEach |
+| Testing XML/TSS | Fragile, implementation detail | Test rendered behavior instead |
+| Hard dependencies | Untestable code | Use dependency injection |
+| Shared state between tests | Flaky tests | Reset state in beforeEach |
 
-## Test Checklist
+## Test checklist
 
 Before committing code, verify:
 

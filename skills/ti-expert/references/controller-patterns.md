@@ -1,15 +1,15 @@
-# Alloy Controller Patterns
+# Alloy controller patterns
 
-## Titanium Layout Rules
+## Titanium layout rules
 
 - Use `layout: 'horizontal'` for left-to-right
 - Use `layout: 'vertical'` for top-to-bottom
-- Omit `layout` for composite (absolute positioning — the default)
+- Omit `layout` for composite (absolute positioning, the default)
 - Use margins on children instead of padding on parent
 
 > For a complete View + TSS + Controller example, see the Quick Start in SKILL.md.
 
-## Animation Usage
+## Animation usage
 
 Use `Ti.UI.createAnimation()` for UI transitions.
 
@@ -36,7 +36,7 @@ function hide(callback) {
 }
 ```
 
-## Dynamic Styling
+## Dynamic styling
 
 To change styles dynamically, use `applyProperties()` to batch updates.
 
@@ -49,7 +49,7 @@ function setStatus(isActive) {
 }
 ```
 
-## Percentage-Based Layouts
+## Percentage-based layouts
 
 Use percentage widths in TSS for responsive column layouts.
 
@@ -66,7 +66,7 @@ Use percentage widths in TSS for responsive column layouts.
 "#colRight": { height: 80, width: '33.33%', backgroundColor: '#dbeafe' }
 ```
 
-## Controller Lifecycle Patterns
+## Controller lifecycle patterns
 
 Show init, focus, blur, close lifecycle:
 ```javascript
@@ -102,7 +102,7 @@ function cleanup() {
 $.cleanup = cleanup
 ```
 
-## Form Handling Patterns
+## Form handling patterns
 
 ```xml
 <!-- views/user/edit.xml -->
@@ -206,7 +206,7 @@ function setLoading(isLoading) {
 }
 ```
 
-## Loading State Patterns
+## Loading state patterns
 
 ```xml
 <!-- Skeleton loading pattern -->
@@ -261,7 +261,7 @@ async function loadData() {
 }
 ```
 
-## Modal and Dialog Patterns
+## Modal and dialog patterns
 
 ```javascript
 // AlertDialog
@@ -325,7 +325,7 @@ function openModal(route, params) {
 }
 ```
 
-## TabGroup Pattern
+## Tabgroup pattern
 
 ```xml
 <!-- views/main.xml -->
@@ -366,7 +366,7 @@ function updateNotificationBadge(count) {
 }
 ```
 
-## NavigationWindow Pattern (iOS)
+## Navigationwindow pattern (iOS)
 
 ```xml
 <!-- views/index.xml -->
@@ -403,7 +403,7 @@ function closeWindow(window, animated = true) {
 }
 ```
 
-## SearchBar with ListView
+## Searchbar with ListView
 
 ```xml
 <!-- views/contacts/list.xml -->
@@ -501,7 +501,7 @@ function cleanup() {
 $.cleanup = cleanup
 ```
 
-## Pull-to-Refresh Pattern
+## Pull-to-refresh pattern
 
 ```xml
 <ListView id="listView">

@@ -1,6 +1,6 @@
-# Architectural Patterns for Titanium + Alloy
+# Architectural patterns for Titanium + Alloy
 
-## 1. Native Module Abstraction (Wrapper)
+## 1. Native module abstraction (Wrapper)
 
 **Use when:** Using native modules like Maps, Biometrics, or specialized Media players.
 
@@ -41,7 +41,7 @@ exports.BiometricService = {
 }
 ```
 
-## 2. Repository Pattern for Data
+## 2. Repository pattern for data
 
 **Use when:** Complex data access, multiple data sources, or need to abstract SQLite/API.
 
@@ -98,7 +98,7 @@ exports.UserRepository = {
 }
 ```
 
-## 3. Service Layer Pattern
+## 3. Service layer pattern
 
 **Use when:** Business logic, orchestrating multiple operations.
 
@@ -148,7 +148,7 @@ exports.AuthService = {
 }
 ```
 
-## 4. Event Bus for Decoupling
+## 4. Event bus for decoupling
 
 **Use when:** Decoupled modules need to communicate without knowing about each other.
 
@@ -194,7 +194,7 @@ function cleanup() {
 $.cleanup = cleanup
 ```
 
-## 5. Factory Pattern for Dynamic Views
+## 5. Factory pattern for dynamic views
 
 **Use when:** Creating similar views with different configurations.
 
@@ -239,7 +239,7 @@ exports.createProductCard = function(product) {
 }
 ```
 
-## 6. Navigation Service Pattern
+## 6. Navigation service pattern
 
 **Use when:** Centralizing navigation with automatic cleanup and history management.
 
@@ -303,7 +303,7 @@ exports.Navigation = {
 }
 ```
 
-## 7. Collection Binding Pattern
+## 7. Collection binding pattern
 
 **Use when:** Binding API data to ListViews with automatic updates.
 
@@ -346,7 +346,7 @@ $.cleanup = cleanup
 </ListView>
 ```
 
-## 8. Cleanup Pattern
+## 8. Cleanup pattern
 
 **Use when:** Preventing memory leaks by removing global listeners.
 
@@ -395,7 +395,7 @@ function cleanup() {
 $.cleanup = cleanup
 ```
 
-## 9. Singleton Service Pattern
+## 9. Singleton service pattern
 
 **Use when:** Services that should have only one instance app-wide.
 

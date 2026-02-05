@@ -137,7 +137,7 @@ if (OS_IOS) {
 
 ### Passing Arguments
 
-When initializing an external controller, you can pass arguments to customize it, for instance, `const controller = Alloy.createController('controller', {args1: 'foo'})`. In the external controller, the special variable `$.args` is used to receive the arguments. Prior to Alloy 1.6, you needed to use `arguments[0]`. For example, suppose you want to add multiple TableViewRow objects to a TableView object.
+When initializing an external controller, you can pass arguments to customize it, for instance, `const controller = Alloy.createController('controller', {args1: 'foo'})`. In the external controller, the special variable `$.args` is used to receive the arguments. Before Alloy 1.6, you needed to use `arguments[0]`. For example, suppose you want to add multiple TableViewRow objects to a TableView object.
 
 For the TableViewRow object, called 'row', the view contains only the object, and the controller contains only a few lines of code to parse the arguments:
 

@@ -1,12 +1,12 @@
-# ListView & ScrollView Performance
+# ListView & ScrollView performance
 
-## Critical Rules
+## Critical rules
 
 1. **NEVER use `Ti.UI.SIZE` in ListView items** - Causes layout recalculation on every scroll
 2. **ALWAYS use fixed heights** - Pre-calculated heights enable fast scrolling
 3. **USE templates** - Reuse view instances instead of creating new ones
 
-## Optimized ListView Template
+## Optimized ListView template
 
 ```xml
 <!-- views/user/list.xml -->
@@ -47,7 +47,7 @@
 - Use margins on children for spacing (NOT padding on parent)
 - Use `width: Ti.UI.FILL, height: Ti.UI.FILL` for full width + height
 
-## Efficient Data Binding
+## Efficient data binding
 
 ```javascript
 // controllers/feed/list.js
@@ -83,7 +83,7 @@ function formatTimestamp(timestamp) {
 }
 ```
 
-## Image Loading & Caching
+## Image loading & caching
 
 ```javascript
 // lib/services/imageCache.js
@@ -147,9 +147,9 @@ exports.ImageCache = {
 }
 ```
 
-## ScrollView Performance
+## ScrollView performance
 
-### Optimizing Large ScrollViews
+### Optimizing large scrollviews
 
 ```xml
 <!-- Avoid: Creating many views at once -->
@@ -163,7 +163,7 @@ exports.ImageCache = {
 </ListView>
 ```
 
-### When You Must Use ScrollView
+### When you must use ScrollView
 
 ```javascript
 // Lazy load content sections
@@ -211,7 +211,7 @@ function loadSection(sectionId) {
 }
 ```
 
-## ScrollView Memory Management
+## ScrollView memory management
 
 ```javascript
 // Release images when scrolled far away
@@ -239,13 +239,13 @@ function onScroll(e) {
 }
 ```
 
-## Performance Checklist (UI)
+## Performance checklist (UI)
 
-| Area         | Check                              |
+| Area | Check |
 | ------------ | ---------------------------------- |
-| **ListView** | Fixed heights on all templates     |
+| **ListView** | Fixed heights on all templates |
 | **ListView** | Using templates, not dynamic views |
-| **ListView** | Image pre-sizing and caching       |
-| **Scroll**   | Lazy loading content sections      |
-| **Scroll**   | Release off-screen images          |
-| **Images**   | Resized appropriately for display  |
+| **ListView** | Image pre-sizing and caching |
+| **Scroll** | Lazy loading content sections |
+| **Scroll** | Release off-screen images |
+| **Images** | Resized appropriately for display |

@@ -1,8 +1,8 @@
-# Alloy Configuration Files Reference
+# Alloy configuration files reference
 
-## Build Configuration File (alloy.jmk)
+## Build configuration file (alloy.jmk)
 
-Alloy provides hooks to customize compilation using a JS Makefile (JMK).
+Alloy exposes hooks to customize compilation with a JS Makefile (JMK).
 
 **Location:** `app/alloy.jmk`
 
@@ -18,7 +18,7 @@ task('post:compile', (event, logger) => {
 });
 ```
 
-### Compiler Tasks (Event Names)
+### Compiler tasks (event names)
 
 | Task             | When Called                                               |
 | ---------------- | --------------------------------------------------------- |
@@ -27,7 +27,7 @@ task('post:compile', (event, logger) => {
 | `post:compile`   | After compiler finishes, before exit                      |
 | `compile:app.js` | After compiling `app.js`, before writing to disk          |
 
-### Event Object
+### Event object
 
 | Property       | Type    | Description                                                                                                                                                                                                         |
 | -------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -41,9 +41,9 @@ task('post:compile', (event, logger) => {
 | `code`         | String  | *(compile:app.js only)* Contents of `app.js`                                                                                                                                                                        |
 | `appJSFile`    | String  | *(compile:app.js only)* Absolute path to `app.js`                                                                                                                                                                   |
 
-### Logger Object
+### Logger object
 
-The `logger` object provides methods and properties to control compilation log output.
+The `logger` object controls compilation log output.
 
 #### Properties
 
@@ -69,13 +69,13 @@ The `logger` object provides methods and properties to control compilation log o
 
 ---
 
-## Global Initializer (alloy.js)
+## Global initializer (alloy.js)
 
 **Location:** `app/alloy.js`
 
-Executed before any controllers load. Use it to set up globals and singletons.
+Runs before any controllers load. Use it to set up globals and singletons.
 
-**Common uses:**
+Common uses:
 - Creating `Alloy.Collections` (e.g., `Alloy.Collections.myModel = Alloy.createCollection('myModel');`)
 - Setting up `Alloy.Globals` (shared references, utility functions)
 - Initializing singletons (analytics, logging, network managers)
@@ -95,11 +95,11 @@ Alloy.Globals.alert = (title, message) => {
 
 ---
 
-## Project Configuration File (config.json)
+## Project configuration file (config.json)
 
 **Location:** `app/config.json`
 
-Alloy uses `config.json` to specify global values, conditional environment and platform values, and widget dependencies.
+Alloy uses `config.json` for global values, environment and platform overrides, and widget dependencies.
 ### Objects
 
 | Object            | Description                                                 |
@@ -114,9 +114,9 @@ Alloy uses `config.json` to specify global values, conditional environment and p
 | `autoStyle`       | Enable autostyle for entire project                         |
 | `backbone`        | Backbone.js version: `0.9.2` (default), `1.1.2`, or `1.3.3` |
 
-**Precedence:** `os` > `env` > `global`. Combinations (e.g., `os:ios env:production`) override single values.
+**Precedence:** `os` > `env` > `global`. Combinations (for example, `os:ios env:production`) override single values.
 
-**Runtime Access:** Values are accessible at runtime via `Alloy.CFG.<key>`.
+**Runtime access:** Values are available at runtime via `Alloy.CFG.<key>`.
 
 **Example:**
 
@@ -136,11 +136,11 @@ Alloy uses `config.json` to specify global values, conditional environment and p
 }
 ```
 
-Accessing values: `Ti.API.info(Alloy.CFG.foo)` — on iPhone simulator this returns `6`.
+Accessing values: `Ti.API.info(Alloy.CFG.foo)` on iPhone simulator returns `6`.
 
 ---
 
-## Widget Configuration File (widget.json)
+## Widget configuration file (widget.json)
 
 **Location:** Root directory of the widget. Follows the npm `package.json` format with a few exceptions.
 ### Keys

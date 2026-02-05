@@ -2,18 +2,18 @@
 
 ## 1. Overview
 
-Orientation refers to whether the app displays in portrait or landscape mode, and how to handle orientation changes.
+Orientation is whether the app displays in portrait or landscape, and how it reacts when the device rotates.
 
-## 2. Design Principles
+## 2. Design principles
 
-- **Don't mix orientations on iPhone/iPod** — Pick either portrait or landscape for your entire app; switching between them mid-flow creates a jarring user experience.
-- **Don't support portrait-upside-down on iPhone** — If a user receives a phone call while the device is upside-down, the call UI appears upside-down, which is disorienting and risky.
-- **iPad should support all orientations** — Apple's HIG expects iPad apps to work in every orientation. Users frequently rotate their iPads.
-- **These principles apply equally to Android** — While Android is more permissive, the same UX considerations hold. Consistency within your app matters.
+- Do not mix orientations on iPhone or iPod. Pick portrait or landscape for the whole app. Switching mid-flow feels jarring.
+- Do not support portrait upside-down on iPhone. A phone call can appear upside-down, which is confusing and risky.
+- iPad should support all orientations. Apple’s HIG expects it and users rotate their iPads often.
+- These principles apply to Android as well. Android is more permissive, but consistency still matters.
 
-## 3. Orientation Modes
+## 3. Orientation modes
 
-### Supported Orientations
+### Supported orientations
 
 | Mode                    | Description                      |
 | ----------------------- | -------------------------------- |
@@ -25,11 +25,11 @@ Orientation refers to whether the app displays in portrait or landscape mode, an
 | `Ti.UI.FACE_DOWN`       | Device face down (flat on table) |
 | `Ti.UI.AUTO`            | Let system decide                |
 
-## 4. Locking Orientation
+## 4. Locking orientation
 
-### Lock to Specific Orientation
+### Lock to a specific orientation
 
-**In tiapp.xml** (preferred):
+In `tiapp.xml` (preferred):
 
 ```xml
 <ios>
@@ -45,10 +45,10 @@ Orientation refers to whether the app displays in portrait or landscape mode, an
 </ios>
 ```
 
-**iOS plist iPhone vs iPad keys**: You can specify different supported orientations for iPhone and iPad using device-specific keys:
-- `UISupportedInterfaceOrientations~iphone` — iPhone-specific orientations (default: portrait only)
-- `UISupportedInterfaceOrientations~ipad` — iPad-specific orientations (default: all four orientations)
-- `UISupportedInterfaceOrientations` (without suffix) — applies to both if device-specific keys are absent
+iOS plist iPhone vs iPad keys: You can define separate orientations for iPhone and iPad:
+- `UISupportedInterfaceOrientations~iphone` for iPhone (default: portrait only)
+- `UISupportedInterfaceOrientations~ipad` for iPad (default: all four)
+- `UISupportedInterfaceOrientations` applies to both if device-specific keys are absent
 
 ```xml
 <android>
@@ -60,7 +60,7 @@ Orientation refers to whether the app displays in portrait or landscape mode, an
 </android>
 ```
 
-### Android Orientation Values
+### Android orientation values
 
 ```xml
 <activity android:screenOrientation="portrait"/>
@@ -76,17 +76,17 @@ Orientation refers to whether the app displays in portrait or landscape mode, an
 <activity android:screenOrientation="sensor"/>
 ```
 
-**Common values**:
-- `portrait` - Portrait mode
-- `landscape` - Landscape mode
-- `sensor` - Uses accelerometer to determine
-- `fullSensor` - All 4 orientations (including upside-down)
-- `nosensor` - Ignores accelerometer (orientation changes only)
-- `user` - User's preference
+Common values:
+- `portrait` for portrait mode
+- `landscape` for landscape mode
+- `sensor` uses the accelerometer
+- `fullSensor` allows all four orientations
+- `nosensor` ignores the accelerometer
+- `user` follows the user preference
 
-> **Warning — Android set-vs-get value mismatch**: On Android, the orientation values you SET don't match those you GET. You can set 4 values (portrait upright, landscape right, portrait upside-down, landscape left) but only get 2 values back (portrait or landscape). Also, "portrait" and "landscape" meaning varies between phones and tablets based on sensor orientation — on most phones portrait is the default, but on some tablets landscape is the default sensor position.
+Warning: Android set vs get mismatch. You can set four specific orientations, but you only get two values back (portrait or landscape). Meaning also varies between phones and tablets based on sensor orientation.
 
-### Runtime Orientation Lock (iOS)
+### Runtime orientation lock (iOS)
 
 ```javascript
 // Set orientation at runtime
@@ -96,9 +96,9 @@ Ti.UI.iPhone.setStatusBarStyle(Ti.UI.iPhone.StatusBar.DEFAULT);
 // Use tiapp.xml configuration for consistent behavior
 ```
 
-## 5. Handling Orientation Changes
+## 5. Handling orientation changes
 
-### Detect Orientation Change
+### Detect orientation change
 
 ```javascript
 Ti.Gesture.addEventListener('orientationchange', (e) => {
@@ -111,15 +111,15 @@ Ti.Gesture.addEventListener('orientationchange', (e) => {
     adjustForLandscape();
   }
 
-  // Ti.Gesture helper methods — convenience booleans
+  // Ti.Gesture helper methods - convenience booleans
   Ti.API.info(`Is portrait: ${e.source.isPortrait()}`);
   Ti.API.info(`Is landscape: ${e.source.isLandscape()}`);
 });
 ```
 
-> **Anti-pattern warning**: Do NOT use `orientationchange` event listeners to force an orientation. This causes: (1) the wrong orientation showing briefly before the forced one kicks in, (2) potential memory leaks from repeated listener firing, and (3) improper technique. Use `tiapp.xml` or window `orientationModes` instead.
+Anti-pattern warning: Do not use `orientationchange` listeners to force an orientation. It causes the wrong orientation to flash, repeated firing, and bad behavior. Use `tiapp.xml` or window `orientationModes`.
 ...
-### Window Orientation Events
+### Window orientation events
 
 ```javascript
 const win = Ti.UI.createWindow();
@@ -133,9 +133,9 @@ win.addEventListener('orientationchange', (e) => {
 });
 ```
 
-## 6. Adapting UI to Orientation
+## 6. Adapting UI to orientation
 
-### Responsive Layout Example
+### Responsive layout example
 
 ```javascript
 const container = Ti.UI.createView({
@@ -164,7 +164,7 @@ function updateLayout() {
 Ti.Gesture.addEventListener('orientationchange', updateLayout);
 ```
 
-### Orientation-Specific Components
+### Orientation-specific components
 
 ```javascript
 function createPortraitLayout() {
@@ -199,23 +199,23 @@ function switchLayout() {
 Ti.Gesture.addEventListener('orientationchange', switchLayout);
 ```
 
-## 7. Platform Differences
+## 7. Platform differences
 
-### iOS Orientation
+### iOS orientation
 
 - Controlled by `UISupportedInterfaceOrientations` in Info.plist
 - Shake to rotate can be disabled
 - Status bar orientation matches window orientation
-- Supports all orientations including upside-down
+- Supports all orientations, including upside-down
 
-### Android Orientation
+### Android orientation
 
 - Controlled by `screenOrientation` in AndroidManifest.xml
-- Can be set per-activity
+- Can be set per activity
 - More granular control (sensor, user, nosensor)
 - May ignore upside-down depending on device
 
-## 8. Checking Current Orientation
+## 8. Checking current orientation
 
 ```javascript
 // Get current orientation
@@ -232,11 +232,11 @@ const isLandscape = (currentOrientation === Ti.UI.LANDSCAPE_LEFT ||
                    currentOrientation === Ti.UI.LANDSCAPE_RIGHT);
 ```
 
-## 9. Disabling Orientation Change
+## 9. Disabling orientation change
 
-### Disable All Rotation
+### Disable all rotation
 
-**iOS (tiapp.xml)**:
+iOS (tiapp.xml):
 ```xml
 <ios>
   <plist>
@@ -250,7 +250,7 @@ const isLandscape = (currentOrientation === Ti.UI.LANDSCAPE_LEFT ||
 </ios>
 ```
 
-**Android (tiapp.xml)**:
+Android (tiapp.xml):
 ```xml
 <android>
   <manifest>
@@ -259,7 +259,7 @@ const isLandscape = (currentOrientation === Ti.UI.LANDSCAPE_LEFT ||
 </android>
 ```
 
-### Disable Rotation for Specific Window (iOS)
+### Disable rotation for a specific window (iOS)
 
 ```javascript
 const win = Ti.UI.createWindow({
@@ -267,16 +267,16 @@ const win = Ti.UI.createWindow({
 });
 ```
 
-**Note**: Window-level orientation control is limited; app-level configuration is preferred.
+Note: Window-level control is limited. App-level configuration is more reliable.
 
-## 10. Orientation Lock Limitations
+## 10. Orientation lock limitations
 
-**Important:** Runtime orientation locking is NOT reliably supported across platforms.
+Runtime orientation locking is not reliable across platforms.
 
-- **iOS**: Orientation is controlled exclusively via `tiapp.xml` plist keys and window-level `orientationModes`. There is no API to lock/unlock orientation at runtime.
-- **Android**: Use `android:screenOrientation` in `tiapp.xml` manifest. Changing orientation programmatically at runtime is not supported through Titanium APIs.
+- iOS: Orientation is controlled by `tiapp.xml` plist keys and window-level `orientationModes`. There is no API to lock or unlock at runtime.
+- Android: Use `android:screenOrientation` in `tiapp.xml`. Changing orientation programmatically at runtime is not supported through Titanium APIs.
 
-If you need a specific orientation for a particular screen (e.g., landscape for video playback), create a dedicated window with the desired `orientationModes` set at creation time:
+If you need a specific orientation for one screen (for example, landscape video playback), create a dedicated window with `orientationModes` set at creation time:
 
 ```javascript
 // Landscape-only video window
@@ -292,57 +292,56 @@ videoWin.add(videoPlayer);
 videoWin.open();
 ```
 
-## 11. Modal Window Constraints (iOS)
+## 11. Modal window constraints (iOS)
 
-> **Note**: Modal windows should not support orientations unsupported by the parent window. This can cause bad visual/redraw behavior after the modal is dismissed. Additionally, setting `orientationModes` on non-modal windows inside a `NavigationWindow` or `TabGroup` is bad practice — only the root window's orientation settings are respected.
+Note: Modal windows should not support orientations unsupported by the parent window. It can cause redraw glitches after dismissal. Also, setting `orientationModes` on non-modal windows inside a `NavigationWindow` or `TabGroup` is bad practice. Only the root window’s orientation settings are respected.
 
-## 12. Splash Screen Configuration
+## 12. Splash screen configuration
 
-Splash screens need orientation-specific image variants:
+Splash screens need orientation-specific images:
+- Android uses `default.png` (lowercase d) in `Resources/android/images/`.
+- iOS uses `Default.png` (uppercase D) and orientation variants like `Default-Landscape.png` and `Default-Portrait.png` for iPad and Universal apps.
 
-- **Android**: Uses `default.png` (lowercase `d`) placed in `Resources/android/images/`.
-- **iOS**: Uses `Default.png` (uppercase `D`) with orientation variants like `Default-Landscape.png` and `Default-Portrait.png` for iPad and Universal apps.
+See `icons-and-splash-screens.md` for full naming and size details.
 
-See the `icons-and-splash-screens.md` reference for full details on naming conventions and required sizes.
+## 13. Best practices
 
-## 13. Best Practices
+1. Test on multiple devices. Orientation behavior varies.
+2. Test rotation scenarios. See how your UI adapts.
+3. Consider user preference. Allow rotation when it makes sense.
+4. Lock when needed, like video, games, or camera capture.
+5. Use responsive layouts.
+6. Test upside-down. Some devices support it, some do not.
+7. Handle edge cases like phone calls.
+8. Consider tablets. Default orientation can differ.
 
-1. **Test on multiple devices** - Orientation behavior varies
-2. **Test rotation scenarios** - How does your UI adapt?
-3. **Consider user preference** - Allow rotation when appropriate
-4. **Lock when needed** - Video, games, camera capture
-5. **Use responsive layouts** - Adapt UI to orientation
-6. **Test upside-down** - Some devices support it, some don't
-7. **Handle edge cases** - What happens during phone calls?
-8. **Consider tablets** - Default orientation may differ
+## 14. Common issues
 
-## 14. Common Issues
+### Orientation not changing
 
-### Orientation Not Changing
+Problem: App does not rotate when the device rotates.
 
-**Problem**: App doesn't rotate when device rotates.
+Solutions:
+1. Check `tiapp.xml` orientation settings.
+2. Ensure all orientations are enabled.
+3. Test on physical device (simulator may not reflect real behavior).
+4. Check for custom orientation locking code.
 
-**Solutions**:
-1. Check `tiapp.xml` orientation settings
-2. Ensure all orientations are enabled
-3. Test on physical device (simulator may not reflect real behavior)
-4. Check for custom orientation locking code
+### UI does not adapt
 
-### UI Doesn't Adapt
+Problem: App rotates but layout does not adjust.
 
-**Problem**: App rotates but layout doesn't adjust.
+Solutions:
+1. Implement `orientationchange` listeners.
+2. Use responsive layout techniques.
+3. Test portrait and landscape layouts.
+4. Consider different layouts per orientation.
 
-**Solutions**:
-1. Implement `orientationchange` event listener
-2. Use responsive layout techniques
-3. Test both portrait and landscape layouts
-4. Consider using different layouts for each orientation
+### Upside-down orientation
 
-### Upside-Down Orientation
+Problem: App appears upside-down.
 
-**Problem**: App appears upside-down.
-
-**Solutions**:
-1. Add `UIInterfaceOrientationPortraitUpsideDown` to supported orientations (iOS)
-2. Use `reversePortrait` or `fullSensor` (Android)
-3. Consider whether upside-down is needed for your use case
+Solutions:
+1. Add `UIInterfaceOrientationPortraitUpsideDown` on iOS.
+2. Use `reversePortrait` or `fullSensor` on Android.
+3. Decide if upside-down is needed for your use case.

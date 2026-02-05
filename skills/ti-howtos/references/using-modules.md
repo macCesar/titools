@@ -1,13 +1,13 @@
-# Using Modules
+# Using modules
 
-Guide for obtaining, installing, and using Titanium modules to extend app functionality.
+Guide to obtaining, installing, and using Titanium modules to extend app functionality.
 
-## Obtaining Modules
+## Obtaining modules
 
-### Sources of Modules
+### Sources of modules
 
-**Official Modules:**
-- **Enterprise Extensions**
+Official modules:
+- Enterprise Extensions
   - InAppBilling (Android)
   - StoreKit (iOS)
   - Barcode (iOS/Android)
@@ -15,43 +15,39 @@ Guide for obtaining, installing, and using Titanium modules to extend app functi
   - OpenGL (iOS)
   - AirPrint (iOS)
 
-**Open-Source Modules:**
-- **GitHub: tidev/** - Official open-source modules
-  - [ti.admob](https://github.com/tidev/ti.admob) - AdMob ads
-  - [ti.map](https://github.com/tidev/ti.map) - Native maps
-  - And many more
+Open-source modules:
+- GitHub: tidev
+  - https://github.com/tidev/ti.admob - AdMob ads
+  - https://github.com/tidev/ti.map - Native maps
+  - And more in the org
 
-**Community Modules:**
-- **From Zero To App** - Lists Titanium modules
-  - https://fromzerotoapp.com/modules/
+Community modules:
+- From Zero To App list: https://fromzerotoapp.com/modules/
 - Curated list of modules maintained by Michael Gangolf
 
-**Marketplace:**
-> **Note**: The original Appcelerator Marketplace is no longer available. Find community modules on GitHub and npm. A curated list is at [From Zero to App](https://fromzerotoapp.com/modules/).
+Marketplace:
+The original Appcelerator Marketplace is no longer available. Find community modules on GitHub and npm. A curated list is at https://fromzerotoapp.com/modules/.
 
-### Pre-installed Modules
-Some modules ship with the SDK and don't need separate installation: `ti.map`, `ti.identity`, `ti.webdialog`, `ti.applesignin`
+### Pre-installed modules
+Some modules ship with the SDK and do not need separate installation: `ti.map`, `ti.identity`, `ti.webdialog`, `ti.applesignin`.
 
----
+## Installing modules
 
-## Installing Modules
+### Single project installation
+1. Copy the module ZIP to your app root folder.
+2. Add the module to `tiapp.xml` (see configuration below).
+3. Build the project. The ZIP is extracted automatically.
 
-### Single Project Installation
+### Global installation (all projects)
+Modules install to platform-specific locations:
 
-1. Copy the module ZIP to your app root folder
-2. Add module to `tiapp.xml` (see configuration below)
-3. Build project - ZIP will be extracted automatically
-
-### Global Installation (All Projects)
-
-Modules are installed to platform-specific locations:
-
-| Operating System | Path                                     |
+| Operating system | Path                                     |
 | ---------------- | ---------------------------------------- |
 | macOS            | `~/Library/Application Support/Titanium` |
 | Windows          | `%ProgramData%\Titanium\mobilesdk\win32` |
 
-**Show hidden Library folder on macOS:**
+Show hidden Library folder on macOS:
+
 ```bash
 # Permanently show
 chflags nohidden ~/Library/
@@ -60,20 +56,19 @@ chflags nohidden ~/Library/
 open ~/Library
 ```
 
----
-
-## Configuring Your App
+## Configuring your app
 
 ### Updating tiapp.xml
 
-**Using Studio/IDE:**
-1. Open `tiapp.xml`
-2. Go to **Overview** tab
-3. Click **+** button in Modules section
-4. Select module and version
-5. Save
+Using Studio/IDE:
+1. Open `tiapp.xml`.
+2. Go to the Overview tab.
+3. Click the plus button in Modules.
+4. Select module and version.
+5. Save.
 
-**Manually (XML):**
+Manually (XML):
+
 ```xml
 <modules>
   <module version="3.0.2" platform="ios">ti.map</module>
@@ -81,18 +76,16 @@ open ~/Library
 </modules>
 ```
 
-**Attributes:**
-- `version` - Must match module manifest
-- `platform` - "ios" or "android"
+Attributes:
+- `version`: must match the module manifest
+- `platform`: "ios" or "android"
 
-### Selecting Module Versions
+### Selecting module versions
+If multiple versions are installed, select specific versions per platform and build type (development/production).
 
-When multiple versions are installed, you can select specific versions per platform and build type (development/production).
+In Studio, double-click the module to open the Module Properties dialog.
 
-In Studio, double-click the module to open **Module Properties** dialog.
-
-### Enable Debugger (for native modules)
-
+### Enable debugger (for native modules)
 Required for debugging native modules:
 
 ```xml
@@ -106,28 +99,25 @@ Required for debugging native modules:
 </ti:app>
 ```
 
----
+## Using a module
 
-## Using a Module
-
-### Loading the Module (ES5)
+### Loading the module (ES5)
 
 ```javascript
 const Module = require('module.id');
 // Example: const Map = require('ti.map');
 ```
 
-### Loading the Module (ES6+)
+### Loading the module (ES6+)
 
 ```javascript
 import Module from 'module.id'
 // Example: import Map from 'ti.map'
 ```
 
-**Important:** Don't include `.js` extension in the module ID.
+Important: do not include the `.js` extension in the module ID.
 
-### Using Module Functionality
-
+### Using module functionality
 After requiring, use the module's API:
 
 ```javascript
@@ -135,55 +125,49 @@ After requiring, use the module's API:
 const Admob = require('ti.admob');
 
 const adview = Admob.createView({
-    top: 0,
-    testing: true,
-    adBackgroundColor: 'black',
-    primaryTextColor: 'blue',
-    publisherId: 'YOUR_PUBLISHER_ID'
+  top: 0,
+  testing: true,
+  adBackgroundColor: 'black',
+  primaryTextColor: 'blue',
+  publisherId: 'YOUR_PUBLISHER_ID'
 });
 
 win.add(adview);
 ```
 
-### Module Patterns
+### Module patterns
 
-**Singleton pattern:**
+Singleton pattern:
 ```javascript
 const admob = require('ti.admob');
-admob.createView({...});
+admob.createView({ ... });
 ```
 
-**Constructor pattern:**
+Constructor pattern:
 ```javascript
 const Map = require('ti.map');
-const view = Map.createView({...});
+const view = Map.createView({ ... });
 ```
 
 Refer to module documentation for its specific API.
 
----
-
 ## Troubleshooting
 
 ### "Requested module not found"
+Solutions:
+1. Check module ID spelling in `require()`.
+2. Verify the module is added to `tiapp.xml`.
+3. Confirm the module is installed (global or local path).
+4. Remove the `version` attribute to use the latest version.
 
-**Solutions:**
-1. Check module ID spelling in `require()`
-2. Verify module is added to `tiapp.xml`
-3. Confirm module is installed (check global or local path)
-4. Remove `version` attribute to use latest version
+### Version conflicts
+If multiple versions exist, specify the exact version in `tiapp.xml`, or remove the version attribute to use the latest.
 
-### Version Conflicts
+### Platform-specific issues
+- iOS: the module must support the iOS SDK version you are using.
+- Android: the module manifest `platform` must match the target.
 
-If multiple versions exist, specify exact version in `tiapp.xml` or remove version attribute to use latest.
-
-### Platform-Specific Issues
-
-- **iOS:** Module must support iOS SDK version you're using
-- **Android:** Check module's `platform` attribute in manifest matches target
-
-### Clean Build
-
+### Clean build
 Sometimes needed after installing modules:
 
 ```bash
@@ -191,21 +175,8 @@ Sometimes needed after installing modules:
 ti clean
 ```
 
----
+## Best practices
 
-## Best Practices
-
-1. **Version pinning** - Specify exact module versions for production
-2. **Check compatibility** - Verify module supports your Titanium SDK version
-3. **Test on devices** - Modules may behave differently on simulator vs. device
-4. **Keep updated** - Update modules regularly for bug fixes and new features
-5. **Read documentation** - Each module has specific setup and usage patterns
-
----
-
-## Module Development
-
-If you need to create your own module, see the **extending-titanium.md** reference for:
-- Android Module Development Guide
-- iOS Module Development Guide
-- Module architecture and best practices
+1. Pin versions for production.
+2. Check compatibility with your Titanium SDK version.
+3. Test on devices. Some modules behave differently on simulator vs device.

@@ -1,8 +1,8 @@
-# Performance Optimization: Bridge, Memory, Animation & Timing
+# Performance optimization: bridge, memory, animation & timing
 
-## Bridge Optimization
+## Bridge optimization
 
-### Minimize Bridge Crossings
+### Minimize bridge crossings
 
 Every JavaScript -> Native call crosses a bridge. Minimize these:
 
@@ -17,7 +17,7 @@ const displayCaps = Ti.Platform.displayCaps
 const { platformWidth, platformHeight, dpi } = displayCaps
 ```
 
-### Batch UI Updates
+### Batch UI updates
 
 ```javascript
 // BAD: Multiple bridge crossings
@@ -35,7 +35,7 @@ $.nameLabel.applyProperties({
 })
 ```
 
-### Use TSS Files Instead of Inline Attributes
+### Use TSS files instead of inline attributes
 
 ```xml
 <!-- BAD: Inline styling = scattered and hard to maintain -->
@@ -50,9 +50,9 @@ $.nameLabel.applyProperties({
 "#helloLabel": { width: 200, height: 40, color: '#000', font: { fontSize: 16 } }
 ```
 
-## Memory Management
+## Memory management
 
-### Controller Cleanup Pattern
+### Controller cleanup pattern
 
 ```javascript
 // controllers/detail.js
@@ -106,7 +106,7 @@ function cleanup() {
 $.cleanup = cleanup
 ```
 
-## Image Memory Management
+## Image memory management
 
 ```javascript
 // lib/services/imageManager.js
@@ -150,7 +150,7 @@ exports.ImageManager = {
 }
 ```
 
-## Lazy Loading Pattern
+## Lazy loading pattern
 
 ```javascript
 // controllers/feed/list.js
@@ -207,7 +207,7 @@ function cleanup() {
 $.cleanup = cleanup
 ```
 
-## Database Performance
+## Database performance
 
 ```javascript
 // lib/services/database.js
@@ -284,7 +284,7 @@ exports.DB = {
 }
 ```
 
-## Performance Monitoring
+## Performance monitoring
 
 ```javascript
 // lib/services/perfMonitor.js
@@ -343,9 +343,9 @@ renderUsers(users)
 measure.end()
 ```
 
-## Animation Performance
+## Animation performance
 
-### 60fps Animation Rules
+### 60fps animation rules
 
 ```javascript
 // Rule 1: Use native animations (not JavaScript intervals)
@@ -406,7 +406,7 @@ fadeIn($.modal, () => {
 })
 ```
 
-## Hardware-Accelerated Properties
+## Hardware-accelerated properties
 
 ```javascript
 // These properties are GPU-accelerated (fast):
@@ -438,7 +438,7 @@ const badAnimation = Ti.UI.createAnimation({
 })
 ```
 
-## Animation Cleanup
+## Animation cleanup
 
 ```javascript
 // Always remove animation listeners
@@ -471,9 +471,9 @@ function cleanup() {
 $.cleanup = cleanup
 ```
 
-## Debouncing and Throttling
+## Debouncing and throttling
 
-### Debounce Pattern
+### Debounce pattern
 
 Use when you want to wait for the user to stop an action before processing.
 
@@ -517,7 +517,7 @@ function cleanup() {
 }
 ```
 
-### Throttle Pattern
+### Throttle pattern
 
 Use when you want to limit how often a function can run.
 
@@ -572,18 +572,18 @@ function cleanup() {
 }
 ```
 
-### Common Use Cases
+### Common use cases
 
-| Pattern  | Use Case         | Delay        |
+| Pattern | Use Case | Delay |
 | -------- | ---------------- | ------------ |
-| Debounce | Search input     | 300ms        |
-| Debounce | Auto-save        | 1000ms       |
-| Debounce | Window resize    | 150ms        |
-| Throttle | Scroll events    | 50-100ms     |
+| Debounce | Search input | 300ms |
+| Debounce | Auto-save | 1000ms |
+| Debounce | Window resize | 150ms |
+| Throttle | Scroll events | 50-100ms |
 | Throttle | Mouse/touch move | 16ms (60fps) |
-| Throttle | API polling      | 5000ms+      |
+| Throttle | API polling | 5000ms+ |
 
-### Combined Pattern for Real-time + Final
+### Combined pattern for real-time + final
 
 ```javascript
 // Show immediate feedback while typing, but only search when done
@@ -620,20 +620,20 @@ function cleanup() {
 }
 ```
 
-## Performance Checklist
+## Performance checklist
 
-| Area          | Check                                   |
+| Area | Check |
 | ------------- | --------------------------------------- |
-| **Bridge**    | Cached Ti.Platform properties           |
-| **Bridge**    | Using applyProperties for updates       |
-| **Bridge**    | TSS styles instead of inline attributes |
-| **Memory**    | All global listeners cleaned up         |
-| **Memory**    | Heavy objects nulled in cleanup         |
-| **Memory**    | Images resized appropriately            |
-| **Database**  | Using transactions for batch ops        |
-| **Database**  | Indexes on frequently queried columns   |
-| **Database**  | ResultSets and DB handles closed        |
-| **Animation** | Using native animations, not intervals  |
-| **Animation** | GPU-accelerated properties preferred    |
-| **Timing**    | Debounce on search/input                |
-| **Timing**    | Throttle on scroll/touch events         |
+| **Bridge** | Cached Ti.Platform properties |
+| **Bridge** | Using applyProperties for updates |
+| **Bridge** | TSS styles instead of inline attributes |
+| **Memory** | All global listeners cleaned up |
+| **Memory** | Heavy objects nulled in cleanup |
+| **Memory** | Images resized appropriately |
+| **Database** | Using transactions for batch ops |
+| **Database** | Indexes on frequently queried columns |
+| **Database** | ResultSets and DB handles closed |
+| **Animation** | Using native animations, not intervals |
+| **Animation** | GPU-accelerated properties preferred |
+| **Timing** | Debounce on search/input |
+| **Timing** | Throttle on scroll/touch events |

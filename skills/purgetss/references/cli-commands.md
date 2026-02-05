@@ -1,9 +1,9 @@
 # PurgeTSS CLI Commands Guide
 
-PurgeTSS provides a comprehensive suite of CLI commands for project setup, asset management, and development workflow automation.
+PurgeTSS provides a full set of CLI commands for project setup, asset management, and development workflow automation.
 
 :::info What's New in v7.2.x
-**FontAwesome 7 & Major Optimization**: PurgeTSS v7.2 introduces full support for **FontAwesome 7**, including the new CSS custom properties format. This version also features a significant reduction in installation size and a complete internal restructuring for better performance and maintainability.
+**FontAwesome 7 & Performance Updates**: PurgeTSS v7.2 adds full support for **FontAwesome 7**, including the new CSS custom properties format. It also reduces installation size and refactors internals for performance and maintainability.
 
 **Key Changes:**
 - **Node.js 20+** required (due to "inquirer" v13 upgrade)
@@ -149,7 +149,7 @@ purgetss w -o
 
 **Default behavior:** Activates auto-purge (runs on every compile)
 
-This functionality is particularly valuable when used with LiveView, as it automatically purges your project whenever you make changes, providing immediate feedback and significantly speeding up your prototyping process.
+This is especially useful with LiveView: it auto-purges on changes, gives fast feedback, and speeds up prototyping.
 
 **What it installs in `alloy.jmk`:**
 ```javascript

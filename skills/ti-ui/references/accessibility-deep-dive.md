@@ -1,18 +1,18 @@
-# Accessibility (a11y) Deep Dive
+# Accessibility (a11y) deep dive
 
 ## 1. Overview
 
-Accessibility ensures your app is usable by everyone, including users with visual, hearing, and motor disabilities. Titanium supports both Android TalkBack and iOS VoiceOver spoken feedback systems.
+Accessibility makes your app usable for people with visual, hearing, and motor disabilities. Titanium works with Android TalkBack and iOS VoiceOver for spoken feedback.
 
-### Design Considerations Beyond Screen Readers
+### Design considerations beyond screen readers
 
-- **Motor disabilities**: Provide larger tap targets (minimum 44x44 points on iOS, 48x48 dp on Android). Support alternative input methods. Avoid interactions that require precise gestures or rapid timing.
-- **Color-blindness**: Never rely on color alone to convey information. Use text labels, icons, or patterns alongside color indicators. Test your UI with grayscale to verify usability.
-- **Screen magnifiers**: Users with low vision may use the built-in zoom features (iOS Zoom, Android Magnification). Ensure your layout remains functional when magnified — avoid absolute positioning that breaks at large zoom levels.
+- Motor disabilities often require larger tap targets (minimum 44x44 points on iOS, 48x48 dp on Android). Support alternative input methods and avoid gestures that demand precision or fast timing.
+- Color-blindness means color alone cannot carry meaning. Use text labels, icons, or patterns alongside color indicators. Test the UI in grayscale to check usability.
+- Screen magnifiers are common for low-vision users (iOS Zoom, Android Magnification). Keep layouts functional when magnified and avoid absolute positioning that breaks at large zoom levels.
 
-## 2. Core Accessibility Properties
+## 2. Core accessibility properties
 
-All Titanium view elements support these accessibility properties:
+All Titanium view elements support these accessibility properties.
 
 | Property              | Default Value                 | Description                                                                     |
 | --------------------- | ----------------------------- | ------------------------------------------------------------------------------- |
@@ -21,9 +21,9 @@ All Titanium view elements support these accessibility properties:
 | `accessibilityHint`   | -                             | Briefly describes what performing an action will do (e.g., "Closes the window") |
 | `accessibilityValue`  | State or value of the control | String describing current state (e.g., "Selected", "50 percent")                |
 
-> **Android note**: On Android, `accessibilityLabel`, `accessibilityValue`, and `accessibilityHint` are combined (in that order) and mapped to Android's native `contentDescription` property. This means TalkBack reads all three as a single string, while VoiceOver on iOS reads them as separate announcements.
+> Android note: On Android, `accessibilityLabel`, `accessibilityValue`, and `accessibilityHint` are combined (in that order) and mapped to the native `contentDescription`. TalkBack reads them as one string. VoiceOver on iOS reads them as separate announcements.
 
-### Basic Usage
+### Basic usage
 
 ```javascript
 const button = Ti.UI.createButton({
@@ -83,7 +83,7 @@ container.add(emailField);
 container.add(submitButton);
 ```
 ...
-### Star Rating Example
+### Star rating example
 
 ```javascript
 const starView = Ti.UI.createView({
@@ -105,7 +105,7 @@ for (let i = 0; i < 5; i++) {
 }
 ```
 
-### Toggle Button Example
+### Toggle button example
 
 ```javascript
 let isMuted = false;
@@ -122,9 +122,9 @@ muteButton.addEventListener('click', () => {
 });
 ```
 
-## 6. System-Level Accessibility Events
+## 6. System-level accessibility events
 
-### Monitor Accessibility Changes
+### Monitor accessibility changes
 
 ```javascript
 Ti.App.addEventListener('accessibilitychanged', (e) => {
@@ -136,9 +136,9 @@ Ti.App.addEventListener('accessibilitychanged', (e) => {
 });
 ```
 ...
-### Code Patterns
+### Code patterns
 
-**DO**:
+Do:
 ```javascript
 // Provide meaningful labels
 const iconButton = Ti.UI.createButton({
@@ -153,7 +153,7 @@ checkbox.accessibilityValue = isChecked ? 'Checked' : 'Unchecked';
 decorativeIcon.accessibilityHidden = true;
 ```
 
-**DON'T**:
+Don't:
 ```javascript
 // Don't set accessibilityLabel for text controls (Android)
 const label = Ti.UI.createLabel({
@@ -168,9 +168,9 @@ const container = Ti.UI.createView({
 });
 ```
 
-### Accessibility First Development
+### Accessibility-first development
 
-When designing complex UIs, consider accessibility from the start:
+When designing complex UIs, plan accessibility at the start.
 
 ```javascript
 function createAccessibleListItem(title, subtitle, action) {
@@ -196,9 +196,9 @@ function createAccessibleListItem(title, subtitle, action) {
 }
 ```
 
-## 9. Platform Behavior Comparison
+## 9. Platform behavior comparison
 
-TalkBack (Android) and VoiceOver (iOS) interpret accessibility properties differently:
+TalkBack (Android) and VoiceOver (iOS) interpret accessibility properties differently.
 
 | Element                          | TalkBack Response                                 | VoiceOver Response                                      |
 | -------------------------------- | ------------------------------------------------- | ------------------------------------------------------- |
@@ -208,31 +208,31 @@ TalkBack (Android) and VoiceOver (iOS) interpret accessibility properties differ
 | Checkbox, checked                | "Checked, checkbox, double-tap to toggle"         | "Checked, tick box"                                     |
 | Image with label "Profile photo" | "Profile photo"                                   | "Profile photo, image"                                  |
 
-> On Android, the three accessibility properties are concatenated into `contentDescription`, so they are always read as one utterance. On iOS, VoiceOver reads them as distinct pieces with brief pauses between them.
+> On Android, the three accessibility properties are concatenated into `contentDescription`, so they are read as one utterance. On iOS, VoiceOver reads them as distinct pieces with short pauses between them.
 
-## 10. Testing Procedures
+## 10. Testing procedures
 
-### Android Emulator
+### Android emulator
 
-The Android emulator does not provide a built-in method to test accessibility. You must test on a physical device for accurate TalkBack behavior.
+The Android emulator has no built-in way to test accessibility. Use a physical device for accurate TalkBack behavior.
 
-### Android Device (TalkBack)
+### Android device (TalkBack)
 
 1. Open **Settings > Accessibility > TalkBack**
 2. Toggle TalkBack **On**
-3. A confirmation dialog appears — confirm to enable
+3. A confirmation dialog appears; confirm to enable
 
-**TalkBack gestures**:
-- **Tap**: Select and hear the element described
-- **Double-tap**: Activate the selected element
-- **Swipe left/right**: Navigate to the previous/next element
-- **Swipe up/down**: Change reading granularity (characters, words, headings)
+TalkBack gestures:
+- Tap: Select and hear the element described
+- Double-tap: Activate the selected element
+- Swipe left/right: Navigate to the previous/next element
+- Swipe up/down: Change reading granularity (characters, words, headings)
 
-To disable TalkBack, navigate to the same setting and toggle it off. You can also set a hardware shortcut (hold both volume keys for 3 seconds) for quick toggling during development.
+To disable TalkBack, go to the same setting and toggle it off. You can also set a hardware shortcut (hold both volume keys for 3 seconds) for quick toggling during development.
 
-### iOS Simulator (Accessibility Inspector)
+### iOS simulator (Accessibility Inspector)
 
-Use the Accessibility Inspector to examine elements without enabling VoiceOver:
+Use the Accessibility Inspector to examine elements without enabling VoiceOver.
 
 1. In Xcode, go to **Xcode > Open Developer Tool > Accessibility Inspector**
 2. Select the Simulator as the target device
@@ -240,49 +240,49 @@ Use the Accessibility Inspector to examine elements without enabling VoiceOver:
 
 This is the fastest way to verify properties during development.
 
-### iOS Device (VoiceOver)
+### iOS device (VoiceOver)
 
 1. Open **Settings > Accessibility > VoiceOver**
 2. Toggle VoiceOver **On**
 
-**VoiceOver gestures**:
-- **Tap**: Select and hear the element described
-- **Double-tap**: Activate the selected element
-- **Swipe left/right**: Navigate to the previous/next element
-- **Three-finger swipe**: Scroll content
-- **Two-finger tap**: Pause/resume speech
+VoiceOver gestures:
+- Tap: Select and hear the element described
+- Double-tap: Activate the selected element
+- Swipe left/right: Navigate to the previous/next element
+- Three-finger swipe: Scroll content
+- Two-finger tap: Pause/resume speech
 
-To disable VoiceOver, navigate to the same setting and toggle it off. You can also configure the Accessibility Shortcut (triple-click the side button) for quick toggling.
+To disable VoiceOver, go to the same setting and toggle it off. You can also configure the Accessibility Shortcut (triple-click the side button) for quick toggling.
 
-## 11. External Resources
+## 11. External resources
 
 - [Accessibility Programming Guide for iOS](https://developer.apple.com/library/ios/documentation/UserExperience/Conceptual/iPhoneAccessibility/Introduction/Introduction.html)
 - [Android Accessibility API Guide](http://developer.android.com/guide/topics/ui/accessibility/index.html)
 - [Android Accessibility Design Guide](http://developer.android.com/design/patterns/accessibility.html)
 - [W3C Web Content Accessibility Guidelines](http://www.w3.org/WAI/WCAG20/quickref/)
 
-## 12. Common Issues
+## 12. Common issues
 
-### Issue: VoiceOver Can't Access Children
+### Issue: VoiceOver cannot access children
 
-**Cause**: Container view has accessibility properties set
+Cause: A container view has accessibility properties set.
 
-**Solution**: Remove all accessibility properties from container views
+Solution: Remove all accessibility properties from container views.
 
-### Issue: TalkBack Doesn't Speak Text
+### Issue: TalkBack does not speak text
 
-**Cause**: `accessibilityLabel` set on Label/Button overrides visible text
+Cause: `accessibilityLabel` on a Label/Button overrides visible text.
 
-**Solution**: Don't set `accessibilityLabel` on textual controls unless intentionally overriding
+Solution: Do not set `accessibilityLabel` on textual controls unless you are intentionally overriding.
 
-### Issue: Complex Custom Controls Not Accessible
+### Issue: Complex custom controls are not accessible
 
-**Cause**: No accessibility properties set on custom-drawn views
+Cause: Custom-drawn views have no accessibility properties.
 
-**Solution**: Always provide `accessibilityLabel`, `accessibilityValue`, and `accessibilityHint` for custom controls
+Solution: Provide `accessibilityLabel`, `accessibilityValue`, and `accessibilityHint` for custom controls.
 
-### Issue: State Changes Not Announced
+### Issue: State changes are not announced
 
-**Cause**: `accessibilityValue` not updated when state changes
+Cause: `accessibilityValue` is not updated when state changes.
 
-**Solution**: Always update `accessibilityValue` in change event handlers
+Solution: Update `accessibilityValue` in change event handlers.

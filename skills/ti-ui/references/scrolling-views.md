@@ -1,18 +1,18 @@
-# Scrolling Views
+# Scrolling views
 
 ## 1. ScrollView vs ScrollableView
 
-| Feature          | ScrollView                     | ScrollableView                   |
-| ---------------- | ------------------------------ | -------------------------------- |
-| Purpose          | Scrollable area of content     | Paging through multiple views    |
-| Scroll Direction | Vertical and/or horizontal     | Horizontal only                  |
-| Content Size     | `contentHeight`/`contentWidth` | Full-screen views                |
-| User Interaction | Drag to scroll                 | Swipe to snap between pages      |
-| Use Case         | Long content, forms, images    | Image gallery, onboarding wizard |
+| Feature          | ScrollView                     | ScrollableView                |
+| ---------------- | ------------------------------ | ----------------------------- |
+| Purpose          | Scrollable area of content     | Paging through multiple views |
+| Scroll direction | Vertical and/or horizontal     | Horizontal only               |
+| Content size     | `contentHeight`/`contentWidth` | Full-screen views             |
+| Interaction      | Drag to scroll                 | Swipe to snap between pages   |
+| Use case         | Long content, forms, images    | Image gallery, onboarding     |
 
 ## 2. ScrollView
 
-### Creating a ScrollView
+### Create a ScrollView
 
 ```javascript
 const scrollView = Ti.UI.createScrollView({
@@ -34,20 +34,20 @@ scrollView.add(content);
 win.add(scrollView);
 ```
 ...
-### ScrollView Properties
+### ScrollView properties
 
 | Property                                      | Description                                                         | Platform |
 | --------------------------------------------- | ------------------------------------------------------------------- | -------- |
 | `contentWidth` / `contentHeight`              | Size of the scrollable content area                                 | All      |
-| `scrollType`                                  | `'vertical'` or `'horizontal'` (Android only — see below)           | Android  |
+| `scrollType`                                  | `'vertical'` or `'horizontal'` (Android only - see below)           | Android  |
 | `showHorizontalScrollIndicator`               | Show/hide horizontal scroll indicator                               | All      |
 | `showVerticalScrollIndicator`                 | Show/hide vertical scroll indicator                                 | All      |
-| `zoomScale` / `minZoomScale` / `maxZoomScale` | Zoom level (values 0–1)                                             | iOS      |
+| `zoomScale` / `minZoomScale` / `maxZoomScale` | Zoom level (values 0-1)                                             | iOS      |
 | `horizontalBounce` / `verticalBounce`         | Enable/disable bounce effect at edges                               | iOS      |
 | `canCancelEvents`                             | Allow ScrollView to cancel touch events in children (default: true) | iOS      |
 | `scrollable`                                  | Enable/disable scrolling                                            | All      |
 
-### ScrollView Events
+### ScrollView events
 
 ```javascript
 scrollView.addEventListener('scroll', (e) => {
@@ -66,9 +66,9 @@ scrollView.addEventListener('scrollEnd', (e) => {
 });
 ```
 ...
-### Android ScrollView Direction
+### Android ScrollView direction
 
-Android ScrollView can be vertical OR horizontal, not both. If you don't set `scrollType`, Android auto-detects: if width equals contentWidth it defaults to vertical; if height equals contentHeight it defaults to horizontal. If Titanium cannot determine the direction, a warning is logged to the console.
+Android ScrollView can be vertical or horizontal, not both. If you do not set `scrollType`, Android auto-detects: if width equals contentWidth it defaults to vertical; if height equals contentHeight it defaults to horizontal. If Titanium cannot determine the direction, it logs a warning.
 
 ```javascript
 // Explicit horizontal scroll
@@ -83,7 +83,7 @@ const scrollView = Ti.UI.createScrollView({
 ...
 ## 3. ScrollableView
 
-### Creating a ScrollableView
+### Create a ScrollableView
 
 ```javascript
 const view1 = Ti.UI.createView({ backgroundColor: '#123' });
@@ -100,7 +100,7 @@ const scrollableView = Ti.UI.createScrollableView({
 win.add(scrollableView);
 ```
 ...
-### ScrollableView Events
+### ScrollableView events
 
 ```javascript
 scrollableView.addEventListener('scroll', (e) => {
@@ -113,7 +113,7 @@ scrollableView.addEventListener('dragEnd', (e) => {
 });
 ```
 ...
-### Image Gallery
+### Image gallery
 
 ```javascript
 const images = [];
@@ -131,7 +131,7 @@ const gallery = Ti.UI.createScrollableView({
 });
 ```
 
-### Onboarding Wizard
+### Onboarding wizard
 
 ```javascript
 const page1 = createOnboardingPage('Welcome', 'Get started with our app');
@@ -158,7 +158,7 @@ nextButton.addEventListener('click', () => {
 });
 ```
 
-### Long Form Content
+### Long-form content
 
 ```javascript
 const scrollView = Ti.UI.createScrollView({
@@ -178,7 +178,7 @@ for (let i = 0; i < 50; i++) {
 }
 ```
 
-### Scrollable Form
+### Scrollable form
 
 ```javascript
 const formScrollView = Ti.UI.createScrollView({
@@ -219,7 +219,7 @@ scrollableView.scrollToView(scrollableView.views.length - 1);
 const current = scrollableView.currentPage;
 ```
 
-## 8. Detecting Scroll Position
+## 8. Detecting scroll position
 
 ```javascript
 scrollView.addEventListener('scroll', (e) => {
@@ -233,11 +233,11 @@ scrollView.addEventListener('scroll', (e) => {
 });
 ```
 
-## Best Practices
+## Best practices
 
-1. **Use ScrollableView** for paginated content (galleries, wizards)
-2. **Use ScrollView** for continuous scrolling content (long forms, articles)
-3. **Specify dimensions** explicitly on Android when possible
-4. **Consider performance** with large datasets
-5. **Test on real devices** - simulator behavior may differ
-6. **Use paging controls** for ScrollableView to improve UX
+1. Use ScrollableView for paginated content (galleries, wizards)
+2. Use ScrollView for continuous scrolling content (long forms, articles)
+3. Specify dimensions explicitly on Android when possible
+4. Consider performance with large datasets
+5. Test on real devices; simulator behavior may differ
+6. Use paging controls for ScrollableView to improve UX

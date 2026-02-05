@@ -84,7 +84,7 @@ $.index.add(profile.getView());
 $.index.open();
 ```
 
-**Prior to Alloy 1.4.0**, to dynamically generate a view:
+**Before Alloy 1.4.0**, to dynamically generate a view:
 
 1. Create a new instance of the controller using `Alloy.createController()`.
 2. Modify the properties directly.

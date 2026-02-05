@@ -1,32 +1,32 @@
-# Custom Fonts and Attributed Strings
+# Custom fonts and attributed strings
 
-## 1. Custom Fonts Overview
+## 1. Custom fonts overview
 
-Titanium supports TrueType (.ttf) and OpenType (.otf) fonts on both iOS and Android. Custom fonts are a quick way to personalize or brand your application.
+Titanium supports TrueType (`.ttf`) and OpenType (`.otf`) fonts on iOS and Android. Custom fonts are a practical way to match a brand or add a distinct tone to your UI.
 
-### Font Sources
+### Font sources
 
-- [Google Fonts](https://fonts.google.com) - Free open source fonts
-- [FontSquirrel](https://www.fontsquirrel.com) - Free commercial fonts
+- [Google Fonts](https://fonts.google.com) - Free, open source fonts
+- [FontSquirrel](https://www.fontsquirrel.com) - Free fonts, often licensed for commercial use
 
-## 2. Platform-Specific Font Loading
+## 2. Platform-specific font loading
 
-### Key Difference
+### Key difference
 
-| Platform    | fontFamily Value                               |
-| ----------- | ---------------------------------------------- |
-| **Android** | Font file name without extension               |
-| **iOS**     | Font's PostScript name (embedded in font file) |
+| Platform | fontFamily value                            |
+| -------- | ------------------------------------------- |
+| Android  | Font file name without extension            |
+| iOS      | Font PostScript name (embedded in the file) |
 
 ### Example
 
 For a file named `BurnstownDam-Regular.otf`:
-- **Android**: `fontFamily: 'burnstown_dam'` (filename without extension)
-- **iOS**: `fontFamily: 'BurnstownDam-Regular'` (PostScript name)
+- Android: `fontFamily: 'burnstown_dam'` (filename without extension)
+- iOS: `fontFamily: 'BurnstownDam-Regular'` (PostScript name)
 
-## 3. Alloy Projects
+## 3. Alloy projects
 
-### Directory Structure
+### Directory structure
 
 Place fonts in platform-specific assets:
 
@@ -41,7 +41,7 @@ app/
         CustomFont.ttf
 ```
 
-### XML Usage
+### XML usage
 
 ```xml
 <Alloy>
@@ -51,7 +51,7 @@ app/
 </Alloy>
 ```
 
-### TSS Styling
+### TSS styling
 
 ```javascript
 "#customFont": {
@@ -62,9 +62,9 @@ app/
 }
 ```
 
-### Cross-Platform Solution 1: Rename Font File
+### Cross-platform solution 1: rename the font file
 
-Rename font file to match PostScript name, then use same value:
+Rename the font file to match the PostScript name and use one value.
 
 ```javascript
 // File renamed from "burnstown_dam.otf" to "BurnstownDam-Regular.otf"
@@ -77,7 +77,7 @@ Rename font file to match PostScript name, then use same value:
 }
 ```
 
-### Cross-Platform Solution 2: Platform-Specific Styles
+### Cross-platform solution 2: platform-specific styles
 
 ```javascript
 // Use platform-specific TSS
@@ -93,9 +93,9 @@ Rename font file to match PostScript name, then use same value:
 }
 ```
 
-## 4. Classic Titanium Projects
+## 4. Classic Titanium projects
 
-### Directory Structure
+### Directory structure
 
 ```
 Resources/
@@ -109,7 +109,7 @@ Resources/
       AndroidFont.ttf
 ```
 
-### Runtime Platform Switching
+### Runtime platform switching
 
 ```javascript
 let fontFamilyName;
@@ -131,7 +131,7 @@ const label = Ti.UI.createLabel({
 });
 ```
 
-### Platform-Switching Helper Function
+### Platform-switching helper function
 
 ```javascript
 // Helper function from Tweetanium pattern
@@ -159,46 +159,46 @@ const label = Ti.UI.createLabel({
 });
 ```
 
-## 5. Finding PostScript Name
+## 5. Finding the PostScript name
 
-### Using FontBook (macOS)
+### Using Font Book (macOS)
 
-1. Open FontBook application
-2. Select desired font
-3. Press Cmd+I to view font info
-4. Find **PostScript name** field
+1. Open Font Book.
+2. Select the font.
+3. Press Cmd+I to view font info.
+4. Look for the PostScript name field.
 
-The PostScript name is embedded in the font file and doesn't change if you rename the file.
+The PostScript name is embedded in the font file and does not change if you rename the file.
 
-### Common Font Patterns
+### Common font patterns
 
-| Friendly Name   | PostScript Name Pattern     |
+| Friendly name   | PostScript name pattern     |
 | --------------- | --------------------------- |
 | Arial           | ArialMT or Arial-BoldMT     |
 | Helvetica       | Helvetica or Helvetica-Bold |
 | Times New Roman | TimesNewRomanPSMT           |
 | Custom-Regular  | CustomName-Regular          |
 
-## 6. iOS Platform Notes
+## 6. iOS platform notes
 
-### Automatic Info.plist Registration
+### Automatic Info.plist registration
 
-All fonts in `Resources/fonts/` are automatically added to iOS Info.plist.
+All fonts in `Resources/fonts/` are automatically added to the iOS Info.plist.
 
-**Important**: Place Android-only fonts in `Resources/android/fonts/` to avoid iOS registration errors.
+Important: Put Android-only fonts in `Resources/android/fonts/` to avoid iOS registration errors.
 
-### Using System Fonts
+### Using system fonts
 
-Check available system fonts before adding custom fonts:
+Check available system fonts before adding custom fonts.
 
 - [iOS Fonts](http://iosfonts.com/)
 - [Android Fonts](https://github.com/android/platform_frameworks_base/tree/master/data/fonts)
 
-## 7. Attributed Strings
+## 7. Attributed strings
 
-Attributed strings allow applying different formatting to character ranges within text. Supports Labels, TextAreas, and TextFields.
+Attributed strings let you style ranges within a string. They work with Labels, TextAreas, and TextFields.
 
-### Basic Syntax
+### Basic syntax
 
 ```javascript
 const text = "Have you tried hyperloop yet?";
@@ -218,22 +218,22 @@ const label = Ti.UI.createLabel({
 });
 ```
 
-### Important Warning
+### Important warning
 
-If using `attributedString` or `attributedHintText`, **do not** set other text-modifying properties (`font`, `color`, etc.). Titanium does not support mixing attributed strings with other text properties.
+If you use `attributedString` or `attributedHintText`, do not set other text properties like `font` or `color`. Titanium does not support mixing attributed strings with other text properties.
 
-### Property Equivalents
+### Property equivalents
 
-| Component | AttributedString Property | Equivalent |
+| Component | AttributedString property | Equivalent |
 | --------- | ------------------------- | ---------- |
 | Label     | `attributedString`        | `text`     |
 | TextArea  | `attributedString`        | `value`    |
 | TextField | `attributedString`        | `value`    |
 | TextField | `attributedHintText`      | `hintText` |
 
-## 8. Attribute Types
+## 8. Attribute types
 
-### Font Attribute
+### Font attribute
 
 ```javascript
 const attr = Ti.UI.createAttributedString({
@@ -251,7 +251,7 @@ const attr = Ti.UI.createAttributedString({
 });
 ```
 
-### Foreground Color
+### Foreground color
 
 ```javascript
 {
@@ -261,7 +261,7 @@ const attr = Ti.UI.createAttributedString({
 }
 ```
 
-### Background Color
+### Background color
 
 ```javascript
 {
@@ -273,9 +273,9 @@ const attr = Ti.UI.createAttributedString({
 
 ### Underline
 
-**Android**: Single line only, `value` ignored.
+Android: single line only, `value` ignored.
 
-**iOS**: Multiple styles and patterns. You can logically-OR constants together (e.g., `STYLE_DOUBLE | PATTERN_DOT`).
+iOS: multiple styles and patterns. You can OR constants together (for example, `STYLE_DOUBLE | PATTERN_DOT`).
 
 ```javascript
 {
@@ -286,13 +286,13 @@ const attr = Ti.UI.createAttributedString({
 }
 ```
 
-**iOS Underline Styles**:
+iOS underline styles:
 - `ATTRIBUTE_UNDERLINE_STYLE_NONE`
 - `ATTRIBUTE_UNDERLINE_STYLE_SINGLE`
 - `ATTRIBUTE_UNDERLINE_STYLE_THICK` (iOS 7+)
 - `ATTRIBUTE_UNDERLINE_STYLE_DOUBLE` (iOS 7+)
 
-**iOS Patterns** (iOS 7+):
+iOS patterns (iOS 7+):
 - `ATTRIBUTE_UNDERLINE_PATTERN_SOLID`
 - `ATTRIBUTE_UNDERLINE_PATTERN_DOT`
 - `ATTRIBUTE_UNDERLINE_PATTERN_DASH`
@@ -300,7 +300,7 @@ const attr = Ti.UI.createAttributedString({
 - `ATTRIBUTE_UNDERLINE_PATTERN_DASH_DOT_DOT`
 - `ATTRIBUTE_UNDERLINE_BY_WORD` (Draw lines only under characters, not spaces)
 
-**iOS Underline Color** (iOS 7+):
+iOS underline color (iOS 7+):
 ```javascript
 {
   type: Ti.UI.ATTRIBUTE_UNDERLINE_COLOR,
@@ -311,11 +311,11 @@ const attr = Ti.UI.createAttributedString({
 
 ### Strikethrough
 
-**Android**: Single line through text only.
+Android: single line through text only.
 
-**iOS**: Supports same styles and patterns as Underline.
+iOS: supports the same styles and patterns as underline.
 
-**iOS Strikethrough Color** (iOS 7+):
+iOS strikethrough color (iOS 7+):
 ```javascript
 {
   type: Ti.UI.ATTRIBUTE_STRIKETHROUGH_COLOR,
@@ -342,9 +342,9 @@ label.addEventListener('link', (e) => {
 });
 ```
 
-**Note**: Prior to Titanium Release 4.0, the `link` event was only triggered by a long press on iOS.
+Note: Prior to Titanium Release 4.0, the `link` event was only triggered by a long press on iOS.
 
-## 9. iOS-Exclusive Attributes
+## 9. iOS-exclusive attributes
 
 ### Ligature
 
@@ -356,7 +356,7 @@ label.addEventListener('link', (e) => {
 }
 ```
 
-### Kerning (Character Spacing)
+### Kerning (character spacing)
 
 ```javascript
 {
@@ -366,10 +366,10 @@ label.addEventListener('link', (e) => {
 }
 ```
 
-### Stroke Text (iOS 7+)
+### Stroke text (iOS 7+)
 
 ```javascript
-// Positive value = outline only, Negative = filled with stroke
+// Positive value = outline only, negative = filled with stroke
 {
   type: Ti.UI.ATTRIBUTE_STROKE_WIDTH,
   value: 3.0,
@@ -398,7 +398,7 @@ label.addEventListener('link', (e) => {
 }
 ```
 
-### Letterpress Effect (iOS 7+)
+### Letterpress effect (iOS 7+)
 
 ```javascript
 {
@@ -408,9 +408,9 @@ label.addEventListener('link', (e) => {
 }
 ```
 
-### Writing Direction (iOS 7+)
+### Writing direction (iOS 7+)
 
-Controls text direction for a specific range. Can logically-OR direction with behavior (Embedding or Override).
+Controls text direction for a specific range. You can OR a direction with a behavior (Embedding or Override).
 
 ```javascript
 {
@@ -421,16 +421,16 @@ Controls text direction for a specific range. Can logically-OR direction with be
 }
 ```
 
-**Direction Constants**:
-- `ATTRIBUTE_WRITING_DIRECTION_NATURAL`: Uses Unicode Bidirectional Algorithm.
+Direction constants:
+- `ATTRIBUTE_WRITING_DIRECTION_NATURAL`: Uses the Unicode Bidirectional Algorithm.
 - `ATTRIBUTE_WRITING_DIRECTION_LEFT_TO_RIGHT`
 - `ATTRIBUTE_WRITING_DIRECTION_RIGHT_TO_LEFT`
 
-**Behavior Modifiers**:
+Behavior modifiers:
 - `ATTRIBUTE_WRITING_DIRECTION_EMBEDDING`: Use embedded direction.
 - `ATTRIBUTE_WRITING_DIRECTION_OVERRIDE`: Force the direction.
 
-### Baseline Offset (iOS 7+)
+### Baseline offset (iOS 7+)
 
 ```javascript
 {
@@ -440,7 +440,7 @@ Controls text direction for a specific range. Can logically-OR direction with be
 }
 ```
 
-### Oblique/Skew (iOS 7+)
+### Oblique or skew (iOS 7+)
 
 ```javascript
 {
@@ -460,7 +460,7 @@ Controls text direction for a specific range. Can logically-OR direction with be
 }
 ```
 
-## 10. Multiple Attributes Example
+## 10. Multiple attributes example
 
 ```javascript
 const text = "Have you tried hyperloop yet?";
@@ -489,43 +489,43 @@ const attr = Ti.UI.createAttributedString({
 });
 ```
 
-## 11. Best Practices
+## 11. Best practices
 
-### Custom Fonts
+### Custom fonts
 
-1. **Test on real devices** - Simulator may not reflect actual font rendering
-2. **Check licensing** - Ensure fonts are licensed for mobile app distribution
-3. **Consider file size** - Custom fonts increase app size
-4. **Use system fonts when possible** - Faster loading, smaller app size
-5. **Provide fallbacks** - Always include a fallback fontFamily
+1. Test on real devices. Simulators can render fonts differently.
+2. Check licensing. Make sure the font is licensed for mobile apps.
+3. Consider file size. Custom fonts increase the app size.
+4. Use system fonts when possible. They load faster.
+5. Provide fallbacks. Always include a fallback `fontFamily`.
 
-### Attributed Strings
+### Attributed strings
 
-1. **Don't mix with other properties** - Use only attributed string OR text properties
-2. **Use consistent range calculations** - Off-by-one errors are common
-3. **Test on both platforms** - Some attributes differ between iOS and Android
-4. **Performance consideration** - Complex attributed strings can impact scrolling performance
+1. Do not mix with other properties. Use attributed strings or plain text styling.
+2. Use consistent range calculations. Off-by-one errors are easy to introduce.
+3. Test on both platforms. Attributes differ between iOS and Android.
+4. Keep performance in mind. Complex attributed strings can slow scrolling.
 
-## 12. Common Issues
+## 12. Common issues
 
-### Font Not Showing
+### Font not showing
 
-**Problem**: Custom font not appearing
+Problem: A custom font does not appear.
 
-**Solutions**:
-1. Check PostScript name (iOS) vs filename (Android)
-2. Verify font file is in correct directory
-4. Clean and rebuild project
-5. Check font file isn't corrupted
+Solutions:
+1. Check the PostScript name (iOS) and filename (Android).
+2. Verify the font file is in the correct directory.
+3. Clean and rebuild the project.
+4. Check that the font file is not corrupted.
 
-### Wrong Font on One Platform
+### Wrong font on one platform
 
-**Problem**: Font works on one platform but not the other
+Problem: The font works on one platform but not the other.
 
-**Solution**: You're likely using the wrong naming convention. Use platform-specific styles or rename font file to match PostScript name.
+Solution: You are likely using the wrong naming convention. Use platform-specific styles or rename the font file to match the PostScript name.
 
-### Attributed String Not Displaying
+### Attributed string not displaying
 
-**Problem**: Text appears plain instead of formatted
+Problem: Text shows as plain instead of formatted.
 
-**Solution**: Remove conflicting properties like `font`, `color`, etc. when using `attributedString`.
+Solution: Remove conflicting properties like `font` and `color` when using `attributedString`.

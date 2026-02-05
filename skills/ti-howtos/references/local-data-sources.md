@@ -1,28 +1,28 @@
-# Local Data Sources
+# Local data sources
 
-## 1. Filesystem Access and Storage
+## 1. Filesystem access and storage
 
-### Modules Overview
-- `Ti.Filesystem` - Top-level module for file/directory operations
-- `Ti.Filesystem.File` - File object with read/write methods
-- `Ti.Filesystem.FileStream` - Stream wrapper implementing Ti.IOStream interface
+### Modules overview
+- `Ti.Filesystem` - top-level module for file/directory operations
+- `Ti.Filesystem.File` - file object with read/write methods
+- `Ti.Filesystem.FileStream` - stream wrapper implementing `Ti.IOStream`
 
-### Storage Locations
+### Storage locations
 
 | Location                    | Read/Write | Persistence      | Notes                                  |
 | --------------------------- | ---------- | ---------------- | -------------------------------------- |
 | `applicationDataDirectory`  | R/W        | Until uninstall  | Primary app data location              |
-| `resourcesDirectory`        | R-only     | Until uninstall  | App resources (R/W in simulator only!) |
+| `resourcesDirectory`        | R-only     | Until uninstall  | App resources (R/W in simulator only)  |
 | `tempDirectory`             | R/W        | Until app closes | OS may delete anytime                  |
 | `applicationCacheDirectory` | R/W        | OS may clean     | For cached data                        |
 | `externalCacheDirectory`    | R/W        | OS may clean     | Android SD card cache                  |
 | `externalStorageDirectory`  | R/W        | Until uninstall  | Android SD card storage                |
 
-**Always check** `Ti.Filesystem.isExternalStoragePresent()` before using external storage on Android.
+Always check `Ti.Filesystem.isExternalStoragePresent()` before using external storage on Android.
 
-### File Operations
+### File operations
 
-#### Getting a File Handle
+#### Getting a file handle
 ```javascript
 const f = Ti.Filesystem.getFile(
   Ti.Filesystem.applicationDataDirectory,
@@ -30,24 +30,24 @@ const f = Ti.Filesystem.getFile(
 );
 ```
 
-#### Writing Files
+#### Writing files
 ```javascript
-f.write('Content here');  // Overwrites or creates
+f.write('Content here'); // Overwrites or creates
 ```
 
-#### Reading Files
+#### Reading files
 ```javascript
-const contents = f.read();  // Returns Blob
-Ti.API.info(contents.text);  // Text content
-Ti.API.info(contents.mimeType);  // MIME type
+const contents = f.read(); // Returns Blob
+Ti.API.info(contents.text); // Text content
+Ti.API.info(contents.mimeType); // MIME type
 ```
 
 #### Appending
 ```javascript
-f.append('More content\n');  // String, Blob, or File
+f.append('More content\n'); // String, Blob, or File
 ```
 
-#### Creating/Copying
+#### Creating/copying
 ```javascript
 // Auto-creates on write, but explicit option exists:
 if (!f.exists()) {
@@ -64,7 +64,7 @@ newFile.write(oldFile.read());
 ```
 
 #### Renaming
-**Important**: File handle still points to old name after rename!
+Important: the file handle still points to the old name after rename.
 
 ```javascript
 const f = Ti.Filesystem.getFile(applicationDataDirectory, 'old.txt');
@@ -76,11 +76,11 @@ const newf = Ti.Filesystem.getFile(applicationDataDirectory, 'new.txt');
 #### Deleting
 ```javascript
 if (f.exists() && f.writable) {
-  const success = f.deleteFile();  // Returns Boolean, no error thrown
+  const success = f.deleteFile(); // Returns Boolean, no error thrown
 }
 ```
 
-### Directory Operations
+### Directory operations
 
 ```javascript
 // Create directory
@@ -95,16 +95,16 @@ const file = Ti.Filesystem.getFile(applicationDataDirectory, 'file.txt');
 file.move('mysubdir/file.txt');
 
 // Delete directory (must be empty or force recursive)
-dir.deleteDirectory(false);  // Fails if not empty
-dir.deleteDirectory(true);   // Recursive delete
+dir.deleteDirectory(false); // Fails if not empty
+dir.deleteDirectory(true); // Recursive delete
 ```
 
-### Case Sensitivity Warning
-Android and Mobile Web use case-sensitive filesystems. File names referenced in code must match actual file names exactly. Recommendation: **lowercase all file names**.
+### Case sensitivity warning
+Android and Mobile Web use case-sensitive filesystems. File names referenced in code must match actual file names exactly. Recommendation: use lowercase file names.
 
-## 2. SQLite Database
+## 2. SQLite database
 
-### Installing a Pre-populated Database
+### Installing a pre-populated database
 Ship a database with your app and install it on first launch:
 ```javascript
 // Copies db from Resources/ (or app/assets/) to applicationDataDirectory
@@ -112,7 +112,7 @@ const db = Ti.Database.install('seeds/mydata.sqlite', 'mydata');
 // On subsequent launches, install() just opens the existing database
 ```
 
-### Opening Databases
+### Opening databases
 
 ```javascript
 // Install (copies from Resources if first time)
@@ -129,39 +129,39 @@ const dbFile = Ti.Filesystem.getFile(
 const db = Ti.Database.open(dbFile.nativePath);
 ```
 
-### Querying Data
+### Querying data
 
 ```javascript
 const rows = db.execute('SELECT * FROM users WHERE age > ?', [18]);
 
 while (rows.isValidRow()) {
   Ti.API.info(rows.fieldByName('name'));
-  Ti.API.info(rows.field(0));  // First column by index
+  Ti.API.info(rows.field(0)); // First column by index
   rows.next();
 }
 
-// **CRITICAL**: Always close result set
+// Always close result set
 rows.close();
 ```
 
-### Parameterized Queries
+### Parameterized queries
 Always use parameters to prevent SQL injection:
 
 ```javascript
-// SAFE - parameterized
+// Safe - parameterized
 db.execute('INSERT INTO users (name, age) VALUES (?, ?)', ['John', 25]);
 
-// UNSAFE - never do this
+// Unsafe - never do this
 db.execute(`INSERT INTO users (name, age) VALUES ('${name}', ${age})`);
 ```
 
-### Data Modification
+### Data modification
 
 ```javascript
 // INSERT
 db.execute('INSERT INTO users (name, age) VALUES (?, ?)', ['Jane', 30]);
-const lastId = db.lastInsertRowId;    // ID of the last inserted row
-const affected = db.rowsAffected;     // number of rows changed by last statement
+const lastId = db.lastInsertRowId; // ID of the last inserted row
+const affected = db.rowsAffected; // number of rows changed by last statement
 
 // UPDATE
 db.execute('UPDATE users SET age = ? WHERE name = ?', [31, 'Jane']);
@@ -171,42 +171,43 @@ const rowsAffected = db.rowsAffected;
 db.execute('DELETE FROM users WHERE age < ?', [18]);
 ```
 
-### Transactions for Batch Operations
-Use transactions to dramatically improve performance for multiple inserts/updates:
+### Transactions for batch operations
+Use transactions to speed up multiple inserts or updates:
 ```javascript
 const db = Ti.Database.open('mydb');
 db.execute('BEGIN');
 try {
-    for (let i = 0; i < items.length; i++) {
-        db.execute('INSERT INTO products (name, price) VALUES (?, ?)', items[i].name, items[i].price);
-    }
-    db.execute('COMMIT');
+  for (let i = 0; i < items.length; i++) {
+    db.execute('INSERT INTO products (name, price) VALUES (?, ?)', items[i].name, items[i].price);
+  }
+  db.execute('COMMIT');
 } catch (e) {
-    db.execute('ROLLBACK');
-    Ti.API.error(`Transaction failed: ${e.message}`);
+  db.execute('ROLLBACK');
+  Ti.API.error(`Transaction failed: ${e.message}`);
 }
 db.close();
 ```
 
-> **Performance**: Wrapping 1000 inserts in a transaction can be 10-100x faster than individual inserts.
+Performance: wrapping 1000 inserts in a transaction can be 10-100x faster than individual inserts.
 
-### SQLite Limitations
-- No `FULL OUTER JOIN` support — use `LEFT JOIN` with `UNION`
-- Limited `ALTER TABLE` — can only `ADD COLUMN` or `RENAME TABLE`, cannot drop/modify columns
-- No built-in referential integrity (foreign key enforcement) — enable with `PRAGMA foreign_keys = ON`
-- No native boolean type — use INTEGER (0/1)
+### SQLite limitations
+- No `FULL OUTER JOIN` support. Use `LEFT JOIN` with `UNION`.
+- Limited `ALTER TABLE`. You can only `ADD COLUMN` or `RENAME TABLE`.
+- No built-in referential integrity (foreign keys). Enable with `PRAGMA foreign_keys = ON`.
+- No native boolean type. Use INTEGER (0/1).
 
-### Disable iCloud Backup for Databases (iOS)
-iOS automatically backs up databases to iCloud. For large or recreatable databases, disable this:
+### Disable iCloud backup for databases (iOS)
+
+iOS backs up databases to iCloud by default. For large or recreatable databases, disable this:
 ```javascript
 const db = Ti.Database.open('mydb');
 db.file.setRemoteBackup(false);
 db.close();
 ```
 
-> **Important**: Apple may reject apps that back up large recreatable data to iCloud.
+Important: Apple may reject apps that back up large recreatable data to iCloud.
 
-### **CRITICAL**: Always Close Connections
+### Always close connections
 
 ```javascript
 try {
@@ -223,11 +224,11 @@ try {
 ### Overview
 Lightweight key-value storage for simple data types. Loaded into memory at launch for fast access.
 
-**Warning**: No hard limit, but all properties load into memory - avoid storing large data.
+Warning: there is no hard limit, but all properties load into memory. Avoid storing large data.
 
-### Data Type Methods
+### Data type methods
 
-| Type   | Get Method                 | Set Method               |
+| Type   | Get method                 | Set method               |
 | ------ | -------------------------- | ------------------------ |
 | String | `getString(name, default)` | `setString(name, value)` |
 | Int    | `getInt(name, default)`    | `setInt(name, value)`    |
@@ -235,7 +236,7 @@ Lightweight key-value storage for simple data types. Loaded into memory at launc
 | Bool   | `getBool(name, default)`   | `setBool(name, value)`   |
 | List   | `getList(name, default)`   | `setList(name, value)`   |
 
-### Usage Examples
+### Usage examples
 
 ```javascript
 // Set values
@@ -261,7 +262,7 @@ Ti.App.Properties.removeProperty('username');
 const allProps = Ti.App.Properties.listProperties();
 ```
 
-### Storing Complex Objects as JSON
+### Storing complex objects as JSON
 
 ```javascript
 // Store object as JSON string
@@ -271,24 +272,24 @@ Ti.App.Properties.setString('weatherData', JSON.stringify(data));
 // Retrieve and parse
 const stored = Ti.App.Properties.getString('weatherData', '{}');
 const weather = JSON.parse(stored);
-Ti.API.info(weather.city);  // 'Mountain View'
+Ti.API.info(weather.city); // 'Mountain View'
 ```
 
-### Platform Storage
-- **iOS**: `NSUserDefaults` in `.plist` file
-- **Android**: XML file at `/data/data/com.domain.app/shared_prefs/titanium.xml`
+### Platform storage
+- iOS: `NSUserDefaults` in a `.plist` file
+- Android: XML file at `/data/data/com.domain.app/shared_prefs/titanium.xml`
 
-## 4. Advanced Data Manipulation (Buffer, Codec, and Streams)
+## 4. Advanced data manipulation (Buffer, Codec, and Streams)
 
-For binary data handling, character encoding, and large file streams, refer to the detailed guide:
+For binary data handling, character encoding, and large file streams, see:
 
-- [Buffer, Codec, and Streams](./buffer-codec-streams.md): Using `Ti.Buffer`, `Ti.Codec` for numbers/strings, and efficient chunk-based reading.
+- Buffer, Codec, and Streams: `buffer-codec-streams.md`
 
-## 5. Choosing a Persistence Strategy
+## 5. Choosing a persistence strategy
 
-### Decision Guide
+### Decision guide
 
-| Scenario                           | Recommended Approach                     |
+| Scenario                           | Recommended approach                     |
 | ---------------------------------- | ---------------------------------------- |
 | User settings/preferences          | `Ti.App.Properties`                      |
 | Small config data (< 100KB)        | `Ti.App.Properties` with JSON            |
@@ -299,11 +300,11 @@ For binary data handling, character encoding, and large file streams, refer to t
 | User-generated files               | Filesystem (`applicationDataDirectory`)  |
 | Offline-first app data             | SQLite + Filesystem combo                |
 
-### Best Practices
+### Best practices
 
-1. **Properties API**: Use only for small, frequently-accessed config data
-2. **SQLite**: Always close connections and result sets; use parameterized queries
-3. **Filesystem**: Check external storage availability on Android; handle case sensitivity
-4. **Streams**: Use for large file operations to avoid memory issues
-5. **Hybrid Approach**: Store metadata in SQLite, file paths in records, actual files on filesystem
-6. **Cleanup**: Implement cleanup for temp files and cache; don't let them accumulate
+1. Properties API: use only for small, frequently accessed config data.
+2. SQLite: always close connections and result sets; use parameterized queries.
+3. Filesystem: check external storage availability on Android; handle case sensitivity.
+4. Streams: use for large file operations to avoid memory issues.
+5. Hybrid approach: store metadata in SQLite, file paths in records, actual files on filesystem.
+6. Cleanup: implement cleanup for temp files and cache; do not let them accumulate.

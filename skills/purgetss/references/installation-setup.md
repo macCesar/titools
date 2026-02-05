@@ -13,7 +13,7 @@ PurgeTSS has been thoroughly tested and proven to be compatible with Node 20.0.0
 - `tailwind.tss` was renamed to `utilities.tss`. Update any scripts or paths that reference the old filename.
 - PurgeTSS validates XML syntax before processing and reports line-level errors (for example, missing `<`).
 - `deviceInfo()` now works in both Alloy and Classic projects (no `Alloy.isTablet`/`Alloy.isHandheld` dependency).
-- If upgrades behave oddly, try a clean reinstall: `npm uninstall -g purgetss && npm install -g purgetss`.
+- If you hit issues after upgrading, try a clean reinstall: `npm uninstall -g purgetss && npm install -g purgetss`.
 
 ## Global Installation
 

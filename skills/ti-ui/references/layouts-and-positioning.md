@@ -1,89 +1,79 @@
-# Layouts, Positioning, and View Hierarchy
+# Layouts, positioning, and view hierarchy
 
-## 🚨 CRITICAL: Platform-Specific Properties Require Modifiers
+## Critical: platform-specific properties require modifiers
 
-:::danger NEVER use platform-specific properties directly
-**Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties WITHOUT modifiers will:**
+Do not use `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties without modifiers. It will break builds.
 
-1. **Add iOS code to Android builds** → compilation failures
-2. **Add Android code to iOS builds** → compilation failures
-3. **Create invalid cross-platform code**
-
-**REAL EXAMPLE of the damage:**
+Example of the problem:
 ```javascript
-// ❌ WRONG - Adds Ti.UI.iOS to Android project
+// WRONG - Adds Ti.UI.iOS to Android project
 const win = Ti.UI.createWindow({
-  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT  // FAILS on Android!
+  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT  // Fails on Android
 })
 ```
 
-**CORRECT approaches:**
+Correct approaches:
 
-**Option 1 - TSS modifier (Alloy projects):**
+Option 1: TSS modifier (Alloy projects)
 ```tss
-// ✅ CORRECT - Only adds to iOS
+// CORRECT - Only adds to iOS
 "#mainWindow[platform=ios]": {
   statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
 }
 ```
 
-**Option 2 - Conditional code:**
+Option 2: conditional code
 ```javascript
 if (OS_IOS) {
   $.mainWindow.statusBarStyle = Ti.UI.iOS.StatusBar.LIGHT_CONTENT
 }
 ```
 
-**Common platform-specific properties that REQUIRE modifiers:**
+Common platform-specific properties that require modifiers:
 - iOS: `statusBarStyle`, `modalStyle`, `modalTransitionStyle`, any `Ti.UI.iOS.*`
 - Android: `actionBar` config, any `Ti.Android.*` constant
-:::
 
-## 1. Units of Measurement
+## 1. Units of measurement
 
-### Available Units
+### Available units
 
-| Unit         | Description                | Platform Notes                              |
-| ------------ | -------------------------- | ------------------------------------------- |
-| `dp` / `dip` | Density-independent pixels | **Recommended** for cross-platform          |
-| `px`         | Absolute pixels            | Use sparingly - varies by screen density    |
-| `%`          | Percentage of parent size  | Relative to parent's dimension              |
-| `mm`         | Millimeters                | Absolute physical unit                      |
-| `cm`         | Centimeters                | Absolute physical unit                      |
-| `in`         | Inches                     | Absolute physical unit                      |
-| `system`     | Platform default           | iOS = dip, Android = px (unless configured) |
+| Unit         | Description                | Platform notes                           |
+| ------------ | -------------------------- | ---------------------------------------- |
+| `dp` / `dip` | Density-independent pixels | Recommended for cross-platform           |
+| `px`         | Absolute pixels            | Use sparingly, varies by density         |
+| `%`          | Percentage of parent size  | Relative to parent dimension             |
+| `mm`         | Millimeters                | Absolute physical unit                   |
+| `cm`         | Centimeters                | Absolute physical unit                   |
+| `in`         | Inches                     | Absolute physical unit                   |
+| `system`     | Platform default           | iOS = dip, Android = px (unless changed) |
 
-### Density-Independent Pixels (dp)
+### Density-independent pixels (dp)
 
-**Android**: `actual pixels = dip × (screen density) / 160`
+Android: `actual pixels = dip * (screen density) / 160`
 - mdpi (160 dpi): 1dp = 1px
 - hdpi (240 dpi): 1dp = 1.5px
 - xhdpi (320 dpi): 1dp = 2px
 - xxhdpi (480 dpi): 1dp = 3px
 
-**iOS**: Effectively `1dip = 1px` on non-retina, `1dip = 2px` on retina
+iOS: effectively `1dip = 1px` on non-retina, `1dip = 2px` on retina.
 
-### Default Units in tiapp.xml
+### Default units in tiapp.xml
 
-You can set app-wide default units via the `ti.ui.defaultunit` property in `tiapp.xml`:
+You can set app-wide default units via `ti.ui.defaultunit` in `tiapp.xml`:
 
 ```xml
 <property name="ti.ui.defaultunit" type="string">dp</property>
 ```
 
-When set, numeric values without explicit units (e.g., `width: 100`) use this unit instead of the platform default.
+When set, numeric values without explicit units (for example, `width: 100`) use this unit instead of the platform default.
 
-### Platform Coordinate Grid Differences
+### Platform coordinate grid differences
 
-> **Important**: iOS and Android use different default coordinate systems:
-> - **iOS** uses a density-independent grid (e.g., 320×480 dip for iPhone classic, 1024×768 for iPad). Values are always in dip.
-> - **Android** uses a pixel-based grid by default (varies by device: HVGA 320×480px, WVGA800 480×800px, etc.).
->
-> This is why setting `ti.ui.defaultunit` to `dp` is recommended for cross-platform consistency — it normalizes Android's behavior to match iOS's density-independent approach.
+iOS uses a density-independent grid. Android uses a pixel-based grid by default. That is why setting `ti.ui.defaultunit` to `dp` is the safest cross-platform choice.
 
-### Best Practice
+### Best practice
 
-Always use `dp` for consistent sizing across devices:
+Use `dp` for consistent sizing across devices:
 
 ```javascript
 // GOOD
@@ -99,9 +89,9 @@ const view = Ti.UI.createView({
 });
 ```
 
-## 2. Positioning Properties
+## 2. Positioning properties
 
-### Edge-Based Positioning
+### Edge-based positioning
 
 Relative to parent edges:
 
@@ -114,7 +104,7 @@ const view = Ti.UI.createView({
 });
 ```
 
-### Center Positioning
+### Center positioning
 
 ```javascript
 const view = Ti.UI.createView({
@@ -122,7 +112,7 @@ const view = Ti.UI.createView({
 });
 ```
 
-### Dynamic Sizing
+### Dynamic sizing
 
 Omit a dimension to calculate dynamically:
 
@@ -135,9 +125,9 @@ const view = Ti.UI.createView({
 });
 ```
 
-## 3. Layout Modes
+## 3. Layout modes
 
-### Composite (Default)
+### Composite (default)
 
 Views stack on top of each other:
 
@@ -161,13 +151,13 @@ container.add(view2);
 // view2 appears on top of view1
 ```
 
-Stacking order controlled by:
+Stacking order is controlled by:
 - Addition order
-- `zIndex` property (higher = on top)
+- `zIndex` (higher is on top)
 
-> **Android limitation**: `zIndex` is only supported by composite layouts. The `zIndex` property is ignored by horizontal and vertical layouts.
+Android limitation: `zIndex` is only supported by composite layouts. It is ignored by horizontal and vertical layouts.
 
-### Vertical Layout
+### Vertical layout
 
 Children stack vertically:
 
@@ -193,12 +183,12 @@ container.add(label2);
 // label2 appears below label1 with 10dp gap
 ```
 
-**Vertical Layout Rules**:
-- Children's `top` property acts as **offset** from previous sibling
-- Children are **horizontally centered** by default
-- Set `horizontalWrap: false` to prevent wrapping
+Vertical layout rules:
+- `top` is an offset from the previous sibling.
+- Children are horizontally centered by default.
+- Set `horizontalWrap: false` to prevent wrapping.
 
-### Horizontal Layout
+### Horizontal layout
 
 Children line up left to right:
 
@@ -225,12 +215,12 @@ container.add(view2);
 // view2 appears to right of view1 with 10dp gap
 ```
 
-**Horizontal Layout Rules**:
-- Children's `left` property acts as **offset** from previous sibling
-- `horizontalWrap: true` (default) - moves to next row if insufficient space
-- `horizontalWrap: false` - continues on same row (may overflow)
+Horizontal layout rules:
+- `left` is an offset from the previous sibling.
+- `horizontalWrap: true` (default) moves to the next row if needed.
+- `horizontalWrap: false` keeps items on one row and may overflow.
 
-## 4. Auto-Size Behaviors
+## 4. Auto-size behaviors
 
 ### Ti.UI.SIZE
 
@@ -255,19 +245,19 @@ const view = Ti.UI.createView({
 });
 ```
 
-### Component Defaults
+### Component defaults
 
-| SIZE Components | FILL Components | Mixed                                  |
-| :-------------- | :-------------- | :------------------------------------- |
+| SIZE components | FILL components | Mixed                                  |
+| --------------- | --------------- | -------------------------------------- |
 | Button          | Window          | TableViewRow (FILL width, SIZE height) |
 | Label           | View            | Slider (FILL width, SIZE height)       |
 | ImageView       | ScrollView      | Toolbar (FILL width, SIZE height)      |
 | Switch          | WebView         |                                        |
 | TextField       | ScrollableView  |                                        |
 
-### ScrollView Auto-Sizing
+### ScrollView auto-sizing
 
-When a `ScrollView`'s `contentWidth` or `contentHeight` is set to `"auto"` or `Ti.UI.SIZE`, the scroll view's content area grows based on the bottom/right offsets of its child views:
+When a `ScrollView` has `contentWidth` or `contentHeight` set to `"auto"` or `Ti.UI.SIZE`, its content area grows based on the bottom and right offsets of its children:
 
 ```javascript
 const scrollView = Ti.UI.createScrollView({
@@ -277,15 +267,15 @@ const scrollView = Ti.UI.createScrollView({
 });
 ```
 
-### Auto-Size in Layout Modes
+### Auto-size in layout modes
 
-In `vertical`/`horizontal` layouts:
-- `FILL` takes into account previously added siblings
-- Example: First child `FILL`, second child `SIZE` → second gets remaining space
+In vertical and horizontal layouts:
+- `FILL` takes into account previously added siblings.
+- Example: First child `FILL`, second child `SIZE` means the second gets remaining space.
 
-## 5. Combining Layouts
+## 5. Combining layouts
 
-### Nested Layouts
+### Nested layouts
 
 ```javascript
 const outerContainer = Ti.UI.createView({
@@ -324,9 +314,9 @@ outerContainer.add(header);
 outerContainer.add(content);
 ```
 
-## 6. View Hierarchy and Z-Index
+## 6. View hierarchy and zIndex
 
-### Stacking Order
+### Stacking order
 
 Views added later appear on top:
 
@@ -346,9 +336,9 @@ win.add(view1);
 win.add(view2);  // view2 appears on top of view1
 ```
 
-### The `size` Property and `postlayout` Event
+### The `size` property and `postlayout` event
 
-The read-only `size` property provides the width and height of a view after layout. This property won't return accurate values until a `postlayout` event has been received:
+The read-only `size` property gives the width and height of a view after layout. It is accurate only after `postlayout` fires:
 
 ```javascript
 const view = Ti.UI.createView({ width: '50%', height: Ti.UI.SIZE });
@@ -358,7 +348,7 @@ view.addEventListener('postlayout', () => {
 });
 ```
 
-### Explicit Z-Index
+### Explicit zIndex
 
 ```javascript
 const view1 = Ti.UI.createView({
@@ -378,9 +368,9 @@ win.add(view2);
 win.add(view1);  // Still below view2 due to zIndex
 ```
 
-## 7. Common Layout Patterns
+## 7. Common layout patterns
 
-### Full-Screen Overlay
+### Full-screen overlay
 
 ```javascript
 const overlay = Ti.UI.createView({
@@ -401,7 +391,7 @@ overlay.add(dialog);
 win.add(overlay);
 ```
 
-### Centered Content
+### Centered content
 
 ```javascript
 const container = Ti.UI.createView({
@@ -419,7 +409,7 @@ const centered = Ti.UI.createView({
 container.add(centered);
 ```
 
-### Bottom-Aligned Content
+### Bottom-aligned content
 
 ```javascript
 const footer = Ti.UI.createView({
@@ -429,7 +419,7 @@ const footer = Ti.UI.createView({
 });
 ```
 
-### Percentage-Based Layout
+### Percentage-based layout
 
 ```javascript
 const leftPanel = Ti.UI.createView({
@@ -446,25 +436,25 @@ const rightPanel = Ti.UI.createView({
 });
 ```
 
-## 8. Platform Considerations
+## 8. Platform considerations
 
-### Android Density-Specific Resources
+### Android density-specific resources
 
 Place resources in appropriate directories:
 - `res-ldpi`, `res-mdpi`, `res-hdpi`, `res-xhdpi`, `res-xxhdpi`
 
-### iOS Asset Catalog
+### iOS asset catalog
 
-PNG/JPEG images with naming convention:
-- `foo.png` - Non-retina
-- `foo@2x.png` - Retina
-- `foo@3x.png` - iPhone 6 Plus
+PNG or JPEG images with naming conventions:
+- `foo.png` for non-retina
+- `foo@2x.png` for retina
+- `foo@3x.png` for iPhone Plus sizes
 
-## Best Practices
+## Best practices
 
-1. **Use `dp` units** for cross-platform consistency
-2. **Prefer `Ti.UI.FILL`** over percentages for containers
-3. **Avoid `Ti.UI.SIZE` in ListViews** for performance
-4. **Use layout modes** instead of manual positioning when possible
-5. **Test on multiple devices** with different screen sizes
-6. **Use `zIndex` sparingly** - rely on addition order when possible
+1. Use `dp` units for cross-platform consistency.
+2. Prefer `Ti.UI.FILL` over percentages for containers.
+3. Avoid `Ti.UI.SIZE` in ListViews for performance.
+4. Use layout modes instead of manual positioning when possible.
+5. Test on multiple devices with different screen sizes.
+6. Use `zIndex` sparingly and rely on add order where possible.

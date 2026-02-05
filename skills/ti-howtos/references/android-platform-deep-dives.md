@@ -1,11 +1,11 @@
-# Android Platform Deep Dives
+# Android platform deep dives
 
-## 1. Android Intent Filters (Advanced)
+## 1. Android intent filters (advanced)
 
-To allow your app to receive implicit intents (e.g., opening a PDF file or a web link), you must register the filter in the manifest.
+To receive implicit intents (for example, opening a PDF file or a web link), register a filter in the manifest.
 
-### Critical Step: Copy Root Activity
-Before declaring an `intent-filter`, you must copy the `<activity>` node of your main activity from `build/android/AndroidManifest.xml` to the `<android>` section of your `tiapp.xml`:
+### Critical step: copy root activity
+Before declaring an `intent-filter`, copy the `<activity>` node of your main activity from `build/android/AndroidManifest.xml` into the `<android>` section of your `tiapp.xml`:
 
 ```xml
 <android xmlns:android="http://schemas.android.com/apk/res/android">
@@ -30,28 +30,28 @@ Before declaring an `intent-filter`, you must copy the `<activity>` node of your
 </android>
 ```
 
-### Retrieving Intent Data
+### Retrieving intent data
 ```javascript
 const intent = Ti.Android.currentActivity.getIntent();
 if (intent.hasExtra(Ti.Android.EXTRA_TEXT)) {
-    const sharedText = intent.getStringExtra(Ti.Android.EXTRA_TEXT);
+  const sharedText = intent.getStringExtra(Ti.Android.EXTRA_TEXT);
 }
 ```
 
-## 2. Broadcast Intents with Permissions
+## 2. Broadcast intents with permissions
 
-You can restrict who receives your broadcast messages for enhanced security.
+You can restrict which apps receive your broadcast messages.
 
-### Sending with Permission
+### Sending with permission
 ```javascript
 const intent = Ti.Android.createBroadcastIntent({
-    action: 'com.mycompany.SECURE_ACTION'
+  action: 'com.mycompany.SECURE_ACTION'
 });
 // Only apps with the permission 'com.mycompany.SPECIAL_PERMISSION' will receive it
 Ti.Android.currentActivity.sendBroadcastWithPermission(intent, 'com.mycompany.SPECIAL_PERMISSION');
 ```
 
-### Declaring Permission in tiapp.xml
+### Declaring permission in tiapp.xml
 ```xml
 <android>
     <manifest>
@@ -63,36 +63,36 @@ Ti.Android.currentActivity.sendBroadcastWithPermission(intent, 'com.mycompany.SP
 
 ## 3. FusedLocationProvider (TiSDK 7.1.0+)
 
-For battery-efficient location tracking on Android, use the "fused" provider.
+For battery-efficient location tracking on Android, use the fused provider.
 
-**Requirement**: Include the `ti.playservices` module in your project.
+Requirement: include the `ti.playservices` module in your project.
 ```xml
 <module platform="android">ti.playservices</module>
 ```
-Titanium will automatically switch to Google Play Services for geolocation, optimizing power consumption.
+Titanium will switch to Google Play Services for geolocation, which reduces power consumption.
 
-## 4. Android Intents
+## 4. Android intents
 
 ### Overview
 Intents are message objects that specify actions to perform. They can start activities, broadcasts, or services.
 
-### Intent Structure
-- **Action**: What to do (e.g., `ACTION_VIEW`, `ACTION_SEND`)
-- **Data**: URI operating on (e.g., URL, file path)
-- **Type**: MIME type of data
-- **Category**: Additional categorization
-- **Extras**: Key-value pairs for additional data
+### Intent structure
+- Action: what to do (for example, `ACTION_VIEW`, `ACTION_SEND`)
+- Data: URI the intent operates on (URL, file path)
+- Type: MIME type of data
+- Category: additional categorization
+- Extras: key-value pairs for additional data
 
-### Creating Intents
+### Creating intents
 
-#### Simple Intent (Action only)
+#### Simple intent (action only)
 ```javascript
 const intent = Ti.Android.createIntent({
   action: Ti.Android.ACTION_VIEW
 });
 ```
 
-#### Intent with Action and Data
+#### Intent with action and data
 ```javascript
 const intent = Ti.Android.createIntent({
   action: Ti.Android.ACTION_VIEW,
@@ -101,7 +101,7 @@ const intent = Ti.Android.createIntent({
 Ti.Android.currentActivity.startActivity(intent);
 ```
 
-#### Intent with Extras
+#### Intent with extras
 ```javascript
 const intent = Ti.Android.createIntent({
   action: 'com.example.MY_ACTION',
@@ -111,9 +111,9 @@ intent.putExtra('message', 'Hello from Titanium');
 intent.putExtra('count', 42);
 ```
 
-### Common Use Cases
+### Common use cases
 
-#### Open URL in Browser
+#### Open URL in browser
 ```javascript
 const intent = Ti.Android.createIntent({
   action: Ti.Android.ACTION_VIEW,
@@ -122,7 +122,7 @@ const intent = Ti.Android.createIntent({
 Ti.Android.currentActivity.startActivity(intent);
 ```
 
-#### Dial Phone Number
+#### Dial phone number
 ```javascript
 const intent = Ti.Android.createIntent({
   action: Ti.Android.ACTION_DIAL,
@@ -131,7 +131,7 @@ const intent = Ti.Android.createIntent({
 Ti.Android.currentActivity.startActivity(intent);
 ```
 
-#### Send Email
+#### Send email
 ```javascript
 const intent = Ti.Android.createIntent({
   action: Ti.Android.ACTION_SENDTO,
@@ -142,7 +142,7 @@ intent.putExtra(Ti.Android.EXTRA_TEXT, 'Email body');
 Ti.Android.currentActivity.startActivity(intent);
 ```
 
-#### Share Content
+#### Share content
 ```javascript
 const intent = Ti.Android.createIntent({
   action: Ti.Android.ACTION_SEND,
@@ -152,18 +152,18 @@ intent.putExtra(Ti.Android.EXTRA_TEXT, 'Check this out!');
 Ti.Android.currentActivity.startActivity(intent);
 ```
 
-#### Open PDF File
+#### Open PDF file
 ```javascript
 const intent = Ti.Android.createIntent({
   action: Ti.Android.ACTION_VIEW,
   type: 'application/pdf',
-  data: file.nativePath  // Ti.Filesystem.File object
+  data: file.nativePath // Ti.Filesystem.File object
 });
 intent.addFlags(Ti.Android.FLAG_GRANT_READ_URI_PERMISSION);
 Ti.Android.currentActivity.startActivity(intent);
 ```
 
-### Starting Other Apps
+### Starting other apps
 ```javascript
 // Open specific app by package name
 const intent = Ti.Android.createIntent({
@@ -178,40 +178,40 @@ try {
 }
 ```
 
-### Intent Chooser
+### Intent chooser
 Force the system to show an app chooser dialog (even if a default is set):
 ```javascript
 const intent = Ti.Android.createIntent({
-    action: Ti.Android.ACTION_SEND,
-    type: 'text/plain'
+  action: Ti.Android.ACTION_SEND,
+  type: 'text/plain'
 });
 intent.putExtra(Ti.Android.EXTRA_TEXT, 'Share this text');
 
 Ti.Android.currentActivity.startActivity(
-    Ti.Android.createIntentChooser(intent, 'Share via...')
+  Ti.Android.createIntentChooser(intent, 'Share via...')
 );
 ```
 
-### Getting Results from Activities
+### Getting results from activities
 ```javascript
 const intent = Ti.Android.createIntent({
-    action: 'android.media.action.IMAGE_CAPTURE'
+  action: 'android.media.action.IMAGE_CAPTURE'
 });
 
 Ti.Android.currentActivity.startActivityForResult(intent, (e) => {
-    if (e.resultCode === Ti.Android.RESULT_OK) {
-        const imageUri = e.intent.data;
-        Ti.API.info(`Captured image: ${imageUri}`);
-    } else if (e.resultCode === Ti.Android.RESULT_CANCELED) {
-        Ti.API.info('User canceled');
-    }
+  if (e.resultCode === Ti.Android.RESULT_OK) {
+    const imageUri = e.intent.data;
+    Ti.API.info(`Captured image: ${imageUri}`);
+  } else if (e.resultCode === Ti.Android.RESULT_CANCELED) {
+    Ti.API.info('User canceled');
+  }
 });
 ```
 
-## 5. Intent Filters
+## 5. Intent filters
 
 ### Overview
-Intent Filters advertise your app's capability to handle certain actions and data types. Enable deep linking, file handling, and inter-app communication.
+Intent filters advertise your app's capability to handle certain actions and data types. They enable deep linking, file handling, and inter-app communication.
 
 ### Configuring in tiapp.xml
 
@@ -247,9 +247,9 @@ Intent Filters advertise your app's capability to handle certain actions and dat
 </android>
 ```
 
-### Handling Incoming Intents
+### Handling incoming intents
 
-#### Get Intent Data on Startup
+#### Get intent data on startup
 ```javascript
 const activity = Ti.Android.currentActivity;
 const intent = activity.getIntent();
@@ -269,7 +269,7 @@ if (intent) {
 }
 ```
 
-#### Listen for New Intents (Activity Restart)
+#### Listen for new intents (activity restart)
 ```javascript
 Ti.Android.currentActivity.addEventListener('newintent', (e) => {
   const intent = e.intent;
@@ -281,7 +281,7 @@ Ti.Android.currentActivity.addEventListener('newintent', (e) => {
 });
 ```
 
-### Deep Linking Example
+### Deep linking example
 
 ```xml
 <!-- In tiapp.xml -->
@@ -310,26 +310,26 @@ if (intent && intent.getData()) {
 }
 ```
 
-## 6. Broadcast Intents and Receivers
+## 6. Broadcast intents and receivers
 
 ### Overview
-Broadcast Intents allow system-wide or app-wide messaging. Apps can send broadcasts and register receivers to listen for them.
+Broadcast intents allow system-wide or app-wide messaging. Apps can send broadcasts and register receivers to listen for them.
 
-### System Broadcasts
+### System broadcasts
 
 Common system broadcasts:
-- `android.intent.action.BATTERY_LOW` - Battery low warning
-- `android.intent.action.BATTERY_CHANGED` - Battery status changed
-- `android.intent.action.ACTION_POWER_CONNECTED` - Power connected
-- `android.intent.action.ACTION_POWER_DISCONNECTED` - Power disconnected
-- `android.intent.action.BOOT_COMPLETED` - System boot completed
-- `android.net.conn.CONNECTIVITY_CHANGE` - Network connection changed
-- `android.intent.action.USER_PRESENT` - User unlocked device
-- `android.intent.action.PACKAGE_INSTALL` / `PACKAGE_REMOVED` - Package changes
+- `android.intent.action.BATTERY_LOW` - battery low warning
+- `android.intent.action.BATTERY_CHANGED` - battery status changed
+- `android.intent.action.ACTION_POWER_CONNECTED` - power connected
+- `android.intent.action.ACTION_POWER_DISCONNECTED` - power disconnected
+- `android.intent.action.BOOT_COMPLETED` - system boot completed
+- `android.net.conn.CONNECTIVITY_CHANGE` - network connection changed
+- `android.intent.action.USER_PRESENT` - user unlocked device
+- `android.intent.action.PACKAGE_INSTALL` / `PACKAGE_REMOVED` - package changes
 
-### Registering Broadcast Receivers
+### Registering broadcast receivers
 
-#### Dynamic Registration (in code)
+#### Dynamic registration (in code)
 
 ```javascript
 // Create receiver
@@ -349,11 +349,11 @@ Ti.Android.registerBroadcastReceiver(batteryReceiver, [
   Ti.Android.ACTION_BATTERY_LOW
 ]);
 
-// Later: Unregister when no longer needed
+// Later: unregister when no longer needed
 Ti.Android.unregisterBroadcastReceiver(batteryReceiver);
 ```
 
-#### Network Change Listener
+#### Network change listener
 
 ```javascript
 const networkReceiver = Ti.Android.createBroadcastReceiver({
@@ -378,7 +378,7 @@ Ti.Android.registerBroadcastReceiver(networkReceiver, [
 ]);
 ```
 
-### Sending Custom Broadcasts
+### Sending custom broadcasts
 
 ```javascript
 // Send broadcast within your app
@@ -389,7 +389,7 @@ intent.putExtra('data', 'Custom data here');
 Ti.Android.currentActivity.sendBroadcast(intent);
 ```
 
-#### Receiver for Custom Broadcast
+#### Receiver for custom broadcast
 
 ```javascript
 const customReceiver = Ti.Android.createBroadcastReceiver({
@@ -404,9 +404,9 @@ Ti.Android.registerBroadcastReceiver(customReceiver, [
 ]);
 ```
 
-### Boot Receiver
+### Boot receiver
 
-**In tiapp.xml**:
+In `tiapp.xml`:
 ```xml
 <android>
   <manifest>
@@ -424,24 +424,24 @@ Ti.Android.registerBroadcastReceiver(customReceiver, [
 </android>
 ```
 
-## 7. Android Services
+## 7. Android services
 
 ### Overview
 Services are background components that run independently of the UI. Useful for long-running operations like music playback, location tracking, or network polling.
 
-### Service Types
+### Service types
 
-1. **Regular Service**: Runs in background until stopped
-2. **IntentService**: Queues work requests and processes sequentially
-3. **Foreground Service**: Shows persistent notification, higher priority
+1. Regular service: runs in background until stopped
+2. IntentService: queues work requests and processes sequentially
+3. Foreground service: shows persistent notification, higher priority
 
-### Creating a Service
+### Creating a service
 
 ```javascript
 // Create service
 const service = Ti.Android.createService({
   url: 'myservice.js',
-  interval: 60000  // Check every 60 seconds
+  interval: 60000 // Check every 60 seconds
 });
 
 // Start service
@@ -451,7 +451,7 @@ service.start();
 service.stop();
 ```
 
-**myservice.js**:
+`myservice.js`:
 ```javascript
 Ti.API.info('Service running');
 
@@ -479,7 +479,7 @@ const intent = Ti.Android.createServiceIntent({
 Ti.Android.startService(intent);
 ```
 
-**backgroundtask.js**:
+`backgroundtask.js`:
 ```javascript
 // Do work
 const result = processHeavyTask();
@@ -491,7 +491,7 @@ const broadcast = Ti.Android.createBroadcastReceiver({
 // ...
 ```
 
-### Foreground Service
+### Foreground service
 
 For critical, long-running operations (must show notification):
 
@@ -519,9 +519,9 @@ To stop:
 Ti.Android.stopForegroundService(intent);
 ```
 
-### Service Lifecycle Management
+### Service lifecycle management
 
-**Important**: Always stop services when no longer needed to conserve resources.
+Important: always stop services when no longer needed to conserve resources.
 
 ```javascript
 // In activity
@@ -538,7 +538,7 @@ Ti.Android.currentActivity.addEventListener('destroy', () => {
 });
 ```
 
-### Inter-Service Communication
+### Inter-service communication
 
 ```javascript
 // From activity to service
@@ -555,11 +555,11 @@ if (command === 'pause') {
 }
 ```
 
-## 8. Android Permissions
+## 8. Android permissions
 
-### Runtime Permissions (Android 6.0+)
+### Runtime permissions (Android 6.0+)
 
-Dangerous permissions require runtime request:
+Dangerous permissions require a runtime request:
 
 ```javascript
 function checkPermission() {
@@ -572,7 +572,7 @@ function checkPermission() {
   } else {
     Ti.Android.requestPermissions(
       [Ti.Android.PERMISSION_ACCESS_FINE_LOCATION],
-      999,  // Request code
+      999, // Request code
       (e) => {
         if (e.granted[0] === true) {
           startLocationTracking();
@@ -587,23 +587,23 @@ function checkPermission() {
 checkPermission();
 ```
 
-### Common Dangerous Permissions
+### Common dangerous permissions
 - `ACCESS_FINE_LOCATION` - GPS location
-- `ACCESS_COARSE_LOCATION` - Network location
-- `CAMERA` - Camera access
-- `READ_EXTERNAL_STORAGE` - Read files
-- `WRITE_EXTERNAL_STORAGE` - Write files
-- `RECORD_AUDIO` - Microphone
-- `CALL_PHONE` - Make phone calls
+- `ACCESS_COARSE_LOCATION` - network location
+- `CAMERA` - camera access
+- `READ_EXTERNAL_STORAGE` - read files
+- `WRITE_EXTERNAL_STORAGE` - write files
+- `RECORD_AUDIO` - microphone
+- `CALL_PHONE` - make phone calls
 - `SEND_SMS` / `READ_SMS` - SMS access
 
-## Best Practices
+## Best practices
 
-1. **Always unregister** broadcast receivers when no longer needed
-2. **Stop services** explicitly to conserve battery
-3. **Use IntentService** for one-off background tasks
-4. **Use foreground services** for user-visible long operations
-5. **Handle runtime permissions** gracefully on Android 6.0+
-6. **Validate intent data** before processing
-7. **Use proper Intent Flags** for navigation behavior
-8. **Test intent filters** with ADB: `adb shell am start -W -a android.intent.action.VIEW -d "myapp://path"`
+1. Always unregister broadcast receivers when no longer needed.
+2. Stop services explicitly to conserve battery.
+3. Use IntentService for one-off background tasks.
+4. Use foreground services for user-visible long operations.
+5. Handle runtime permissions gracefully on Android 6.0+.
+6. Validate intent data before processing.
+7. Use proper intent flags for navigation behavior.
+8. Test intent filters with ADB: `adb shell am start -W -a android.intent.action.VIEW -d "myapp://path"`.

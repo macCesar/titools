@@ -1,6 +1,6 @@
-# Error Handling & Logging Guide
+# Error handling & logging guide
 
-## AppError Classes
+## Apperror classes
 
 ```javascript
 // lib/core/appError.js
@@ -49,7 +49,7 @@ exports.ErrorCodes = {
 }
 ```
 
-## Logger Service
+## Logger service
 
 ```javascript
 // lib/services/logger.js
@@ -142,7 +142,7 @@ class Logger {
 module.exports = new Logger()
 ```
 
-## Error Handler Service
+## Error handler service
 
 ```javascript
 // lib/services/errorHandler.js
@@ -197,7 +197,7 @@ function _getUserMessage(error) {
 }
 ```
 
-## Using the Logger
+## Using the logger
 
 ```javascript
 // lib/services/userService.js
@@ -233,7 +233,7 @@ exports.getUserProfile = async function getUserProfile(userId) {
 }
 ```
 
-## API Client Error Handling
+## API client error handling
 
 ```javascript
 // lib/api/client.js
@@ -302,7 +302,7 @@ exports.get = async function get(endpoint, params = {}) {
 }
 ```
 
-## Controller Error Handling Pattern
+## Controller error handling pattern
 
 ```javascript
 // controllers/user/detail.js
@@ -376,7 +376,7 @@ function cleanup() {
 $.cleanup = cleanup
 ```
 
-## Global Error Handler
+## Global error handler
 
 ```javascript
 // alloy.js - Setup global error catching
@@ -396,7 +396,7 @@ if (Ti.App.deployType === 'production') {
 }
 ```
 
-## Crash Reporting Integration
+## Crash reporting integration
 
 ```javascript
 // lib/services/crashReporting.js
@@ -425,7 +425,7 @@ exports.reportToCrashService = function reportToCrashService(error, context = {}
 }
 ```
 
-## Validation Helper
+## Validation helper
 
 ```javascript
 // lib/helpers/validator.js
@@ -465,7 +465,7 @@ exports.validateRequired = function validateRequired(value, fieldName) {
 }
 ```
 
-## Logging Best Practices
+## Logging best practices
 
 | Practice                   | Example                                                |
 | -------------------------- | ------------------------------------------------------ |

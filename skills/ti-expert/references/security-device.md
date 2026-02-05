@@ -1,8 +1,8 @@
-# Device Security: Biometrics, Deep Links & Integrity
+# Device security: biometrics, deep links & integrity
 
-## Biometric Authentication
+## Biometric authentication
 
-### Using ti.identity Module
+### Using ti.identity module
 
 ```javascript
 // lib/services/biometricService.js
@@ -83,7 +83,7 @@ exports.BiometricService = {
 }
 ```
 
-## Biometric Login Flow
+## Biometric login flow
 
 ```javascript
 // controllers/auth/login.js
@@ -148,9 +148,9 @@ async function onLoginSuccess(user) {
 }
 ```
 
-## Deep Link Security
+## Deep link security
 
-### Validating Deep Links
+### Validating deep links
 
 ```javascript
 // lib/services/deepLinkService.js
@@ -311,7 +311,7 @@ exports.DeepLinkService = {
 }
 ```
 
-## Registering Deep Link Handler
+## Registering deep link handler
 
 ```javascript
 // alloy.js
@@ -346,9 +346,9 @@ if (OS_ANDROID) {
 }
 ```
 
-## Jailbreak/Root Detection
+## Jailbreak/Root detection
 
-### Detection Service
+### Detection service
 
 ```javascript
 // lib/services/securityService.js
@@ -528,7 +528,7 @@ exports.SecurityService = {
 }
 ```
 
-## Integrating Security Checks
+## Integrating security checks
 
 ```javascript
 // alloy.js
@@ -548,17 +548,17 @@ setInterval(() => {
 }, 5 * 60 * 1000) // Every 5 minutes
 ```
 
-## Security Checklist
+## Security checklist
 
-| Category       | Check                      | Implementation           |
+| Category | Check | Implementation |
 | -------------- | -------------------------- | ------------------------ |
-| **Biometrics** | Use ti.identity for auth   | BiometricService wrapper |
-| **Biometrics** | Never store biometric data | System handles storage   |
-| **Biometrics** | Fallback to password       | Always offer alternative |
-| **Deep Links** | Whitelist allowed schemes  | ALLOWED_SCHEMES constant |
-| **Deep Links** | Whitelist allowed hosts    | ALLOWED_HOSTS constant   |
-| **Deep Links** | Sanitize all parameters    | _sanitizeParams()        |
-| **Deep Links** | Check auth requirements    | requiresAuth per route   |
-| **Integrity**  | Check for jailbreak/root   | checkDeviceIntegrity()   |
-| **Integrity**  | Define security policy     | block/restrict/warn      |
-| **Integrity**  | Log security events        | Always log compromises   |
+| **Biometrics** | Use ti.identity for auth | BiometricService wrapper |
+| **Biometrics** | Never store biometric data | System handles storage |
+| **Biometrics** | Fallback to password | Always offer alternative |
+| **Deep Links** | Whitelist allowed schemes | ALLOWED_SCHEMES constant |
+| **Deep Links** | Whitelist allowed hosts | ALLOWED_HOSTS constant |
+| **Deep Links** | Sanitize all parameters | _sanitizeParams() |
+| **Deep Links** | Check auth requirements | requiresAuth per route |
+| **Integrity** | Check for jailbreak/root | checkDeviceIntegrity() |
+| **Integrity** | Define security policy | block/restrict/warn |
+| **Integrity** | Log security events | Always log compromises |

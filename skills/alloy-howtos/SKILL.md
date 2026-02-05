@@ -7,25 +7,25 @@ allowed-tools: Read, Grep, Glob, Edit, Write, Bash(alloy *), Bash(node *)
 
 # Titanium Alloy How-tos
 
-Comprehensive guide for the Alloy MVC Framework in Titanium SDK.
+Practical guide for Alloy MVC projects in the Titanium SDK.
 
-## Project Detection
+## Project detection
 
-:::info AUTO-DETECTS ALLOY PROJECTS
-This skill automatically detects Alloy projects when invoked and provides CLI and configuration guidance.
+:::info Auto-detects Alloy projects
+This skill checks for Alloy projects when invoked and provides CLI and configuration guidance.
 
-**Detection occurs automatically** - no manual command needed.
+Detection is automatic. No manual command is needed.
 
-**Alloy project indicators:**
+Alloy project indicators:
 - `app/` folder with Alloy structure
 - `alloy.jmk` or `config.json` files
 
-**Behavior based on detection:**
-- **Alloy detected** → Provides Alloy CLI command guidance, configuration file help, Alloy-specific troubleshooting
-- **Not detected** → Indicates this skill is for Alloy projects only, suggests Alloy guides if user wants to migrate
+Behavior based on detection:
+- Alloy detected -> Provide Alloy CLI command guidance, configuration file help, Alloy-specific troubleshooting
+- Not detected -> Explain this skill is for Alloy projects only and suggest Alloy guides if the user wants to migrate
 :::
 
-## Quick Reference
+## Quick reference
 
 | Topic                                        | Reference                                                               |
 | -------------------------------------------- | ----------------------------------------------------------------------- |
@@ -36,16 +36,16 @@ This skill automatically detects Alloy projects when invoked and provides CLI an
 | Debugging & Common Errors                    | [debugging_troubleshooting.md](references/debugging_troubleshooting.md) |
 | Code Samples & Conditionals                  | [samples.md](references/samples.md)                                     |
 
-## Critical Best Practices
+## Key practices
 
-### Naming Conventions
+### Naming conventions
 - **Never use double underscore prefixes** (`__foo`) - reserved for Alloy
 - **Never use JavaScript reserved words as IDs**
 
-### Global Events - Use Backbone.Events
-**AVOID** `Ti.App.fireEvent` / `Ti.App.addEventListener` - causes memory leaks and poor performance.
+### Global events - use Backbone.Events
+Avoid `Ti.App.fireEvent` / `Ti.App.addEventListener`. It can cause memory leaks and poor performance.
 
-**USE** Backbone.Events pattern:
+Use the Backbone.Events pattern:
 ```javascript
 // In alloy.js
 Alloy.Events = _.clone(Backbone.Events);
@@ -61,7 +61,7 @@ $.controller.addEventListener('close', () => {
 Alloy.Events.trigger('updateMainUI');
 ```
 
-### Global Variables in Non-Controller Files
+### Global variables in non-controller files
 Always require Alloy modules:
 ```javascript
 const Alloy = require('alloy');
@@ -69,9 +69,9 @@ const Backbone = require('alloy/backbone');
 const _ = require('alloy/underscore')._;
 ```
 
-## Conditional Views
+## Conditional views
 
-Use IF attributes in XML for conditional rendering (evaluated before render):
+Use `if` attributes in XML for conditional rendering (evaluated before render):
 
 ```xml
 <Alloy>
@@ -98,7 +98,7 @@ Data-binding conditionals:
 <TableViewRow if="$model.shouldShowCommentRow()">
 ```
 
-## Common Error Solutions
+## Common error solutions
 
 | Error                                   | Solution                                                |
 | --------------------------------------- | ------------------------------------------------------- |
@@ -107,7 +107,7 @@ Data-binding conditionals:
 | `Alloy is not defined` (non-controller) | Add `const Alloy = require('alloy');`                   |
 | iOS `invalid method passed to UIModule` | Creating Android-only object - use `platform` attribute |
 
-## CLI Quick Reference
+## CLI quick reference
 
 ```bash
 # New project
@@ -130,15 +130,15 @@ alloy move <old> <new>
 alloy remove <name>
 ```
 
-## Configuration Files Priority
+## Configuration files priority
 
 **config.json precedence:** `os:ios` > `env:production` > `global`
 
 Access at runtime: `Alloy.CFG.yourKey`
 
-## Custom XML Tags
+## Custom XML tags
 
-Create reusable components without widgets - just drop a file in `app/lib/`:
+Create reusable components without widgets. Drop a file in `app/lib/`:
 
 **app/lib/checkbox.js**
 ```javascript
@@ -155,7 +155,7 @@ exports.createCheckBox = args => {
 <CheckBox module="checkbox" id="terms" caption="I agree" onChange="onCheck" />
 ```
 
-Key: `module` attribute points to file in `app/lib/` (without `.js`), function must be `create<TagName>`.
+Key: the `module` attribute points to the file in `app/lib/` (without `.js`). The function must be `create<TagName>`.
 
 See [custom_tags.md](references/custom_tags.md) for complete examples.
 
@@ -163,7 +163,7 @@ See [custom_tags.md](references/custom_tags.md) for complete examples.
 
 ### references/
 
-Complete documentation for each topic area:
+Reference docs by topic:
 - **best_practices.md** - Coding standards, naming conventions, global events patterns
 - **cli_reference.md** - All CLI commands with options and model schema format
 - **config_files.md** - alloy.jmk tasks, config.json structure, widget.json format
@@ -171,9 +171,9 @@ Complete documentation for each topic area:
 - **debugging_troubleshooting.md** - Common errors with solutions
 - **samples.md** - Controller examples, conditional views, data-binding patterns
 
-## Related Skills
+## Related skills
 
-For tasks beyond Alloy CLI and configuration, use these complementary skills:
+For tasks beyond Alloy CLI and configuration, use these related skills:
 
 | Task                                     | Use This Skill |
 | ---------------------------------------- | -------------- |

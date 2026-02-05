@@ -1,6 +1,6 @@
-# TSS Styling & Code Conventions
+# TSS styling & code conventions
 
-## Module System: CommonJS (NOT ES6 modules)
+## Module system: CommonJS (NOT ES6 modules)
 
 Titanium uses **CommonJS** for modules. Do NOT use ES6 `import`/`export`:
 
@@ -14,7 +14,7 @@ import { Navigation } from 'services/navigation'
 export const Navigation = { /* ... */ }
 ```
 
-## ES6+ Features (Non-Module)
+## ES6+ features (Non-Module)
 
 Use `const`, `let`, destructuring, and template literals. Prefer arrow functions for callbacks and traditional functions for main logic.
 
@@ -25,7 +25,7 @@ const loadUserData = (userId) => {
 }
 ```
 
-## No Semicolons
+## No semicolons
 Omit semicolons at the end of lines (ASI handles it).
 
 ```javascript
@@ -35,7 +35,7 @@ const name = user.name
 
 ## Styling with TSS
 
-### TSS File Organization
+### TSS file organization
 
 Every controller can have a matching TSS file. Alloy also supports a global `app.tss`.
 
@@ -49,11 +49,11 @@ app/styles/
 ```
 
 **Style cascade (priority low → high):**
-1. `app.tss` — global base styles
-2. `<controller>.tss` — controller-specific styles
+1. `app.tss` , global base styles
+2. `<controller>.tss` , controller-specific styles
 3. Theme overrides (`app/themes/<name>/styles/`)
 
-### Selector Types
+### Selector types
 
 ```tss
 /* Element selector — applies to ALL elements of this type */
@@ -79,7 +79,7 @@ app/styles/
 | Class (`".card"`)   | Reusable patterns (3+ uses) | Cards, buttons, inputs |
 | ID (`"#name"`)      | Unique element positioning  | Specific layout needs  |
 
-### Class Selectors in XML
+### Class selectors in XML
 
 ```xml
 <!-- Combine multiple classes -->
@@ -91,7 +91,7 @@ app/styles/
 
 Classes defined in `app.tss` are available in every controller. Classes in `<controller>.tss` are only available in that controller.
 
-### ID + Class Combined
+### ID + class combined
 
 When an element has both an ID and classes, properties merge with ID taking priority:
 
@@ -108,7 +108,7 @@ When an element has both an ID and classes, properties merge with ID taking prio
 <Button id="saveButton" class="btn-primary" title="L('save')" />
 ```
 
-### Building a Design System in app.tss
+### Building a design system in app.tss
 
 Define reusable style classes for consistency:
 
@@ -162,7 +162,7 @@ Define reusable style classes for consistency:
 }
 ```
 
-### Complete Example
+### Complete example
 
 ```xml
 <!-- views/feature/list.xml -->
@@ -188,15 +188,15 @@ Define reusable style classes for consistency:
 }
 ```
 
-### Titanium Layout Rules
+### Titanium layout rules
 
-- Three layout modes: `layout: 'horizontal'`, `layout: 'vertical'`, and composite (default — no `layout` needed)
-- NO padding on container Views — use margins on children instead
+- Three layout modes: `layout: 'horizontal'`, `layout: 'vertical'`, and composite (default , no `layout` needed)
+- NO padding on container Views , use margins on children instead
 - `width: Ti.UI.FILL` fills available space, `width: Ti.UI.SIZE` wraps content
 - `height: Ti.UI.SIZE` is essential for vertical layouts with dynamic content
 - Use percentage widths (`width: '50%'`) for proportional column layouts
 
-## Platform & Device Modifiers
+## Platform & device modifiers
 Use TSS platform modifiers instead of writing conditional logic in controllers.
 
 ```tss
@@ -205,7 +205,7 @@ Use TSS platform modifiers instead of writing conditional logic in controllers.
 "#header[formFactor=tablet]": { top: 80 }
 ```
 
-## applyProperties() Pattern
+## applyProperties() pattern
 Use `applyProperties()` to batch UI updates and minimize bridge crossings for properties not managed by classes.
 
 ```javascript
@@ -215,7 +215,7 @@ $.nameLabel.applyProperties({
 })
 ```
 
-## ListView Templates
+## ListView templates
 Always use templates for performance. Never create views dynamically inside list rows.
 
 ```javascript
@@ -228,7 +228,7 @@ function renderUsers(users) {
 }
 ```
 
-## Memory Cleanup
+## Memory cleanup
 Always remove listeners to avoid memory leaks. Implement a `cleanup` function.
 
 ```javascript
@@ -238,7 +238,7 @@ function cleanup() {
 }
 ```
 
-## i18n and Accessibility (a11y)
+## i18n and accessibility (a11y)
 Use `L()` for all text and always include `accessibilityLabel` for interactive elements.
 
 ```xml
@@ -246,7 +246,7 @@ Use `L()` for all text and always include `accessibilityLabel` for interactive e
 <ImageView image="/images/user.png" accessibilityLabel="User Profile Picture" />
 ```
 
-## Percentage-Based Layouts
+## Percentage-based layouts
 Use percentage widths in TSS for responsive column layouts.
 
 ```xml
@@ -262,9 +262,9 @@ Use percentage widths in TSS for responsive column layouts.
 "#colRight": { width: '33.33%', backgroundColor: '#3b82f6' }
 ```
 
-## Naming Conventions
+## Naming conventions
 
-### Files and Folders
+### Files and folders
 ```
 app/
 ├── controllers/
@@ -286,7 +286,7 @@ app/
 │       └── settings.xml
 ```
 
-### Variables and Functions
+### Variables and functions
 ```javascript
 // Constants: UPPER_SNAKE_CASE
 const API_BASE_URL = 'https://api.example.com'
@@ -317,7 +317,7 @@ function onSearchChange(e) { /* ... */ }
 function _calculateTotal(items) { /* ... */ }
 ```
 
-### Classes and Services
+### Classes and services
 ```javascript
 // Classes: PascalCase
 class UserService {
@@ -332,7 +332,7 @@ function createHTTPClient(config) { /* ... */ }
 function createAnimationController() { /* ... */ }
 ```
 
-### Events and Constants
+### Events and constants
 ```javascript
 // Event names: namespace:action format
 const Events = {
@@ -350,9 +350,9 @@ const ErrorCodes = {
 }
 ```
 
-## Import/Export Patterns
+## Import/Export patterns
 
-### Named Exports (Preferred)
+### Named exports (Preferred)
 ```javascript
 // lib/api/userApi.js
 exports.getUser = async function(id) { /* ... */ }
@@ -363,7 +363,7 @@ exports.deleteUser = async function(id) { /* ... */ }
 const { getUser, updateUser } = require('api/userApi')
 ```
 
-### Default Export (For Classes/Singletons)
+### Default export (For Classes/Singletons)
 ```javascript
 // lib/services/logger.js
 class Logger {
@@ -378,7 +378,7 @@ module.exports = new Logger()
 const logger = require('services/logger')
 ```
 
-### Mixed Exports
+### Mixed exports
 ```javascript
 // lib/services/eventBus.js
 const _ = require('alloy/underscore')._
@@ -411,7 +411,7 @@ exports.orderApi = require('./orderApi').orderApi
 const { userApi, productApi } = require('api')
 ```
 
-### CommonJS Compatibility
+### CommonJS compatibility
 ```javascript
 // When using native modules that use require()
 const SomeNativeModule = require('ti.somemodule')
@@ -424,7 +424,7 @@ exports.nativeService = {
 }
 ```
 
-## Async/Promise Patterns
+## Async/Promise patterns
 
 ### Async/Await (Preferred)
 ```javascript
@@ -454,7 +454,7 @@ async function loadData() {
 }
 ```
 
-### Parallel Requests
+### Parallel requests
 ```javascript
 // When requests are independent - run in parallel
 async function loadDashboard() {
@@ -468,7 +468,7 @@ async function loadDashboard() {
 }
 ```
 
-### Sequential with Dependencies
+### Sequential with dependencies
 ```javascript
 // When each request depends on the previous
 async function processOrder(cartId) {
@@ -485,7 +485,7 @@ async function processOrder(cartId) {
 }
 ```
 
-### Error Handling with Specific Catches
+### Error handling with specific catches
 ```javascript
 async function login(email, password) {
   try {
@@ -508,7 +508,7 @@ async function login(email, password) {
 }
 ```
 
-### Converting Callbacks to Promises
+### Converting callbacks to promises
 ```javascript
 // Wrap Ti.Network.createHTTPClient in Promise
 function httpGet(url) {
@@ -544,7 +544,7 @@ function takePhoto() {
 }
 ```
 
-### Debouncing Async Operations
+### Debouncing async operations
 ```javascript
 // Useful for search, auto-save, etc.
 let searchTimeout = null
@@ -575,7 +575,7 @@ function cleanup() {
 }
 ```
 
-### Retry Pattern
+### Retry pattern
 ```javascript
 async function fetchWithRetry(fn, maxRetries = 3) {
   let lastError

@@ -1,19 +1,20 @@
-# CommonJS Advanced Patterns
+# CommonJS advanced patterns
 
-> For more on CommonJS in Titanium, see the official CommonJS Modules guide in the Titanium SDK documentation.
+For more on CommonJS in Titanium, see the official CommonJS Modules guide in the Titanium SDK documentation.
 
 ## Definitions
 
-- **Module** - Any CommonJS-compliant module consumed in a Titanium SDK application. This can be a JavaScript file included with the app, or a native extension to Titanium which exposes a JavaScript API.
-- **Resources** - The Resources directory of a Titanium application, where user source code lives before processing by the build system. **Note**: For Alloy, CommonJS modules are placed in `app/lib`.
-- **`exports`** - A free variable within a module, to which multiple properties may be added to create a public interface.
-- **`module.exports`** - An object within a module, which may be REPLACED by an object representing the public interface to the module.
+- Module: any CommonJS-compliant module used in a Titanium SDK application. This can be a JavaScript file bundled with the app or a native extension that exposes a JavaScript API.
+- Resources: the Resources directory of a Titanium application, where source code lives before the build system processes it. In Alloy, CommonJS modules live in `app/lib`.
+- `exports`: a free variable within a module. Add properties to expose a public API.
+- `module.exports`: an object you can replace to define the module's public API.
 
-## 1. Stateful Modules (Singleton Pattern)
+## 1. Stateful modules (singleton pattern)
 
-Modules in Titanium are created once per JavaScript context and then passed by reference on subsequent `require()` calls. This makes them ideal for maintaining application state.
+Modules in Titanium are created once per JavaScript context and reused on subsequent `require()` calls. This makes them useful for shared state.
 
-### Example: Stateful Counter Module
+### Example: stateful counter module
+
 ```javascript
 // app/lib/counter.js
 let _count = 0
@@ -31,14 +32,13 @@ exports.reset = () => {
 }
 ```
 
-**Usage**: Multiple controllers requiring this module share the same `_count` state.
+Usage: multiple controllers that require this module share the same `_count` state.
 
-### Critical Note
-A module is created once **per Titanium JavaScript context**. Additional contexts create new module instances.
+A module is created once per Titanium JavaScript context. Additional contexts create new module instances.
 
-## 2. Native/Compiled Modules
+## 2. Native/compiled modules
 
-When `require()` is called, Titanium first checks for a native/compiled module before looking for a JavaScript module. Native modules take priority.
+When `require()` is called, Titanium checks for a native/compiled module before it looks for a JavaScript module. Native modules take priority.
 
 Native modules are identified by a single string and configured in `tiapp.xml`:
 
@@ -52,18 +52,18 @@ Native modules are identified by a single string and configured in `tiapp.xml`:
 const paypal = require('ti.paypal')
 ```
 
-Titanium loads `ti.paypal` as a native module and will NOT look for a JavaScript file in Resources. Only if no native module matches does Titanium fall back to JavaScript module resolution.
+Titanium loads `ti.paypal` as a native module and will not look for a JavaScript file in Resources. If no native module matches, it falls back to JavaScript module resolution.
 
-## 3. Module Path Resolution
+## 3. Module path resolution
 
-The string passed to `require()` is treated as a path to a JavaScript file, minus the `.js` extension.
+The string passed to `require()` is treated as a path to a JavaScript file, without the `.js` extension.
 
-**Resolution rules:**
-- **No prefix** (`require('app/lib/myModule')`) - resolved relative to the `Resources` directory (or `app/lib` in Alloy)
-- **`/` prefix** (`require('/app/lib/myModule')`) - also resolved relative to the `Resources` directory
-- **`./` or `../` prefix** (`require('./widgets/SomeView')`) - resolved relative to the current module file
+Resolution rules:
+- No prefix (`require('app/lib/myModule')`): resolved relative to the `Resources` directory (or `app/lib` in Alloy)
+- `/` prefix (`require('/app/lib/myModule')`): also resolved relative to the `Resources` directory
+- `./` or `../` prefix (`require('./widgets/SomeView')`): resolved relative to the current module file
 
-**Example with relative paths:**
+Example with relative paths:
 
 Given these files:
 - `Resources/app/ui/SomeCustomView.js`
@@ -76,24 +76,24 @@ const myModule = require('../lib/myModule')
 const SomeOtherCustomView = require('./widgets/SomeOtherCustomView')
 ```
 
-The `.js` extension is always omitted in `require()` calls.
+The `.js` extension is omitted in `require()` calls.
 
-## 4. Caching Behavior
+## 4. Caching behavior
 
-Titanium caches the object returned by `require()` and provides the same reference without re-evaluating the code.
+Titanium caches the object returned by `require()` and returns the same reference without re-evaluating the code.
 
-**Implication**: If you think you need code evaluated multiple times, create a module with a callable function instead.
+If you need code evaluated multiple times, export a function that creates what you need instead.
 
 ```javascript
-// Good - factory pattern
+// Good: factory pattern
 exports.createView = (args) => {
   return Ti.UI.createView(args)
 }
 
-// Bad - expecting re-evaluation
+// Bad: expecting re-evaluation
 ```
 
-## 5. ES6+ Support (SDK 7.1.0+)
+## 5. ES6+ support (SDK 7.1.0+)
 
 Since Titanium SDK 7.1.0, you can use ES6+ module syntax. Code is transpiled to ES5 for all platforms.
 
@@ -114,9 +114,10 @@ import MyClass from 'MyClass'
 const instance = new MyClass('World')
 ```
 
-## 6. Module Composition Patterns
+## 6. Module composition patterns
 
-### Exports Object Pattern
+### Exports object pattern
+
 ```javascript
 exports.sayHello = (name) => {
   Ti.API.info(`Hello ${name}`)
@@ -125,7 +126,8 @@ exports.sayHello = (name) => {
 exports.version = 1.4
 ```
 
-### Constructor Pattern (module.exports)
+### Constructor pattern (`module.exports`)
+
 ```javascript
 class Person {
   constructor(firstName, lastName) {
@@ -141,7 +143,8 @@ class Person {
 module.exports = Person
 ```
 
-### Utility Library Pattern
+### Utility library pattern
+
 ```javascript
 // app/lib/logger.js
 exports.info = (str) => {
@@ -153,15 +156,15 @@ exports.debug = (str) => {
 }
 ```
 
-**Usage:**
+Usage:
 ```javascript
 const logger = require('logger')
 logger.info('some log statement with a timestamp')
 ```
 
-## 7. Inter-Module State Sharing
+## 7. Inter-module state sharing
 
-When a module assigns a primitive value to `exports`, the consumer gets a **copy**, not a live reference. Subsequent changes to the internal variable are NOT reflected in the exported property.
+When a module assigns a primitive value to `exports`, the consumer gets a copy, not a live reference. Changes to the internal variable are not reflected in the exported property.
 
 ```javascript
 // app/lib/statefulModule.js
@@ -175,43 +178,46 @@ exports.getPointStep = () => {
   return _stepVal
 }
 
-exports.stepVal = _stepVal // This is a COPY of _stepVal (value: 5)
+exports.stepVal = _stepVal // This is a copy of _stepVal (value: 5)
 ```
 
 ```javascript
 const stateful = require('statefulModule')
 stateful.setPointStep(10)
 Ti.API.info(stateful.getPointStep()) // 10 - correct, uses getter
-Ti.API.info(stateful.stepVal)        // 5  - still the original copy!
+Ti.API.info(stateful.stepVal)        // 5  - still the original copy
 ```
 
-**Rule**: Always use getter/setter functions for stateful values. Direct property exports of primitives are snapshots at module load time.
+Rule: use getter/setter functions for stateful values. Direct property exports of primitives are snapshots at module load time.
 
-## 8. Antipatterns to Avoid
+## 8. Antipatterns to avoid
 
-### Don't Assign Directly to exports
+### Do not assign directly to `exports`
+
 ```javascript
-// ❌ WRONG - won't work
+// Wrong
 function Person() {}
 exports = Person
 
-// ✅ CORRECT
+// Correct
 module.exports = Person
 ```
 
-### Don't Mix module.exports and exports.*
+### Do not mix `module.exports` and `exports.*`
+
 ```javascript
-// ❌ DISCOURAGED
+// Discouraged
 module.exports = Person
 exports.foo = 'bar'
 
-// ✅ Use one consistently
+// Use one consistently
 ```
 
-### No Global Variables Across Modules
-Any data a module needs must be passed during construction or initialization. Never rely on globals shared across modules.
+### Avoid globals across modules
 
-## 9. Security and Scope
+Any data a module needs should be passed during construction or initialization. Avoid globals shared across modules.
+
+## 9. Security and scope
 
 All modules have private scope. Variables declared within the module are private unless added to `exports`.
 
@@ -224,8 +230,8 @@ exports.publicMethod = () => {
 }
 ```
 
-## 10. Node.js Compatibility
+## 10. Node.js compatibility
 
 Titanium supports Node.js module patterns and `require()` resolution. Node.js modules can often be used directly.
 
-For detailed Node.js support information, refer to the official Titanium Node.js guide.
+For details, refer to the official Titanium Node.js guide.

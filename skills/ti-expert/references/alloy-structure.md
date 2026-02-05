@@ -1,6 +1,6 @@
-# Alloy MVC Structure Reference
+# Alloy MVC structure reference
 
-## Standard Project Structure
+## Standard project structure
 
 ```
 app/
@@ -35,7 +35,7 @@ app/
 └── alloy.js              # Collections & Global services
 ```
 
-## lib/ Folder and Module Require Paths
+## lib/ folder and module require paths
 
 :::danger CRITICAL: lib/ Folder is FLATTENED During Build
 When Alloy compiles, the **entire `lib/` folder is flattened to the root of Resources**. This means:
@@ -72,9 +72,9 @@ app/
 ```
 :::
 
-## Data Layer: Two Approaches
+## Data layer: two approaches
 
-### Approach A: Alloy Models (app/models/) - For Persistence
+### Approach a: Alloy models (app/models/) - for persistence
 
 **Use when:**
 - You need SQLite persistence
@@ -104,7 +104,7 @@ users.fetch()
 
 ---
 
-### Approach B: Backbone Collections Direct (alloy.js) - For API Data
+### Approach b: Backbone collections direct (alloy.js) - for API data
 
 **Use when:**
 - Data comes from APIs
@@ -137,7 +137,7 @@ api.getFrames()
   .then(frames => Alloy.Collections.frames.reset(frames))
 ```
 
-## Controller Rules
+## Controller rules
 
 **DO:**
 - Define styles in TSS files (per-controller + `app.tss` for global).
@@ -152,9 +152,9 @@ api.getFrames()
 - Contain heavy business logic.
 - Call native modules directly (use a service wrapper).
 
-## Navigation & Cleanup Pattern
+## Navigation & cleanup pattern
 
-### Automatic Cleanup with ControllerAutoCleanup
+### Automatic cleanup with controllerautocleanup
 
 For automatic controller cleanup without code changes, use the ControllerAutoCleanup utility.
 
@@ -187,14 +187,14 @@ Alloy.Collections.frames = new Backbone.Collection()
 
 See [ControllerAutoCleanup.js](../assets/ControllerAutoCleanup.js) for the complete source code.
 
-## i18n and Accessibility Rules
+## i18n and accessibility rules
 
 - All static text must use `L('key')`.
 - All interactive elements must have `accessibilityLabel`.
 - Use `lib/helpers/i18n.js` for strings that require logic (e.g., "You have 5 messages").
 - Use **TSS platform modifiers** (`[platform=ios]`, `[platform=android]`) for platform-specific design instead of conditional code.
 
-## Widget Structure
+## Widget structure
 
 Widgets are self-contained, reusable components used in 3+ places across the app.
 
@@ -210,7 +210,7 @@ app/widgets/
     └── widget.json        # Widget manifest
 ```
 
-### widget.json Configuration
+### widget.json configuration
 ```json
 {
   "id": "com.app.loadingOverlay",
@@ -227,7 +227,7 @@ app/widgets/
 }
 ```
 
-### Widget View (widget.xml)
+### Widget view (widget.xml)
 ```xml
 <Alloy>
   <View id="container">
@@ -247,7 +247,7 @@ app/widgets/
 "#messageLabel": { left: 16, right: 16, top: 16, font: { fontSize: 14 }, color: '#4b5563' }
 ```
 
-### Widget Controller (widget.js)
+### Widget controller (widget.js)
 ```javascript
 // Widget controller receives args via $.args
 const args = $.args || {}
@@ -279,7 +279,7 @@ $.cleanup = () => {
 }
 ```
 
-### Using Widgets
+### Using widgets
 ```xml
 <!-- In any view -->
 <Alloy>
@@ -307,7 +307,7 @@ const loadData = () => {
 Widgets have their own `styles/widget.tss` file. Define all widget-specific styles there to keep them self-contained and portable.
 :::
 
-### Widget ↔ Controller Communication
+### Widget ↔ controller communication
 
 **Pattern 1: Public methods on $**
 
@@ -369,7 +369,7 @@ function cleanup() {
 }
 ```
 
-### Widget with Internal State
+### Widget with internal state
 
 ```javascript
 // widgets/counter/controllers/widget.js
@@ -414,7 +414,7 @@ $.cleanup = () => {
 render()
 ```
 
-### When to Use Widget vs Require
+### When to use widget vs require
 
 | Use `<Widget>` when                   | Use `<Require>` when            |
 | ------------------------------------- | ------------------------------- |
@@ -424,7 +424,7 @@ render()
 | Could be extracted to another project | Specific to this app            |
 | Needs its own `widget.json` manifest  | Lightweight, no manifest needed |
 
-## config.json Reference
+## config.json reference
 
 The `app/config.json` file configures Alloy compilation and runtime behavior.
 
@@ -463,7 +463,7 @@ The `app/config.json` file configures Alloy compilation and runtime behavior.
 }
 ```
 
-### Accessing Config Values
+### Accessing config values
 ```javascript
 // In any controller or lib file
 const apiUrl = Alloy.CFG.apiUrl
@@ -476,7 +476,7 @@ if (Alloy.CFG.debug) {
 }
 ```
 
-### Key Configuration Options
+### Main configuration options
 
 | Property       | Description                               |
 | -------------- | ----------------------------------------- |

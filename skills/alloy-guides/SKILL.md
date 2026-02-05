@@ -5,11 +5,11 @@ argument-hint: "[concept]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(node *)
 ---
 
-# Alloy MVC Framework Guide
+# Alloy MVC framework guide
 
-Complete reference for building Titanium mobile applications with the Alloy MVC framework and Backbone.js.
+Reference for building Titanium mobile applications with the Alloy MVC framework and Backbone.js.
 
-## Project Detection
+## Project detection
 
 :::info AUTO-DETECTS ALLOY PROJECTS
 This skill automatically detects Alloy projects when invoked and provides framework-specific guidance.
@@ -26,7 +26,7 @@ This skill automatically detects Alloy projects when invoked and provides framew
 - **Not detected** → Indicates this skill is for Alloy projects only, does not suggest Alloy-specific features
 :::
 
-## Quick Reference
+## Quick reference
 
 | Topic                                            | Reference File                                                          |
 | ------------------------------------------------ | ----------------------------------------------------------------------- |
@@ -41,7 +41,7 @@ This skill automatically detects Alloy projects when invoked and provides framew
 | CLI commands, code generation                    | [CLI_TASKS.md](references/CLI_TASKS.md)                                 |
 | PurgeTSS integration (optional addon)            | [PURGETSS.md](references/PURGETSS.md)                                   |
 
-## Project Structure
+## Project structure
 
 Standard Alloy project structure:
 
@@ -64,7 +64,7 @@ app/
 └── widgets/              # Widget components
 ```
 
-## MVC Quick Start
+## MVC quick start
 
 **Controller** (`app/controllers/index.js`):
 ```javascript
@@ -89,7 +89,7 @@ $.index.open();
 "Label": { color: "#000" }
 ```
 
-## Key Concepts
+## Key concepts
 
 - **Models/Collections**: Backbone.js objects with sync adapters (sql, properties)
 - **Views**: XML markup with TSS styling
@@ -98,29 +98,29 @@ $.index.open();
 - **Widgets**: Reusable components with MVC structure
 - **Conventions**: File naming and placement drive code generation
 
-## Critical Rules
+## Critical rules
 
-### Platform-Specific Properties in TSS
+### Platform-specific properties in TSS
 
-:::danger CRITICAL: Platform-Specific Properties Require Modifiers
-Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties in TSS WITHOUT platform modifiers causes cross-platform compilation failures.
+:::danger CRITICAL: Platform-specific properties require modifiers
+Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties in TSS without platform modifiers causes cross-platform compilation failures.
 
-**Example of the damage:**
+Example of the failure:
 ```tss
-// ❌ WRONG - Adds Ti.UI.iOS to Android project
+// WRONG - Adds Ti.UI.iOS to Android project
 "#mainWindow": {
   statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT  // FAILS on Android!
 }
 ```
 
-**CORRECT approach - Use platform modifiers:**
+Correct approach - use platform modifiers:
 ```tss
-// ✅ CORRECT - Only adds to iOS
+// CORRECT - Only adds to iOS
 "#mainWindow[platform=ios]": {
   statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
 }
 
-// ✅ CORRECT - Only adds to Android
+// CORRECT - Only adds to Android
 "#mainWindow[platform=android]": {
   actionBar: {
     displayHomeAsUp: true
@@ -128,23 +128,23 @@ Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties in TSS WITHOUT platform modi
 }
 ```
 
-**Properties that ALWAYS require platform modifiers:**
+Properties that always require platform modifiers:
 - iOS: `statusBarStyle`, `modalStyle`, `modalTransitionStyle`, any `Ti.UI.iOS.*`
 - Android: `actionBar` config, any `Ti.UI.Android.*` constant
 
 **Available modifiers:** `[platform=ios]`, `[platform=android]`, `[formFactor=handheld]`, `[formFactor=tablet]`, `[if=Alloy.Globals.customVar]`
 
-**For more platform-specific patterns, see** [Code Conventions (ti-expert)](skills/ti-expert/references/code-conventions.md#platform--device-modifiers) or [Platform UI guides (ti-ui)](skills/ti-ui/references/platform-ui-ios.md).
+For more platform-specific patterns, see [Code conventions (ti-expert)](skills/ti-expert/references/code-conventions.md#platform--device-modifiers) or [Platform UI guides (ti-ui)](skills/ti-ui/references/platform-ui-ios.md).
 :::
 
-## Common Patterns
+## Common patterns
 
-### Creating a Model
+### Creating a model
 ```bash
 alloy generate model book sql title:string author:string
 ```
 
-### Data Binding
+### Data binding
 ```xml
 <Collection src="book" />
 <TableView dataCollection="book">
@@ -152,7 +152,7 @@ alloy generate model book sql title:string author:string
 </TableView>
 ```
 
-### Platform-Specific Code
+### Platform-specific code
 ```javascript
 if (OS_IOS) {
     // iOS-only code
@@ -162,25 +162,25 @@ if (OS_ANDROID) {
 }
 ```
 
-### Widget Usage
+### Widget usage
 ```xml
 <Widget src="mywidget" id="foo" />
 ```
 
-## Compilation Process
+## Compilation process
 
-1. **Cleanup**: Resources folder cleaned
-2. **Build Config**: alloy.jmk loaded (pre:load task)
-3. **Framework Files**: Backbone.js, Underscore.js, sync adapters copied
-4. **MVC Generation**: Models, widgets, views, controllers compiled to JS
-5. **Main App**: app.js generated from template
-6. **Optimization**: UglifyJS optimization, platform-specific code removal
+1. Cleanup: Resources folder cleaned
+2. Build Config: alloy.jmk loaded (pre:load task)
+3. Framework Files: Backbone.js, Underscore.js, sync adapters copied
+4. MVC Generation: Models, widgets, views, controllers compiled to JS
+5. Main App: app.js generated from template
+6. Optimization: UglifyJS optimization, platform-specific code removal
 
 ## References
 
 Read detailed documentation from the reference files listed above based on your specific task.
 
-## Related Skills
+## Related skills
 
 For tasks beyond Alloy MVC basics, use these complementary skills:
 

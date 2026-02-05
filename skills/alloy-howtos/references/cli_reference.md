@@ -1,10 +1,10 @@
-# Alloy Command-Line Interface Reference
+# Alloy command-line interface reference
 
-The Alloy CLI is a command-line tool for managing and building Alloy projects.
+The Alloy CLI manages and builds Alloy projects.
 
 ## Installation
 
-The Alloy CLI is automatically installed when installing the `alloy` package.
+The Alloy CLI is installed when you install the `alloy` package.
 
 ### Manual Installation
 
@@ -19,7 +19,7 @@ For a specific version:
 sudo npm install -g alloy@1.10.0
 ```
 
-### Bleeding Edge Installation
+### Development install
 
 ```bash
 git clone https://github.com/tidev/alloy.git
@@ -71,7 +71,7 @@ alloy generate <component> [--widgetname <widget_name>] [--outputPath <output_pa
 | `-f, --force`             | Force execution                                  |
 | `-n, --no-colors`         | Disable color output                             |
 
-#### Model Format
+#### Model format
 
 Select adapter type:
 - `sql` - SQLite database for Android/iOS (also generates a migration file)
@@ -125,29 +125,29 @@ Compiler options reference the `event.alloyConfig` object in [Build Configuratio
 
 Use `titanium build` command to run Alloy projects. See [Titanium Command-Line Interface Reference](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_Guide/Titanium_Command-Line_Interface_Reference/).
 
-:::tip COMMON ti build PITFALLS
+:::tip Common ti build pitfalls
 
-**❌ Using `-C` flag without UDID:**
+Using `-C` flag without UDID:
 ```bash
-# WRONG - Prompts for simulator selection interactively
+# Prompts for simulator selection interactively
 ti build -p ios -T simulator -C
 ```
 
-**✅ Correct approach for simulator:**
+Correct approach for simulator:
 ```bash
-# GOOD - Runs on default simulator
+# Runs on default simulator
 ti build -p ios -T simulator
 ```
 
-**❌ Using `--no-prompt` incorrectly:**
+Using `--no-prompt` incorrectly:
 ```bash
 # Still may prompt for device selection if not specific
 ti build -p ios --no-prompt
 ```
 
-**✅ Always specify target:**
+Always specify target:
 ```bash
-# GOOD - Clear target specification
+# Clear target specification
 ti build -p ios -T simulator --no-prompt
 ```
 
@@ -184,7 +184,7 @@ Supported functions:
 - `Ti.Locale.getString()`
 - `L()`
 
-Usage Examples:
+Usage examples:
 ```bash
 # Preview changes for default (English)
 alloy extract-i18n

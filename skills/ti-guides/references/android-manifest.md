@@ -1,8 +1,8 @@
 # Custom AndroidManifest.xml
 
-For most Android manifest settings, use `tiapp.xml`. Only create a custom manifest when absolutely necessary.
+For most Android manifest settings, use `tiapp.xml`. Only create a custom manifest when you really need it.
 
-## Preferred Method: tiapp.xml
+## Preferred method: tiapp.xml
 
 Add manifest entries in `tiapp.xml` inside the `<android>` section:
 
@@ -30,13 +30,13 @@ Add manifest entries in `tiapp.xml` inside the `<android>` section:
 </android>
 ```
 
-## How Merging Works
+## How merging works
 
-- **Most elements**: Replaced by your entry
-- **`<application>` element**: Attributes are merged additively
-- **Activities/Services**: Added to existing ones
+- Most elements are replaced by your entry.
+- The `<application>` element is merged additively by attribute.
+- Activities and services are added to existing ones.
 
-## Custom Manifest (Rare Cases)
+## Custom manifest (rare cases)
 
 If you need full control, create `platform/android/AndroidManifest.xml`:
 
@@ -49,26 +49,26 @@ MyApp/
 └── tiapp.xml
 ```
 
-**Warning**: You must maintain this file manually through SDK updates.
+Warning: you must maintain this file manually through SDK updates.
 
-## Common Use Cases
+## Common use cases
 
-### Camera Permission
+### Camera permission
 ```xml
 <uses-permission android:name="android.permission.CAMERA" />
 ```
 
-### Hardware Requirements
+### Hardware requirements
 ```xml
 <uses-feature android:name="android.hardware.camera" android:required="false" />
 ```
 
-### Launch Mode
+### Launch mode
 ```xml
 <application android:launchMode="singleTask" />
 ```
 
-### Deep Links
+### Deep links
 ```xml
 <intent-filter>
     <action android:name="android.intent.action.VIEW" />
@@ -86,9 +86,9 @@ ti build -p android
 # Check: build/android/AndroidManifest.xml.gen
 ```
 
-## Enable Manifest Merge (CLI 7.0+)
+## Enable manifest merge (CLI 7.0+)
 
-If using custom manifest, enable merge in `tiapp.xml`:
+If you use a custom manifest, enable merge in `tiapp.xml`:
 
 ```bash
 ti config android.mergeCustomAndroidManifest true

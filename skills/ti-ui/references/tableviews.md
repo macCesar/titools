@@ -2,22 +2,22 @@
 
 ## 1. Overview
 
-TableView is a scrolling list component that displays rows of data. While ListView is the recommended modern API for most use cases, TableView remains useful for:
+TableView is a scrolling list component that displays rows of data. ListView is the recommended modern API for most cases, but TableView is still useful for:
 - Complex row animations
 - Direct child view access
 - Legacy code compatibility
-- UI patterns requiring direct row manipulation
+- UI patterns that need direct row manipulation
 
 ## 2. TableView vs ListView
 
 | Feature             | TableView                       | ListView                     |
 | ------------------- | ------------------------------- | ---------------------------- |
-| **Recommended for** | Legacy apps, complex animations | New apps, large datasets     |
-| **Data binding**    | Direct row object access        | Template-based binding       |
-| **Performance**     | Good for small datasets         | Optimized for large datasets |
-| **Row access**      | Direct children access          | Virtual, data-only updates   |
-| **Animations**      | Full row animation support      | Limited                      |
-| **Complexity**      | Simpler for basic needs         | More setup required          |
+| Recommended for     | Legacy apps, complex animations | New apps, large datasets     |
+| Data binding        | Direct row object access        | Template-based binding       |
+| Performance         | Good for small datasets         | Optimized for large datasets |
+| Row access          | Direct children access          | Virtual, data-only updates   |
+| Animations          | Full row animation support      | Limited                      |
+| Complexity          | Simpler for basic needs         | More setup required          |
 
 ## 3. Creating a TableView
 
@@ -40,7 +40,7 @@ win.add(table);
 ...
 ## 4. Creating rows
 
-### Object Literal Rows (Simple)
+### Object literal rows (simple)
 
 ```javascript
 const data = [
@@ -56,7 +56,7 @@ const table = Ti.UI.createTableView({
 win.add(table);
 ```
 
-### Explicit TableViewRow Objects
+### Explicit TableViewRow objects
 
 ```javascript
 const row = Ti.UI.createTableViewRow({
@@ -87,11 +87,11 @@ for (let i = 0; i < 100; i++) {
 }
 ```
 
-**Best Practice**: Use `setData()` for multiple rows. `appendRow()` is significantly slower.
+Best practice: use `setData()` for multiple rows. `appendRow()` is significantly slower.
 
-## 5. Row Properties
+## 5. Row properties
 
-### Built-in Row Properties
+### Built-in row properties
 
 | Property          | Description                       |
 | ----------------- | --------------------------------- |
@@ -107,7 +107,7 @@ for (let i = 0; i < 100; i++) {
 | `header`          | Section header text               |
 | `footer`          | Section footer text               |
 
-### Styled Rows Example
+### Styled rows example
 
 ```javascript
 const data = [
@@ -119,7 +119,7 @@ const data = [
 const table = Ti.UI.createTableView({ data: data });
 ```
 
-### Row Indicators
+### Row indicators
 
 Row indicators provide visual cues:
 
@@ -134,9 +134,9 @@ Row indicators provide visual cues:
 { title: 'Selected', hasCheck: true }  // checkmark
 ```
 
-## 6. Custom Rows
+## 6. Custom rows
 
-### Adding Child Views
+### Add child views
 
 ```javascript
 const data = [];
@@ -175,13 +175,13 @@ for (let i = 0; i < 10; i++) {
 const table = Ti.UI.createTableView({ data: data });
 ```
 
-### Performance Warning
+### Performance warning
 
-**Warning**: Complex rows have performance implications. Each unique UI element adds resource requirements multiplied by the number of rows. Test on device and scale back if necessary.
+Warning: complex rows have performance costs. Each extra UI element multiplies resource use across rows. Test on device and simplify if needed.
 
-## 7. Headers and Footers
+## 7. Headers and footers
 
-### Table-Level Headers/Footers
+### Table-level headers and footers
 
 ```javascript
 const table = Ti.UI.createTableView({
@@ -191,7 +191,7 @@ const table = Ti.UI.createTableView({
 });
 ```
 
-### Custom Header/Footer Views
+### Custom header and footer views
 
 ```javascript
 function createCustomView(title) {
@@ -217,7 +217,7 @@ const table = Ti.UI.createTableView({
 });
 ```
 
-### Section Headers/Footers
+### Section headers and footers
 
 ```javascript
 const data = [
@@ -231,7 +231,7 @@ const data = [
 const table = Ti.UI.createTableView({ data: data });
 ```
 
-## 8. Grouped Table Style (iOS)
+## 8. Grouped table style (iOS)
 
 ```javascript
 const data = [
@@ -248,7 +248,7 @@ const table = Ti.UI.createTableView({
 });
 ```
 
-## 9. Editing Mode
+## 9. Editing mode
 
 ```javascript
 table.editing = true;
@@ -263,9 +263,9 @@ const data = [
 ];
 ```
 
-## 10. TableView Events
+## 10. TableView events
 
-### Click Event
+### Click event
 
 ```javascript
 table.addEventListener('click', (e) => {
@@ -279,7 +279,7 @@ table.addEventListener('click', (e) => {
 });
 ```
 
-### Delete Event
+### Delete event
 
 ```javascript
 table.addEventListener('delete', (e) => {
@@ -287,7 +287,7 @@ table.addEventListener('delete', (e) => {
 });
 ```
 
-### Scroll Events
+### Scroll events
 
 ```javascript
 table.addEventListener('scroll', (e) => {
@@ -314,9 +314,9 @@ const table = Ti.UI.createTableView({
 });
 ```
 
-## 12. Updating Table Data
+## 12. Updating table data
 
-### Appending Rows
+### Append rows
 
 ```javascript
 table.appendRow({ title: 'New Row' });
@@ -328,14 +328,14 @@ table.appendRow([
 ]);
 ```
 
-### Inserting Rows
+### Insert rows
 
 ```javascript
 table.insertRowBefore(2, { title: 'Inserted at index 2' });
 table.insertRowAfter(5, { title: 'Inserted after index 5' });
 ```
 
-### Deleting Rows
+### Delete rows
 
 ```javascript
 table.deleteRow(3);  // Delete row at index 3
@@ -346,7 +346,7 @@ table.setData([]);
 // Use table.setData([]) or table.data = [] to clear
 ```
 
-### Updating Specific Row
+### Update a specific row
 
 ```javascript
 const data = table.data;
@@ -354,9 +354,9 @@ data[2].title = 'Updated Title';
 table.setData(data);
 ```
 
-## 13. TableView Sections
+## 13. TableView sections
 
-### Creating Sections
+### Create sections
 
 ```javascript
 const section1 = Ti.UI.createTableViewSection({
@@ -378,7 +378,7 @@ const table = Ti.UI.createTableView({
 });
 ```
 
-### Custom Section Headers
+### Custom section headers
 
 ```javascript
 const section = Ti.UI.createTableViewSection({
@@ -386,7 +386,7 @@ const section = Ti.UI.createTableViewSection({
 });
 ```
 
-## 14. Performance Optimization
+## 14. Performance optimization
 
 ### Use className
 
@@ -404,26 +404,26 @@ const row2 = Ti.UI.createTableViewRow({
 });
 ```
 
-`className` enables OS to reuse scrolled-out rows for faster rendering.
+`className` lets the OS reuse scrolled-out rows for faster rendering.
 
-### Avoid Too Many Rows
+### Avoid too many rows
 
 If you have thousands of rows, consider:
 - Pagination
 - ListView instead
-- Filtering mechanism
+- Filtering
 - Drill-down interface
 
-### Optimize Custom Rows
+### Optimize custom rows
 
 - Test on device
 - Use simple layouts
 - Minimize child views per row
 - Avoid nested ScrollViews
 
-## 15. Common Patterns
+## 15. Common patterns
 
-### Detail View Navigation
+### Detail view navigation
 
 ```javascript
 table.addEventListener('click', (e) => {
@@ -441,12 +441,12 @@ table.addEventListener('click', (e) => {
 });
 ```
 
-### Row Actions (Swipe to Delete)
+### Row actions (swipe to delete)
 
 ```javascript
 table.setEditable(true);
 
-table.addEventListener('delete', (e) => {
+table.addEventListener('delete', () => {
   // Confirm deletion
   const dialog = Ti.UI.createAlertDialog({
     title: 'Delete',
@@ -465,7 +465,7 @@ table.addEventListener('delete', (e) => {
 });
 ```
 
-### Refresh Control
+### Refresh control
 
 ```javascript
 const table = Ti.UI.createTableView({
@@ -482,7 +482,7 @@ table.refreshControl.addEventListener('refreshstart', () => {
 });
 ```
 
-## 16. Platform Differences
+## 16. Platform differences
 
 ### iOS
 - Supports `GROUPED` style
@@ -500,7 +500,7 @@ table.refreshControl.addEventListener('refreshstart', () => {
 
 When to migrate:
 - New app development
-- Large datasets (>100 rows)
+- Large datasets (more than 100 rows)
 - Performance issues
 - Need modern features (templates, binding)
 
@@ -508,11 +508,11 @@ Key differences:
 - TableView: `data` property with row objects
 - ListView: `sections` property with templates
 
-## Best Practices
+## Best practices
 
-1. **Use ListView for new apps** - Better performance and features
-2. **Use className** - Enables row reuse
-3. **Batch updates** - Use `setData()` instead of multiple `appendRow()`
-4. **Test on device** - Simulator performance differs
-5. **Limit row complexity** - Fewer children = better scrolling
-6. **Consider pagination** - Don't show thousands of rows at once
+1. Use ListView for new apps - better performance and features
+2. Use className to enable row reuse
+3. Batch updates with `setData()` instead of many `appendRow()` calls
+4. Test on device; simulator performance differs
+5. Limit row complexity; fewer children means better scrolling
+6. Consider pagination; avoid showing thousands of rows at once

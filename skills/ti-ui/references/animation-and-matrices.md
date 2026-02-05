@@ -1,17 +1,17 @@
-# Animation, Matrices, and Transitions
+# Animation, matrices, and transitions
 
 ## 1. Overview
 
-Animations add visual interest and professionalism to apps when used appropriately. Titanium supports:
-- **Basic property animations** (opacity, position, color, etc.)
-- **2D matrix transformations** (scale, rotate, translate) - iOS & Android
-- **3D matrix transformations** (x/y/z space) - iOS only
-- **iOS transitions** (flip, curl, etc.)
-- **Dynamic animations** (physics-based) - iOS only
+Animations make state changes easier to read and can help an interface feel responsive. Use them with restraint. Titanium includes:
+- Basic property animations (opacity, position, color, etc.)
+- 2D matrix transforms (scale, rotate, translate) for iOS and Android
+- 3D matrix transforms (x, y, z space) for iOS only
+- iOS transitions (flip, curl, etc.)
+- Dynamic, physics-based animations for iOS only
 
-## 2. Basic Animations
+## 2. Basic animations
 
-### Property Animation Syntax
+### Property animation syntax
 
 ```javascript
 // Method 1: Direct object
@@ -41,7 +41,7 @@ view.animate({
 });
 ```
 
-### Animation Properties
+### Animation properties
 
 | Property                         | Description               | Default                             |
 | -------------------------------- | ------------------------- | ----------------------------------- |
@@ -58,7 +58,7 @@ view.animate({
 | `view`                           | View for transition       | -                                   |
 | `transition`                     | Transition type (iOS)     | -                                   |
 
-### Animation Curves (Easing)
+### Animation curves (easing)
 
 ```javascript
 // Available curves
@@ -76,7 +76,7 @@ view.animate({
 });
 ```
 
-### Reversing Animation
+### Reversing animation
 
 ```javascript
 // Use autoreverse for simple reversal
@@ -98,7 +98,7 @@ view.animate({
 });
 ```
 
-### Repeating Animation
+### Repeating animation
 
 ```javascript
 // Repeat 3 times
@@ -120,19 +120,19 @@ view.animate({
 view.animate({ opacity: view.opacity, duration: 0 });
 ```
 
-## 3. 2D Matrix Animations
+## 3. 2D matrix animations
 
-2D matrices work on both iOS and Android. Transform in x/y plane: scale, rotate, translate, skew.
+2D matrices work on both iOS and Android. They transform the x and y plane with scale, rotate, translate, and skew.
 
-### Basic 2D Transform
+### Basic 2D transform
 
 ```javascript
 // Create matrix
 let matrix2d = Ti.UI.create2DMatrix();
 
 // Apply transformations
-matrix2d = matrix2d.rotate(20);      // Rotate 20 degrees
-matrix2d = matrix2d.scale(1.5);      // Scale 1.5x
+matrix2d = matrix2d.rotate(20);         // Rotate 20 degrees
+matrix2d = matrix2d.scale(1.5);         // Scale 1.5x
 matrix2d = matrix2d.translate(50, 50);  // Move 50px right, 50px down
 
 // Apply animation
@@ -144,21 +144,21 @@ view.animate({
 });
 ```
 
-### 2D Matrix Methods
+### 2D matrix methods
 
 | Method              | Description               |
 | ------------------- | ------------------------- |
 | `rotate(degrees)`   | Rotate clockwise          |
 | `scale(sx, sy)`     | Scale (sy defaults to sx) |
 | `translate(dx, dy)` | Move by delta             |
-| `skew(x, y)`        | Skew/shear transformation |
+| `skew(x, y)`        | Skew or shear             |
 | `invert()`          | Invert matrix             |
 | `multiply(matrix)`  | Multiply matrices         |
 | `length`            | Get matrix length         |
 
-### Sequential Transformations
+### Sequential transformations
 
-Order matters for transformations:
+Order matters.
 
 ```javascript
 // Rotate THEN scale
@@ -172,7 +172,7 @@ const matrix2 = Ti.UI.create2DMatrix()
   .rotate(45);
 ```
 
-### Identity (Reset) Transform
+### Identity (reset) transform
 
 ```javascript
 // Reset to original state
@@ -183,17 +183,17 @@ view.animate({
 });
 ```
 
-## 4. 3D Matrix Animations (iOS Only)
+## 4. 3D matrix animations (iOS only)
 
-3D matrices work in x/y/z space. iOS only.
+3D matrices work in x, y, and z space on iOS only.
 
-### Basic 3D Transform
+### Basic 3D transform
 
 ```javascript
 let matrix3d = Ti.UI.create3DMatrix();
 
 // Rotate around axis vector (x, y, z)
-matrix3d = matrix3d.rotate(180, 1, 1, 0);  // 180° around diagonal
+matrix3d = matrix3d.rotate(180, 1, 1, 0);  // 180 degrees around diagonal
 
 // Scale in 3 dimensions
 matrix3d = matrix3d.scale(2, 2, 2);
@@ -206,18 +206,18 @@ view.animate({
 });
 ```
 
-### 3D Matrix Methods
+### 3D matrix methods
 
-| Method                     | Description               |
-| -------------------------- | ------------------------- |
-| `rotate(degrees, x, y, z)` | Rotate around vector      |
-| `scale(sx, sy, sz)`        | Scale in 3D               |
-| `translate(dx, dy, dz)`    | Move in 3D                |
-| `invert()`                 | Invert matrix             |
-| `multiply(matrix)`         | Multiply matrices         |
-| `perspective(p)`           | Set perspective (4th row) |
+| Method                     | Description          |
+| -------------------------- | -------------------- |
+| `rotate(degrees, x, y, z)` | Rotate around vector |
+| `scale(sx, sy, sz)`        | Scale in 3D          |
+| `translate(dx, dy, dz)`    | Move in 3D           |
+| `invert()`                 | Invert matrix        |
+| `multiply(matrix)`         | Multiply matrices    |
+| `perspective(p)`           | Set perspective      |
 
-### Flip Card Effect
+### Flip card effect
 
 ```javascript
 const frontView = Ti.UI.createView({
@@ -252,11 +252,11 @@ frontView.addEventListener('click', () => {
 });
 ```
 
-## 5. iOS Transitions
+## 5. iOS transitions
 
-Transitions are built-in animations for switching between Views/Windows.
+Transitions are built-in animations for switching between views and windows.
 
-### Transition Constants
+### Transition constants
 
 ```javascript
 Ti.UI.iPhone.AnimationStyle.CURL_UP
@@ -267,7 +267,7 @@ Ti.UI.iPhone.AnimationStyle.NONE
 Ti.UI.iPhone.AnimationStyle.OPAQUE_FADE  // Fade with black (not transparent)
 ```
 
-### View Transition
+### View transition
 
 ```javascript
 const container = Ti.UI.createView({ width: 300, height: 300 });
@@ -293,7 +293,7 @@ container.addEventListener('click', () => {
 });
 ```
 
-### Window Transition (NavigationWindow)
+### Window transition (NavigationWindow)
 
 ```javascript
 const navWindow = Ti.UI.createNavigationWindow({
@@ -318,11 +318,11 @@ const win1 = Ti.UI.createWindow({
 navWindow.openWindow(win1);
 ```
 
-## 6. Dynamic Animations (iOS Only)
+## 6. Dynamic animations (iOS only)
 
-Physics-based animations using `Ti.UI.iOS.Animator`.
+Physics-based animations use `Ti.UI.iOS.Animator`.
 
-### Gravity Animation
+### Gravity animation
 
 ```javascript
 const animator = Ti.UI.iOS.createAnimator({
@@ -349,7 +349,7 @@ animator.addBehavior(collision);
 animator.startAnimator();
 ```
 
-### Attachment (Spring) Behavior
+### Attachment (spring) behavior
 
 ```javascript
 const attachment = Ti.UI.iOS.createAttachmentBehavior({
@@ -364,7 +364,7 @@ animator.addBehavior(attachment);
 animator.startAnimator();
 ```
 
-### Push Behavior
+### Push behavior
 
 ```javascript
 const push = Ti.UI.iOS.createPushBehavior({
@@ -377,9 +377,9 @@ push.addItem(viewToPush);
 animator.addBehavior(push);
 ```
 
-## 7. Animation Events
+## 7. Animation events
 
-### Animation Lifecycle
+### Animation lifecycle
 
 ```javascript
 const animation = Ti.UI.createAnimation({
@@ -400,7 +400,7 @@ animation.addEventListener('complete', (e) => {
 view.animate(animation);
 ```
 
-### Stopping Animations
+### Stopping animations
 
 ```javascript
 // Method 1: Overwrite with new animation (duration: 0)
@@ -417,9 +417,9 @@ parent.remove(view);
 view.visible = false;
 ```
 
-## 8. Common Animation Patterns
+## 8. Common animation patterns
 
-### Fade In/Out
+### Fade in and out
 
 ```javascript
 function fadeIn(view, duration, callback) {
@@ -435,7 +435,7 @@ function fadeOut(view, duration, callback) {
 }
 ```
 
-### Slide In
+### Slide in
 
 ```javascript
 function slideInFromRight(view, duration) {
@@ -448,7 +448,7 @@ function slideInFromRight(view, duration) {
 }
 ```
 
-### Pulse Animation
+### Pulse animation
 
 ```javascript
 function pulse(view) {
@@ -464,7 +464,7 @@ function pulse(view) {
 }
 ```
 
-### Shake Animation
+### Shake animation
 
 ```javascript
 function shake(view) {
@@ -478,7 +478,7 @@ function shake(view) {
 }
 ```
 
-### Bounce In
+### Bounce in
 
 ```javascript
 function bounceIn(view) {
@@ -497,22 +497,22 @@ function bounceIn(view) {
 }
 ```
 
-## 9. Performance Considerations
+## 9. Performance considerations
 
-### DO:
-- Use hardware-accelerated properties (opacity, transform)
-- Animate `transform` instead of `top`/`left` when possible
-- Use `autoreverse` for simple back-and-forth
-- Cache animation objects for reuse
-- Stop unused animations
+Do:
+- Use hardware-accelerated properties (opacity, transform).
+- Animate `transform` instead of `top` or `left` when possible.
+- Use `autoreverse` for simple back-and-forth.
+- Cache animation objects for reuse.
+- Stop unused animations.
 
-### DON'T:
-- Animate `width`/`height` (triggers layout recalculation)
-- Animate too many views simultaneously
-- Use JavaScript loops for animation
-- Animate properties that trigger reflow
+Don't:
+- Animate `width` or `height` since it triggers layout recalculation.
+- Animate too many views at once.
+- Use JavaScript loops for animation.
+- Animate properties that trigger reflow.
 
-### Bad vs Good
+### Bad vs good
 
 ```javascript
 // BAD - Triggers layout
@@ -529,24 +529,24 @@ view.animate({
 });
 ```
 
-## 10. Platform Differences
+## 10. Platform differences
 
 ### iOS vs Android
 
 | Feature            | iOS          | Android           |
 | ------------------ | ------------ | ----------------- |
-| 2D Matrix          | Full support | Full support      |
-| 3D Matrix          | Full support | Not supported     |
+| 2D matrix          | Full support | Full support      |
+| 3D matrix          | Full support | Not supported     |
 | Transitions        | Full support | Not supported     |
 | Dynamic animations | Full support | Not supported     |
 | Curves             | +SPRING      | Basic curves only |
 | Color animation    | RGBA full    | Basic colors      |
 
-## Best Practices
+## Best practices
 
-1. **Keep animations simple** - More complex = more prone to bugs
-2. **Test on devices** - Simulator performance differs
-3. **Consider accessibility** - Respect `reduceMotion` setting
-4. **Use appropriate duration** - 200-300ms for subtle, 500ms for noticeable
-5. **Avoid animation chains** - Use callback instead of nesting
-6. **Clean up** - Remove event listeners on animation completion
+1. Keep animations simple. The more complex they get, the harder they are to debug.
+2. Test on devices. Simulator performance is not the same.
+3. Consider accessibility. Respect the `reduceMotion` setting.
+4. Use sensible duration. 200 to 300 ms for subtle motion, about 500 ms for noticeable.
+5. Avoid long animation chains. Prefer a callback instead of deep nesting.
+6. Clean up. Remove event listeners on animation completion.

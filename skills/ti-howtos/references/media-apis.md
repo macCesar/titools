@@ -2,11 +2,11 @@
 
 ## 1. Audio APIs
 
-### Playing Basic Sounds (Ti.Media.Sound)
-- Use for short sound effects, beeps, ambient audio
-- **Entire file loads into memory** - use `preload=true` to reduce delay
+### Playing basic sounds (Ti.Media.Sound)
+- Use for short effects, beeps, ambient audio
+- The entire file loads into memory. Use `preload=true` to reduce delay.
 - Methods: `play()`, `pause()`, `stop()`, `setVolume()`
-- Property `allowBackground=true` for continued playback when app closes
+- `allowBackground=true` keeps playback going when the app closes
 
 ```javascript
 const sound = Ti.Media.createSound({
@@ -16,12 +16,12 @@ const sound = Ti.Media.createSound({
 sound.play();
 ```
 
-### Streaming Audio (Ti.Media.AudioPlayer)
-- Use for streaming from web URLs (MP3, HTML Live Streaming)
+### Streaming audio (Ti.Media.AudioPlayer)
+- Use for streaming web URLs (MP3, HLS)
 - Supports pseudo-streaming and HLS
 - Handle interruptions (phone calls) with app-level events:
-  - `pause` event: Call `setPaused(true)` or `pause()`
-  - `resume` event: Call `setPaused(false)` or `start()`
+  - `pause`: call `setPaused(true)` or `pause()`
+  - `resume`: call `setPaused(false)` or `start()`
 
 ```javascript
 const streamer = Ti.Media.createAudioPlayer({ url: 'https://example.com/stream.mp3' });
@@ -31,7 +31,7 @@ Ti.App.addEventListener('pause', () => { streamer.setPaused(true); });
 Ti.App.addEventListener('resume', () => { streamer.setPaused(false); });
 ```
 
-### Recording Audio (Ti.Media.AudioRecorder)
+### Recording audio (Ti.Media.AudioRecorder)
 - Requires microphone permission
 - Properties:
   - `compression`: `Ti.Media.AUDIO_FORMAT_ULAW` (low-fi) or `AUDIO_FORMAT_LINEAR_PCM` (hi-fi)
@@ -40,20 +40,20 @@ Ti.App.addEventListener('resume', () => { streamer.setPaused(false); });
 
 ## 2. Video APIs (Ti.Media.VideoPlayer)
 
-### Cross-Platform Considerations
-- **Android**: Must be fullscreen (Intent-based, not a view proxy)
-- **iOS**: Can be embedded or fullscreen; set `height`/`width` for embedded
+### Cross-platform considerations
+- Android: must be fullscreen (Intent-based, not a view proxy)
+- iOS: can be embedded or fullscreen; set `height` and `width` for embedded
 
-### Basic Usage
-- `url` property: Local file path or remote URL
-- `autoplay=true`: Auto-start when rendered
+### Basic usage
+- `url`: local file path or remote URL
+- `autoplay=true`: auto-start when rendered
 - `movieControlStyle`: `Ti.Media.VIDEO_CONTROL_EMBEDDED` for embedded controls
-- `scalingMode`: Control fill/fit behavior
+- `scalingMode`: control fill/fit behavior
 
 ```javascript
 const videoPlayer = Ti.Media.createVideoPlayer({
-    url: 'movie.mp4',
-    scalingMode: Ti.Media.VIDEO_SCALING_ASPECT_FIT  // or ASPECT_FILL, MODE_FILL, NONE
+  url: 'movie.mp4',
+  scalingMode: Ti.Media.VIDEO_SCALING_ASPECT_FIT // or ASPECT_FILL, MODE_FILL, NONE
 });
 ```
 
@@ -73,37 +73,37 @@ if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
 win.addEventListener('close', () => { player.stop(); });
 ```
 
-### Key Events
-- `complete`: Playback ended (check `e.reason` vs `Ti.Media.VIDEO_FINISH_REASON_PLAYBACK_ENDED`)
-- `load`: Movie finished loading
-- `fullscreen`: Entered/exited fullscreen (check `e.entering`)
+### Key events
+- `complete`: playback ended (check `e.reason` vs `Ti.Media.VIDEO_FINISH_REASON_PLAYBACK_ENDED`)
+- `load`: movie finished loading
+- `fullscreen`: entered/exited fullscreen (check `e.entering`)
 
-## 3. Camera and Photo Gallery APIs
+## 3. Camera and photo gallery APIs
 
-### Camera Availability and Permissions
-
+### Camera availability and permissions
 Always check device support and permissions before opening the camera:
 
 ```javascript
 if (!Ti.Media.isCameraSupported) {
-    Ti.API.warn('No camera available on this device');
-    return;
+  Ti.API.warn('No camera available on this device');
+  return;
 }
 
 if (Ti.Media.hasCameraPermissions()) {
-    openCamera();
+  openCamera();
 } else {
-    Ti.Media.requestCameraPermissions((e) => {
-        if (e.success) {
-            openCamera();
-        } else {
-            Ti.API.error('Camera permission denied');
-        }
-    });
+  Ti.Media.requestCameraPermissions((e) => {
+    if (e.success) {
+      openCamera();
+    } else {
+      Ti.API.error('Camera permission denied');
+    }
+  });
 }
 ```
 
-**Required tiapp.xml keys (iOS)**:
+Required `tiapp.xml` keys (iOS):
+
 ```xml
 <key>NSCameraUsageDescription</key>
 <string>We need camera access to take photos</string>
@@ -113,57 +113,57 @@ if (Ti.Media.hasCameraPermissions()) {
 
 ### Camera (Ti.Media.showCamera)
 - Requires camera permission and usage descriptions
-- Success callback provides `event.media` (blob)
-- Use `saveToPhotoGallery: true` to automatically save
+- Success callback provides `event.media` (Blob)
+- Use `saveToPhotoGallery: true` to auto-save
 - Handle `cancel` and `error` callbacks
 
-### Front and Rear Camera
+### Front and rear camera
 ```javascript
 const cameras = Ti.Media.availableCameras;
 
 // Check if front camera exists
 if (cameras.indexOf(Ti.Media.CAMERA_FRONT) !== -1) {
-    Ti.Media.showCamera({
-        whichCamera: Ti.Media.CAMERA_FRONT,
-        // ... other options
-    });
+  Ti.Media.showCamera({
+    whichCamera: Ti.Media.CAMERA_FRONT,
+    // ... other options
+  });
 }
 
 // Switch camera programmatically
 Ti.Media.switchCamera(Ti.Media.CAMERA_REAR);
 ```
 
-### Advanced Camera Options (iOS)
-| Property | Description |
-|---|---|
-| `autohide` | Auto-hide camera after capture (default: true) |
-| `animated` | Animate camera appearance |
-| `allowEditing` | Allow user to crop/edit after capture |
-| `mediaTypes` | Array: `MEDIA_TYPE_PHOTO`, `MEDIA_TYPE_VIDEO` |
-| `videoMaximumDuration` | Max video duration in milliseconds |
-| `videoQuality` | `QUALITY_HIGH`, `QUALITY_MEDIUM`, `QUALITY_LOW` |
-| `overlay` | Custom Ti.UI.View overlay on camera |
-| `showControls` | Show/hide default camera controls |
+### Advanced camera options (iOS)
+| Property               | Description                                     |
+| ---------------------- | ----------------------------------------------- |
+| `autohide`             | Auto-hide camera after capture (default: true)  |
+| `animated`             | Animate camera appearance                       |
+| `allowEditing`         | Allow user to crop/edit after capture           |
+| `mediaTypes`           | Array: `MEDIA_TYPE_PHOTO`, `MEDIA_TYPE_VIDEO`   |
+| `videoMaximumDuration` | Max video duration in milliseconds              |
+| `videoQuality`         | `QUALITY_HIGH`, `QUALITY_MEDIUM`, `QUALITY_LOW` |
+| `overlay`              | Custom `Ti.UI.View` overlay on camera           |
+| `showControls`         | Show/hide default camera controls               |
 
 When using a custom overlay, call `Ti.Media.takePicture()` to capture and `Ti.Media.hideCamera()` to dismiss.
 
 ### Gallery (Ti.Media.openPhotoGallery)
-- Success callback provides `event.media` (blob)
-- Note: `event.media` may contain only file info, use `Ti.Filesystem.getFile(event.media.nativePath)` to access actual file
+- Success callback provides `event.media` (Blob)
+- Note: `event.media` may only contain file info. Use `Ti.Filesystem.getFile(event.media.nativePath)` to access the actual file.
 
-### iPad-Specific Gallery Options
+### iPad-specific gallery options
 On iPad, the photo gallery opens as a popover. Configure its position:
+
 ```javascript
 Ti.Media.openPhotoGallery({
-    popoverView: myButton,  // Anchor popover to this view
-    arrowDirection: Ti.UI.iPad.POPOVER_ARROW_DIRECTION_UP,
-    success: (e) => { /* ... */ }
+  popoverView: myButton, // Anchor popover to this view
+  arrowDirection: Ti.UI.iPad.POPOVER_ARROW_DIRECTION_UP,
+  success: (e) => { /* ... */ }
 });
 ```
 
-### Memory Management
-- **Critical**: Use `imageAsResized()` on blobs to avoid memory exhaustion
-- For display: Resize to target dimensions before assigning to ImageView
+### Memory management
+Use `imageAsResized()` on blobs to avoid memory exhaustion. Resize to target dimensions before assigning to an ImageView.
 
 ```javascript
 Ti.Media.showCamera({
@@ -178,49 +178,50 @@ Ti.Media.showCamera({
 
 ## 4. Images and ImageView APIs
 
-### Background Images
+### Background images
 - Scaled to fit component dimensions by default
-- **iOS**: Use `backgroundLeftCap` and `backgroundTopCap` to control stretch regions
-- **Android**: Supports remote URLs as background images; iOS does not
+- iOS: use `backgroundLeftCap` and `backgroundTopCap` to control stretch regions
+- Android: supports remote URLs as background images; iOS does not
 
-### Image Stretching (Background Images)
+### Image stretching (background images)
 When using small images as backgrounds, iOS and Android stretch differently:
-- **`backgroundLeftCap`** (iOS): Number of pixels from the left that are NOT stretched. The middle section stretches.
-- **`backgroundTopCap`** (iOS): Number of pixels from the top that are NOT stretched.
-- **Android**: Supports remote URLs for background images; iOS does NOT.
+- `backgroundLeftCap` (iOS): pixels from the left that are not stretched. The middle section stretches.
+- `backgroundTopCap` (iOS): pixels from the top that are not stretched.
+- Android: supports remote URLs for background images; iOS does not.
 
-### ImageView Component
-- `image` property accepts: URL, local path, or Ti.Filesystem.File object
+### ImageView component
+- `image` accepts: URL, local path, or `Ti.Filesystem.File`
 - Scaling behavior:
-  - Both `height` AND `width` specified: Unproportional scale (aspect ratio NOT maintained)
-  - Only ONE dimension specified: Proportional scale (aspect ratio maintained)
-- `defaultImage`: Local image to show while remote image loads
+  - Both `height` and `width` specified: unproportional scale (aspect ratio not maintained)
+  - Only one dimension specified: proportional scale (aspect ratio maintained)
+- `defaultImage`: local image to show while remote image loads
 
-### Density-Specific Images
+### Density-specific images
 
-**Android**: Place in resolution-specific directories:
+Android: place in resolution-specific directories:
 - `res-ldpi`, `res-mdpi`, `res-hdpi`, `res-xhdpi`, `res-xxhdpi`, `res-xxxhdpi`
 
-**iOS**: Use naming convention:
-- `foo.png` - Non-retina
-- `foo@2x.png` - Retina
+iOS: use naming convention:
+- `foo.png` - non-retina
+- `foo@2x.png` - retina
 - `foo@3x.png` - iPhone 6 Plus
 - `foo~iphone.png` - iPhone-specific
 - `foo~ipad.png` - iPad-specific
 
 For remote density-specific images on iOS:
+
 ```javascript
 const density = Ti.Platform.displayCaps.logicalDensityFactor;
 const url = `https://example.com/image@${density}x.png`;
 const imageView = Ti.UI.createImageView({
   image: url,
-  hires: true  // Indicates high-resolution remote image
+  hires: true // Indicates high-resolution remote image
 });
 ```
 
-### Flipbook Animations
-- Assign array of images to `images` property
-- `duration`: Milliseconds between frames
+### Flipbook animations
+- Assign an array of images to `images`
+- `duration`: milliseconds between frames
 - `repeatCount`: 0 = infinite, >1 = specific count
 
 ```javascript
@@ -233,10 +234,10 @@ const animationView = Ti.UI.createImageView({
   duration: 100,
   repeatCount: 0
 });
-// animationView.stop() / animationView.start() para controlar
+// animationView.stop() / animationView.start() to control
 ```
 
-## Permissions Checklist
+## Permissions checklist
 
 ### iOS (tiapp.xml)
 ```xml

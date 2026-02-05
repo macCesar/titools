@@ -1,24 +1,24 @@
-# Buffer, Codec, and Streams
+# Buffer, Codec, and streams
 
-Guide for advanced binary data manipulation and data flows in Titanium SDK.
+Guide to binary data manipulation and data flows in Titanium SDK.
 
 ## 1. Titanium.Buffer
 
-Buffers are mutable and resizable containers for bytes (byte arrays).
+Buffers are mutable, resizable containers for bytes (byte arrays).
 
-### Creating Buffers
+### Creating buffers
 ```javascript
 // Empty 512-byte buffer
 const buffer1 = Ti.createBuffer({ length: 512 });
 
 // Buffer initialized with a string (UTF-8 by default)
-const buffer2 = Ti.createBuffer({ value: "Hello World" });
+const buffer2 = Ti.createBuffer({ value: 'Hello World' });
 ```
 
-### Common Operations
+### Common operations
 ```javascript
-const b1 = Ti.createBuffer({ value: "Part 1. " });
-const b2 = Ti.createBuffer({ value: "Part 2." });
+const b1 = Ti.createBuffer({ value: 'Part 1. ' });
+const b2 = Ti.createBuffer({ value: 'Part 2.' });
 
 // Append
 b1.append(b2);
@@ -35,68 +35,68 @@ b1.release();
 
 ## 2. Titanium.Codec
 
-The Codec module allows encoding and decoding primitive data (numbers and strings) to/from buffers.
+The Codec module encodes and decodes primitive data (numbers and strings) to and from buffers.
 
-### Encoding Numbers
+### Encoding numbers
 ```javascript
 const buffer = Ti.createBuffer({ length: 8 });
 Ti.Codec.encodeNumber({
-    source: 12345,
-    dest: buffer,
-    type: Ti.Codec.TYPE_INT,
-    byteOrder: Ti.Codec.BIG_ENDIAN
+  source: 12345,
+  dest: buffer,
+  type: Ti.Codec.TYPE_INT,
+  byteOrder: Ti.Codec.BIG_ENDIAN
 });
 ```
 
-### Decoding Strings
+### Decoding strings
 ```javascript
 const text = Ti.Codec.decodeString({
-    source: buffer,
-    charset: Ti.Codec.CHARSET_UTF8
+  source: buffer,
+  charset: Ti.Codec.CHARSET_UTF8
 });
 ```
 
-### Supported Types and Charsets
+### Supported types and charsets
 
-**Numeric types**: `TYPE_BYTE`, `TYPE_SHORT`, `TYPE_INT`, `TYPE_LONG`, `TYPE_FLOAT`, `TYPE_DOUBLE`
+Numeric types: `TYPE_BYTE`, `TYPE_SHORT`, `TYPE_INT`, `TYPE_LONG`, `TYPE_FLOAT`, `TYPE_DOUBLE`
 
-**String charsets**: `CHARSET_UTF8`, `CHARSET_UTF16`, `CHARSET_UTF16BE`, `CHARSET_UTF16LE`, `CHARSET_ISO_LATIN1`
+String charsets: `CHARSET_UTF8`, `CHARSET_UTF16`, `CHARSET_UTF16BE`, `CHARSET_UTF16LE`, `CHARSET_ISO_LATIN1`
 
-### Position Parameter
-The `position` parameter controls where encoding/decoding starts in the buffer:
+### Position parameter
+The `position` parameter controls where encoding or decoding starts in the buffer:
 ```javascript
 Ti.Codec.encodeNumber({
-    source: 42,
-    dest: buffer,
-    position: 4,  // start writing at byte 4
-    type: Ti.Codec.TYPE_INT
+  source: 42,
+  dest: buffer,
+  position: 4, // start writing at byte 4
+  type: Ti.Codec.TYPE_INT
 });
 ```
 
 ## 3. Streams
 
-Streams allow reading and writing data in a serialized and memory-efficient way.
+Streams let you read and write data in a serialized, memory-efficient way.
 
-### Stream Types
-1. **BufferStream**: For reading/writing in memory buffers.
-2. **FileStream**: For file operations (more efficient than `file.read()`).
-3. **BlobStream**: Read-only for Blob objects (images, camera).
+### Stream types
+1. BufferStream: for reading and writing in-memory buffers
+2. FileStream: for file operations (more efficient than `file.read()`)
+3. BlobStream: read-only for Blob objects (images, camera)
 
-**Stream modes**: `Ti.Filesystem.MODE_READ`, `Ti.Filesystem.MODE_WRITE`, `Ti.Filesystem.MODE_APPEND`
+Stream modes: `Ti.Filesystem.MODE_READ`, `Ti.Filesystem.MODE_WRITE`, `Ti.Filesystem.MODE_APPEND`
 
 ### Example: BufferStream
 ```javascript
 const buffer = Ti.createBuffer({ length: 1024 });
 const stream = Ti.Stream.createStream({
-    source: buffer,
-    mode: Ti.Stream.MODE_WRITE
+  source: buffer,
+  mode: Ti.Stream.MODE_WRITE
 });
 
-stream.write(Ti.createBuffer({ value: "Stream data" }));
+stream.write(Ti.createBuffer({ value: 'Stream data' }));
 stream.close();
 ```
 
-### Example: FileStream (Chunk-based reading)
+### Example: FileStream (chunk-based reading)
 ```javascript
 const file = Ti.Filesystem.getFile('large_file.txt');
 const instream = file.open(Ti.Filesystem.MODE_READ);
@@ -104,37 +104,37 @@ const buffer = Ti.createBuffer({ length: 1024 }); // 1KB chunks
 
 let bytesRead = 0;
 while ((bytesRead = instream.read(buffer)) > 0) {
-    Ti.API.info(`Read ${bytesRead} bytes`);
-    // Process buffer...
+  Ti.API.info(`Read ${bytesRead} bytes`);
+  // Process buffer...
 }
 instream.close();
 ```
 
-### Example: BlobStream (Camera to File)
+### Example: BlobStream (camera to file)
 ```javascript
 Ti.Media.showCamera({
-    success: (e) => {
-        const instream = Ti.Stream.createStream({
-            source: e.media,
-            mode: Ti.Stream.MODE_READ
-        });
+  success: (e) => {
+    const instream = Ti.Stream.createStream({
+      source: e.media,
+      mode: Ti.Stream.MODE_READ
+    });
 
-        const outfile = Ti.Filesystem.getFile(Ti.Filesystem.applicationDataDirectory, 'photo.jpg');
-        const outstream = outfile.open(Ti.Filesystem.MODE_WRITE);
+    const outfile = Ti.Filesystem.getFile(Ti.Filesystem.applicationDataDirectory, 'photo.jpg');
+    const outstream = outfile.open(Ti.Filesystem.MODE_WRITE);
 
-        const buffer = Ti.createBuffer({ length: 4096 });
-        let readBytes = 0;
-        while ((readBytes = instream.read(buffer)) > 0) {
-            outstream.write(buffer, 0, readBytes);
-        }
-
-        instream.close();
-        outstream.close();
+    const buffer = Ti.createBuffer({ length: 4096 });
+    let readBytes = 0;
+    while ((readBytes = instream.read(buffer)) > 0) {
+      outstream.write(buffer, 0, readBytes);
     }
+
+    instream.close();
+    outstream.close();
+  }
 });
 ```
 
-## 4. Best Practices
-- **Always close streams**: Avoid memory leaks and file locks by calling `.close()`.
-- **Use chunks**: For large files or networking, read in small blocks (e.g., 1KB or 4KB) to avoid saturating RAM.
-- **Buffers vs Blobs**: Buffers are mutable; Blobs are immutable. Convert a Blob to a Buffer if you need to modify bytes.
+## 4. Best practices
+- Always close streams to avoid memory leaks and file locks.
+- Use chunks for large files or networking (for example, 1KB or 4KB) to avoid saturating RAM.
+- Buffers vs Blobs: Buffers are mutable; Blobs are immutable. Convert a Blob to a Buffer if you need to modify bytes.

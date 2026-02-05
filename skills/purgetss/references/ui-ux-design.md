@@ -1,6 +1,6 @@
 # UI/UX Design Patterns for Titanium SDK with PurgeTSS
 
-A comprehensive guide to building beautiful, accessible, and performant mobile UIs using Titanium SDK and PurgeTSS utility classes.
+A guide to building accessible and performant mobile UIs using Titanium SDK and PurgeTSS utility classes.
 
 ## 1. Common UI Components
 

@@ -1,14 +1,14 @@
-# Remote Data Sources
+# Remote data sources
 
-## 1. HTTPClient and Request Lifecycle
+## 1. HTTPClient and request lifecycle
 
-### Basic Pattern
-`Ti.Network.HTTPClient` mirrors XHR (XMLHttpRequest) API. Always handle both success and error cases.
+### Basic pattern
+`Ti.Network.HTTPClient` mirrors the XHR (XMLHttpRequest) API. Always handle both success and error paths.
 
 ```javascript
 const xhr = Ti.Network.createHTTPClient({
   onload: (e) => {
-    // this.responseText - raw text (for JSON/text)
+    // this.responseText - raw text (JSON/text)
     // this.responseXML - XML document (including SOAP)
     // this.responseData - binary data (Blob)
     Ti.API.debug(xhr.responseText);
@@ -22,13 +22,13 @@ xhr.open('GET', 'https://api.example.com/data');
 xhr.send();
 ```
 
-### HTTP Methods
+### HTTP methods
 - GET: `xhr.open('GET', url)` then `xhr.send()`
 - POST: `xhr.open('POST', url)` then `xhr.send({key: 'value'})`
-- PUT/DELETE/PATCH: All supported (PATCH since 4.1.0 on Android)
+- PUT/DELETE/PATCH: all supported (PATCH since 4.1.0 on Android)
 
-### Setting Headers
-**Critical**: Headers must be set AFTER `open()` but BEFORE `send()`
+### Setting headers
+Headers must be set after `open()` but before `send()`.
 
 ```javascript
 const client = Ti.Network.createHTTPClient();
@@ -38,17 +38,17 @@ client.setRequestHeader('Authorization', `Bearer ${token}`);
 client.send('data');
 ```
 
-### XHR Lifecycle States
+### XHR lifecycle states
 Monitor with `onreadystatechange`:
-- `UNSENT` - Object constructed
+- `UNSENT` - object constructed
 - `OPENED` - `open()` called successfully
-- `HEADERS_RECEIVED` - All redirects followed, headers received
-- `LOADING` - Response body being received
-- `DONE` - Transfer complete or error occurred
+- `HEADERS_RECEIVED` - all redirects followed, headers received
+- `LOADING` - response body being received
+- `DONE` - transfer complete or error occurred
 
 ```javascript
 xhr.onreadystatechange = (e) => {
-  switch(xhr.readyState) {
+  switch (xhr.readyState) {
     case Ti.Network.HTTPClient.HEADERS_RECEIVED:
       Ti.API.info(`Headers: ${xhr.getResponseHeader('Content-Type')}`);
       break;
@@ -59,9 +59,9 @@ xhr.onreadystatechange = (e) => {
 };
 ```
 
-### Progress Monitoring
-- `onsendstream`: Upload progress (0.0-1.0)
-- `ondatastream`: Download progress (0.0-1.0)
+### Progress monitoring
+- `onsendstream`: upload progress (0.0-1.0)
+- `ondatastream`: download progress (0.0-1.0)
 
 ```javascript
 xhr.onsendstream = (e) => {
@@ -72,7 +72,7 @@ xhr.ondatastream = (e) => {
 };
 ```
 
-## 2. Working with JSON Data
+## 2. Working with JSON data
 
 ### Receiving JSON
 ```javascript
@@ -83,15 +83,15 @@ xhr.onload = () => {
 ```
 
 ### Sending JSON
-`send()` automatically stringifies objects:
+`send()` stringifies objects for you.
 
 ```javascript
 const postData = { title: 'My Post', body: 'Content' };
 xhr.open('POST', 'http://blog.com/api/posts');
-xhr.send(postData);  // Auto-stringified
+xhr.send(postData); // Auto-stringified
 ```
 
-For GET querystrings, manually stringify and encode:
+For GET query strings, stringify and encode yourself.
 
 ```javascript
 const data = { search: 'titanium' };
@@ -100,13 +100,13 @@ xhr.open('GET', `http://api.com/search?q=${queryString}`);
 xhr.send();
 ```
 
-### Important Limitation
-JSON cannot represent methods. Attempting to stringify Titanium objects returns empty representation.
+### Important limitation
+JSON cannot represent methods. Stringifying Titanium objects returns an empty representation.
 
-## 3. Working with XML Data
+## 3. Working with XML data
 
 ### Parsing XML
-Titanium provides XML DOM Level 2 implementation. Auto-serializes if Content-Type is XML.
+Titanium provides XML DOM Level 2. If the response is XML and the server sends the correct Content-Type, Titanium auto-parses it.
 
 ```javascript
 xhr.onload = () => {
@@ -121,19 +121,19 @@ xhr.onload = () => {
 };
 ```
 
-### Common DOM Methods
-- `getElementsByTagName(name)` - Returns array of nodes
-- `item(index)` - Select specific node from array
-- `getAttribute(name)` - Get attribute value
-- `textContent` / `nodeValue` - Get leaf node value
+### Common DOM methods
+- `getElementsByTagName(name)` - returns array of nodes
+- `item(index)` - selects a specific node from the array
+- `getAttribute(name)` - gets an attribute value
+- `textContent` / `nodeValue` - gets a leaf node value
 
-### Important: Know Your DTD
+### Important: know your DTD
 You must understand the XML structure (node hierarchy) to parse correctly. Use tools like apigee.com to inspect API responses.
 
-## 4. File Uploads and Downloads
+## 4. File uploads and downloads
 
-### File Upload
-Pass a Blob to `send()`:
+### File upload
+Pass a Blob to `send()`.
 
 ```javascript
 Ti.Media.openPhotoGallery({
@@ -145,7 +145,7 @@ Ti.Media.openPhotoGallery({
     });
     xhr.open('POST', 'https://server.com/upload');
     xhr.send({
-      file: event.media,  // Blob from gallery
+      file: event.media, // Blob from gallery
       username: 'user'
     });
   }
@@ -153,6 +153,7 @@ Ti.Media.openPhotoGallery({
 ```
 
 For file uploads with actual file contents:
+
 ```javascript
 const file = Ti.Filesystem.getFile(event.media.nativePath);
 if (file.exists()) {
@@ -160,11 +161,11 @@ if (file.exists()) {
 }
 ```
 
-> **Note**: When uploading from the photo gallery, `event.media` returns a Blob. For file uploads from the filesystem, use `Ti.Filesystem.getFile(path).read()` to get the Blob.
+Note: when uploading from the photo gallery, `event.media` is a Blob. For filesystem uploads, use `Ti.Filesystem.getFile(path).read()` to get a Blob.
 
-### File Download (Cross-Platform)
+### File download (cross-platform)
 
-**Option 1**: Write manually to filesystem
+Option 1: write manually to the filesystem.
 
 ```javascript
 const xhr = Ti.Network.createHTTPClient({
@@ -182,9 +183,8 @@ xhr.open('GET', 'http://example.com/image.png');
 xhr.send();
 ```
 
-**Option 2**: iOS-only automatic saving with `file` property
+Option 2 (iOS only): set `xhr.file` to save directly without buffering.
 
-**iOS-only**: Use `xhr.file` to save downloads directly to a file without buffering in memory:
 ```javascript
 xhr.file = Ti.Filesystem.getFile(Ti.Filesystem.applicationDataDirectory, 'download.zip');
 ```
@@ -203,24 +203,24 @@ xhr.file = Ti.Filesystem.getFile(
 xhr.send();
 ```
 
-### File Storage Locations
-- `applicationDataDirectory` - Primary read/write location for app files
-- `resourcesDirectory` - Read-only app resources (writeable in simulator only)
-- `tempDirectory` - Temporary files, OS may delete when app closes
+### File storage locations
+- `applicationDataDirectory` - primary read/write location for app files
+- `resourcesDirectory` - read-only app resources (writeable in simulator only)
+- `tempDirectory` - temporary files, OS may delete when app closes
 - `externalCacheDirectory` - Android SD card cache (check `isExternalStoragePresent()`)
-- `applicationCacheDirectory` - Cache data, persists but OS may clean
+- `applicationCacheDirectory` - cache data, persists but OS may clean it up
 
 ## 5. Sockets
 
-Titanium supports TCP socket connections via `Ti.Network.Socket`.
+Titanium supports TCP sockets via `Ti.Network.Socket`.
 
-### Creating a TCP Socket
+### Creating a TCP socket
 
 ```javascript
 const socket = Ti.Network.Socket.createTCP({
   host: 'example.com',
   port: 80,
-  connected: function(e) {
+  connected: function (e) {
     Ti.API.info('Socket connected');
     // Write data
     this.write(Ti.createBuffer({
@@ -235,77 +235,81 @@ const socket = Ti.Network.Socket.createTCP({
 socket.connect();
 ```
 
-### Socket Listening (Android/iOS)
+### Socket listening (Android/iOS)
 To create a socket server that accepts connections:
+
 ```javascript
 const listenSocket = Ti.Network.Socket.createTCP({
-    host: '127.0.0.1', // localhost
-    port: 40404,
-    accepted: (e) => {
-        Ti.API.info(`Incoming connection accepted: ${e.inbound}`);
-        e.inbound.close();
-    }
+  host: '127.0.0.1', // localhost
+  port: 40404,
+  accepted: (e) => {
+    Ti.API.info(`Incoming connection accepted: ${e.inbound}`);
+    e.inbound.close();
+  }
 });
 listenSocket.listen();
 listenSocket.accept(); // Asynchronous, waits for next connection
 ```
 
-> **Platform Note**: On iOS, `Ti.Platform.address` returns the WiFi interface address. On Android, only the loopback address (`127.0.0.1`) is available for listening sockets.
+Platform note: on iOS, `Ti.Platform.address` returns the WiFi interface address. On Android, only the loopback address (`127.0.0.1`) is available for listening sockets.
 
-## 6. Dealing with SOAP Web Services
+## 6. Dealing with SOAP web services
 
-Although JSON is recommended, you can consume legacy SOAP services using a "low-tech" approach by sending the XML envelope manually.
+JSON is recommended, but you can consume legacy SOAP services by sending the XML envelope manually.
 
-### Manual Approach (SOAP Envelope)
+### Manual approach (SOAP envelope)
 ```javascript
 const client = Ti.Network.createHTTPClient();
 client.onload = () => {
-    const doc = client.responseXML.documentElement;
-    // Parse the response XML manually
+  const doc = client.responseXML.documentElement;
+  // Parse the response XML manually
 };
 
 const soapRequest = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n" +
-"<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"> \n" +
-"<SOAP-ENV:Body> \n" +
-"  <GetUserDetailsReq> \n" +
-"    <SessionToken>XXXX</SessionToken> \n" +
-"  </GetUserDetailsReq> \n" +
-"</SOAP-ENV:Body> \n" +
-"</SOAP-ENV:Envelope>";
+  "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"> \n" +
+  "<SOAP-ENV:Body> \n" +
+  "  <GetUserDetailsReq> \n" +
+  "    <SessionToken>XXXX</SessionToken> \n" +
+  "  </GetUserDetailsReq> \n" +
+  "</SOAP-ENV:Body> \n" +
+  "</SOAP-ENV:Envelope>";
 
 client.open('POST', 'https://server.com/service.asmx');
 client.setRequestHeader('Content-Type', 'text/xml; charset=utf-8');
 client.send({ xml: soapRequest });
 ```
 
-## 7. SSL Certificate & Security Manager
+## 7. SSL certificate and SecurityManager
 
-For robust security (SSL Pinning), use the `securityManager` property.
+For SSL pinning, use the `securityManager` property.
 
-### SSL Pinning (TiSDK 3.3.0+)
-Unlike standard certificate validation, Pinning ensures the app only communicates with a server having a specific certificate.
+### SSL pinning (TiSDK 3.3.0+)
+Pinning ensures the app only communicates with a server that presents a specific certificate.
 
 ```javascript
 const xhr = Ti.Network.createHTTPClient({
-    validatesSecureCertificate: true,
-    // securityManager allows implementing custom validation logic
-    securityManager: mySecurityModule
+  validatesSecureCertificate: true,
+  // securityManager allows custom validation logic
+  securityManager: mySecurityModule
 });
 ```
 
-### SSL Certificate Store (Android)
+### SSL certificate store (Android)
 ```javascript
 const certificateStore = require('ti.certificatestore');
 const httpClient = Ti.Network.createHTTPClient({
-    securityManager: certificateStore.createX509CertificatePinningSecurityManager([{
-        url: 'https://api.example.com',
-        serverCertificate: 'api_cert.der'
-    }])
+  securityManager: certificateStore.createX509CertificatePinningSecurityManager([
+    {
+      url: 'https://api.example.com',
+      serverCertificate: 'api_cert.der'
+    }
+  ])
 });
 ```
 
 ### Android: addTrustManager
-Allows adding custom certificates for development environments or private networks:
+Use this for development environments or private networks with custom certs.
+
 ```javascript
 const certificateStore = require('ti.certificatestore');
 const xhr = Ti.Network.createHTTPClient();
@@ -313,22 +317,23 @@ const xhr = Ti.Network.createHTTPClient();
 certificateStore.addCertificate('server.p12', 'password');
 xhr.addTrustManager(certificateStore.getTrustManager());
 
-xhr.open("GET", url);
+xhr.open('GET', url);
 xhr.send();
 ```
-## CORS Considerations for Mobile Web
+
+## 8. CORS considerations for Mobile Web
 
 For Mobile Web targets accessing cross-domain resources:
-- Enable CORS headers on server
+- Enable CORS headers on the server
 - Or configure a proxy service
 - Use custom `Ti.Network.httpURLFormatter`
 
-## Best Practices
+## Best practices
 
-1. **Always set timeouts** to prevent hanging requests
-2. **Handle both `onload` and `onerror`** - never assume success
-3. **Use progress callbacks** for large file operations
-4. **Save large downloads directly to disk** using `file` property (iOS) or `write()` to avoid memory exhaustion
-5. **For complex JSON**, validate schema before parsing
-6. **For XML**, always test with actual API response to verify node hierarchy
-7. **Use `onsendstream`/`ondatastream`** to provide user feedback during transfers
+1. Set timeouts to prevent hanging requests.
+2. Handle both `onload` and `onerror`.
+3. Use progress callbacks for large file operations.
+4. Save large downloads to disk using `file` (iOS) or `write()` to avoid memory exhaustion.
+5. For complex JSON, validate schema before parsing.
+6. For XML, test with real responses to verify node hierarchy.
+7. Use `onsendstream` and `ondatastream` for user feedback during transfers.

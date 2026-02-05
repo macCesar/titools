@@ -1,6 +1,6 @@
-# End-to-End Testing & CI/CD
+# End-to-end testing & CI/CD
 
-## Appium Setup
+## Appium setup
 
 ```bash
 # Install Appium
@@ -11,7 +11,7 @@ appium driver install xcuitest  # iOS
 appium driver install uiautomator2  # Android
 ```
 
-## Appium Configuration
+## Appium configuration
 
 ```javascript
 // e2e/config/capabilities.js
@@ -34,7 +34,7 @@ exports.android = {
 }
 ```
 
-## WebdriverIO Integration
+## Webdriverio integration
 
 ```javascript
 // e2e/wdio.conf.js
@@ -72,7 +72,7 @@ exports.config = {
 }
 ```
 
-## E2E Test Example
+## E2E test example
 
 ```javascript
 // e2e/specs/login.spec.js
@@ -125,7 +125,7 @@ describe('Login Flow', () => {
 })
 ```
 
-## Adding Accessibility IDs for Testing
+## Adding accessibility IDs for testing
 
 ```xml
 <!-- views/auth/login.xml -->
@@ -145,7 +145,7 @@ if (Alloy.CFG.debug) {
 }
 ```
 
-## Page Object Pattern
+## Page object pattern
 
 ```javascript
 // e2e/pages/LoginPage.js
@@ -184,9 +184,9 @@ describe('Login Flow', () => {
 })
 ```
 
-## CI/CD Integration
+## CI/CD integration
 
-### GitHub Actions Workflow
+### Github actions workflow
 
 ```yaml
 # .github/workflows/ci.yml
@@ -348,7 +348,7 @@ jobs:
           path: e2e/screenshots/
 ```
 
-## Fastlane Integration
+## Fastlane integration
 
 ```ruby
 # fastlane/Fastfile
@@ -389,7 +389,7 @@ platform :android do
 end
 ```
 
-## Package.json Scripts
+## Package.json scripts
 
 ```json
 {
@@ -408,25 +408,25 @@ end
 }
 ```
 
-## Branch Protection Rules
+## Branch protection rules
 
 Configure in GitHub repository settings:
 
-| Rule                              | Setting                                    |
+| Rule | Setting |
 | --------------------------------- | ------------------------------------------ |
-| Require pull request reviews      | 1 approval required                        |
-| Require status checks             | lint, unit-tests, build-ios, build-android |
-| Require branches to be up to date | Yes                                        |
-| Include administrators            | Yes                                        |
+| Require pull request reviews | 1 approval required |
+| Require status checks | lint, unit-tests, build-ios, build-android |
+| Require branches to be up to date | Yes |
+| Include administrators | Yes |
 
-## Testing Best Practices Summary
+## Testing best practices summary
 
-| Area                  | Practice                                   |
+| Area | Practice |
 | --------------------- | ------------------------------------------ |
-| **Unit Tests**        | Test business logic in services/helpers    |
+| **Unit Tests** | Test business logic in services/helpers |
 | **Integration Tests** | Test controller flows with mocked services |
-| **E2E Tests**         | Test critical user journeys                |
-| **Coverage**          | Aim for 80%+ on services, 60%+ overall     |
-| **CI Pipeline**       | Run lint -> unit tests -> build -> E2E     |
-| **Artifacts**         | Save screenshots on failure                |
-| **Notifications**     | Slack/email on build failures              |
+| **E2E Tests** | Test critical user journeys |
+| **Coverage** | Aim for 80%+ on services, 60%+ overall |
+| **CI Pipeline** | Run lint -> unit tests -> build -> E2E |
+| **Artifacts** | Save screenshots on failure |
+| **Notifications** | Slack/email on build failures |

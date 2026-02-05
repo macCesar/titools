@@ -1,66 +1,59 @@
-# JavaScript Development Primer
+# JavaScript development primer
 
 Essential JavaScript concepts, resources, and best practices for Titanium development.
 
-1. [JavaScript Overview](#javascript-overview)
-2. [Learning Resources](#learning-resources)
-3. [Best Practices](#best-practices)
-4. [Common Patterns](#common-patterns)
+## JavaScript overview
 
----
+JavaScript is the language of Titanium. It is lightweight and dynamic, with object-oriented and functional features.
 
-## JavaScript Overview
-
-JavaScript is the language of Titanium. It's a powerful, lightweight, dynamic object-oriented programming language.
-
-**Why JavaScript for Titanium?**
-- One of the most widely deployed languages (every web browser)
-- Large community of developers
+Why JavaScript for Titanium?
+- Widely deployed (every web browser)
+- Large community
 - Dynamic typing with duck typing
 - Functional programming support
 - Convenient object literal notation
 - Closures for encapsulation
 - Small learning curve
 
-**JavaScript in Titanium:**
-- No DOM manipulation (that's web-specific)
-- Access to native APIs via Titanium namespace
+JavaScript in Titanium:
+- No DOM manipulation (that is web-specific)
+- Access to native APIs via the Titanium namespace
 - ECMAScript 5/6 compliant
-- Same JavaScript you use in web, but targeting mobile apps
+- Same JavaScript you use on the web, but targeting mobile apps
 
 ---
 
-## Learning Resources
+## Learning resources
 
-### Online Courses
+### Online courses
 
-- **[Codecademy](https://www.codecademy.com/learn/introduction-to-javascript)** - Interactive JavaScript tutorials
-- **[Stanford CS101](http://www.stanford.edu/class/cs101/)** - Uses JavaScript, lecture notes and projects available
-- **[edX](https://www.edx.org/learn/javascript)** - Free courses from top universities
+- Codecademy: https://www.codecademy.com/learn/introduction-to-javascript
+- Stanford CS101: http://www.stanford.edu/class/cs101/
+- edX: https://www.edx.org/learn/javascript
 
-### Online Books & References
+### Online books and references
 
-- **[Eloquent JavaScript](https://eloquentjavascript.net/)** - Excellent learning resource (free online, or buy the book)
-- **[MDN JavaScript Guide](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide)** - Comprehensive JavaScript documentation
-- **[Douglas Crockford's Resources](http://javascript.crockford.com/)** - From the creator of JSON and JSLint
-- **[JavaScript in 10 Minutes](https://github.com/spencertipping/js-in-ten-minutes)** - Dense advanced guide
-- **[Google JavaScript Style Guide](https://google.github.io/styleguide/jsguide.html)** - Code style guidelines
-- **[Learning Advanced JavaScript](http://ejohn.org/apps/learn/)** - By John Resig (jQuery creator)
+- Eloquent JavaScript: https://eloquentjavascript.net/
+- MDN JavaScript Guide: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide
+- Douglas Crockford's resources: http://javascript.crockford.com/
+- JavaScript in 10 Minutes: https://github.com/spencertipping/js-in-ten-minutes
+- Google JavaScript Style Guide: https://google.github.io/styleguide/jsguide.html
+- Learning Advanced JavaScript: http://ejohn.org/apps/learn/
 
-### Print Books (Recommended)
+### Print books (recommended)
 
-- **JavaScript: The Good Parts** (Douglas Crockford) - ESSENTIAL
-- **JavaScript: The Definitive Guide** (David Flanagan) - Complete reference
-- **JavaScript Patterns** (Stoyan Stefanov) - Design patterns
-- **Eloquent JavaScript** (Marijn Haverbeke) - Also available free online
+- JavaScript: The Good Parts (Douglas Crockford)
+- JavaScript: The Definitive Guide (David Flanagan)
+- JavaScript Patterns (Stoyan Stefanov)
+- Eloquent JavaScript (Marijn Haverbeke)
 
 ---
 
-## Best Practices
+## Best practices
 
-### Don't Pollute the Global Scope
+### Do not pollute the global scope
 
-**BAD:** Everything in global scope
+Bad: everything in global scope
 ```javascript
 const key = 'value';
 const foo = 'bar';
@@ -75,9 +68,9 @@ function info(msg) {
 }
 ```
 
-**GOOD:** Single namespace
+Good: single namespace
 ```javascript
-const myapp = {};  // Only ONE global variable
+const myapp = {};  // Only one global variable
 
 myapp.key = 'value';
 
@@ -100,9 +93,9 @@ myapp.dosomething = (foo) => {
 myapp.info('Hello World');
 ```
 
-### Use Strict Equality
+### Use strict equality
 
-**BAD:** `==` converts types
+Bad: `==` converts types
 ```javascript
 const testme = '1';
 if (testme == 1) {
@@ -110,7 +103,7 @@ if (testme == 1) {
 }
 ```
 
-**GOOD:** `===` checks both type and value
+Good: `===` checks both type and value
 ```javascript
 const testme = '1';
 if (testme === 1) {
@@ -118,9 +111,9 @@ if (testme === 1) {
 }
 ```
 
-### Efficient Loops
+### Efficient loops
 
-**BAD:** Checks array.length every iteration
+Bad: checks `array.length` every iteration
 ```javascript
 const names = ['Jeff', 'Nolan', 'Marshall', 'Don'];
 for (let i = 0; i < names.length; i++) {
@@ -128,7 +121,7 @@ for (let i = 0; i < names.length; i++) {
 }
 ```
 
-**GOOD:** Cache length
+Good: cache length
 ```javascript
 const names = ['Jeff', 'Nolan', 'Marshall', 'Don'];
 for (let i = 0, j = names.length; i < j; i++) {
@@ -136,33 +129,33 @@ for (let i = 0, j = names.length; i < j; i++) {
 }
 ```
 
-This is especially important when working with Titanium proxy objects (representing native OS structures), where checking length on each iteration has additional overhead.
+This is especially important with Titanium proxy objects, where checking length on each iteration has extra overhead.
 
-**Even better:** ES6 `for...of`
+Even better: ES6 `for...of`
 ```javascript
 for (const name of names) {
     process(name);
 }
 ```
 
-### Use var/let/const Correctly
+### Use var/let/const correctly
 
 ```javascript
-// ES5: Use var (function-scoped)
+// ES5: use var (function-scoped)
 var x = 10;
 
-// ES6+: Use let and const (block-scoped)
+// ES6+: use let and const (block-scoped)
 let y = 20;        // Can be reassigned
 const z = 30;       // Cannot be reassigned
 ```
 
 ---
 
-## Common Patterns
+## Common patterns
 
-### Ternary Operator
+### Ternary operator
 
-Compact conditional assignment. Value after `?` is assigned if the condition is true; value after `:` if false.
+Compact conditional assignment. Value after `?` is used if the condition is true; value after `:` if false.
 
 ```javascript
 // Instead of this:
@@ -177,7 +170,7 @@ if (somecondition === somevalue) {
 const xyz = (somecondition === somevalue) ? 'abc' : '123';
 ```
 
-### Multiple Variable Declarations
+### Multiple variable declarations
 
 Use commas instead of multiple `var` statements:
 
@@ -193,18 +186,18 @@ const foo = true,
     great = 42;
 ```
 
-### Self-Calling Functions (IIFE)
+### Self-calling functions (IIFE)
 
 Encapsulate private variables and functions:
 
-**Ambiguous (not recommended):**
+Ambiguous (not recommended):
 ```javascript
 const myValue = (() => {
     return someValue;
 })();  // Looks like assigning function, not result
 ```
 
-**Clear (recommended):**
+Clear (recommended):
 ```javascript
 const myValue = (() => {
     // Private variables here
@@ -214,11 +207,11 @@ const myValue = (() => {
 })();  // Clearly returns result, not function
 ```
 
-### CommonJS Modules
+### CommonJS modules
 
 Use `require()` for modular code:
 
-**myModule.js:**
+myModule.js:
 ```javascript
 // Private
 const privateData = 'secret';
@@ -234,7 +227,7 @@ exports.publicMethod = () => {
 };
 ```
 
-**app.js:**
+app.js:
 ```javascript
 const myModule = require('myModule');
 myModule.publicMethod();
@@ -242,11 +235,11 @@ myModule.publicMethod();
 
 ---
 
-## ES6+ Features in Titanium
+## ES6+ features in Titanium
 
-Titanium supports modern JavaScript (ES6/ES7+). Use these features:
+Titanium supports modern JavaScript (ES6/ES7+). Use these features.
 
-**Arrow Functions:**
+Arrow functions:
 ```javascript
 // Old
 const self = this;
@@ -260,7 +253,7 @@ someArray.forEach((item) => {
 });
 ```
 
-**Template Literals:**
+Template literals:
 ```javascript
 // Old
 const message = 'Hello ' + name + ', you have ' + count + ' messages';
@@ -269,7 +262,7 @@ const message = 'Hello ' + name + ', you have ' + count + ' messages';
 const message = `Hello ${name}, you have ${count} messages`;
 ```
 
-**Destructuring:**
+Destructuring:
 ```javascript
 // Old
 const width = e.source.size.width;
@@ -279,17 +272,17 @@ const height = e.source.size.height;
 const {width, height} = e.source.size;
 ```
 
-**Spread Operator:**
+Spread operator:
 ```javascript
 // Old
 const arr = [1, 2, 3];
 const arr2 = arr.concat([4, 5]);
 
 // New
-var arr2 = [...arr, 4, 5];
+const arr2 = [...arr, 4, 5];
 ```
 
-**Classes:**
+Classes:
 ```javascript
 class Person {
     constructor(name) {
@@ -304,19 +297,19 @@ class Person {
 
 ---
 
-## Gotchas to Avoid
+## Gotchas to avoid
 
-### Variable Hoisting
+### Variable hoisting
 
-**Problem:** Variables are hoisted to function scope
+Problem: variables are hoisted to function scope.
 ```javascript
 function test() {
-    console.log(myVar);  // undefined (not error!)
+    console.log(myVar);  // undefined (not error)
     var myVar = 'value';
 }
 ```
 
-**Solution:** Declare variables at top of function
+Solution: declare variables at the top of the function.
 ```javascript
 function test() {
     let myVar;  // Declare first
@@ -325,88 +318,77 @@ function test() {
 }
 ```
 
-### Global Variable Accidents
+### Global variable accidents
 
-**Problem:** Forgetting `var` creates global variable
+Problem: forgetting `var` creates a global variable.
 ```javascript
 function test() {
-    myVar = 'value';  // Creates GLOBAL variable!
+    myVar = 'value';  // Creates a global variable
 }
 ```
 
-**Solution:** Always use `var`, `let`, or `const`
+Solution: always use `var`, `let`, or `const`.
 ```javascript
 function test() {
-    const myVar = 'value';  // Local variable
+    const myVar = 'value';
 }
 ```
 
-### The `this` Context
+### The `this` context
 
-**Problem:** `this` changes in different contexts
+Problem: `this` changes in different contexts.
 ```javascript
 const obj = {
     value: 42,
     getValue: function() {
         setTimeout(function() {
-            console.log(this.value);  // undefined!
+            console.log(this.value);  // undefined
         }, 100);
     }
 };
 ```
 
-**Solution 1:** Store `this`
+Solution 1: store `this`.
 ```javascript
 const obj = {
     value: 42,
     getValue: function() {
         const self = this;
         setTimeout(function() {
-            console.log(self.value);  // Works!
+            console.log(self.value);  // Works
         }, 100);
     }
 };
 ```
 
-**Solution 2:** Arrow function (ES6)
+Solution 2: arrow function (ES6).
 ```javascript
 const obj = {
     value: 42,
     getValue() {
         setTimeout(() => {
-            console.log(this.value);  // Works!
+            console.log(this.value);  // Works
         }, 100);
     }
 };
 ```
 
-### Semicolon Insertion
+### Semicolon insertion
 
-JavaScript automatically inserts semicolons, but can cause bugs:
+JavaScript automatically inserts semicolons and can cause bugs.
 
-**Dangerous:**
+Dangerous:
 ```javascript
 return
 {
     name: 'Test'
 };
-// Returns undefined!
+// Returns undefined
 ```
 
-**Safe:**
+Safe:
 ```javascript
 return {
     name: 'Test'
 };
-// Or put opening brace on same line
-return { name: 'Test' };
 ```
-
----
-
-## Resources
-
-- **Alloy Framework:** See `alloy-guides` skill
-- **CommonJS Modules:** See `commonjs-advanced.md`
-- **Coding Best Practices:** See `coding-best-practices.md`
-- **Style Guide:** See `style-and-conventions.md`

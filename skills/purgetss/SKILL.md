@@ -117,15 +117,15 @@ purgetss create 'MyApp' -d -v fa
 # -v: Copy icon fonts (fa, mi, ms, f7)
 ```
 
-## What's New in v7.3.x (Key Notes)
+## What's New in v7.3.x
 
 - `tailwind.tss` was renamed to `utilities.tss` (update any scripts or references).
-- XML syntax validation now runs before processing and reports line-level errors (e.g., missing `<`).
+- XML syntax validation now runs before processing and reports line-level errors (for example, missing `<`).
 - `deviceInfo()` works in both Alloy and Classic (no `Alloy.isTablet`/`Alloy.isHandheld` dependency).
 - Node.js 20+ is required.
 - Font Awesome 7 is supported, including the new `--fa:` CSS custom properties.
 - VS Code: `KevinYouu.tailwind-raw-reorder-tw4` is recommended for class ordering.
-- If upgrades act weird, try: `npm uninstall -g purgetss && npm install -g purgetss`.
+- If you hit issues after upgrading, try: `npm uninstall -g purgetss && npm install -g purgetss`.
 
 :::tip NEW PROJECT: Clean Up Default app.tss
 For new projects created with `purgetss create`, the default `app/styles/app.tss` contains a large commented template.

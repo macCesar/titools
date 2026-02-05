@@ -1,6 +1,6 @@
-# Migration Patterns for Legacy Titanium Apps
+# Migration patterns for legacy Titanium apps
 
-## Assessment Checklist
+## Assessment checklist
 
 Before migrating, evaluate the current codebase:
 
@@ -12,11 +12,11 @@ Before migrating, evaluate the current codebase:
 | Navigation  | Direct `Alloy.createController().getView().open()` | Navigation service                            |
 | Data        | Scattered `Ti.App.Properties`, no collections      | Centralized state + Collections               |
 
-## Phase 1: TSS Organization
+## Phase 1: TSS organization
 
 **Goal**: Migrate from inline styling and scattered styles to well-organized TSS files.
 
-### Step 1: Audit Existing Styles
+### Step 1: audit existing styles
 
 Find all inline attributes and consolidate into TSS files:
 ```bash
@@ -26,7 +26,7 @@ grep -r 'font=' app/views/
 grep -r 'color=' app/views/
 ```
 
-### Step 2: Move Inline Attributes to TSS
+### Step 2: move inline attributes to TSS
 
 ```xml
 <!-- BEFORE: Inline attributes -->
@@ -48,7 +48,7 @@ grep -r 'color=' app/views/
 "#title": { color: "#333", font: { fontSize: 18, fontWeight: "bold" } }
 ```
 
-### Step 3: Organize TSS Structure
+### Step 3: organize TSS structure
 
 1. Use `app.tss` for global styles (shared across all views)
 2. Use per-controller TSS files for view-specific styles
@@ -59,11 +59,11 @@ grep -r 'color=' app/views/
 ".btn-primary": { backgroundColor: '#2563eb', color: '#fff', height: 44, borderRadius: 8 }
 ```
 
-## Phase 2: Service Layer Extraction
+## Phase 2: service layer extraction
 
 **Goal**: Move business logic from controllers to services.
 
-### Identify Fat Controllers
+### Identify fat controllers
 
 Signs of a fat controller:
 - API calls with `Ti.Network.createHTTPClient`
@@ -71,7 +71,7 @@ Signs of a fat controller:
 - Native module interactions
 - 100+ lines of code
 
-### Extract to Services
+### Extract to services
 
 ```javascript
 // BEFORE: Fat controller
@@ -117,18 +117,18 @@ async function loadProfile() {
 }
 ```
 
-## Phase 3: Event System Migration
+## Phase 3: event system migration
 
 **Goal**: Replace `Ti.App.fireEvent` with Backbone.Events.
 
-### Step 1: Create Event Bus
+### Step 1: create event bus
 
 ```javascript
 // alloy.js
 Alloy.Events = _.clone(Backbone.Events)
 ```
 
-### Step 2: Find All Ti.App Event Usage
+### Step 2: find all Ti.App event usage
 
 ```bash
 # Find all Ti.App.fireEvent calls
@@ -136,7 +136,7 @@ grep -r "Ti.App.fireEvent" app/controllers/
 grep -r "Ti.App.addEventListener" app/controllers/
 ```
 
-### Step 3: Migrate Events
+### Step 3: migrate events
 
 ```javascript
 // BEFORE: Ti.App events (memory leaks, no cleanup)
@@ -151,7 +151,7 @@ Alloy.Events.on('user:updated', onUserUpdated)
 Alloy.Events.off('user:updated', onUserUpdated)
 ```
 
-### Step 4: Add Cleanup Functions
+### Step 4: add cleanup functions
 
 Every controller that listens to events needs cleanup:
 
@@ -171,11 +171,11 @@ function cleanup() {
 $.cleanup = cleanup
 ```
 
-## Phase 4: Navigation Service
+## Phase 4: navigation service
 
 **Goal**: Centralize navigation with automatic cleanup.
 
-### Step 1: Create Navigation Service
+### Step 1: create navigation service
 
 ```javascript
 // lib/services/navigation.js
@@ -216,7 +216,7 @@ exports.getStack = function() {
 }
 ```
 
-### Step 2: Replace Direct Navigation
+### Step 2: replace direct navigation
 
 ```javascript
 // BEFORE: Direct navigation (no cleanup)
@@ -227,22 +227,22 @@ const navigation = require('services/navigation')
 navigation.open('detail', { id: 123 })
 ```
 
-## Phase 5: State Management
+## Phase 5: state management
 
 **Goal**: Centralize app state for consistency.
 
-### Step 1: Identify Scattered State
+### Step 1: identify scattered state
 
 Look for:
 - `Ti.App.Properties.getString/setString` scattered across controllers
 - `Alloy.Globals` for sharing data
 - Direct collection access from multiple controllers
 
-### Step 2: Create State Store
+### Step 2: create state store
 
 See [state-management.md](state-management.md) for full implementation.
 
-### Step 3: Migrate State Access
+### Step 3: migrate state access
 
 ```javascript
 // BEFORE: Scattered state
@@ -261,7 +261,7 @@ appStore.setState({ user })
 const { user } = appStore.getState()
 ```
 
-## Migration Order
+## Migration order
 
 Recommended sequence to minimize risk:
 
@@ -271,7 +271,7 @@ Recommended sequence to minimize risk:
 4. **Event System** - Replace Ti.App events
 5. **State Management** - Last, as it touches everything
 
-## Rollback Strategy
+## Rollback strategy
 
 For each phase:
 
@@ -289,7 +289,7 @@ For each phase:
 Alloy.Events.trigger('user:updated', data)
 ```
 
-## Common Migration Pitfalls
+## Common migration pitfalls
 
 | Pitfall                          | Consequence         | Prevention                           |
 | -------------------------------- | ------------------- | ------------------------------------ |

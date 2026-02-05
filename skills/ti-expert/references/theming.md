@@ -1,10 +1,10 @@
-# Theming & Dark Mode
+# Theming & dark mode
 
-## Alloy Theme System
+## Alloy theme system
 
 Alloy has a built-in theme system via the `app/themes/` folder. Themes override views, styles, and assets without modifying originals.
 
-### Theme Folder Structure
+### Theme folder structure
 
 ```
 app/
@@ -26,7 +26,7 @@ app/
 ├── config.json
 ```
 
-### Activating a Theme
+### Activating a theme
 
 Set the theme in `config.json`:
 
@@ -45,7 +45,7 @@ Set the theme in `config.json`:
 Alloy themes are applied at **build time**. You cannot switch themes at runtime using this system alone. For runtime switching, use the Dynamic Theming approach below.
 :::
 
-### Theme Cascade
+### Theme cascade
 
 When a theme is active, Alloy merges files in this order:
 1. `app/styles/app.tss` (base)
@@ -53,15 +53,15 @@ When a theme is active, Alloy merges files in this order:
 3. `app/styles/<controller>.tss` (controller-specific)
 4. `app/themes/<theme>/styles/<controller>.tss` (theme + controller override)
 
-Theme files **merge** with base files — you only need to include properties you want to override.
+Theme files **merge** with base files , you only need to include properties you want to override.
 
 ---
 
-## Dynamic Theming with Alloy.Globals
+## Dynamic theming with Alloy.Globals
 
 For runtime theme switching (including Dark Mode), use `Alloy.Globals` as a centralized color palette.
 
-### Step 1: Define Color Palette
+### Step 1: define color palette
 
 ```javascript
 // alloy.js
@@ -98,7 +98,7 @@ Alloy.Globals.theme = themes[savedTheme]
 Alloy.Globals.themeName = savedTheme
 ```
 
-### Step 2: Use in TSS with Alloy.Globals
+### Step 2: use in TSS with Alloy.Globals
 
 ```tss
 /* app.tss - Global base styles using theme colors */
@@ -134,7 +134,7 @@ Alloy.Globals.themeName = savedTheme
 }
 ```
 
-### Step 3: Theme Switching Service
+### Step 3: theme switching service
 
 ```javascript
 // lib/services/themeService.js
@@ -176,7 +176,7 @@ exports.ThemeService = {
 }
 ```
 
-### Step 4: Respond to Theme Changes in Controllers
+### Step 4: respond to theme changes in controllers
 
 :::warning Theme change requires UI rebuild
 Since TSS is applied at controller creation time, changing `Alloy.Globals.theme` does NOT retroactively update already-rendered views. You must manually update visible elements or restart the root controller.
@@ -233,7 +233,7 @@ $.cleanup = cleanup
 
 ---
 
-## System Dark Mode Detection
+## System dark mode detection
 
 ### iOS 13+ / Android 10+
 
@@ -263,7 +263,7 @@ exports.ThemeService = {
 }
 ```
 
-### Semantic Colors (Cross-Platform)
+### Semantic colors (Cross-Platform)
 
 Titanium provides a cross-platform semantic colors API for Dark Mode support. Define colors in a `semantic.colors.json` file:
 
@@ -329,7 +329,7 @@ $.container.backgroundColor = 'backgroundColor';
 
 ---
 
-## Reusable Style Classes Pattern
+## Reusable style classes pattern
 
 Define a library of reusable TSS classes in `app.tss` for consistency across the app:
 
@@ -410,7 +410,7 @@ Define a library of reusable TSS classes in `app.tss` for consistency across the
 ".mx-lg": { left: 24, right: 24 }
 ```
 
-### Using Style Classes in Views
+### Using style classes in views
 
 ```xml
 <Alloy>

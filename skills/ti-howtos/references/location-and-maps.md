@@ -1,66 +1,66 @@
-# Location Services and Maps
+# Location services and maps
 
-## 1. GPS Position Tracking
+## 1. GPS position tracking
 
 ### FusedLocationProvider (Android)
 Since TiSDK 7.1.0, Titanium supports `FusedLocationProvider` for significant battery savings.
-**Requirement**: Include the `ti.playservices` module in your project.
+Requirement: include the `ti.playservices` module in your project.
 
-### Accuracy Configuration
+### Accuracy configuration
 
-**iOS Accuracy Levels:**
-- `ACCURACY_BEST` - Highest power (GPS)
-- `ACCURACY_NEAREST_TEN_METERS` - Medium-high power
-- `ACCURACY_HUNDRED_METERS` - Medium power
-- `ACCURACY_KILOMETER` - Low power
-- `ACCURACY_THREE_KILOMETERS` - Lowest power (cell/wifi)
+iOS accuracy levels:
+- `ACCURACY_BEST` - highest power (GPS)
+- `ACCURACY_NEAREST_TEN_METERS` - medium-high power
+- `ACCURACY_HUNDRED_METERS` - medium power
+- `ACCURACY_KILOMETER` - low power
+- `ACCURACY_THREE_KILOMETERS` - lowest power (cell/wifi)
 
-**Key Properties:**
+Key properties:
 ```javascript
 Ti.Geolocation.accuracy = Ti.Geolocation.ACCURACY_BEST;
 Ti.Geolocation.distanceFilter = 10; // meters - only fire if moved X meters
-Ti.Geolocation.headingFilter = 5;   // degrees - only fire if heading changed X degrees
+Ti.Geolocation.headingFilter = 5; // degrees - only fire if heading changed X degrees
 Ti.Geolocation.preferredProvider = Ti.Geolocation.PROVIDER_GPS; // or PROVIDER_NETWORK
 ```
 
-> **Note**: On many Android devices, a low-precision "passive" location provider is always enabled, even when the user disables GPS and Network providers. Therefore `Ti.Geolocation.locationServicesEnabled` may always return `true` on these devices.
+Note: on many Android devices, a low-precision passive location provider is always enabled, even when the user disables GPS and Network providers. `Ti.Geolocation.locationServicesEnabled` may always return `true` on those devices.
 
-### Android Configuration Modes
+### Android configuration modes
 
-**Simple Mode** (ACCURACY_HIGH/LOW):
+Simple mode (ACCURACY_HIGH/LOW):
 ```javascript
 Ti.Geolocation.accuracy = Ti.Geolocation.ACCURACY_HIGH;
 ```
 
-**Manual Mode** (fine-grained control):
+Manual mode (fine-grained control):
 ```javascript
 const providerGps = Ti.Geolocation.Android.createLocationProvider({
-    name: Ti.Geolocation.PROVIDER_GPS,
-    minUpdateDistance: 0.0,
-    minUpdateTime: 0
+  name: Ti.Geolocation.PROVIDER_GPS,
+  minUpdateDistance: 0.0,
+  minUpdateTime: 0
 });
 Ti.Geolocation.Android.addLocationProvider(providerGps);
 Ti.Geolocation.Android.manualMode = true;
 ```
 
-### Location Permissions
+### Location permissions
 
 ```javascript
 // Check permissions
 if (Ti.Geolocation.hasLocationPermissions(Ti.Geolocation.AUTHORIZATION_WHEN_IN_USE)) {
-    startTracking();
+  startTracking();
 } else {
-    Ti.Geolocation.requestLocationPermissions(Ti.Geolocation.AUTHORIZATION_WHEN_IN_USE, (e) => {
-        if (e.success) {
-            startTracking();
-        } else {
-            Ti.API.error(`Permission denied: ${e.error}`);
-        }
-    });
+  Ti.Geolocation.requestLocationPermissions(Ti.Geolocation.AUTHORIZATION_WHEN_IN_USE, (e) => {
+    if (e.success) {
+      startTracking();
+    } else {
+      Ti.API.error(`Permission denied: ${e.error}`);
+    }
+  });
 }
 ```
 
-**iOS plist keys** (tiapp.xml):
+iOS plist keys (tiapp.xml):
 ```xml
 <key>NSLocationWhenInUseUsageDescription</key>
 <string>We need your location to show nearby places</string>
@@ -69,58 +69,58 @@ if (Ti.Geolocation.hasLocationPermissions(Ti.Geolocation.AUTHORIZATION_WHEN_IN_U
 <string>We need background location for navigation</string>
 ```
 
-> **Note (iOS 11+)**: You must include `NSLocationAlwaysAndWhenInUseUsageDescription` even when requesting "Always" permission. Users can still choose "When in Use" even if your app requests "Always".
+Note (iOS 11+): you must include `NSLocationAlwaysAndWhenInUseUsageDescription` even when requesting "Always" permission. Users can still choose "When in Use".
 
-### One-Time Position
+### One-time position
 
 ```javascript
 if (Ti.Geolocation.locationServicesEnabled) {
-    Ti.Geolocation.getCurrentPosition((e) => {
-        if (e.error) {
-            Ti.API.error(`Error: ${e.error}`);
-        } else {
-            const coords = e.coords;
-            // { latitude, longitude, altitude, accuracy, heading, speed, timestamp }
-        }
-    });
+  Ti.Geolocation.getCurrentPosition((e) => {
+    if (e.error) {
+      Ti.API.error(`Error: ${e.error}`);
+    } else {
+      const coords = e.coords;
+      // { latitude, longitude, altitude, accuracy, heading, speed, timestamp }
+    }
+  });
 }
 ```
 
-### Continuous Monitoring
+### Continuous monitoring
 
 ```javascript
 Ti.Geolocation.addEventListener('location', (e) => {
-    if (e.error) {
-        Ti.API.error(`Error: ${e.error}`);
-    } else {
-        Ti.API.info(`${e.coords.latitude}, ${e.coords.longitude}`);
-    }
+  if (e.error) {
+    Ti.API.error(`Error: ${e.error}`);
+  } else {
+    Ti.API.info(`${e.coords.latitude}, ${e.coords.longitude}`);
+  }
 });
 ```
 
-### Lifecycle Management (Critical for Battery)
+### Lifecycle management (critical for battery)
 
-**Android Activity Events:**
+Android Activity events:
 ```javascript
 let locationAdded = false;
 const handleLocation = (e) => {
-    if (!e.error) {
-        Ti.API.info(e.coords);
-    }
+  if (!e.error) {
+    Ti.API.info(e.coords);
+  }
 };
 
 function addHandler() {
-    if (!locationAdded) {
-        Ti.Geolocation.addEventListener('location', handleLocation);
-        locationAdded = true;
-    }
+  if (!locationAdded) {
+    Ti.Geolocation.addEventListener('location', handleLocation);
+    locationAdded = true;
+  }
 }
 
 function removeHandler() {
-    if (locationAdded) {
-        Ti.Geolocation.removeEventListener('location', handleLocation);
-        locationAdded = false;
-    }
+  if (locationAdded) {
+    Ti.Geolocation.removeEventListener('location', handleLocation);
+    locationAdded = false;
+  }
 }
 
 // Add listeners
@@ -128,144 +128,140 @@ addHandler();
 
 const activity = Ti.Android.currentActivity;
 activity.addEventListener('destroy', removeHandler);
-activity.addEventListener('pause', removeHandler);   // Stop when in background
-activity.addEventListener('resume', addHandler);     // Resume when foreground
+activity.addEventListener('pause', removeHandler); // Stop when in background
+activity.addEventListener('resume', addHandler); // Resume when foreground
 ```
 
-### Compass/Heading
+### Compass/heading
 
 ```javascript
 // One-time heading
 Ti.Geolocation.getCurrentHeading((e) => {
-    Ti.API.info(e.heading.magneticHeading); // degrees from magnetic north
-    Ti.API.info(e.heading.trueHeading);     // degrees from true north
+  Ti.API.info(e.heading.magneticHeading); // degrees from magnetic north
+  Ti.API.info(e.heading.trueHeading); // degrees from true north
 });
 
 // Continuous heading monitoring
 Ti.Geolocation.addEventListener('heading', (e) => {
-    if (!e.error) {
-        Ti.API.info(`Heading: ${e.heading.magneticHeading}`);
-    }
+  if (!e.error) {
+    Ti.API.info(`Heading: ${e.heading.magneticHeading}`);
+  }
 });
 ```
 
 The heading event object includes:
-- `heading.magneticHeading` — degrees relative to magnetic north
-- `heading.trueHeading` — degrees relative to true north (requires location)
-- `heading.accuracy` — deviation in degrees (lower is better)
-- `heading.x`, `heading.y`, `heading.z` — raw magnetometer data (microteslas)
-
----
+- `heading.magneticHeading` - degrees relative to magnetic north
+- `heading.trueHeading` - degrees relative to true north (requires location)
+- `heading.accuracy` - deviation in degrees (lower is better)
+- `heading.x`, `heading.y`, `heading.z` - raw magnetometer data (microteslas)
 
 ## Geocoding
 
-### Forward Geocoding (Address → Coordinates)
+### Forward geocoding (address → coordinates)
 
 ```javascript
 Ti.Geolocation.forwardGeocoder('440 Bernardo Ave Mountain View CA', (e) => {
-    if (e.success) {
-        Ti.API.info(`Lat: ${e.latitude}, Lon: ${e.longitude}`);
-    }
+  if (e.success) {
+    Ti.API.info(`Lat: ${e.latitude}, Lon: ${e.longitude}`);
+  }
 });
 ```
 
-**With error handling:**
+With error handling:
 ```javascript
 Ti.Geolocation.forwardGeocoder('1600 Amphitheatre Pkwy, Mountain View, CA', (e) => {
-    if (!e.success || e.error) {
-        Ti.API.error(`Geocoding failed: ${e.error}`);
-        return;
-    }
-    Ti.API.info(`Lat: ${e.latitude}, Lng: ${e.longitude}`);
+  if (!e.success || e.error) {
+    Ti.API.error(`Geocoding failed: ${e.error}`);
+    return;
+  }
+  Ti.API.info(`Lat: ${e.latitude}, Lng: ${e.longitude}`);
 });
 ```
 
-### Reverse Geocoding (Coordinates → Places)
+### Reverse geocoding (coordinates → places)
 
 ```javascript
 Ti.Geolocation.reverseGeocoder(37.389569, -122.050212, (e) => {
-    if (e.success) {
-        e.places.forEach((place) => {
-            Ti.API.info(place.address);   // Full address
-            Ti.API.info(place.city);      // City name
-            Ti.API.info(place.country);   // Country
-            Ti.API.info(place.zipcode);   // Postal code
-        });
-    }
+  if (e.success) {
+    e.places.forEach((place) => {
+      Ti.API.info(place.address); // Full address
+      Ti.API.info(place.city); // City name
+      Ti.API.info(place.country); // Country
+      Ti.API.info(place.zipcode); // Postal code
+    });
+  }
 });
 ```
 
-## 2. Native Maps (Platform-Specific Details)
+## 2. Native maps (platform-specific details)
 
 Due to the complexity of modern native maps, refer to the detailed guides:
 
-- [Google Maps v2 for Android](./google-maps-v2.md): API Keys configuration, Google Play Services, and advanced controls.
-- [iOS Map Kit](./ios-map-kit.md): 3D Camera, system buttons, and Info.plist configuration.
+- Google Maps v2 for Android: `google-maps-v2.md`
+- iOS Map Kit: `ios-map-kit.md`
 
----
+## Common map patterns
 
-## Common Map Patterns
-
-### Add Annotation After Map Creation
+### Add annotation after map creation
 
 ```javascript
 mapview.addAnnotation(annotation);
 ```
 
-### Remove Annotation
+### Remove annotation
 
 ```javascript
 mapview.removeAnnotation(annotation);
 ```
 
-### Remove All Annotations
+### Remove all annotations
 
 ```javascript
 mapview.removeAllAnnotations();
 ```
 
-### Select Annotation Programmatically
+### Select annotation programmatically
 
 ```javascript
 mapview.selectAnnotation(annotation);
 ```
 
-### Deselect Annotation
+### Deselect annotation
 
 ```javascript
 mapview.deselectAnnotation(annotation);
 ```
 
-### Set Region with Animation
+### Set region with animation
 
 ```javascript
 mapview.setLocation({
-    latitude: 37.389569,
-    longitude: -122.050212,
-    animate: true
+  latitude: 37.389569,
+  longitude: -122.050212,
+  animate: true
 });
 
 // Or for region
 mapview.setRegion({
-    latitude: 37.389569,
-    longitude: -122.050212,
-    latitudeDelta: 0.05,
-    longitudeDelta: 0.05,
-    animate: true
+  latitude: 37.389569,
+  longitude: -122.050212,
+  latitudeDelta: 0.05,
+  longitudeDelta: 0.05,
+  animate: true
 });
 ```
 
-### Zoom to Annotations
+### Zoom to annotations
 
 ```javascript
-mapview.showAnnotations([annotation1, annotation2], true);  // true = animate
+mapview.showAnnotations([annotation1, annotation2], true); // true = animate
 ```
 
-### Best Practices
+### Best practices
 
-1. **Battery Life**: Always remove location listeners when not needed. Use `distanceFilter` to reduce updates.
-2. **Accuracy**: Use the lowest accuracy that meets your needs.
-3. **Permissions**: Check permissions before requesting location. Handle denial gracefully.
-4. **Maps on Android**: Only one map view per application (legacy). Use ti.map module for multiple views.
-5. **API Keys**: Google Maps API key required for Android (both debug and production).
-6. **User Location**: Requires location permissions (`NSLocationWhenInUseUsageDescription` for iOS).
+1. Battery life: remove location listeners when not needed. Use `distanceFilter` to reduce updates.
+2. Accuracy: use the lowest accuracy that meets your needs.
+3. Permissions: check permissions before requesting location. Handle denial gracefully.
+4. Maps on Android: only one map view per application (legacy). Use `ti.map` for multiple views.
+5. API keys: Google Maps API key required for Android (debug and production).
+6. User location: requires location permissions (`NSLocationWhenInUseUsageDescription` for iOS).

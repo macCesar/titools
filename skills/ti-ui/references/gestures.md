@@ -2,17 +2,17 @@
 
 ## 1. Overview
 
-Titanium supports various gestures beyond simple taps:
-- **Touch Events** - Low-level touch tracking
-- **Swipe** - Left/right drag gestures
-- **Pinch** - Zoom gestures (iOS only)
-- **Long Press** - Extended press gesture
-- **Shake** - Device shake detection
-- **Accelerometer** - Device orientation/movement
+Titanium supports more than simple taps.
+- Touch events for low-level tracking.
+- Swipe for left and right drags.
+- Pinch for zoom (iOS only).
+- Long press for extended presses.
+- Shake for device shake detection.
+- Accelerometer for device orientation and movement.
 
-## 2. Touch Events
+## 2. Touch events
 
-### Touch Lifecycle
+### Touch lifecycle
 
 ```javascript
 const view = Ti.UI.createView({
@@ -37,7 +37,7 @@ view.addEventListener('touchcancel', (e) => {
 });
 ```
 
-### Touch Event Properties
+### Touch event properties
 
 | Property      | Description                              |
 | ------------- | ---------------------------------------- |
@@ -45,13 +45,13 @@ view.addEventListener('touchcancel', (e) => {
 | `y`           | Y coordinate in view's coordinate system |
 | `globalPoint` | Screen coordinates (iOS only)            |
 
-### Android Note
+### Android note
 
-On Android, `longpress` and `swipe` cancel touch events - `touchend` may not fire after `touchstart`.
+On Android, `longpress` and `swipe` cancel touch events. `touchend` may not fire after `touchstart`.
 
-## 3. Swipe Gesture
+## 3. Swipe gesture
 
-### Basic Swipe
+### Basic swipe
 
 ```javascript
 const view = Ti.UI.createView({
@@ -66,7 +66,7 @@ view.addEventListener('swipe', (e) => {
 });
 ```
 
-### Swipe Direction Detection
+### Swipe direction detection
 
 ```javascript
 view.addEventListener('swipe', (e) => {
@@ -89,12 +89,12 @@ view.addEventListener('swipe', (e) => {
 });
 ```
 
-### Swipe vs Scroll
+### Swipe vs scroll
 
-- **Swipe**: Quick flick gesture (left/right mainly)
-- **Scroll**: Sustained drag gesture (up/down mainly)
+- Swipe is a quick flick, usually left or right.
+- Scroll is a sustained drag, usually up or down.
 
-## 4. Pinch Gesture (iOS Only)
+## 4. Pinch gesture (iOS only)
 
 ```javascript
 const view = Ti.UI.createView({
@@ -109,7 +109,7 @@ view.addEventListener('pinch', (e) => {
 });
 ```
 
-### Pinch to Zoom
+### Pinch to zoom
 
 ```javascript
 const imageView = Ti.UI.createImageView({
@@ -125,9 +125,9 @@ imageView.addEventListener('pinch', (e) => {
 });
 ```
 
-## 5. Long Press Gesture
+## 5. Long press gesture
 
-### Basic Long Press
+### Basic long press
 
 ```javascript
 const view = Ti.UI.createView({
@@ -141,9 +141,9 @@ view.addEventListener('longpress', (e) => {
 });
 ```
 
-### Long Press Duration
+### Long press duration
 
-Default long press duration varies by platform. Custom handling:
+Default duration varies by platform. You can roll your own:
 
 ```javascript
 let pressTimer = null;
@@ -171,9 +171,9 @@ view.addEventListener('touchmove', () => {
 });
 ```
 
-### Android Long Press Convention
+### Android long press convention
 
-On Android, long press typically shows context menu:
+On Android, long press usually shows a context menu:
 
 ```javascript
 view.addEventListener('longpress', (e) => {
@@ -193,9 +193,9 @@ view.addEventListener('longpress', (e) => {
 });
 ```
 
-## 6. Shake Gesture
+## 6. Shake gesture
 
-### Detecting Shake
+### Detecting shake
 
 ```javascript
 Ti.Gesture.addEventListener('shake', (e) => {
@@ -206,7 +206,7 @@ Ti.Gesture.addEventListener('shake', (e) => {
 });
 ```
 
-### Shake Example
+### Shake example
 
 ```javascript
 // Use shake to refresh data
@@ -225,15 +225,15 @@ function loadDataFromServer() {
 }
 ```
 
-### Testing Shake
+### Testing shake
 
-- **iOS Simulator**: Hardware > Shake Device
-- **Android Emulator**: Not supported - test on physical device
-- **Physical Device**: Just shake the device
+- iOS Simulator: Hardware > Shake Device
+- Android Emulator: not supported, test on physical device
+- Physical device: shake the device
 
-## 7. Accelerometer as Input
+## 7. Accelerometer as input
 
-### Basic Accelerometer
+### Basic accelerometer
 
 ```javascript
 const labelX = Ti.UI.createLabel({ text: 'X: 0' });
@@ -247,7 +247,7 @@ Ti.Accelerometer.addEventListener('update', (e) => {
 });
 ```
 
-### Accelerometer Properties
+### Accelerometer properties
 
 | Property    | Description         | Range                |
 | ----------- | ------------------- | -------------------- |
@@ -256,7 +256,7 @@ Ti.Accelerometer.addEventListener('update', (e) => {
 | `z`         | Z-axis acceleration | G-force              |
 | `timestamp` | When event occurred | Timestamp            |
 
-### Using Accelerometer for Control
+### Using accelerometer for control
 
 ```javascript
 const sensitivity = 2.0;
@@ -279,9 +279,9 @@ Ti.Accelerometer.addEventListener('update', (e) => {
 });
 ```
 
-### Smoothing Accelerometer Data
+### Smoothing accelerometer data
 
-Accelerometer data is very sensitive. Apply smoothing:
+Accelerometer data is noisy. Smooth it:
 
 ```javascript
 let samples = [];
@@ -305,13 +305,11 @@ Ti.Accelerometer.addEventListener('update', (e) => {
 });
 ```
 
-## 8. Gesture Lifecycle Management
+## 8. Gesture lifecycle management
 
-### Battery Considerations
+### Battery considerations
 
-Global gesture events (`Ti.Gesture`, `Ti.Accelerometer`) keep hardware powered and drain battery.
-
-**Always remove listeners when not needed:**
+Global gesture events (`Ti.Gesture`, `Ti.Accelerometer`) keep hardware powered and drain battery. Remove listeners when not needed.
 
 ```javascript
 let accelerometerAdded = false;
@@ -345,35 +343,35 @@ if (Ti.Platform.osname === 'android') {
 }
 ```
 
-## 9. Platform-Specific Considerations
+## 9. Platform-specific considerations
 
 ### iOS
 
-- **Pinch gesture** fully supported
-- **Simulator shake**: Hardware > Shake Device
-- **More touch events** supported
-- **Smoother gesture recognition**
+- Pinch is fully supported.
+- Simulator shake: Hardware > Shake Device.
+- More touch events are supported.
+- Gesture recognition is smoother.
 
 ### Android
 
-- **Pinch** limited/experimental support
-- **No simulator shake** - must test on device
-- **Long press** for context menus (standard pattern)
-- **Hardware button events** available
+- Pinch support is limited or experimental.
+- No simulator shake. Test on device.
+- Long press opens context menus (standard pattern).
+- Hardware button events are available.
 
-## 10. Best Practices
+## 10. Best practices
 
-1. **Test on physical devices** - Simulators don't support all gestures
-2. **Remove global gesture listeners** when not needed to save battery
-3. **Smooth accelerometer data** - Use averaging/rounding
-4. **Use appropriate gesture for context** - Long press for context menus, swipe for navigation
-5. **Consider accessibility** - Ensure gestures don't conflict with screen readers
-6. **Handle edge cases** - Touch cancel, gesture interruptions
-7. **Provide alternatives** - Not all users can perform all gestures
+1. Test on physical devices. Simulators do not support all gestures.
+2. Remove global gesture listeners when not needed to save battery.
+3. Smooth accelerometer data with averaging.
+4. Use the right gesture for the task. Long press for context menus, swipe for navigation.
+5. Consider accessibility. Make sure gestures do not conflict with screen readers.
+6. Handle edge cases like touch cancel and gesture interruptions.
+7. Provide alternatives. Not all users can perform all gestures.
 
-## 11. Combining Gestures
+## 11. Combining gestures
 
-### Multiple Gesture Types
+### Multiple gesture types
 
 ```javascript
 const view = Ti.UI.createView({
@@ -410,7 +408,7 @@ view.addEventListener('pinch', (e) => {
 });
 ```
 
-### Preventing Gesture Conflicts
+### Preventing gesture conflicts
 
 ```javascript
 let touchStartTime = 0;

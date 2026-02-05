@@ -1,8 +1,8 @@
-# Layer Contracts & Interfaces
+# Layer contracts & interfaces
 
 Contracts define the input/output specifications between layers, ensuring consistent communication and easy testing.
 
-## API Layer Contracts
+## API layer contracts
 
 ```javascript
 // lib/api/userApi.js
@@ -73,7 +73,7 @@ exports.userApi = {
 }
 ```
 
-## Service Layer Contracts
+## Service layer contracts
 
 ```javascript
 // lib/services/authService.js
@@ -123,7 +123,7 @@ exports.AuthService = {
 }
 ```
 
-## Controller Contracts
+## Controller contracts
 
 Document expected inputs and outputs for each controller:
 
@@ -167,7 +167,7 @@ function init() {
 $.cleanup = cleanup
 ```
 
-## Navigation Service Contract
+## Navigation service contract
 
 ```javascript
 // lib/services/navigation.js
@@ -210,7 +210,7 @@ exports.Navigation = {
 }
 ```
 
-## Helper Contracts
+## Helper contracts
 
 ```javascript
 // lib/helpers/formatters.js
@@ -242,7 +242,7 @@ exports.Formatters = {
 }
 ```
 
-## Event Bus Contract
+## Event bus contract
 
 ```javascript
 // lib/services/eventBus.js
@@ -271,7 +271,7 @@ exports.Events = {
 }
 ```
 
-## Contract Enforcement Tips
+## Contract enforcement tips
 
 1. **Always validate `$.args`** at controller initialization
 2. **Use TypeScript JSDoc** for IDE autocompletion and error detection

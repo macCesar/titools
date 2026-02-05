@@ -5,46 +5,44 @@ argument-hint: "[architecture-topic]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(git *), Bash(node *)
 ---
 
-# Titanium Expert
+# Titanium expert
 
-Complete architectural and implementation guidance for building scalable, maintainable Titanium SDK applications (Alloy & Classic).
+Practical architecture and implementation guidance for Titanium SDK apps (Alloy and Classic). Focus on maintainability, clear boundaries, and low-friction testing.
 
-## Project Detection
+## Project detection
 
-:::info AUTO-DETECTS ALLOY VS CLASSIC PROJECTS
-This skill automatically detects project type when invoked and provides appropriate guidance.
+:::info Auto-detects Alloy vs Classic projects
+This skill detects project type automatically and tailors guidance.
 
-**Detection occurs automatically** - no manual command needed.
-
-**Alloy project indicators:**
+Alloy indicators:
 - `app/` folder (MVC structure)
 - `app/views/`, `app/controllers/` folders
 - `alloy.jmk` or `config.json` files
 
-**Classic project indicators:**
+Classic indicators:
 - `Resources/` folder with `app.js` at root
 - No `app/` folder structure
 
-**Behavior based on detection:**
-- **Alloy detected** → Provides Alloy-specific architecture patterns, MVC folder structure, Backbone.js patterns
-- **Classic detected** → Indicates incompatibility, does not suggest Alloy-specific patterns, recommends migration or Classic resources
-- **Unknown** → Asks user to clarify project type
+Behavior:
+- Alloy detected: provides Alloy MVC patterns and Backbone.js guidance
+- Classic detected: avoids Alloy-only patterns and recommends Classic options or migration
+- Unknown: asks the user to clarify the project type
 :::
 
 ## Workflow
 
-1. **Architecture**: Define structure (`lib/api`, `lib/services`, `lib/helpers`)
-2. **Data Strategy**: Choose Models (SQLite) or Collections (API)
-3. **Contracts**: Define I/O specs for cross-layer communication
-4. **Implementation**: Write XML views + ES6+ controllers
-5. **Quality**: Testing, error handling, logging, performance
-6. **Cleanup**: Implement `cleanup()` pattern for memory management
+1. Architecture: define structure (`lib/api`, `lib/services`, `lib/helpers`)
+2. Data strategy: choose Models (SQLite) or Collections (API)
+3. Contracts: define I/O specs between layers
+4. Implementation: write XML views and ES6+ controllers
+5. Quality: testing, error handling, logging, performance
+6. Cleanup: implement a `cleanup()` pattern for memory management
 
-## Quick Start Example
+## Quick start example
 
-Minimal example following all conventions:
+Minimal example that matches the conventions:
 
-**View (views/user/card.xml)**
+View (`views/user/card.xml`)
 ```xml
 <Alloy>
   <View id="cardContainer">
@@ -60,7 +58,7 @@ Minimal example following all conventions:
 </Alloy>
 ```
 
-**Styles (styles/user/card.tss)**
+Styles (`styles/user/card.tss`)
 ```tss
 "#cardContainer": { left: 8, right: 8, top: 8, height: Ti.UI.SIZE, borderRadius: 12, backgroundColor: '#fff' }
 "#headerRow": { layout: 'horizontal', left: 12, right: 12, top: 12, height: Ti.UI.SIZE, width: Ti.UI.FILL }
@@ -69,7 +67,7 @@ Minimal example following all conventions:
 "#viewProfileBtn": { left: 12, right: 12, bottom: 12, height: 40, width: Ti.UI.FILL, borderRadius: 6, backgroundColor: '#2563eb', color: '#fff' }
 ```
 
-**Controller (controllers/user/card.js)**
+Controller (`controllers/user/card.js`)
 ```javascript
 const { Navigation } = require('services/navigation')
 
@@ -89,7 +87,7 @@ function cleanup() {
 $.cleanup = cleanup
 ```
 
-**Service (lib/services/navigation.js)**
+Service (`lib/services/navigation.js`)
 ```javascript
 exports.Navigation = {
   open(route, params = {}) {
@@ -106,133 +104,95 @@ exports.Navigation = {
 }
 ```
 
-## Code Standards (Low Freedom)
+## Code standards (low freedom)
 
-- **NO SEMICOLONS**: Let ASI handle it
-- **MODERN SYNTAX**: `const/let`, destructuring, template literals
-- **applyProperties()**: Batch UI updates to minimize bridge crossings
-- **MEMORY CLEANUP**: Every controller with global listeners MUST have `$.cleanup = cleanup`
-- **ERROR HANDLING**: Use AppError classes, log with context, never swallow errors
-- **TESTABLE**: Inject dependencies, avoid hard coupling
+- No semicolons: let ASI handle it
+- Modern syntax: `const/let`, destructuring, template literals
+- `applyProperties()`: batch UI updates to reduce bridge crossings
+- Memory cleanup: any controller with global listeners must set `$.cleanup = cleanup`
+- Error handling: use AppError classes, log with context, never swallow errors
+- Testable code: inject dependencies, avoid hard coupling
 
-## Titanium Style Sheets Rules (Low Freedom)
+## Titanium style sheets rules (low freedom)
 
-:::danger CRITICAL: Platform-Specific Properties Require Modifiers
-Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties WITHOUT platform modifiers causes cross-platform compilation failures.
+:::danger Critical: platform-specific properties require modifiers
+Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties without platform modifiers breaks cross-platform builds.
 
-**Example of the damage:**
+Example of the damage:
 ```tss
-// ❌ WRONG - Adds Ti.UI.iOS to Android project
+// Wrong: adds Ti.UI.iOS to Android project
 "#mainWindow": {
-  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT  // FAILS on Android!
+  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
 }
 ```
 
-**CORRECT - Always use platform modifiers:**
+Correct: always use platform modifiers
 ```tss
-// ✅ CORRECT - Only adds to iOS
+// Correct: only adds to iOS
 "#mainWindow[platform=ios]": {
   statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
 }
 ```
 
-**Properties that ALWAYS require platform modifiers:**
+Properties that always need platform modifiers:
 - iOS: `statusBarStyle`, `modalStyle`, `modalTransitionStyle`, any `Ti.UI.iOS.*`
 - Android: `actionBar` configuration, any `Ti.UI.Android.*` constant
 
-**Available modifiers:** `[platform=ios]`, `[platform=android]`, `[formFactor=handheld]`, `[formFactor=tablet]`, `[if=Alloy.Globals.customVar]`
+Available modifiers: `[platform=ios]`, `[platform=android]`, `[formFactor=handheld]`, `[formFactor=tablet]`, `[if=Alloy.Globals.customVar]`
 
-**For more platform-specific patterns, see the `ti-ui` skill.**
+For more platform-specific patterns, see the `ti-ui` skill.
 :::
 
-**Titanium layout system:**
-- Three layout modes: `layout: 'horizontal'`, `layout: 'vertical'`, and composite (default — no `layout` needed)
-- No padding on container Views — use margins on children instead
+Titanium layout system:
+- Three layout modes: `layout: 'horizontal'`, `layout: 'vertical'`, and composite (default, no `layout` needed)
+- No padding on container Views: use margins on children instead
 - `width: Ti.UI.FILL` fills available space (preferred), `width: '100%'` = 100% of parent
 - `height: Ti.UI.SIZE` wraps content, `height: Ti.UI.FILL` fills available space
 
-## Alloy Builtins Quick Reference
+## Alloy builtins quick reference
 
 Key builtins: `OS_IOS`/`OS_ANDROID` (compile-time), `Alloy.CFG` (config.json), `Alloy.Globals` (shared state), `$.args` (controller params), `$.destroy()` (cleanup bindings), `platform="ios"` / `formFactor="tablet"` (XML conditionals).
 
-For the complete reference with examples, see **[Alloy Builtins & Globals](references/alloy-builtins.md)**.
+For the complete reference with examples, see [Alloy builtins and globals](references/alloy-builtins.md).
 
-## Quick Decision Matrix
+## Quick decision matrix
 
 | Question                           | Answer                                                         |
 | ---------------------------------- | -------------------------------------------------------------- |
-| How to create a new Alloy project? | **`ti create -t app --alloy`** (not `--classic` + `alloy new`) |
-| Fastest way to build?              | **`tn <recipe>`** (using TiNy CLI wrapper)                     |
+| How to create a new Alloy project? | `ti create -t app --alloy` (not `--classic` + `alloy new`)      |
+| Fastest way to build?              | `tn <recipe>` (using TiNy CLI wrapper)                         |
 | Where does API call go?            | `lib/api/`                                                     |
 | Where does business logic go?      | `lib/services/`                                                |
 | Where do I store auth tokens?      | Keychain (iOS) / KeyStore (Android) via service                |
 | Models or Collections?             | Collections for API data, Models for SQLite persistence        |
-| Ti.App.fireEvent or EventBus?      | **Always EventBus** (Backbone.Events)                          |
-| Direct navigation or service?      | **Always Navigation service** (auto cleanup)                   |
-| Inline styles or TSS files?        | **Always TSS files** (per-controller + `app.tss` for global)   |
+| Ti.App.fireEvent or EventBus?      | Always EventBus (Backbone.Events)                              |
+| Direct navigation or service?      | Always Navigation service (auto cleanup)                       |
+| Inline styles or TSS files?        | Always TSS files (per-controller + `app.tss` for global)        |
 | Controller 100+ lines?             | Extract logic to services                                      |
 
-## Reference Guides (Progressive Disclosure)
+## Reference guides (progressive disclosure)
 
-### Architecture
-- **[CLI Expert & TiNy](references/cli-expert.md)**: Advanced build workflows, LiveView, and TiNy (`tn`) recipes
-- **[Structure & Organization](references/alloy-structure.md)**: Models vs Collections, folder maps, widget patterns, automatic cleanup
-- **[Alloy Builtins & Globals](references/alloy-builtins.md)**: OS_IOS/OS_ANDROID, Alloy.CFG, Alloy.Globals, $.args, compiler directives
-- **[ControllerAutoCleanup.js](assets/ControllerAutoCleanup.js)**: Drop-in utility for automatic controller cleanup (prevents memory leaks)
-- **[Architectural Patterns](references/patterns.md)**: Repository, Service Layer, Event Bus, Factory, Singleton
-- **[Contracts & Communication](references/contracts.md)**: Layer interaction examples and JSDoc specs
-- **[Anti-Patterns](references/anti-patterns.md)**: Fat controllers, memory leaks, inline styling, direct API calls
+Architecture
+- [CLI expert and TiNy](references/cli-expert.md): advanced build workflows, LiveView, TiNy (`tn`) recipes
+- [Structure and organization](references/alloy-structure.md): models vs collections, folder maps, widget patterns, automatic cleanup
+- [Alloy builtins and globals](references/alloy-builtins.md): `OS_IOS`/`OS_ANDROID`, `Alloy.CFG`, `Alloy.Globals`, `$.args`, compiler directives
+- [ControllerAutoCleanup.js](assets/ControllerAutoCleanup.js): drop-in utility for automatic controller cleanup
+- [Architectural patterns](references/patterns.md): repository, service layer, event bus, factory, singleton
+- [Contracts and communication](references/contracts.md): layer interaction examples and JSDoc specs
+- [Anti-patterns](references/anti-patterns.md): fat controllers, memory leaks, inline styling, direct API calls
 
-### Implementation
-- **[Code Conventions](references/code-conventions.md)**: ES6 features, TSS design system, accessibility
-- **[Theming & Dark Mode](references/theming.md)**: Theme system, Alloy.Globals palette, runtime switching, design tokens
-- **[Controller Patterns](references/controller-patterns.md)**: Templates, animation, dynamic styling
-- **[Examples](references/examples.md)**: API clients, SQL models, full screen examples
+Implementation
+- [Code conventions](references/code-conventions.md): ES6 features, TSS design system, accessibility
+- [Theming and dark mode](references/theming.md): theme system, Alloy.Globals palette, runtime switching, design tokens
+- [Controller patterns](references/controller-patterns.md): templates, animation, dynamic styling
+- [Examples](references/examples.md): API clients, SQL models, full screen examples
 
-### Quality & Reliability
-- **[Unit & Integration Testing](references/testing-unit.md)**: Unit testing, mocking patterns, controller testing, test helpers
-- **[E2E Testing & CI/CD](references/testing-e2e-ci.md)**: Appium, WebdriverIO, GitHub Actions, Fastlane
-- **[Error Handling & Logging](references/error-handling.md)**: AppError classes, Logger service, validation
+Quality and reliability
+- [Unit and integration testing](references/testing-unit.md): unit testing, mocking patterns, controller testing, test helpers
+- [E2E testing and CI/CD](references/testing-e2e-ci.md): Appium, WebdriverIO, GitHub Actions, Fastlane
+- [Error handling and logging](references/error-handling.md): AppError classes, Logger service, validation
 
-### Performance & Security
-- **[ListView & ScrollView Performance](references/performance-listview.md)**: ListView templates, data binding, image caching, ScrollView optimization
-- **[Performance Optimization](references/performance-optimization.md)**: Bridge crossings, memory management, animations, debounce/throttle, database
-- **[Security Fundamentals](references/security-fundamentals.md)**: Token storage, certificate pinning, encryption, HTTPS, OWASP
-- **[Device Security](references/security-device.md)**: Biometric auth, deep link validation, jailbreak/root detection
-- **[State Management](references/state-management.md)**: Centralized store, reactive patterns, synchronization
-
-### Migration
-- **[Migration Patterns](references/migration-patterns.md)**: Step-by-step guide for modernizing legacy apps
-
-## Specialized Titanium Skills
-
-For specific feature implementations, defer to these specialized skills:
-
-| Task                                                  | Use This Skill |
-| ----------------------------------------------------- | -------------- |
-| Location, Maps, Push Notifications, Media APIs        | `ti-howtos`    |
-| UI layouts, ListViews, gestures, platform-specific UI | `ti-ui`        |
-| Alloy CLI, configuration files, debugging             | `alloy-howtos` |
-| Alloy MVC complete reference                          | `alloy-guides` |
-| Hyperloop, native modules, app distribution           | `ti-guides`    |
-
-## Guiding Principles
-
-1. **Thin Controllers**: Max 100 lines. Delegate to services.
-2. **Single Source of Truth**: One state store, not scattered Properties.
-3. **Always Cleanup**: Every listener added = listener removed in `cleanup()`.
-4. **Never Block UI**: All API/DB calls are async with loading states.
-5. **Fail Gracefully**: Centralized error handling with user-friendly messages.
-
-## Response Format
-
-**For Architecture Questions:**
-1. Decision: What should be done
-2. Justification: Technical rationale
-3. Structure: File and folder placement
-4. Contract: Clear I/O specification
-
-**For Implementation Tasks:**
-1. Code First: Show implementation immediately
-2. Minimal Comments: Explain only the "Why" for complex logic
-3. No Explanations: Deliver exactly what was asked concisely
+Performance and security
+- [ListView and ScrollView performance](references/performance-listview.md): ListView templates, data binding, image caching, ScrollView optimization
+- [Performance optimization](references/performance-optimization.md): bridge crossings, memory management, animations, debounce/throttle, database
+- [Security fundamentals](references/security-fundamentals.md): token storage, certificate pinning, encryption, HTTPS, OWASP

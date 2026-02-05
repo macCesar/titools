@@ -1,8 +1,8 @@
-# Reserved Words in Titanium
+# Reserved words in Titanium
 
-## ECMAScript Reserved Keywords
+## ECMAScript reserved keywords
 
-These keywords cannot be used as variable, function, method, or object identifiers per the ECMAScript specification:
+These keywords cannot be used as variable, function, method, or object identifiers under the ECMAScript specification:
 
 ```
 abstract, boolean, break, byte, case, catch, char, class, const, continue,
@@ -13,22 +13,22 @@ static, super, switch, synchronized, this, throw, throws, transient, try,
 typeof, var, void, volatile, while, with, yield
 ```
 
-## iOS Objective-C Reserved Words
+## iOS Objective-C reserved words
 
-These keywords are exposed from Objective-C and may not be used as identifiers on iOS:
+These keywords are exposed from Objective-C and should not be used as identifiers on iOS:
 
 ```
 _configure, _destroy, _initProperties, autorelease, deadlock, dealloc,
 description, id, init, release, startup
 ```
 
-## Alloy Reserved Words
+## Alloy reserved words
 
-**Do not use double underscore prefixes** on variables, properties, or function names (e.g., `__foo`). These are reserved for Alloy's internal use.
+Do not use double underscore prefixes on variables, properties, or function names (for example, `__foo`). These are reserved for Alloy's internal use.
 
-## Best Practice
+## Best practice
 
-Always avoid these reserved words when naming:
+Avoid these reserved words when naming:
 - Variables
 - Functions
 - Methods

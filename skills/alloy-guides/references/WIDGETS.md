@@ -10,7 +10,7 @@ See [Importing Widgets](./VIEWS_XML.md#importing-widgets) for more information o
 
 ## Creating Widgets
 
-Widgets should be built in their own directory in the Alloy project's `app/widgets/` directory. Widgets have their own views, controllers, models, styles and assets and are laid out the same as the `app` directory in the Alloy project. Additionally, since widgets are self-contained, they should not reference any code or assets not within its path, except for internationalization and localization files, which are located in the `i18n` folder.
+Widgets should be built in their own directory in the Alloy project's `app/widgets/` directory. Widgets have their own views, controllers, models, styles and assets and are laid out the same as the `app` directory in the Alloy project. Also, since widgets are self-contained, they should not reference any code or assets not within its path, except for internationalization and localization files, which are located in the `i18n` folder.
 
 ## Assets and Libs
 

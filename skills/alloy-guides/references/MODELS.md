@@ -11,7 +11,7 @@
 
 Alloy uses Backbone.js to provide support for its models and collections. Alloy also borrows the concepts of migrations and adapters from Rails for storage integration.
 
-For models, collections and sync adapters, these guides only provides information on how Alloy utilizes the Backbone.js functionality and some simple examples of using it.
+For models, collections and sync adapters, these guides only provides information on how Alloy uses the Backbone.js functionality and some simple examples of using it.
 
 ## Alloy Collection and Model Objects
 
@@ -214,7 +214,7 @@ exports.definition = {
 
 #### Underscore.js Functionality
 
-Additionally, the Backbone.Collection class inherits some functionality from [Underscore.js](https://underscorejs.org/), which can help simplify iterative functions. For example, to add the title of each book object in the library collection to a table, you could use the `map` function to set the table:
+Also, the Backbone.Collection class inherits some functionality from [Underscore.js](https://underscorejs.org/), which can help simplify iterative functions. For example, to add the title of each book object in the library collection to a table, you could use the `map` function to set the table:
 
 **Iterating over a collection with underscore**
 
@@ -281,7 +281,7 @@ You can bind both a collection of models or an individual model. To bind a model
 
 ### Global Singleton vs Local Instance
 
-In the above code snippet, the model and collection are global singletons under `Alloy.Models.currentCategory` and `Alloy.Collections.book`. You can also use local instances for the current controller by adding `instance="true"` as attribute. You also need to assign them an ID in order to reference them in the XML and controller.
+In the above code snippet, the model and collection are global singletons under `Alloy.Models.currentCategory` and `Alloy.Collections.book`. You can also use local instances for the current controller by adding `instance="true"` as attribute. You also need to assign them an ID to reference them in the XML and controller.
 
 ```xml
 <Alloy>
@@ -360,7 +360,7 @@ You can bind deep object properties:
 
 Before, you needed to use a transformer to create a reference like `authorName`.
 
-Prior to CLI 7.1.0, the only way to set object properties (e.g. `font.fontFamily` for a Label) was to use TSS. You can use dot notation in XML:
+Before CLI 7.1.0, the only way to set object properties (e.g. `font.fontFamily` for a Label) was to use TSS. You can use dot notation in XML:
 
 ```xml
 <Alloy>
@@ -760,7 +760,7 @@ The sync adapter exports three functions:
 
 ### Migrations
 
-A migration is a description of incremental changes to a database, which takes your database from version 1 to version X, with a migration file for each step in the evolution of your database schema. This is helpful to keep different versions of a database in sync. For example, when version 7 of your application is deployed, migrations are able to successfully update the database from versions 1 through 6. Currently, migrations are only used with the `sql` sync adapter.
+A migration is a description of incremental changes to a database, which takes your database from version 1 to version X, with a migration file for each step in the evolution of your database schema. This is helpful to keep different versions of a database in sync. For example, when version 7 of your application is deployed, migrations can successfully update the database from versions 1 through 6. Currently, migrations are only used with the `sql` sync adapter.
 
 The `migration.up` function upgrades the database from the previous version, while the `migration.down` function rolls back the changes to the previous version.
 
@@ -1014,7 +1014,7 @@ To use Backbone 1.1.2 to support Alloy Model and Collections objects, open the p
 
 #### Model APIs
 
-**Validation**: Model validation is now only enforced with the `save()` method. Previously, models were also validated with the `set()` method. To force validation when the `set()` method is called, pass `{validate: true}` to the method or extend the Model class. Additionally, validation now occurs even during 'silent' changes (passing `{silent: true}` to methods). Previously, it would not. Failed validations return the `invalid` event. Previously, a failed model validation would return the `error` event.
+**Validation**: Model validation is now only enforced with the `save()` method. Previously, models were also validated with the `set()` method. To force validation when the `set()` method is called, pass `{validate: true}` to the method or extend the Model class. Also, validation now occurs even during 'silent' changes (passing `{silent: true}` to methods). Previously, it would not. Failed validations return the `invalid` event. Previously, a failed model validation would return the `error` event.
 
 **Parse Method**: All `parse` methods now run after a `fetch`. You cannot change the `id` of a model during `parse`. The `parse` method receives `options` as a second parameter.
 

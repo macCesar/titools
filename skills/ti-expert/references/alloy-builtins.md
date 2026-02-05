@@ -1,10 +1,10 @@
-# Alloy Builtins & Globals
+# Alloy builtins & globals
 
-## Compiler Directives
+## Compiler directives
 
 Alloy provides compile-time constants that are replaced with `true`/`false` during build. Use them for platform-specific code without runtime cost.
 
-### OS_IOS / OS_ANDROID
+### Os_ios / os_android
 
 ```javascript
 // These are compile-time constants — dead code is removed at build
@@ -30,7 +30,7 @@ if (OS_ANDROID) {
 **Do NOT use for:** Logic that should be testable on both platforms
 :::
 
-### ENV_DEV / ENV_TEST / ENV_PRODUCTION
+### Env_dev / env_test / env_production
 
 ```javascript
 if (ENV_DEV) {
@@ -55,7 +55,7 @@ ti build -p ios -T dist-appstore -D production
 
 Shared state and utilities accessible from any controller or lib file. Set in `alloy.js`, available everywhere.
 
-### Common Patterns
+### Common patterns
 
 ```javascript
 // alloy.js
@@ -83,7 +83,7 @@ Alloy.Collections.products = new Backbone.Collection()
 Alloy.Collections.notifications = new Backbone.Collection()
 ```
 
-### Access from Anywhere
+### Access from anywhere
 
 ```javascript
 // In any controller
@@ -99,7 +99,7 @@ $.label.color = theme.primary
 // <View if="Alloy.Globals.isLoggedIn">
 ```
 
-### Globals vs Services
+### Globals vs services
 
 | Use `Alloy.Globals` for            | Use a Service for             |
 | ---------------------------------- | ----------------------------- |
@@ -184,11 +184,11 @@ if (Alloy.isTablet) {
 
 ---
 
-## $.args — Controller Arguments
+## $.args , controller arguments
 
 Every controller receives arguments via `$.args`. This is the standard way to pass data between controllers.
 
-### Basic Usage
+### Basic usage
 
 ```javascript
 // Opening controller with args
@@ -203,7 +203,7 @@ const ctrl = Alloy.createController('user/profile', {
 const { userId, mode, onSave } = $.args
 ```
 
-### Common Patterns
+### Common patterns
 
 ```javascript
 // Pattern 1: Default values with destructuring
@@ -242,7 +242,7 @@ function save() {
 }
 ```
 
-### $.args in Widgets
+### $.args in widgets
 
 Widgets also receive args, but through the `<Widget>` tag attributes:
 
@@ -269,7 +269,7 @@ For complex data, pass via `Alloy.createController()` in the parent controller i
 
 ## Alloy.createController / Alloy.createWidget
 
-### Controller Creation
+### Controller creation
 
 ```javascript
 // Create and open
@@ -285,7 +285,7 @@ ctrl.refresh()
 ctrl.setData(newData)
 ```
 
-### Widget Creation
+### Widget creation
 
 ```javascript
 // Create widget programmatically (alternative to XML <Widget>)
@@ -321,9 +321,9 @@ users.fetch({
 
 ---
 
-## Conditional Code in XML
+## Conditional code in XML
 
-### Platform Conditional
+### Platform conditional
 
 ```xml
 <Alloy>
@@ -339,7 +339,7 @@ users.fetch({
 </Alloy>
 ```
 
-### Form Factor Conditional
+### Form factor conditional
 
 ```xml
 <Alloy>
@@ -352,7 +352,7 @@ users.fetch({
 </Alloy>
 ```
 
-### Custom Conditional (if attribute)
+### Custom conditional (if attribute)
 
 ```xml
 <!-- Only render if condition is true at creation time -->
@@ -371,7 +371,7 @@ The `if` attribute is checked when the controller is created. It does NOT react 
 
 ---
 
-## Quick Reference
+## Quick reference
 
 | Builtin             | Type              | Where Set         | Mutable |
 | ------------------- | ----------------- | ----------------- | ------- |

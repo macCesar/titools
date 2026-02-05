@@ -1,12 +1,12 @@
-# Alloy Best Practices and Recommendations
+# Alloy best practices and recommendations
 
-This guide provides recommendations for writing Alloy applications. This guide supplements the existing Titanium SDK [Best Practices and Recommendations](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_Guide/Best_Practices_and_Recommendations/) guide, specifically focusing on Coding Best Practices and Style and Conventions.
+Recommendations for writing Alloy apps. This supplements the Titanium SDK [Best Practices and Recommendations](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_Guide/Best_Practices_and_Recommendations/) guide and focuses on coding style and conventions.
 
 ## Titanium-to-Alloy Guidance
 
 ### Loading Libraries in Alloy
 
-If you have pre-existing functionality to make available globally, you can require modules in all controllers or create a single global reference:
+If you need global functionality, require modules in all controllers or create a single global reference:
 
 **alloy.js**
 ```javascript
@@ -16,13 +16,13 @@ Alloy.Globals.refToYourModule = require('yourModule');
 
 ### Performance Best Practices
 
-The same best practices from traditional Titanium development apply to Alloy. Everything you can do in traditional Titanium development can be done in Alloy's controllers.
+The same best practices from traditional Titanium development apply to Alloy. Alloy controllers can do what classic controllers can.
 
-Use compiler directives to speed up runtime performance (see Conditional Code in Alloy Controllers).
+Use compiler directives to reduce runtime work (see Conditional Code in Alloy Controllers).
 
 ### Project Organization
 
-Determine if it makes sense to bend Alloy around your existing organization, or bend your existing organization around Alloy. Alloy was created to standardize Titanium coding methodologies, making projects cleaner and more maintainable.
+Decide whether to adapt Alloy to your existing structure, or to adopt Alloy's structure. Alloy standardizes common Titanium patterns and makes projects easier to maintain.
 
 ## Coding Style Best Practices
 
@@ -33,7 +33,7 @@ Determine if it makes sense to bend Alloy around your existing organization, or 
 
 ### Global Variables
 
-Do not declare global variables in app.js and use them in other files. This is allowed but not recommended and will be deprecated.
+Avoid declaring globals in app.js and using them in other files. It still works, but it is not recommended and may be deprecated.
 
 Instead, declare these in your JS files:
 
@@ -61,7 +61,7 @@ const loading = Alloy.createWidget("com.titaniumsdk.loading");
 
 ### Global Events
 
-**Avoid `Ti.App.fireEvent` and `Ti.App.addEventListener`** - This crosses the bridge between native and JavaScript lands, which can cause memory leaks and slower processes.
+**Avoid `Ti.App.fireEvent` and `Ti.App.addEventListener`.** It crosses the native-JS bridge and can cause memory leaks and slower execution.
 
 #### Use Callbacks for Master-Child Communication
 
@@ -118,4 +118,4 @@ Alloy.Events.trigger('updateMainUI');
 ```javascript
 Alloy.createController('child').on('refresh', refreshData);
 ```
-This is a cleaner approach to cross-controller communication using Backbone's built-in event capabilities.
+This is a simpler way to do cross-controller communication with Backbone events.

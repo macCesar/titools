@@ -1,23 +1,22 @@
-# Application Structures and Core Building Blocks
+# Application structures and core building blocks
 
 ## 1. Overview
 
-Titanium apps are built from three core components:
-- **Windows** - Top-level containers (like web pages)
-- **Views** - Generic content containers (like HTML divs)
-- **TabGroups** - Tab-based navigation containers
+Titanium apps are built from three core components.
+- Windows: top-level containers, similar to web pages.
+- Views: generic content containers, similar to HTML divs.
+- TabGroups: tab-based navigation containers.
 
 ## 2. Windows
 
-### Window Concepts
+### Window concepts
 
-In web development terms:
-- **Window** ≈ **Web page** (top-level container)
-- **View** ≈ **div** (generic content container)
-- Windows can run in their own execution context
-- Windows are top-level containers that hold views
+If you think in web terms:
+- A window is like a page. It is the top-level container.
+- A view is like a div. It sits inside a window.
+- Windows can run in their own execution context.
 
-### Creating Windows
+### Creating windows
 
 ```javascript
 const win = Ti.UI.createWindow({
@@ -31,7 +30,7 @@ const win = Ti.UI.createWindow({
 win.open();
 ```
 ...
-### Window Events
+### Window events
 
 ```javascript
 win.addEventListener('open', (e) => {
@@ -51,9 +50,9 @@ win.addEventListener('blur', (e) => {
 });
 ```
 
-### Window Lifecycle
+### Window lifecycle
 
-Windows exist in a stack. Opening a window pushes it onto the stack; closing pops it from the stack.
+Windows live in a stack. Opening a window pushes it on top. Closing it pops it off.
 
 ```javascript
 const win1 = Ti.UI.createWindow({ title: 'Window 1' });
@@ -67,14 +66,14 @@ win2.open();  // Pushed on top of win1
 
 ## 3. Views
 
-### View Concepts
+### View concepts
 
-Views are style-able generic containers that:
-- Hold other components (buttons, labels, etc.)
-- Must be contained within a window
-- Are analogous to HTML divs
+Views are stylable containers that:
+- Hold other components (buttons, labels, etc.).
+- Must be contained within a window.
+- Map closely to HTML divs.
 
-### Creating Views
+### Creating views
 
 ```javascript
 const view = Ti.UI.createView({
@@ -88,7 +87,7 @@ const view = Ti.UI.createView({
 win.add(view);
 ```
 
-### Common View Types
+### Common view types
 
 ```javascript
 // Basic view
@@ -115,7 +114,7 @@ const webView = Ti.UI.createWebView({
 });
 ```
 
-### Adding Views to Windows
+### Adding views to windows
 
 ```javascript
 // Add single view
@@ -130,7 +129,7 @@ container.add(childView);
 win.add(container);
 ```
 
-### Removing Views
+### Removing views
 
 ```javascript
 // Remove specific view
@@ -142,9 +141,9 @@ win.removeAllChildren();
 
 ## 4. TabGroups
 
-### Tab-Based Apps
+### Tab-based apps
 
-TabGroups contain multiple tabs, each containing a window. This is the most common mobile app pattern.
+TabGroups contain multiple tabs, each with a window. This is a common mobile pattern.
 
 ```javascript
 // Create tab group
@@ -182,7 +181,7 @@ tabGroup.addTab(tab2);
 tabGroup.open();
 ```
 
-### Tab Properties
+### Tab properties
 
 | Property     | Description            |
 | ------------ | ---------------------- |
@@ -192,7 +191,7 @@ tabGroup.open();
 | `badge`      | Badge number           |
 | `activeIcon` | Icon when active (iOS) |
 
-### Window Titles vs Tab Titles
+### Window titles vs tab titles
 
 ```javascript
 const tab = Ti.UI.createTab({
@@ -203,7 +202,7 @@ const tab = Ti.UI.createTab({
 });
 ```
 
-### Tab Events
+### Tab events
 
 ```javascript
 tabGroup.addEventListener('focus', (e) => {
@@ -213,30 +212,28 @@ tabGroup.addEventListener('focus', (e) => {
 });
 ```
 
-### Tab Recommendations
+### Tab recommendations
 
-**Limit tabs to 4 or less**:
-- iOS: Fixed minimum width, shows "More" for overflow
-- Android: Tabs shrink to fit (can become unusable)
-- Both platforms: All tabs visible = better UX
+Keep tabs to four or fewer.
+- iOS uses a fixed minimum width and shows "More" for overflow.
+- Android shrinks tabs to fit, which can make them hard to use.
+- On both platforms, visible tabs are easier to scan.
 
-**Tab expectations**:
-- Tabs are peers (siblings), not hierarchical
-- Each tab focuses on limited, related functionality
-- Tabs are related within overall app purpose
+Tabs should be peers. They are not a hierarchy.
+- Each tab should focus on a narrow slice of functionality.
+- All tabs should make sense as parts of a single app.
 
-### Tab-Based Applications
+### Tab-based applications
 
-**Characteristics**:
-- 2-4 tabs at bottom
-- Each tab contains a window
-- Easy navigation between features
-- Most common mobile pattern
+Typical characteristics:
+- Two to four tabs at the bottom.
+- Each tab contains a window.
+- Switching between features is quick.
 
-**Example apps**:
-- Social networks (feed, profile, messages)
-- News apps (headlines, sports, business)
-- Utilities with distinct features
+Example apps:
+- Social networks (feed, profile, messages).
+- News apps (headlines, sports, business).
+- Utilities with distinct features.
 
 ```javascript
 // Classic tab-based app
@@ -276,7 +273,7 @@ navWindow.open();
 
 ## 6. NavigationWindow (iOS)
 
-NavigationWindow provides iOS-style navigation with push/pop transitions.
+NavigationWindow provides iOS-style navigation with push and pop transitions.
 
 ```javascript
 const navWindow = Ti.UI.createNavigationWindow({
@@ -298,7 +295,7 @@ navWindow.openWindow(detailWin, { animated: true });
 detailWin.close();
 ```
 
-### Navigation Bar Customization
+### Navigation bar customization
 
 ```javascript
 const win = Ti.UI.createWindow({
@@ -322,9 +319,9 @@ win.rightNavButton = Ti.UI.createButton({
 });
 ```
 
-## 7. Modal Windows
+## 7. Modal windows
 
-### iOS Modal Windows
+### iOS modal windows
 
 ```javascript
 const modalWin = Ti.UI.createWindow({
@@ -336,17 +333,17 @@ const modalWin = Ti.UI.createWindow({
 modalWin.open({ modal: true });
 ```
 
-**Modal behavior**:
-- Fills entire screen
-- Covers tab bar (if in tab)
-- Must be explicitly closed
-- No automatic back button
+Modal behavior:
+- Fills the entire screen.
+- Covers the tab bar if the app uses tabs.
+- Must be explicitly closed.
+- No automatic back button.
 
-## 8. Heavyweight vs Lightweight Windows
+## 8. Heavyweight vs lightweight windows
 
-### Heavyweight Windows (Android)
+### Heavyweight windows (Android)
 
-Android windows are "heavyweight" - they each run in their own activity/context.
+Android windows are heavyweight. Each runs in its own activity and context.
 
 ```javascript
 // Explicit heavyweight (Android)
@@ -357,13 +354,13 @@ const win = Ti.UI.createWindow({
 });
 ```
 
-**Heavyweight characteristics**:
-- Each window = separate Android Activity
-- Own back button handling
-- Own lifecycle
-- More memory intensive
+Heavyweight characteristics:
+- Each window is a separate Android Activity.
+- Each has its own back button handling.
+- Each has its own lifecycle.
+- They use more memory.
 
-### Lightweight Windows
+### Lightweight windows
 
 ```javascript
 // Lightweight (same context)
@@ -373,15 +370,15 @@ const win = Ti.UI.createWindow({
 });
 ```
 
-**Lightweight characteristics**:
-- Share context with opening window
-- No back button (typically)
-- Less memory usage
-- Faster creation
+Lightweight characteristics:
+- Share context with the opening window.
+- No back button (typically).
+- Use less memory.
+- Create faster.
 
-## 9. Window Hierarchy and Stacking
+## 9. Window hierarchy and stacking
 
-### Understanding the Stack
+### Understanding the stack
 
 ```javascript
 const win1 = Ti.UI.createWindow({ title: '1' });
@@ -404,7 +401,7 @@ win2.close();
 // Stack: [win1]
 ```
 
-### Accessing the Stack
+### Accessing the stack
 
 ```javascript
 // Get current window (some contexts)
@@ -414,11 +411,11 @@ const currentWin = Ti.UI.currentWindow;
 const activity = Ti.Android.currentActivity;
 ```
 
-## 10. Platform-Specific Navigation
+## 10. Platform-specific navigation
 
-### Android Navigation Patterns
+### Android navigation patterns
 
-**Back Button**:
+Back button:
 ```javascript
 win.addEventListener('androidback', (e) => {
   // Override default behavior
@@ -438,7 +435,7 @@ win.addEventListener('androidback', (e) => {
 });
 ```
 
-**Menu Button**:
+Menu button:
 ```javascript
 const activity = Ti.Android.currentActivity;
 
@@ -470,9 +467,9 @@ activity.onOptionsItemSelected = (e) => {
 };
 ```
 
-### iOS Navigation Patterns
+### iOS navigation patterns
 
-**NavigationWindow** (most common):
+NavigationWindow (most common):
 ```javascript
 const navWindow = Ti.UI.createNavigationWindow({
   window: rootWindow
@@ -480,13 +477,13 @@ const navWindow = Ti.UI.createNavigationWindow({
 navWindow.open();
 ```
 
-**Tab Bar Controller**:
+Tab bar controller:
 ```javascript
 const tabGroup = Ti.UI.createTabGroup();
 tabGroup.open();
 ```
 
-**SplitWindow** (iPad):
+SplitWindow (iPad):
 ```javascript
 const splitWin = Ti.UI.iOS.createSplitWindow({
   masterView: masterWindow,
@@ -495,11 +492,11 @@ const splitWin = Ti.UI.iOS.createSplitWindow({
 splitWin.open();
 ```
 
-## 11. Execution Contexts
+## 11. Execution contexts
 
-### Lightweight Contexts
+### Lightweight contexts
 
-Windows share contexts by default:
+Windows share contexts by default.
 
 ```javascript
 const win1 = Ti.UI.createWindow();
@@ -509,9 +506,9 @@ const win2 = Ti.UI.createWindow();
 const sharedVariable = 123;  // Accessible in both
 ```
 ...
-## 12. Common Patterns
+## 12. Common patterns
 
-### Drill-Down Navigation
+### Drill-down navigation
 
 ```javascript
 // Root level
@@ -537,7 +534,7 @@ table.addEventListener('click', (e) => {
 });
 ```
 
-### Modal Forms
+### Modal forms
 
 ```javascript
 function showModalForm() {
@@ -569,7 +566,7 @@ function showModalForm() {
 }
 ```
 
-### Tab with Navigation
+### Tab with navigation
 
 ```javascript
 const navWindow = Ti.UI.createNavigationWindow({
@@ -588,22 +585,22 @@ const tab = Ti.UI.createTab({
 tabGroup.addTab(tab);
 ```
 
-## 13. Best Practices
+## 13. Best practices
 
-1. **Prefer TabGroups for multi-feature apps** - Most common pattern
-2. **Use NavigationWindow for iOS hierarchy** - Standard iOS pattern
-3. **Limit to 4 tabs** - All tabs visible = better UX
-4. **Handle androidback appropriately** - Confirm before destructive actions
-5. **Use modal windows for focused tasks** - Forms, confirmations
-6. **Consider execution contexts** - Heavyweight windows don't share variables
-7. **Test on both platforms** - Navigation patterns differ significantly
+1. Prefer TabGroups for multi-feature apps. It is the most common pattern.
+2. Use NavigationWindow for iOS hierarchy. It matches platform expectations.
+3. Limit to 4 tabs. All tabs visible is better UX.
+4. Handle `androidback` with care. Confirm destructive actions.
+5. Use modal windows for focused tasks like forms and confirmations.
+6. Remember execution contexts. Heavyweight windows do not share variables.
+7. Test on both platforms. Navigation differs in real use.
 
-## 14. Platform Differences Summary
+## 14. Platform differences summary
 
 | Feature       | iOS                          | Android                                |
 | ------------- | ---------------------------- | -------------------------------------- |
 | Modal windows | Fill screen, cover tab bar   | No effect (windows always full screen) |
-| Navigation    | NavigationWindow             | Back button + Menu button              |
+| Navigation    | NavigationWindow             | Back button and menu button            |
 | Tabs          | Fixed width, "More" overflow | Shrink to fit                          |
 | Window stack  | Manual management            | Back button navigation                 |
 | Heavyweight   | Requires fullscreen          | Default behavior                       |

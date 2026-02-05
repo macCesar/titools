@@ -1,12 +1,12 @@
-# CLI Expert Strategies & TiNy
+# CLI expert strategies & TiNy
 
 Mastering the command line is essential for a Titanium expert. This guide covers advanced workflows, optimization techniques, and the use of **TiNy (`tn`)** for efficient development.
 
-## The Expert Workflow
+## The expert workflow
 
 An expert doesn't just run `ti build`. They optimize for speed, reliability, and automation.
 
-### 1. The "Inner Loop" Optimization
+### 1. The "inner loop" optimization
 Reduce the time between writing code and seeing it on the device.
 
 - **LiveView**: Use `--liveview` for near-instant UI updates without full recompilation.
@@ -22,27 +22,27 @@ Reduce the time between writing code and seeing it on the device.
   ti build -p ios --skip-js-minify
   ```
 
-### 2. Precise Cleaning
+### 2. Precise cleaning
 Don't use `ti clean` as a first resort (it's slow).
 - **Targeted Clean**: If Alloy isn't reflecting changes, try deleting `Resources/` and `build/` manually or use `ti clean -p <platform>`.
-- **Pre-Production**: Always run a full `ti clean` before a production/App Store build to ensure no stale assets are included.
+- **Pre-Production**: Always run a full `ti clean` before a production/App Store build to make sure no stale assets are included.
 
-### 3. Advanced Debugging
+### 3. Advanced debugging
 - **Trace Logging**: Use `--log-level trace` when a build fails for mysterious reasons (e.g., a broken hook or native module issue).
 - **Build Logs**: Check `build/build.log` for the full output of the last build process.
 
 ---
 
-## TiNy (`tn`): The Expert's Power Tool
+## TiNy (`tn`): the expert's power tool
 
 **TiNy** is a modern CLI wrapper for Titanium SDK that drastically reduces keystrokes and manages complex build configurations through "recipes".
 
-### Why Experts Use TiNy
+### Why experts use TiNy
 - **Speed**: `tn ios` vs `ti build -p ios -T simulator`.
-- **Consistency**: Recipes ensure every team member builds with the same flags.
+- **Consistency**: Recipes make sure every team member builds with the same flags.
 - **Device Management**: Easily target specific simulators/emulators by name.
 
-### Quick Start
+### Quick start
 1. **Install**: `npm install -g tn`
 2. **Repo**: https://github.com/jasonkneen/tn
 3. **Generate Recipes**: Detect all connected devices/simulators.
@@ -55,7 +55,7 @@ Don't use `ti clean` as a first resort (it's slow).
    tn pixel-8-pro-api-34
    ```
 
-### Expert Recipes
+### Expert recipes
 Recipes can be flags or options. Multiple recipes can be combined.
 
 | Command        | Expansion                           |
@@ -66,7 +66,7 @@ Recipes can be flags or options. Multiple recipes can be combined.
 | `tn playstore` | `--android --target dist-playstore` |
 | `tn watch`     | `--ios --launch-watch-app`          |
 
-### Customizing Your Workflow
+### Customizing your workflow
 - **Save Global Recipe**:
   ```bash
   tn save my-debug --ios --simulator --log-level trace --skip-js-minify
@@ -76,7 +76,7 @@ Recipes can be flags or options. Multiple recipes can be combined.
   tn project save release --playstore --keystore ./android/release.keystore
   ```
 
-### Composition & Placeholders
+### Composition & placeholders
 You can use `%s` as a placeholder in recipes for values:
 ```bash
 tn save ci -b --pp-uuid <UUID> --distribution-name "<NAME>" --ah --installr --installr-release-notes %s
@@ -87,7 +87,7 @@ tn ci "Fixed login bug"
 
 ---
 
-## Automation Integration
+## Automation integration
 
 Experts automate their builds using `package.json` scripts, often combining `ti` or `tn` with other tools.
 
@@ -103,7 +103,7 @@ Experts automate their builds using `package.json` scripts, often combining `ti`
 
 ---
 
-## Pro-Tips
+## Pro-tips
 - **SDK Switching**: Use `-s <version>` to test your app against a specific SDK version without changing your global default.
 - **Sim Focus**: Use `--no-sim-focus` if you want to keep your editor in focus while the simulator launches in the background.
 - **Concurrent Builds**: You can often build for iOS and Android simultaneously in different terminal tabs if your machine has the resources.

@@ -171,7 +171,7 @@ The `open` and `close` methods provide a clear and straightforward way to manage
 
 By using these methods, you can ensure consistent and manageable animation behavior across your application, as opposed to using the `play` or `toggle` methods, which alternate between the `open` and `close` states based on the current state of the view.
 
-This explicit control helps in scenarios where the exact state of the view is crucial for the desired user experience or application logic.
+This explicit control helps in scenarios where the exact state of the view is important for the UI or application logic.
 
 ### `open(views, [callback])`
 

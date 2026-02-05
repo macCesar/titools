@@ -1,17 +1,16 @@
-# Titanium SDK Tutorials
+# Titanium SDK tutorials
 
-Practical tutorials and guides for building real-world Titanium applications.
+Practical tutorials and guides for building real Titanium applications.
 
-## RESTe - API Integration
+## RESTe - API integration
 
 ### Overview
+RESTe by Jason Kneen is a module for consuming web APIs in Titanium.
 
-**RESTe** by Jason Kneen - A module for consuming web APIs in Titanium.
-
-**Benefits:**
+Benefits:
 - Eliminates boilerplate HTTP code
 - Auto-generates JavaScript API from config
-- Supports Backbone.js Models/Collections in Alloy
+- Supports Backbone.js models and collections in Alloy
 - Works with any API (not just REST)
 
 ### Installation
@@ -20,108 +19,113 @@ Practical tutorials and guides for building real-world Titanium applications.
 npm install reste
 ```
 
-### Basic Configuration
+### Basic configuration
 
-**alloy.js:**
+`alloy.js`:
+
 ```javascript
-const reste = require("reste");
+const reste = require('reste');
 const api = new reste();
 
 api.config({
-    debug: true,                    // Console logging
-    errorsAsObjects: true,          // Return errors as objects (1.4.5+) — WARNING: breaks apps written for 1.4.4 that handle errors differently
-    autoValidateParams: false,      // Throw error if params missing
-    validatesSecureCertificate: false,
-    timeout: 4000,
-    url: "https://api.example.com/",  // Base URL
-    requestHeaders: {
-        "X-API-Key": "your-key-here",
-        "Content-Type": "application/json"
+  debug: true, // Console logging
+  errorsAsObjects: true, // Return errors as objects (1.4.5+) - breaks apps written for 1.4.4 that handle errors differently
+  autoValidateParams: false, // Throw error if params missing
+  validatesSecureCertificate: false,
+  timeout: 4000,
+  url: 'https://api.example.com/', // Base URL
+  requestHeaders: {
+    'X-API-Key': 'your-key-here',
+    'Content-Type': 'application/json'
+  },
+  methods: [
+    {
+      name: 'getVideos',
+      get: 'videos'
     },
-    methods: [
-        {
-            name: "getVideos",
-            get: "videos"
-        },
-        {
-            name: "getVideoById",
-            get: "videos/"
-        },
-        {
-            name: "createVideo",
-            post: "videos"
-        }
-    ],
-    onError: (e, retry) => {
-        const dialog = Ti.UI.createAlertDialog({
-            title: "Connection error",
-            message: "Check your network and retry.",
-            buttonNames: ['Retry']
-        });
-        dialog.addEventListener("click", () => {
-            retry();
-        });
-        dialog.show();
+    {
+      name: 'getVideoById',
+      get: 'videos/'
+    },
+    {
+      name: 'createVideo',
+      post: 'videos'
     }
+  ],
+  onError: (e, retry) => {
+    const dialog = Ti.UI.createAlertDialog({
+      title: 'Connection error',
+      message: 'Check your network and retry.',
+      buttonNames: ['Retry']
+    });
+    dialog.addEventListener('click', () => {
+      retry();
+    });
+    dialog.show();
+  }
 });
 ```
 
 ### Usage
 
-**Auto-generated methods:**
+Auto-generated methods:
+
 ```javascript
 // Fetch single video
 api.getVideoById({
-    videoId: "abc123"
+  videoId: 'abc123'
 }, (video) => {
-    Ti.API.info(`Got video: ${video.title}`);
+  Ti.API.info(`Got video: ${video.title}`);
 });
 
 // Create video
 api.createVideo({
-    body: {
-        title: "My Video",
-        categoryId: 2
-    }
+  body: {
+    title: 'My Video',
+    categoryId: 2
+  }
 }, (response) => {
-    Ti.API.info(`Created: ${response.id}`);
+  Ti.API.info(`Created: ${response.id}`);
 });
 ```
 
-### Backbone.js Models/Collections
+### Backbone.js models and collections
 
-**Configuration:**
+Configuration:
+
 ```javascript
 api.config({
-    // ... other config
-    models: [{
-        name: "video",
-        id: "objectId",              // Primary key field
-        read: "getVideo",
-        create: "createVideo",
-        update: "updateVideo",
-        delete: "deleteVideo",
-        collections: [{
-            name: "videos",
-            content: "results",      // Array wrapper in response
-            read: "getVideos"
-        }]
+  // ... other config
+  models: [{
+    name: 'video',
+    id: 'objectId', // Primary key field
+    read: 'getVideo',
+    create: 'createVideo',
+    update: 'updateVideo',
+    delete: 'deleteVideo',
+    collections: [{
+      name: 'videos',
+      content: 'results', // Array wrapper in response
+      read: 'getVideos'
     }]
+  }]
 });
 ```
 
-**In Alloy Controller:**
+In an Alloy controller:
+
 ```javascript
 // Fetch collection
 Alloy.Collections.videos.fetch();
 
 // Or fetch with parameters
 Alloy.Collections.videos.fetch({
-    data: {category: "sports"}
+  data: { category: 'sports' }
 });
 ```
 
-**In Alloy View:**
+In an Alloy view:
+
 ```xml
 <TableView dataCollection="videos" onClick="selectVideo">
   <TableViewRow model="{objectId}">
@@ -131,54 +135,57 @@ Alloy.Collections.videos.fetch({
 </TableView>
 ```
 
-### RESTe Advanced Features
+### RESTe advanced features
 
-- **Caching**: Built-in response caching support
-- **Promises**: Use with `q.js` for Promise-based API calls
-- **Mock data**: Create models/collections on-the-fly for testing:
+- Caching: built-in response caching
+- Promises: use with `q.js` for Promise-based API calls
+- Mock data: create models and collections on the fly for testing
+
 ```javascript
 const mockUser = api.createModel('users', {
-    id: 1,
-    name: 'Test User'
+  id: 1,
+  name: 'Test User'
 });
 ```
-- **Backbone.js binding**: Use RESTe models directly with Alloy data binding without `<Model>` tags
 
-### Important Notes
+- Backbone.js binding: use RESTe models directly with Alloy data binding without `<Model>` tags
 
-- **Don't use `<Model>` or `<Collection>` tags** with RESTe
-- RESTe creates models/collections automatically
-- Use data-binding like normal Alloy collections
-- Great for mocking data during UI development
+### Important notes
 
-### Mock Data (On-The-Fly)
+- Do not use `<Model>` or `<Collection>` tags with RESTe
+- RESTe creates models and collections automatically
+- Use data binding like normal Alloy collections
+- Useful for mocking data during UI development
+
+### Mock data (on the fly)
 
 ```javascript
 // Create model without API
 const videoModel = api.createModel('video', {
-    title: 'Test Video',
-    description: 'Mock data'
+  title: 'Test Video',
+  description: 'Mock data'
 });
 
 // Create collection
 const videoCollection = api.createCollection('videos', [
-    {title: 'Video 1'},
-    {title: 'Video 2'}
+  { title: 'Video 1' },
+  { title: 'Video 2' }
 ]);
 ```
 
 ### Resources
 
-- **npm:** https://www.npmjs.com/package/reste
-- **GitHub:** https://github.com/jasonkneen/reste
+- npm: https://www.npmjs.com/package/reste
+- GitHub: https://github.com/jasonkneen/reste
 
 ---
 
-## Camera App Tutorial
+## Camera app tutorial
 
-### Camera Permissions Setup
+### Camera permissions setup
 
-**iOS** — add to tiapp.xml plist:
+iOS - add to `tiapp.xml` plist:
+
 ```xml
 <key>NSCameraUsageDescription</key>
 <string>This app needs camera access to take photos</string>
@@ -186,96 +193,98 @@ const videoCollection = api.createCollection('videos', [
 <string>This app needs microphone access for video recording</string>
 ```
 
-**Android**: Camera permissions are automatically added by the build system when using `Ti.Media.showCamera()`.
+Android: camera permissions are automatically added by the build system when you use `Ti.Media.showCamera()`.
 
 Always check permissions at runtime:
+
 ```javascript
 if (!Ti.Media.hasCameraPermissions()) {
-    Ti.Media.requestCameraPermissions((e) => {
-        if (e.success) openCamera();
-    });
+  Ti.Media.requestCameraPermissions((e) => {
+    if (e.success) openCamera();
+  });
 } else {
-    openCamera();
+  openCamera();
 }
 ```
 
-### Basic Camera Access
+### Basic camera access
 
 ```javascript
 // Show camera
 Ti.Media.showCamera({
-    success: (event) => {
-        const image = event.media;
-        if (event.mediaType === Ti.Media.MEDIA_TYPE_PHOTO) {
-            // Use the photo
-            const imageView = Ti.UI.createImageView({
-                image: image,
-                width: 300,
-                height: 300
-            });
-            win.add(imageView);
-        }
-    },
-    cancel: () => {
-        Ti.API.info('Camera canceled');
-    },
-    error: (error) => {
-        const a = Ti.UI.createAlertDialog({title: 'Camera Error'});
-        if (error.code === Ti.Media.NO_CAMERA) {
-            a.setMessage('Device does not have camera');
-        } else {
-            a.setMessage(`Unexpected error: ${error.code}`);
-        }
-        a.show();
-    },
-    saveToPhotoGallery: true,
-    allowEditing: true,
-    mediaTypes: [Ti.Media.MEDIA_TYPE_PHOTO],
-    videoQuality: Ti.Media.QUALITY_HIGH
+  success: (event) => {
+    const image = event.media;
+    if (event.mediaType === Ti.Media.MEDIA_TYPE_PHOTO) {
+      // Use the photo
+      const imageView = Ti.UI.createImageView({
+        image: image,
+        width: 300,
+        height: 300
+      });
+      win.add(imageView);
+    }
+  },
+  cancel: () => {
+    Ti.API.info('Camera canceled');
+  },
+  error: (error) => {
+    const a = Ti.UI.createAlertDialog({ title: 'Camera Error' });
+    if (error.code === Ti.Media.NO_CAMERA) {
+      a.setMessage('Device does not have camera');
+    } else {
+      a.setMessage(`Unexpected error: ${error.code}`);
+    }
+    a.show();
+  },
+  saveToPhotoGallery: true,
+  allowEditing: true,
+  mediaTypes: [Ti.Media.MEDIA_TYPE_PHOTO],
+  videoQuality: Ti.Media.QUALITY_HIGH
 });
 ```
 
-### Photo Gallery
+### Photo gallery
 
 ```javascript
 // Open photo gallery
 Ti.Media.openPhotoGallery({
-    success: (event) => {
-        const image = event.media;
-        // Process selected image
-    },
-    cancel: () => {
-        // User canceled
-    },
-    error: (error) => {
-        // Handle error
-    },
-    mediaTypes: [Ti.Media.MEDIA_TYPE_PHOTO]
+  success: (event) => {
+    const image = event.media;
+    // Process selected image
+  },
+  cancel: () => {
+    // User canceled
+  },
+  error: (error) => {
+    // Handle error
+  },
+  mediaTypes: [Ti.Media.MEDIA_TYPE_PHOTO]
 });
 ```
 
-### Saving Images
+### Saving images
 
 ```javascript
 // Save to gallery
 Ti.Media.saveToPhotoGallery({
-    media: myImageBlob,
-    success: () => {
-        alert('Saved!');
-    },
-    error: (e) => {
-        alert(`Error: ${e.error}`);
-    }
+  media: myImageBlob,
+  success: () => {
+    alert('Saved!');
+  },
+  error: (e) => {
+    alert(`Error: ${e.error}`);
+  }
 });
 ```
 
 ---
 
-## Geolocation Tutorial
+## Geolocation tutorial
 
-### Geolocation Permissions Setup
+### Geolocation permissions setup
 
-**iOS** — add to tiapp.xml plist:
+iOS - add to `tiapp.xml` plist:
+
 ```xml
 <key>NSLocationWhenInUseUsageDescription</key>
 <string>We need your location to show nearby places</string>
@@ -283,7 +292,8 @@ Ti.Media.saveToPhotoGallery({
 <string>We need your location for background tracking</string>
 ```
 
-**Android** — add to tiapp.xml manifest:
+Android - add to `tiapp.xml` manifest:
+
 ```xml
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
@@ -292,59 +302,59 @@ Ti.Media.saveToPhotoGallery({
 Runtime permission check:
 ```javascript
 if (!Ti.Geolocation.hasLocationPermissions(Ti.Geolocation.AUTHORIZATION_WHEN_IN_USE)) {
-    Ti.Geolocation.requestLocationPermissions(Ti.Geolocation.AUTHORIZATION_WHEN_IN_USE, (e) => {
-        if (e.success) startTracking();
-    });
+  Ti.Geolocation.requestLocationPermissions(Ti.Geolocation.AUTHORIZATION_WHEN_IN_USE, (e) => {
+    if (e.success) startTracking();
+  });
 }
 ```
 
-### Basic Location
+### Basic location
 
 ```javascript
 // One-time location
 if (Ti.Geolocation.locationServicesEnabled) {
-    Ti.Geolocation.getCurrentPosition((e) => {
-        if (!e.error) {
-            Ti.API.info(`Lat: ${e.coords.latitude}`);
-            Ti.API.info(`Lon: ${e.coords.longitude}`);
-        }
-    });
+  Ti.Geolocation.getCurrentPosition((e) => {
+    if (!e.error) {
+      Ti.API.info(`Lat: ${e.coords.latitude}`);
+      Ti.API.info(`Lon: ${e.coords.longitude}`);
+    }
+  });
 }
 ```
 
-### Continuous Tracking
+### Continuous tracking
 
 ```javascript
 // Configure accuracy
 Ti.Geolocation.accuracy = Ti.Geolocation.ACCURACY_BEST;
-Ti.Geolocation.distanceFilter = 10;  // Meters
+Ti.Geolocation.distanceFilter = 10; // Meters
 
 // Track location changes
 Ti.Geolocation.addEventListener('location', (e) => {
-    if (!e.error) {
-        const lat = e.coords.latitude;
-        const lon = e.coords.longitude;
-        updateMap(lat, lon);
-    }
+  if (!e.error) {
+    const lat = e.coords.latitude;
+    const lon = e.coords.longitude;
+    updateMap(lat, lon);
+  }
 });
 ```
 
-### Reverse Geocoding
+### Reverse geocoding
 
 ```javascript
 // Coordinates to address
 Ti.Geolocation.reverseGeocoder(37.389569, -122.050212, (e) => {
-    if (e.success) {
-        e.places.forEach((place) => {
-            Ti.API.info(place.address);
-            Ti.API.info(place.city);
-            Ti.API.info(place.country);
-        });
-    }
+  if (e.success) {
+    e.places.forEach((place) => {
+      Ti.API.info(place.address);
+      Ti.API.info(place.city);
+      Ti.API.info(place.country);
+    });
+  }
 });
 ```
 
-### Accuracy Tuning
+### Accuracy tuning
 
 ```javascript
 // iOS: minimum distance before firing event
@@ -355,40 +365,40 @@ Ti.Geolocation.distanceFilter = 10; // meters
 
 // Android: custom location rules
 Ti.Geolocation.Android.addLocationRule(Ti.Geolocation.Android.createLocationRule({
-    provider: Ti.Geolocation.Android.PROVIDER_GPS,
-    accuracy: 100, // meters
-    minAge: 1000   // milliseconds
+  provider: Ti.Geolocation.Android.PROVIDER_GPS,
+  accuracy: 100, // meters
+  minAge: 1000 // milliseconds
 }));
 ```
 
 ---
 
-## Alloy Controller Chaining
+## Alloy controller chaining
 
-### Pattern Overview
+### Pattern overview
 
 Chain controller methods to pass data between Alloy controllers in a clean, maintainable way.
 
-### Basic Pattern
+### Basic pattern
 
-**Parent Controller:**
+Parent controller:
 ```javascript
 const childController = Alloy.createController('child', {
-    data: someData,
-    onAction: (result) => {
-        // Handle result from child
-        Ti.API.info(`Child returned: ${result}`);
-    }
+  data: someData,
+  onAction: (result) => {
+    // Handle result from child
+    Ti.API.info(`Child returned: ${result}`);
+  }
 });
 
 childController.on('customEvent', (data) => {
-    // Handle child events
+  // Handle child events
 });
 
 childController.open();
 ```
 
-**Child Controller:**
+Child controller:
 ```javascript
 const args = arguments[0] || {};
 
@@ -397,27 +407,27 @@ const parentData = args.data;
 
 // Call parent callback
 function notifyParent(result) {
-    if (args.onAction) {
-        args.onAction(result);
-    }
+  if (args.onAction) {
+    args.onAction(result);
+  }
 }
 
 // Trigger parent events
 function triggerEvent(data) {
-    $.trigger('customEvent', data);
+  $.trigger('customEvent', data);
 }
 ```
 
 ### Benefits
 
-- **Clean separation** - Controllers remain independent
-- **Reusable** - Child works in different contexts
-- **Testable** - Can mock parent callbacks
-- **Maintainable** - Clear data flow
+- Clean separation. Controllers remain independent.
+- Reusable. Child works in different contexts.
+- Testable. You can mock parent callbacks.
+- Maintainable. Clear data flow.
 
 ---
 
-## Build Automation with Fastlane
+## Build automation with Fastlane
 
 ### Overview
 
@@ -435,7 +445,7 @@ sudo gem install fastlane -NV
 
 ### Basic Fastfile
 
-**fastlane/Fastfile:**
+`fastlane/Fastfile`:
 ```ruby
 platform :ios do
   desc "Build and deploy to TestFlight"
@@ -488,9 +498,9 @@ fastlane android build
 fastlane android beta
 ```
 
-### Advanced Options
+### Advanced options
 
-**Multiple environments:**
+Multiple environments:
 ```ruby
 lane :staging do
   sh "ti build -p ios -T dist --config ../staging.js"
@@ -501,42 +511,42 @@ lane :production do
 end
 ```
 
-**Environment-specific configs:**
+Environment-specific configs:
 ```javascript
 // staging.js
 module.exports = {
-    apiURL: 'https://staging-api.example.com',
-    analyticsEnabled: true
+  apiURL: 'https://staging-api.example.com',
+  analyticsEnabled: true
 };
 
 // production.js
 module.exports = {
-    apiURL: 'https://api.example.com',
-    analyticsEnabled: true
+  apiURL: 'https://api.example.com',
+  analyticsEnabled: true
 };
 ```
 
 ---
 
-## Additional Tutorials
+## Additional tutorials
 
-### Alloy Boilerplates
+### Alloy boilerplates
 
-See **Titanium_Boilerplates** folder for:
+See `Titanium_Boilerplates` folder for:
 - TypeScript boilerplates
 - App templates
 - Project scaffolding
 
-### Complete Sample Apps
+### Complete sample apps
 
-- **ToDoList** - CommonJS module pattern example
-- **Tweetanium** - Namespaced pattern example
-- **KitchenSink** - Complete API reference (built with Alloy)
+- ToDoList - CommonJS module pattern example
+- Tweetanium - Namespaced pattern example
+- KitchenSink - Complete API reference (built with Alloy)
 
 ---
 
 ## Resources
 
-- **RESTe:** https://github.com/jasonkneen/reste
-- **Fastlane:** https://fastlane.tools
-- **Alloy Framework:** See alloy-guides skill
+- RESTe: https://github.com/jasonkneen/reste
+- Fastlane: https://fastlane.tools
+- Alloy Framework: see alloy-guides skill

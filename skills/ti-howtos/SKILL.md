@@ -5,145 +5,141 @@ argument-hint: "[feature]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash, Bash(node *)
 ---
 
-# Titanium SDK How-tos Expert
+# Titanium SDK how-tos
 
-Comprehensive expert covering all official Titanium SDK how-to guides. Provides step-by-step instructions for integrating native features, handling data, working with media, and implementing platform-specific APIs.
+Hands-on guide to Titanium SDK native integrations. Focuses on practical steps, platform differences, and the details that usually bite.
 
-## Project Detection
+## Project detection
 
-:::info AUTO-DETECTS TITANIUM PROJECTS
-This skill automatically detects Titanium projects when invoked and provides native feature integration guides.
+::::info Auto-detects Titanium projects
+This skill detects Titanium projects automatically.
 
-**Detection occurs automatically** - no manual command needed.
+Indicators:
+- `tiapp.xml` exists (definitive)
+- Alloy project: `app/` folder
+- Classic project: `Resources/` folder
 
-**Titanium project indicator:**
-- `tiapp.xml` file (definitive indicator)
+Behavior:
+- Titanium detected: provide native integration guidance, permissions, modules, and platform notes
+- Not detected: say this skill is for Titanium projects only
+::::
 
-**Applicable to BOTH:**
-- **Alloy projects** (app/ folder)
-- **Classic projects** (Resources/ folder)
+## Integration workflow
 
-**Behavior based on detection:**
-- **Titanium detected** → Provides native feature integration guides, platform-specific API usage, permissions/modules/CI/CD help
-- **Not detected** → Indicates this is for Titanium projects only
-:::
+1. Requirement check: permissions, `tiapp.xml`, and module dependencies.
+2. Service setup: listeners and services (Location, Push, Core Motion, and so on).
+3. Lifecycle sync: tie listeners to Android and iOS lifecycle events.
+4. Error handling: use robust callbacks for async native calls.
+5. Platform optimization: apply platform-specific logic (Intent filters, Spotlight, Core Motion).
 
-## Integration Workflow
+## Native integration rules
 
-1.  **Requirement Check**: Identify needed permissions, `tiapp.xml` configurations, and module dependencies.
-2.  **Service Setup**: Register listeners or services (Location, Push, Core Motion, etc.).
-3.  **Lifecycle Sync**: Coordinate service listeners with Android/iOS lifecycle events.
-4.  **Error Handling**: Implement robust error callbacks for asynchronous native calls.
-5.  **Platform Optimization**: Apply platform-specific deep-dive logic (e.g., Intent Filters, Spotlight, Core Motion).
+### iOS permissions
+- Location: `NSLocationWhenInUseUsageDescription` or `NSLocationAlwaysAndWhenInUseUsageDescription` in `tiapp.xml`.
+- Motion activity: required for Core Motion Activity API.
+- Camera and photo: `NSCameraUsageDescription` and `NSPhotoLibraryUsageDescription`.
+- Background modes: required for background audio, location, or VOIP.
+- iOS 17+: add `PrivacyInfo.xcprivacy` for UserDefaults and File Timestamps.
 
-## Native Integration Rules (Low Freedom)
+### Android resource management
+- Services: stop background services when they are no longer needed.
+- Location: use `distanceFilter` and FusedLocationProvider (requires `ti.playservices`).
+- Intents: set action, data type, and category. Copy the root activity to `tiapp.xml` for intent filters.
 
-### iOS Permissions
-- **Location**: `NSLocationWhenInUseUsageDescription` or `NSLocationAlwaysAndWhenInUseUsageDescription` in `tiapp.xml`
-- **Motion Activity**: Required for Core Motion Activity API
-- **Camera/Photo**: `NSCameraUsageDescription` and `NSPhotoLibraryUsageDescription`
-- **Background Modes**: Required for background audio, location, or VOIP
-- **iOS 17+ Privacy**: Mandatory `PrivacyInfo.xcprivacy` manifest for UserDefaults and FileTimestamps.
+### Data and networking
+- HTTPClient: handle both `onload` and `onerror`.
+- SQLite: close both `db` and `resultSet` to avoid locks.
+- Filesystem: check `isExternalStoragePresent()` before using SD card storage.
+- Binary data: use `Ti.Buffer` and `Ti.Codec` for byte-level work.
+- Streams: use `BufferStream`, `FileStream`, or `BlobStream` for chunked I/O.
 
-### Android Resource Management
-- **Services**: Always stop background services when no longer needed
-- **Location**: Use `distanceFilter` and FusedLocationProvider (requires `ti.playservices`)
-- **Intents**: Specify proper action, data type, and category. Copy root activity to `tiapp.xml` for Intent Filters.
+### Media and memory
+- Camera and gallery: use `imageAsResized` to reduce memory pressure.
+- Audio: handle `pause` and `resume` for streaming interruptions.
+- WebView: avoid TableView embedding; set `touchEnabled=false` if needed.
+- Video: Android requires fullscreen; iOS supports embedded players.
 
-### Data & Networking
-- **HTTPClient**: Always handle both `onload` and `onerror` callbacks
-- **SQLite**: Always `db.close()` and `resultSet.close()` to prevent locks
-- **Filesystem**: Check `isExternalStoragePresent()` before accessing SD card
-- **Binary Data**: Use `Ti.Buffer` and `Ti.Codec` for low-level byte manipulation
-- **Streams**: Use `BufferStream`, `FileStream` or `BlobStream` for efficient chunk-based I/O.
+### Platform-specific properties
 
-### Media & Memory
-- **Camera/Gallery**: Use `imageAsResized` to avoid memory exhaustion
-- **Audio**: Handle `pause`/`resume` events for streaming interruption
-- **WebView**: Avoid embedding in TableViews; set `touchEnabled=false` if needed
-- **Video**: Android requires fullscreen; iOS supports embedded players
+::::danger Platform-specific properties need modifiers
+Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` without platform modifiers can break cross-platform builds.
 
-### Platform-Specific Properties
-
-:::danger CRITICAL: Platform-Specific Properties Require Modifiers
-Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties WITHOUT platform modifiers causes cross-platform compilation failures.
-
-**Example of the damage:**
+Bad example:
 ```javascript
-// ❌ WRONG - Adds Ti.UI.iOS to Android project
+// Wrong: adds Ti.UI.iOS to Android build
 const win = Ti.UI.createWindow({
-  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT  // FAILS on Android!
-})
+  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
+});
 ```
 
-**CORRECT approaches:**
+Good options:
 
-**Option 1 - TSS modifier (Alloy projects):**
+TSS modifier (Alloy):
 ```tss
 "#mainWindow[platform=ios]": {
   statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
 }
 ```
 
-**Option 2 - Conditional code:**
+Conditional code:
 ```javascript
 if (OS_IOS) {
-  $.mainWindow.statusBarStyle = Ti.UI.iOS.StatusBar.LIGHT_CONTENT
+  $.mainWindow.statusBarStyle = Ti.UI.iOS.StatusBar.LIGHT_CONTENT;
 }
 ```
 
-**Properties that ALWAYS require platform modifiers:**
-- iOS: `statusBarStyle`, `modalStyle`, `modalTransitionStyle`, any `Ti.UI.iOS.*`
-- Android: `actionBar` config, any `Ti.UI.Android.*` constant
+Always require modifiers:
+- iOS: `statusBarStyle`, `modalStyle`, `modalTransitionStyle`, any `Ti.UI.iOS.*`.
+- Android: `actionBar` config, any `Ti.UI.Android.*` constant.
 
-**For platform-specific modifier syntax in TSS, see** [Code Conventions (ti-expert)](skills/ti-expert/references/code-conventions.md#platform--device-modifiers) or [Platform UI guides](references/ios-platform-deep-dives.md).
-:::
+For TSS platform modifiers, see the code conventions in `skills/ti-expert/references/code-conventions.md#platform--device-modifiers` or the platform UI guides in `references/ios-platform-deep-dives.md`.
+::::
 
-## Reference Guides (Progressive Disclosure)
+## Reference guides
 
-### Core Features
--   **[Location & Maps](references/location-and-maps.md)**: GPS tracking and battery-efficient location rules.
-    -   **[Google Maps v2 (Android)](references/google-maps-v2.md)**: API Keys, Google Play Services, and v2 features.
-    -   **[iOS Map Kit](references/ios-map-kit.md)**: 3D Camera, system buttons, and iOS-specific callouts.
--   **[Notification Services](references/notification-services.md)**: Push notifications (APNs/FCM), local alerts, interactive notifications.
+### Core features
+- [Location and maps](references/location-and-maps.md): GPS tracking and battery-efficient location rules.
+- [Google Maps v2 (Android)](references/google-maps-v2.md): API keys, Google Play Services, and v2 features.
+- [iOS Map Kit](references/ios-map-kit.md): 3D camera, system buttons, and iOS callouts.
+- [Notification services](references/notification-services.md): push notifications (APNs/FCM), local alerts, interactive notifications.
 
-### Data Handling
--   **[Remote Data Sources](references/remote-data-sources.md)**: HTTPClient lifecycle, JSON/XML parsing, file uploads/downloads, sockets, SOAP, SSL security.
--   **[Local Data Sources](references/local-data-sources.md)**: Filesystem operations, SQLite databases, Properties API, persistence strategies.
-    -   **[Buffer, Codec, and Streams](references/buffer-codec-streams.md)**: Advanced binary data manipulation and serial data flows.
+### Data handling
+- [Remote data sources](references/remote-data-sources.md): HTTPClient lifecycle, JSON/XML parsing, uploads, downloads, sockets, SOAP, SSL.
+- [Local data sources](references/local-data-sources.md): filesystem operations, SQLite, Properties API, persistence strategy.
+- [Buffer, Codec, and Streams](references/buffer-codec-streams.md): binary data manipulation and serial data flows.
 
-### Media & Content
--   **[Media APIs](references/media-apis.md)**: Audio playback/recording, Video streaming, Camera/Gallery, Images and ImageViews, density-specific assets.
+### Media and content
+- [Media APIs](references/media-apis.md): audio playback and recording, video streaming, camera and gallery, ImageViews, density assets.
 
-### Web Integration
--   **[Web Content Integration](references/web-content-integration.md)**: WebView component (WKWebView), local/remote content, bidirectional communication.
--   **[Webpack Build Pipeline](references/webpack-build-pipeline.md)**: Modern build pipeline (Ti 9.1.0+), NPM integration, and the `@` source alias.
+### Web integration
+- [Web content integration](references/web-content-integration.md): WebView (WKWebView), local and remote content, bidirectional communication.
+- [Webpack build pipeline](references/webpack-build-pipeline.md): Ti 9.1.0+ build pipeline, npm integration, and the `@` alias.
 
-### Platform-Specific (Android)
--   **[Android Platform Deep Dives](references/android-platform-deep-dives.md)**: Intents, advanced Intent Filters, Broadcast with permissions, Background Services.
+### Platform-specific (Android)
+- [Android platform deep dives](references/android-platform-deep-dives.md): intents, intent filters, broadcast permissions, background services.
 
-### Platform-Specific (iOS)
--   **[iOS Platform Deep Dives](references/ios-platform-deep-dives.md)**: iOS 17 Privacy, Silent Push, Spotlight, Handoff, iCloud, Core Motion, WatchKit/Siri integration.
+### Platform-specific (iOS)
+- [iOS platform deep dives](references/ios-platform-deep-dives.md): iOS 17 privacy, silent push, Spotlight, Handoff, iCloud, Core Motion, WatchKit and Siri.
 
-### Advanced & DevOps
--   **[Extending Titanium](references/extending-titanium.md)**: Hyperloop, native module architecture (Proxy/View), Xcode debugging, SDK 9.0 (AndroidX) migration.
--   **[Debugging & Profiling](references/debugging-profiling.md)**: Memory management, leak detection, native tools.
-    -   **[Automation (Fastlane & Appium)](references/automation-fastlane-appium.md)**: CI/CD pipelines, UI testing, and automated store deployment.
+### Advanced and DevOps
+- [Extending Titanium](references/extending-titanium.md): Hyperloop, native modules (Proxy and View), Xcode debugging, AndroidX migration for SDK 9.0.
+- [Debugging and profiling](references/debugging-profiling.md): memory management, leak detection, native tools.
+- [Automation (Fastlane and Appium)](references/automation-fastlane-appium.md): CI/CD, UI testing, store deployment.
 
-## Related Skills
+## Related skills
 
-For tasks beyond native feature integration, use these complementary skills:
+For tasks beyond native feature integration, use:
 
-| Task                                           | Use This Skill |
+| Task                                           | Use this skill |
 | ---------------------------------------------- | -------------- |
 | Project architecture, services, memory cleanup | `ti-expert`    |
 | UI layouts, ListViews, gestures, animations    | `ti-ui`        |
 | Hyperloop, app distribution, tiapp.xml config  | `ti-guides`    |
 | Alloy MVC, models, data binding                | `alloy-guides` |
 
-## Response Format
+## Response format
 
-1.  **Prerequisites**: List required permissions, `tiapp.xml` configurations, or module dependencies.
-2.  **Step-by-Step Implementation**: Task-focused code guide with error handling.
-3.  **Platform Caveats**: Mention specific behavior differences between iOS and Android.
-4.  **Best Practices**: Include memory management, lifecycle considerations, and performance tips.
+1. Prerequisites: required permissions, `tiapp.xml` config, or modules.
+2. Step-by-step implementation: task-focused code guide with error handling.
+3. Platform caveats: iOS and Android differences.
+4. Best practices: memory, lifecycle, and performance tips.

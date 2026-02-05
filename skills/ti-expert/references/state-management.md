@@ -1,6 +1,6 @@
-# State Management Patterns
+# State management patterns
 
-## The Problem
+## The problem
 
 As apps grow, state gets scattered:
 - `Alloy.Collections` scattered across controllers
@@ -13,7 +13,7 @@ This leads to:
 - Inconsistent UI updates
 - Difficult debugging
 
-## Solution: Centralized State Store
+## Solution: centralized state store
 
 Create a single source of truth using Backbone.Events:
 
@@ -76,7 +76,7 @@ class StateStore {
 exports.appStore = new StateStore()
 ```
 
-## State Store Usage
+## State store usage
 
 ### Initialization in alloy.js
 
@@ -101,7 +101,7 @@ function initAppStore() {
 initAppStore()
 ```
 
-### Using State in Controllers
+### Using state in controllers
 
 ```javascript
 // controllers/home/index.js
@@ -139,7 +139,7 @@ function cleanup() {
 }
 ```
 
-### Updating State from Services
+### Updating state from services
 
 ```javascript
 // lib/services/authService.js
@@ -189,7 +189,7 @@ exports.logout = async function() {
 }
 ```
 
-## Service Layer State Caching
+## Service layer state caching
 
 Services can maintain their own cached state:
 
@@ -229,7 +229,7 @@ class UserService {
 exports.userService = new UserService()
 ```
 
-## Collections vs State Store
+## Collections vs state store
 
 **Use Alloy.Collections when:**
 - Data is list-based (users, items, messages)
@@ -254,7 +254,7 @@ Alloy.Collections.users.fetch({
 })
 ```
 
-## State Synchronization Pattern
+## State synchronization pattern
 
 When state needs to sync with server:
 
@@ -278,19 +278,19 @@ Ti.App.addEventListener('resume', () => {
 })
 ```
 
-## Anti-Patterns
+## Anti-patterns
 
-| Anti-Pattern                          | Why It's Bad                 | Solution                                 |
+| Anti-Pattern | Why It's Bad | Solution |
 | ------------------------------------- | ---------------------------- | ---------------------------------------- |
-| `Ti.App.fireEvent` for state          | No cleanup, memory leaks     | Use StateStore with `offChange`          |
-| Direct collection mutation            | Bypasses reactivity          | Use collection methods (`add`, `remove`) |
-| State in multiple places              | Inconsistency bugs           | Single source of truth                   |
-| Global variables (`Alloy.Globals`)    | No reactivity, hard to track | Use StateStore                           |
-| Controller-to-controller direct calls | Tight coupling               | Use StateStore or events                 |
+| `Ti.App.fireEvent` for state | No cleanup, memory leaks | Use StateStore with `offChange` |
+| Direct collection mutation | Bypasses reactivity | Use collection methods (`add`, `remove`) |
+| State in multiple places | Inconsistency bugs | Single source of truth |
+| Global variables (`Alloy.Globals`) | No reactivity, hard to track | Use StateStore |
+| Controller-to-controller direct calls | Tight coupling | Use StateStore or events |
 
-## Persistence Strategies
+## Persistence strategies
 
-### Ti.App.Properties (Simple Key-Value)
+### Ti.App.Properties (Simple Main-Value)
 
 Best for: User preferences, flags, simple settings.
 
@@ -415,7 +415,7 @@ exports.Database = {
 }
 ```
 
-### Hybrid Strategy (Recommended)
+### Hybrid strategy (Recommended)
 
 ```javascript
 // lib/services/stateStore.js
@@ -470,20 +470,20 @@ exports.appStore = {
 }
 ```
 
-### Choosing a Strategy
+### Choosing a strategy
 
-| Data Type          | Strategy            | Reason                 |
+| Data Type | Strategy | Reason |
 | ------------------ | ------------------- | ---------------------- |
-| User preferences   | Ti.App.Properties   | Simple key-value, fast |
-| Auth tokens        | Keychain/KeyStore   | Security               |
-| User profile       | Properties + Secure | Mixed sensitivity      |
-| Lists (100+ items) | SQLite              | Query, pagination      |
-| Offline queue      | SQLite              | Durability, FIFO       |
-| Cache              | In-memory + SQLite  | Speed + persistence    |
+| User preferences | Ti.App.Properties | Simple main-value, fast |
+| Auth tokens | Keychain/KeyStore | Security |
+| User profile | Properties + Secure | Mixed sensitivity |
+| Lists (100+ items) | SQLite | Query, pagination |
+| Offline queue | SQLite | Durability, FIFO |
+| Cache | In-memory + SQLite | Speed + persistence |
 
-## State Middleware
+## State middleware
 
-### Logger Middleware
+### Logger middleware
 
 ```javascript
 // lib/services/stateStore.js
@@ -569,7 +569,7 @@ appStore
   .use(persistMiddleware)
 ```
 
-### Action-Based State Updates
+### Action-based state updates
 
 ```javascript
 // lib/services/stateStore.js
@@ -639,9 +639,9 @@ appStore.dispatch('user/login', { user: userData, token: authToken })
 appStore.dispatch('cart/add', { item: product })
 ```
 
-## State Debugging
+## State debugging
 
-### Debug Helper
+### Debug helper
 
 ```javascript
 // lib/services/stateDebug.js
@@ -723,7 +723,7 @@ const debugMiddleware = (oldState, action, newState) => {
 appStore.use(debugMiddleware)
 ```
 
-### Development Panel
+### Development panel
 
 ```javascript
 // controllers/debug/stateViewer.js (Development only)

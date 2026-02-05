@@ -1,20 +1,20 @@
-# ListViews and Performance Optimization
+# ListViews and performance optimization
 
 ## 1. Overview
 
-ListView is a data-oriented, high-performance replacement for TableView. It optimizes large datasets by recycling native views and managing the item lifecycle automatically.
+ListView is a data-oriented, high-performance replacement for TableView. It handles large datasets by recycling native views and managing the item lifecycle for you.
 
-### Core Concepts
+### Core concepts
 
 | Concept          | Description                                                   |
 | ---------------- | ------------------------------------------------------------- |
-| **ListView**     | Container for sections                                        |
-| **ListSection**  | Organizes items, supports CRUD operations                     |
-| **ListItem**     | Virtual view object (not directly accessible after rendering) |
-| **ItemTemplate** | Defines row structure and binding                             |
-| **ListDataItem** | Raw data bound to templates                                   |
+| ListView         | Container for sections                                        |
+| ListSection      | Organizes items, supports CRUD operations                     |
+| ListItem         | Virtual view object (not directly accessible after rendering) |
+| ItemTemplate     | Defines row structure and binding                             |
+| ListDataItem     | Raw data bound to templates                                   |
 
-## 2. Basic ListView Structure
+## 2. Basic ListView structure
 
 ### Declarative (Alloy XML)
 
@@ -32,7 +32,7 @@ ListView is a data-oriented, high-performance replacement for TableView. It opti
 </Alloy>
 ```
 
-### Programmatic Data Binding
+### Programmatic data binding
 
 ```javascript
 const items = [
@@ -44,7 +44,7 @@ const items = [
 $.myList.sections[0].setItems(items);
 ```
 
-### Mapping External Data
+### Mapping external data
 
 ```javascript
 const externalData = [
@@ -68,11 +68,11 @@ $.myList.sections[0].setItems(items);
 
 ## 3. Templates
 
-### Default Template
+### Default template
 
 Built-in template with:
 - ImageView (left on iOS, right on Android)
-- Title Label (left-aligned, black)
+- Title label (left-aligned, black)
 - Optional accessory icon
 
 ```xml
@@ -83,7 +83,7 @@ Built-in template with:
 </ListView>
 ```
 
-### Custom Templates
+### Custom templates
 
 Create with `<Templates>` and `<ItemTemplate>`:
 
@@ -110,7 +110,7 @@ Create with `<Templates>` and `<ItemTemplate>`:
 </ListView>
 ```
 
-### Multiple Templates
+### Multiple templates
 
 ```xml
 <ListView id="dynamicListView">
@@ -149,13 +149,13 @@ const items = [
 $.dynamicListView.sections[0].setItems(items);
 ```
 
-### iOS Built-in Templates (iOS Only)
+### iOS built-in templates (iOS only)
 
-iOS provides four built-in templates that can be used without defining custom `ItemTemplate`:
+iOS provides four built-in templates you can use without defining custom templates:
 
 | Constant                            | Layout                                                          |
 | ----------------------------------- | --------------------------------------------------------------- |
-| `Ti.UI.LIST_ITEM_TEMPLATE_DEFAULT`  | Left-justified title only (this is the default)                 |
+| `Ti.UI.LIST_ITEM_TEMPLATE_DEFAULT`  | Left-justified title only (default)                             |
 | `Ti.UI.LIST_ITEM_TEMPLATE_SUBTITLE` | Title with subtitle below in smaller gray text                  |
 | `Ti.UI.LIST_ITEM_TEMPLATE_SETTINGS` | Left-justified title on left, right-justified subtitle on right |
 | `Ti.UI.LIST_ITEM_TEMPLATE_CONTACTS` | Right-justified title with left-justified subtitle              |
@@ -173,18 +173,18 @@ const listView = Ti.UI.createListView({
 });
 ```
 
-### Supported Template View Classes
+### Supported template view classes
 
 The following views can be used as child elements in custom templates: ActivityIndicator, Button, ImageView, Label, MaskedImage, ProgressBar, Slider, Switch, TextArea, TextField.
 
-## 4. Data Binding
+## 4. Data binding
 
-### Binding Syntax
+### Binding syntax
 
-**XML (Alloy)**: `bindId:property="value"`
-**JavaScript**: `{ bindId: { property: value } }`
+XML (Alloy): `bindId:property="value"`
+JavaScript: `{ bindId: { property: value } }`
 
-### Programmatic Binding with Custom Templates
+### Programmatic binding with custom templates
 
 ```javascript
 const items = [
@@ -205,9 +205,9 @@ const items = [
 $.elementsList.sections[0].setItems(items);
 ```
 
-## 5. Section Operations
+## 5. Section operations
 
-### CRUD Methods
+### CRUD methods
 
 | Method                                | Description        |
 | ------------------------------------- | ------------------ |
@@ -217,7 +217,7 @@ $.elementsList.sections[0].setItems(items);
 | `replaceItemsAt(index, count, items)` | Replace range      |
 | `deleteItemsAt(index, count)`         | Delete range       |
 
-### Example Operations
+### Example operations
 
 ```javascript
 const section = $.myList.sections[0];
@@ -238,9 +238,9 @@ section.replaceItemsAt(2, 3, replacementItems);
 section.deleteItemsAt(10, 2);
 ```
 
-### Row Animation (iOS)
+### Row animation (iOS)
 
-You can pass animation styles to append/delete/insert/replace/update methods:
+You can pass animation styles to append, delete, insert, replace, and update methods:
 
 ```javascript
 section.deleteItemsAt(0, 1, {
@@ -256,7 +256,7 @@ Available styles: `Ti.UI.iOS.RowAnimationStyle.BOTTOM`, `FADE`, `LEFT`, `NONE`, 
 
 ## 6. Events
 
-### Item Click
+### Item click
 
 ```xml
 <ListView id="list" onItemclick="handleClick">
@@ -279,9 +279,9 @@ function handleClick(e) {
 }
 ```
 
-### Marker Events (Infinite Scroll)
+### Marker events (infinite scroll)
 
-Markers act as "tripwires" for loading more data:
+Markers act as tripwires for loading more data:
 
 ```javascript
 // Set initial marker at item 100
@@ -309,9 +309,9 @@ Since SDK 4.1.0, use `addMarker()` to add additional markers after the initial `
 $.myList.addMarker({ sectionIndex: 0, itemIndex: 149 });
 ```
 
-### Scroll Events
+### Scroll events
 
-Since SDK 4.1.0, use `scrollstart` and `scrollend` events to monitor scrolling:
+Since SDK 4.1.0, use `scrollstart` and `scrollend` to monitor scrolling:
 
 ```javascript
 $.myList.addEventListener('scrollstart', (e) => {
@@ -326,7 +326,7 @@ $.myList.addEventListener('scrollend', (e) => {
 
 Event properties: `firstVisibleSectionIndex`, `firstVisibleItemIndex`, `visibleItemCount`.
 
-### Template Element Events
+### Template element events
 
 ```xml
 <ListView id="likeList" onItemclick="handleItemClick">
@@ -348,7 +348,7 @@ function handleItemClick(e) {
   if (e.bindId === "icon") {
     const item = e.section.getItemAt(e.itemIndex);
 
-    // Toggle image (update data, NOT e.source)
+    // Toggle image (update data, not e.source)
     if (item.icon.image === "star_grey.png") {
       item.icon.image = "star_gold.png";
     } else {
@@ -360,11 +360,11 @@ function handleItemClick(e) {
 }
 ```
 
-## 7. Critical Performance Rules
+## 7. Critical performance rules
 
-### Rule 1: Avoid Ti.UI.SIZE in Templates
+### Rule 1: Avoid Ti.UI.SIZE in templates
 
-**BAD** - Causes jerky scrolling:
+Bad (jerky scrolling):
 
 ```xml
 <ItemTemplate name="bad">
@@ -372,7 +372,7 @@ function handleItemClick(e) {
 </ItemTemplate>
 ```
 
-**GOOD** - Use fixed height or Ti.UI.FILL:
+Good (fixed height or FILL):
 
 ```xml
 <ItemTemplate name="good">
@@ -380,11 +380,11 @@ function handleItemClick(e) {
 </ItemTemplate>
 ```
 
-### Rule 2: Cannot Access Children Directly
+### Rule 2: Cannot access children directly
 
-Views are recycled. Always update via data:
+Views are recycled. Always update via data.
 
-**BAD**:
+Bad:
 
 ```javascript
 // DON'T - Will be lost when recycled
@@ -393,7 +393,7 @@ function handleClick(e) {
 }
 ```
 
-**GOOD**:
+Good:
 
 ```javascript
 // DO - Update the data item
@@ -404,11 +404,11 @@ function handleClick(e) {
 }
 ```
 
-### Rule 3: Minimize Template Count
+### Rule 3: Minimize template count
 
-Fewer templates = better native cell reuse:
+Fewer templates means better native cell reuse.
 
-**GOOD** - One template with conditional visibility:
+Good: one template with conditional visibility
 
 ```xml
 <ItemTemplate name="flexible">
@@ -418,7 +418,7 @@ Fewer templates = better native cell reuse:
 </ItemTemplate>
 ```
 
-**BAD** - Multiple similar templates:
+Bad: multiple similar templates
 
 ```xml
 <ItemTemplate name="withIcon">...</ItemTemplate>
@@ -426,7 +426,7 @@ Fewer templates = better native cell reuse:
 <ItemTemplate name="withSubtitle">...</ItemTemplate>
 ```
 
-### Rule 4: Use updateItemAt for Changes
+### Rule 4: Use updateItemAt for changes
 
 ```javascript
 // Get item data
@@ -440,11 +440,11 @@ item.customField.text = 'Updated';
 section.updateItemAt(index, item);
 ```
 
-### Rule 5: Animations are Limited
+### Rule 5: Animations are limited
 
 ListView items have limited animation support. For complex animations, consider TableView.
 
-## 8. iOS Action Items (Swipe Actions)
+## 8. iOS action items (swipe actions)
 
 ```javascript
 const section = $.myList.sections[0];
@@ -463,7 +463,7 @@ section.editActions = [
 ];
 section.canEdit = true;
 
-// Handle actions — e.action is the title STRING of the tapped action
+// Handle actions - e.action is the title string of the tapped action
 $.myList.addEventListener('editaction', (e) => {
   if (e.action === 'Delete') {
     e.section.deleteItemsAt(e.itemIndex, 1);
@@ -474,16 +474,16 @@ $.myList.addEventListener('editaction', (e) => {
 });
 ```
 
-**Available action styles:**
-- `Ti.UI.iOS.ROW_ACTION_STYLE_DEFAULT` — gray background
-- `Ti.UI.iOS.ROW_ACTION_STYLE_DESTRUCTIVE` — red background (default)
-- `Ti.UI.iOS.ROW_ACTION_STYLE_NORMAL` — custom color background
+Available action styles:
+- `Ti.UI.iOS.ROW_ACTION_STYLE_DEFAULT` - gray background
+- `Ti.UI.iOS.ROW_ACTION_STYLE_DESTRUCTIVE` - red background (default)
+- `Ti.UI.iOS.ROW_ACTION_STYLE_NORMAL` - custom color background
 
-**Event properties:** `action` (string — the title), `itemId`, `itemIndex`, `section`, `sectionIndex`.
+Event properties: `action` (string, the title), `itemId`, `itemIndex`, `section`, `sectionIndex`.
 
-## 9. Editing Mode (iOS)
+## 9. Editing mode (iOS)
 
-Set the `editing` property to toggle edit mode, allowing users to delete and reorder items:
+Set `editing` to toggle edit mode and let users delete or reorder items:
 
 ```javascript
 // Toggle edit mode
@@ -493,7 +493,7 @@ $.myList.editing = true;
 $.myList.pruneSectionsOnEdit = true;
 ```
 
-### Delete Event
+### Delete event
 
 Fires when a user deletes an item in edit mode:
 
@@ -503,7 +503,7 @@ $.myList.addEventListener('delete', (e) => {
 });
 ```
 
-### Move Event
+### Move event
 
 Fires when a user reorders an item in edit mode:
 
@@ -533,10 +533,10 @@ const items = [
 ];
 ```
 
-### Search Properties
+### Search properties
 
-- `keepSectionsInSearch: true` — preserves section headers while filtering search results.
-- `caseInsensitiveSearch: true` — enables case-insensitive search filtering.
+- `keepSectionsInSearch: true` preserves section headers while filtering results.
+- `caseInsensitiveSearch: true` enables case-insensitive filtering.
 
 ```javascript
 const listView = Ti.UI.createListView({
@@ -546,9 +546,9 @@ const listView = Ti.UI.createListView({
 });
 ```
 
-### No Results Event
+### No results event
 
-Since SDK 3.3.0, when items are filtered using `searchView` or `searchText`, the `noresults` event fires when search returns no results:
+Since SDK 3.3.0, when items are filtered using `searchView` or `searchText`, the `noresults` event fires when there are no matches:
 
 ```javascript
 $.myList.addEventListener('noresults', (e) => {
@@ -556,26 +556,26 @@ $.myList.addEventListener('noresults', (e) => {
 });
 ```
 
-## 11. Performance Best Practices
+## 11. Performance best practices
 
-### DO:
-- Use fixed heights in templates
-- Minimize number of templates
-- Use `updateItemAt()` for changes
-- Cache `sections[0]` reference
-- Use markers for infinite scroll
-- Test with real device data volumes
+Do:
+- Use fixed heights in templates.
+- Minimize number of templates.
+- Use `updateItemAt()` for changes.
+- Cache `sections[0]` reference.
+- Use markers for infinite scroll.
+- Test with real device data volumes.
 
-### DON'T:
-- Use `Ti.UI.SIZE` for row dimensions
-- Access `e.source` in itemclick events
-- Create too many similar templates
-- Add complex animations to list items
-- Ignore the "recycled" nature of views
+Don't:
+- Use `Ti.UI.SIZE` for row dimensions.
+- Access `e.source` in itemclick events.
+- Create too many similar templates.
+- Add complex animations to list items.
+- Ignore the recycled nature of views.
 
 ## 12. Transitioning from TableView
 
-### Core Logic Differences
+### Core logic differences
 
 | TableView            | ListView                     |
 | -------------------- | ---------------------------- |
@@ -587,23 +587,23 @@ $.myList.addEventListener('noresults', (e) => {
 | `updateRow()`        | `updateItemAt()`             |
 | `deleteRow()`        | `deleteItemsAt()`            |
 
-### API Differences
+### API differences
 
-**Properties NOT available for ListItem**:
+Properties not available for ListItem:
 - `accessibilityLabel`, `className`, `editable`, `hasCheck`, `hasChild`, `hasDetail`, `leftImage`, `moveable`, `rightImage`.
-- *Alternatives*: Use `accessoryType` for indicators, and `image` or custom templates for images.
+- Alternatives: use `accessoryType` for indicators, and `image` or custom templates for images.
 
-**TableViewSection methods NOT supported by ListSection**:
+TableViewSection methods not supported by ListSection:
 - `add`, `remove`, `rowAtIndex`.
-- *Alternatives*: Use `getItemAt` and `appendItems`/`deleteItemsAt`.
+- Alternatives: use `getItemAt` and `appendItems` or `deleteItemsAt`.
 
-**TableView methods NOT available to ListView**:
+TableView methods not available to ListView:
 - `appendRow`, `deleteRow`, `deselectRow`, `insertRowAfter`, `insertRowBefore`, `selectRow`, `updateRow`, `scrollToIndex`.
-- *Alternatives*: Use `scrollToItem` and `selectItem` (iOS). For row manipulation, use the containing `ListSection`.
+- Alternatives: use `scrollToItem` and `selectItem` (iOS). For row manipulation, use the containing ListSection.
 
-## 13. Common Patterns
+## 13. Common patterns
 
-### Infinite Scroll with Markers
+### Infinite scroll with markers
 
 ```javascript
 const PAGE_SIZE = 25;
@@ -633,7 +633,7 @@ $.myList.addEventListener('marker', (e) => {
 });
 ```
 
-### Multiple Selection
+### Multiple selection
 
 ```javascript
 const selectedItems = {};
@@ -656,13 +656,13 @@ $.myList.addEventListener('itemclick', (e) => {
 });
 ```
 
-### Section Index (A-Z)
+### Section index (A-Z)
 
 ```javascript
 $.myList.sectionIndexTitles = ["A", "B", "C", ...];
 ```
 
-## 14. Platform Differences
+## 14. Platform differences
 
 ### iOS vs Android
 
@@ -674,7 +674,7 @@ $.myList.sectionIndexTitles = ["A", "B", "C", ...];
 | Default template image | Left side    | Right side    |
 | cacheSize property     | Supported    | Not supported |
 
-### Grouped Style (iOS)
+### Grouped style (iOS)
 
 Set `style: Ti.UI.iOS.ListViewStyle.GROUPED` to display sections as separate visual groups with rounded corners and inset spacing:
 
@@ -685,9 +685,9 @@ const listView = Ti.UI.createListView({
 });
 ```
 
-### Pull-to-Refresh (iOS)
+### Pull-to-refresh (iOS)
 
-The `pull` event fires when the user pulls past the top of the list, and `pullend` fires when the user releases. Use the `pullView` property to set a custom pull-to-refresh view:
+The `pull` event fires when the user pulls past the top of the list, and `pullend` fires when they release. Use `pullView` to set a custom view:
 
 ```javascript
 const pullView = Ti.UI.createView({
@@ -699,12 +699,12 @@ pullView.add(Ti.UI.createLabel({ text: 'Pull to refresh...' }));
 $.myList.pullView = pullView;
 
 $.myList.addEventListener('pull', (e) => {
-  // User is pulling — update UI as needed
+  // User is pulling - update UI as needed
   pullView.children[0].text = e.active ? 'Release to refresh...' : 'Pull to refresh...';
 });
 
 $.myList.addEventListener('pullend', (e) => {
-  // User released — trigger data refresh
+  // User released - trigger data refresh
   refreshData();
 });
 ```
@@ -718,16 +718,16 @@ $.myList.cacheSize = 3;  // Default
 
 ## 15. Debugging
 
-### Common Issues
+### Common issues
 
-**Problem**: Jerky scrolling
-**Solution**: Remove `Ti.UI.SIZE` from templates
+Problem: Jerky scrolling
+Solution: Remove `Ti.UI.SIZE` from templates
 
-**Problem**: Data changes not visible
-**Solution**: Use `updateItemAt()` instead of modifying views
+Problem: Data changes not visible
+Solution: Use `updateItemAt()` instead of modifying views
 
-**Problem**: Event not firing on template element
-**Solution**: Check `bindId` in event handler
+Problem: Event not firing on template element
+Solution: Check `bindId` in event handler
 
-**Problem**: Wrong item updated
-**Solution**: Use `e.section.getItemAt(e.itemIndex)` not global reference
+Problem: Wrong item updated
+Solution: Use `e.section.getItemAt(e.itemIndex)` not a global reference

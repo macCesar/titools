@@ -85,7 +85,7 @@ Font Awesome 7 uses different style prefixes:
 ```
 
 :::tip
-PurgeTSS handles Font Awesome 7 CSS custom properties automatically (the `--fa:` format), so you do not need to manually tweak icon CSS.
+PurgeTSS handles Font Awesome 7 CSS custom properties automatically (the `--fa:` format), so you do not need to edit icon CSS by hand.
 :::
 
 ### Material Icons

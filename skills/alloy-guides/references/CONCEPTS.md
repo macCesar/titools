@@ -6,7 +6,7 @@ This guide covers the important concepts related to the Alloy framework, includi
 
 ## Model-View-Controller
 
-Alloy utilizes the model-view-controller (MVC) pattern, which separates the application into three different components:
+Alloy uses the model-view-controller (MVC) pattern, which separates the application into three different components:
 
 * **Models** provide the business logic, containing the rules, data and state of the application
 
@@ -26,7 +26,7 @@ Alloy views are built from Titanium UI components. You define views using XML ma
 
 Alloy controllers generally have a one-to-one relationship with Alloy views. Controllers directly use the Titanium SDK API without an abstraction layer. The controller has access to all of the view components.
 
-Additionally, Alloy provides built-in support for Underscore.js, which provides a set of utility functions, such as array and iterative helpers.
+Also, Alloy provides built-in support for Underscore.js, which provides a set of utility functions, such as array and iterative helpers.
 
 ## Alloy and the Titanium SDK
 
@@ -103,7 +103,7 @@ app/
 
 Alternatively, you can use special conditional code and attributes inside the controllers, views and styles to apply platform-specific code and components.
 
-Additionally, the `assets` folder is laid out the same way as the `Resources` folder in a Titanium project for platform-specific files and density-specific images.
+Also, the `assets` folder is laid out the same way as the `Resources` folder in a Titanium project for platform-specific files and density-specific images.
 
 ## Widgets
 

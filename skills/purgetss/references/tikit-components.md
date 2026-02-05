@@ -1,6 +1,6 @@
 # Welcome to TiKit UI Components
 
-TiKit is a small library of UI components built with Alloy and PurgeTSS. It provides reusable building blocks for common UI patterns so you can move faster without fighting styling details.
+TiKit is a set of UI components built with Alloy and PurgeTSS. It gives you reusable blocks for common UI patterns and keeps styling consistent across screens.
 
 ## Why TiKit
 
@@ -8,7 +8,7 @@ TiKit is a small library of UI components built with Alloy and PurgeTSS. It prov
 - PurgeTSS-first styling: Use utility classes instead of large TSS files.
 - Dynamic updates: Change text, images, and icons without recreating components.
 - Icon support: Works with Font Awesome, Material Icons, and other icon fonts.
-- Consistent UI: Components are designed to look good together.
+- Consistent UI: Components are designed to work together.
 - Easy to customize: Adjust colors and styles to match your brand.
 - Lightweight: Built to stay fast and avoid extra overhead.
 - Sensible defaults: You only pass what you need.

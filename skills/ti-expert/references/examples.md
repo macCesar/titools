@@ -1,6 +1,6 @@
-# Alloy Implementation Examples
+# Alloy implementation examples
 
-## API Client Service
+## API client service
 Standard logic for network requests.
 
 ```javascript
@@ -18,7 +18,7 @@ exports.get = function(endpoint, params = {}) {
 }
 ```
 
-## Native Module Wrapper Service
+## Native module wrapper service
 Encapsulate native modules (e.g., audio, maps, facebook) to decouple from controllers.
 
 ```javascript
@@ -33,7 +33,7 @@ exports.performAction = function(data) {
 }
 ```
 
-## i18n Helper
+## i18n helper
 Logic for complex string transformations and plurals.
 
 ```javascript
@@ -44,7 +44,7 @@ exports.getPluralMessages = function(count) {
 }
 ```
 
-## Model with SQL Adapter
+## Model with SQL adapter
 Definition for local SQLite persistence.
 
 ```javascript
@@ -64,7 +64,7 @@ exports.definition = {
 }
 ```
 
-## Fully Styled & Accessible View
+## Fully styled & accessible view
 Applying TSS styles while maintaining accessibility.
 
 ```xml
@@ -111,7 +111,7 @@ Applying TSS styles while maintaining accessibility.
 - Use margins on children for spacing (NOT padding on parent)
 - Use `Ti.UI.FILL` for full-width elements
 
-## Cleanup Pattern in Controller
+## Cleanup pattern in controller
 Critical for memory management and avoiding leaks.
 
 ```javascript
@@ -133,7 +133,7 @@ function cleanup() {
 $.cleanup = cleanup
 ```
 
-## Animation Usage
+## Animation usage
 Using `Ti.UI.createAnimation()` for UI transformations.
 
 ```javascript
@@ -153,7 +153,7 @@ function shakeError(element) {
 }
 ```
 
-## Complete CRUD Example
+## Complete crud example
 
 ```javascript
 // lib/services/productService.js
@@ -301,7 +301,7 @@ function cleanup() {
 $.cleanup = cleanup
 ```
 
-## ListView with Search and Filter
+## ListView with search and filter
 
 ```xml
 <!-- views/contacts/list.xml -->
@@ -455,7 +455,7 @@ function cleanup() {
 $.cleanup = cleanup
 ```
 
-## Form with Validation Example
+## Form with validation example
 
 ```xml
 <!-- views/auth/register.xml -->
@@ -696,7 +696,7 @@ function cleanup() {
 $.cleanup = cleanup
 ```
 
-## Tab-Based Navigation Example
+## Tab-based navigation example
 
 ```xml
 <!-- views/main.xml -->

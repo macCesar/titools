@@ -62,7 +62,7 @@ purge: {
 **`mode: 'all'` (default)**
 - Scans EVERYWHERE in XML files (comments, attributes, classes, IDs, Ti Elements)
 - **REQUIRED** if you want PurgeTSS to parse any Ti Elements styled in `config.cjs`
-- Most comprehensive but slightly slower
+- Most complete but a bit slower
 
 **`mode: 'class'`**
 - Searches only in `class` and ID attributes in XML files

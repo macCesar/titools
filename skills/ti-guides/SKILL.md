@@ -5,77 +5,75 @@ argument-hint: "[topic]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(node *)
 ---
 
-# Titanium SDK Guide Expert
+# Titanium SDK guide expert
 
-This skill ensures Titanium projects follow TiDev standards for stability, performance, and cross-platform reliability.
+Use this skill to keep Titanium projects aligned with TiDev standards for stability, performance, and cross-platform behavior.
 
-## Project Detection
+## Project detection
 
-:::info AUTO-DETECTS TITANIUM PROJECTS
-This skill automatically detects Titanium projects when invoked and provides SDK-specific guidance.
+:::info Auto-detects Titanium projects
+This skill auto-detects Titanium projects. No manual command is needed.
 
-**Detection occurs automatically** - no manual command needed.
-
-**Titanium project indicator:**
+Titanium project indicator:
 - `tiapp.xml` file (definitive indicator)
 
-**Applicable to BOTH:**
-- **Alloy projects** (app/ folder)
-- **Classic projects** (Resources/ folder)
+Applies to both:
+- Alloy projects (`app/` folder)
+- Classic projects (`Resources/` folder)
 
-**Behavior based on detection:**
-- **Titanium detected** → Provides official Titanium SDK guidance, memory management best practices, app distribution help
-- **Not detected** → Indicates this is for Titanium projects only
+Behavior:
+- If a Titanium project is detected, provide official Titanium SDK guidance, memory management best practices, and app distribution help.
+- If not detected, say this skill is only for Titanium projects.
 :::
 
-## Core Workflow
+## Core workflow
 
-1.  **Architecture Check**: Validate that the project follows a modular pattern (CommonJS or Alloy).
-2.  **Memory Review**: Ensure all global listeners are removed and heavy objects are nulled during cleanup.
-3.  **Bridge Optimization**: Identify and cache frequently accessed native properties to minimize bridge crossings.
-4.  **Native Integration**: Use Hyperloop for specialized native functionality, ensuring proper casting and thread management.
-5.  **Asset Management**: Optimize database operations with transactions and manage image memory footprints.
+1. Validate the project follows a modular pattern (CommonJS or Alloy).
+2. Ensure global listeners are removed and heavy objects are nulled during cleanup.
+3. Cache frequently accessed native properties to reduce bridge crossings.
+4. Use Hyperloop for specialized native functionality and handle casting and threading correctly.
+5. Use transactions for database work and manage image memory footprints.
 
-## Procedural Rules (Low Freedom)
+## Procedural rules
 
--   **Memory Hygiene**: Always remove `Ti.App` and `Ti.Geolocation` listeners in the controller cleanup phase.
--   **No Bridge Calls in Loops**: Never access `Ti.Platform` or `Ti.DisplayCaps` inside loops; store values in local variables.
--   **Hyperloop Naming**: Concatenate selectors accurately (e.g., `addAttribute:value:range:` -> `addAttributeValueRange`).
--   **DB Persistence**: Always close resultsets and database handles after every transaction block.
+- Always remove `Ti.App` and `Ti.Geolocation` listeners during controller cleanup.
+- Do not access `Ti.Platform` or `Ti.DisplayCaps` inside loops. Store values in local variables.
+- Concatenate Hyperloop selectors accurately (for example, `addAttribute:value:range:` -> `addAttributeValueRange`).
+- Close resultsets and database handles after every transaction block.
 
-## Reference Guides (Progressive Disclosure)
+## Reference guides
 
--   **[Hello World](references/hello-world.md)**: Project creation, structure, and getting started with Alloy or Classic Titanium.
--   **[JavaScript Primer](references/javascript-primer.md)**: JavaScript fundamentals, learning resources, best practices, and ES6+ features.
--   **[Application Frameworks](references/application-frameworks.md)**: Alloy vs Classic Titanium, architectural patterns, and framework selection.
--   **[Coding Best Practices](references/coding-best-practices.md)**: Memory leaks, bridge efficiency, event naming, security, and lazy loading.
--   **[CommonJS Advanced](references/commonjs-advanced.md)**: Stateful modules, caching, ES6+ support, and antipatterns.
--   **[Advanced Data & Images](references/advanced-data-and-images.md)**: SQLite transactions and image memory optimization.
--   **[Hyperloop Native Access](references/hyperloop-native-access.md)**: Objective-C/Swift/Java syntax, casting, debugging, XIB/Storyboards.
--   **[Style & Conventions](references/style-and-conventions.md)**: Naming standards and formatting rules.
--   **[Reserved Words](references/reserved-words.md)**: ECMAScript, iOS, and Alloy reserved keywords to avoid.
--   **[Alloy CLI Reference](references/alloy-cli-advanced.md)**: extract-i18n, code generation, and build hooks.
--   **[Alloy Data Mastery](references/alloy-data-mastery.md)**: Sync adapters, data binding, and Backbone collections.
--   **[Alloy Widgets & Themes](references/alloy-widgets-and-themes.md)**: Widget structure, styling priorities, and theming.
--   **[Android Manifest](references/android-manifest.md)**: Custom AndroidManifest.xml, permissions, and manifest merge.
--   **[App Distribution](references/app-distribution.md)**: Google Play (APK/AAB), App Store (IPA), certificates, provisioning, and deployment.
--   **[tiapp.xml Configuration](references/tiapp-config.md)**: Complete reference for tiapp.xml and timodule.xml, including all elements, properties, and platform-specific settings.
--   **[CLI Reference](references/cli-reference.md)**: Titanium CLI commands, options, tasks, configuration, and build processes.
--   **[Resources](references/resources.md)**: Community support, modules, sample code, Slack, and learning materials.
+- Hello World (references/hello-world.md): project creation, structure, and getting started with Alloy or Classic Titanium.
+- JavaScript Primer (references/javascript-primer.md): JavaScript fundamentals, learning resources, best practices, and ES6+ features.
+- Application Frameworks (references/application-frameworks.md): Alloy vs Classic Titanium, architectural patterns, and framework selection.
+- Coding Best Practices (references/coding-best-practices.md): memory leaks, bridge efficiency, event naming, security, and lazy loading.
+- CommonJS Advanced (references/commonjs-advanced.md): stateful modules, caching, ES6+ support, and antipatterns.
+- Advanced Data & Images (references/advanced-data-and-images.md): SQLite transactions and image memory optimization.
+- Hyperloop Native Access (references/hyperloop-native-access.md): Objective-C/Swift/Java syntax, casting, debugging, XIB/Storyboards.
+- Style & Conventions (references/style-and-conventions.md): naming standards and formatting rules.
+- Reserved Words (references/reserved-words.md): ECMAScript, iOS, and Alloy reserved keywords to avoid.
+- Alloy CLI Reference (references/alloy-cli-advanced.md): extract-i18n, code generation, and build hooks.
+- Alloy Data Mastery (references/alloy-data-mastery.md): sync adapters, data binding, and Backbone collections.
+- Alloy Widgets & Themes (references/alloy-widgets-and-themes.md): widget structure, styling priorities, and theming.
+- Android Manifest (references/android-manifest.md): custom AndroidManifest.xml, permissions, and manifest merge.
+- App Distribution (references/app-distribution.md): Google Play (APK/AAB), App Store (IPA), certificates, provisioning, and deployment.
+- tiapp.xml Configuration (references/tiapp-config.md): complete reference for tiapp.xml and timodule.xml, including all elements, properties, and platform-specific settings.
+- CLI Reference (references/cli-reference.md): Titanium CLI commands, options, tasks, configuration, and build processes.
+- Resources (references/resources.md): community support, modules, sample code, Slack, and learning materials.
 
-## Related Skills
+## Related skills
 
 For tasks beyond SDK fundamentals, use these complementary skills:
 
-| Task                                     | Use This Skill |
-| ---------------------------------------- | -------------- |
-| Project architecture, services, patterns | `ti-expert`    |
-| Native features (location, push, media)  | `ti-howtos`    |
-| Alloy CLI, configuration, debugging      | `alloy-howtos` |
-| UI layouts, ListViews, gestures          | `ti-ui`        |
+| Task | Use this skill |
+| --- | --- |
+| Project architecture, services, patterns | `ti-expert` |
+| Native features (location, push, media) | `ti-howtos` |
+| Alloy CLI, configuration, debugging | `alloy-howtos` |
+| UI layouts, ListViews, gestures | `ti-ui` |
 
-## Response Format
+## Response format
 
-1.  **Technical Recommendation**: Cite the specific TiDev best practice.
-2.  **Optimized Implementation**: Provide modern ES6+ code without semicolons.
-3.  **Rationale**: Briefly explain the performance or memory impact.
+1. Technical recommendation: cite the specific TiDev best practice.
+2. Optimized implementation: provide modern ES6+ code without semicolons.
+3. Rationale: briefly explain the performance or memory impact.

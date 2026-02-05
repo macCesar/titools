@@ -1,10 +1,10 @@
-# Alloy Samples
+# Alloy samples
 
-## Kitchen Sink
+## Kitchen sink
 
-See the [KitchenSink-v2 application on GitHub](https://github.com/tidev/kitchensink-v2) for Alloy samples in a real app.
+See the [KitchenSink-v2 application on GitHub](https://github.com/tidev/kitchensink-v2) for Alloy samples in a full app.
 
-## Controller Sample
+## Controller sample
 
 **index.js**
 ```javascript
@@ -52,15 +52,15 @@ if (!ENV_PROD) {
 }
 ```
 
-## Conditional Statements in Views
+## Conditional statements in views
 
-Alloy separates business logic (controllers) from UI definition (XML/TSS). A common challenge is showing/hiding content based on app state (e.g., login status).
+Alloy separates business logic (controllers) from UI definition (XML/TSS). A common challenge is showing or hiding content based on app state (for example, login status).
 
-:::tip TSS DEFAULTS
+:::tip TSS defaults
 The samples below assume some additional TSS: views and windows use a vertical layout, and the `View` tag has a default height and width of `Ti.UI.SIZE`.
 :::
 
-### The Problem with Traditional Approaches
+### Problems with traditional approaches
 
 **Approach 1: show/hide (in controller)**
 ```javascript
@@ -72,7 +72,7 @@ if (Alloy.Globals.isLoggedIn()) {
     $.notLoggedIn.show();
 }
 ```
-**Problem:** Both views render initially when the window opens. If the user isn't logged in, there's a big white space where the logged-in view was originally placed before it was hidden.
+**Problem:** Both views render when the window opens. If the user isn't logged in, there is empty space where the logged-in view was.
 
 **Approach 2: setHeight (in controller)**
 ```javascript
@@ -84,11 +84,11 @@ if (Alloy.Globals.isLoggedIn()) {
     $.notLoggedIn.setHeight(Ti.UI.SIZE);
 }
 ```
-**Problem:** This works but is messy and forces you to manage specific height values (`Ti.UI.SIZE`) in JavaScript logic, which should ideally stay in TSS.
+**Problem:** This works, but it forces you to manage height values (`Ti.UI.SIZE`) in JavaScript instead of TSS.
 
-### The Solution: IF Attributes in XML
+### Solution: IF attributes in XML
 
-Use `if` attributes directly within the XML View. These conditions are evaluated **before** rendering, providing a smoother experience.
+Use `if` attributes directly in the XML view. These conditions are evaluated before rendering.
 
 **index.xml**
 ```xml
@@ -107,14 +107,14 @@ Use `if` attributes directly within the XML View. These conditions are evaluated
 </Alloy>
 ```
 
-**Benefits:**
-- **No White Space:** Only the view that matches the condition is rendered to the UI.
-- **Pre-rendering Evaluation:** The UI is correct from the first frame.
-- **Cleaner Code:** No need for visibility logic in your controllers.
+Benefits:
+- Only the view that matches the condition is rendered.
+- The UI is correct from the first frame.
+- No visibility logic in controllers.
 
-### Conditional Queries in TSS
+### Conditional queries in TSS
 
-Use IF attributes in TSS definitions:
+Use `if` attributes in TSS definitions:
 
 ```tss
 "#info[if=Alloy.Globals.isIos7Plus]": {
@@ -138,7 +138,7 @@ Use IF attributes in TSS definitions:
 }
 ```
 
-### Data-Binding with Conditional Queries
+### Data-binding with conditional queries
 
 Define custom methods in models and render based on those methods:
 

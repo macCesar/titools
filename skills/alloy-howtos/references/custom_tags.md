@@ -1,16 +1,16 @@
-# Creating Custom Tags in Titanium with Alloy
+# Creating custom tags in Titanium with Alloy
 
-Custom tags allow you to create reusable UI components without the overhead of widgets. They are an incredibly fast way to build a suite of controls that are as easy to use as dropping a file into the `app/lib` folder.
+Custom tags let you create reusable UI components without the overhead of widgets. You can keep controls in a single file under `app/lib`.
 
-## Why Use Custom Tags?
+## Why use custom tags?
 
-When building cross-platform applications, you often need specific UI controls (like a web-style checkbox) that don't exist natively. You have three main approaches:
+When building cross-platform apps, you often need UI controls (like a web-style checkbox) that do not exist natively. You have three approaches:
 
-1.  **Direct XML/JS:** Copy-pasting code into every view. Not reusable and messy.
-2.  **Widgets:** Highly reusable but requires a folder structure and `dependencies` in `config.json`.
-3.  **Custom Tags:** Single file in `app/lib/`, no config dependency, and very simple to share. They reduce the amount of platform-specific code in your views, keeping them simple and readable.
+1.  **Direct XML/JS:** Copy and paste code into each view. Not reusable and easy to drift.
+2.  **Widgets:** Reusable, but require a folder structure and `dependencies` in `config.json`.
+3.  **Custom tags:** Single file in `app/lib/`, no config dependency, easy to share. They reduce platform-specific code in views.
 
-## Basic Setup
+## Basic setup
 
 1.  Create a file in `app/lib/` (e.g., `checkbox.js`)
 2.  Export a `create<TagName>` function
@@ -24,9 +24,9 @@ When building cross-platform applications, you often need specific UI controls (
     onCaptionClick="doShowTerms"
     onChange="onCheckChange" />
 ```
-The `module` attribute tells Alloy to look in `checkbox.js` for a `createCheckBox` function, pass it the arguments from XML/TSS, and expect a `Ti.UI.*` component back.
+The `module` attribute tells Alloy to look in `checkbox.js` for a `createCheckBox` function. Alloy passes the XML/TSS arguments and expects a `Ti.UI.*` component back.
 
-## Robust Example: CheckBox
+## Robust example: CheckBox
 
 **app/lib/checkbox.js**
 ```javascript
@@ -101,9 +101,9 @@ exports.createCheckBox = args => {
 };
 ```
 
-## Global Module Override
+## Global module override
 
-Apply a module to all tags in a view by updating the `Alloy` tag. Alloy will check your specified file for any tag creation overrides before falling back to default implementations:
+Apply a module to all tags in a view by updating the `Alloy` tag. Alloy checks your file for tag creation overrides before using default implementations:
 
 ```xml
 <Alloy module="ui">
@@ -113,9 +113,9 @@ Apply a module to all tags in a view by updating the `Alloy` tag. Alloy will che
     </Window>
 </Alloy>
 ```
-This is powerful for adding default colors or properties (like a black default color for Android Labels) across an entire project.
+This is useful for adding default colors or properties (for example, a black default color for Android Labels) across a project.
 
-## Key Points
+## Key points
 
 | Aspect        | Description                                                   |
 | ------------- | ------------------------------------------------------------- |
@@ -136,9 +136,9 @@ const checkbox = require("checkbox").createCheckBox({
 win.add(checkbox);
 ```
 
-This works because custom tags are standard CommonJS modules — the `module` attribute in XML is just a convenience.
+This works because custom tags are standard CommonJS modules. The `module` attribute in XML is a convenience.
 
-## Custom Tags vs Widgets
+## Custom tags vs widgets
 
 | Custom Tags                           | Widgets                                  |
 | ------------------------------------- | ---------------------------------------- |

@@ -1,6 +1,6 @@
-# Security Fundamentals for Titanium Mobile Apps
+# Security fundamentals for Titanium mobile apps
 
-## Token Storage Strategy
+## Token storage strategy
 
 **NEVER store tokens in:** `Ti.App.Properties` (plaintext), localStorage, or files.
 
@@ -56,7 +56,7 @@ exports.TokenStorage = {
 }
 ```
 
-## Certificate Pinning
+## Certificate pinning
 
 Prevent man-in-the-middle attacks by pinning SSL certificates:
 
@@ -100,7 +100,7 @@ exports.createPinnedClient = function() {
 </ti:app>
 ```
 
-## Data Encryption at Rest
+## Data encryption at rest
 
 ```javascript
 // lib/services/encryption.js
@@ -151,7 +151,7 @@ module.exports = class SecureCache {
 }
 ```
 
-## Secure HTTP Communication
+## Secure HTTP communication
 
 ```javascript
 // lib/api/secureClient.js
@@ -205,7 +205,7 @@ exports.createSecureClient = function(baseUrl) {
 }
 ```
 
-## Authentication Token Refresh Pattern
+## Authentication token refresh pattern
 
 ```javascript
 // lib/services/authService.js
@@ -238,7 +238,7 @@ function scheduleTokenRefresh(expiresIn) {
 }
 ```
 
-## Input Validation
+## Input validation
 
 ```javascript
 // lib/services/validator.js
@@ -268,17 +268,17 @@ exports.Validator = {
 }
 ```
 
-## OWASP Mobile Security Checklist
+## Owasp mobile security checklist
 
-| Category             | Check                       | Implementation                     |
+| Category | Check | Implementation |
 | -------------------- | --------------------------- | ---------------------------------- |
-| **Data Storage**     | Credentials stored securely | Keychain/KeyStore for tokens       |
-| **Data Storage**     | Sensitive data encrypted    | AES-256 for cached data            |
-| **Communication**    | HTTPS only                  | `validatesSecureCertificate: true` |
-| **Communication**    | Certificate pinning         | SSL pinning enabled                |
-| **Authentication**   | Token refresh               | Auto-refresh before expiry         |
-| **Authentication**   | Session timeout             | Auto-logout after inactivity       |
-| **Input Validation** | Server-side validation      | Never trust client input           |
-| **Input Validation** | Sanitize user input         | Remove XSS patterns                |
-| **Cryptography**     | No hardcoded keys           | Keys from secure storage           |
-| **Cryptography**     | Use standard algorithms     | AES-256, SHA-256                   |
+| **Data Storage** | Credentials stored securely | Keychain/KeyStore for tokens |
+| **Data Storage** | Sensitive data encrypted | AES-256 for cached data |
+| **Communication** | HTTPS only | `validatesSecureCertificate: true` |
+| **Communication** | Certificate pinning | SSL pinning enabled |
+| **Authentication** | Token refresh | Auto-refresh before expiry |
+| **Authentication** | Session timeout | Auto-logout after inactivity |
+| **Input Validation** | Server-side validation | Never trust client input |
+| **Input Validation** | Sanitize user input | Remove XSS patterns |
+| **Cryptography** | No hardcoded keys | Keys from secure storage |
+| **Cryptography** | Use standard algorithms | AES-256, SHA-256 |

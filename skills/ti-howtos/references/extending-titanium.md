@@ -1,48 +1,48 @@
 # Extending Titanium
 
-## 1. Module Architecture (Core Concepts)
+## 1. Module architecture (core concepts)
 
 Titanium modules are based on a native class hierarchy that communicates with JavaScript:
 
-- **Proxy**: Base class that binds native code with JS. Maintains object state.
-- **Module**: A special Proxy that defines a namespace (e.g., `Ti.UI`). Only one per project is allowed.
-- **ViewProxy**: Proxy specialized in rendering views. Manages the native view's lifecycle.
-- **View**: The actual visual representation (e.g., a `UIButton` or an Android `UIView`).
+- Proxy: base class that binds native code with JS and maintains object state
+- Module: special Proxy that defines a namespace (for example, `Ti.UI`). Only one per project is allowed.
+- ViewProxy: Proxy specialized in rendering views; manages the native view lifecycle
+- View: the actual visual representation (for example, a `UIButton` or an Android `UIView`)
 
-### Proxy-View Relationship
-The `ViewProxy` maintains properties in JS even if the native view does not exist yet. When the view is added to the hierarchy, the Proxy instantiates the native `View` and passes all accumulated properties to it.
+### Proxy-view relationship
+The `ViewProxy` keeps properties in JS even if the native view does not exist yet. When the view is added to the hierarchy, the Proxy creates the native `View` and applies all accumulated properties.
 
-### Threading Considerations
-- JavaScript in Titanium is **single-threaded**. All JS callbacks execute on the JS runtime thread.
+### Threading considerations
+- JavaScript in Titanium is single-threaded. All JS callbacks run on the JS runtime thread.
 - Native modules can use background threads for heavy work, but UI operations must happen on the main/UI thread.
-- On iOS, each Window with a `url` property gets its own JavaScript context and thread — avoid this pattern.
+- On iOS, each Window with a `url` property gets its own JS context and thread. Avoid this pattern.
 - Use `@Kroll.method(runOnUiThread=true)` (Android) to ensure a method runs on the UI thread.
 
-### Key Android Kroll Annotations
-- `@Kroll.method` — expose a Java method to JavaScript
-- `@Kroll.getProperty` / `@Kroll.setProperty` — expose getter/setter properties
-- `@Kroll.onAppCreate` — annotate a static method to run when the app process starts
-- `propertyAccessors` element in `@Kroll.proxy` — auto-generate getter/setter methods
+### Key Android Kroll annotations
+- `@Kroll.method` - expose a Java method to JavaScript
+- `@Kroll.getProperty` / `@Kroll.setProperty` - expose getter/setter properties
+- `@Kroll.onAppCreate` - annotate a static method to run when the app process starts
+- `propertyAccessors` in `@Kroll.proxy` - auto-generate getter/setter methods
 
-## 2. Module Debugging in Xcode (iOS)
+## 2. Module debugging in Xcode (iOS)
 
-You can debug your native module directly within a Titanium project:
+You can debug a native module directly within a Titanium project:
 
-1. Open the generated Xcode project from your test app at `build/iphone/<App>.xcodeproj`.
+1. Open the generated Xcode project at `build/iphone/<App>.xcodeproj`.
 2. Drag the module project (`.xcodeproj`) into the app project in Xcode.
-3. In the app, go to **Build Phases > Dependencies** and add the module.
-4. In **Link Binary With Libraries**, add the module's `.a` library or framework.
+3. In the app, go to Build Phases → Dependencies and add the module.
+4. In Link Binary With Libraries, add the module's `.a` library or framework.
 5. Set a breakpoint in your native code and launch the app from Xcode.
 
 ## 3. Upgrading to SDK 9.0.0+ (Android)
 
-Titanium 9.0.0 introduced major changes in Android:
+Titanium 9.0.0 introduced major Android changes:
 
-- **AndroidX**: Legacy support libraries are no longer supported. You must migrate your Java/Kotlin code to AndroidX.
-- **Gradle**: Modules now use Gradle for dependencies. Create an `android/build.gradle` file instead of manually copying `.jar` files to `lib/`.
-- **Architectures**: It is mandatory to include `arm64-v8a` and `x86_64` in the `manifest` file.
+- AndroidX: legacy support libraries are no longer supported. Migrate Java/Kotlin code to AndroidX.
+- Gradle: modules now use Gradle for dependencies. Create `android/build.gradle` instead of copying `.jar` files into `lib/`.
+- Architectures: include `arm64-v8a` and `x86_64` in the manifest.
 
-**Example module `build.gradle`:**
+Example module `build.gradle`:
 ```gradle
 dependencies {
     implementation 'com.google.android.material:material:1.1.0'
@@ -57,16 +57,16 @@ Hyperloop provides direct JavaScript access to native iOS and Android APIs witho
 
 ### Prerequisites
 
-**For iOS**:
+For iOS:
 - Requires `ti.hyperloop` module in `tiapp.xml`
-- Only works with Classic Titanium project (not Alloy initially, now supported)
+- Only works with Classic Titanium projects (not Alloy initially, now supported)
 - iOS 7+ deployment target
 
-**For Android**:
+For Android:
 - Requires `ti.hyperloop` module in `tiapp.xml`
-- Android 4.0+ (API Level 14+)
+- Android 4.0+ (API level 14+)
 
-**Enable in tiapp.xml**:
+Enable in `tiapp.xml`:
 ```xml
 <modules>
   <module platform="iphone">ti.hyperloop</module>
@@ -74,18 +74,18 @@ Hyperloop provides direct JavaScript access to native iOS and Android APIs witho
 </modules>
 ```
 
-### Hyperloop Basics
+### Hyperloop basics
 
-The pattern for accessing native APIs:
+Pattern for accessing native APIs:
 ```javascript
 const NativeClass = require('path.to.NativeClass');
 const instance = new NativeClass();
 instance.methodName();
 ```
 
-### iOS Hyperloop Examples
+### iOS Hyperloop examples
 
-#### Access iOS Frameworks
+#### Access iOS frameworks
 
 ```javascript
 // Access Foundation framework
@@ -99,7 +99,7 @@ Ti.API.info(`Length: ${str.length()}`);
 // Mutable string
 const mutable = NSMutableString.alloc().initWithString('Hello');
 mutable.appendString(' Hyperloop');
-Ti.API.info(mutable);  // "Hello Hyperloop"
+Ti.API.info(mutable); // "Hello Hyperloop"
 ```
 
 #### Access UIKit
@@ -117,7 +117,7 @@ controller.view().setBackgroundColor(
 );
 ```
 
-#### Make Native HTTP Request
+#### Make native HTTP request
 
 ```javascript
 const NSURL = require('Foundation/NSURL');
@@ -144,19 +144,19 @@ task.resume();
 var CBCentralManager = require('CoreBluetooth/CBCentralManager');
 
 var central = CBCentralManager.alloc().initWithDelegateQueueOptions(
-  null,  // delegate
-  null   // queue
+  null, // delegate
+  null // queue
 );
 
 // Check Bluetooth state
 var state = central.state();
-if (state === 5) {  // CBCentralManagerStatePoweredOn
+if (state === 5) { // CBCentralManagerStatePoweredOn
   // Start scanning
   central.scanForPeripheralsWithServicesOptions(null, null);
 }
 ```
 
-#### Access AVFoundation (Camera/Video)
+#### Access AVFoundation (camera/video)
 
 ```javascript
 var AVCaptureDevice = require('AVFoundation/AVCaptureDevice');
@@ -167,7 +167,7 @@ var backCamera = null;
 
 for (var i = 0; i < devices.count(); i++) {
   var device = devices.objectAtIndex(i);
-  if (device.position() === 1) {  // AVCaptureDevicePositionBack
+  if (device.position() === 1) { // AVCaptureDevicePositionBack
     backCamera = device;
     break;
   }
@@ -176,12 +176,12 @@ for (var i = 0; i < devices.count(); i++) {
 // Configure camera
 if (backCamera) {
   backCamera.lockForConfiguration(null);
-  backCamera.setFlashMode(1);  // AVCaptureFlashModeOn
+  backCamera.setFlashMode(1); // AVCaptureFlashModeOn
   backCamera.unlockForConfiguration();
 }
 ```
 
-#### Access Address Book (Contacts)
+#### Access Address Book (contacts)
 
 ```javascript
 var ABAddressBook = require('AddressBook/ABAddressBook');
@@ -191,12 +191,12 @@ var people = addressBook.people();
 
 for (var i = 0; i < people.count(); i++) {
   var person = people.objectAtIndex(i);
-  var firstName = person.valueForProperty(0);  // kABPersonFirstNameProperty
+  var firstName = person.valueForProperty(0); // kABPersonFirstNameProperty
   Ti.API.info('Contact: ' + firstName);
 }
 ```
 
-#### Access CoreLocation (Enhanced)
+#### Access CoreLocation (enhanced)
 
 ```javascript
 var CLLocationManager = require('CoreLocation/CLLocationManager');
@@ -204,13 +204,13 @@ var CLLocation = require('CoreLocation/CLLocation');
 
 var locationManager = CLLocationManager.alloc().init();
 locationManager.setDelegate(null);
-locationManager.setDesiredAccuracy(3);  // kCLLocationAccuracyBest
+locationManager.setDesiredAccuracy(3); // kCLLocationAccuracyBest
 locationManager.startUpdatingLocation();
 ```
 
-### Android Hyperloop Examples
+### Android Hyperloop examples
 
-#### Access Android Frameworks
+#### Access Android frameworks
 
 ```javascript
 const Context = require('android.content.Context');
@@ -228,7 +228,7 @@ Toast.makeText(
 ).show();
 ```
 
-#### Access Vibrator
+#### Access vibrator
 
 ```javascript
 const Vibrator = require('android.os.Vibrator');
@@ -301,14 +301,14 @@ for (let i = 0; i < packages.size(); i++) {
 }
 ```
 
-### Hyperloop Best Practices
+### Hyperloop best practices
 
-1. **Check platform availability** - Use `Ti.Platform.osname` to branch code
-2. **Handle errors** - Native calls can throw exceptions
-3. **Memory management** - Be aware of native object lifecycles
-4. **Test thoroughly** - Native APIs have platform-specific behaviors
-5. **Document requirements** - Note platform versions and permissions needed
-6. **Use try-catch** - Wrap native calls for safety
+1. Check platform availability. Use `Ti.Platform.osname` to branch code.
+2. Handle errors. Native calls can throw exceptions.
+3. Memory management: be aware of native object lifecycles.
+4. Test thoroughly. Native APIs have platform-specific behaviors.
+5. Document requirements. Note platform versions and permissions needed.
+6. Use try/catch. Wrap native calls for safety.
 
 ```javascript
 try {
@@ -320,9 +320,9 @@ try {
 }
 ```
 
-## 3. Native Module Development
+## 3. Native module development
 
-### When to Create Native Modules
+### When to create native modules
 
 Create a native module when you need to:
 - Reuse native code across multiple Titanium apps
@@ -330,11 +330,11 @@ Create a native module when you need to:
 - Implement complex native functionality not suitable for Hyperloop
 - Maintain a stable API regardless of native SDK changes
 
-### Android Module Development
+### Android module development
 
-#### Quick Start
+#### Quick start
 
-1. **Create module structure**:
+1. Create module structure:
 ```
 com.example.mymodule/
 ├── src/
@@ -349,7 +349,7 @@ com.example.mymodule/
 └── LICENSE
 ```
 
-2. **Module Java class**:
+2. Module Java class:
 
 ```java
 package com.example.mymodule;
@@ -381,7 +381,7 @@ public class ExampleModule extends KrollModule {
 }
 ```
 
-3. **timodule.xml**:
+3. `timodule.xml`:
 ```xml
 <module>
     <description>My Example Module</description>
@@ -391,7 +391,7 @@ public class ExampleModule extends KrollModule {
 </module>
 ```
 
-4. **Build and package**:
+4. Build and package:
 ```bash
 ant clean
 ant package
@@ -401,14 +401,14 @@ ant package
 
 ```javascript
 const myModule = require('com.example.mymodule');
-Ti.API.info(myModule.helloWorld());  // "Hello from native module!"
-Ti.API.info(myModule.add(5, 3));      // 8
-Ti.API.info(myModule.version);       // "1.0.0"
+Ti.API.info(myModule.helloWorld()); // "Hello from native module!"
+Ti.API.info(myModule.add(5, 3)); // 8
+Ti.API.info(myModule.version); // "1.0.0"
 ```
 
-#### Common Android Module Patterns
+#### Common Android module patterns
 
-**Accessing Android APIs**:
+Accessing Android APIs:
 
 ```java
 import android.content.Context;
@@ -421,7 +421,7 @@ public boolean isGPSEnabled() {
 }
 ```
 
-**Firing events to JavaScript**:
+Firing events to JavaScript:
 
 ```java
 import org.appcelerator.kroll.KrollDict;
@@ -434,7 +434,7 @@ public void triggerEvent() {
 }
 ```
 
-**Receiving events from JavaScript**:
+Receiving events from JavaScript:
 
 ```java
 @Kroll.method
@@ -443,17 +443,17 @@ public void startService() {
 }
 ```
 
-### iOS Module Development
+### iOS module development
 
-#### Quick Start
+#### Quick start
 
-1. **Create module with Template**:
+1. Create module with template:
 ```bash
 # Use Titanium CLI
 titanium create --type module --id com.example.mymodule --name MyModule --platform ios
 ```
 
-2. **Module Structure**:
+2. Module structure:
 ```
 com.example.mymodule/
 ├── Classes/
@@ -469,7 +469,7 @@ com.example.mymodule/
 └── LICENSE
 ```
 
-3. **Module Implementation** (ComExampleMymoduleModule.m):
+3. Module implementation (`ComExampleMymoduleModule.m`):
 
 ```objc
 #import "ComExampleMymoduleModule.h"
@@ -520,7 +520,7 @@ com.example.mymodule/
 @end
 ```
 
-4. **timodule.xml**:
+4. `timodule.xml`:
 ```xml
 <module>
     <description>My Example Module</description>
@@ -530,23 +530,23 @@ com.example.mymodule/
 </module>
 ```
 
-5. **Build and package**:
+5. Build and package:
 ```bash
 ./build.py
 ```
 
-6. **Use in Titanium app**:
+6. Use in Titanium app:
 
 ```javascript
 const myModule = require('com.example.mymodule');
-Ti.API.info(myModule.helloWorld());  // "Hello from native module!"
-Ti.API.info(myModule.add(5, {with: 3})); // 8
-Ti.API.info(myModule.version);       // "1.0.0"
+Ti.API.info(myModule.helloWorld()); // "Hello from native module!"
+Ti.API.info(myModule.add(5, { with: 3 })); // 8
+Ti.API.info(myModule.version); // "1.0.0"
 ```
 
-#### Common iOS Module Patterns
+#### Common iOS module patterns
 
-**Accessing iOS Frameworks**:
+Accessing iOS frameworks:
 
 ```objc
 #import <CoreLocation/CoreLocation.h>
@@ -558,7 +558,7 @@ Ti.API.info(myModule.version);       // "1.0.0"
 }
 ```
 
-**Firing events to JavaScript**:
+Firing events to JavaScript:
 
 ```objc
 - (void)locationUpdated:(CLLocation*)location {
@@ -570,7 +570,7 @@ Ti.API.info(myModule.version);       // "1.0.0"
 }
 ```
 
-**View Proxies** (for custom UI components):
+View proxies (custom UI components):
 
 ```objc
 @interface MyViewProxy : TiViewProxy {
@@ -587,11 +587,11 @@ Ti.API.info(myModule.version);       // "1.0.0"
 @end
 ```
 
-### Module Distribution
+### Module distribution
 
 #### Packaging
 
-Both platforms create a `.zip` file that can be distributed:
+Both platforms create a `.zip` file for distribution:
 
 ```bash
 # For iOS
@@ -601,13 +601,13 @@ Both platforms create a `.zip` file that can be distributed:
 ant dist
 ```
 
-#### Installing Module
+#### Installing module
 
-1. **Local installation**: Extract to `/Library/Application Support/Titanium/modules/`
-2. **Global installation**: Use `gittio` or `npm` for publishing
-3. **Project-specific**: Place in app's `modules/` directory
+1. Local installation: extract to `/Library/Application Support/Titanium/modules/`
+2. Global installation: use `gittio` or `npm` for publishing
+3. Project-specific: place in the app's `modules/` directory
 
-#### Module Configuration in tiapp.xml
+#### Module configuration in tiapp.xml
 
 ```xml
 <modules>
@@ -616,17 +616,17 @@ ant dist
 </modules>
 ```
 
-## 4. Choosing Between Hyperloop and Native Modules
+## 4. Choosing between Hyperloop and native modules
 
-### Use Hyperloop When
+### Use Hyperloop when
 
 - Prototyping native API access
 - App-specific native functionality (not reusable)
 - One-off native API calls
 - Quick integration with platform features
-- Don't need to distribute code
+- You do not need to distribute code
 
-### Use Native Modules When
+### Use native modules when
 
 - Creating reusable components
 - Distributing to other developers
@@ -635,29 +635,29 @@ ant dist
 - Performance-critical code paths
 - Custom UI components
 
-## 5. Finding and Using Third-Party Modules
+## 5. Finding and using third-party modules
 
-### Ti_slack Marketplace
+### Ti_slack marketplace
 
 Search for existing modules at:
 - https://fromzerotoapp.com/modules/
 - https://github.com/search?q=titanium+module
 
-### Popular Third-Party Modules
+### Popular third-party modules
 
-- **ti.map** - Enhanced mapping (Google Maps, Apple Maps)
-- **ti.paint** - Drawing/signature capture
-- **ti.barcode** - Barcode/QR scanning
-- **ti.admob** - AdMob integration
-- **ti.facebook** - Facebook SDK
-- **ti.googleplus** - Google+ SDK
-- **ti.oauth2** - OAuth 2.0 client
+- ti.map - Enhanced mapping (Google Maps, Apple Maps)
+- ti.paint - Drawing/signature capture
+- ti.barcode - Barcode/QR scanning
+- ti.admob - AdMob integration
+- ti.facebook - Facebook SDK
+- ti.googleplus - Google+ SDK
+- ti.oauth2 - OAuth 2.0 client
 
-### Using Third-Party Modules
+### Using third-party modules
 
-1. **Download** module zip
-2. **Extract** to modules directory
-3. **Add to tiapp.xml**:
+1. Download module zip
+2. Extract to modules directory
+3. Add to `tiapp.xml`:
 
 ```xml
 <modules>
@@ -666,19 +666,19 @@ Search for existing modules at:
 </modules>
 ```
 
-4. **Require in code**:
+4. Require in code:
 
 ```javascript
 const Mapbox = require('com.mapbox.map');
 ```
 
-## Best Practices Summary
+## Best practices summary
 
-1. **Try built-in APIs first** - Titanium may already have what you need
-2. **Prefer Hyperloop for simple cases** - Less overhead
-3. **Create modules for reusable code** - Better distribution
-4. **Handle platform differences** - Branch code appropriately
-5. **Document dependencies** - Note SDK versions and requirements
-6. **Test on real devices** - Simulators may not support all features
-7. **Version your modules** - Semantic versioning for compatibility
-8. **Provide examples** - Help users understand usage patterns
+1. Try built-in APIs first; Titanium may already have what you need.
+2. Prefer Hyperloop for simple cases; less overhead.
+3. Create modules for reusable code; better distribution.
+4. Handle platform differences; branch code appropriately.
+5. Document dependencies; note SDK versions and requirements.
+6. Test on real devices; simulators may not support all features.
+7. Version your modules; use semantic versioning for compatibility.
+8. Provide examples; help users understand usage patterns.
