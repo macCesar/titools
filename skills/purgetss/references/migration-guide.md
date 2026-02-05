@@ -14,6 +14,10 @@ Before migrating, evaluate styling in the current codebase:
 | Manual 2D Matrix animations                  | PurgeTSS Animation component              |
 | Platform conditionals in controllers         | PurgeTSS platform modifiers (`ios:mt-10`) |
 
+:::info v7.3 Upgrade Note
+If your project or scripts reference `tailwind.tss`, update them to `utilities.tss` (the file was renamed in v7.3).
+:::
+
 ## Step 1: Initialize PurgeTSS
 
 ```bash

@@ -84,6 +84,10 @@ Font Awesome 7 uses different style prefixes:
 <Label class="fab fa-twitter fa-facebook fa-github" />
 ```
 
+:::tip
+PurgeTSS handles Font Awesome 7 CSS custom properties automatically (the `--fa:` format), so you do not need to manually tweak icon CSS.
+:::
+
 ### Material Icons
 
 ```xml

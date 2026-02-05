@@ -40,7 +40,7 @@ This skill automatically detects PurgeTSS usage when invoked and provides utilit
 ├─ fonts/              # Custom font files (.ttf, .otf)
 ├─ styles/
 │  ├─ definitions.css  # For VS Code IntelliSense
-│  └─ utilities.tss     # All PurgeTSS utility classes
+│  └─ utilities.tss     # All PurgeTSS utility classes (renamed from tailwind.tss in v7.3)
 └─ config.cjs          # Theme configuration
 
 ./app/styles/
@@ -116,6 +116,16 @@ purgetss create 'MyApp' -d -v fa
 # -d: Install dev dependencies (ESLint, Tailwind)
 # -v: Copy icon fonts (fa, mi, ms, f7)
 ```
+
+## What's New in v7.3.x (Key Notes)
+
+- `tailwind.tss` was renamed to `utilities.tss` (update any scripts or references).
+- XML syntax validation now runs before processing and reports line-level errors (e.g., missing `<`).
+- `deviceInfo()` works in both Alloy and Classic (no `Alloy.isTablet`/`Alloy.isHandheld` dependency).
+- Node.js 20+ is required.
+- Font Awesome 7 is supported, including the new `--fa:` CSS custom properties.
+- VS Code: `KevinYouu.tailwind-raw-reorder-tw4` is recommended for class ordering.
+- If upgrades act weird, try: `npm uninstall -g purgetss && npm install -g purgetss`.
 
 :::tip NEW PROJECT: Clean Up Default app.tss
 For new projects created with `purgetss create`, the default `app/styles/app.tss` contains a large commented template.
