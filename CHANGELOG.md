@@ -4,20 +4,14 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [2.2.7] - 2026-02-03
+## [2.2.8] - 2026-02-05
 
-### Added
+### Changed
+- **Documentation refresh**: Simplified wording and standardized capitalization, headings, and bullet styles across README and all skill/reference docs
+- **README**: Clarified product description and reordered skill tables for consistency
 - **GitHub Actions CI/CD**: Automatic npm publish when package.json changes on main branch
   - Uses OIDC Trusted Publishing (no tokens required)
   - Auto-creates GitHub Release with generated notes
-
-### Changed
-- **package-lock.json**: Now tracked in git for reproducible CI/CD builds
-
-## [2.2.5] - 2026-02-03 / [2.2.6] - 2026-02-03
-
-### Skipped
-- CI/CD configuration iterations (not published)
 
 ## [2.2.4] - 2026-02-03
 

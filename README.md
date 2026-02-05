@@ -8,11 +8,11 @@
 
 </div>
 
-A CLI that gives your AI coding assistant access to **Titanium SDK** knowledge. One command installs 7 specialized skills, a research agent, and 100+ reference files for Titanium SDK, Alloy MVC, and PurgeTSS.
+TiTools is a CLI that installs Titanium SDK skills and a knowledge index for AI coding assistants. One command installs 7 skills, a research agent, and 100+ reference files for Titanium SDK, Alloy MVC, and PurgeTSS.
 
-Without `titools`, assistants fall back on general training data, which is often outdated or off-target for Titanium. With `titools`, your assistant can reference Alloy architecture, memory cleanup patterns, PurgeTSS utility classes, and platform-specific APIs.
+Without TiTools, assistants rely on general training data. That data can be outdated or too generic for Titanium work. With TiTools, the assistant can look up Alloy architecture, memory cleanup patterns, PurgeTSS utility classes, and platform-specific APIs.
 
-Based on [Vercel’s research on AGENTS.md](https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals), they found that the knowledge index approach achieved a 100% pass rate, compared to 53–79% using skills alone.
+Vercel's AGENTS.md evaluation reports a 100% pass rate for the knowledge index approach, compared to 53-79% using skills alone.
 
 ---
 
@@ -36,7 +36,7 @@ claude   # or gemini, or codex
 
 # 6) Ask away!
 # "How should I structure a new app with login, signup, and a dashboard?"
-# "My ListView with 500 items scrolls like garbage on Android. How do I fix it?"
+# "My ListView with 500 items scrolls poorly on Android. How do I fix it?"
 ```
 
 What gets installed:
@@ -125,15 +125,15 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 
 ## Skills overview
 
-| Skill        | Purpose                       | Best For                                |
-| ------------ | ----------------------------- | --------------------------------------- |
-| alloy-guides | Alloy MVC reference           | Models, Views, Controllers, Widgets     |
-| alloy-howtos | Alloy CLI & debugging         | Project setup, CLI commands, errors     |
-| purgetss     | Utility-first styling         | UI styling and animations               |
-| ti-expert    | Architecture + Implementation | Starting point for most tasks           |
-| ti-guides    | SDK fundamentals              | Hyperloop, distribution, configuration  |
-| ti-howtos    | Native feature integration    | Location, Push, Media, Platform APIs    |
-| ti-ui        | UI/UX patterns                | Complex layouts, ListViews, platform UI |
+| Skill        | Purpose                         | Best For                                |
+| ------------ | ------------------------------- | --------------------------------------- |
+| alloy-guides | Alloy MVC reference             | Models, Views, Controllers, Widgets     |
+| alloy-howtos | Alloy CLI and debugging         | Project setup, CLI commands, errors     |
+| purgetss     | Utility-first styling           | UI styling and animations               |
+| ti-expert    | Architecture and implementation | Starting point for most tasks           |
+| ti-guides    | SDK fundamentals                | Hyperloop, distribution, configuration  |
+| ti-howtos    | Native feature integration      | Location, Push, Media, Platform APIs    |
+| ti-ui        | UI/UX patterns                  | Complex layouts, ListViews, platform UI |
 
 Note: `ti-guides`, `ti-howtos`, `ti-ui`, `alloy-guides`, and `alloy-howtos` are based on official Titanium SDK and Alloy documentation. `ti-expert` and `purgetss` are opinionated and reflect personal coding conventions (biased toward PurgeTSS).
 
@@ -206,9 +206,9 @@ All skills include automatic project detection to ensure compatibility:
 | ti-expert    | Alloy vs Classic      | Checks for `app/` (Alloy) vs `Resources/` (Classic) structure |
 | alloy-guides | Alloy projects        | Checks for `app/views/`, `app/controllers/`                   |
 | alloy-howtos | Alloy projects        | Checks for `alloy.jmk`, `config.json`                         |
-| ti-ui        | Titanium projects     | Checks for `tiapp.xml` (both Alloy & Classic)                 |
-| ti-guides    | Titanium projects     | Checks for `tiapp.xml` (both Alloy & Classic)                 |
-| ti-howtos    | Titanium projects     | Checks for `tiapp.xml` (both Alloy & Classic)                 |
+| ti-ui        | Titanium projects     | Checks for `tiapp.xml` (both Alloy and Classic)               |
+| ti-guides    | Titanium projects     | Checks for `tiapp.xml` (both Alloy and Classic)               |
+| ti-howtos    | Titanium projects     | Checks for `tiapp.xml` (both Alloy and Classic)               |
 
 Why this matters:
 - PurgeTSS suggestions are only provided if PurgeTSS is installed
@@ -620,8 +620,8 @@ Behavior depends on where you run it:
 
 What it does:
 1. Checks GitHub for the latest CLI version
-2. If a newer version exists → prompts you to update the CLI first with `npm update -g @maccesar/titools`
-3. If CLI is current → syncs skills and agents from the installed package (no download needed)
+2. If a newer version exists, it prompts you to update the CLI first with `npm update -g @maccesar/titools`
+3. If the CLI is current, it syncs skills and agents from the installed package (no download needed)
 4. Updates platform symlinks only for platforms that already have them
 5. Cleans up legacy artifacts (`alloy-expert` skill, `ti-researcher` agent)
 6. Auto-syncs knowledge index files if they exist in the current project
@@ -691,13 +691,13 @@ Codex CLI:
 
 | Skill        | SKILL.md                      | References                                            |
 | ------------ | ----------------------------- | ----------------------------------------------------- |
-| ti-expert    | Architecture + Implementation | 19 refs + 1 asset (patterns, testing, security, etc.) |
-| purgetss     | Setup + Critical Rules        | 21 files (grid, animations, icons, class-index, etc.) |
-| ti-ui        | UI Rules + Platform Diffs     | 14 files (layouts, lists, gestures, etc.)             |
-| ti-howtos    | Integration Workflow          | 18 files (location, media, maps, automation, etc.)    |
-| ti-guides    | Core Workflow                 | 14 files (hyperloop, distribution, etc.)              |
 | alloy-guides | MVC Quick Start               | 10 files (models, views, widgets, etc.)               |
 | alloy-howtos | Best Practices                | 6 files (CLI, config, debugging, etc.)                |
+| purgetss     | Setup + Critical Rules        | 21 files (grid, animations, icons, class-index, etc.) |
+| ti-expert    | Architecture + Implementation | 19 refs + 1 asset (patterns, testing, security, etc.) |
+| ti-guides    | Core Workflow                 | 14 files (hyperloop, distribution, etc.)              |
+| ti-howtos    | Integration Workflow          | 18 files (location, media, maps, automation, etc.)    |
+| ti-ui        | UI Rules + Platform Diffs     | 14 files (layouts, lists, gestures, etc.)             |
 
 ---
 
