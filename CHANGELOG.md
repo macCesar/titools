@@ -4,6 +4,18 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.2.10] - 2026-02-05
+
+### Added
+- **update command**: New "Both locations" option to update global and local skills simultaneously
+  - Prompt now shows when both local and global skills are detected
+  - Users can update global, local, or both in a single run
+
+### Changed
+- **update command**: Refactored update logic into reusable `performUpdate()` function
+  - Cleaner code structure for handling single vs dual-scope updates
+  - Improved user messaging for update mode selection
+
 ## [2.2.8] - 2026-02-05
 
 ### Changed
