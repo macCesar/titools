@@ -258,7 +258,7 @@ Omit `-V` and `-P` to be prompted.
 | `-P, --pp-uuid <uuid>`           | Provisioning profile UUID (for device/dist targets).                                                   |
 | `-R, --distribution-name <name>` | iOS Distribution Certificate (for dist targets).                                                       |
 | `--sim-focus`                    | Focus the iOS Simulator after launching (default: true). Use --no-sim-focus to disable.                |
-| `-T, --target <value>`           | Target: simulator, device, dist-appstore, or dist-adhoc.                                               |
+| `-T, --target <value>`           | Target: simulator, device, dist-appstore, dist-adhoc, macos, or dist-macappstore.                            |
 | `-V, --developer-name <name>`    | iOS Developer Certificate (required for device target).                                                |
 | `-W, --watch-device-id <udid>`   | Watch simulator UDID (simulator only).                                                                 |
 | `--watch-app-name <name>`        | Name of the watch app to launch (simulator only).                                                      |
@@ -393,6 +393,48 @@ ti build -p ios -T dist-appstore -R "Pseudo, Inc." -P "AAAAAAAA-0000-9999-8888-7
 ```
 
 Installs the package to Xcode Organizer.
+
+### Mac Catalyst (macOS Development)
+
+```bash
+ti build -p ios -T macos
+```
+
+Builds a Mac Catalyst version of your iOS app for local testing. The resulting `.app` bundle is located at:
+```
+build/iphone/build/Products/Debug-maccatalyst/AppName.app
+```
+
+For a production build:
+```bash
+ti build -p ios -T macos --deploy-type production
+```
+
+The release `.app` bundle will be at:
+```
+build/iphone/build/Products/Release-maccatalyst/AppName.app
+```
+
+### Mac App Store (Mac Catalyst Distribution)
+
+```bash
+ti build -p ios -T dist-macappstore [-R <CERT_NAME>]
+```
+
+Example:
+```bash
+ti build -p ios -T dist-macappstore -R "Apple Distribution: Your Name (TEAM_ID)"
+```
+
+**Important Notes:**
+- Requires a Mac App Store Distribution Certificate (not iOS Distribution)
+- The build creates an archive for Mac App Store distribution
+- The `.xcarchive` is installed in Xcode's Organizer
+- Uses `Release-maccatalyst` configuration
+- Destination: `generic/platform=macOS`
+- Code signing is set to Manual with identity `-`
+
+The target `dist-macappstore` is available in Titanium SDK 13.1.1.GA and later.
 
 ---
 

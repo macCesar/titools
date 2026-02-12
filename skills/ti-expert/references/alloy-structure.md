@@ -4,52 +4,81 @@
 
 ```
 app/
-├── controllers/           # View orchestrators
+├── controllers/          # View orchestrators
 │   ├── index.js          # Bootstrap only (no business logic)
-│   └── feature/
-│       └── list.js       # Controller for list view
+│   ├── home.js
+│   └── userProfile.js
 ├── models/               # OPTIONAL: For persistence with migrations
 │   └── user.js           # Model definition (ONLY if using SQLite)
 ├── views/                # XML views
 │   ├── index.xml
-│   └── feature/
-│       └── list.xml      # View definition
+│   ├── home.xml
+│   └── userProfile.xml
 ├── styles/               # TSS styles (one per view + global)
 │   ├── app.tss           # Global application styles
 │   ├── index.tss         # Styles for index view
-│   └── feature/
-│       └── list.tss      # Styles for feature/list view
+│   ├── home.tss
+│   └── userProfile.tss
 ├── lib/                  # Reusable logic (no UI)
 │   ├── api/
-│   │   └── client.js     # API calls
+│   │   ├── authApi.js
+│   │   ├── userApi.js
+│   │   └── frameApi.js
 │   ├── services/
-│   │   ├── auth.js       # Business logic services
-│   │   ├── navigation.js # Navigation orchestration
-│   │   └── nativeService.js # Native module wrapper (e.g. Audio, FB, Maps)
-│   └── helpers/
-│       ├── utils.js      # Pure utility functions
-│       └── i18n.js       # Complex string transformations
+│   │   ├── authService.js
+│   │   ├── navigationService.js
+│   │   └── notificationService.js
+│   ├── actions/
+│   │   ├── syncUserAction.js
+│   │   └── refreshSessionAction.js
+│   ├── repositories/
+│   │   ├── userRepository.js
+│   │   └── settingsRepository.js
+│   ├── helpers/
+│   │   ├── validator.js
+│   │   ├── formatter.js
+│   │   └── dateHelper.js
+│   ├── policies/
+│   │   ├── permissionPolicy.js
+│   │   └── featurePolicy.js
+│   └── providers/
+│       ├── containerProvider.js
+│       └── loggerProvider.js
 ├── widgets/              # Truly reusable components (used in 3+ places)
 │   └── customButton/
 ├── config.json           # Alloy configuration
 └── alloy.js              # Collections & Global services
 ```
 
+## Organization strategy
+
+- `lib/` uses technical-type grouping (Laravel-style naming adapted to Titanium).
+- UI stays in Alloy MVC folders (`controllers`, `views`, `styles`).
+- This is a hybrid approach: technical grouping for reusable logic + screen-based organization for UI files.
+- Keep folder depth low to preserve discoverability.
+- Use clear composed names (`authService.js`, `userRepository.js`, `authApi.js`) and keep multiple files per folder as the normal case.
+
+### Folder depth policy (critical)
+
+- Allowed in `lib`: `lib/<type>/<file>.js`
+- Avoid in `lib`: `lib/<type>/<domain>/<subdomain>/<file>.js`
+- If a folder grows too much, split by new technical type, not deep tree nesting.
+
 ## lib/ folder and module require paths
 
 :::danger CRITICAL: lib/ Folder is FLATTENED During Build
 When Alloy compiles, the **entire `lib/` folder is flattened to the root of Resources**. This means:
-- `app/lib/services/picsum.js` → `Resources/iphone/services/picsum.js`
-- `app/lib/api/client.js` → `Resources/iphone/api/client.js`
+- `app/lib/services/authService.js` → `Resources/iphone/services/authService.js`
+- `app/lib/api/authApi.js` → `Resources/iphone/api/authApi.js`
 
 **Therefore, require statements should NOT include `lib/` prefix:**
 ```javascript
 // ❌ WRONG - Will fail at runtime
-const client = require('lib/api/client')
+const authApi = require('lib/api/authApi')
 
 // ✅ CORRECT - Path relative to flattened lib/
-const client = require('api/client')
-const picsum = require('services/picsum')
+const authApi = require('api/authApi')
+const authService = require('services/authService')
 ```
 
 **This applies to:**
@@ -62,13 +91,18 @@ const picsum = require('services/picsum')
 app/
 ├── lib/
 │   ├── services/
-│   │   ├── picsum.js     # require('services/logger')
-│   │   ├── navigation.js # require('services/logger')
-│   │   └── logger.js
-│   └── api/
-│       └── client.js     # require('services/logger')
+│   │   ├── authService.js       # require('services/navigationService')
+│   │   ├── navigationService.js # require('services/notificationService')
+│   │   └── notificationService.js
+│   ├── api/
+│   │   ├── authApi.js           # require('services/authService')
+│   │   ├── userApi.js
+│   │   └── frameApi.js
+│   └── repositories/
+│       ├── userRepository.js
+│       └── settingsRepository.js
 ├── controllers/
-│   └── index.js          # require('services/picsum')
+│   └── index.js                 # require('services/authService')
 ```
 :::
 
@@ -145,6 +179,7 @@ api.getFrames()
 - Handle UI events and delegate to services.
 - Format data for display (simple cases).
 - Manage view lifecycle (including cleanup).
+- Keep `lib` modules flat and easy to locate.
 
 **DON'T:**
 - Use inline style attributes in XML (define in TSS files).

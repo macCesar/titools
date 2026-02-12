@@ -31,18 +31,25 @@ Behavior:
 
 ## Workflow
 
-1. Architecture: define structure (`lib/api`, `lib/services`, `lib/helpers`)
+1. Architecture: define structure by technical type with flat folders (`lib/api`, `lib/services`, `lib/actions`, `lib/repositories`, `lib/helpers`)
 2. Data strategy: choose Models (SQLite) or Collections (API)
 3. Contracts: define I/O specs between layers
 4. Implementation: write XML views and ES6+ controllers
 5. Quality: testing, error handling, logging, performance
 6. Cleanup: implement a `cleanup()` pattern for memory management
 
+## Organization policy (low freedom)
+
+- Use technical-type organization in `lib` (for example: `api`, `services`, `actions`, `repositories`, `helpers`, `policies`, `providers`).
+- Keep `lib` flat and predictable: `lib/<type>/<file>.js` only.
+- Do not recommend deep nesting like `lib/services/auth/session/login.js`.
+- Keep UI layers aligned by screen (`controllers/`, `views/`, `styles/`) and avoid unnecessary depth.
+
 ## Quick start example
 
 Minimal example that matches the conventions:
 
-View (`views/user/card.xml`)
+View (`views/userCard.xml`)
 ```xml
 <Alloy>
   <View id="cardContainer">
@@ -58,7 +65,7 @@ View (`views/user/card.xml`)
 </Alloy>
 ```
 
-Styles (`styles/user/card.tss`)
+Styles (`styles/userCard.tss`)
 ```tss
 "#cardContainer": { left: 8, right: 8, top: 8, height: Ti.UI.SIZE, borderRadius: 12, backgroundColor: '#fff' }
 "#headerRow": { layout: 'horizontal', left: 12, right: 12, top: 12, height: Ti.UI.SIZE, width: Ti.UI.FILL }
@@ -67,7 +74,7 @@ Styles (`styles/user/card.tss`)
 "#viewProfileBtn": { left: 12, right: 12, bottom: 12, height: 40, width: Ti.UI.FILL, borderRadius: 6, backgroundColor: '#2563eb', color: '#fff' }
 ```
 
-Controller (`controllers/user/card.js`)
+Controller (`controllers/userCard.js`)
 ```javascript
 const { Navigation } = require('services/navigation')
 
@@ -77,7 +84,7 @@ function init() {
 }
 
 function onViewProfile() {
-  Navigation.open('user/profile', { userId: $.args.user.id })
+  Navigation.open('userProfile', { userId: $.args.user.id })
 }
 
 function cleanup() {
@@ -163,6 +170,7 @@ For the complete reference with examples, see [Alloy builtins and globals](refer
 | Fastest way to build?              | `tn <recipe>` (using TiNy CLI wrapper)                         |
 | Where does API call go?            | `lib/api/`                                                     |
 | Where does business logic go?      | `lib/services/`                                                |
+| How deep should `lib` folders be?  | One level: `lib/<type>/<file>.js`                             |
 | Where do I store auth tokens?      | Keychain (iOS) / KeyStore (Android) via service                |
 | Models or Collections?             | Collections for API data, Models for SQLite persistence        |
 | Ti.App.fireEvent or EventBus?      | Always EventBus (Backbone.Events)                              |

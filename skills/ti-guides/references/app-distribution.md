@@ -198,3 +198,176 @@ Installation method:
 2. Open Xcode, then Window, then Devices.
 3. Select the device, then Installed Apps, then +.
 4. Select the IPA file.
+
+---
+
+## Mac Catalyst distribution (Mac App Store)
+
+Mac Catalyst allows you to run your iPad app on macOS. Titanium SDK 13.1.1.GA and later supports building for Mac Catalyst.
+
+### 1. Enable Mac Catalyst for your App ID
+
+1. Go to [Apple Developer → Identifiers](https://developer.apple.com/account/resources/identifiers/list)
+2. Select your App ID or create a new one
+3. Enable **Mac Catalyst** capability
+4. Save the changes
+
+### 2. Create Mac App Store Distribution Certificate
+
+1. Go to [Apple Developer → Certificates](https://developer.apple.com/account/resources/certificates/list)
+2. Click **+** to create a new certificate
+3. Select **Mac App Store Distribution**
+4. Upload your CSR (Certificate Signing Request)
+5. Download and install the certificate
+
+### 3. Mac Catalyst build targets
+
+Titanium provides two targets for Mac Catalyst:
+
+| Target | Description | Configuration |
+|--------|-------------|---------------|
+| `macos` | Development builds for testing on Mac | Debug-maccatalyst |
+| `dist-macappstore` | Production builds for Mac App Store | Release-maccatalyst |
+
+### 4. Build for Mac Catalyst (Development)
+
+```bash
+ti build -p ios -T macos
+```
+
+The `.app` bundle will be created at:
+```
+build/iphone/build/Products/Debug-maccatalyst/AppName.app
+```
+
+For a production-ready build:
+```bash
+ti build -p ios -T macos --deploy-type production
+```
+
+The `.app` bundle will be at:
+```
+build/iphone/build/Products/Release-maccatalyst/AppName.app
+```
+
+### 5. Build for Mac App Store (Distribution)
+
+```bash
+ti build -p ios -T dist-macappstore [-R <CERTIFICATE_NAME>]
+```
+
+Example:
+```bash
+ti build -p ios -T dist-macappstore -R "Apple Distribution: Your Team Name (TEAM_ID)"
+```
+
+If you omit the `-R` flag, Titanium will prompt you to select a certificate.
+
+**What happens during the build:**
+- Uses `Release-maccatalyst` configuration
+- Sets code signing to Manual with identity `-`
+- Creates a `.xcarchive` for Mac App Store
+- Installs the archive in Xcode's Organizer
+- Destination: `generic/platform=macOS`
+
+### 6. Upload to Mac App Store Connect
+
+1. Open Xcode → Window → Organizer
+2. Select your Mac Catalyst archive
+3. Click **Validate App** to check for issues
+4. Click **Distribute App**
+5. Select **Mac App Store**
+6. Follow the prompts to upload
+
+### 7. Create app listing in App Store Connect
+
+1. Go to [App Store Connect](https://appstoreconnect.apple.com)
+2. **My Apps → + → New App**
+3. Select **Mac** as platform
+4. Enter app details:
+   - Name
+   - Primary Language
+   - Bundle ID (must match your App ID with Mac Catalyst enabled)
+   - SKU
+5. Complete required metadata:
+   - Description
+   - Keywords
+   - Screenshots (Mac-specific sizes)
+   - Category
+   - Age rating
+
+### 8. Mac Catalyst entitlements
+
+Add Mac-specific entitlements in `tiapp.xml`:
+
+```xml
+<ios>
+  <entitlements>
+    <dict>
+      <!-- File access for saving to Downloads -->
+      <key>com.apple.security.files.user-selected.read-write</key>
+      <true/>
+      <key>com.apple.security.files.downloads.read-write</key>
+      <true/>
+
+      <!-- App sandbox (required for Mac App Store) -->
+      <key>com.apple.security.app-sandbox</key>
+      <true/>
+
+      <!-- Network access -->
+      <key>com.apple.security.network.client</key>
+      <true/>
+
+      <!-- Additional entitlements as needed -->
+      <key>com.apple.security.print</key>
+      <true/>
+    </dict>
+  </entitlements>
+</ios>
+```
+
+### 9. Common issues
+
+**Issue**: "No suitable signing certificate found"
+- Ensure you have a **Mac App Store Distribution Certificate** (not iOS Distribution)
+- The certificate must be installed in your Keychain
+
+**Issue**: Build fails with code signing errors
+- Verify your App ID has Mac Catalyst enabled
+- Check that the certificate matches the App ID
+- Try cleaning the build: `ti clean -p ios`
+
+**Issue**: App crashes on launch
+- Verify entitlements are correctly configured
+- Check Console.app for crash logs
+- Ensure all required capabilities are enabled
+
+### 10. Versioning
+
+Update version numbers in `tiapp.xml`:
+
+```xml
+<ti:app xmlns:ti="http://ti.tidev.io">
+  <id>com.yourcompany.yourapp</id>
+  <name>Your App Name</name>
+  <version>1.0.0</version>
+  <publisher>Your Company</publisher>
+  ...
+</ti:app>
+```
+
+- `version`: Display version (e.g., "1.0.0")
+- For iOS, use `pv-version-code` in `<ios>` section for build number
+- For Mac, the build number can be set in Xcode or via `CFBundleVersion`
+
+### 11. Testing on Mac
+
+Before submitting to Mac App Store:
+
+1. Build with `macos` target for testing
+2. Run the app on different Mac architectures (Intel and Apple Silicon)
+3. Test all features that use file system, network, and other sandboxed resources
+4. Verify entitlements are working correctly
+5. Test on macOS versions you plan to support
+
+---

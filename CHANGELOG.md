@@ -4,6 +4,37 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.2.11] - 2026-02-12
+
+### Changed
+- **ti-guides/cli-reference.md**: Added `dist-macappstore` and `macos` targets to iOS build options
+  - Documents Mac Catalyst distribution for Mac App Store
+  - Includes examples for both development (`macos`) and distribution (`dist-macappstore`) targets
+- **ti-guides/app-distribution.md**: Added comprehensive Mac Catalyst distribution section
+  - Documents enabling Mac Catalyst for App IDs
+  - Mac App Store Distribution Certificate setup
+  - Build targets comparison table
+  - Development and distribution build commands
+  - Upload process to Mac App Store Connect
+  - Mac Catalyst entitlements configuration
+  - Common issues and troubleshooting
+- **ti-expert/SKILL.md**: Added explicit organization policy for technical-type folders and flat `lib` structure
+  - Enforces one-level depth: `lib/<type>/<file>.js`
+  - Clarifies hybrid approach (technical grouping in `lib` + screen-aligned UI files)
+  - Updated quick-start examples to use composed names (`userCard`, `userProfile`)
+- **ti-expert/references/alloy-structure.md**: Unified structure recommendations and naming conventions
+  - Replaced deep/feature-nested examples with flatter, predictable structure
+  - Updated `lib` map with multiple files per technical folder (`api`, `services`, `actions`, `repositories`, `helpers`, `policies`, `providers`)
+  - Updated flattening examples and `require()` paths to composed names (`authApi`, `authService`, `userRepository`)
+
+### Fixed
+- **Documentation gap**: Mac App Store distribution via Titanium CLI was not documented
+  - The `dist-macappstore` target has existed since Titanium SDK 13.1.1.GA
+  - No prompts required - automatically detects installed certificates
+  - Archive is installed in Xcode Organizer for upload
+- **ti-expert consistency**: Removed mixed naming examples (`picsum`, `client.js`) in structure docs
+  - Examples now consistently use composed, technical-type names across all `lib` snippets
+
 ## [2.2.10] - 2026-02-05
 
 ### Added
