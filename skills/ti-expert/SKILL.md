@@ -38,6 +38,32 @@ Behavior:
 5. Quality: testing, error handling, logging, performance
 6. Cleanup: implement a `cleanup()` pattern for memory management
 
+## Architectural Maturity Tiers
+
+Choose the appropriate tier based on project complexity:
+
+### Tier 1: Basic (Rapid Prototyping)
+- **Best for**: Simple utility apps or developers transitioning from Classic.
+- **Structure**: Logic resides directly within `index.js`.
+- **UI Access**: Direct usage of the `$` object throughout the file.
+- **Pros**: Zero boilerplate, extremely fast start.
+- **Cons**: Unmaintainable beyond 500 lines of code.
+
+### Tier 2: Intermediate (Modular Alloy)
+- **Best for**: Standard commercial applications.
+- **Structure**: Business logic extracted to `app/lib/` using a flat technical-type organization.
+- **Pattern**: Slim Controllers that `require()` services.
+- **Memory**: Mandatory implementation of `$.cleanup = cleanup`.
+
+### Tier 3: Advanced / Enterprise (Service-Oriented)
+- **Best for**: High-complexity apps (IDEs like TiDesigner, multi-state platforms).
+- **Architecture**: Dependency Injection via a `ServiceRegistry`.
+- **ID Scoping**: Services do not receive the entire `$` object. They receive a "Scoped UI" object containing only relevant IDs.
+- **Cognitive Load**: "Black Box" logic—encapsulated units that reduce mental fatigue.
+- **Observability**: Structured logging with a mandatory `service` context.
+
+Detailed examples and full implementation samples are available in: [Architectural Tiers Detail](references/architecture-tiers.md)
+
 ## Organization policy (low freedom)
 
 - Use technical-type organization in `lib` (for example: `api`, `services`, `actions`, `repositories`, `helpers`, `policies`, `providers`).
@@ -45,71 +71,6 @@ Behavior:
 - Do not recommend deep nesting like `lib/services/auth/session/login.js`.
 - Keep UI layers aligned by screen (`controllers/`, `views/`, `styles/`) and avoid unnecessary depth.
 
-## Quick start example
-
-Minimal example that matches the conventions:
-
-View (`views/userCard.xml`)
-```xml
-<Alloy>
-  <View id="cardContainer">
-    <View id="headerRow">
-      <ImageView id="userIcon" image="/images/user.png" />
-      <Label id="name" />
-    </View>
-    <Button id="viewProfileBtn"
-      title="L('view_profile')"
-      onClick="onViewProfile"
-    />
-  </View>
-</Alloy>
-```
-
-Styles (`styles/userCard.tss`)
-```tss
-"#cardContainer": { left: 8, right: 8, top: 8, height: Ti.UI.SIZE, borderRadius: 12, backgroundColor: '#fff' }
-"#headerRow": { layout: 'horizontal', left: 12, right: 12, top: 12, height: Ti.UI.SIZE, width: Ti.UI.FILL }
-"#userIcon": { width: 32, height: 32 }
-"#name": { left: 12, font: { fontSize: 18, fontWeight: 'bold' } }
-"#viewProfileBtn": { left: 12, right: 12, bottom: 12, height: 40, width: Ti.UI.FILL, borderRadius: 6, backgroundColor: '#2563eb', color: '#fff' }
-```
-
-Controller (`controllers/userCard.js`)
-```javascript
-const { Navigation } = require('services/navigation')
-
-function init() {
-  const user = $.args.user
-  $.name.text = user.name
-}
-
-function onViewProfile() {
-  Navigation.open('userProfile', { userId: $.args.user.id })
-}
-
-function cleanup() {
-  $.destroy()
-}
-
-$.cleanup = cleanup
-```
-
-Service (`lib/services/navigation.js`)
-```javascript
-exports.Navigation = {
-  open(route, params = {}) {
-    const controller = Alloy.createController(route, params)
-    const view = controller.getView()
-
-    view.addEventListener('close', function() {
-      if (controller.cleanup) controller.cleanup()
-    })
-
-    view.open()
-    return controller
-  }
-}
-```
 
 ## Code standards (low freedom)
 
@@ -166,41 +127,47 @@ For the complete reference with examples, see [Alloy builtins and globals](refer
 
 | Question                           | Answer                                                         |
 | ---------------------------------- | -------------------------------------------------------------- |
-| How to create a new Alloy project? | `ti create -t app --alloy` (not `--classic` + `alloy new`)      |
+| How to create a new Alloy project? | `ti create -t app --alloy` (not `--classic` + `alloy new`)     |
 | Fastest way to build?              | `tn <recipe>` (using TiNy CLI wrapper)                         |
+| Controller > 100 lines?            | Extract to Tier 2 (Services)                                   |
+| More than 50 IDs in XML?           | Use Tier 3 (ID Scoping)                                        |
 | Where does API call go?            | `lib/api/`                                                     |
 | Where does business logic go?      | `lib/services/`                                                |
-| How deep should `lib` folders be?  | One level: `lib/<type>/<file>.js`                             |
+| How deep should `lib` folders be?  | One level: `lib/<type>/<file>.js`                              |
 | Where do I store auth tokens?      | Keychain (iOS) / KeyStore (Android) via service                |
 | Models or Collections?             | Collections for API data, Models for SQLite persistence        |
 | Ti.App.fireEvent or EventBus?      | Always EventBus (Backbone.Events)                              |
 | Direct navigation or service?      | Always Navigation service (auto cleanup)                       |
-| Inline styles or TSS files?        | Always TSS files (per-controller + `app.tss` for global)        |
-| Controller 100+ lines?             | Extract logic to services                                      |
+| Inline styles or TSS files?        | Always TSS files (per-controller + `app.tss` for global)       |
 
 ## Reference guides (progressive disclosure)
 
-Architecture
-- [CLI expert and TiNy](references/cli-expert.md): advanced build workflows, LiveView, TiNy (`tn`) recipes
-- [Structure and organization](references/alloy-structure.md): models vs collections, folder maps, widget patterns, automatic cleanup
-- [Alloy builtins and globals](references/alloy-builtins.md): `OS_IOS`/`OS_ANDROID`, `Alloy.CFG`, `Alloy.Globals`, `$.args`, compiler directives
-- [ControllerAutoCleanup.js](assets/ControllerAutoCleanup.js): drop-in utility for automatic controller cleanup
-- [Architectural patterns](references/patterns.md): repository, service layer, event bus, factory, singleton
-- [Contracts and communication](references/contracts.md): layer interaction examples and JSDoc specs
-- [Anti-patterns](references/anti-patterns.md): fat controllers, memory leaks, inline styling, direct API calls
+### Architecture & Patterns
+- [Architectural Tiers Detail](references/architecture-tiers.md)
+- [Architectural Patterns](references/patterns.md) (Factory, Singleton, Repository)
+- [Structure & Organization](references/alloy-structure.md)
+- [Contracts & Communication](references/contracts.md)
+- [State Management](references/state-management.md)
+- [Anti-patterns to Avoid](references/anti-patterns.md)
 
-Implementation
-- [Code conventions](references/code-conventions.md): ES6 features, TSS design system, accessibility
-- [Theming and dark mode](references/theming.md): theme system, Alloy.Globals palette, runtime switching, design tokens
-- [Controller patterns](references/controller-patterns.md): templates, animation, dynamic styling
-- [Examples](references/examples.md): API clients, SQL models, full screen examples
+### Implementation & API
+- [Alloy Builtins & Globals](references/alloy-builtins.md)
+- [Code Conventions](references/code-conventions.md)
+- [Controller Patterns](references/controller-patterns.md)
+- [Theming & Dark Mode](references/theming.md)
+- [Migration Patterns](references/migration-patterns.md)
+- [Examples Collection](references/examples.md)
 
-Quality and reliability
-- [Unit and integration testing](references/testing-unit.md): unit testing, mocking patterns, controller testing, test helpers
-- [E2E testing and CI/CD](references/testing-e2e-ci.md): Appium, WebdriverIO, GitHub Actions, Fastlane
-- [Error handling and logging](references/error-handling.md): AppError classes, Logger service, validation
+### Quality & Performance
+- [Performance Optimization](references/performance-optimization.md)
+- [ListView & ScrollView Performance](references/performance-listview.md)
+- [Error Handling & Logging](references/error-handling.md)
+- [Unit & Integration Testing](references/testing-unit.md)
+- [E2E Testing & CI/CD](references/testing-e2e-ci.md)
 
-Performance and security
-- [ListView and ScrollView performance](references/performance-listview.md): ListView templates, data binding, image caching, ScrollView optimization
-- [Performance optimization](references/performance-optimization.md): bridge crossings, memory management, animations, debounce/throttle, database
-- [Security fundamentals](references/security-fundamentals.md): token storage, certificate pinning, encryption, HTTPS, OWASP
+### Security
+- [Security Fundamentals](references/security-fundamentals.md)
+- [Device Security](references/security-device.md)
+
+### Tools
+- [CLI Expert & TiNy](references/cli-expert.md)
