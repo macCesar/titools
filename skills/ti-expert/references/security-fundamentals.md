@@ -4,107 +4,90 @@
 
 **NEVER store tokens in:** `Ti.App.Properties` (plaintext), localStorage, or files.
 
-**USE platform-specific secure storage:**
+**USE the `ti.identity` module** — it handles iOS Keychain and Android Keystore through a unified API. Both platforms use `Identity.createKeychainItem()`.
 
 ```javascript
 // lib/services/tokenStorage.js
+const Identity = require('ti.identity')
+
+// Create a keychainItem once per identifier
+function createItem(identifier) {
+  return Identity.createKeychainItem({ identifier })
+}
+
 exports.TokenStorage = {
   save(token) {
-    if (Ti.Platform.osname === 'android') {
-      // Use Android KeyStore
-      const keyStore = Ti.Android.createKeyStore({
-        name: 'SecureKeyStore'
+    return new Promise((resolve, reject) => {
+      const item = createItem('authToken')
+      item.addEventListener('save', (e) => {
+        e.success ? resolve() : reject(new Error(e.error))
       })
-      keyStore.addEntry('authToken', token)
-    } else {
-      // Use iOS Keychain
-      Ti.KeychainItem.setItem({
-        identifier: 'authToken',
-        value: token,
-        accessGroup: 'com.yourapp.keychain'
-      })
-    }
+      item.save(token)
+    })
   },
 
   get() {
-    if (Ti.Platform.osname === 'android') {
-      const keyStore = Ti.Android.createKeyStore({
-        name: 'SecureKeyStore'
+    return new Promise((resolve, reject) => {
+      const item = createItem('authToken')
+      item.addEventListener('read', (e) => {
+        e.success ? resolve(e.value) : reject(new Error(e.error))
       })
-      return keyStore.getEntry('authToken')
-    } else {
-      return Ti.KeychainItem.getItem({
-        identifier: 'authToken',
-        accessGroup: 'com.yourapp.keychain'
-      })
-    }
+      item.read()
+    })
   },
 
   clear() {
-    if (Ti.Platform.osname === 'android') {
-      const keyStore = Ti.Android.createKeyStore({
-        name: 'SecureKeyStore'
+    return new Promise((resolve, reject) => {
+      const item = createItem('authToken')
+      item.addEventListener('reset', (e) => {
+        e.success ? resolve() : reject(new Error(e.error))
       })
-      keyStore.removeEntry('authToken')
-    } else {
-      Ti.KeychainItem.removeItem({
-        identifier: 'authToken',
-        accessGroup: 'com.yourapp.keychain'
-      })
-    }
+      item.reset()
+    })
   }
 }
 ```
 
+> Verified against official `ti.identity` module docs. `Identity.createKeychainItem({identifier})` is the cross-platform API — it maps to iOS Keychain and Android Keystore automatically. `Ti.Android.createKeyStore()` and `Ti.KeychainItem.setItem()` do NOT exist.
+
 ## Certificate pinning
 
-Prevent man-in-the-middle attacks by pinning SSL certificates:
+Prevent man-in-the-middle attacks by pinning SSL certificates using the **`ti.https` module** (community module — not built into the SDK):
 
 ```javascript
 // lib/api/pinnedClient.js
-exports.createPinnedClient = function() {
-  const client = Ti.Network.createHTTPClient({
-    // Security: Enable certificate pinning
-    certificatePinning: true,
+// Requires: ti.https module — install via npm or tiapp.xml modules section
+const HTTPS = require('ti.https')
 
-    // Specify allowed certificates
+const securityManager = HTTPS.createX509CertificatePinningSecurityManager([
+  {
+    url: 'https://api.example.com',
+    serverCertificate: Ti.Filesystem.getFile(
+      Ti.Filesystem.resourcesDirectory, 'certificates/api-pin.pem'
+    ).read()
+  }
+])
+
+exports.createPinnedClient = function(options = {}) {
+  return Ti.Network.createHTTPClient({
+    securityManager,           // must be set at creation time
     validatesSecureCertificate: true,
-
-    onload: () => {
-      // Success
-    },
-
-    onerror: (e) => {
-      // Certificate validation failed
-      if (e.error.indexOf('certificate') >= 0) {
-        Ti.API.error('Certificate pinning failed - possible MITM attack')
-      }
-    }
+    timeout: 10000,
+    ...options
   })
-
-  return client
 }
 ```
 
-**Add certificates to tiapp.xml:**
-
-```xml
-<ti:app>
-  <certificates>
-    <certificate>
-      <name>api.example.com</name>
-      <type>rsa</type>
-      <file>certificates/api-pin.pem</file>
-    </certificate>
-  </certificates>
-</ti:app>
-```
+> `certificatePinning: true` is NOT a valid `HTTPClient` property. Certificate pinning requires the `ti.https` module and must be set via the `securityManager` property when creating the client. Note that the `validatesSecureCertificate` property of `HTTPClient` is not honored for pinned URLs — the security manager takes precedence.
 
 ## Data encryption at rest
+
+> **Community pattern** — `ti.crypto` is a third-party community module (not part of the Titanium SDK core). Verify availability and compatibility before using in production.
 
 ```javascript
 // lib/services/encryption.js
 // AES-256 encryption for sensitive local data
+// Requires: ti.crypto community module
 
 const crypto = require('ti.crypto')
 
@@ -124,30 +107,6 @@ exports.decrypt = function(encryptedData, key) {
     algorithm: crypto.AES_256_CBC,
     options: { mode: crypto.CBC }
   })
-}
-
-// Usage: Secure cache of sensitive user data
-module.exports = class SecureCache {
-  constructor(encryptionKey) {
-    this.key = encryptionKey
-    this.cache = {}
-  }
-
-  set(key, value) {
-    const encrypted = encrypt(JSON.stringify(value), this.key)
-    this.cache[key] = encrypted
-  }
-
-  get(key) {
-    if (!this.cache[key]) return null
-
-    const decrypted = decrypt(this.cache[key], this.key)
-    return JSON.parse(decrypted)
-  }
-
-  clear() {
-    this.cache = {}
-  }
 }
 ```
 
@@ -270,15 +229,15 @@ exports.Validator = {
 
 ## Owasp mobile security checklist
 
-| Category | Check | Implementation |
+| Category             | Check                       | Implementation                     |
 | -------------------- | --------------------------- | ---------------------------------- |
-| **Data Storage** | Credentials stored securely | Keychain/KeyStore for tokens |
-| **Data Storage** | Sensitive data encrypted | AES-256 for cached data |
-| **Communication** | HTTPS only | `validatesSecureCertificate: true` |
-| **Communication** | Certificate pinning | SSL pinning enabled |
-| **Authentication** | Token refresh | Auto-refresh before expiry |
-| **Authentication** | Session timeout | Auto-logout after inactivity |
-| **Input Validation** | Server-side validation | Never trust client input |
-| **Input Validation** | Sanitize user input | Remove XSS patterns |
-| **Cryptography** | No hardcoded keys | Keys from secure storage |
-| **Cryptography** | Use standard algorithms | AES-256, SHA-256 |
+| **Data Storage**     | Credentials stored securely | Keychain/KeyStore for tokens       |
+| **Data Storage**     | Sensitive data encrypted    | AES-256 for cached data            |
+| **Communication**    | HTTPS only                  | `validatesSecureCertificate: true` |
+| **Communication**    | Certificate pinning         | SSL pinning enabled                |
+| **Authentication**   | Token refresh               | Auto-refresh before expiry         |
+| **Authentication**   | Session timeout             | Auto-logout after inactivity       |
+| **Input Validation** | Server-side validation      | Never trust client input           |
+| **Input Validation** | Sanitize user input         | Remove XSS patterns                |
+| **Cryptography**     | No hardcoded keys           | Keys from secure storage           |
+| **Cryptography**     | Use standard algorithms     | AES-256, SHA-256                   |

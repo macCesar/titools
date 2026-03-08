@@ -245,20 +245,15 @@ exports.ThemeService = {
 
   // Initialize system theme listener
   initSystemListener() {
-    // Detect current system theme
+    // Detect current system theme at startup
     this.followSystem()
 
-    // Listen for system theme changes
-    Ti.App.addEventListener('significantTimeChange', () => {
+    // Re-check on resume (user may have changed system Dark Mode while app was backgrounded)
+    // Note: Titanium does not fire a dedicated dark-mode-change event.
+    // `Ti.UI.semanticColorType` is the correct way to check the current setting.
+    Ti.App.addEventListener('resumed', () => {
       this.followSystem()
     })
-
-    // iOS: userInterfaceStyle change
-    if (OS_IOS) {
-      Ti.App.addEventListener('traitCollectionChange', () => {
-        this.followSystem()
-      })
-    }
   }
 }
 ```
