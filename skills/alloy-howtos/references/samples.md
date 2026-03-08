@@ -154,4 +154,4 @@ Define custom methods in models and render based on those methods:
 </Alloy>
 ```
 
-See [Custom Query Styles](/guide/Alloy_Framework/Alloy_Guide/Alloy_Views/Alloy_Styles_and_Themes/#custom-query-styles) for more details.
+See `VIEWS_STYLES.md` in the `alloy-guides` skill (Custom Query Styles section) for more details.
