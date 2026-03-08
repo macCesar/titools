@@ -4,6 +4,34 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.2.13] - 2026-03-07
+
+### Added
+- **alloy-guides/MODELS.md**: Comprehensive Alloy data binding section
+  - Collection-view binding with full attribute reference (`dataCollection`, `dataTransform`, `dataFilter`, `dataFunction`)
+  - Repeater objects table for all supported view types (ListView, TableView, ScrollableView, Picker, etc.)
+  - Model-view binding documentation
+  - `$.destroy()` memory cleanup warning and pattern for global singletons
+  - Complete collection-view binding example with album/ScrollableView
+- **ti-guides/advanced-data-and-images.md**: Added database download pattern for first-boot hydration
+
+### Changed
+- **ti-expert/security-fundamentals.md**: Updated secure token storage to use unified `ti.identity` module — replaces platform-specific `Ti.Android.createKeyStore` / `Ti.KeychainItem` with `Identity.createKeychainItem()` (works on both iOS and Android)
+- **alloy-guides**: Refreshed CONTROLLERS, VIEWS_DYNAMIC, VIEWS_STYLES, VIEWS_XML, WIDGETS
+- **ti-expert**: Content refresh across code-conventions, error-handling, examples, performance-optimization, security-device, state-management, testing-e2e-ci, theming
+- **ti-guides**: Content refresh across application-frameworks, coding-best-practices, commonjs-advanced, hello-world, hyperloop-native-access, javascript-primer, style-and-conventions
+- **ti-howtos**: Content refresh across buffer-codec-streams, debugging-profiling, google-maps-v2, ios-map-kit, notification-services, webpack-build-pipeline
+- **ti-ui/application-structures.md**: Minor content update
+- **purgetss/icon-fonts.md**: Content refresh
+- **alloy-howtos/samples.md**: Minor update
+
+### Removed
+- **ti-guides/SKILL.md**: Removed dead references (`alloy-cli-advanced.md`, `alloy-data-mastery.md`, `alloy-widgets-and-themes.md`)
+- **ti-guides/tiapp-config.md**: Removed deprecated Appcelerator-only properties (`appc-sourcecode-encryption-policy`, `appc-security-jailbreak-detect`, `appc-security-debugger-detect`)
+
+### Fixed
+- **ti-guides/advanced-data-and-images.md**: Fixed markdown table alignment formatting
+
 ## [2.2.11] - 2026-02-12
 
 ### Changed
