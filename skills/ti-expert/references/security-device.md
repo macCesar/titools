@@ -502,6 +502,9 @@ exports.SecurityService = {
   },
 
   _showBlockedScreen() {
+    // Note: iOS guidelines prohibit programmatically terminating an app.
+    // The best practice is to show a blocking dialog and prevent further interaction.
+    // On Android you can call Ti.Android.currentActivity.finish() to close the activity.
     const dialog = Ti.UI.createAlertDialog({
       title: L('security_blocked_title'),
       message: L('security_blocked_msg'),
@@ -509,10 +512,10 @@ exports.SecurityService = {
     })
 
     dialog.addEventListener('click', () => {
-      // Close the app (iOS) or minimize (Android)
-      if (OS_IOS) {
-        Ti.Platform.openURL('prefs:root=General')
+      if (OS_ANDROID) {
+        Ti.Android.currentActivity.finish()
       }
+      // On iOS: leave the dialog visible — Apple guidelines prohibit force-quitting apps.
     })
 
     dialog.show()
@@ -550,15 +553,15 @@ setInterval(() => {
 
 ## Security checklist
 
-| Category | Check | Implementation |
+| Category       | Check                      | Implementation           |
 | -------------- | -------------------------- | ------------------------ |
-| **Biometrics** | Use ti.identity for auth | BiometricService wrapper |
-| **Biometrics** | Never store biometric data | System handles storage |
-| **Biometrics** | Fallback to password | Always offer alternative |
-| **Deep Links** | Whitelist allowed schemes | ALLOWED_SCHEMES constant |
-| **Deep Links** | Whitelist allowed hosts | ALLOWED_HOSTS constant |
-| **Deep Links** | Sanitize all parameters | _sanitizeParams() |
-| **Deep Links** | Check auth requirements | requiresAuth per route |
-| **Integrity** | Check for jailbreak/root | checkDeviceIntegrity() |
-| **Integrity** | Define security policy | block/restrict/warn |
-| **Integrity** | Log security events | Always log compromises |
+| **Biometrics** | Use ti.identity for auth   | BiometricService wrapper |
+| **Biometrics** | Never store biometric data | System handles storage   |
+| **Biometrics** | Fallback to password       | Always offer alternative |
+| **Deep Links** | Whitelist allowed schemes  | ALLOWED_SCHEMES constant |
+| **Deep Links** | Whitelist allowed hosts    | ALLOWED_HOSTS constant   |
+| **Deep Links** | Sanitize all parameters    | _sanitizeParams()        |
+| **Deep Links** | Check auth requirements    | requiresAuth per route   |
+| **Integrity**  | Check for jailbreak/root   | checkDeviceIntegrity()   |
+| **Integrity**  | Define security policy     | block/restrict/warn      |
+| **Integrity**  | Log security events        | Always log compromises   |

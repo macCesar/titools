@@ -20,6 +20,7 @@ Create a single source of truth using Backbone.Events:
 ```javascript
 // lib/services/stateStore.js
 const Backbone = require('alloy/backbone')
+const _ = require('alloy/underscore')._
 
 class StateStore {
   constructor() {
@@ -280,13 +281,13 @@ Ti.App.addEventListener('resume', () => {
 
 ## Anti-patterns
 
-| Anti-Pattern | Why It's Bad | Solution |
+| Anti-Pattern                          | Why It's Bad                 | Solution                                 |
 | ------------------------------------- | ---------------------------- | ---------------------------------------- |
-| `Ti.App.fireEvent` for state | No cleanup, memory leaks | Use StateStore with `offChange` |
-| Direct collection mutation | Bypasses reactivity | Use collection methods (`add`, `remove`) |
-| State in multiple places | Inconsistency bugs | Single source of truth |
-| Global variables (`Alloy.Globals`) | No reactivity, hard to track | Use StateStore |
-| Controller-to-controller direct calls | Tight coupling | Use StateStore or events |
+| `Ti.App.fireEvent` for state          | No cleanup, memory leaks     | Use StateStore with `offChange`          |
+| Direct collection mutation            | Bypasses reactivity          | Use collection methods (`add`, `remove`) |
+| State in multiple places              | Inconsistency bugs           | Single source of truth                   |
+| Global variables (`Alloy.Globals`)    | No reactivity, hard to track | Use StateStore                           |
+| Controller-to-controller direct calls | Tight coupling               | Use StateStore or events                 |
 
 ## Persistence strategies
 
@@ -472,14 +473,14 @@ exports.appStore = {
 
 ### Choosing a strategy
 
-| Data Type | Strategy | Reason |
-| ------------------ | ------------------- | ---------------------- |
-| User preferences | Ti.App.Properties | Simple main-value, fast |
-| Auth tokens | Keychain/KeyStore | Security |
-| User profile | Properties + Secure | Mixed sensitivity |
-| Lists (100+ items) | SQLite | Query, pagination |
-| Offline queue | SQLite | Durability, FIFO |
-| Cache | In-memory + SQLite | Speed + persistence |
+| Data Type          | Strategy            | Reason                  |
+| ------------------ | ------------------- | ----------------------- |
+| User preferences   | Ti.App.Properties   | Simple main-value, fast |
+| Auth tokens        | Keychain/KeyStore   | Security                |
+| User profile       | Properties + Secure | Mixed sensitivity       |
+| Lists (100+ items) | SQLite              | Query, pagination       |
+| Offline queue      | SQLite              | Durability, FIFO        |
+| Cache              | In-memory + SQLite  | Speed + persistence     |
 
 ## State middleware
 

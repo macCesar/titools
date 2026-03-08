@@ -127,21 +127,30 @@ describe('Login Flow', () => {
 
 ## Adding accessibility IDs for testing
 
+Appium uses accessibility identifiers to locate elements. The correct properties are:
+- **iOS**: `accessibilityIdentifier` — maps to `$('~id')` in WebdriverIO
+- **Android**: `contentDescription` — also maps to `$('~id')` in WebdriverIO
+
+`testId` is NOT an official Titanium view property. Use `accessibilityIdentifier` instead.
+
 ```xml
 <!-- views/auth/login.xml -->
-<Window testId="loginScreen">
-  <TextField id="emailField" testId="emailField" />
-  <TextField id="passwordField" testId="passwordField" />
-  <Button id="loginBtn" testId="loginButton" />
-  <Label id="errorLabel" testId="errorLabel" />
+<Window id="loginWindow" accessibilityIdentifier="loginScreen">
+  <TextField id="emailField" accessibilityIdentifier="emailField" />
+  <TextField id="passwordField" accessibilityIdentifier="passwordField" />
+  <Button id="loginBtn" accessibilityIdentifier="loginButton" />
+  <Label id="errorLabel" accessibilityIdentifier="errorLabel" />
 </Window>
 ```
 
 ```javascript
-// In controller or alloy.js - map testId to accessibilityLabel
-if (Alloy.CFG.debug) {
-  // Auto-set accessibilityLabel from testId during development
-  Ti.UI.defaultUnit = 'dp'
+// For Android, also set contentDescription to match the same value
+// since accessibilityIdentifier is iOS-specific.
+// In controller:
+if (OS_ANDROID) {
+  $.emailField.contentDescription = 'emailField'
+  $.passwordField.contentDescription = 'passwordField'
+  $.loginBtn.contentDescription = 'loginButton'
 }
 ```
 
@@ -412,21 +421,21 @@ end
 
 Configure in GitHub repository settings:
 
-| Rule | Setting |
+| Rule                              | Setting                                    |
 | --------------------------------- | ------------------------------------------ |
-| Require pull request reviews | 1 approval required |
-| Require status checks | lint, unit-tests, build-ios, build-android |
-| Require branches to be up to date | Yes |
-| Include administrators | Yes |
+| Require pull request reviews      | 1 approval required                        |
+| Require status checks             | lint, unit-tests, build-ios, build-android |
+| Require branches to be up to date | Yes                                        |
+| Include administrators            | Yes                                        |
 
 ## Testing best practices summary
 
-| Area | Practice |
+| Area                  | Practice                                   |
 | --------------------- | ------------------------------------------ |
-| **Unit Tests** | Test business logic in services/helpers |
+| **Unit Tests**        | Test business logic in services/helpers    |
 | **Integration Tests** | Test controller flows with mocked services |
-| **E2E Tests** | Test critical user journeys |
-| **Coverage** | Aim for 80%+ on services, 60%+ overall |
-| **CI Pipeline** | Run lint -> unit tests -> build -> E2E |
-| **Artifacts** | Save screenshots on failure |
-| **Notifications** | Slack/email on build failures |
+| **E2E Tests**         | Test critical user journeys                |
+| **Coverage**          | Aim for 80%+ on services, 60%+ overall     |
+| **CI Pipeline**       | Run lint -> unit tests -> build -> E2E     |
+| **Artifacts**         | Save screenshots on failure                |
+| **Notifications**     | Slack/email on build failures              |

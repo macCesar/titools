@@ -212,12 +212,14 @@ $.cleanup = cleanup
 ```javascript
 // lib/services/database.js
 exports.DB = {
-  // Use transactions for multiple writes
+  // Use transactions to speed batch inserts
+  // Per official docs: use db.execute('BEGIN') / db.execute('COMMIT') — there are no
+  // dedicated begin_transaction() / commit() / rollback() methods on Ti.Database.DB.
   batchInsert(items) {
     const db = Ti.Database.open('mydb')
 
     try {
-      db.begin_transaction()
+      db.execute('BEGIN')
 
       items.forEach(item => {
         db.execute(
@@ -228,12 +230,12 @@ exports.DB = {
         )
       })
 
-      db.commit()
+      db.execute('COMMIT')
 
       console.log(`Inserted ${items.length} items`)
 
     } catch (e) {
-      db.rollback()
+      db.execute('ROLLBACK')
       console.error('Batch insert failed', e)
       throw e
 
@@ -574,14 +576,14 @@ function cleanup() {
 
 ### Common use cases
 
-| Pattern | Use Case | Delay |
+| Pattern  | Use Case         | Delay        |
 | -------- | ---------------- | ------------ |
-| Debounce | Search input | 300ms |
-| Debounce | Auto-save | 1000ms |
-| Debounce | Window resize | 150ms |
-| Throttle | Scroll events | 50-100ms |
+| Debounce | Search input     | 300ms        |
+| Debounce | Auto-save        | 1000ms       |
+| Debounce | Window resize    | 150ms        |
+| Throttle | Scroll events    | 50-100ms     |
 | Throttle | Mouse/touch move | 16ms (60fps) |
-| Throttle | API polling | 5000ms+ |
+| Throttle | API polling      | 5000ms+      |
 
 ### Combined pattern for real-time + final
 
@@ -622,18 +624,18 @@ function cleanup() {
 
 ## Performance checklist
 
-| Area | Check |
+| Area          | Check                                   |
 | ------------- | --------------------------------------- |
-| **Bridge** | Cached Ti.Platform properties |
-| **Bridge** | Using applyProperties for updates |
-| **Bridge** | TSS styles instead of inline attributes |
-| **Memory** | All global listeners cleaned up |
-| **Memory** | Heavy objects nulled in cleanup |
-| **Memory** | Images resized appropriately |
-| **Database** | Using transactions for batch ops |
-| **Database** | Indexes on frequently queried columns |
-| **Database** | ResultSets and DB handles closed |
-| **Animation** | Using native animations, not intervals |
-| **Animation** | GPU-accelerated properties preferred |
-| **Timing** | Debounce on search/input |
-| **Timing** | Throttle on scroll/touch events |
+| **Bridge**    | Cached Ti.Platform properties           |
+| **Bridge**    | Using applyProperties for updates       |
+| **Bridge**    | TSS styles instead of inline attributes |
+| **Memory**    | All global listeners cleaned up         |
+| **Memory**    | Heavy objects nulled in cleanup         |
+| **Memory**    | Images resized appropriately            |
+| **Database**  | Using transactions for batch ops        |
+| **Database**  | Indexes on frequently queried columns   |
+| **Database**  | ResultSets and DB handles closed        |
+| **Animation** | Using native animations, not intervals  |
+| **Animation** | GPU-accelerated properties preferred    |
+| **Timing**    | Debounce on search/input                |
+| **Timing**    | Throttle on scroll/touch events         |

@@ -736,9 +736,11 @@ function init() {
 }
 
 function onTabFocus(e) {
-  // Analytics tracking
+  // Track tab changes via your analytics service
+  // Note: Ti.Analytics was removed from the Titanium SDK.
+  // Use a third-party analytics service (e.g., Firebase, Segment) instead.
   const tabNames = ['home', 'search', 'cart', 'profile']
-  Ti.Analytics.featureEvent(`tab:${tabNames[e.index]}`)
+  Analytics.track(`tab:${tabNames[e.index]}`)
 }
 
 function onCartUpdated({ itemCount }) {

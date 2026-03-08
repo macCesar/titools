@@ -4,7 +4,10 @@
 
 ```javascript
 // lib/core/appError.js
-module.exports = class AppError extends Error {
+// IMPORTANT: Use named exports (exports.Foo), NOT module.exports = class Foo.
+// Multiple `module.exports =` assignments overwrite each other — only the last one survives.
+
+class AppError extends Error {
   constructor(message, code, statusCode = 500) {
     super(message)
     this.code = code
@@ -14,32 +17,36 @@ module.exports = class AppError extends Error {
   }
 }
 
-// Specific error types
-module.exports = class NetworkError extends AppError {
+class NetworkError extends AppError {
   constructor(message = 'Network request failed') {
     super(message, 'NETWORK_ERROR', 0)
   }
 }
 
-module.exports = class AuthError extends AppError {
+class AuthError extends AppError {
   constructor(message = 'Authentication failed') {
     super(message, 'AUTH_ERROR', 401)
   }
 }
 
-module.exports = class ValidationError extends AppError {
+class ValidationError extends AppError {
   constructor(message = 'Validation failed') {
     super(message, 'VALIDATION_ERROR', 400)
   }
 }
 
-module.exports = class NotFoundError extends AppError {
+class NotFoundError extends AppError {
   constructor(message = 'Resource not found') {
     super(message, 'NOT_FOUND', 404)
   }
 }
 
-// Error codes for reference
+exports.AppError = AppError
+exports.NetworkError = NetworkError
+exports.AuthError = AuthError
+exports.ValidationError = ValidationError
+exports.NotFoundError = NotFoundError
+
 exports.ErrorCodes = {
   NETWORK_ERROR: 'NETWORK_ERROR',
   AUTH_ERROR: 'AUTH_ERROR',

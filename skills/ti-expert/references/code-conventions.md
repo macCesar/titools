@@ -386,19 +386,21 @@ const Backbone = require('alloy/backbone')
 
 const EventBus = _.clone(Backbone.Events)
 
-// Named export for event constants
-exports.Events = {
+// Attach event constants directly to the bus object so they survive module.exports
+EventBus.Events = {
   USER_UPDATED: 'user:updated',
   SYNC_COMPLETE: 'sync:complete'
 }
 
-// Default export for the bus itself
+// Export the bus (EventBus.Events is accessible as a property)
 module.exports = EventBus
 
 // Usage
 const EventBus = require('services/eventBus')
 const { Events } = EventBus
 ```
+
+> Note: setting `exports.Events = {...}` before `module.exports = EventBus` has no effect — the `module.exports` assignment discards the prior `exports` object. Attach constants directly to the object being exported instead.
 
 ### Re-exports (Barrel Files)
 ```javascript
