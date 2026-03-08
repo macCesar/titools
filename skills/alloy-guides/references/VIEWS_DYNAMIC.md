@@ -60,7 +60,7 @@ Before using either method, you need to create class styles in the TSS files, ei
 }
 ```
 
-The previous style sheet defines various class and markup element styles for labels, buttons and windows. Alloy assigns a priority for each class, based on its order in the TSS file. Styles listed first receive a lower priority than ones listed afterwards. For example, if both the ldpi and hdpi classes are assigned to a label, since hdpi is after ldpi, the label text is 24 dp not 9 dp.
+The previous style sheet defines various class and markup element styles for labels, buttons and windows. Alloy assigns a priority for each class, based on its order in the TSS file. Styles listed first receive a lower priority than ones listed afterwards. For example, if both the ldpi and hdpi classes are assigned to a label, since hdpi is after ldpi, the label text is 24 dp not 9 dp. Since the Label size of 14 dp is a markup element style and even though it appears after the class styles, it does not have a higher priority number since class styles have higher precedence over markup element styles. The label is still 24 dp not 14 dp. Properties defined inline in the markup and TSS id styles still take precedence over class styles.
 
 ## Generate a Dynamic Style
 
