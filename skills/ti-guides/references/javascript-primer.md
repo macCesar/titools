@@ -138,16 +138,24 @@ for (const name of names) {
 }
 ```
 
-### Use var/let/const correctly
+### Prefer `const` and `let` over `var`
+
+`var` is function-scoped and hoisted; `let` and `const` are block-scoped and clearer.
 
 ```javascript
-// ES5: use var (function-scoped)
+// Avoid: var (function-scoped, can be accidentally hoisted)
 var x = 10;
 
-// ES6+: use let and const (block-scoped)
-let y = 20;        // Can be reassigned
-const z = 30;       // Cannot be reassigned
+// Prefer: const for values that do not change
+const MAX_RETRIES = 3;
+const config = { timeout: 5000 };
+
+// Use let only when the binding must be reassigned
+let retryCount = 0;
+retryCount++;
 ```
+
+Rule of thumb: reach for `const` first; switch to `let` only when you need to reassign; never use `var` in new code.
 
 ---
 

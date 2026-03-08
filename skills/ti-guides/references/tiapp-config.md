@@ -243,38 +243,6 @@ Since 6.1.0. Allow or disallow custom iOS 8+ keyboard extensions. Custom keyboar
 <property name="allow-custom-keyboards" type="bool">false</property>
 ```
 
-#### `appc-sourcecode-encryption-policy`
-
-Encryption policy for app assets.
-
-```xml
-<property name="appc-sourcecode-encryption-policy">remote</property>
-```
-
-Values:
-- `embed`: key embedded in binary (padded/obfuscated)
-- `remote`: key stored remotely (requires internet, default)
-
-#### `appc-security-jailbreak-detect`
-
-Prevent running on jailbroken/rooted devices.
-
-```xml
-<property name="appc-security-jailbreak-detect">true</property>
-```
-
-Requires `appc-sourcecode-encryption-policy` set to `remote`.
-
-#### `appc-security-debugger-detect`
-
-Prevent debugger connections.
-
-```xml
-<property name="appc-security-debugger-detect">true</property>
-```
-
-Requires `appc-sourcecode-encryption-policy` set to `remote`.
-
 ---
 
 ## Android section

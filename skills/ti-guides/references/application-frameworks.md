@@ -118,11 +118,11 @@ app.js:
 // Single namespace pattern
 const app = {};
 
-// Include components (Legacy)
-Ti.include('ui/ApplicationWindow.js');
+// Load components via require (Ti.include is deprecated)
+const AppWindow = require('ui/ApplicationWindow');
 
 // Create and open window
-app.mainWindow = app.ui.createApplicationWindow();
+app.mainWindow = AppWindow.createApplicationWindow();
 app.mainWindow.open();
 ```
 

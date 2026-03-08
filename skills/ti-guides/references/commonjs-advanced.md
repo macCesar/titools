@@ -162,7 +162,49 @@ const logger = require('logger')
 logger.info('some log statement with a timestamp')
 ```
 
-## 7. Inter-module state sharing
+## 7. Packages of related functionality
+
+Group related classes or helpers in a single module:
+
+```javascript
+// app/lib/geo.js
+class Point {
+  constructor(x, y) {
+    this.x = x
+    this.y = y
+  }
+}
+
+class Line {
+  constructor(start, end) {
+    this.start = start
+    this.end = end
+  }
+
+  slope() {
+    return (this.end.y - this.start.y) / (this.end.x - this.start.x)
+  }
+
+  yIntercept() {
+    return this.start.y - (this.slope() * this.start.x)
+  }
+}
+
+exports.Point = Point
+exports.Line = Line
+```
+
+Usage:
+```javascript
+const Geo = require('lib/geo')
+
+const start = new Geo.Point(1, -5)
+const end = new Geo.Point(10, 2)
+const line = new Geo.Line(start, end)
+Ti.API.info(line.slope())
+```
+
+## 8. Inter-module state sharing
 
 When a module assigns a primitive value to `exports`, the consumer gets a copy, not a live reference. Changes to the internal variable are not reflected in the exported property.
 
@@ -190,7 +232,7 @@ Ti.API.info(stateful.stepVal)        // 5  - still the original copy
 
 Rule: use getter/setter functions for stateful values. Direct property exports of primitives are snapshots at module load time.
 
-## 8. Antipatterns to avoid
+## 9. Antipatterns to avoid
 
 ### Do not assign directly to `exports`
 
@@ -217,7 +259,7 @@ exports.foo = 'bar'
 
 Any data a module needs should be passed during construction or initialization. Avoid globals shared across modules.
 
-## 9. Security and scope
+## 10. Security and scope
 
 All modules have private scope. Variables declared within the module are private unless added to `exports`.
 
@@ -230,7 +272,7 @@ exports.publicMethod = () => {
 }
 ```
 
-## 10. Node.js compatibility
+## 11. Node.js compatibility
 
 Titanium supports Node.js module patterns and `require()` resolution. Node.js modules can often be used directly.
 

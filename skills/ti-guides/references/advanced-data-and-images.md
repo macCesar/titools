@@ -15,6 +15,26 @@
   ```
 - Do not ship large pre-populated databases. Ship a small skeleton and download data on first boot to reduce IPA/APK size. The `Resources` directory is read-only, so installing a database copies it to `applicationDataDirectory`, which creates two copies on the device.
   - Android note: in Android 2.2 and earlier, the installer could not uncompress assets over 1 MB. One workaround was to rename the file with a `.mp3` extension to prevent `aapt` compression.
+  - Pattern for downloading a replacement database on first boot:
+  ```javascript
+  const updateDatabase = (newData) => {
+    // delete existing content and rehydrate from downloaded JSON
+  }
+  downloadButton.addEventListener('click', () => {
+    const client = Ti.Network.createHTTPClient({
+      timeout: 10000,
+      onload() {
+        updateDatabase(this.responseData)
+        Ti.UI.createAlertDialog({ title: 'Info', message: 'Database installed' }).show()
+      },
+      onerror(e) {
+        Ti.UI.createAlertDialog({ title: 'Error', message: e.error }).show()
+      }
+    })
+    client.open('GET', 'https://example.com/data.json')
+    client.send()
+  })
+  ```
 
 ### Database version management
 
@@ -45,11 +65,11 @@ const addColumn = (dbname, tblName, newFieldName, colSpec) => {
 
 Choose the right format for each use case:
 
-| Format | Compression | Best for | Avoid for |
-| --- | --- | --- | --- |
-| PNG | Lossless | Icons, text, line art, buttons | Photos (large files) |
-| JPG | Lossy | Photographs | Text, icons, line drawings (artifacts) |
-| GIF | Lossless (256 colors) | Rare cases | Most cases (limited colors, animated GIF not supported everywhere) |
+| Format | Compression           | Best for                       | Avoid for                                                          |
+| ------ | --------------------- | ------------------------------ | ------------------------------------------------------------------ |
+| PNG    | Lossless              | Icons, text, line art, buttons | Photos (large files)                                               |
+| JPG    | Lossy                 | Photographs                    | Text, icons, line drawings (artifacts)                             |
+| GIF    | Lossless (256 colors) | Rare cases                     | Most cases (limited colors, animated GIF not supported everywhere) |
 
 For flip-book animations, use `ImageView.images` with an array of PNG or optimized JPG files instead of animated GIFs.
 
@@ -80,12 +100,12 @@ For flip-book animations, use `ImageView.images` with an array of PNG or optimiz
 
 Resize and compress images before including them in your app to reduce IPA/APK size and network usage.
 
-| Platform | File types | Tool |
-| --- | --- | --- |
-| Mac | PNG, JPG, GIF | ImageOptim |
+| Platform            | File types    | Tool        |
+| ------------------- | ------------- | ----------- |
+| Mac                 | PNG, JPG, GIF | ImageOptim  |
 | Mac, Windows, Linux | PNG, JPG, GIF | ImageMagick |
-| Windows/DOS | PNG | PNGCrush |
-| Windows | JPG | Nikkho |
+| Windows/DOS         | PNG           | PNGCrush    |
+| Windows             | JPG           | Nikkho      |
 
 ---
 

@@ -34,6 +34,8 @@ Ti.App.fireEvent('my_event')
 
 - Defer script loading. Only `require` modules when you need them.
 
+Defer loading to reduce startup time. Only `require` modules when you need them.
+
 Lazy script loading example:
 ```javascript
 // must be loaded at launch
@@ -56,8 +58,16 @@ win1.addEventListener('click', () => {
 });
 ```
 
-- Bridge efficiency: minimize requests for device properties like `Ti.Platform.osname`. Store them in a local variable.
-- Avoid extending the `Ti` namespace. `Ti` objects are proxies to native components. Properties set on them may not reach the native object, arrays return copies, and persistence across SDK versions is not guaranteed. Use modules instead.
+- Bridge efficiency: minimize requests for device properties like `Ti.Platform.osname`. Store them in a local variable:
+```javascript
+const isAndroid = (Ti.Platform.osname === 'android')
+if (isAndroid) { /* Android path */ } else { /* iOS path */ }
+```
+- Avoid extending the `Ti` namespace. Three reasons:
+  1. Ti objects are proxies to native OS components — your extensions may conflict with native functionality.
+  2. Arrays stored on the namespace may be immutable; objects may be null unexpectedly.
+  3. There is no guarantee properties persist across SDK versions.
+  Use your own namespace or CommonJS module instead of modifying `Ti`.
 
 ## 5. App architecture recommendations
 
@@ -83,6 +93,25 @@ app.js:
 ```javascript
 const myModule = require('/MyModule');
 myModule.sayHello('User');
+```
+
+### Namespace with deferred loading (alternative pattern)
+
+If not using CommonJS, you can still defer loading with a namespace:
+
+```javascript
+const someNameSpace = () => {
+  const API = {
+    init() {
+      // create UI or initialize
+    },
+    reset() {
+      // null objects, clean up
+    }
+  }
+  return API
+}
+const ns = new someNameSpace()
 ```
 
 ### Custom objects as components
