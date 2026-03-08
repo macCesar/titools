@@ -180,11 +180,11 @@ Setup:
 5. Click Record
 
 Key columns:
-| Column                            | What it shows           |
-| --------------------------------- | ----------------------- |
-| Persistent Bytes (Live Bytes)     | Memory currently in use |
-| #Persistent (#Living)             | Active object count     |
-| #Transient (#Transitory)          | Ready to garbage collect |
+| Column                        | What it shows            |
+| ----------------------------- | ------------------------ |
+| Persistent Bytes (Live Bytes) | Memory currently in use  |
+| #Persistent (#Living)         | Active object count      |
+| #Transient (#Transitory)      | Ready to garbage collect |
 
 Identifying leaks:
 1. Filter for `Ti` prefix (Titanium objects)
@@ -348,27 +348,23 @@ SELECT * FROM tablename;
 
 ### Creating emulators
 
-Command line:
-```bash
-# List available targets
-android list targets
+:::warning AVD Manager moved to Android Studio
+The legacy `android` CLI (`android create avd`, `android avd`) was removed in Android SDK Tools 25.3. Use Android Studio's built-in **AVD Manager** (Tools → Device Manager) or the command-line `avdmanager` tool instead.
+:::
 
-# Create AVD
-android create avd -n my_emulator -t 1 -s WVGA800 --abi x86
+Command line (modern):
+```bash
+# List available system images
+sdkmanager --list | grep system-images
+
+# Create AVD with avdmanager
+avdmanager create avd -n my_emulator -k "system-images;android-34;google_apis;x86_64"
 
 # Launch emulator
 emulator -avd my_emulator
 ```
 
-AVD Manager (GUI):
-```bash
-android avd
-```
-
-1. Click New
-2. Enter name, select device/target
-3. Choose x86 ABI if available
-4. Click OK
+Android Studio (GUI): Tools → Device Manager → Create Device.
 
 ### Modifying emulators
 
@@ -377,12 +373,6 @@ Edit `~/.android/avd/<NAME>.avd/config.ini`:
 ```
 disk.dataPartition.size=1024m
 ```
-
-Resize emulator:
-1. Close emulator
-2. AVD Manager → Select emulator → Edit
-3. Change resolution
-4. Save
 
 Scale on-the-fly:
 ```bash

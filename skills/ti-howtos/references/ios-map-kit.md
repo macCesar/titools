@@ -77,6 +77,12 @@ mapView.showsBuildings = true; // 3D buildings
 
 ## 4. iOS annotations
 
+### iOS pin colors
+iOS supports only three pin color constants (unlike Android's ten):
+- `MapModule.ANNOTATION_GREEN`
+- `MapModule.ANNOTATION_PURPLE`
+- `MapModule.ANNOTATION_RED`
+
 ### System buttons and callouts
 iOS allows native buttons in the pin callout (popup window).
 
@@ -134,8 +140,9 @@ mapView.addEventListener('click', (e) => {
   }
 });
 
+// e.newState holds the drag state constant; e.annotation holds the annotation object
 mapView.addEventListener('pinchangedragstate', (e) => {
-  if (e.annotation.dragState === MapModule.ANNOTATION_DRAG_STATE_END) {
+  if (e.newState === MapModule.ANNOTATION_DRAG_STATE_END) {
     Ti.API.info(`Dropped at: ${e.annotation.latitude}, ${e.annotation.longitude}`);
   }
 });

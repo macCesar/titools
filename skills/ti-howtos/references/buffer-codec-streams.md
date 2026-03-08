@@ -8,11 +8,17 @@ Buffers are mutable, resizable containers for bytes (byte arrays).
 
 ### Creating buffers
 ```javascript
+// Empty buffer (initial length 0)
+const buffer0 = Ti.createBuffer();
+
 // Empty 512-byte buffer
 const buffer1 = Ti.createBuffer({ length: 512 });
 
 // Buffer initialized with a string (UTF-8 by default)
 const buffer2 = Ti.createBuffer({ value: 'Hello World' });
+
+// Buffer initialized with explicit charset
+const buffer3 = Ti.createBuffer({ value: 'Hello World', type: Ti.Codec.CHARSET_UTF16 });
 ```
 
 ### Common operations
@@ -20,14 +26,18 @@ const buffer2 = Ti.createBuffer({ value: 'Hello World' });
 const b1 = Ti.createBuffer({ value: 'Part 1. ' });
 const b2 = Ti.createBuffer({ value: 'Part 2.' });
 
-// Append
+// Append (resizes b1)
 b1.append(b2);
+
+// Insert at position (resizes buffer as needed)
+const extra = Ti.createBuffer({ value: 'X' });
+b1.insert(extra, 1); // insert extra at index 1
 
 // Truncate
 b1.length = 10;
 
-// Direct access (array-like)
-b1[0] = 72; // 'H' character in ASCII
+// Direct array access — buffer is NOT auto-extended; values must be byte values
+b1[0] = 72; // 'H' (ASCII). b1[100] = 1 would throw if index >= b1.length
 
 // Free memory
 b1.release();
@@ -46,6 +56,18 @@ Ti.Codec.encodeNumber({
   type: Ti.Codec.TYPE_INT,
   byteOrder: Ti.Codec.BIG_ENDIAN
 });
+```
+
+### Encoding strings
+```javascript
+// Encode a string into a buffer; returns the byte length written
+const buffer = Ti.createBuffer({ length: 1024 });
+const encodedLength = Ti.Codec.encodeString({
+  source: 'hello world',
+  dest: buffer
+});
+// Trim buffer to actual content
+buffer.length = encodedLength;
 ```
 
 ### Decoding strings
