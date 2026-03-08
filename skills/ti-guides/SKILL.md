@@ -52,9 +52,6 @@ Behavior:
 - Hyperloop Native Access (references/hyperloop-native-access.md): Objective-C/Swift/Java syntax, casting, debugging, XIB/Storyboards.
 - Style & Conventions (references/style-and-conventions.md): naming standards and formatting rules.
 - Reserved Words (references/reserved-words.md): ECMAScript, iOS, and Alloy reserved keywords to avoid.
-- Alloy CLI Reference (references/alloy-cli-advanced.md): extract-i18n, code generation, and build hooks.
-- Alloy Data Mastery (references/alloy-data-mastery.md): sync adapters, data binding, and Backbone collections.
-- Alloy Widgets & Themes (references/alloy-widgets-and-themes.md): widget structure, styling priorities, and theming.
 - Android Manifest (references/android-manifest.md): custom AndroidManifest.xml, permissions, and manifest merge.
 - App Distribution (references/app-distribution.md): Google Play (APK/AAB), App Store (IPA), certificates, provisioning, and deployment.
 - tiapp.xml Configuration (references/tiapp-config.md): complete reference for tiapp.xml and timodule.xml, including all elements, properties, and platform-specific settings.

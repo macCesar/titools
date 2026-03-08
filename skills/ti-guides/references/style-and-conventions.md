@@ -101,3 +101,4 @@ function getCustomer(customerName) {}
 
 - Douglas Crockford's JavaScript Code Conventions
 - Google's JavaScript Style Guide: https://google.github.io/styleguide/jsguide.html
+- TiDev ESLint Configuration (rules used for SDK-related npm packages and CLI code): https://github.com/tidev/eslint-config-axway

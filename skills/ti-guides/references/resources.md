@@ -14,7 +14,6 @@ Community resources, support channels, tools, and learning materials for Titaniu
 ### Module resources
 
 - Module Search: https://modules.titaniumsdk.com/
-- Ti.Utils: https://github.com/TimanMax/Ti.Utils
 - From Zero to App: https://fromzerotoapp.com/
 
 ### Documentation
@@ -36,7 +35,6 @@ Community resources, support channels, tools, and learning materials for Titaniu
 
 ### Sample applications
 
-- Ti.Bluetooth: https://github.com/mwaylabs/ti.bluetooth
 - Ti.Map: https://github.com/tidev/ti.map
 - KitchenSink: https://github.com/tidev/KitchenSink
 

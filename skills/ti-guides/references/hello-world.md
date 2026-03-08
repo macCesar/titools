@@ -15,23 +15,19 @@ Example:
 ti create -t app --id com.example.hello -n HelloWorld -p android,ios -d ~/Projects
 ```
 
-### Using Studio/VS Code
+### Using VS Code
 
-File > New > Mobile App Project
-
-Choose a template:
-- Alloy: MVC framework (recommended)
-- Classic: no framework
+VS Code with the Titanium extension supports project creation via the command palette. The CLI is the most reliable method and works in any editor.
 
 ## Project fields
 
-| Field | Description | Rules |
-| --- | --- | --- |
-| Project name | App name shown to users | - |
-| App ID | Reverse domain notation | `com.company.appname` |
-| Company URL | Your website | - |
-| SDK Version | Titanium SDK to use | Use latest |
-| Deployment Targets | Platforms to support | android, ios, ipad, iphone |
+| Field              | Description             | Rules                      |
+| ------------------ | ----------------------- | -------------------------- |
+| Project name       | App name shown to users | -                          |
+| App ID             | Reverse domain notation | `com.company.appname`      |
+| Company URL        | Your website            | -                          |
+| SDK Version        | Titanium SDK to use     | Use latest                 |
+| Deployment Targets | Platforms to support    | android, ios, ipad, iphone |
 
 ### App ID naming guidelines
 
