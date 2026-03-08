@@ -259,7 +259,8 @@ tabGroup.addTab(Ti.UI.createTab({
 
 tabGroup.open();
 ```
-...
+
+```javascript
 // Window-based app with NavigationWindow (iOS)
 const navWindow = Ti.UI.createNavigationWindow({
   window: Ti.UI.createWindow({
@@ -485,7 +486,7 @@ tabGroup.open();
 
 SplitWindow (iPad):
 ```javascript
-const splitWin = Ti.UI.iOS.createSplitWindow({
+const splitWin = Ti.UI.iPad.createSplitWindow({
   masterView: masterWindow,
   detailView: detailWindow
 });
