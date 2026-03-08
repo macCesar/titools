@@ -531,7 +531,6 @@ Use `UNMutableNotificationContent` with attachments (images, video, audio).
 
 - Service lifecycle: services may be killed if app is swiped away. For critical notifications, use FCM instead of local services.
 - Notification channels: Android 8.0+ requires notification channels.
-- Limitations: legacy MapView only supports a single map view.
 
 ### iOS
 

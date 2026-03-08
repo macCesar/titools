@@ -143,13 +143,13 @@ mapView.addEventListener('click', (e) => {
 });
 
 // Detect drag state changes
+// e.newState holds the drag state constant; e.annotation holds the annotation object
 mapView.addEventListener('pinchangedragstate', (e) => {
-  if (e.annotation.dragState === MapModule.ANNOTATION_DRAG_STATE_END) {
+  if (e.newState === MapModule.ANNOTATION_DRAG_STATE_END) {
     Ti.API.info(`Dropped at: ${e.annotation.latitude}, ${e.annotation.longitude}`);
   }
 });
-// Drag states: ANNOTATION_DRAG_STATE_START, ANNOTATION_DRAG_STATE_DRAG,
-//              ANNOTATION_DRAG_STATE_CANCEL, ANNOTATION_DRAG_STATE_END
+// Drag states: ANNOTATION_DRAG_STATE_START, ANNOTATION_DRAG_STATE_END
 
 // Detect region changes
 mapView.addEventListener('regionchanged', (e) => {
