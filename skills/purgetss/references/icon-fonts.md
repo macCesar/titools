@@ -91,19 +91,19 @@ PurgeTSS handles Font Awesome 7 CSS custom properties automatically (the `--fa:`
 ### Material Icons
 
 ```xml
-<Label class="material-icons md-home md-settings" />
+<Label class="mi mi-home mi-settings" />
 ```
 
 ### Material Symbols
 
 ```xml
-<Label class="material-symbols ms-check ms-add ms-close" />
+<Label class="ms ms-check ms-add ms-close" />
 ```
 
 ### Framework7 Icons
 
 ```xml
-<Label class="f7-icons f7-home f7-search" />
+<Label class="f7 f7-house f7-search" />
 ```
 
 ## Recreating Deleted Libraries
@@ -232,9 +232,9 @@ $.myButton.title = icons.fontAwesome.fabTwitter;
 Using the module is useful when you need to dynamically set icons based on data or user actions.
 :::
 
-## The --prefix Option
+## The --filename Option
 
-**PurgeTSS** automatically determines the group's prefix for each icon family and class name. However, you can use the `--prefix` option to apply the style's filename as the prefix for class names in `fonts.tss` and property names in `purgetss.fonts.js`.
+**PurgeTSS** automatically determines the group's prefix for each icon family and class name. However, you can use the `--filename` (`-f`) option to apply the style's filename as both the font class name and the prefix for icon class names in `fonts.tss` and property names in `purgetss.fonts.js`.
 
 ### Example with Custom Prefix
 
@@ -544,10 +544,10 @@ Both use similar syntax but have different icon names and font files.
 
 ```xml
 <!-- Material Icons -->
-<Label class="material-icons md-home" />
+<Label class="mi mi-home" />
 
 <!-- Material Symbols -->
-<Label class="material-symbols ms-home" />
+<Label class="ms ms-home" />
 ```
 
 ## Complete Command Reference
