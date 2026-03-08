@@ -24,18 +24,18 @@ If the top-level UI component does not have an ID defined, it can be referenced 
 
 The following table lists the attributes for the UI components:
 
-| Attribute      | Description                                                                                        |
-| -------------- | -------------------------------------------------------------------------------------------------- |
+| Attribute      | Description                                                                                                                                                                                                  |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `id`           | Identifies UI elements in the controller (prefixed with `$.`) and style sheet (prefixed with `#`). IDs should be unique per view but are not global, so multiple views can have components with the same ID. |
-| `class`        | Applies additional styles (prefixed with `.` in the TSS file). Overwrites the element style but not the id style. |
-| `autoStyle`    | Enables the autostyle feature for dynamic styling.                                                 |
-| `formFactor`   | Acts as a compiler directive for size-specific view components (`handheld` or `tablet`).           |
-| `if`           | Use a custom query to apply additional styles to the element.                                      |
-| `module`       | Requires in a CommonJS module.                                                                     |
-| `ns`           | Overrides the default `Titanium.UI` namespace.                                                     |
-| `platform`     | Switches the namespace based on the platform.                                                      |
-| `<properties>` | Assigns values to UI object properties.                                                            |
-| `<events>`     | Assigns callbacks to UI object events.                                                             |
+| `class`        | Applies additional styles (prefixed with `.` in the TSS file). Overwrites the element style but not the id style.                                                                                            |
+| `autoStyle`    | Enables the autostyle feature for dynamic styling.                                                                                                                                                           |
+| `formFactor`   | Acts as a compiler directive for size-specific view components (`handheld` or `tablet`).                                                                                                                     |
+| `if`           | Use a custom query to apply additional styles to the element.                                                                                                                                                |
+| `module`       | Requires in a CommonJS module.                                                                                                                                                                               |
+| `ns`           | Overrides the default `Titanium.UI` namespace.                                                                                                                                                               |
+| `platform`     | Switches the namespace based on the platform.                                                                                                                                                                |
+| `<properties>` | Assigns values to UI object properties.                                                                                                                                                                      |
+| `<events>`     | Assigns callbacks to UI object events.                                                                                                                                                                       |
 
 The following table lists the special XML elements besides the Titanium UI components:
 
@@ -54,6 +54,8 @@ The following table lists the special XML elements besides the Titanium UI compo
 * `Ti.UI.TabGroup` or `<TabGroup>`
 * `Ti.UI.NavigationWindow` or `<NavigationWindow>`
 * `Ti.UI.iOS.SplitWindow` or `<SplitWindow>`
+
+Other views do not have any format restrictions.
 
 ::: warning
 With the release of CLI 7.1.0, you can use platform as a prefix in the XML. For example: `<Label ios:text="Hello iOS!" android:text="Hello Android!" />`
@@ -228,9 +230,33 @@ Within a view in the regular Alloy project space (`app/views`), use the `<Widget
 
 **To import a widget:**
 
-1. Copy the widget to the `app/widgets` folder.
-2. Add the `<Widget>` tag in the XML and specify its `src` attribute as the folder name of the widget. Use the `name` attribute to import a specific view-controller instead of the default `widget.xml`/`widget.js`.
-3. Update the `dependencies` object in the `config.json` file.
+1. Copy the widget to the `app/widgets` folder. The widget must be contained within its own folder.
+2. Add the `<Widget>` tag in the XML and specify its `src` attribute as the folder name of the widget.
+3. Update the `dependencies` object in the `config.json` file by adding a key/value pair with the name of the widget as the key and the version number as the value.
+
+You can optionally add the `id` and `name` attributes to the `Widget` element:
+- The `id` attribute allows you to reference the widget in the controller code.
+- The `name` attribute allows you to import a specific view-controller in the widget rather than the default one (`widget.xml`/`widget.js`). Specify the name of the view-controller minus the extension.
+
+For example, to import the `mywidget` widget, copy it to `app/widgets`:
+
+```
+app
+├── config.json
+├── controllers
+│   └── index.js
+├── views
+│   └── index.xml
+└── widgets
+    └── mywidget
+        ├── controllers
+        │   ├── foo.js
+        │   └── widget.js
+        ├── views
+        │   ├── foo.xml
+        │   └── widget.xml
+        └── widget.json
+```
 
 **app/views/index.xml**
 
@@ -247,6 +273,15 @@ Within a view in the regular Alloy project space (`app/views`), use the `<Widget
 ```javascript
 $.index.open();
 $.foo.myMethod();
+```
+
+Update the `dependencies` object in `config.json`:
+
+```
+...
+    "dependencies": {
+        "mywidget":"1.0"
+    }
 ```
 
 ### Passing Arguments

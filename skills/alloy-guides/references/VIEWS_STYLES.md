@@ -331,16 +331,16 @@ Themes provide a way to overwrite or modify files for a specific brand of your a
 
 To create a theme, create a folder called `themes` in your Alloy `app` directory. In the `themes` folder, create a folder for your theme.
 
-| Folder or Filename | Merges or Overwrites             | Supported Since         |
-| ------------------ | -------------------------------- | ----------------------- |
-| config.json        | merges                           | Alloy 1.4.0             |
-| i18n               | merges folders and files         | Alloy 1.4.0             |
-| assets             | merges folders, overwrites files | Alloy 1.4.0             |
-| lib                | merges folders, overwrites files | Alloy 1.7.6 / CLI 5.0.0 |
-| platform           | merges folders, overwrites files | Alloy 1.7.6 / CLI 5.0.0 |
-| styles             | merges folders and files         | Alloy 1.4.0             |
-| widgets/\*/assets  | merges folders, overwrites files | Alloy 1.4.0             |
-| widgets/\*/styles  | merges folders and files         | Alloy 1.4.0             |
+| Folder or Filename | Supported Since         | Merges or Overwrites             |
+| ------------------ | ----------------------- | -------------------------------- |
+| config.json        | Alloy 1.4.0             | merges                           |
+| i18n               | Alloy 1.7.6 / CLI 5.0.0 | merges folders and files         |
+| assets             |                         | merges folders, overwrites files |
+| lib                | Alloy 1.7.6 / CLI 5.0.0 | merges folders, overwrites files |
+| platform           | Alloy 1.7.6 / CLI 5.0.0 | merges folders, overwrites files |
+| styles             |                         | merges folders and files         |
+| widgets/\*/assets  | Alloy 1.4.0             | merges folders, overwrites files |
+| widgets/\*/styles  | Alloy 1.4.0             | merges folders and files         |
 
 To use a theme, add it to your `config.json`:
 

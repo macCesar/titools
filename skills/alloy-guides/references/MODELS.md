@@ -259,9 +259,254 @@ If you want to fire or listen to multiple events, Backbone.js uses spaces to del
 
 ## Alloy Data Binding
 
+### Introduction
+
+When data in the collection changes, you may want to update the view simultaneously to keep information synchronized. This concept is known as data binding. Both Alloy and Backbone provide some mechanisms to bind model data to a view.
+
+### Alloy Binding
+
+In Alloy, collection data can be synchronized to a view object, or a single model can be bound to a view component. Alloy monitors the Backbone add, change, destroy, fetch, remove, and reset events to update the data in the view.
+
+#### Collection-View Binding
+
+To enable collection-view binding, create a global singleton or controller-specific collection using the [Collection tag](https://titaniumsdk.com/guide/Alloy_Framework/Alloy_Guide/Alloy_Views/Alloy_XML_Markup.html#collection-element) in the XML markup of the main view, then add the view object you want to bind data to. The following Titanium view objects support binding to a Collection:
+
+| View Object    | Since Alloy version | Add data binding attributes to...              | Repeater Object to map model attributes to view properties                     |
+| -------------- | ------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------ |
+| ButtonBar      | 1.1                 | `<Labels>`                                     | `<Label/>`                                                                     |
+| CoverFlowView  | 1.1                 | `<Images>`                                     | `<Image/>`                                                                     |
+| ListView       | 1.2                 | `<ListSection>`                                | `<ListItem/>`                                                                  |
+| Map Module     | 1.4                 | `<Module module="ti.map" method="createView">` | None, model attributes will be used as params for createAnnotation() directly. |
+| Picker         | 1.5                 | `<PickerColumn>` or `<Column>`                 | `<PickerRow/>` or `<Row/>`                                                     |
+| ScrollableView | 1.1                 | `<ScrollableView>`                             | `<View/>` May contain children view objects.                                   |
+| TableView      | 1.0                 | `<TableView>`                                  | `<TableViewRow/>` May contain children view objects.                           |
+| TabbedBar      | 1.1                 | `<Labels>`                                     | `<Label/>`                                                                     |
+| Toolbar        | 1.1                 | `<Items>`                                      | `<Item/>`                                                                      |
+| View           | 1.0                 | `<View>`                                       | Any view object except a top-level container like a Window or TabGroup         |
+
+You need to specify additional attributes in the markup, which are only specific to collection data binding. The only mandatory attribute is `dataCollection`, which specifies the collection singleton or instance to render. Note that you can only add these attributes to specific XML elements (refer to the table above).
+
+* `dataCollection`: specifies the collection singleton or instance to bind to the table. This is the name of the model file for singletons or the ID prefixed with the controller symbol ('$') for instances.
+
+* `dataTransform`: specifies an optional callback to use to format model attributes. The passed argument is a model and the return value is a modified model as a JSON object.
+
+* `dataFilter`: specifies an optional callback to use to filter data in the collection. The passed argument is a collection and the return value is an array of models.
+
+* `dataFunction`: set to an arbitrary identifier (name) for a function call. Use this identifier to call a function in the controller to manually update the view. This is not a declared function in the controller. This attribute creates an alias to access the underlying binding function, which is part of the Alloy data-view binding framework.
+
+Next, create a repeater object (refer to the table above) and place it inline with the view object with the `dataCollection` attribute, or place it in a separate view and use the `Require` tag to import it.
+
+To map model attributes, enclose the attribute with curly brackets or braces ('{' and '}'). You can map more than one attribute to a repeater object's property. For example, to assign the Label.text property to the model's title and author attributes, use this notation: `<Label text="{title} by {author}" />.` For more complex transformations, use the `dataTransform` callback to create a custom attribute.
+
+In the controller code of the repeater object, you can use the special variable `$model` to reference the current model being iterated over. This variable is present only in data bound controllers and is a reference to the currently bound model. For example, to get the title attribute of the current model, use `$model.title` to access it.
+
+::: warning ⚠️ Warning
+**IMPORTANT:** When using Alloy's data binding in a view-controller, you **MUST** call the `$.destroy()` function when closing a controller to prevent potential memory leaks. The `destroy` function unbinds the callbacks created by Alloy when the collection-view syntax is used. For example:
+
+```javascript
+$.win.addEventListener("close", () => {
+    $.destroy();
+});
+```
+
+For global singletons, to properly release them you should also remove event handlers with `off()` and set the reference to null:
+
+```javascript
+$.win.addEventListener("close", () => {
+    $.destroy();
+    Alloy.Collections.book.off();
+    Alloy.Collections.book = null;
+});
+```
+:::
+
+#### Collection-View Binding Example
+
+The following example demonstrates how to add basic collection-view binding to an application. The example binds a collection of album models to a ScrollableView. In the ScrollableView, each model has its own view, which displays the album cover, title of the album and the artist. The `artist` and `title` attributes are bound to a Label object and the `cover` attribute is bound to an ImageView object.
+
+1. Add the `<Collection>` tag as a child of the `<Alloy>` tag.
+
+    **app/views/index.xml**
+
+    ```xml
+    <Alloy>
+        <Collection src="album" />
+    </Alloy>
+    ```
+
+2. Next, add the view object(s) you want to bind the data to. In this example, data will be bound to a ScrollableView object.
+
+    **app/views/index.xml**
+
+    ```xml
+    <Alloy>
+        <Collection src="album" />
+        <Window backgroundColor="white" onClose="cleanup">
+            <ScrollableView></ScrollableView>
+        </Window>
+    </Alloy>
+    ```
+
+3. Add the `dataCollection` attribute to the appropriate view object. Assign this attribute to the collection you want to use. For a ScrollableView object, add the attribute to the `<ScrollableView>` tag. The element to add the attribute to depends on which view object you want to bind data to.
+
+    **app/views/index.xml**
+
+    ```xml
+    <Alloy>
+        <Collection src="album" />
+        <Window backgroundColor="white" onClose="cleanup">
+            <ScrollableView dataCollection="album"></ScrollableView>
+        </Window>
+    </Alloy>
+    ```
+
+4. Next, create your repeater object and add model attributes. Enclose the model attributes with curly brackets or braces ('{' and '}'). For a ScrollableView, the repeater object can be a View object with additional children objects. The repeater object depends on which view object you are using.
+
+    **app/views/index.xml**
+
+    ```xml
+    <Alloy>
+        <Collection src="album"/>
+        <Window backgroundColor="white" onClose="cleanup">
+            <ScrollableView dataCollection="album">
+                <View layout="vertical">
+                    <ImageView image="{cover}" />
+                    <Label text="{title} by {artist}" />
+                </View>
+            </ScrollableView>
+        </Window>
+    </Alloy>
+    ```
+
+5. In the controller, call the Collection's `fetch()` method to initialize the collection and sync any stored models to the view. Remember to call the `$.destroy()` method when you close the controller to prevent memory leaks.
+
+    **app/controllers/index.js**
+
+    ```javascript
+    $.index.open();
+    Alloy.Collections.album.fetch();
+
+    function cleanup() {
+        $.destroy();
+    }
+    ```
+
+The application is now setup for basic collection-view binding. When any new data is added to the collection, the ScrollableView will be updated with the new data.
+
+#### Model-View Binding
+
+To bind a single model to a component, create a global singleton or controller-specific model using the [Model tag](https://titaniumsdk.com/guide/Alloy_Framework/Alloy_Guide/Alloy_Views/Alloy_XML_Markup.html#model-element) in the XML markup of the main view and map the model attribute to the view component. To map the attribute to the view component, prefix the model name or id to the attribute, then enclose it with curly brackets or braces ('{' and '}').
+
+To do complex transformations on the model attributes, extend the model prototype with a `transform()` function. It should return the modified model as a JSON object.
+
+**app/models/album.js**
+
+```javascript
+exports.definition = {
+  config: {}, // model definition
+  extendModel(Model) {
+    _.extend(Model.prototype, {
+      transform() {
+        const transformed = this.toJSON();
+        transformed.artist = transformed.artist.toUpperCase();
+        return transformed;
+      }
+    });
+    return Model;
+  }
+};
+```
+
+A global singleton instance is a single instance of a particular model that is available for use anywhere in your application. When using global instances, they will be in memory for the duration of your application unless you manually release them. The process of manually releasing them should include:
+
+* If any controllers are using data binding that relies on the global instance, they should call their own destroy() function: `$.destroy()`
+* Any other event handlers added to the global instance should be removed with the [off()](http://backbonejs.org/#Events-off) function
+* Set the reference of the model to null: `Alloy.Models.nameOfModel = null;`
+
+Note that you need to call the `$.destroy()` function when closing the controller to prevent potential memory leaks. The `destroy` function unbinds the callbacks created by Alloy when the model-view syntax is used.
+
+#### Model-View Binding Example
+
+The example below demonstrates how to bind a model to view components in the XML markup. Notice that each attribute is prefixed with the model's name and enclosed with braces.
+
+```xml
+<Alloy>
+    <Model src="settings"/>
+    <Window backgroundColor="white" onClose="cleanup">
+        <View layout="vertical">
+            <Label text="Text Size" />
+            <Slider value="{settings.textsize}" max="5" min="1"/>
+            <Label text="Bold"/>
+            <Switch value="{settings.bold}" />
+            <Label text="Italics"/>
+            <Switch value="{settings.italics}" />
+        </View>
+    </Window>
+</Alloy>
+```
+
+#### Collection Example
+
+The example below demonstrates how to display all book models in the collection by the author Mark Twain. It also demonstrates how to use each of the data binding attributes.
+
+**app/views/index.xml**
+
+```xml
+<Alloy>
+    <Collection src="book" />
+    <Window class="container">
+        <TableView dataCollection="book"
+                   dataTransform="transformFunction"
+                   dataFilter="filterFunction"
+                   dataFunction="updateUI"
+                   onDragEnd="refreshTable">
+            <!-- Also can use Require -->
+            <TableViewRow title="{title}" />
+        </TableView>
+    </Window>
+</Alloy>
+```
+
+**app/controllers/index.js**
+
+```javascript
+$.index.open();
+
+// Encase the title attribute in square brackets
+function transformFunction(model) {
+    // Need to convert the model to a JSON object
+    const transform = model.toJSON();
+    transform.title = '[' + transform.title + ']';
+    // Example of creating a custom attribute, reference in the view using {custom}
+    transform.custom = transform.title + " by " + transform.author;
+    return transform;
+}
+
+// Show only book models by Mark Twain
+function filterFunction(collection) {
+    return collection.where({author:'Mark Twain'});
+}
+
+function refreshTable(){
+    // Trigger the binding function identified by the dataFunction attribute
+    updateUI();
+}
+
+// Trigger the synchronization
+const library = Alloy.Collections.book;
+library.fetch();
+
+// Free model-view data binding resources when this view-controller closes
+$.index.addEventListener('close', () => {
+    $.destroy();
+});
+```
+
+As the collection is updated, the view reflects the changes made to the models. If you want to suppress an update, specify `{silent: true}` in the `options` parameters when calling Backbone methods to change model data.
+
 ### Collection vs Model Data Binding
 
-You can bind both a collection of models or an individual model. To bind a model attribute the opening curly bracket is first followed by the model name and then the attribute. To bind a collection you add the `dataCollection` attribute to the container using the collection name as value.
+You can bind both a collection of models or an individual model. To bind a model attribute the opening curly bracket is first followed by the model name and then the attribute. To bind a collection you add the `dataCollection` attribute to the container using the collection name as value. The generated code will then loop over the collection and add the child elements to the container for each model.
 
 ```xml
 <Alloy>
@@ -380,16 +625,6 @@ You can bind models and properties that use names with special characters like d
 </Alloy>
 ```
 
-### Use $.args Values in XML (CLI 7.1.0+)
-
-Since CLI 7.1.0, values passed at creation time can be used directly in XML:
-
-```xml
-<Alloy>
-    <Label text="$.args.foo" />
-</Alloy>
-```
-
 ### Bind Multiple Models to the Same View
 
 You have the ability to bind multiple models to the same view:
@@ -440,7 +675,9 @@ exports.definition = {
 The `transform` method must return **all** bound properties, not just the transformed ones. Until Alloy 1.8.1, simple collection data binding did not require this and automatically fell back to the model attributes.
 :::
 
-### Lazy Transformation (Performance Tip)
+### Tips and Tricks
+
+#### Lazy Transformation
 
 The advantage of defining transformations in the model is that you don't need to repeat them in every controller. A possible disadvantage is that everywhere you bind the model all transformations are computed where you might only need some.
 
@@ -470,7 +707,7 @@ exports.definition = {
 };
 ```
 
-### Populating a Model After Data Binding
+#### Populating a Model After Data Binding
 
 When Alloy compiles your views and controllers, the generated view code precedes your controller code. Any models you define for data binding in the XML will also be created at that point. Just like you call `fetch()` to populate the collection, you do the exact same thing for the model.
 
@@ -495,158 +732,15 @@ $.current.fetch({
 $.index.open();
 ```
 
-### Introduction
-
-When data in the collection changes, you may want to update the view simultaneously to keep information synchronized. This concept is known as data binding. Both Alloy and Backbone provide some mechanisms to bind model data to a view.
-
-### Alloy Binding
-
-In Alloy, collection data can be synchronized to a view object, or a single model can be bound to a view component. Alloy monitors the Backbone add, change, destroy, fetch, remove, and reset events to update the data in the view.
-
-#### Collection-View Binding
-
-To enable collection-view binding, create a global singleton or controller-specific collection using the [Collection tag](https://titaniumsdk.com/guide/Alloy_Framework/Alloy_Guide/Alloy_Views/Alloy_XML_Markup.html#collection-element) in the XML markup of the main view, then add the view object you want to bind data to. The following Titanium view objects support binding to a Collection:
-
-| View Object    | Since Alloy version | Add data binding attributes to...              | Repeater Object to map model attributes to view properties                     |
-| -------------- | ------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------ |
-| ButtonBar      | 1.1                 | `<Labels>`                                     | `<Label/>`                                                                     |
-| CoverFlowView  | 1.1                 | `<Images>`                                     | `<Image/>`                                                                     |
-| ListView       | 1.2                 | `<ListSection>`                                | `<ListItem/>`                                                                  |
-| Map Module     | 1.4                 | `<Module module="ti.map" method="createView">` | None, model attributes will be used as params for createAnnotation() directly. |
-| Picker         | 1.5                 | `<PickerColumn>` or `<Column>`                 | `<PickerRow/>` or `<Row/>`                                                     |
-| ScrollableView | 1.1                 | `<ScrollableView>`                             | `<View/>` May contain children view objects.                                   |
-| TableView      | 1.0                 | `<TableView>`                                  | `<TableViewRow/>` May contain children view objects.                           |
-| TabbedBar      | 1.1                 | `<Labels>`                                     | `<Label/>`                                                                     |
-| Toolbar        | 1.1                 | `<Items>`                                      | `<Item/>`                                                                      |
-| View           | 1.0                 | `<View>`                                       | Any view object except a top-level container like a Window or TabGroup         |
-
-You need to specify additional attributes in the markup, which are only specific to collection data binding. The only mandatory attribute is `dataCollection`, which specifies the collection singleton or instance to render. Note that you can only add these attributes to specific XML elements (refer to the table above).
-
-* `dataCollection`: specifies the collection singleton or instance to bind to the table. This is the name of the model file for singletons or the ID prefixed with the controller symbol ('$') for instances.
-* `dataTransform`: specifies an optional callback to use to format model attributes. The passed argument is a model and the return value is a modified model as a JSON object.
-* `dataFilter`: specifies an optional callback to use to filter data in the collection. The passed argument is a collection and the return value is an array of models.
-* `dataFunction`: set to an arbitrary identifier (name) for a function call. This is not a declared function in the controller. This attribute creates an alias to access the underlying binding function, which is part of the Alloy data-view binding framework. Use this identifier to call a function in the controller to manually update the view.
-
-Next, create a repeater object (refer to the table above) and place it inline with the view object with the `dataCollection` attribute, or place it in a separate view and use the `Require` tag to import it.
-
-To map model attributes, enclose the attribute with curly brackets or braces ('{' and '}'). You can map more than one attribute to a repeater object's property. For example, to assign the Label.text property to the model's title and author attributes, use this notation: `<Label text="{title} by {author}" />.` For more complex transformations, use the `dataTransform` callback to create a custom attribute.
-
-In the controller code of the repeater object, you can use the special variable `$model` to reference the current model being iterated over. This variable is present only in data bound controllers and is a reference to the currently bound model. For example, to get the title attribute of the current model, use `$model.title` to access it.
-
 ::: warning ⚠️ Warning
-**IMPORTANT:** When using Alloy's data binding in a view-controller, you **MUST** call the `$.destroy()` function when closing a controller to prevent potential memory leaks. The `destroy` function unbinds the callbacks created by Alloy when the collection-view syntax is used. For example:
+With the release of CLI 7.1.0, values passed in at creation of a view can be used as values in TSS and XML. For example, if the **foo** property was passed in at creation it can be used on a label:
 
-```
-$.win.addEventListener("close", () => {
-    $.destroy();
-});
-```
-
-For global singletons, to properly release them you should also remove event handlers with `off()` and set the reference to null:
-
-```javascript
-$.win.addEventListener("close", () => {
-    $.destroy();
-    Alloy.Collections.book.off();
-    Alloy.Collections.book = null;
-});
+```xml
+<Alloy>
+    <Label text="$.args.foo" />
+</Alloy>
 ```
 :::
-
-#### Collection-View Binding Example
-
-The following example demonstrates how to add basic collection-view binding to an application. The example binds a collection of album models to a ScrollableView. In the ScrollableView, each model has its own view, which displays the album cover, title of the album and the artist. The `artist` and `title` attributes are bound to a Label object and the `cover` attribute is bound to an ImageView object.
-
-1. Add the `<Collection>` tag as a child of the `<Alloy>` tag.
-
-    **app/views/index.xml**
-
-    ```xml
-    <Alloy>
-        <Collection src="album" />
-    </Alloy>
-    ```
-
-2. Next, add the view object(s) you want to bind the data to.
-
-    **app/views/index.xml**
-
-    ```xml
-    <Alloy>
-        <Collection src="album" />
-        <Window backgroundColor="white" onClose="cleanup">
-            <ScrollableView></ScrollableView>
-        </Window>
-    </Alloy>
-    ```
-
-3. Add the `dataCollection` attribute to the appropriate view object.
-
-    **app/views/index.xml**
-
-    ```xml
-    <Alloy>
-        <Collection src="album" />
-        <Window backgroundColor="white" onClose="cleanup">
-            <ScrollableView dataCollection="album"></ScrollableView>
-        </Window>
-    </Alloy>
-    ```
-
-4. Next, create your repeater object and add model attributes.
-
-    **app/views/index.xml**
-
-    ```xml
-    <Alloy>
-        <Collection src="album"/>
-        <Window backgroundColor="white" onClose="cleanup">
-            <ScrollableView dataCollection="album">
-                <View layout="vertical">
-                    <ImageView image="{cover}" />
-                    <Label text="{title} by {artist}" />
-                </View>
-            </ScrollableView>
-        </Window>
-    </Alloy>
-    ```
-
-5. In the controller, call the Collection's `fetch()` method to initialize the collection and sync any stored models to the view.
-
-    **app/controllers/index.js**
-
-    ```javascript
-    $.index.open();
-    Alloy.Collections.album.fetch();
-
-    function cleanup() {
-        $.destroy();
-    }
-    ```
-
-#### Model-View Binding
-
-To bind a single model to a component, create a global singleton or controller-specific model using the [Model tag](https://titaniumsdk.com/guide/Alloy_Framework/Alloy_Guide/Alloy_Views/Alloy_XML_Markup.html#model-element) in the XML markup of the main view and map the model attribute to the view component. To map the attribute to the view component, prefix the model name or id to the attribute, then enclose it with curly brackets or braces ('{' and '}').
-
-To do complex transformations on the model attributes, extend the model prototype with a `transform()` function. It should return the modified model as a JSON object.
-
-**app/models/album.js**
-
-```javascript
-exports.definition = {
-  config: {}, // model definition
-  extendModel(Model) {
-    _.extend(Model.prototype, {
-      transform() {
-        const transformed = this.toJSON();
-        transformed.artist = transformed.artist.toUpperCase();
-        return transformed;
-      }
-    });
-    return Model;
-  }
-};
-```
 
 ## Alloy Sync Adapters and Migrations
 
@@ -768,16 +862,16 @@ In Alloy, migrations are defined by JavaScript files located in the `app/migrati
 
 The migration file contains two functions that need to be implemented: `migration.up(migrator)` and `migration.down(migrator)`, where `migrator` is a special migration object that provides references to the database and table as well as some convenient functions for table operations:
 
-| Key           | Description                                                                   |
-| ------------- | ----------------------------------------------------------------------------- |
-| `db`          | Handle to a `Ti.Database` instance. DO NOT CLOSE THIS HANDLE.                 |
-| `dbname`      | Name of the database.                                                         |
-| `table`       | Name of the table. Same as value of the `config.adapter.collection_name` key. |
-| `idAttribute` | Name of the columns attribute to use as the primary key.                      |
-| `createTable` | Function to create a table. Required parameter is the `columns` object.       |
-| `dropTable`   | Function to drop the current table from the database.                         |
-| `insertRow`   | Function to insert data into the table. Useful for preloading data.           |
-| `deleteRow`   | Function to delete data from the table.                                       |
+| Key           | Description                                                                                                                                                      |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `db`          | Handle to a `Ti.Database` instance. Use this handle to execute SQL calls using `db.execute`. DO NOT CLOSE THIS HANDLE OR OPEN A SECOND INSTANCE OF THE DATABASE. |
+| `dbname`      | Name of the database.                                                                                                                                            |
+| `table`       | Name of the table. Same as value of the `config.adapter.collection_name` key.                                                                                    |
+| `idAttribute` | Name of the columns attribute to use as the primary key.                                                                                                         |
+| `createTable` | Function to create a table. Required parameter is the `columns` object.                                                                                          |
+| `dropTable`   | Function to drop the current table from the database.                                                                                                            |
+| `insertRow`   | Function to insert data into the table. Useful for preloading data.                                                                                              |
+| `deleteRow`   | Function to delete data from the table.                                                                                                                          |
 
 For example, the migration file below is the initial version of the database that preloads some data in the table.
 
@@ -996,13 +1090,41 @@ To use Backbone 1.1.2 to support Alloy Model and Collections objects, open the p
 
 #### Collection APIs
 
-**Fetch Method Behavior Change**: Backbone Collection objects no longer emit the `reset` event after a `fetch()` call. To use old functionality, pass `{reset: true}` when calling `fetch()` or extend the Collection class.
+**Fetch Method Behavior Change**: Backbone Collection objects no longer emit the `reset` event after a `fetch()` call, which means data-bound views may not update automatically. **This could break existing apps.** To use old functionality, pass `{reset: true}` when calling `fetch()` or extend the Collection class:
+
+```javascript
+exports.definition = {
+    config: {
+        // Model configuration
+    },
+    extendModel(Model) {
+        _.extend(Model.prototype, {
+            // extended functions and properties go here
+        });
+        return Model;
+    },
+    extendCollection(Collection) {
+        _.extend(Collection.prototype, {
+            // For Backbone v1.1.2, uncomment the following to override the
+            // fetch method to account for a breaking change in Backbone.
+            /*
+            fetch(options) {
+                options = options ? _.clone(options) : {};
+                options.reset = true;
+                return Backbone.Collection.prototype.fetch.call(this, options);
+            }
+            */
+        });
+        return Collection;
+    }
+};
+```
 
 **New Set Method**: To smartly update the contents of a Collection (adding new models, removing missing ones, and merging those already present), call `set()`.
 
 **Return Value for Methods**: The return values of Collection's `add()`, `push()`, `remove()`, `reset()` and `shift()` methods return the changed model or list of models, instead of `this`.
 
-**Add Method**: When invoking `add()` on a collection, passing `{merge: true}` will now cause duplicate models to have their attributes merged in to the existing models.
+**Add Method**: When invoking `add()` on a collection, passing `{merge: true}` will now cause duplicate models to have their attributes merged in to the existing models. To improve performance, `options.index` will no longer be set in the `add` event callback — use `collection.indexOf(model)` instead.
 
 #### Event APIs
 
@@ -1016,6 +1138,10 @@ To use Backbone 1.1.2 to support Alloy Model and Collections objects, open the p
 
 **Validation**: Model validation is now only enforced with the `save()` method. Previously, models were also validated with the `set()` method. To force validation when the `set()` method is called, pass `{validate: true}` to the method or extend the Model class. Also, validation now occurs even during 'silent' changes (passing `{silent: true}` to methods). Previously, it would not. Failed validations return the `invalid` event. Previously, a failed model validation would return the `error` event.
 
+::: warning ⚠️ Warning
+To validate Model objects, implement the `validate()` method in the `extendModel` key of the model configuration file.
+:::
+
 **Parse Method**: All `parse` methods now run after a `fetch`. You cannot change the `id` of a model during `parse`. The `parse` method receives `options` as a second parameter.
 
 **Other Changes**:
@@ -1025,9 +1151,44 @@ To use Backbone 1.1.2 to support Alloy Model and Collections objects, open the p
 * `url` and `urlRoot` properties may now be passed as options when instantiating a new Model.
 * If you want to maintain current models in a collection when using `fetch` the property has changed from `{add:true}` to `{remove:false}`.
 
-#### Silent Option
+### Parse Method
+
+After fetching a model or a collection, all defined parse methods will now be run. So fetching a collection and getting back new models could cause both the collection to parse the list, and then each model to be parsed in turn, if you have both methods defined. By default, the parse method is a no-op function that directly passes the JSON response object.
+
+You are no longer permitted to change the `id` of your model during `parse()`. Use `idAttribute` instead.
+
+The parse function now receives the `options` dictionary as its second parameter. Previously, it would only be passed a raw `response` object.
+
+### Silent Option
 
 Passing `{silent:true}` to methods now suppresses the `change:attr` events, thus a data-bound view will not be updated to reflect the changes. The sql sync adapter passed this option by default. It has been updated to no longer pass that option when Backbone 1.1.2 is used (still passed with 0.9.2).
+
+If you want the new behavior where `change` events are suppressed, you will need to pass this option or extend the Model or Collection class. The following sample code extends the Model `set()` method by forcing the silent option to true:
+
+```javascript
+exports.definition = {
+    config: {
+        // Model configuration
+    },
+    extendModel(Model) {
+        _.extend(Model.prototype, {
+            // Forces silent true option when the model is updated
+            set(attributes, options) {
+                options = options ? _.clone(options) : {};
+                options.silent = true;
+                return Backbone.Model.prototype.set.call(this, attributes, options);
+            }
+        });
+        return Model;
+    },
+    extendCollection(Collection) {
+        _.extend(Collection.prototype, {
+            // extended functions and properties go here
+        });
+        return Collection;
+    }
+};
+```
 
 ### API Changes
 

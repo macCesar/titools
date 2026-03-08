@@ -141,7 +141,7 @@ Specifying the `id` attribute in the XML markup components will make it easier t
 Ti.API.info("button state: " + $.foo.button.enabled);
 ```
 
-For widgets that have multiple view-controllers, to include a widget's view-controller in another widget's view, use the `Widget` tag and assign the `name` attribute with the name of the view-controller minus the file extension. Since Alloy 1.5.0, if you omit the `src` attribute, Alloy assumes you are referencing the current widget.
+For widgets that have multiple view-controllers, to include a widget's view-controller in another widget's view, use the `Widget` tag and assign the `name` attribute with the name of the view-controller minus the file extension. Since Alloy 1.5.0, if you omit the `src` attribute, Alloy assumes you are referencing the current widget. For Alloy 1.4.x and prior, you need to assign the `src` attribute to the widget's name.
 
 **app/widgets/foo/views/widget.xml**
 
