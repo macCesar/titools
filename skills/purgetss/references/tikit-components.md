@@ -24,7 +24,7 @@ npm install -g purgetss
 
 ## Setting Up Your Project
 
-1. Create a PurgeTSS project and configure `app.idprefix` and `app.theme` in `config.json` as required by PurgeTSS.
+1. Create a PurgeTSS project and configure `app.idprefix` and `app.workspace` in Titanium config as required by the PurgeTSS project creation flow.
 1. Run `tikit install` inside your project:
 
 ```bash

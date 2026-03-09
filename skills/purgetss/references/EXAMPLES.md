@@ -99,13 +99,13 @@ Titanium does NOT support CSS Flexbox. All examples use `horizontal`, `vertical`
 
 ### Available Layout Classes
 
-| Class        | Description                          | Use Case                       |
-| ------------ | ------------------------------------ | ------------------------------ |
-| `horizontal` | Children arranged left to right      | Rows of buttons, form fields   |
-| `vertical`   | Children arranged top to bottom      | Stacked content, lists         |
-| *(no class)* | Defaults to `composite`              | Absolute positioning, overlays |
-| `flow-col`   | Horizontal grid flow with 100% width | Special grid layouts           |
-| `flow-row`   | Vertical grid flow with 100% height  | Special grid layouts           |
+| Class           | Description                          | Use Case                       |
+| --------------- | ------------------------------------ | ------------------------------ |
+| `horizontal`    | Children arranged left to right      | Rows of buttons, form fields   |
+| `vertical`      | Children arranged top to bottom      | Stacked content, lists         |
+| *(no class)*    | Defaults to `composite`              | Absolute positioning, overlays |
+| `grid-flow-col` | Horizontal grid flow with 100% width | Special grid layouts           |
+| `grid-flow-row` | Vertical grid flow with 100% height  | Special grid layouts           |
 
 ---
 
@@ -213,11 +213,11 @@ alloy compile
 **✅ CORRECT (Use margins on children instead):**
 ```xml
 <View>
-  <Label class="m-4" text="Hello" />
+  <Label class="m-4 wh-auto" text="Hello" />
 </View>
 ```
 
-**Why:** Titanium Views don't support padding properties. Use margins on child elements.
+**Why:** Titanium Views don't support padding properties. Use margins on child elements, and add `wh-auto` on `Label`/`Button` when opposite margins would otherwise trigger Titanium edge pinning.
 
 ---
 
@@ -321,16 +321,16 @@ alloy compile
 
 ## Quick Reference Table
 
-| Anti-Pattern          | Why It Fails             | Correct Approach        |
-| --------------------- | ------------------------ | ----------------------- |
-| `flex-row`            | Flexbox not supported    | `horizontal`            |
-| `flex-col`            | Flexbox not supported    | `vertical`              |
-| `justify-*`           | Flexbox not supported    | Use margins/positioning |
-| `items-center`        | Flexbox not supported    | Use `center` class      |
-| `p-4` on View         | No padding on containers | `m-4` on children       |
-| `w-full`              | Percentage-based         | `w-screen` (Ti.UI.FILL) |
-| `rounded-full`        | Needs size suffix        | `rounded-full-12`       |
-| `composite` class     | Already default          | Omit it                 |
-| `w-[100px]`           | Wrong syntax             | `w-(100px)`             |
-| Manual `.tss`         | Overwritten by PurgeTSS  | Use utility classes     |
-| `gap` with `%` widths | Total exceeds 100%       | Use explicit margins    |
+| Anti-Pattern          | Why It Fails             | Correct Approach         |
+| --------------------- | ------------------------ | ------------------------ |
+| `flex-row`            | Flexbox not supported    | `horizontal`             |
+| `flex-col`            | Flexbox not supported    | `vertical`               |
+| `justify-*`           | Flexbox not supported    | Use margins/positioning  |
+| `items-center`        | Flexbox mental model     | Use layout + positioning |
+| `p-4` on View         | No padding on containers | `m-4` on children        |
+| `w-full`              | Percentage-based         | `w-screen` (Ti.UI.FILL)  |
+| `rounded-full`        | Needs size suffix        | `rounded-full-12`        |
+| `composite` class     | Already default          | Omit it                  |
+| `w-[100px]`           | Wrong syntax             | `w-(100px)`              |
+| Manual `.tss`         | Overwritten by PurgeTSS  | Use utility classes      |
+| `gap` with `%` widths | Total exceeds 100%       | Use explicit margins     |

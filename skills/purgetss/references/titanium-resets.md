@@ -33,9 +33,13 @@ The most important reset is for the `View` element. By default, `View` is set to
 :::tip EXPLICIT SIZE VS NATIVE UNDEFINED
 In Titanium, most elements like `Label` and `Button` default to `SIZE` behavior, but their property values are `undefined`.
 
-According to the **UI Composite Layout Behavior Spec**, if a dimension is `undefined` and you apply two opposite pins (e.g., `left` and `right` via `m-xx`), the motor will **compute the dimension based on the pins**, causing the element to stretch.
+According to the **UI Composite Layout Behavior Spec**, if a dimension is `undefined` and you apply two opposite pins (e.g., `left` and `right` via `mx-*`, or `top` and `bottom` via `my-*`), the motor will **compute the dimension based on the pins**, causing the element to stretch.
 
-**PurgeTSS** recommends using the `wh-auto` class (which sets explicit `Ti.UI.SIZE` for both width and height) to override this pinning effect and ensure the element only occupies the space needed for its content regardless of margins.
+**PurgeTSS** recommends adding an explicit `SIZE` reset on the affected axis:
+
+- Use `h-auto` when `mt-*` + `mb-*` or `my-*` would otherwise stretch the height.
+- Use `w-auto` when `ml-*` + `mr-*` or `mx-*` would otherwise stretch the width.
+- Use `wh-auto` as the safe reset when both axes may be affected.
 :::
 
 ### Practical Examples
@@ -228,14 +232,14 @@ This generates classes for ALL color properties:
   <Label text="Content" />
 </View>
 
-<!-- CORRECT: Margin on children -->
+<!-- CORRECT: Margin on children, with explicit SIZE reset -->
 <View class="bg-white">
-  <Label class="m-4" text="Content" />
+  <Label class="m-4 wh-auto" text="Content" />
 </View>
 ```
 
 :::caution
-Do not use `p-` on `View`, `Window`, or `Label`. Use margins on children instead.
+Do not use `p-` on `View`, `Window`, `ScrollView`, or `TableView`. Use margins on children instead.
 :::
 
 ### 3. Not using w-screen for percentage calculations
