@@ -40,7 +40,7 @@ program
 // Update command
 program
   .command('update')
-  .description('Update installed knowledge packages and agent (not the CLI)')
+  .description('Check for newer CLI versions, then sync installed knowledge packages and agent')
   .option('-l, --local', 'Update local skills in the current project')
   .action(updateCommand);
 
