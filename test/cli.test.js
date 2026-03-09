@@ -51,6 +51,10 @@ async function makeLocalSkills(dir) {
   }
 }
 
+async function writeAiFile(dir, filename = 'CLAUDE.md', content = '') {
+  await writeFile(join(dir, filename), content, 'utf8');
+}
+
 describe('titools CLI', () => {
   it('sync: errors outside a Titanium project', async () => {
     const cwd = await makeTempDir('titools-no-project-');
@@ -111,6 +115,66 @@ describe('titools CLI', () => {
       env: { ...process.env, HOME: home, USERPROFILE: home },
     });
     assert.ok(result.stdout.includes('No skills installed at this location.'));
+    await rm(cwd, { recursive: true, force: true });
+    await rm(home, { recursive: true, force: true });
+  });
+
+  it('update: shows npm update instructions when CLI is outdated and does not sync knowledge files', async () => {
+    const cwd = await makeTempDir('titools-project-');
+    const home = await makeTempDir('titools-home-');
+    await makeProject(cwd);
+    await makeLocalSkills(cwd);
+    await writeAiFile(cwd, 'CLAUDE.md', 'original');
+
+    const result = await runCli(['update', '--local'], {
+      cwd,
+      env: {
+        ...process.env,
+        HOME: home,
+        USERPROFILE: home,
+        TITOOLS_TEST_NPM_LATEST_VERSION: '99.0.0',
+      },
+    });
+    const output = `${result.stdout}\n${result.stderr}`;
+
+    assert.ok(output.includes('New version available'));
+    assert.ok(output.includes(`Current: v${config.PACKAGE_VERSION}`));
+    assert.ok(output.includes('Latest:  99.0.0'));
+    assert.ok(output.includes('npm update -g @maccesar/titools'));
+    assert.ok(output.includes('titools update'));
+
+    const content = await import('node:fs/promises').then(({ readFile }) => readFile(join(cwd, 'CLAUDE.md'), 'utf8'));
+    assert.strictEqual(content, 'original');
+
+    await rm(cwd, { recursive: true, force: true });
+    await rm(home, { recursive: true, force: true });
+  });
+
+  it('update: syncs skills and refreshes knowledge files when CLI is current', async () => {
+    const cwd = await makeTempDir('titools-project-');
+    const home = await makeTempDir('titools-home-');
+    await makeProject(cwd);
+    await makeLocalSkills(cwd);
+    await writeAiFile(cwd, 'CLAUDE.md', 'original');
+
+    const result = await runCli(['update', '--local'], {
+      cwd,
+      env: {
+        ...process.env,
+        HOME: home,
+        USERPROFILE: home,
+        TITOOLS_TEST_NPM_LATEST_VERSION: config.PACKAGE_VERSION,
+      },
+    });
+    const output = `${result.stdout}\n${result.stderr}`;
+
+    assert.ok(output.includes(`CLI is up to date (v${config.PACKAGE_VERSION})`));
+    assert.ok(output.includes('skills updated'));
+    assert.ok(output.includes('Update complete!'));
+
+    const content = await import('node:fs/promises').then(({ readFile }) => readFile(join(cwd, 'CLAUDE.md'), 'utf8'));
+    assert.ok(content.includes(config.BLOCK_START));
+
     await rm(cwd, { recursive: true, force: true });
     await rm(home, { recursive: true, force: true });
   });

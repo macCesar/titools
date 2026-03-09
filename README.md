@@ -10,6 +10,8 @@
 
 TiTools is a CLI that installs Titanium SDK skills and a knowledge index for AI coding assistants. One command installs 7 skills, a research agent, and 100+ reference files for Titanium SDK, Alloy MVC, and PurgeTSS.
 
+The reference files are maintained against official documentation whenever an official source exists, so the assistant can retrieve current framework behavior instead of guessing from generic training data.
+
 Without TiTools, assistants rely on general training data. That data can be outdated or too generic for Titanium work. With TiTools, the assistant can look up Alloy architecture, memory cleanup patterns, PurgeTSS utility classes, and platform-specific APIs.
 
 Vercel's AGENTS.md evaluation reports a 100% pass rate for the knowledge index approach, compared to 53-79% using skills alone.
@@ -66,7 +68,7 @@ All three platforms use the Agent Skills open standard: a `SKILL.md` file with Y
 
 ## Knowledge index
 
-The knowledge index is a compressed documentation map that gets injected into your project's instruction files. It tells the AI where Titanium reference docs are, so it can pull accurate information instead of relying on general training data.
+The knowledge index is a compressed documentation map that gets injected into your project's instruction files. It tells the AI where Titanium reference docs are, so it can pull accurate information from the installed references instead of relying on general training data.
 
 ### Why it works
 
@@ -135,7 +137,7 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 | ti-howtos    | Native feature integration      | Location, Push, Media, Platform APIs    |
 | ti-ui        | UI/UX patterns                  | Complex layouts, ListViews, platform UI |
 
-Note: `ti-guides`, `ti-howtos`, `ti-ui`, `alloy-guides`, and `alloy-howtos` are based on official Titanium SDK and Alloy documentation. `ti-expert` and `purgetss` are opinionated and reflect personal coding conventions (biased toward PurgeTSS).
+Note: `ti-guides`, `ti-howtos`, `ti-ui`, `alloy-guides`, and `alloy-howtos` are based on official Titanium SDK and Alloy documentation. `purgetss` is opinionated in workflow and conventions, but its reference files are audited against the official PurgeTSS documentation for verifiable classes and behavior. `ti-expert` and `purgetss` reflect personal coding conventions (biased toward PurgeTSS).
 
 ---
 
@@ -598,7 +600,7 @@ What it does:
 
 ### titools update
 
-Updates installed skills and agents to the latest version.
+Checks whether a newer `titools` CLI version is available on npm, then syncs installed skills and agents from the currently installed package.
 
 ```bash
 titools update [options]
@@ -619,14 +621,15 @@ Behavior depends on where you run it:
 | Inside a Titanium project (with existing knowledge index files) | Also refreshes `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`          |
 
 What it does:
-1. Checks GitHub for the latest CLI version
-2. If a newer version exists, it prompts you to update the CLI first with `npm update -g @maccesar/titools`
-3. If the CLI is current, it syncs skills and agents from the installed package (no download needed)
-4. Updates platform symlinks only for platforms that already have them
-5. Cleans up legacy artifacts (`alloy-expert` skill, `ti-researcher` agent)
-6. Auto-syncs knowledge index files if they exist in the current project
+1. Checks npm for the latest CLI version
+2. If a newer version exists, it shows the update command `npm update -g @maccesar/titools`
+3. It exits without changing skills, agents, or knowledge files until the CLI is updated
+4. If the CLI is current, it syncs skills and agents from the installed package (no download needed)
+5. Updates platform symlinks only for platforms that already have them
+6. Cleans up legacy artifacts (`alloy-expert` skill, `ti-researcher` agent)
+7. Auto-syncs knowledge index files if they exist in the current project
 
-Note: This command syncs knowledge packages and agents from your installed CLI. To get new features, first update the CLI with `npm update -g @maccesar/titools`, then run `titools update`.
+Note: This command syncs knowledge packages and agents from your installed CLI. To get new features, first update the CLI with `npm update -g @maccesar/titools`, then run `titools update` again.
 
 ### titools remove
 
