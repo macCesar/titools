@@ -1,52 +1,49 @@
-# Custom Rules for Ti Elements, IDs, and Classes
+# Custom Rules
 
-Custom rules in PurgeTSS allow you to style **Titanium elements**, **IDs**, and **classes** with flexibility and precision. Configure these rules in the `config.cjs` file with optional platform, device, or conditional targeting.
+Custom rules in PurgeTSS let you style Titanium elements, IDs, and classes in `config.cjs`. You can also target specific platforms, devices, or conditional blocks using global variables.
 
-:::info
-This feature is particularly useful for meeting visual and design requirements across multiple platforms (iOS and Android).
+## Classes, IDs, and Ti Elements
+
+You can style any Ti Element, IDs, or your own classes with as many attributes as needed. You can also target specific platforms, devices, or add conditional blocks with global variables.
+
+Whether you want to style a Ti Element, a custom ID prefixed with `#`, or a custom class prefixed with `.`, the structure is the same.
+
+### Modifier Key
+
+- For Titanium elements, use the exact name of the element, such as `Label`, `Button`, or `ScrollView`.
+- For IDs, use `camelCase` to match the JavaScript convention.
+- For classes, use `kebab-case` to stay compatible with PurgeTSS v6.x and above. For example, use `.my-custom-class-name` instead of `.myCustomClassName`.
+
+:::caution
+If your project started on PurgeTSS v5 or earlier and you now use 7.x or later, set `purge.options.missing` to `true` in `config.cjs`. It reports missing classes at the end of `app.tss` so you can update them to the newer naming convention.
 :::
 
-## Naming Conventions
+### Default, Platform, Device, or Conditional Blocks
 
-| Target Type     | Naming Convention  | Example                             |
-| --------------- | ------------------ | ----------------------------------- |
-| **Ti Elements** | Exact element name | `Label`, `Button`, `ScrollView`     |
-| **IDs**         | camelCase          | `#mainBanner`, `#sidebarWidget`     |
-| **Classes**     | kebab-case         | `.my-custom-class`, `.feature-card` |
+- To generate a global style, use either the lowercase `default` or the uppercase `DEFAULT` keyword.
+- To target a specific platform, use the `ios` or `android` keywords.
+- To target a specific device, use the `tablet` or `handheld` keywords.
+- To target a condition with a global variable, use the `[if=globalVariableName]` keyword.
 
-:::caution PurgeTSS v5 or earlier
-For projects upgraded from PurgeTSS v5 or earlier, set `purge.options.missing` to `true` in `config.cjs` to get a report of any missing classes at the end of `app.tss`.
+### Property Values
+
+- For Titanium constants, Alloy configuration values, or global variables, always enclose them in quotes.
+- For color values, you can use `hex`, `8-digit hex`, `rgb(R,G,B)`, `rgba(R,G,B,A)`, `transparent`, or standard color names.
+- For spacing values, you can use `em`, `rem`, `%`, `px`, `dp`, `cm`, or `in`.
+  - `%`, `px`, `cm`, and `in` are passed through without conversion.
+  - `em` and `rem` values are converted with `value * 16`.
+  - `dp` removes the unit and keeps the value as-is.
+
+:::warning Platform-Specific Constants
+If a rule uses `Ti.UI.iOS.*` or `Ti.UI.Android.*` constants, keep that property inside the matching `ios` or `android` block to avoid cross-platform compilation failures.
 :::
 
-## Modifier Keys
+## `config.cjs` File Example
 
-### Platform, Device, and Conditional Blocks
-
-| Modifier                  | Description                            |
-| ------------------------- | -------------------------------------- |
-| `DEFAULT` / `default`     | Global style                           |
-| `ios`                     | iOS-specific                           |
-| `android`                 | Android-specific                       |
-| `tablet`                  | Tablet devices                         |
-| `handheld`                | Handheld devices                       |
-| `[if=globalVariableName]` | Conditional block with global variable |
-
-## Property Values
-
-- **Titanium constants, Alloy config, Global Variables**: Always enclose in quotes
-- **Colors**: hex, 8-digit hex, `rgb(R,G,B)`, `rgba(R,G,B,A)`, `transparent`, or color names
-- **Spacing**: `em`, `rem`, `%`, `px`, `dp`, `cm`, or `in`
-  - `%`, `px`, `cm`, `in` - Passed without conversion
-  - `em` / `rem` - Converted: `value * 16`
-  - `dp` - Unit removed, value intact
-
-## Config Example
-
+`./purgetss/config.cjs`
 ```javascript
-// purgetss/config.cjs
 module.exports = {
   theme: {
-    // ID with platform-specific styles
     '#main-banner': {
       DEFAULT: {
         width: '300px',
@@ -56,8 +53,6 @@ module.exports = {
         clipMode: 'Ti.UI.iOS.CLIP_MODE_DISABLED'
       }
     },
-
-    // Class with device targeting
     '.gallery': {
       DEFAULT: {
         height: 'Ti.UI.SIZE'
@@ -75,8 +70,6 @@ module.exports = {
         width: '500px'
       }
     },
-
-    // Ti Element with conditional block
     TextField: {
       DEFAULT: {
         top: 10,
@@ -92,56 +85,24 @@ module.exports = {
       }
     }
   }
-}
+};
 ```
 
-## Generated TSS Output
-
-```css
-/* Ti Element */
+`Custom ./purgetss/styles/utilities.tss file`
+```tss
+/* Property: TextField */
+/* Description: A single line text field. */
 'TextField': { top: 10, left: 20, right: 20, bottom: 0 }
 'TextField[if=Alloy.Globals.iPhoneX]': { bottom: Alloy.CFG.iPhoneXNotchSize }
 'TextField[platform=android]': { touchFeedback: true }
 
-/* Custom IDs */
+/* Custom Classes */
 '#main-banner': { width: '300px', height: '80px' }
 '#main-banner[platform=ios]': { clipMode: Ti.UI.iOS.CLIP_MODE_DISABLED }
 
-/* Custom Classes */
 '.gallery': { height: Ti.UI.SIZE }
 '.gallery[platform=ios]': { clipMode: Ti.UI.iOS.CLIP_MODE_ENABLED }
 '.gallery[platform=android]': { hiddenBehavior: Ti.UI.HIDDEN_BEHAVIOR_GONE }
 '.gallery[formFactor=handheld]': { width: '250px' }
 '.gallery[formFactor=tablet]': { width: '500px' }
-```
-
-## Complete Styling Example
-
-```javascript
-// config.cjs - Styling a custom card component
-module.exports = {
-  theme: {
-    '.card': {
-      DEFAULT: {
-        apply: 'bg-white rounded-lg shadow-md p-4 m-2'
-      },
-      ios: {
-        apply: 'ios:shadow-offset-0'
-      }
-    },
-    '.card-title': {
-      DEFAULT: {
-        apply: 'text-lg font-bold text-gray-900 mb-2'
-      }
-    },
-    '.card-button': {
-      DEFAULT: {
-        apply: 'bg-blue-500 text-white px-4 py-2 rounded mt-4'
-      },
-      android: {
-        apply: 'android:ripple-enabled'
-      }
-    }
-  }
-}
 ```

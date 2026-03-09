@@ -110,17 +110,17 @@ classes: [
 ```javascript
 function createListItem(text, icon) {
   const container = $.UI.create('View', {
-    classes: ['horizontal', 'm-4', 'p-4', 'bg-white', 'rounded-lg']
+    classes: ['horizontal', 'bg-white', 'rounded-lg']
   })
 
   const iconView = $.UI.create('Label', {
     text: icon,
-    classes: ['text-2xl', 'mr-4']
+    classes: ['m-4', 'text-2xl']
   })
 
   const label = $.UI.create('Label', {
     text: text,
-    classes: ['text-base', 'font-semibold']
+    classes: ['my-4', 'text-base', 'font-semibold']
   })
 
   container.add(iconView)
@@ -212,7 +212,7 @@ Alloy.createStyle('index', {
 
 ```javascript
 // lib/factories/formFactory.js
-exports.createFormField = function fieldType, options) {
+exports.createFormField = function(fieldType, options) {
   const baseClasses = ['w-screen', 'h-12', 'mx-4', 'border-gray-300', 'border-(1)', 'rounded-lg']
 
   switch (fieldType) {
@@ -252,17 +252,17 @@ function createProductCard(product) {
   })
 
   const info = $.UI.create('View', {
-    classes: ['vertical', 'p-4']
+    classes: ['vertical']
   })
 
   const title = $.UI.create('Label', {
     text: product.name,
-    classes: ['text-lg', 'font-bold', 'mb-2']
+    classes: ['mx-4', 'mt-4', 'text-lg', 'font-bold']
   })
 
   const price = $.UI.create('Label', {
     text: `$${product.price}`,
-    classes: ['text-xl', 'text-green-600', 'font-bold']
+    classes: ['mx-4', 'mb-4', 'text-xl', 'text-green-600', 'font-bold']
   })
 
   info.add(title)
@@ -301,22 +301,22 @@ function applyTheme(theme) {
 // controllers/dashboard/grid.js
 function createIconGrid(items) {
   const grid = $.UI.create('View', {
-    classes: ['w-screen', 'grid-cols-4', 'gap-4', 'p-4']
+    classes: ['w-screen', 'grid-cols-4', 'gap-4']
   })
 
   items.forEach(item => {
     const icon = $.UI.create('View', {
-      classes: ['vertical', 'items-center']
+      classes: ['vertical']
     })
 
     const iconView = $.UI.create('Label', {
       text: item.icon,
-      classes: ['text-3xl', 'mb-2', 'text-blue-500']
+      classes: ['mx-auto', 'mt-4', 'text-3xl', 'text-blue-500']
     })
 
     const label = $.UI.create('Label', {
       text: item.label,
-      classes: ['text-xs', 'text-center', 'text-gray-600']
+      classes: ['mx-2', 'mb-4', 'text-xs', 'text-center', 'text-gray-600']
     })
 
     icon.add(iconView)
@@ -500,7 +500,7 @@ view.applyProperties(Alloy.createStyle('index', {
 :::tip REMEMBER
 Both methods give you **full access to PurgeTSS utilities**:
 - All color classes (`bg-*`, `text-*`, `border-*`)
-- All spacing classes (`m-*`, `p-*`, `gap-*`)
+- All spacing classes (`m-*`, `gap-*`, and `p-*` where the Titanium component supports padding)
 - All layout classes (`horizontal`, `vertical`)
 - All typography classes (`text-*`, `font-*`)
 - Platform modifiers (`ios:*`, `android:*`)

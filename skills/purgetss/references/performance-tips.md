@@ -141,14 +141,14 @@ setInterval(() => {
 
 ```xml
 <Animation id="slideIn" module="purgetss.ui"
-  class="close:translate-x-full duration-300 open:translate-x-0" />
+  class="close:opacity-0 open:opacity-100 duration-300" />
 ```
 
 ### Hardware-Accelerated Properties
 
 Fast (GPU-accelerated):
 - `opacity` — use for fade effects
-- `transform` (translate, scale, rotate)
+- `transform` (`scale`, `rotate`)
 
 Slow (triggers layout recalculation):
 - `width`, `height`

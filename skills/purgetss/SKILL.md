@@ -40,7 +40,7 @@ This skill automatically detects PurgeTSS usage when invoked and provides utilit
 ├─ fonts/              # Custom font files (.ttf, .otf)
 ├─ styles/
 │  ├─ definitions.css  # For VS Code IntelliSense
-│  └─ utilities.tss     # All PurgeTSS utility classes (renamed from tailwind.tss in v7.3)
+│  └─ utilities.tss     # All PurgeTSS utility classes
 └─ config.cjs          # Theme configuration
 
 ./app/styles/
@@ -119,7 +119,7 @@ purgetss create 'MyApp' -d -v fa
 
 ## What's New in v7.3.x
 
-- `tailwind.tss` was renamed to `utilities.tss` (update any scripts or references).
+- `utilities.tss` is the current generated utilities file (update any scripts or references that still use the old filename).
 - XML syntax validation now runs before processing and reports line-level errors (for example, missing `<`).
 - `deviceInfo()` works in both Alloy and Classic (no `Alloy.isTablet`/`Alloy.isHandheld` dependency).
 - Node.js 20+ is required.
@@ -271,7 +271,11 @@ Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties WITHOUT platform modifiers c
     - Using these instead of separate `w-` and `h-` classes improves XML readability and reduces generated TSS size.
 
 :::tip LAYOUT TIP: EDGE PINNING
-If using margins (`m-`) causes your `Label` or `Button` to stretch unexpectedly, it is due to Titanium's **Edge Pinning** rule (2 opposite pins = computed dimension). Use the `wh-auto` class to explicitly force `SIZE` behavior and prevent stretching.
+If opposite margins cause a `Label` or `Button` to stretch unexpectedly, it is due to Titanium's **Edge Pinning** rule (2 opposite pins = computed dimension).
+
+- `mt-*` + `mb-*` or `my-*` can stretch the component vertically. Add `h-auto`.
+- `ml-*` + `mr-*` or `mx-*` can stretch the component horizontally. Add `w-auto`.
+- If margins affect both axes, use `wh-auto` to force `SIZE` for both width and height.
 :::
 
 - **NEVER add `composite` class explicitly** - That's the default, use `horizontal`/`vertical` when needed
