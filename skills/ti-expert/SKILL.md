@@ -76,6 +76,8 @@ Detailed examples and full implementation samples are available in: [Architectur
 
 - No semicolons: let ASI handle it
 - Modern syntax: `const/let`, destructuring, template literals
+- Prefer stable property ordering in JS objects and `applyProperties()` calls
+- Default to alphabetical property order when it does not break a meaningful semantic grouping
 - `applyProperties()`: batch UI updates to reduce bridge crossings
 - Memory cleanup: any controller with global listeners must set `$.cleanup = cleanup`
 - Error handling: use AppError classes, log with context, never swallow errors
