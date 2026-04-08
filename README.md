@@ -292,6 +292,48 @@ Button: {
 
 ---
 
+## Community-Discovered Patterns
+
+The TiTools skills include **Community-Discovered Patterns** — verified iOS behaviors not present in the official Titanium documentation. These sections are protected from removal during skill audits.
+
+### Large Title + ScrollView (iOS)
+
+When using Large Titles with a ScrollView inside NavigationWindow or TabGroup, three Window properties must be set together. Without all three, the ScrollView content overlaps behind the navigation bar — or the large title renders with a visible delay.
+
+| Class | Property | Purpose |
+|---|---|---|
+| `auto-adjust-scroll-view-insets` | `autoAdjustScrollViewInsets` | Adjusts ScrollView insets to prevent content overlap |
+| `extend-edges-all` | `extendEdges` | Content extends behind bars (blur/translucent effect) |
+| `large-title-enabled` | `largeTitleEnabled` | Large title that collapses on scroll |
+
+**Recommended:** set the base properties as global Window defaults in `config.cjs`:
+
+```js
+module.exports = {
+  theme: {
+    Window: {
+      ios: {
+        apply: 'auto-adjust-scroll-view-insets extend-edges-all status-bar-style-light-content'
+      }
+    }
+  }
+};
+```
+
+Then only add `large-title-enabled` per-window as needed:
+
+```xml
+<Window title="Home" class="large-title-enabled">
+  <ScrollView class="vertical w-screen" contentHeight="Ti.UI.SIZE">
+    <!-- Content starts below the nav bar automatically -->
+  </ScrollView>
+</Window>
+```
+
+This pattern is documented across four skills: `ti-ui`, `ti-expert`, `ti-api`, and `purgetss`.
+
+---
+
 ### Visit the official documentation site at [purgetss.com](https://purgetss.com) to learn more.
 
 ## Requirements
