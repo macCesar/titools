@@ -12,6 +12,7 @@ import { agentsCommand } from '../lib/commands/agents.js';
 import { updateCommand } from '../lib/commands/update.js';
 import { uninstallCommand } from '../lib/commands/uninstall.js';
 import { autoUpdateCommand } from '../lib/commands/auto-update.js';
+import { statusCommand } from '../lib/commands/status.js';
 
 const program = new Command();
 
@@ -58,6 +59,12 @@ program
   .description('Check for updates and apply silently (used by hooks)')
   .option('-s, --silent', 'Suppress all output except errors')
   .action(autoUpdateCommand);
+
+// Status command
+program
+  .command('status')
+  .description('Show installation status and linked platforms')
+  .action(statusCommand);
 
 // Parse arguments
 program.parse();
