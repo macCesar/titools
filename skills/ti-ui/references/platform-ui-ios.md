@@ -341,6 +341,69 @@ win2.close();
 win1.navBarHidden = true;
 ```
 
+## Community-Discovered Patterns
+
+### Large Titles + ScrollView: required property triad (iOS)
+
+When using `largeTitleEnabled: true` with a `ScrollView` inside a `NavigationWindow`, three Window properties must be set together. Without all three, the ScrollView content overlaps behind the navigation bar.
+
+```javascript
+const win = Ti.UI.createWindow({
+  title: 'My Screen',
+  largeTitleEnabled: true,
+  largeTitleDisplayMode: Ti.UI.iOS.LARGE_TITLE_DISPLAY_MODE_AUTOMATIC,
+  extendEdges: [Ti.UI.EXTEND_EDGE_ALL],
+  autoAdjustScrollViewInsets: true,
+  barColor: '#1e293b',
+  backgroundColor: '#0f172a'
+});
+
+const scrollView = Ti.UI.createScrollView({
+  layout: 'vertical',
+  contentWidth: Ti.UI.FILL,
+  contentHeight: Ti.UI.SIZE
+});
+
+scrollView.add(Ti.UI.createLabel({ text: 'Content here' }));
+win.add(scrollView);
+navWindow.openWindow(win);
+```
+
+| Property | Purpose | What breaks without it |
+|---|---|---|
+| `largeTitleEnabled: true` | Large title that collapses on scroll | No large title behavior |
+| `extendEdges: [Ti.UI.EXTEND_EDGE_ALL]` | Content renders behind bars (blur/translucent effect) | Large title renders with visible delay (empty nav bar gap appears first, then title draws) |
+| `autoAdjustScrollViewInsets: true` | Automatically adjusts ScrollView insets | Content overlaps behind the nav bar |
+
+> **Why all three?** `extendEdges` tells iOS to extend content behind the navigation bar. `autoAdjustScrollViewInsets` tells iOS to compensate by adjusting the ScrollView's content insets so content starts below the bar. Without `extendEdges`, there is nothing to adjust — and the large title renders with a visible delay as iOS cannot calculate the full layout upfront. Without `autoAdjustScrollViewInsets`, the content sits behind the bar. They are interdependent.
+
+`largeTitleDisplayMode` controls collapse behavior:
+- `LARGE_TITLE_DISPLAY_MODE_AUTOMATIC` (default) — inherits from previous window; collapses on scroll
+- `LARGE_TITLE_DISPLAY_MODE_ALWAYS` — title stays large regardless of scroll position
+- `LARGE_TITLE_DISPLAY_MODE_NEVER` — always standard title size
+
+#### Works with both NavigationWindow and TabGroup
+
+On iOS, TabGroup wraps each Tab in an implicit NavigationWindow. The same three properties apply to Windows inside both standalone NavigationWindow and TabGroup Tabs. Child windows opened via `navWindow.openWindow()` or from within a Tab inherit the large title behavior when using `LARGE_TITLE_DISPLAY_MODE_AUTOMATIC`.
+
+#### Recommended: global defaults
+
+Instead of repeating the properties on every Window, set them as global defaults:
+
+```javascript
+// app.tss (Alloy)
+'Window[platform=ios]': {
+  autoAdjustScrollViewInsets: true,
+  extendEdges: [Ti.UI.EXTEND_EDGE_ALL]
+}
+```
+
+Then only add `largeTitleEnabled` and `largeTitleDisplayMode` per-window as needed.
+
+> **Note:** The official docs only document the `largeTitleEnabled` + `extendEdges` pair for RefreshControl flicker prevention. The full triad for ScrollView content positioning is not in official documentation.
+
+See also: [scrolling-views.md](scrolling-views.md) for ScrollView properties and patterns.
+
 ### Toolbar
 
 ```javascript
