@@ -150,7 +150,7 @@ Complete inventory of all class prefixes organized by functional category. For n
 | `touch` | `touch-enabled`, `touch-enabled-false` | Boolean |
 | `clip` | `clip-enabled`, `clip-enabled-false` | Boolean (iOS) |
 | `interactive-dismiss` | `interactive-dismiss-mode-enabled`, `*-false` | Boolean (iOS) |
-| `large-title` | `large-title-enabled`, `large-title-enabled-false` | Boolean (iOS) |
+| `large-title` | `large-title-enabled`, `large-title-enabled-false` | Boolean (iOS). Must pair with `extend-edges-all` and `auto-adjust-scroll-view-insets` when using ScrollView — see [apply-directive.md](apply-directive.md) Community-Discovered Patterns |
 | `overlay` | `overlay-enabled`, `overlay-enabled-false` | Boolean (iOS) |
 | `toolbar` | `toolbar-enabled`, `toolbar-enabled-false` | Boolean |
 | `submit` | `submit-enabled`, `submit-enabled-false` | Boolean |
