@@ -1,6 +1,6 @@
 ---
 name: ti-expert
-description: "Titanium SDK architecture and implementation expert. Use when designing, reviewing, analyzing, or examining Titanium project structure (Alloy or Classic), creating controllers/views/services, choosing models vs collections, implementing communication patterns, handling memory cleanup, testing, auditing code, or migrating legacy apps. Automatically identifies project type."
+description: "Titanium SDK architecture and implementation expert. Use when designing, reviewing, analyzing, or examining Titanium project structure (Alloy or Classic), creating controllers/views/services, choosing models vs collections, implementing communication patterns, handling memory cleanup, testing, auditing code, migrating legacy apps, or building adaptive/responsive layouts for tablets, foldables, and large screens. Automatically identifies project type."
 argument-hint: "[architecture-topic]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(git *), Bash(node *)
 ---
@@ -11,23 +11,22 @@ Practical architecture and implementation guidance for Titanium SDK apps (Alloy 
 
 ## Project detection
 
-:::info Auto-detects Alloy vs Classic projects
-This skill detects project type automatically and tailors guidance.
-
-Alloy indicators:
-- `app/` folder (MVC structure)
-- `app/views/`, `app/controllers/` folders
-- `alloy.jmk` or `config.json` files
-
-Classic indicators:
-- `Resources/` folder with `app.js` at root
-- No `app/` folder structure
-
-Behavior:
-- Alloy detected: provides Alloy MVC patterns and Backbone.js guidance
-- Classic detected: avoids Alloy-only patterns and recommends Classic options or migration
-- Unknown: asks the user to clarify the project type
-:::
+> **️ℹ️ Auto-detects Alloy vs Classic projects**
+> This skill detects project type automatically and tailors guidance.
+>
+> Alloy indicators:
+> - `app/` folder (MVC structure)
+> - `app/views/`, `app/controllers/` folders
+> - `alloy.jmk` or `config.json` files
+>
+> Classic indicators:
+> - `Resources/` folder with `app.js` at root
+> - No `app/` folder structure
+>
+> Behavior:
+> - Alloy detected: provides Alloy MVC patterns and Backbone.js guidance
+> - Classic detected: avoids Alloy-only patterns and recommends Classic options or migration
+> - Unknown: asks the user to clarify the project type
 
 ## Workflow
 
@@ -85,33 +84,32 @@ Detailed examples and full implementation samples are available in: [Architectur
 
 ## Titanium style sheets rules (low freedom)
 
-:::danger Critical: platform-specific properties require modifiers
-Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties without platform modifiers breaks cross-platform builds.
-
-Example of the damage:
-```tss
-// Wrong: adds Ti.UI.iOS to Android project
-"#mainWindow": {
-  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
-}
-```
-
-Correct: always use platform modifiers
-```tss
-// Correct: only adds to iOS
-"#mainWindow[platform=ios]": {
-  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
-}
-```
-
-Properties that always need platform modifiers:
-- iOS: `statusBarStyle`, `modalStyle`, `modalTransitionStyle`, any `Ti.UI.iOS.*`
-- Android: `actionBar` configuration, any `Ti.UI.Android.*` constant
-
-Available modifiers: `[platform=ios]`, `[platform=android]`, `[formFactor=handheld]`, `[formFactor=tablet]`, `[if=Alloy.Globals.customVar]`
-
-For more platform-specific patterns, see the `ti-ui` skill.
-:::
+> **🚨 Critical: platform-specific properties require modifiers**
+> Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties without platform modifiers breaks cross-platform builds.
+>
+> Example of the damage:
+> ```tss
+> // Wrong: adds Ti.UI.iOS to Android project
+> "#mainWindow": {
+>   statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
+> }
+> ```
+>
+> Correct: always use platform modifiers
+> ```tss
+> // Correct: only adds to iOS
+> "#mainWindow[platform=ios]": {
+>   statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
+> }
+> ```
+>
+> Properties that always need platform modifiers:
+> - iOS: `statusBarStyle`, `modalStyle`, `modalTransitionStyle`, any `Ti.UI.iOS.*`
+> - Android: `actionBar` configuration, any `Ti.UI.Android.*` constant
+>
+> Available modifiers: `[platform=ios]`, `[platform=android]`, `[formFactor=handheld]`, `[formFactor=tablet]`, `[if=Alloy.Globals.customVar]`
+>
+> For more platform-specific patterns, see the `ti-ui` skill.
 
 Titanium layout system:
 - Three layout modes: `layout: 'horizontal'`, `layout: 'vertical'`, and composite (default, no `layout` needed)
@@ -151,6 +149,7 @@ For the complete reference with examples, see [Alloy builtins and globals](refer
 - [Contracts & Communication](references/contracts.md)
 - [State Management](references/state-management.md)
 - [Anti-patterns to Avoid](references/anti-patterns.md)
+- [Adaptive Layouts](references/adaptive-layouts.md) (responsive breakpoints, tablet/foldable/desktop support, Android 17 resizability compliance)
 
 ### Implementation & API
 - [Alloy Builtins & Globals](references/alloy-builtins.md)

@@ -41,9 +41,8 @@ Set the theme in `config.json`:
 }
 ```
 
-:::warning Theme is compile-time only
-Alloy themes are applied at **build time**. You cannot switch themes at runtime using this system alone. For runtime switching, use the Dynamic Theming approach below.
-:::
+> **⚠️ Theme is compile-time only**
+> Alloy themes are applied at **build time**. You cannot switch themes at runtime using this system alone. For runtime switching, use the Dynamic Theming approach below.
 
 ### Theme cascade
 
@@ -178,9 +177,8 @@ exports.ThemeService = {
 
 ### Step 4: respond to theme changes in controllers
 
-:::warning Theme change requires UI rebuild
-Since TSS is applied at controller creation time, changing `Alloy.Globals.theme` does NOT retroactively update already-rendered views. You must manually update visible elements or restart the root controller.
-:::
+> **⚠️ Theme change requires UI rebuild**
+> Since TSS is applied at controller creation time, changing `Alloy.Globals.theme` does NOT retroactively update already-rendered views. You must manually update visible elements or restart the root controller.
 
 **Approach A: Rebuild root controller (simplest)**
 
@@ -317,10 +315,9 @@ $.container.backgroundColor = 'backgroundColor';
 - Alpha can be set from 0.0-100.0 (integer or float)
 - Light values can use hex with alpha via ARGB/AARRGGBB format
 
-:::tip When to use Semantic Colors vs Alloy.Globals
-- **Semantic Colors**: Built-in Dark Mode support, automatic switching, simpler setup. Works cross-platform.
-- **Alloy.Globals palette**: More control over when/how themes switch, easier to add custom themes beyond light/dark, runtime theme changes with UI rebuild.
-:::
+> **💡 When to use Semantic Colors vs Alloy.Globals**
+> - **Semantic Colors**: Built-in Dark Mode support, automatic switching, simpler setup. Works cross-platform.
+> - **Alloy.Globals palette**: More control over when/how themes switch, easier to add custom themes beyond light/dark, runtime theme changes with UI rebuild.
 
 ---
 

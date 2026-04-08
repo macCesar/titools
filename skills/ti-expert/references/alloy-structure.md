@@ -66,45 +66,44 @@ app/
 
 ## lib/ folder and module require paths
 
-:::danger CRITICAL: lib/ Folder is FLATTENED During Build
-When Alloy compiles, the **entire `lib/` folder is flattened to the root of Resources**. This means:
-- `app/lib/services/authService.js` → `Resources/iphone/services/authService.js`
-- `app/lib/api/authApi.js` → `Resources/iphone/api/authApi.js`
-
-**Therefore, require statements should NOT include `lib/` prefix:**
-```javascript
-// ❌ WRONG - Will fail at runtime
-const authApi = require('lib/api/authApi')
-
-// ✅ CORRECT - Path relative to flattened lib/
-const authApi = require('api/authApi')
-const authService = require('services/authService')
-```
-
-**This applies to:**
-- All files in `app/lib/` (services, api, helpers, etc.)
-- Cross-references within lib/ files
-- Controller requires of lib/ files
-
-**Example project structure:**
-```
-app/
-├── lib/
-│   ├── services/
-│   │   ├── authService.js       # require('services/navigationService')
-│   │   ├── navigationService.js # require('services/notificationService')
-│   │   └── notificationService.js
-│   ├── api/
-│   │   ├── authApi.js           # require('services/authService')
-│   │   ├── userApi.js
-│   │   └── frameApi.js
-│   └── repositories/
-│       ├── userRepository.js
-│       └── settingsRepository.js
-├── controllers/
-│   └── index.js                 # require('services/authService')
-```
-:::
+> **🚨 CRITICAL: lib/ Folder is FLATTENED During Build**
+> When Alloy compiles, the **entire `lib/` folder is flattened to the root of Resources**. This means:
+> - `app/lib/services/authService.js` → `Resources/iphone/services/authService.js`
+> - `app/lib/api/authApi.js` → `Resources/iphone/api/authApi.js`
+>
+> **Therefore, require statements should NOT include `lib/` prefix:**
+> ```javascript
+> // ❌ WRONG - Will fail at runtime
+> const authApi = require('lib/api/authApi')
+>
+> // ✅ CORRECT - Path relative to flattened lib/
+> const authApi = require('api/authApi')
+> const authService = require('services/authService')
+> ```
+>
+> **This applies to:**
+> - All files in `app/lib/` (services, api, helpers, etc.)
+> - Cross-references within lib/ files
+> - Controller requires of lib/ files
+>
+> **Example project structure:**
+> ```
+> app/
+> ├── lib/
+> │   ├── services/
+> │   │   ├── authService.js       # require('services/navigationService')
+> │   │   ├── navigationService.js # require('services/notificationService')
+> │   │   └── notificationService.js
+> │   ├── api/
+> │   │   ├── authApi.js           # require('services/authService')
+> │   │   ├── userApi.js
+> │   │   └── frameApi.js
+> │   └── repositories/
+> │       ├── userRepository.js
+> │       └── settingsRepository.js
+> ├── controllers/
+> │   └── index.js                 # require('services/authService')
+> ```
 
 ## Data layer: two approaches
 
@@ -338,9 +337,8 @@ const loadData = () => {
 }
 ```
 
-:::tip Widget Styles
-Widgets have their own `styles/widget.tss` file. Define all widget-specific styles there to keep them self-contained and portable.
-:::
+> **💡 Widget Styles**
+> Widgets have their own `styles/widget.tss` file. Define all widget-specific styles there to keep them self-contained and portable.
 
 ### Widget ↔ controller communication
 
