@@ -4,6 +4,13 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.5.0] - 2026-04-08
+
+### Added
+- **`titools status`** — Quick overview of installation: version, skills count, agent, hook, last update check, platform symlinks, and project Knowledge Index status.
+- **`titools doctor`** — Diagnoses installation health: verifies each skill directory, validates symlinks (detects broken ones), checks Knowledge Index version, reports issues with fix suggestions.
+- **Async spinner** — npm update now runs asynchronously so the spinner animates during download/install instead of freezing.
+
 ## [2.4.2] - 2026-04-08
 
 ### Fixed
