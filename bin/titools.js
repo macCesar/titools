@@ -13,6 +13,7 @@ import { updateCommand } from '../lib/commands/update.js';
 import { uninstallCommand } from '../lib/commands/uninstall.js';
 import { autoUpdateCommand } from '../lib/commands/auto-update.js';
 import { statusCommand } from '../lib/commands/status.js';
+import { doctorCommand } from '../lib/commands/doctor.js';
 
 const program = new Command();
 
@@ -65,6 +66,12 @@ program
   .command('status')
   .description('Show installation status and linked platforms')
   .action(statusCommand);
+
+// Doctor command
+program
+  .command('doctor')
+  .description('Check installation health and diagnose issues')
+  .action(doctorCommand);
 
 // Parse arguments
 program.parse();
