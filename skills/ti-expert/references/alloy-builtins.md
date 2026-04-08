@@ -23,12 +23,11 @@ if (OS_ANDROID) {
 }
 ```
 
-:::warning These are NOT runtime checks
-`OS_IOS` and `OS_ANDROID` are replaced by the Alloy compiler with literal `true`/`false`. The opposite platform's code is completely removed from the build output. This is different from `Ti.Platform.osname === 'iphone'` which remains in the code.
-
-**Use for:** Platform-specific APIs, platform-specific UI configuration
-**Do NOT use for:** Logic that should be testable on both platforms
-:::
+> **⚠️ These are NOT runtime checks**
+> `OS_IOS` and `OS_ANDROID` are replaced by the Alloy compiler with literal `true`/`false`. The opposite platform's code is completely removed from the build output. This is different from `Ti.Platform.osname === 'iphone'` which remains in the code.
+>
+> **Use for:** Platform-specific APIs, platform-specific UI configuration
+> **Do NOT use for:** Logic that should be testable on both platforms
 
 ### Env_dev / env_test / env_production
 
@@ -132,9 +131,8 @@ const debug = Alloy.CFG.debug      // true in dev, false in prod
 const appName = Alloy.CFG.appName  // From global
 ```
 
-:::tip CFG is read-only
-`Alloy.CFG` values are set at build time and cannot be modified at runtime. For runtime configuration, use `Alloy.Globals` or `Ti.App.Properties`.
-:::
+> **💡 CFG is read-only**
+> `Alloy.CFG` values are set at build time and cannot be modified at runtime. For runtime configuration, use `Alloy.Globals` or `Ti.App.Properties`.
 
 ---
 
@@ -256,14 +254,13 @@ const title = $.args.title || ''
 const showBack = $.args.showBack !== 'false'  // XML passes strings
 ```
 
-:::warning XML attributes are always strings
-When passing values through XML attributes, they arrive as strings in `$.args`. Numbers and booleans need to be parsed:
-```javascript
-const count = parseInt($.args.count, 10)    // "5" → 5
-const visible = $.args.visible !== 'false'   // "false" → false
-```
-For complex data, pass via `Alloy.createController()` in the parent controller instead.
-:::
+> **⚠️ XML attributes are always strings**
+> When passing values through XML attributes, they arrive as strings in `$.args`. Numbers and booleans need to be parsed:
+> ```javascript
+> const count = parseInt($.args.count, 10)    // "5" → 5
+> const visible = $.args.visible !== 'false'   // "false" → false
+> ```
+> For complex data, pass via `Alloy.createController()` in the parent controller instead.
 
 ---
 
@@ -365,9 +362,8 @@ users.fetch({
 </View>
 ```
 
-:::warning `if` is evaluated once at controller creation
-The `if` attribute is checked when the controller is created. It does NOT react to later changes in the condition. For dynamic visibility, use the `visible` property in the controller.
-:::
+> **⚠️ `if` is evaluated once at controller creation**
+> The `if` attribute is checked when the controller is created. It does NOT react to later changes in the condition. For dynamic visibility, use the `visible` property in the controller.
 
 ---
 
