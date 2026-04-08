@@ -300,25 +300,24 @@ To map model attributes, enclose the attribute with curly brackets or braces ('{
 
 In the controller code of the repeater object, you can use the special variable `$model` to reference the current model being iterated over. This variable is present only in data bound controllers and is a reference to the currently bound model. For example, to get the title attribute of the current model, use `$model.title` to access it.
 
-::: warning ⚠️ Warning
-**IMPORTANT:** When using Alloy's data binding in a view-controller, you **MUST** call the `$.destroy()` function when closing a controller to prevent potential memory leaks. The `destroy` function unbinds the callbacks created by Alloy when the collection-view syntax is used. For example:
-
-```javascript
-$.win.addEventListener("close", () => {
-    $.destroy();
-});
-```
-
-For global singletons, to properly release them you should also remove event handlers with `off()` and set the reference to null:
-
-```javascript
-$.win.addEventListener("close", () => {
-    $.destroy();
-    Alloy.Collections.book.off();
-    Alloy.Collections.book = null;
-});
-```
-:::
+> **⚠️ ⚠️ Warning**
+> **IMPORTANT:** When using Alloy's data binding in a view-controller, you **MUST** call the `$.destroy()` function when closing a controller to prevent potential memory leaks. The `destroy` function unbinds the callbacks created by Alloy when the collection-view syntax is used. For example:
+>
+> ```javascript
+> $.win.addEventListener("close", () => {
+>     $.destroy();
+> });
+> ```
+>
+> For global singletons, to properly release them you should also remove event handlers with `off()` and set the reference to null:
+>
+> ```javascript
+> $.win.addEventListener("close", () => {
+>     $.destroy();
+>     Alloy.Collections.book.off();
+>     Alloy.Collections.book = null;
+> });
+> ```
 
 #### Collection-View Binding Example
 
@@ -586,9 +585,8 @@ library.on('change:title', e => {
 });
 ```
 
-::: warning ⚠️ Warning
-This only works if the Backbone method fires the change event and does not enable `{silent: true}` as an option.
-:::
+> **⚠️ ⚠️ Warning**
+> This only works if the Backbone method fires the change event and does not enable `{silent: true}` as an option.
 
 If you want to suppress an update, specify `{silent: true}` in the `options` parameters when calling Backbone methods to change model data. The data-bound view will not be updated to reflect the changes.
 
@@ -671,9 +669,8 @@ exports.definition = {
 };
 ```
 
-::: warning ⚠️ Warning
-The `transform` method must return **all** bound properties, not just the transformed ones. Until Alloy 1.8.1, simple collection data binding did not require this and automatically fell back to the model attributes.
-:::
+> **⚠️ ⚠️ Warning**
+> The `transform` method must return **all** bound properties, not just the transformed ones. Until Alloy 1.8.1, simple collection data binding did not require this and automatically fell back to the model attributes.
 
 ### Tips and Tricks
 
@@ -732,15 +729,14 @@ $.current.fetch({
 $.index.open();
 ```
 
-::: warning ⚠️ Warning
-With the release of CLI 7.1.0, values passed in at creation of a view can be used as values in TSS and XML. For example, if the **foo** property was passed in at creation it can be used on a label:
-
-```xml
-<Alloy>
-    <Label text="$.args.foo" />
-</Alloy>
-```
-:::
+> **⚠️ ⚠️ Warning**
+> With the release of CLI 7.1.0, values passed in at creation of a view can be used as values in TSS and XML. For example, if the **foo** property was passed in at creation it can be used on a label:
+>
+> ```xml
+> <Alloy>
+>     <Label text="$.args.foo" />
+> </Alloy>
+> ```
 
 ## Alloy Sync Adapters and Migrations
 
@@ -1138,9 +1134,8 @@ exports.definition = {
 
 **Validation**: Model validation is now only enforced with the `save()` method. Previously, models were also validated with the `set()` method. To force validation when the `set()` method is called, pass `{validate: true}` to the method or extend the Model class. Also, validation now occurs even during 'silent' changes (passing `{silent: true}` to methods). Previously, it would not. Failed validations return the `invalid` event. Previously, a failed model validation would return the `error` event.
 
-::: warning ⚠️ Warning
-To validate Model objects, implement the `validate()` method in the `extendModel` key of the model configuration file.
-:::
+> **⚠️ ⚠️ Warning**
+> To validate Model objects, implement the `validate()` method in the `extendModel` key of the model configuration file.
 
 **Parse Method**: All `parse` methods now run after a `fetch`. You cannot change the `id` of a model during `parse`. The `parse` method receives `options` as a second parameter.
 

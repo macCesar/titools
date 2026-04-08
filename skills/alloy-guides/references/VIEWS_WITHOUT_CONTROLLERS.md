@@ -45,11 +45,10 @@ Then, the controller can use `$.button1`, `$.button2` and `$.button3` to access 
 3. Use the `getView()` method to retrieve the view.
 4. Use the `add()` method to add the view to a parent component.
 
-::: warning ⚠️ Warning
-Unlike other style dictionaries in Alloy, when using the `updateViews()` method, you can only apply styles using IDs. Class and view component styles do not work with this method.
-
-Using the `Require` or `Widget` elements to include external views in the controller-less view does not work with this procedure — you can include the external views, but the styles cannot be updated with the `updateViews` method.
-:::
+> **⚠️ ⚠️ Warning**
+> Unlike other style dictionaries in Alloy, when using the `updateViews()` method, you can only apply styles using IDs. Class and view component styles do not work with this method.
+>
+> Using the `Require` or `Widget` elements to include external views in the controller-less view does not work with this procedure — you can include the external views, but the styles cannot be updated with the `updateViews` method.
 
 For example:
 

@@ -11,20 +11,19 @@ Reference for building Titanium mobile applications with the Alloy MVC framework
 
 ## Project detection
 
-:::info AUTO-DETECTS ALLOY PROJECTS
-This skill automatically detects Alloy projects when invoked and provides framework-specific guidance.
-
-**Detection occurs automatically** - no manual command needed.
-
-**Alloy project indicators:**
-- `app/` folder (MVC structure)
-- `app/views/`, `app/controllers/` folders
-- `app/models/` folder
-
-**Behavior based on detection:**
-- **Alloy detected** → Provides Alloy MVC documentation, Backbone.js patterns, TSS styling, widgets
-- **Not detected** → Indicates this skill is for Alloy projects only, does not suggest Alloy-specific features
-:::
+> **️ℹ️ AUTO-DETECTS ALLOY PROJECTS**
+> This skill automatically detects Alloy projects when invoked and provides framework-specific guidance.
+>
+> **Detection occurs automatically** - no manual command needed.
+>
+> **Alloy project indicators:**
+> - `app/` folder (MVC structure)
+> - `app/views/`, `app/controllers/` folders
+> - `app/models/` folder
+>
+> **Behavior based on detection:**
+> - **Alloy detected** → Provides Alloy MVC documentation, Backbone.js patterns, TSS styling, widgets
+> - **Not detected** → Indicates this skill is for Alloy projects only, does not suggest Alloy-specific features
 
 ## Quick reference
 
@@ -102,40 +101,39 @@ $.index.open();
 
 ### Platform-specific properties in TSS
 
-:::danger CRITICAL: Platform-specific properties require modifiers
-Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties in TSS without platform modifiers causes cross-platform compilation failures.
-
-Example of the failure:
-```tss
-// WRONG - Adds Ti.UI.iOS to Android project
-"#mainWindow": {
-  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT  // FAILS on Android!
-}
-```
-
-Correct approach - use platform modifiers:
-```tss
-// CORRECT - Only adds to iOS
-"#mainWindow[platform=ios]": {
-  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
-}
-
-// CORRECT - Only adds to Android
-"#mainWindow[platform=android]": {
-  actionBar: {
-    displayHomeAsUp: true
-  }
-}
-```
-
-Properties that always require platform modifiers:
-- iOS: `statusBarStyle`, `modalStyle`, `modalTransitionStyle`, any `Ti.UI.iOS.*`
-- Android: `actionBar` config, any `Ti.UI.Android.*` constant
-
-**Available modifiers:** `[platform=ios]`, `[platform=android]`, `[formFactor=handheld]`, `[formFactor=tablet]`, `[if=Alloy.Globals.customVar]`
-
-For more platform-specific patterns, see [Code conventions (ti-expert)](skills/ti-expert/references/code-conventions.md#platform--device-modifiers) or [Platform UI guides (ti-ui)](skills/ti-ui/references/platform-ui-ios.md).
-:::
+> **🚨 CRITICAL: Platform-specific properties require modifiers**
+> Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties in TSS without platform modifiers causes cross-platform compilation failures.
+>
+> Example of the failure:
+> ```tss
+> // WRONG - Adds Ti.UI.iOS to Android project
+> "#mainWindow": {
+>   statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT  // FAILS on Android!
+> }
+> ```
+>
+> Correct approach - use platform modifiers:
+> ```tss
+> // CORRECT - Only adds to iOS
+> "#mainWindow[platform=ios]": {
+>   statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
+> }
+>
+> // CORRECT - Only adds to Android
+> "#mainWindow[platform=android]": {
+>   actionBar: {
+>     displayHomeAsUp: true
+>   }
+> }
+> ```
+>
+> Properties that always require platform modifiers:
+> - iOS: `statusBarStyle`, `modalStyle`, `modalTransitionStyle`, any `Ti.UI.iOS.*`
+> - Android: `actionBar` config, any `Ti.UI.Android.*` constant
+>
+> **Available modifiers:** `[platform=ios]`, `[platform=android]`, `[formFactor=handheld]`, `[formFactor=tablet]`, `[if=Alloy.Globals.customVar]`
+>
+> For more platform-specific patterns, see [Code conventions (ti-expert)](skills/ti-expert/references/code-conventions.md#platform--device-modifiers) or [Platform UI guides (ti-ui)](skills/ti-ui/references/platform-ui-ios.md).
 
 ## Common patterns
 
