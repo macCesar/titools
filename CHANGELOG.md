@@ -4,6 +4,16 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.4.0] - 2026-04-08
+
+### Added
+- **Auto-update command** (`titools auto-update`) — Full pipeline: checks npm for new versions, updates CLI, syncs skills to `~/.agents/skills/`, and refreshes Knowledge Index in existing MD files. Supports `--silent` flag for hook usage.
+- **Claude Code SessionStart hook** — Automatically installed by `titools install` when Claude Code is selected. Runs `titools auto-update --silent` at session start to check for updates (at most once per day).
+- **Update cache** (`~/.titools/last-check.json`) — Prevents hitting npm registry on every invocation. Checks at most once every 24 hours. TTL overridable via `TITOOLS_CACHE_TTL_MS` env var for testing.
+- **Knowledge Index AUTO-UPDATE instruction** — Fallback for Gemini CLI and Codex CLI that don't support hooks. The instruction tells the AI to run `titools auto-update --silent` at session start.
+- **Dev mode detection** — When running from a git repo (via `npm link`), skips the `npm update -g` step to avoid interfering with development.
+- **Hook lifecycle management** — Hook is installed during `titools install` and removed during `titools remove`, along with cache cleanup.
+
 ## [2.3.0] - 2026-04-08
 
 ### Added
