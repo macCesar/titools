@@ -2,17 +2,15 @@
 
 ## The `config` File
 
-:::info
-`config.cjs` is the active configuration filename. Older `config.js` references are outdated.
-:::
+> **️ℹ️ INFO**
+> `config.cjs` is the active configuration filename. Older `config.js` references are outdated.
 
 By default, PurgeTSS looks for `./purgetss/config.cjs`, where you can define customizations.
 
 ## Create the `config.cjs` File
 
-:::info
-`config.cjs` is created automatically the first time you run `purgetss` in a project.
-:::
+> **️ℹ️ INFO**
+> `config.cjs` is created automatically the first time you run `purgetss` in a project.
 
 If you want a clean `config.cjs`, delete the existing one and run:
 
@@ -198,9 +196,8 @@ module.exports = {
 
 This completely replaces the original default `opacity` values with the new ones.
 
-:::info
-Keys you do not provide are inherited from the default theme. In the example above, colors, spacing, border radius, background position, and other defaults remain.
-:::
+> **️ℹ️ INFO**
+> Keys you do not provide are inherited from the default theme. In the example above, colors, spacing, border radius, background position, and other defaults remain.
 
 ### Extend Properties
 
@@ -339,9 +336,8 @@ module.exports = {
 
 This generates classes like `bg-regal-blue`.
 
-:::info
-You can use the `shades` command to generate a range of shades for a color and add them to `config.cjs`. See [CLI Commands](./cli-commands.md#shades-command).
-:::
+> **️ℹ️ INFO**
+> You can use the `shades` command to generate a range of shades for a color and add them to `config.cjs`. See [CLI Commands](./cli-commands.md#shades-command).
 
 ## Customize Spacing
 
@@ -442,9 +438,8 @@ module.exports = {
 
 This generates classes like `p-72`, `m-84`, and `h-96` in addition to the default spacing and sizing utilities.
 
-:::warning Titanium Layout Constraint
-Titanium does not support native `padding` on `View`, `Window`, `ScrollView`, or `TableView`. Even if PurgeTSS can generate spacing-related utilities, prefer margins on children for those elements.
-:::
+> **⚠️ Titanium Layout Constraint**
+> Titanium does not support native `padding` on `View`, `Window`, `ScrollView`, or `TableView`. Even if PurgeTSS can generate spacing-related utilities, prefer margins on children for those elements.
 
 ## List of Customizable Properties
 

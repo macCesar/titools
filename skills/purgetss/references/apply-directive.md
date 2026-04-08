@@ -2,9 +2,8 @@
 
 ## Create Complex Classes and IDs
 
-:::info
-Use `apply` to bundle classes into a new class, or to extract a repeated pattern into a reusable class.
-:::
+> **️ℹ️ INFO**
+> Use `apply` to bundle classes into a new class, or to extract a repeated pattern into a reusable class.
 
 - Set any ID, class, or Ti Element.
 - Use any of the default classes.
@@ -197,11 +196,10 @@ theme: {
 
 Several classes in `utilities.tss` are platform-specific to prevent polluting objects with properties that are not specific to a particular platform.
 
-:::caution
-To apply these platform styles when creating custom rules, you must specify the platform variant in the `apply` directive.
-
-Even if you are not targeting a specific platform, you still need to specify the platform variant.
-:::
+> **⚠️ CAUTION**
+> To apply these platform styles when creating custom rules, you must specify the platform variant in the `apply` directive.
+>
+> Even if you are not targeting a specific platform, you still need to specify the platform variant.
 
 `./purgetss/config.cjs`
 ```javascript
@@ -244,6 +242,5 @@ module.exports = {
 '.my-view': { backgroundColor: '#22c55e', width: 128, height: 128 }
 ```
 
-:::warning Titanium Fill Rule
-When composing layout utilities inside `apply`, prefer `w-screen` for fill behavior. `w-full` maps to `100%`, not `Ti.UI.FILL`.
-:::
+> **⚠️ Titanium Fill Rule**
+> When composing layout utilities inside `apply`, prefer `w-screen` for fill behavior. `w-full` maps to `100%`, not `Ti.UI.FILL`.

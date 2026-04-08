@@ -4,9 +4,8 @@ Complete examples of common patterns with anti-patterns and correct implementati
 
 ## Titanium Layout Patterns
 
-:::danger NO FLEXBOX IN TITANIUM
-Titanium does NOT support CSS Flexbox. All examples use `horizontal`, `vertical`, or `composite` layouts.
-:::
+> **🚨 NO FLEXBOX IN TITANIUM**
+> Titanium does NOT support CSS Flexbox. All examples use `horizontal`, `vertical`, or `composite` layouts.
 
 ### Horizontal Row with Space Between
 
@@ -217,7 +216,7 @@ alloy compile
 </View>
 ```
 
-**Why:** Titanium Views don't support padding properties. Use margins on child elements, and add `wh-auto` on `Label`/`Button` when opposite margins would otherwise trigger Titanium edge pinning.
+**Why:** Titanium Views don't support padding properties. Use margins on child elements, and add `wh-auto` on `Label`/`Button`/`Switch` (or any `SIZE`-default component) when opposite margins would otherwise trigger Titanium edge pinning.
 
 ---
 

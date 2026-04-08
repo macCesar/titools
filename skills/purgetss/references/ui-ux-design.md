@@ -22,8 +22,8 @@ This guide collects practical UI patterns that stay aligned with Titanium layout
   <Label class="mx-4 mt-2 text-sm text-gray-600" text="Card description goes here." />
 
   <View class="horizontal mx-4 mt-4 mb-4">
-    <Button class="rounded-lg bg-blue-500 px-4 py-2 text-white" title="Action" />
-    <Button class="ml-2 rounded-lg bg-gray-200 px-4 py-2 text-gray-700" title="Learn More" />
+    <Button class="rounded-lg bg-blue-500 text-white" title="Action" />
+    <Button class="ml-2 rounded-lg bg-gray-200 text-gray-700" title="Learn More" />
   </View>
 </View>
 ```
@@ -98,9 +98,8 @@ This guide collects practical UI patterns that stay aligned with Titanium layout
 </ListView>
 ```
 
-:::warning ListView Performance
-Prefer fixed item heights for production ListView templates. Avoid relying on `Ti.UI.SIZE` in scrolling cells when performance matters.
-:::
+> **⚠️ ListView Performance**
+> Prefer fixed item heights for production ListView templates. Avoid relying on `Ti.UI.SIZE` in scrolling cells when performance matters.
 
 ## Forms
 
@@ -132,34 +131,33 @@ Prefer fixed item heights for production ListView templates. Avoid relying on `T
 </View>
 ```
 
-:::warning Input Padding
-Padding utilities are appropriate on components such as `TextField`, `TextArea`, `Button`, and `Label`, but not on container views.
-:::
+> **⚠️ Input Padding**
+> Padding utilities (`p-`, `px-`, `py-`) work on `TextField` and `TextArea`, but NOT on `Button` (especially iOS/Mac) and NOT on container views (`View`, `Window`, `ScrollView`, `TableView`). Use margins on children to simulate internal spacing on containers.
 
 ## Buttons
 
 ### Primary Button
 
 ```xml
-<Button class="rounded-lg bg-blue-500 px-4 py-3 text-base font-semibold text-white" title="Save Changes" />
+<Button class="rounded-lg bg-blue-500 text-base font-semibold text-white" title="Save Changes" />
 ```
 
 ### Secondary Button
 
 ```xml
-<Button class="rounded-lg bg-gray-200 px-4 py-3 text-base font-semibold text-gray-800" title="Cancel" />
+<Button class="rounded-lg bg-gray-200 text-base font-semibold text-gray-800" title="Cancel" />
 ```
 
 ### Outline Button
 
 ```xml
-<Button class="rounded-lg border-(1) border-blue-500 px-4 py-3 text-base font-semibold text-blue-500" title="Learn More" />
+<Button class="rounded-lg border-(1) border-blue-500 text-base font-semibold text-blue-500" title="Learn More" />
 ```
 
 ### Icon Button
 
 ```xml
-<Button class="rounded-lg bg-blue-500 px-4 py-3 text-white" title="Save" />
+<Button class="rounded-lg bg-blue-500 text-white" title="Save" />
 <Label class="fas fa-save ml-2 text-white" />
 ```
 
@@ -206,8 +204,8 @@ Padding utilities are appropriate on components such as `TextField`, `TextArea`,
     <Label class="mx-4 mt-2 text-sm text-gray-600" text="Are you sure you want to continue?" />
 
     <View class="horizontal mx-4 mt-4 mb-4">
-      <Button class="rounded-lg bg-gray-200 px-4 py-2 text-gray-700" title="Cancel" />
-      <Button class="ml-2 rounded-lg bg-red-500 px-4 py-2 text-white" title="Delete" />
+      <Button class="rounded-lg bg-gray-200 text-gray-700" title="Cancel" />
+      <Button class="ml-2 rounded-lg bg-red-500 text-white" title="Delete" />
     </View>
   </View>
 </View>
@@ -317,7 +315,7 @@ Padding utilities are appropriate on components such as `TextField`, `TextArea`,
 Example:
 
 ```xml
-<Button class="h-12 rounded-lg bg-blue-500 px-4 text-white" title="Continue" accessibilityLabel="Continue to next step" />
+<Button class="h-12 rounded-lg bg-blue-500 text-white" title="Continue" accessibilityLabel="Continue to next step" />
 ```
 
 ## Performance Notes
@@ -340,9 +338,8 @@ Example:
 | Tablet adaptation | `tablet:*`, `handheld:*` |
 | Overlay background | `bg-(#88000000)` |
 
-:::warning Common Pitfalls
-- Do not use `md:*`, `lg:*`, `focus:*`, or other web-responsive/state prefixes.
-- Do not assume `w-full` behaves like `Ti.UI.FILL`.
-- Do not put `p-*` on container views.
-- Do not rely on Flexbox classes such as `flex-row`, `justify-between`, or `items-center`.
-:::
+> **⚠️ Common Pitfalls**
+> - Do not use `md:*`, `lg:*`, `focus:*`, or other web-responsive/state prefixes.
+> - Do not assume `w-full` behaves like `Ti.UI.FILL`.
+> - Do not put `p-*` on container views.
+> - Do not rely on Flexbox classes such as `flex-row`, `justify-between`, or `items-center`.

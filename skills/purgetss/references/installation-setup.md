@@ -8,9 +8,8 @@ Install PurgeTSS globally on your machine using [NPM](https://www.npmjs.com/).
 [sudo] npm install -g purgetss
 ```
 
-:::caution Node.js 20+ Required
-PurgeTSS requires Node 20.0.0 or higher.
-:::
+> **⚠️ Node.js 20+ Required**
+> PurgeTSS requires Node 20.0.0 or higher.
 
 ## Upgrade Notes
 
@@ -25,11 +24,10 @@ npm install -g purgetss
 
 ## Run PurgeTSS the First Time
 
-:::info
-Run `purgetss` once in your project to generate the required files and folders.
-
-After that, every build parses your XML files and writes a clean `app.tss` with only the classes used in your project.
-:::
+> **️ℹ️ INFO**
+> Run `purgetss` once in your project to generate the required files and folders.
+>
+> After that, every build parses your XML files and writes a clean `app.tss` with only the classes used in your project.
 
 When you run `purgetss` for the first time in your project, it does the following:
 
@@ -70,15 +68,14 @@ purgetss
 
   Here, you can add various font types such as icons, serif, sans-serif, cursive, fantasy, or monospace fonts for your app. Step-by-step instructions are available in the [`build-fonts` command](./cli-commands.md#purgetss-build-fonts-alias-bf) section.
 
-:::caution Important
-PurgeTSS overwrites your existing `app.tss` file.
-
-On the first run, your original `app.tss` is backed up to `_app.tss`.
-
-From this point forward, you can add, delete, or update your custom classes in `_app.tss`.
-
-Alternatively, include custom values in `config.cjs`.
-:::
+> **⚠️ Important**
+> PurgeTSS overwrites your existing `app.tss` file.
+>
+> On the first run, your original `app.tss` is backed up to `_app.tss`.
+>
+> From this point forward, you can add, delete, or update your custom classes in `_app.tss`.
+>
+> Alternatively, include custom values in `config.cjs`.
 
 ## Example Files
 
@@ -125,13 +122,12 @@ To use the example files:
 }
 ```
 
-:::info
-After running `purgetss`, you will have a new `app.tss` file with only the classes used in the XML files.
-
-Your original `app.tss` file is backed up in `_app.tss`. You can use this file to add, delete, or update any of your original styles.
-
-Every time `purgetss` runs, it copies the content of `_app.tss` to `app.tss`.
-:::
+> **️ℹ️ INFO**
+> After running `purgetss`, you will have a new `app.tss` file with only the classes used in the XML files.
+>
+> Your original `app.tss` file is backed up in `_app.tss`. You can use this file to add, delete, or update any of your original styles.
+>
+> Every time `purgetss` runs, it copies the content of `_app.tss` to `app.tss`.
 
 ```tss
 /* PurgeTSS v7.2.7 */
@@ -213,6 +209,5 @@ After installing the extension, add the `xml` language to the `"HTMLLanguages"` 
 }
 ```
 
-:::warning Titanium Layout Reminder
-PurgeTSS does not add Flexbox to Titanium. Use `horizontal`, `vertical`, or the default composite layout, and prefer `w-screen` instead of `w-full` when you need `Ti.UI.FILL`.
-:::
+> **⚠️ Titanium Layout Reminder**
+> PurgeTSS does not add Flexbox to Titanium. Use `horizontal`, `vertical`, or the default composite layout, and prefer `w-screen` instead of `w-full` when you need `Ti.UI.FILL`.

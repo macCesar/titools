@@ -1,13 +1,12 @@
 # Icon Font Libraries
 
-:::info Official Icon Fonts for PurgeTSS
-Previous versions of PurgeTSS included several icon font libraries such as Bootstrap Icons, Boxicons, LineIcons, and Tabler Icons. To keep maintenance manageable, the official icon fonts are now:
-
-- [Font Awesome 7 Free](https://fontawesome.com)
-- [Framework7](https://framework7.io/icons/)
-- [Material Icons](https://fonts.google.com/icons?icon.set=Material+Icons)
-- [Material Symbols](https://fonts.google.com/icons?icon.set=Material+Symbols)
-:::
+> **️ℹ️ Official Icon Fonts for PurgeTSS**
+> Previous versions of PurgeTSS included several icon font libraries such as Bootstrap Icons, Boxicons, LineIcons, and Tabler Icons. To keep maintenance manageable, the official icon fonts are now:
+>
+> - [Font Awesome 7 Free](https://fontawesome.com)
+> - [Framework7](https://framework7.io/icons/)
+> - [Material Icons](https://fonts.google.com/icons?icon.set=Material+Icons)
+> - [Material Symbols](https://fonts.google.com/icons?icon.set=Material+Symbols)
 
 For the official install flow for those vendors, see [CLI Commands](./cli-commands.md#icon-library-command).
 
@@ -28,9 +27,8 @@ Start by downloading the libraries from their official websites:
 
 Put the desired libraries in the `./purgetss/fonts` folder.
 
-:::info
-Copy the TrueType or OpenType font files and the `.css` file.
-:::
+> **️ℹ️ INFO**
+> Copy the TrueType or OpenType font files and the `.css` file.
 
 ```bash
 purgetss
@@ -162,10 +160,8 @@ const icons = {
 exports.icons = icons;
 ```
 
-:::danger
-Make sure the new prefix remains unique to avoid conflicts with other class prefixes.
-:::
+> **🚨 DANGER**
+> Make sure the new prefix remains unique to avoid conflicts with other class prefixes.
 
-:::warning Font Awesome Duotone
-Titanium cannot render Font Awesome duotone icons correctly because each icon uses two glyphs. If you work with Font Awesome Pro, avoid documenting duotone as supported.
-:::
+> **⚠️ Font Awesome Duotone**
+> Titanium cannot render Font Awesome duotone icons correctly because each icon uses two glyphs. If you work with Font Awesome Pro, avoid documenting duotone as supported.

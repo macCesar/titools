@@ -65,9 +65,8 @@ You can customize any of the following properties individually by adding them in
 - `trackTintColor`
 - `viewShadowColor`
 
-:::info `backgroundGradient`
-For custom gradient rules, `backgroundGradient.colors` can use arrays of `{ color, offset }` objects. PurgeTSS v7.4.0 fixed serialization for those nested object arrays in `utilities.tss`.
-:::
+> **️ℹ️ `backgroundGradient`**
+> For custom gradient rules, `backgroundGradient.colors` can use arrays of `{ color, offset }` objects. PurgeTSS v7.4.0 fixed serialization for those nested object arrays in `utilities.tss`.
 
 ## Configurable Properties
 
@@ -153,13 +152,11 @@ For custom gradient rules, `backgroundGradient.colors` can use arrays of `{ colo
 - `zIndex`
 - `zoomScale`
 
-:::warning Titanium Padding Constraint
-Titanium does not support native `padding` on `View`, `Window`, `ScrollView`, or `TableView`. Even if `padding*` is configurable, use margins on children for those elements.
-:::
+> **⚠️ Titanium Padding Constraint**
+> Titanium does not support native `padding` on `View`, `Window`, `ScrollView`, or `TableView`. Even if `padding*` is configurable, use margins on children for those elements.
 
-:::warning Width Fill Constraint
-For full-width Titanium layouts, prefer `w-screen` (`Ti.UI.FILL`) instead of `w-full` (`100%`).
-:::
+> **⚠️ Width Fill Constraint**
+> For full-width Titanium layouts, prefer `w-screen` (`Ti.UI.FILL`) instead of `w-full` (`100%`).
 
 ## Custom Rules and Ti Elements
 

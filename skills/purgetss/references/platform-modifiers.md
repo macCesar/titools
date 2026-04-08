@@ -43,6 +43,5 @@ You can combine them with arbitrary values. Examples: `ios:bg-(#53606b)`, `ios:t
 '.tablet:bg-green-500[formFactor=tablet]': { backgroundColor: '#22c55e' }
 ```
 
-:::warning Platform-Specific Properties
-If a style relies on `Ti.UI.iOS.*` or `Ti.UI.Android.*` constants, scope it with the matching `ios:` or `android:` modifier, or with the equivalent platform block in `config.cjs`.
-:::
+> **⚠️ Platform-Specific Properties**
+> If a style relies on `Ti.UI.iOS.*` or `Ti.UI.Android.*` constants, scope it with the matching `ios:` or `android:` modifier, or with the equivalent platform block in `config.cjs`.

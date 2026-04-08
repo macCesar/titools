@@ -2,9 +2,8 @@
 
 The grid system is a small layout tool that lets you build rows and columns with utility classes.
 
-:::warning
-PurgeTSS grid is not CSS Grid. It is a Titanium-oriented layout helper built around horizontal and vertical layout behavior.
-:::
+> **⚠️ WARNING**
+> PurgeTSS grid is not CSS Grid. It is a Titanium-oriented layout helper built around horizontal and vertical layout behavior.
 
 The snippet below shows the simplest layout. From there, you can mix columns and rows as needed.
 
