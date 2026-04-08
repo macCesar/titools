@@ -2,7 +2,7 @@
 
 ## Create Complex Classes and IDs
 
-> **️ℹ️ INFO**
+> **INFO**
 > Use `apply` to bundle classes into a new class, or to extract a repeated pattern into a reusable class.
 
 - Set any ID, class, or Ti Element.
@@ -97,6 +97,7 @@ In the following example, we are creating `corporate` color classes so we can us
 theme: {
   extend: {
     colors: {
+      // New color values that will generate bg-colors, text-colors, border-colors classes.
       corporate: {
         100: '#dddfe1', 200: '#babfc4', 500: '#53606b'
       }
@@ -106,6 +107,7 @@ theme: {
     apply: 'wh-auto font-bold border-2 rounded my-0.5'
   },
   '.btn-corporate': {
+    // Newly created classes (see extend.colors.corporate)
     apply: 'bg-corporate-500 text-corporate-100 border-corporate-200'
   }
 }
@@ -143,9 +145,11 @@ theme: {
       }
     }
   },
+  // Use a string of classes
   '.btn': {
     apply: 'font-bold border-2 rounded wh-auto my-0.5'
   },
+  // or an array of classes
   '.btn-corporate': {
     apply: [
       'bg-corporate-500',
@@ -169,13 +173,20 @@ theme: {
 ```javascript
 theme: {
   '.btn': {
+    // Default .btn
     apply: 'font-bold border-2 rounded wh-auto my-0.5',
+
+    // Specific to iOS devices
     ios: {
       apply: 'w-screen mx-4'
     },
+
+    // Specific to handheld devices
     handheld: {
       apply: 'h-20'
     },
+
+    // Specific to iPhoneX (if Alloy.Globals.iPhoneX is set)
     '[if=Alloy.Globals.iPhoneX]': {
       apply: 'mb-12'
     }
@@ -194,12 +205,9 @@ theme: {
 
 ## Platform-Specific Classes
 
-Several classes in `utilities.tss` are platform-specific to prevent polluting objects with properties that are not specific to a particular platform.
+Several classes in `utilities.tss` are platform-specific (e.g., `clip-enabled`, `status-bar-style-light-content`). These only exist with a `[platform=ios]` or `[platform=android]` suffix.
 
-> **⚠️ CAUTION**
-> To apply these platform styles when creating custom rules, you must specify the platform variant in the `apply` directive.
->
-> Even if you are not targeting a specific platform, you still need to specify the platform variant.
+When you use these classes inside a platform block (`ios:` or `android:`), PurgeTSS automatically finds the platform-specific version -- no prefix needed:
 
 `./purgetss/config.cjs`
 ```javascript
@@ -207,7 +215,7 @@ module.exports = {
   theme: {
     '.my-view': {
       ios: {
-        apply: 'bg-green-500 wh-32 ios:clip-enabled'
+        apply: 'bg-green-500 wh-32 clip-enabled'
       }
     }
   }
@@ -220,15 +228,42 @@ module.exports = {
 '.my-view[platform=ios]': { backgroundColor: '#22c55e', clipMode: Ti.UI.iOS.CLIP_MODE_ENABLED, width: 128, height: 128 }
 ```
 
-### Omitting the Platform Variant
+The `ios:` / `android:` prefix still works from a non-platform block (e.g., `default`), but use it with caution:
 
-If you omit the platform variant, PurgeTSS will not be able to determine which platform you are targeting, and the custom class will not have the corresponding property.
+> **WARNING -- Cross-Platform Apps**
+> Using `ios:` or `android:` in a `default` block applies the property on **all platforms**. Some iOS-only or Android-only properties can cause errors on the other platform at compile time or when the view opens. For cross-platform apps, always use platform blocks instead.
+
+`./purgetss/config.cjs`
+```javascript
+module.exports = {
+  theme: {
+    // For single-platform apps, the prefix works from default:
+    '.my-view': {
+      apply: 'wh-32 bg-green-500 ios:clip-enabled'
+    },
+
+    // For cross-platform apps, use platform blocks instead:
+    '.my-view': {
+      apply: 'wh-32 bg-green-500',
+      ios: {
+        apply: 'clip-enabled'
+      }
+    }
+  }
+};
+```
+
+### Classes Outside Platform Blocks
+
+If a platform-specific class is used outside a platform block (without the `ios:` or `android:` prefix), PurgeTSS will not find it because it only exists with the platform suffix in `utilities.tss`:
 
 `./purgetss/config.cjs`
 ```javascript
 module.exports = {
   theme: {
     '.my-view': {
+      // clip-enabled only exists as '.clip-enabled[platform=ios]' in utilities.tss
+      // Without a platform block or ios: prefix, it will not be found
       apply: 'wh-32 clip-enabled bg-green-500'
     }
   }
@@ -237,10 +272,9 @@ module.exports = {
 
 `./purgetss/styles/utilities.tss`
 ```tss
-/* Omitting the platform variant in `config.cjs` will not generate the corresponding property. */
-/* Missing the property related to `clip-enabled`. */
+/* clip-enabled was not resolved because no platform context was available */
 '.my-view': { backgroundColor: '#22c55e', width: 128, height: 128 }
 ```
 
-> **⚠️ Titanium Fill Rule**
+> **Titanium Fill Rule**
 > When composing layout utilities inside `apply`, prefer `w-screen` for fill behavior. `w-full` maps to `100%`, not `Ti.UI.FILL`.

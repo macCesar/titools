@@ -1,9 +1,11 @@
 # Icon Font Libraries
 
-> **️ℹ️ Official Icon Fonts for PurgeTSS**
-> Previous versions of PurgeTSS included several icon font libraries such as Bootstrap Icons, Boxicons, LineIcons, and Tabler Icons. To keep maintenance manageable, the official icon fonts are now:
+> **Official Icon Fonts for PurgeTSS**
+> Previous versions of PurgeTSS included several icon font libraries such as Bootstrap Icons, Boxicons, LineIcons, and Tabler Icons. The list was reduced to keep maintenance manageable.
 >
-> - [Font Awesome 7 Free](https://fontawesome.com)
+> These are the official icon fonts supported by PurgeTSS:
+>
+> - [Font Awesome 7 Free](https://fontawesome.com) (upgrade with `purgetss il -v=fa`)
 > - [Framework7](https://framework7.io/icons/)
 > - [Material Icons](https://fonts.google.com/icons?icon.set=Material+Icons)
 > - [Material Symbols](https://fonts.google.com/icons?icon.set=Material+Symbols)
@@ -12,7 +14,7 @@ For the official install flow for those vendors, see [CLI Commands](./cli-comman
 
 ## Recreate Removed Libraries
 
-You can recreate removed libraries with the `build-fonts` command.
+You can recreate removed libraries using the `build-fonts` command.
 
 ### 1. Download the Libraries
 
@@ -27,15 +29,15 @@ Start by downloading the libraries from their official websites:
 
 Put the desired libraries in the `./purgetss/fonts` folder.
 
-> **️ℹ️ INFO**
+> **INFO**
 > Copy the TrueType or OpenType font files and the `.css` file.
 
 ```bash
 purgetss
 └─ fonts
-   ├─ boxicons
-   │  ├─ boxicons.css
-   │  └─ boxicons.ttf
+   └─ boxicons
+      ├─ boxicons.css
+      └─ boxicons.ttf
    └─ lineicons
       ├─ lineicons.css
       └─ lineicons.ttf
@@ -46,7 +48,7 @@ purgetss
 Run the `build-fonts` command to create a custom `fonts.tss` file.
 
 ```bash
-purgetss build-fonts [--module]
+purgetss build-fonts [--modules]
 
 # alias:
 purgetss bf [-m]
@@ -62,7 +64,7 @@ The `build-fonts` command generates `./purgetss/styles/fonts.tss` with Unicode c
 '.lineicons': { font: { fontFamily: 'LineIcons' } }
 
 /* Unicode Characters */
-/* To use your icon fonts in Buttons and Labels each class sets `text` and `title` */
+/* To use your Icon Fonts in Buttons AND Labels each class sets 'text' and 'title' properties */
 
 /* boxicons.css */
 '.bxl-meta': { text: '\uef27', title: '\uef27' }
@@ -77,7 +79,7 @@ The `build-fonts` command generates `./purgetss/styles/fonts.tss` with Unicode c
 
 ### Rename the Style Rule Name
 
-PurgeTSS uses the font filename as the style rule name. You can change it by renaming the font file.
+PurgeTSS uses the font file name as the style rule name. You can change it by renaming the font file.
 
 `./purgetss/fonts/`
 ```bash
@@ -105,10 +107,11 @@ app
       └─ LineIcons.ttf
 ```
 
-### The `--module` Option
+### The `--modules` Option
 
-When you use the `--module` option, it generates a `./app/lib/purgetss.fonts.js` CommonJS module file.
+When you use the `--modules` option, it generates a `./app/lib/purgetss.fonts.js` CommonJS module file.
 
+`./app/lib/purgetss.fonts.js`
 ```javascript
 const icons = {
   /* boxicons */
@@ -127,9 +130,9 @@ const icons = {
 exports.icons = icons;
 ```
 
-### The `--filename` Option
+### The `--prefix` Option
 
-PurgeTSS determines the group's prefix for each icon family and class name. Use `--filename` to apply the style's filename as the prefix for class names in `fonts.tss` and property names in `purgetss.fonts.js`.
+PurgeTSS determines the group's prefix for each icon family and class name. Use `--prefix` to apply the style's filename as the prefix for class names in `fonts.tss` and property names in `purgetss.fonts.js`.
 
 `./purgetss/fonts/`
 ```bash
@@ -160,8 +163,8 @@ const icons = {
 exports.icons = icons;
 ```
 
-> **🚨 DANGER**
+> **DANGER**
 > Make sure the new prefix remains unique to avoid conflicts with other class prefixes.
 
-> **⚠️ Font Awesome Duotone**
+> **Font Awesome Duotone**
 > Titanium cannot render Font Awesome duotone icons correctly because each icon uses two glyphs. If you work with Font Awesome Pro, avoid documenting duotone as supported.
