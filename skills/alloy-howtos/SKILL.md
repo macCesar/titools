@@ -11,19 +11,18 @@ Practical guide for Alloy MVC projects in the Titanium SDK.
 
 ## Project detection
 
-:::info Auto-detects Alloy projects
-This skill checks for Alloy projects when invoked and provides CLI and configuration guidance.
-
-Detection is automatic. No manual command is needed.
-
-Alloy project indicators:
-- `app/` folder with Alloy structure
-- `alloy.jmk` or `config.json` files
-
-Behavior based on detection:
-- Alloy detected -> Provide Alloy CLI command guidance, configuration file help, Alloy-specific troubleshooting
-- Not detected -> Explain this skill is for Alloy projects only and suggest Alloy guides if the user wants to migrate
-:::
+> **️ℹ️ Auto-detects Alloy projects**
+> This skill checks for Alloy projects when invoked and provides CLI and configuration guidance.
+>
+> Detection is automatic. No manual command is needed.
+>
+> Alloy project indicators:
+> - `app/` folder with Alloy structure
+> - `alloy.jmk` or `config.json` files
+>
+> Behavior based on detection:
+> - Alloy detected -> Provide Alloy CLI command guidance, configuration file help, Alloy-specific troubleshooting
+> - Not detected -> Explain this skill is for Alloy projects only and suggest Alloy guides if the user wants to migrate
 
 ## Quick reference
 
