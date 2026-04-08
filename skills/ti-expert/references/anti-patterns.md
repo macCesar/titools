@@ -76,6 +76,39 @@
 - iOS: Use `Ti.UI.iOS.createDocumentViewer` for files, or simple `Ti.UI.createOptionDialog` + `Ti.UI.Clipboard` for links
 - Android: Use `Ti.Android.createIntent` with ACTION_SEND
 
+## Community-Discovered Patterns
+
+### 15. Using extendEdges without autoAdjustScrollViewInsets (iOS)
+
+**Anti-pattern:** Setting `extendEdges: [Ti.UI.EXTEND_EDGE_ALL]` on a Window without also setting `autoAdjustScrollViewInsets: true`.
+
+```javascript
+// Wrong: content overlaps behind navigation bar
+const win = Ti.UI.createWindow({
+  title: 'My Screen',
+  largeTitleEnabled: true,
+  extendEdges: [Ti.UI.EXTEND_EDGE_ALL]
+  // missing autoAdjustScrollViewInsets!
+});
+```
+
+**Why it's wrong:** `extendEdges` tells iOS to extend the view's content behind the navigation bar and tab bar. Without `autoAdjustScrollViewInsets: true`, iOS does not adjust the ScrollView's content insets, so the scroll content starts at y=0 — directly behind the navigation bar.
+
+**Fix:** Always pair `extendEdges` with `autoAdjustScrollViewInsets`:
+
+```javascript
+const win = Ti.UI.createWindow({
+  title: 'My Screen',
+  largeTitleEnabled: true,
+  extendEdges: [Ti.UI.EXTEND_EDGE_ALL],
+  autoAdjustScrollViewInsets: true
+});
+```
+
+These three properties work together: `extendEdges` creates the blur/translucent effect, `autoAdjustScrollViewInsets` prevents content overlap, and `largeTitleEnabled` shows the collapsible large title. Without `extendEdges`, the large title also renders with a visible delay (empty nav bar gap appears first, then the title draws).
+
+This applies to Windows inside both standalone NavigationWindow and TabGroup (which wraps each Tab in an implicit NavigationWindow on iOS).
+
 ---
 
 ## Quick reference table
@@ -88,3 +121,4 @@
 | `lib/` prefix           | lib/ is flattened        | Use path without lib/ |
 | `$.index.open()`        | Wrong ID reference       | Use actual Window ID  |
 | `createNotification`    | API doesn't exist        | `createAlertDialog`   |
+| `extendEdges` alone     | Content behind nav bar   | Add `autoAdjustScrollViewInsets: true` |
