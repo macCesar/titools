@@ -4,6 +4,11 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.4.2] - 2026-04-08
+
+### Fixed
+- **Auto-update progress feedback** — Show intermediate steps ("Update available", "Downloading and installing") instead of jumping from "Checking" to "Updated". Show "Up to date" message on cache hit in non-silent mode.
+
 ## [2.4.1] - 2026-04-08
 
 ### Fixed
