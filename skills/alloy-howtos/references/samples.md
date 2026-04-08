@@ -56,9 +56,8 @@ if (!ENV_PROD) {
 
 Alloy separates business logic (controllers) from UI definition (XML/TSS). A common challenge is showing or hiding content based on app state (for example, login status).
 
-:::tip TSS defaults
-The samples below assume some additional TSS: views and windows use a vertical layout, and the `View` tag has a default height and width of `Ti.UI.SIZE`.
-:::
+> **💡 TSS defaults**
+> The samples below assume some additional TSS: views and windows use a vertical layout, and the `View` tag has a default height and width of `Ti.UI.SIZE`.
 
 ### Problems with traditional approaches
 
