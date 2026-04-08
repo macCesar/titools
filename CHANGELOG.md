@@ -4,6 +4,17 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.3.0] - 2026-04-08
+
+### Added
+- **Community-Discovered Patterns** — New protected section type across skills for verified behavior not present in official Titanium documentation. These sections survive audits via a protection rule in `quality-standards.md`
+- **ti-ui/platform-ui-ios.md**: Large Title + ScrollView property triad pattern — documents the interdependency between `largeTitleEnabled`, `extendEdges`, and `autoAdjustScrollViewInsets` including `largeTitleDisplayMode` options, TabGroup compatibility, rendering delay explanation, and global defaults via `app.tss`
+- **ti-ui/scrolling-views.md**: ScrollView inside NavigationWindow (iOS) pattern with property table and code example
+- **ti-expert/anti-patterns.md**: Anti-pattern #15 — using `extendEdges` without `autoAdjustScrollViewInsets` (iOS), with entry in quick reference table
+- **ti-api/api-ui-windows-navigation.md**: Platform Implementation Notes for Ti.UI.Window — Large Title + ScrollView interdependency with `largeTitleDisplayMode` constants
+- **purgetss/apply-directive.md**: Global Window defaults pattern using `apply` directive in `config.cjs` with PurgeTSS classes (`auto-adjust-scroll-view-insets`, `extend-edges-all`, `large-title-enabled`)
+- **purgetss/class-categories.md**: Cross-reference on `large-title` entry linking to the apply directive pattern
+
 ## [2.2.13] - 2026-03-07
 
 ### Added
