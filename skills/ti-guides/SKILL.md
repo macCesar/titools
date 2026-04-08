@@ -11,20 +11,19 @@ Use this skill to keep Titanium projects aligned with TiDev standards for stabil
 
 ## Project detection
 
-:::info Auto-detects Titanium projects
-This skill auto-detects Titanium projects. No manual command is needed.
-
-Titanium project indicator:
-- `tiapp.xml` file (definitive indicator)
-
-Applies to both:
-- Alloy projects (`app/` folder)
-- Classic projects (`Resources/` folder)
-
-Behavior:
-- If a Titanium project is detected, provide official Titanium SDK guidance, memory management best practices, and app distribution help.
-- If not detected, say this skill is only for Titanium projects.
-:::
+> **️ℹ️ Auto-detects Titanium projects**
+> This skill auto-detects Titanium projects. No manual command is needed.
+>
+> Titanium project indicator:
+> - `tiapp.xml` file (definitive indicator)
+>
+> Applies to both:
+> - Alloy projects (`app/` folder)
+> - Classic projects (`Resources/` folder)
+>
+> Behavior:
+> - If a Titanium project is detected, provide official Titanium SDK guidance, memory management best practices, and app distribution help.
+> - If not detected, say this skill is only for Titanium projects.
 
 ## Core workflow
 

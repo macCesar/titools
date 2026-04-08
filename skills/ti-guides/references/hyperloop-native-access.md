@@ -257,9 +257,8 @@ The following resources are compiled automatically: `*.storyboard`, `*.xcdatamod
 
 ## 9. iOS: customizing the Xcode build
 
-:::warning Legacy: `appc.js`
-The `appc.js` file was an Appcelerator/AMPLIFY Platform hook. It is no longer supported. For modern Titanium projects, use `tiapp.xml` or native Xcode project settings for build customization.
-:::
+> **⚠️ Legacy: `appc.js`**
+> The `appc.js` file was an Appcelerator/AMPLIFY Platform hook. It is no longer supported. For modern Titanium projects, use `tiapp.xml` or native Xcode project settings for build customization.
 
 For historical reference, `appc.js` at the project root passed custom flags to `xcodebuild`:
 ```javascript
