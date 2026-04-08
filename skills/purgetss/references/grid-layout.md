@@ -2,7 +2,7 @@
 
 The grid system is a small layout tool that lets you build rows and columns with utility classes.
 
-> **⚠️ WARNING**
+> **WARNING**
 > PurgeTSS grid is not CSS Grid. It is a Titanium-oriented layout helper built around horizontal and vertical layout behavior.
 
 The snippet below shows the simplest layout. From there, you can mix columns and rows as needed.
@@ -11,6 +11,7 @@ The snippet below shows the simplest layout. From there, you can mix columns and
 <Alloy>
   <View class="grid">
     <View class="grid-cols-4">
+      <!-- Remove if you don't need a gutter between columns (or rows) -->
       <View class="gap-1">
         <!-- ANY CONTENT GOES HERE -->
       </View>
@@ -35,7 +36,7 @@ Use `grid-cols` to set how many columns fit in each row. For example, `.grid-col
 
 Use `col-span` to set how many columns an element occupies in a 12-column grid.
 
-If a view uses `.col-span-3`, you can add three more views of the same width to fill the row. Other combinations like `3-6-3` or `2-4-6` also work, as long as the total is 12.
+If a view uses `.col-span-3`, you can add three more views of the same width to fill the row. Other combos like 3-6-3 or 2-4-6 work too, as long as the total is 12.
 
 ## Row Grid
 
@@ -47,7 +48,7 @@ Use `grid-rows` to set how many rows fit in each column. For example, `.grid-row
 
 Use `row-span` to set how many rows an element occupies in a 12-row grid.
 
-If a view uses `.row-span-3`, you can add three more views of the same height to fill the column. Other combinations like `3-6-3` or `2-4-6` also work, as long as the total is 12.
+If a view uses `.row-span-3`, you can add three more views of the same height to fill the column. Other combos like 3-6-3 or 2-4-6 work too, as long as the total is 12.
 
 ## Available Utilities
 
@@ -57,7 +58,7 @@ These are the available utilities to control the grid.
 
 - `gap-{size}`: Change the gap between rows and columns.
 - `gap-x-{size}` and `gap-y-{size}`: Change the gap between rows and columns independently.
-- `gap-{side}-{size}`: Change the gap on a specific side (`t`, `r`, `b`, `l`).
+- `gap-{side}-{size}`: Change the gap on a specific side (t=top, r=right, b=bottom, l=left).
 
 ### Column Span Utilities
 
@@ -82,6 +83,12 @@ These are the available utilities to control the grid.
 
 ### Row Placement Utilities
 
-- `start`: Align an element to the start of a row.
-- `end`: Align an element to the end of a row.
-- `center`: Align an element to the center of a row.
+Control horizontal alignment of elements within a row:
+
+| Class | Effect | Use case |
+| --- | --- | --- |
+| `start` | Align to the start of the row | Left-aligned content |
+| `end` | Align to the end of the row | Right-aligned buttons or labels |
+| `center` | Align to the center of the row | Centered content blocks |
+
+These apply to child views inside a `grid-cols-*` container and control horizontal placement within the grid cell.

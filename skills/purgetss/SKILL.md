@@ -377,7 +377,8 @@ purgetss create 'MyApp' -d -v fa
 > Load these only when needed:
 >
 > ### Essential References
-> - **[Class Index](references/class-index.md)** - Quick patterns, prohibited classes, verification commands (LOAD FIRST when unsure about a class)
+> - **[Class Index](references/class-index.md)** - Naming conventions, 416-property table, prohibited classes, verification commands (LOAD FIRST when unsure about a class)
+> - **[Class Categories](references/class-categories.md)** - Complete prefix inventory by category (layout, colors, typography, states, etc.)
 > - **[Dynamic Component Creation](references/dynamic-component-creation.md)** - `$.UI.create()` and `Alloy.createStyle()` for creating components in Controllers (READ FIRST for dynamic components)
 >
 > ### Setup & Configuration
@@ -409,6 +410,7 @@ purgetss create 'MyApp' -d -v fa
 > ### Fonts & Animations
 > - [Icon Fonts](references/icon-fonts.md) - Font Awesome 7, Material Icons, custom icon libraries
 > - [Animation System](references/animation-system.md) - 15 methods including collision detection, transitions, and sequential animations
+> - [Animation Advanced](references/animation-advanced.md) - Property inheritance, utility classes, implementation rules, complex UI example
 >
 > **💡 TEXT FONTS (Google Fonts, Roboto, etc.)**
 > For text fonts, see [CLI Commands → build-fonts](references/cli-commands.md#purgetss-build-fonts-alias-bf).

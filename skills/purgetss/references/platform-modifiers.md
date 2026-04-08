@@ -1,6 +1,6 @@
 # Platform and Device Modifiers
 
-Platform and device modifiers let you specify different styles depending on the platform and device your app runs on.
+Platform and device modifiers (also called variants or prefixes) apply styles conditionally based on platform (iOS or Android) and device type (tablet or handheld):
 
 - Platform modifiers:
   - `ios:`
@@ -9,7 +9,7 @@ Platform and device modifiers let you specify different styles depending on the 
   - `tablet:`
   - `handheld:`
 
-You can combine them with arbitrary values. Examples: `ios:bg-(#53606b)`, `ios:text-(20px)`, `android:bg-(#8fb63e)`, and `android:text-(24px)`.
+You can set different background colors and font sizes per platform and device, and combine them with arbitrary values. Examples: `ios:bg-(#53606b)`, `ios:text-(20px)`, `android:bg-(#8fb63e)`, and `android:text-(24px)`.
 
 ```xml
 <Alloy>
@@ -43,5 +43,5 @@ You can combine them with arbitrary values. Examples: `ios:bg-(#53606b)`, `ios:t
 '.tablet:bg-green-500[formFactor=tablet]': { backgroundColor: '#22c55e' }
 ```
 
-> **⚠️ Platform-Specific Properties**
+> **Platform-Specific Properties**
 > If a style relies on `Ti.UI.iOS.*` or `Ti.UI.Android.*` constants, scope it with the matching `ios:` or `android:` modifier, or with the equivalent platform block in `config.cjs`.

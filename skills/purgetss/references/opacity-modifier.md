@@ -1,7 +1,7 @@
 # The `opacity` Modifier
 
-> **️ℹ️ INFO**
-> Add an opacity modifier to any available color property by appending a value between `0` and `100` after a slash (`/`).
+> **INFO**
+> Add an opacity modifier to any available color property by appending a value between 0 and 100 after a slash (`/`).
 
 ## In Your XML Files
 
@@ -23,7 +23,7 @@
 
 ## In the `apply` Directive
 
-You can also use color opacity modifiers in the `apply` directive in `config.cjs`.
+You can also use color opacity modifiers in the `apply` directive in the `config.cjs` file.
 
 `./purgetss/config.cjs`
 ```javascript
@@ -41,7 +41,7 @@ module.exports = {
       ]
     }
   }
-}
+};
 ```
 
 `Generated classes`
@@ -53,8 +53,8 @@ module.exports = {
 '.bg-primary': { backgroundColor: '#ce10cc' }
 ```
 
-> **⚠️ Semantic Colors**
+> **CAUTION -- Semantic Colors**
 > Semantic colors cannot be modified with the opacity modifier because they are defined as an object with light and dark values.
 
-> **️ℹ️ Gradients**
+> **Gradients**
 > The same modifier logic applies to color-based gradient utilities such as `from-*` and `to-*`. When you define custom `backgroundGradient.colors` arrays of `{ color, offset }` objects in `config.cjs`, PurgeTSS v7.4.0 correctly serializes those nested objects in `utilities.tss`.

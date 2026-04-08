@@ -8,7 +8,8 @@ Install PurgeTSS globally on your machine using [NPM](https://www.npmjs.com/).
 [sudo] npm install -g purgetss
 ```
 
-> **⚠️ Node.js 20+ Required**
+> **CAUTION**
+> Node.js 20+ required.
 > PurgeTSS requires Node 20.0.0 or higher.
 
 ## Upgrade Notes
@@ -24,7 +25,7 @@ npm install -g purgetss
 
 ## Run PurgeTSS the First Time
 
-> **️ℹ️ INFO**
+> **INFO**
 > Run `purgetss` once in your project to generate the required files and folders.
 >
 > After that, every build parses your XML files and writes a clean `app.tss` with only the classes used in your project.
@@ -33,43 +34,43 @@ When you run `purgetss` for the first time in your project, it does the followin
 
 ### 1. Auto-run Hook
 
-PurgeTSS adds a task in `alloy.jmk` to run `purgetss` every time you compile your app. This is especially useful when using `liveview`.
+PurgeTSS adds a task in `alloy.jmk` to run `purgetss` every time you compile your app. Works well with `liveview`.
 
 ### 2. `purgetss` Folder
 
-PurgeTSS creates a `purgetss` folder at the root of your project containing the following files and folders:
+PurgeTSS creates a `purgetss` folder at the root of your project:
 
 ```bash
 purgetss
-├─ fonts
-├─ styles
-│  ├─ definitions.css
-│  └─ utilities.tss
+└─ fonts
+└─ styles
+   └─ definitions.css
+   └─ utilities.tss
 └─ config.cjs
 ```
 
 - `config.cjs`
 
-  This is where you can customize or create new classes with your preferred spacing, colors, margin values, and more. For deeper customization, see [Customization Deep Dive](./customization-deep-dive.md).
+  This is where you can customize or create new classes with your preferred spacing, colors, margin values, and more. For details, see [Customization Deep Dive](./customization-deep-dive.md).
 
 - `styles`
 
-  The `styles` folder contains `utilities.tss` and `definitions.css`:
+  The `styles` folder contains the `utilities.tss` and `definitions.css` files:
 
   - `utilities.tss`
 
-    This file includes all PurgeTSS utility classes, including any custom classes defined in `config.cjs`.
+    This file includes all Tailwind-like utility classes, including any custom classes defined in `config.cjs`.
 
   - `definitions.css`
 
-    A special CSS file that incorporates all classes from `utilities.tss`, `_app.tss`, any `.tss` remaining in your project, and `fonts.tss`. It is meant to be used with the [VS Code extension](#vscode-extension).
+    A CSS file combining all classes from `utilities.tss`, `_app.tss`, any `.tss` files in your project, and `fonts.tss`. Used by the [VS Code extension](#vscode-extension) for autocomplete.
 
 - `fonts`
 
-  Here, you can add various font types such as icons, serif, sans-serif, cursive, fantasy, or monospace fonts for your app. Step-by-step instructions are available in the [`build-fonts` command](./cli-commands.md#purgetss-build-fonts-alias-bf) section.
+  Place icon, serif, sans-serif, or monospace font files here. See the [`build-fonts` command](./cli-commands.md#purgetss-build-fonts-alias-bf) for instructions.
 
-> **⚠️ Important**
-> PurgeTSS overwrites your existing `app.tss` file.
+> **CAUTION**
+> **PurgeTSS overwrites your existing `app.tss` file.**
 >
 > On the first run, your original `app.tss` is backed up to `_app.tss`.
 >
@@ -81,11 +82,11 @@ purgetss
 
 To use the example files:
 
-1. Copy the content of `index.xml` and `app.tss` into a new Alloy project.
-2. Install Font Awesome font files with `purgetss icon-library --vendor=fontawesome`.
-3. Run `purgetss` once to generate the necessary files.
-4. Compile your app as usual.
-5. If you use `liveview`, it speeds up testing and development time.
+- Copy the content of `index.xml` and `app.tss` into a new Alloy project.
+- Install Font Awesome font files with `purgetss icon-library --vendor=fontawesome`.
+- Run `purgetss` once to generate the necessary files.
+- Compile your app as usual.
+- Use `liveview` for faster iteration.
 
 ```xml
 <Alloy>
@@ -122,10 +123,10 @@ To use the example files:
 }
 ```
 
-> **️ℹ️ INFO**
-> After running `purgetss`, you will have a new `app.tss` file with only the classes used in the XML files.
+> **INFO**
+> After running `purgetss`, `app.tss` contains only the classes used in your XML files.
 >
-> Your original `app.tss` file is backed up in `_app.tss`. You can use this file to add, delete, or update any of your original styles.
+> Your original `app.tss` is backed up as `_app.tss`. Use that file to add, delete, or update your custom styles.
 >
 > Every time `purgetss` runs, it copies the content of `_app.tss` to `app.tss`.
 
@@ -178,13 +179,32 @@ To use the example files:
 '.fas': { font: { fontFamily: 'FontAwesome7Free-Solid' } }
 ```
 
-Find more examples in the sample app repository referenced by the official documentation.
+More examples in the [Tailwind TSS Sample App](https://github.com/macCesar/utilities.tss-sample-app).
+
+> **WARNING: `Label`, `Button`, and `Switch` with opposite margins**
+> In Titanium, `Label`, `Button`, and `Switch` can stretch when opposite margins pin both sides of the same axis and the dimension is still implicit.
+>
+> - `mt-*` + `mb-*` or `my-*` can stretch the component vertically. Add `h-auto`.
+> - `ml-*` + `mr-*` or `mx-*` can stretch the component horizontally. Add `w-auto`.
+> - If margins affect both axes, use `wh-auto`.
+>
+> This applies to **any component whose default size is `Ti.UI.SIZE`**. If you set opposite margins on the same axis (e.g., left and right), Titanium's composite layout uses those pins to calculate the dimension instead of the content -- so the component stretches to fill its parent.
+>
+> ```xml
+> <Label class="mt-2 mb-4 h-auto" text="Only content height" />
+> <Label class="mx-4 w-auto" text="Only content width" />
+> <Label class="m-4 wh-auto" text="Safe reset on both axes" />
+> <Switch class="my-1 mr-2 h-auto" onChange="onChanged" />
+> ```
+
+> **Titanium Layout Reminder**
+> PurgeTSS does not add Flexbox to Titanium. Use `horizontal`, `vertical`, or the default composite layout, and prefer `w-screen` instead of `w-full` when you need `Ti.UI.FILL`.
 
 ## VSCode Extension
 
-If you're using [Visual Studio Code](https://code.visualstudio.com), install the [IntelliSense for CSS class names in HTML](https://marketplace.visualstudio.com/items?itemName=Zignd.html-css-class-completion) extension.
+If you're using [**Visual Studio Code**](https://code.visualstudio.com), install the [**IntelliSense for CSS class names in HTML**](https://marketplace.visualstudio.com/items?itemName=Zignd.html-css-class-completion) extension.
 
-It provides class name completion for the `XML` `class` attribute based on the `definitions.css` file created by PurgeTSS.
+It provides class name completion for the `XML` class attribute based on the `definitions.css` file created by PurgeTSS.
 
 After installing the extension, add the `xml` language to the `"HTMLLanguages"` setting and exclude any `css/html` files from the caching process by pointing `"excludeGlobPattern"` to the `./purgetss/fonts/` folder.
 
@@ -208,6 +228,3 @@ After installing the extension, add the `xml` language to the `"HTMLLanguages"` 
   "html-css-class-completion.excludeGlobPattern": "**/node_modules/**,purgetss/fonts/**/*.{css,html}"
 }
 ```
-
-> **⚠️ Titanium Layout Reminder**
-> PurgeTSS does not add Flexbox to Titanium. Use `horizontal`, `vertical`, or the default composite layout, and prefer `w-screen` instead of `w-full` when you need `Ti.UI.FILL`.

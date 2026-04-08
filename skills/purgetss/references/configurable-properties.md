@@ -1,6 +1,6 @@
 # Configurable Properties
 
-This reference captures the exhaustive properties subsection from the official configuration guide. Add these under `theme` in `config.cjs`, or extend them under `theme.extend` when appropriate.
+This reference lists all customizable properties from the official PurgeTSS configuration guide. Add these under `theme` in `config.cjs` to override defaults, or under `theme.extend` to add new values while keeping defaults.
 
 ## Global Properties
 
@@ -65,7 +65,7 @@ You can customize any of the following properties individually by adding them in
 - `trackTintColor`
 - `viewShadowColor`
 
-> **️ℹ️ `backgroundGradient`**
+> **ℹ️ `backgroundGradient`**
 > For custom gradient rules, `backgroundGradient.colors` can use arrays of `{ color, offset }` objects. PurgeTSS v7.4.0 fixed serialization for those nested object arrays in `utilities.tss`.
 
 ## Configurable Properties
@@ -152,10 +152,10 @@ You can customize any of the following properties individually by adding them in
 - `zIndex`
 - `zoomScale`
 
-> **⚠️ Titanium Padding Constraint**
+> **WARNING: Titanium Padding Constraint**
 > Titanium does not support native `padding` on `View`, `Window`, `ScrollView`, or `TableView`. Even if `padding*` is configurable, use margins on children for those elements.
 
-> **⚠️ Width Fill Constraint**
+> **WARNING: Width Fill Constraint**
 > For full-width Titanium layouts, prefer `w-screen` (`Ti.UI.FILL`) instead of `w-full` (`100%`).
 
 ## Custom Rules and Ti Elements

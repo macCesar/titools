@@ -2,14 +2,14 @@
 
 ## The `config` File
 
-> **️ℹ️ INFO**
-> `config.cjs` is the active configuration filename. Older `config.js` references are outdated.
+> **ℹ️ INFO**
+> The configuration file is named `config.cjs` (it used to be `config.js`). The structure is the same. Legacy mode was removed in PurgeTSS v7.2.x along with its related options.
 
 By default, PurgeTSS looks for `./purgetss/config.cjs`, where you can define customizations.
 
 ## Create the `config.cjs` File
 
-> **️ℹ️ INFO**
+> **ℹ️ INFO**
 > `config.cjs` is created automatically the first time you run `purgetss` in a project.
 
 If you want a clean `config.cjs`, delete the existing one and run:
@@ -54,98 +54,102 @@ The `purge` section controls how PurgeTSS removes unused classes or keeps the on
 module.exports = {
   purge: {
     mode: 'all',
-    method: 'sync',
+    method: 'sync', // How to execute the auto-purging task: sync or async
+
+    // These options are passed through directly to PurgeTSS
     options: {
-      missing: true,
-      widgets: false,
-      safelist: [],
-      plugins: []
+      missing: true, // Reports missing classes
+      widgets: false, // Purges widgets too
+      safelist: [], // Array of classes to keep
+      plugins: [] // Array of properties to ignore
     }
   }
-}
+};
 ```
 
-- `mode: 'all'`
+- **`mode: 'all'`**
 
   By default, PurgeTSS searches XML files everywhere: comments, attributes, classes, IDs, and Ti Elements.
 
   Use this mode if you want PurgeTSS to parse Ti Elements you style in `config.cjs`.
 
-- `method: 'sync'` or `method: 'async'`
+- **`method: 'sync'` or `method: 'async'`**
 
-  The `method` setting controls how the auto-purge task runs.
+  The `method` setting controls how the auto-purge task runs: `sync` (default) or `async`.
 
   If changes are not showing up when rebuilding a project with TiKit Components and LiveView, set the method to `async`.
 
-- `mode: 'class'`
+- **`mode: 'class'`**
 
   Use `class` to search only class and ID attributes in XML files.
 
-- `options.missing`
+- **`options.missing`**
 
   Set `missing` to `true` if you want a list of missing or misspelled classes at the end of `app.tss`.
 
   This is useful when you want to confirm you did not forget class definitions or when upgrading older projects.
 
-- `options.widgets`
+- **`options.widgets`**
 
-  Set `widgets` to `true` to also parse all XML files under the widgets folder.
+  Set `widgets` to `true` to also parse all XML files under the Widgets folder.
 
-- `options.safelist`
+- **`options.safelist`**
 
   The `safelist` is a list of classes and Ti Elements you want to keep no matter the purge mode or whether they appear in XML.
 
   If the list is large, put it in a CommonJS module and require it in `config.cjs`:
 
-```javascript
-module.exports = {
-  purge: {
-    options: {
-      safelist: require('./safelist')
+  ```javascript
+  module.exports = {
+    purge: {
+      options: {
+        safelist: require('./safelist')
+      }
     }
-  }
-}
-```
+  };
+  ```
 
-Keep the safelist inside the `purgetss` folder:
+  Keep the safelist inside the `purgetss` folder:
 
-```javascript
-// ./purgetss/safelist.js
-exports.safelist = [
-  'Label',
-  'Button',
-  'Window',
-  'ListView',
-  'TableView',
-  'ScrollView',
-  'ScrollableView',
-  'bg-indigo-50',
-  'bg-indigo-100',
-  'bg-indigo-800',
-  'bg-indigo-900'
-];
-```
+  ```javascript
+  // ./purgetss/safelist.js
+  exports.safelist = [
+    'Label',
+    'Button',
+    'Window',
+    'ListView',
+    'TableView',
+    'ScrollView',
+    'ScrollableView',
+    'bg-indigo-50',
+    'bg-indigo-100',
+    'bg-indigo-800',
+    'bg-indigo-900'
+  ];
+  ```
 
-- `options.plugins`
+- **`options.plugins`**
 
   The `plugins` option lets you disable classes PurgeTSS would normally generate.
 
-```javascript
-module.exports = {
-  purge: {
-    options: {
-      plugins: [
-        'opacity',
-        'borderRadius'
-      ]
+  To disable specific classes, provide an array of properties (or plugins) to disable:
+
+  ```javascript
+  module.exports = {
+    purge: {
+      options: {
+        plugins: [
+          'opacity',
+          'borderRadius'
+        ]
+      }
     }
-  }
-}
-```
+  };
+  ```
 
 ### `theme` Section
 
-The `theme` section in `config.cjs` is where you define and extend your project's color palette, type scale, font stacks, border radius values, and other properties.
+The `theme` section defines your project's color palette, type scale, font stacks, border radius values, and other properties.
 
 ```javascript
 module.exports = {
@@ -170,7 +174,7 @@ module.exports = {
       }
     }
   }
-}
+};
 ```
 
 ## Overriding and Extending Properties
@@ -184,6 +188,7 @@ To override a default property, add it directly in the `theme` section.
 ```javascript
 module.exports = {
   theme: {
+    // Replaces all of the default `opacity` values
     opacity: {
       15: '0.15',
       35: '0.35',
@@ -191,28 +196,31 @@ module.exports = {
       85: '0.85'
     }
   }
-}
+};
 ```
 
 This completely replaces the original default `opacity` values with the new ones.
 
-> **️ℹ️ INFO**
+> **ℹ️ INFO**
 > Keys you do not provide are inherited from the default theme. In the example above, colors, spacing, border radius, background position, and other defaults remain.
 
 ### Extend Properties
 
 If you want to keep the defaults and add new values, place them under `theme.extend`.
 
+For example, if you want to add an extra color but preserve the existing ones, you could extend the `colors` section:
+
 ```javascript
 module.exports = {
   theme: {
     extend: {
+      // Adds a new color in addition to the default colors
       colors: {
         primary: '#002359'
       }
     }
   }
-}
+};
 ```
 
 You can override some parts of the default theme and extend others within the same configuration:
@@ -232,12 +240,16 @@ module.exports = {
       }
     }
   }
-}
+};
 ```
 
 ## Customize Colors
 
-PurgeTSS includes a default color palette. Customize it under the `colors` key in the `theme` section of your `config.cjs` file.
+PurgeTSS includes Tailwind's default color palette. Customize it under the `colors` key in the `theme` section of your `config.cjs` file.
+
+### Use Custom Colors
+
+To replace the default color palette, add your colors directly under `theme.colors`:
 
 ```javascript
 module.exports = {
@@ -254,7 +266,7 @@ module.exports = {
       bermuda: '#78dcca'
     }
   }
-}
+};
 ```
 
 These colors are available across utilities like text, border, and background colors.
@@ -295,6 +307,8 @@ The nested keys are combined with the parent key to form class names like `bg-ta
 
 If you want to override one of the default colors but keep the rest, provide the new values in `theme.extend.colors`.
 
+For example, replacing the default cool grays with a neutral gray palette:
+
 ```javascript
 module.exports = {
   theme: {
@@ -315,7 +329,7 @@ module.exports = {
       }
     }
   }
-}
+};
 ```
 
 ### Extend the Default Palette
@@ -331,17 +345,17 @@ module.exports = {
       }
     }
   }
-}
+};
 ```
 
-This generates classes like `bg-regal-blue`.
+This generates classes like `bg-regal-blue` in addition to all of Tailwind's default colors.
 
-> **️ℹ️ INFO**
+> **ℹ️ INFO**
 > You can use the `shades` command to generate a range of shades for a color and add them to `config.cjs`. See [CLI Commands](./cli-commands.md#shades-command).
 
 ## Customize Spacing
 
-The `spacing` section controls the global spacing and sizing scale values.
+The `spacing` section sets the global spacing and sizing scale.
 
 ```javascript
 module.exports = {
@@ -355,14 +369,16 @@ module.exports = {
       6: '48px'
     }
   }
-}
+};
 ```
 
-By default, the spacing scale is inherited by the padding, margin, width, height, and gap plugins.
+By default, the spacing scale is inherited by the padding, margin, width, height, and gap core plugins.
 
 ### Shared Spacing
 
-The `spacing` section is shared by `padding`, `margin`, `width`, and `height`.
+The `spacing` section is shared by the `padding`, `margin`, `width`, and `height` properties.
+
+When you include the `spacing` section, PurgeTSS automatically generates all spacing-related properties and merges them with any other spacing-related properties present in the configuration file.
 
 ```javascript
 module.exports = {
@@ -397,6 +413,14 @@ module.exports = {
 /* margin */
 '.m-tight': { top: 4, right: 4, bottom: 4, left: 4 }
 '.m-loose': { top: 16, right: 16, bottom: 16, left: 16 }
+'.my-tight': { top: 4, bottom: 4 }
+'.my-loose': { top: 16, bottom: 16 }
+
+/* padding */
+'.p-tight': { padding: { top: 4, right: 4, bottom: 4, left: 4 } }
+'.p-loose': { padding: { top: 16, right: 16, bottom: 16, left: 16 } }
+'.py-tight': { padding: { top: 4, bottom: 4 } }
+'.py-loose': { padding: { top: 16, bottom: 16 } }
 ```
 
 ### Override the Default Spacing Scale
@@ -413,10 +437,10 @@ module.exports = {
       xl: 24
     }
   }
-}
+};
 ```
 
-This generates classes like `p-sm`, `m-md`, `w-lg`, and `h-xl`.
+This disables the default spacing scale and generates classes like `p-sm` for padding, `m-md` for margin, `w-lg` for width, and `h-xl` for height.
 
 ### Extend the Default Spacing Scale
 
@@ -433,17 +457,17 @@ module.exports = {
       }
     }
   }
-}
+};
 ```
 
-This generates classes like `p-72`, `m-84`, and `h-96` in addition to the default spacing and sizing utilities.
+This generates classes like `p-72`, `m-84`, and `h-96` in addition to all of the default spacing and sizing utilities.
 
-> **⚠️ Titanium Layout Constraint**
+> **WARNING: Titanium Layout Constraint**
 > Titanium does not support native `padding` on `View`, `Window`, `ScrollView`, or `TableView`. Even if PurgeTSS can generate spacing-related utilities, prefer margins on children for those elements.
 
 ## List of Customizable Properties
 
-The official guide ends with an exhaustive list of color and configurable properties. In this skill, that subsection is maintained separately in [Configurable Properties](./configurable-properties.md) so the main configuration guide stays focused.
+The official guide ends with an exhaustive list of color and configurable properties. In this skill, that list is maintained separately in [Configurable Properties](./configurable-properties.md) so this guide stays focused on config structure and usage patterns.
 
 ## Custom Rules and Ti Elements
 
