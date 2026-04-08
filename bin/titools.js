@@ -11,6 +11,7 @@ import { skillsCommand } from '../lib/commands/skills.js';
 import { agentsCommand } from '../lib/commands/agents.js';
 import { updateCommand } from '../lib/commands/update.js';
 import { uninstallCommand } from '../lib/commands/uninstall.js';
+import { autoUpdateCommand } from '../lib/commands/auto-update.js';
 
 const program = new Command();
 
@@ -50,6 +51,13 @@ program
   .description('Remove Titanium knowledge packages and agent')
   .option('-l, --local', 'Remove local skills from the current project')
   .action(uninstallCommand);
+
+// Auto-update command
+program
+  .command('auto-update')
+  .description('Check for updates and apply silently (used by hooks)')
+  .option('-s, --silent', 'Suppress all output except errors')
+  .action(autoUpdateCommand);
 
 // Parse arguments
 program.parse();
