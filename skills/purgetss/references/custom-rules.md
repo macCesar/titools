@@ -14,9 +14,8 @@ Whether you want to style a Ti Element, a custom ID prefixed with `#`, or a cust
 - For IDs, use `camelCase` to match the JavaScript convention.
 - For classes, use `kebab-case` to stay compatible with PurgeTSS v6.x and above. For example, use `.my-custom-class-name` instead of `.myCustomClassName`.
 
-:::caution
-If your project started on PurgeTSS v5 or earlier and you now use 7.x or later, set `purge.options.missing` to `true` in `config.cjs`. It reports missing classes at the end of `app.tss` so you can update them to the newer naming convention.
-:::
+> **⚠️ CAUTION**
+> If your project started on PurgeTSS v5 or earlier and you now use 7.x or later, set `purge.options.missing` to `true` in `config.cjs`. It reports missing classes at the end of `app.tss` so you can update them to the newer naming convention.
 
 ### Default, Platform, Device, or Conditional Blocks
 
@@ -34,9 +33,8 @@ If your project started on PurgeTSS v5 or earlier and you now use 7.x or later, 
   - `em` and `rem` values are converted with `value * 16`.
   - `dp` removes the unit and keeps the value as-is.
 
-:::warning Platform-Specific Constants
-If a rule uses `Ti.UI.iOS.*` or `Ti.UI.Android.*` constants, keep that property inside the matching `ios` or `android` block to avoid cross-platform compilation failures.
-:::
+> **⚠️ Platform-Specific Constants**
+> If a rule uses `Ti.UI.iOS.*` or `Ti.UI.Android.*` constants, keep that property inside the matching `ios` or `android` block to avoid cross-platform compilation failures.
 
 ## `config.cjs` File Example
 

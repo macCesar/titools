@@ -7,9 +7,8 @@ When creating components dynamically in Controllers (not declaratively in XML), 
 1. **`$.UI.create()`** - Create components with PurgeTSS classes (Recommended)
 2. **`Alloy.createStyle()` + `applyProperties()`** - Apply PurgeTSS styles to existing components
 
-:::tip BEST PRACTICE
-**Always prefer `$.UI.create()` for dynamic components** - it's cleaner, more readable, and PurgeTSS will process the classes automatically during build.
-:::
+> **💡 BEST PRACTICE**
+> **Always prefer `$.UI.create()` for dynamic components** - it's cleaner, more readable, and PurgeTSS will process the classes automatically during build.
 
 ---
 
@@ -334,15 +333,14 @@ function createIconGrid(items) {
 
 ### PurgeTSS Processes Classes During Build
 
-:::info HOW IT WORKS
-When you use `$.UI.create()` or `Alloy.createStyle()` with classes:
-
-1. PurgeTSS scans your controllers for these class references
-2. It adds the classes to the generated `app.tss`
-3. At runtime, Alloy applies the styles to your components
-
-This means you get **full PurgeTSS power** even with dynamic components!
-:::
+> **️ℹ️ HOW IT WORKS**
+> When you use `$.UI.create()` or `Alloy.createStyle()` with classes:
+>
+> 1. PurgeTSS scans your controllers for these class references
+> 2. It adds the classes to the generated `app.tss`
+> 3. At runtime, Alloy applies the styles to your components
+>
+> This means you get **full PurgeTSS power** even with dynamic components!
 
 ### Class Verification
 
@@ -427,11 +425,10 @@ function setState(state) {
 }
 ```
 
-:::tip When to Use `classes` vs `applyProperties`
-- Use `classes` when you want to swap entire style sets (e.g., active/inactive states)
-- Use `applyProperties` with direct values when changing individual properties (e.g., text, enabled)
-- Combine both for complex state changes
-:::
+> **💡 When to Use `classes` vs `applyProperties`**
+> - Use `classes` when you want to swap entire style sets (e.g., active/inactive states)
+> - Use `applyProperties` with direct values when changing individual properties (e.g., text, enabled)
+> - Combine both for complex state changes
 
 ---
 
@@ -497,12 +494,11 @@ view.applyProperties(Alloy.createStyle('index', {
 | **`Alloy.createStyle()`** | Styling existing components | `Alloy.createStyle('view', { classes: 'bg-white' })` |
 | **`applyProperties()`**   | Apply style to component    | `component.applyProperties(style)`                   |
 
-:::tip REMEMBER
-Both methods give you **full access to PurgeTSS utilities**:
-- All color classes (`bg-*`, `text-*`, `border-*`)
-- All spacing classes (`m-*`, `gap-*`, and `p-*` where the Titanium component supports padding)
-- All layout classes (`horizontal`, `vertical`)
-- All typography classes (`text-*`, `font-*`)
-- Platform modifiers (`ios:*`, `android:*`)
-- Arbitrary values (`w-(100px)`, `bg-(#ff0000)`)
-:::
+> **💡 REMEMBER**
+> Both methods give you **full access to PurgeTSS utilities**:
+> - All color classes (`bg-*`, `text-*`, `border-*`)
+> - All spacing classes (`m-*`, `gap-*`, and `p-*` where the Titanium component supports padding)
+> - All layout classes (`horizontal`, `vertical`)
+> - All typography classes (`text-*`, `font-*`)
+> - Platform modifiers (`ios:*`, `android:*`)
+> - Arbitrary values (`w-(100px)`, `bg-(#ff0000)`)

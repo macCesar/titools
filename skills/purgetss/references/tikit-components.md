@@ -379,4 +379,4 @@ purgetss icon-library --vendor=fa,mi,ms,f7
 
 ## License
 
-TiKit UI Components is open source under the MIT License.
+TiKit UI Components is open source under the MIT License (2023-2025).

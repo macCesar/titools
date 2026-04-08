@@ -1,10 +1,9 @@
 # PurgeTSS CLI Commands
 
-:::info Version Notes
-- Node.js 20+ is required.
-- `utilities.tss` is the generated utilities file. Replace any references that still use the previous output filename.
-- Font Awesome 7 is supported, including the new CSS custom properties format.
-:::
+> **️ℹ️ Version Notes**
+> - Node.js 20+ is required.
+> - `utilities.tss` is the generated utilities file. Replace any references that still use the previous output filename.
+> - Font Awesome 7 is supported, including the new CSS custom properties format.
 
 This page lists the commands available in PurgeTSS.
 
@@ -66,9 +65,8 @@ module.exports = {
 };
 ```
 
-:::tip
-PurgeTSS looks for `./purgetss/config.cjs`. Each section is optional and can be customized. Missing sections use the default configuration.
-:::
+> **💡 TIP**
+> PurgeTSS looks for `./purgetss/config.cjs`. Each section is optional and can be customized. Missing sections use the default configuration.
 
 ## `create` Command
 
@@ -123,9 +121,8 @@ purgetss c 'Name of the Project' [-d]
 
 This option installs ESLint for code quality, Tailwind CSS for editor tooling, and setup files for Visual Studio Code.
 
-:::warning
-Tailwind CSS is installed here for editor support and related tooling. PurgeTSS remains a separate Titanium styling toolkit.
-:::
+> **⚠️ WARNING**
+> Tailwind CSS is installed here for editor support and related tooling. PurgeTSS remains a separate Titanium styling toolkit.
 
 Recommended VSCode extensions:
 
@@ -160,9 +157,8 @@ purgetss install-dependencies
 purgetss id
 ```
 
-:::caution
-This command overwrites any existing `extensions.json` and `settings.json` files. Back them up if you want to keep your current versions.
-:::
+> **⚠️ CAUTION**
+> This command overwrites any existing `extensions.json` and `settings.json` files. Back them up if you want to keep your current versions.
 
 ## `icon-library` Command
 
@@ -259,9 +255,8 @@ To generate a new `purgetss/styles/fontawesome.tss`, run:
 purgetss build
 ```
 
-:::caution
-Titanium cannot use Font Awesome duotone icons because they have two separate glyphs for each icon.
-:::
+> **⚠️ CAUTION**
+> Titanium cannot use Font Awesome duotone icons because they have two separate glyphs for each icon.
 
 ### Font Awesome 7 Beta
 
@@ -614,9 +609,8 @@ purgetss s [hexcode] [name]
 - `-l, --log`: Logs the generated shades instead of saving them.
 - `-j, --json`: Logs a JSON compatible structure, which can be used in `./app/config.json`.
 
-:::info
-More than 66% of `utilities.tss` classes are related to color properties, so `shades` is a practical way to extend color choices.
-:::
+> **️ℹ️ INFO**
+> More than 66% of `utilities.tss` classes are related to color properties, so `shades` is a practical way to extend color choices.
 
 Basic usage:
 
@@ -687,9 +681,8 @@ purgetss shades '#65e92c' -j
 purgetss s '#65e92c' -j
 ```
 
-:::info
-The `shades` command is the first one that writes to `config.cjs`. If you run into issues, please report them.
-:::
+> **️ℹ️ INFO**
+> The `shades` command is the first one that writes to `config.cjs`. If you run into issues, please report them.
 
 ## `color-module` Command
 
@@ -768,9 +761,8 @@ task('pre:compile', function(event, logger) {
 });
 ```
 
-:::info
-This feature works with standard Alloy projects compiled using `ti build`. It has not been tested with project types built using Webpack or Vue.
-:::
+> **️ℹ️ INFO**
+> This feature works with standard Alloy projects compiled using `ti build`. It has not been tested with project types built using Webpack or Vue.
 
 To deactivate it, use `--off`.
 

@@ -2,11 +2,10 @@
 
 Sometimes you need a value that is not in the defaults, or you only need it once and do not want to add it to `config.cjs`. Use arbitrary values for that.
 
-:::info
-To generate an arbitrary style, use parentheses notation with almost any default utility class.
-
-Do not use square bracket notation. PurgeTSS uses parentheses because Titanium handles platform and conditional statements in `.tss` files differently.
-:::
+> **️ℹ️ INFO**
+> To generate an arbitrary style, use parentheses notation with almost any default utility class.
+>
+> Do not use square bracket notation. PurgeTSS uses parentheses because Titanium handles platform and conditional statements in `.tss` files differently.
 
 ## Color Properties
 
@@ -306,10 +305,8 @@ Try this example on an iPad or tablet.
 </Alloy>
 ```
 
-:::warning Titanium Layout Constraint
-Prefer `w-screen` instead of `w-full` when you need fill behavior. `w-full` maps to `100%`, not `Ti.UI.FILL`.
-:::
+> **⚠️ Titanium Layout Constraint**
+> Prefer `w-screen` instead of `w-full` when you need fill behavior. `w-full` maps to `100%`, not `Ti.UI.FILL`.
 
-:::warning Titanium Padding Constraint
-PurgeTSS can generate arbitrary `padding-*` values, but Titanium still does not support native `padding` on `View`, `Window`, `ScrollView`, or `TableView`. Use margins on children for those elements.
-:::
+> **⚠️ Titanium Padding Constraint**
+> PurgeTSS can generate arbitrary `padding-*` values, but Titanium still does not support native `padding` on `View`, `Window`, `ScrollView`, or `TableView`. Use margins on children for those elements.

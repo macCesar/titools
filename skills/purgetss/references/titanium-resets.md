@@ -30,17 +30,16 @@ The most important reset is for the `View` element. By default, `View` is set to
 - Grow to accommodate explicit dimensions (`w-64`, `h-32`, etc.)
 - Expand to fill margins (`m-4`, `mx-2`, `mt-6 mb-4`, etc.)
 
-:::tip EXPLICIT SIZE VS NATIVE UNDEFINED
-In Titanium, most elements like `Label` and `Button` default to `SIZE` behavior, but their property values are `undefined`.
-
-According to the **UI Composite Layout Behavior Spec**, if a dimension is `undefined` and you apply two opposite pins (e.g., `left` and `right` via `mx-*`, or `top` and `bottom` via `my-*`), the motor will **compute the dimension based on the pins**, causing the element to stretch.
-
-**PurgeTSS** recommends adding an explicit `SIZE` reset on the affected axis:
-
-- Use `h-auto` when `mt-*` + `mb-*` or `my-*` would otherwise stretch the height.
-- Use `w-auto` when `ml-*` + `mr-*` or `mx-*` would otherwise stretch the width.
-- Use `wh-auto` as the safe reset when both axes may be affected.
-:::
+> **💡 EXPLICIT SIZE VS NATIVE UNDEFINED**
+> In Titanium, components like `Label`, `Button`, and `Switch` default to `SIZE` behavior, but their property values are `undefined`. This applies to **any component whose default size is `Ti.UI.SIZE`**, not just `Label` and `Button`.
+>
+> According to the **UI Composite Layout Behavior Spec**, if a dimension is `undefined` and you apply two opposite pins (e.g., `left` and `right` via `mx-*`, or `top` and `bottom` via `my-*`), the motor will **compute the dimension based on the pins**, causing the element to stretch.
+>
+> **PurgeTSS** recommends adding an explicit `SIZE` reset on the affected axis:
+>
+> - Use `h-auto` when `mt-*` + `mb-*` or `my-*` would otherwise stretch the height.
+> - Use `w-auto` when `ml-*` + `mr-*` or `mx-*` would otherwise stretch the width.
+> - Use `wh-auto` as the safe reset when both axes may be affected.
 
 ### Practical Examples
 
@@ -114,9 +113,8 @@ On iOS, `ImageView` automatically gets `hires: true` for high-resolution image d
 'ImageView[platform=ios]': { hires: true }
 ```
 
-:::info
-This ensures images look crisp on Retina displays without manual configuration.
-:::
+> **️ℹ️ INFO**
+> This ensures images look crisp on Retina displays without manual configuration.
 
 ## Window Reset: White Background
 
@@ -185,9 +183,8 @@ PurgeTSS provides `wh-` shortcuts to set both width and height simultaneously. T
 - **Numeric**: `wh-0` (0px) up to `wh-96` (384px) following the spacing scale.
 - **Fractions**: `wh-1/2` (50%), `wh-1/3` (33%), up to `wh-11/12` (91%).
 
-:::tip
-Always prefer `wh-screen` (FILL) over `wh-full` (100%) for better native performance in Titanium, unless you specifically need percentage-based calculations against a parent's dimension.
-:::
+> **💡 TIP**
+> Always prefer `wh-screen` (FILL) over `wh-full` (100%) for better native performance in Titanium, unless you specifically need percentage-based calculations against a parent's dimension.
 
 ### Color Inheritance
 
@@ -238,9 +235,8 @@ This generates classes for ALL color properties:
 </View>
 ```
 
-:::caution
-Do not use `p-` on `View`, `Window`, `ScrollView`, or `TableView`. Use margins on children instead.
-:::
+> **⚠️ CAUTION**
+> Do not use `p-` on `View`, `Window`, `ScrollView`, or `TableView`. Use margins on children instead.
 
 ### 3. Not using w-screen for percentage calculations
 
@@ -322,9 +318,8 @@ module.exports = {
 }
 ```
 
-:::tip
-Prefer `config.cjs` for custom defaults because they're preserved when PurgeTSS regenerates `app.tss`.
-:::
+> **💡 TIP**
+> Prefer `config.cjs` for custom defaults because they're preserved when PurgeTSS regenerates `app.tss`.
 
 ## Summary Table
 
