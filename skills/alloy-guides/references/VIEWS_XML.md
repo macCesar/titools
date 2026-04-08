@@ -57,9 +57,8 @@ The following table lists the special XML elements besides the Titanium UI compo
 
 Other views do not have any format restrictions.
 
-::: warning
-With the release of CLI 7.1.0, you can use platform as a prefix in the XML. For example: `<Label ios:text="Hello iOS!" android:text="Hello Android!" />`
-:::
+> **⚠️ WARNING**
+> With the release of CLI 7.1.0, you can use platform as a prefix in the XML. For example: `<Label ios:text="Hello iOS!" android:text="Hello Android!" />`
 
 ## Collection Element
 

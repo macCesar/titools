@@ -18,9 +18,8 @@ You can use the following values and operators in your TSS file:
 * Bitwise operators: `>>`, `<<`, `>>>`, `&`, `|`, `^` (since Alloy 1.3.0)
 * Single (`//comment`) and multiline comments (`/* comment */`)
 
-::: warning ⚠️ Warning
-Alloy does not support the CSS concept of child or descendent selectors.
-:::
+> **⚠️ ⚠️ Warning**
+> Alloy does not support the CSS concept of child or descendent selectors.
 
 **app/styles/index.tss**
 
@@ -120,39 +119,38 @@ Style priority (lowest to highest): Global Style File → Global Style File in T
 
 ## Platform-Specific Styles
 
-:::danger CRITICAL: Platform-Specific Properties Require Modifiers
-**Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties in TSS WITHOUT platform modifiers will:**
-
-1. **Add iOS code to Android builds** → compilation failures
-2. **Add Android code to iOS builds** → compilation failures
-
-**Example of the damage:**
-```tss
-// ❌ WRONG - Adds Ti.UI.iOS to Android project
-"#mainWindow": {
-  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT  // FAILS on Android!
-}
-```
-
-**CORRECT - Always use platform modifiers:**
-```tss
-// ✅ CORRECT - Only adds to iOS
-"#mainWindow[platform=ios]": {
-  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
-}
-
-// ✅ CORRECT - Only adds to Android
-"#mainWindow[platform=android]": {
-  actionBar: {
-    displayHomeAsUp: true
-  }
-}
-```
-
-**Common platform-specific properties that REQUIRE `[platform=...]` modifiers:**
-- iOS: `statusBarStyle`, `modalStyle`, `modalTransitionStyle`, any `Ti.UI.iOS.*`
-- Android: `actionBar` config, any `Ti.Android.*` constant
-:::
+> **🚨 CRITICAL: Platform-Specific Properties Require Modifiers**
+> **Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties in TSS WITHOUT platform modifiers will:**
+>
+> 1. **Add iOS code to Android builds** → compilation failures
+> 2. **Add Android code to iOS builds** → compilation failures
+>
+> **Example of the damage:**
+> ```tss
+> // ❌ WRONG - Adds Ti.UI.iOS to Android project
+> "#mainWindow": {
+>   statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT  // FAILS on Android!
+> }
+> ```
+>
+> **CORRECT - Always use platform modifiers:**
+> ```tss
+> // ✅ CORRECT - Only adds to iOS
+> "#mainWindow[platform=ios]": {
+>   statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
+> }
+>
+> // ✅ CORRECT - Only adds to Android
+> "#mainWindow[platform=android]": {
+>   actionBar: {
+>     displayHomeAsUp: true
+>   }
+> }
+> ```
+>
+> **Common platform-specific properties that REQUIRE `[platform=...]` modifiers:**
+> - iOS: `statusBarStyle`, `modalStyle`, `modalTransitionStyle`, any `Ti.UI.iOS.*`
+> - Android: `actionBar` config, any `Ti.Android.*` constant
 
 As with views, separate styles may be defined based on the platform and device size.
 

@@ -158,9 +158,8 @@ Note that code outside of the dialog view-controller is using the instance varia
 
 To modify the TSS classes of an object that has already been created, use the controller's `addClass`, `removeClass` and `resetClass` methods, which adds, removes or resets the TSS classes of a view object, respectively. As the classes are modified using these API calls, the view is automatically updated. To take advantage of these APIs, you need to enable autostyle for the components or else the view may not update properly.
 
-::: warning ⚠️ Warning
-Using the `Require` or `Widget` elements to include external views in a controller-less view does not work with the `updateViews` method — you can include the external views, but the styles cannot be updated.
-:::
+> **⚠️ ⚠️ Warning**
+> Using the `Require` or `Widget` elements to include external views in a controller-less view does not work with the `updateViews` method — you can include the external views, but the styles cannot be updated.
 
 Pass a reference to the view object as the first parameter, then pass the classes to add or remove as an array or space-separated string as the second parameter. You can optionally specify inline properties as an optional third parameter.
 
