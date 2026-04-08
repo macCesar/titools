@@ -1,8 +1,7 @@
 # Webpack build pipeline
 
-:::warning Appcelerator/Axway era feature
-The Webpack pipeline documented here was introduced with Titanium SDK 9.1.0 as part of the Axway AMPLIFY toolchain (`appcd` daemon). Since Axway discontinued Appcelerator, this feature is **not maintained** in the current TiDev CLI (`ti`). If you are using the community TiDev CLI, this pipeline may not be available. Prefer the standard `ti build` pipeline unless your project already uses Webpack.
-:::
+> **⚠️ Appcelerator/Axway era feature**
+> The Webpack pipeline documented here was introduced with Titanium SDK 9.1.0 as part of the Axway AMPLIFY toolchain (`appcd` daemon). Since Axway discontinued Appcelerator, this feature is **not maintained** in the current TiDev CLI (`ti`). If you are using the community TiDev CLI, this pipeline may not be available. Prefer the standard `ti build` pipeline unless your project already uses Webpack.
 
 Webpack integration is an alternative build pipeline starting with Titanium SDK 9.1.0. It is optional. When enabled, Webpack manages asset and code bundling.
 

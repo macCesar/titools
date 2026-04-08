@@ -348,9 +348,8 @@ SELECT * FROM tablename;
 
 ### Creating emulators
 
-:::warning AVD Manager moved to Android Studio
-The legacy `android` CLI (`android create avd`, `android avd`) was removed in Android SDK Tools 25.3. Use Android Studio's built-in **AVD Manager** (Tools → Device Manager) or the command-line `avdmanager` tool instead.
-:::
+> **⚠️ AVD Manager moved to Android Studio**
+> The legacy `android` CLI (`android create avd`, `android avd`) was removed in Android SDK Tools 25.3. Use Android Studio's built-in **AVD Manager** (Tools → Device Manager) or the command-line `avdmanager` tool instead.
 
 Command line (modern):
 ```bash
