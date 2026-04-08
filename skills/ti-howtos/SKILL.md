@@ -11,18 +11,17 @@ Hands-on guide to Titanium SDK native integrations. Focuses on practical steps, 
 
 ## Project detection
 
-::::info Auto-detects Titanium projects
-This skill detects Titanium projects automatically.
-
-Indicators:
-- `tiapp.xml` exists (definitive)
-- Alloy project: `app/` folder
-- Classic project: `Resources/` folder
-
-Behavior:
-- Titanium detected: provide native integration guidance, permissions, modules, and platform notes
-- Not detected: say this skill is for Titanium projects only
-::::
+> **️ℹ️ Auto-detects Titanium projects**
+> This skill detects Titanium projects automatically.
+>
+> Indicators:
+> - `tiapp.xml` exists (definitive)
+> - Alloy project: `app/` folder
+> - Classic project: `Resources/` folder
+>
+> Behavior:
+> - Titanium detected: provide native integration guidance, permissions, modules, and platform notes
+> - Not detected: say this skill is for Titanium projects only
 
 ## Integration workflow
 
@@ -61,39 +60,38 @@ Behavior:
 
 ### Platform-specific properties
 
-::::danger Platform-specific properties need modifiers
-Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` without platform modifiers can break cross-platform builds.
-
-Bad example:
-```javascript
-// Wrong: adds Ti.UI.iOS to Android build
-const win = Ti.UI.createWindow({
-  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
-});
-```
-
-Good options:
-
-TSS modifier (Alloy):
-```tss
-"#mainWindow[platform=ios]": {
-  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
-}
-```
-
-Conditional code:
-```javascript
-if (OS_IOS) {
-  $.mainWindow.statusBarStyle = Ti.UI.iOS.StatusBar.LIGHT_CONTENT;
-}
-```
-
-Always require modifiers:
-- iOS: `statusBarStyle`, `modalStyle`, `modalTransitionStyle`, any `Ti.UI.iOS.*`.
-- Android: `actionBar` config, any `Ti.UI.Android.*` constant.
-
-For TSS platform modifiers, see the code conventions in `skills/ti-expert/references/code-conventions.md#platform--device-modifiers` or the platform UI guides in `references/ios-platform-deep-dives.md`.
-::::
+> **🚨 Platform-specific properties need modifiers**
+> Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` without platform modifiers can break cross-platform builds.
+>
+> Bad example:
+> ```javascript
+> // Wrong: adds Ti.UI.iOS to Android build
+> const win = Ti.UI.createWindow({
+>   statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
+> });
+> ```
+>
+> Good options:
+>
+> TSS modifier (Alloy):
+> ```tss
+> "#mainWindow[platform=ios]": {
+>   statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
+> }
+> ```
+>
+> Conditional code:
+> ```javascript
+> if (OS_IOS) {
+>   $.mainWindow.statusBarStyle = Ti.UI.iOS.StatusBar.LIGHT_CONTENT;
+> }
+> ```
+>
+> Always require modifiers:
+> - iOS: `statusBarStyle`, `modalStyle`, `modalTransitionStyle`, any `Ti.UI.iOS.*`.
+> - Android: `actionBar` config, any `Ti.UI.Android.*` constant.
+>
+> For TSS platform modifiers, see the code conventions in `skills/ti-expert/references/code-conventions.md#platform--device-modifiers` or the platform UI guides in `references/ios-platform-deep-dives.md`.
 
 ## Reference guides
 
