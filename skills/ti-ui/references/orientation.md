@@ -50,12 +50,16 @@ iOS plist iPhone vs iPad keys: You can define separate orientations for iPhone a
 - `UISupportedInterfaceOrientations~ipad` for iPad (default: all four)
 - `UISupportedInterfaceOrientations` applies to both if device-specific keys are absent
 
+The `<activity>` element must include `android:name` and be nested inside `<application>`. Titanium generates the main activity name as `<app-id>.<Appname>Activity`.
+
 ```xml
-<android>
+<android xmlns:android="http://schemas.android.com/apk/res/android">
   <manifest>
-    <activity>
-      <android:screenOrientation="portrait"/>
-    </activity>
+    <application>
+      <activity
+        android:name="com.example.myapp.MyappActivity"
+        android:screenOrientation="portrait"/>
+    </application>
   </manifest>
 </android>
 ```
@@ -111,9 +115,9 @@ Ti.Gesture.addEventListener('orientationchange', (e) => {
     adjustForLandscape();
   }
 
-  // Ti.Gesture helper methods - convenience booleans
-  Ti.API.info(`Is portrait: ${e.source.isPortrait()}`);
-  Ti.API.info(`Is landscape: ${e.source.isLandscape()}`);
+  // Ti.Gesture convenience boolean properties
+  Ti.API.info(`Is portrait: ${e.source.portrait}`);
+  Ti.API.info(`Is landscape: ${e.source.landscape}`);
 });
 ```
 
@@ -252,9 +256,13 @@ iOS (tiapp.xml):
 
 Android (tiapp.xml):
 ```xml
-<android>
+<android xmlns:android="http://schemas.android.com/apk/res/android">
   <manifest>
-    <activity android:screenOrientation="portrait"/>
+    <application>
+      <activity
+        android:name="com.example.myapp.MyappActivity"
+        android:screenOrientation="portrait"/>
+    </application>
   </manifest>
 </android>
 ```

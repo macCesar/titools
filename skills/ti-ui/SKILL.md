@@ -11,22 +11,21 @@ A practical guide to Titanium SDK UI. Covers layouts, event handling, animations
 
 ## Project detection
 
-:::info auto-detects titanium projects
-This skill detects Titanium projects and provides UI guidance.
-
-Detection happens automatically. You do not need to run a command.
-
-Titanium project indicator:
-- `tiapp.xml` (required for all Titanium projects)
-
-Applicable to both:
-- Alloy projects (app/ folder structure)
-- Classic projects (Resources/ folder)
-
-Behavior based on detection:
-- Titanium detected: Provide UI guidance for Alloy and Classic, ListView/TableView patterns, and platform differences
-- Not detected: State this is for Titanium projects only and skip UI guidance
-:::
+> **️ℹ️ auto-detects titanium projects**
+> This skill detects Titanium projects and provides UI guidance.
+>
+> Detection happens automatically. You do not need to run a command.
+>
+> Titanium project indicator:
+> - `tiapp.xml` (required for all Titanium projects)
+>
+> Applicable to both:
+> - Alloy projects (app/ folder structure)
+> - Classic projects (Resources/ folder)
+>
+> Behavior based on detection:
+> - Titanium detected: Provide UI guidance for Alloy and Classic, ListView/TableView patterns, and platform differences
+> - Not detected: State this is for Titanium projects only and skip UI guidance
 
 ## Quick reference
 
@@ -65,39 +64,38 @@ Behavior based on detection:
 
 ### Platform-specific properties
 
-:::danger critical: platform-specific properties require modifiers
-Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties without platform modifiers will crash cross-platform compilation.
-
-Example of the damage:
-```javascript
-// Wrong: adds Ti.UI.iOS to an Android build
-const win = Ti.UI.createWindow({
-  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
-})
-```
-
-Correct approaches:
-
-Option 1: TSS modifier (Alloy projects):
-```tss
-"#mainWindow[platform=ios]": {
-  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
-}
-```
-
-Option 2: Conditional code:
-```javascript
-if (OS_IOS) {
-  $.mainWindow.statusBarStyle = Ti.UI.iOS.StatusBar.LIGHT_CONTENT
-}
-```
-
-Properties that always require platform modifiers:
-- iOS: `statusBarStyle`, `modalStyle`, `modalTransitionStyle`, any `Ti.UI.iOS.*`
-- Android: `actionBar` config, any `Ti.UI.Android.*` constant
-
-For platform-specific UI patterns, see [platform-ui-ios.md](references/platform-ui-ios.md) and [platform-ui-android.md](references/platform-ui-android.md).
-:::
+> **🚨 critical: platform-specific properties require modifiers**
+> Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties without platform modifiers will crash cross-platform compilation.
+>
+> Example of the damage:
+> ```javascript
+> // Wrong: adds Ti.UI.iOS to an Android build
+> const win = Ti.UI.createWindow({
+>   statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
+> })
+> ```
+>
+> Correct approaches:
+>
+> Option 1: TSS modifier (Alloy projects):
+> ```tss
+> "#mainWindow[platform=ios]": {
+>   statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
+> }
+> ```
+>
+> Option 2: Conditional code:
+> ```javascript
+> if (OS_IOS) {
+>   $.mainWindow.statusBarStyle = Ti.UI.iOS.StatusBar.LIGHT_CONTENT
+> }
+> ```
+>
+> Properties that always require platform modifiers:
+> - iOS: `statusBarStyle`, `modalStyle`, `modalTransitionStyle`, any `Ti.UI.iOS.*`
+> - Android: `actionBar` config, any `Ti.UI.Android.*` constant
+>
+> For platform-specific UI patterns, see [platform-ui-ios.md](references/platform-ui-ios.md) and [platform-ui-android.md](references/platform-ui-android.md).
 
 ### Event management
 - Remove global listeners (`Ti.App`, `Ti.Gesture`, `Ti.Accelerometer`) on pause to save battery.
