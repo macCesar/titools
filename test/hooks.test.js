@@ -26,28 +26,33 @@ describe('hooks', () => {
     assert.ok(existsSync(settingsPath));
     const settings = JSON.parse(readFileSync(settingsPath, 'utf8'));
     assert.ok(Array.isArray(settings.hooks.SessionStart));
-    assert.strictEqual(settings.hooks.SessionStart[0].command, HOOK_CMD);
+    const entry = settings.hooks.SessionStart[0];
+    assert.ok(Array.isArray(entry.hooks));
+    assert.strictEqual(entry.hooks[0].type, 'command');
+    assert.strictEqual(entry.hooks[0].command, HOOK_CMD);
   });
 
   it('installHook appends to existing hooks without overwriting', async () => {
     const existing = {
       hooks: {
-        SessionStart: [{ command: 'echo hello', timeout: 5000 }]
+        SessionStart: [{ hooks: [{ type: 'command', command: 'echo hello' }] }]
       }
     };
     await writeFile(settingsPath, JSON.stringify(existing, null, 2), 'utf8');
     installHook(claudeDir);
     const settings = JSON.parse(readFileSync(settingsPath, 'utf8'));
     assert.strictEqual(settings.hooks.SessionStart.length, 2);
-    assert.strictEqual(settings.hooks.SessionStart[0].command, 'echo hello');
-    assert.strictEqual(settings.hooks.SessionStart[1].command, HOOK_CMD);
+    assert.strictEqual(settings.hooks.SessionStart[0].hooks[0].command, 'echo hello');
+    assert.strictEqual(settings.hooks.SessionStart[1].hooks[0].command, HOOK_CMD);
   });
 
   it('installHook does not duplicate if hook already exists', () => {
     installHook(claudeDir);
     installHook(claudeDir);
     const settings = JSON.parse(readFileSync(settingsPath, 'utf8'));
-    const matches = settings.hooks.SessionStart.filter((h) => h.command === HOOK_CMD);
+    const matches = settings.hooks.SessionStart.filter((entry) =>
+      entry.hooks?.some((h) => h.command === HOOK_CMD)
+    );
     assert.strictEqual(matches.length, 1);
   });
 
@@ -55,8 +60,8 @@ describe('hooks', () => {
     const existing = {
       hooks: {
         SessionStart: [
-          { command: 'echo hello', timeout: 5000 },
-          { command: HOOK_CMD, timeout: 30000 }
+          { hooks: [{ type: 'command', command: 'echo hello' }] },
+          { hooks: [{ type: 'command', command: HOOK_CMD }] }
         ]
       }
     };
@@ -64,7 +69,7 @@ describe('hooks', () => {
     removeHook(claudeDir);
     const settings = JSON.parse(readFileSync(settingsPath, 'utf8'));
     assert.strictEqual(settings.hooks.SessionStart.length, 1);
-    assert.strictEqual(settings.hooks.SessionStart[0].command, 'echo hello');
+    assert.strictEqual(settings.hooks.SessionStart[0].hooks[0].command, 'echo hello');
   });
 
   it('removeHook does nothing if no settings.json', () => {
