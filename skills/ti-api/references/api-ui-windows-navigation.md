@@ -129,6 +129,27 @@ other views. There are a few specialized views that manage windows:
 | close | both | Fired when the window is closed. |
 | open | both | Fired when the window is opened. |
 
+### Community-Discovered Patterns
+
+#### Large title with ScrollView
+
+When using `largeTitleEnabled` with a ScrollView inside NavigationWindow, three properties must be configured together on the Window:
+
+| Property | Required Value | Role |
+|----------|----------------|------|
+| `largeTitleEnabled` | `true` | Displays title in large format, collapses on scroll |
+| `extendEdges` | `[Ti.UI.EXTEND_EDGE_ALL]` | Content extends behind bars (blur/translucent effect) |
+| `autoAdjustScrollViewInsets` | `true` | Adjusts ScrollView insets to prevent content overlap |
+
+**Without `autoAdjustScrollViewInsets`**, setting `extendEdges` causes ScrollView content to render behind the navigation bar. **Without `extendEdges`**, the large title renders with a visible delay (empty nav bar gap, then title draws).
+
+Use `largeTitleDisplayMode` to control collapse behavior:
+- `Ti.UI.iOS.LARGE_TITLE_DISPLAY_MODE_AUTOMATIC` (default) — inherits from previous window in the navigation stack; collapses on scroll
+- `Ti.UI.iOS.LARGE_TITLE_DISPLAY_MODE_ALWAYS` — title stays large
+- `Ti.UI.iOS.LARGE_TITLE_DISPLAY_MODE_NEVER` — always standard size
+
+This applies to Windows inside both standalone NavigationWindow and TabGroup (which wraps each Tab in an implicit NavigationWindow on iOS).
+
 ### Related Types
 
 #### AnimatedOptions
