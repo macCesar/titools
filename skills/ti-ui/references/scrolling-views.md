@@ -241,3 +241,42 @@ scrollView.addEventListener('scroll', (e) => {
 4. Consider performance with large datasets
 5. Test on real devices; simulator behavior may differ
 6. Use paging controls for ScrollableView to improve UX
+
+## Community-Discovered Patterns
+
+### ScrollView inside NavigationWindow with Large Titles (iOS)
+
+When placing a ScrollView inside a Window managed by NavigationWindow, configure the Window to ensure proper content positioning — especially when using large titles or translucent bars.
+
+Three Window properties must be set together:
+
+| Property | Value | Purpose |
+|---|---|---|
+| `extendEdges` | `[Ti.UI.EXTEND_EDGE_ALL]` | Content extends behind bars (enables blur effect) |
+| `autoAdjustScrollViewInsets` | `true` | iOS adjusts ScrollView insets to avoid overlap |
+| `largeTitleEnabled` | `true` | Enables large title that collapses on scroll |
+
+Without `autoAdjustScrollViewInsets`, the ScrollView content overlaps behind the navigation bar when `extendEdges` is set. Without `extendEdges`, the large title renders with a visible delay as iOS cannot calculate the full layout upfront.
+
+This applies to both standalone NavigationWindow and TabGroup (which wraps each Tab in an implicit NavigationWindow on iOS).
+
+```javascript
+const win = Ti.UI.createWindow({
+  title: 'Feed',
+  largeTitleEnabled: true,
+  extendEdges: [Ti.UI.EXTEND_EDGE_ALL],
+  autoAdjustScrollViewInsets: true
+});
+
+const scroll = Ti.UI.createScrollView({
+  layout: 'vertical',
+  contentWidth: Ti.UI.FILL,
+  contentHeight: Ti.UI.SIZE
+});
+
+// Content starts below the nav bar automatically
+scroll.add(Ti.UI.createView({ height: 200, backgroundColor: 'red' }));
+win.add(scroll);
+```
+
+See [platform-ui-ios.md](platform-ui-ios.md) for the full explanation with `largeTitleDisplayMode` options.
