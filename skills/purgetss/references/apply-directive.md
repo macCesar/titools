@@ -278,3 +278,50 @@ module.exports = {
 
 > **Titanium Fill Rule**
 > When composing layout utilities inside `apply`, prefer `w-screen` for fill behavior. `w-full` maps to `100%`, not `Ti.UI.FILL`.
+
+## Community-Discovered Patterns
+
+### Global Window defaults for Large Titles + ScrollView (iOS)
+
+When using `largeTitleEnabled` with a ScrollView inside NavigationWindow or TabGroup, three Window properties must work together: `auto-adjust-scroll-view-insets`, `extend-edges-all`, and `large-title-enabled`. Without all three, the ScrollView content overlaps behind the navigation bar — or the large title renders with a visible delay.
+
+Instead of repeating these classes on every Window XML, use `apply` in `config.cjs` to set the base properties as global defaults:
+
+`./purgetss/config.cjs`
+```javascript
+module.exports = {
+  theme: {
+    Window: {
+      ios: {
+        apply: 'auto-adjust-scroll-view-insets extend-edges-all status-bar-style-light-content'
+      }
+    }
+  }
+};
+```
+
+`./purgetss/styles/utilities.tss`
+```tss
+'Window[platform=ios]': { autoAdjustScrollViewInsets: true, extendEdges: [ Ti.UI.EXTEND_EDGE_ALL ], statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT }
+```
+
+Then in each view XML, only add `largeTitleEnabled` and `largeTitleDisplayMode` as needed:
+
+```xml
+<Window title="Home" class="large-title-enabled">
+  <ScrollView class="vertical w-screen" contentHeight="Ti.UI.SIZE">
+    <!-- Content starts below the nav bar automatically -->
+  </ScrollView>
+</Window>
+```
+
+This works for both NavigationWindow and TabGroup — on iOS, TabGroup wraps each Tab in an implicit NavigationWindow.
+
+| Class | Property | Value |
+|---|---|---|
+| `auto-adjust-scroll-view-insets` | `autoAdjustScrollViewInsets` | `true` |
+| `extend-edges-all` | `extendEdges` | `[ Ti.UI.EXTEND_EDGE_ALL ]` |
+| `large-title-enabled` | `largeTitleEnabled` | `true` |
+| `large-title-display-mode` | `largeTitleDisplayMode` | Uses `LARGE_TITLE_DISPLAY_MODE_*` constants |
+
+> **Why `ios:` block instead of inline `ios:` prefix?** The three classes (`auto-adjust-scroll-view-insets`, `extend-edges-all`, `status-bar-style-light-content`) are platform-specific — they only exist with `[platform=ios]` suffix in `utilities.tss`. Using the `ios:` block in `config.cjs` ensures PurgeTSS resolves them correctly. See "Platform-Specific Classes" above.
