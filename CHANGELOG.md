@@ -4,6 +4,11 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.4.1] - 2026-04-08
+
+### Fixed
+- **Hook format** — Claude Code hooks require `{ hooks: [{ type: "command", command: "..." }] }` format. The flat `{ command, timeout }` format used in v2.4.0 caused a settings validation error on session start.
+
 ## [2.4.0] - 2026-04-08
 
 ### Added
