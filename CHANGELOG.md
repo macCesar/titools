@@ -4,6 +4,11 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.5.1] - 2026-04-08
+
+### Fixed
+- **README** — Restored TiTools README that was accidentally overwritten with PurgeTSS content. npm was showing the wrong documentation.
+
 ## [2.5.0] - 2026-04-08
 
 ### Added
