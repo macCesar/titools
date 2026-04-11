@@ -1,6 +1,6 @@
 ---
 name: purgetss
-description: "Titanium PurgeTSS utility-first styling toolkit. Use when styling, reviewing, analyzing, or examining Titanium UI with utility classes, configuring config.cjs, creating dynamic components with $.UI.create(), building animations, using grid layouts, setting up icon fonts, or working with TSS styles. Never suggest other CSS framework classes - verify in class-index.md first."
+description: "Titanium PurgeTSS utility-first styling toolkit. Use when styling, reviewing, analyzing, or examining Titanium UI with utility classes, configuring config.cjs, creating dynamic components with $.UI.create(), building animations, using grid layouts, setting up icon fonts, or working with TSS styles. AUTO-DETECT: If purgetss/ folder or purgetss/config.cjs exists, this project uses PurgeTSS — invoke this skill BEFORE writing ANY styling code. All styling MUST use PurgeTSS utility classes in XML, NOT custom TSS. PurgeTSS classes look like Tailwind but are NOT Tailwind — verify every class exists before using it. Never use padding on Views (use margins on children), never use flexbox classes, never write manual TSS when a utility class exists."
 argument-hint: "[class-name]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(purgetss *), Bash(node *)
 ---

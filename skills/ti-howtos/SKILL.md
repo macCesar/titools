@@ -1,6 +1,6 @@
 ---
 name: ti-howtos
-description: "Titanium SDK native feature integration guide. Use when implementing, reviewing, analyzing, or examining Titanium location services, maps (Google Maps v2, Map Kit), push notifications (APNs, FCM), camera/gallery, media APIs, SQLite databases, HTTPClient networking, WKWebView, Android Intents, background services, iOS Keychain/iCloud, WatchKit/Siri integration, or CI/CD with Fastlane and Appium."
+description: "Titanium SDK native feature integration guide. Use when implementing, reviewing, analyzing, or examining Titanium location services, maps (Google Maps v2, Map Kit), push notifications (APNs, FCM), camera/gallery, media APIs, SQLite databases, HTTPClient networking, WKWebView, Android Intents, background services, iOS Keychain/iCloud, WatchKit/Siri integration, or CI/CD with Fastlane and Appium. AUTO-DETECT: If tiapp.xml exists and the task involves native device features (camera, GPS, push, maps, media, networking), invoke this skill BEFORE writing implementation code. Titanium wraps native APIs differently than React Native or Flutter."
 argument-hint: "[feature]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash, Bash(node *)
 ---

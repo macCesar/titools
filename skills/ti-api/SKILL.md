@@ -1,6 +1,6 @@
 ---
 name: ti-api
-description: "Titanium SDK complete API reference. Use when looking up properties, methods, events, constants, or type signatures for any Ti.* or Modules.* API. Covers Ti.UI, Ti.Android, Ti.App, Ti.Media, Ti.Network, Ti.Database, Ti.Filesystem, Ti.Geolocation, Ti.Contacts, Ti.Calendar, Global, and third-party modules (Map, BLE, NFC, Facebook, Identity, CoreMotion)."
+description: "Titanium SDK complete API reference. Use when looking up properties, methods, events, constants, or type signatures for any Ti.* or Modules.* API. Covers Ti.UI, Ti.Android, Ti.App, Ti.Media, Ti.Network, Ti.Database, Ti.Filesystem, Ti.Geolocation, Ti.Contacts, Ti.Calendar, Global, and third-party modules (Map, BLE, NFC, Facebook, Identity, CoreMotion). AUTO-DETECT: If tiapp.xml exists in the project, this is a Titanium project — invoke this skill BEFORE writing any code that uses Ti.* APIs. Do NOT rely on training data for Titanium APIs; always check the reference files in this skill first."
 argument-hint: "[Ti.UI.Window | Ti.Network.HTTPClient | Modules.Map.View | ...]"
 allowed-tools: Read, Grep, Glob
 ---

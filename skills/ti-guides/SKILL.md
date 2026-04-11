@@ -1,6 +1,6 @@
 ---
 name: ti-guides
-description: "Titanium SDK official fundamentals and configuration guide. Use when working with, reviewing, analyzing, or examining Titanium projects, Hyperloop native access, app distribution (App Store/Google Play), tiapp.xml configuration, CLI commands, memory management, bridge optimization, CommonJS modules, SQLite transactions, or coding standards. Applies to both Alloy and Classic projects."
+description: "Titanium SDK official fundamentals and configuration guide. Use when working with, reviewing, analyzing, or examining Titanium projects, Hyperloop native access, app distribution (App Store/Google Play), tiapp.xml configuration, CLI commands, memory management, bridge optimization, CommonJS modules, SQLite transactions, or coding standards. AUTO-DETECT: If tiapp.xml exists, invoke this skill for any project configuration, build, or deployment question. Covers SDK versions, platform compatibility, and tiapp.xml settings that are unique to Titanium."
 argument-hint: "[topic]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(node *)
 ---
