@@ -1,6 +1,6 @@
 ---
 name: alloy-guides
-description: "Titanium Alloy MVC official framework reference. Use when working with, reviewing, analyzing, or examining Alloy models, views, controllers, Backbone.js data binding, TSS styling, widgets, Alloy CLI, sync adapters, migrations, or MVC compilation. Explains how Backbone.js models and collections work in Alloy."
+description: "Titanium Alloy MVC official framework reference. Use when working with, reviewing, analyzing, or examining Alloy models, views, controllers, Backbone.js data binding, TSS styling, widgets, Alloy CLI, sync adapters, migrations, or MVC compilation. AUTO-DETECT: If the project has an app/views/ + app/controllers/ + app/styles/ folder structure, it is an Alloy project — invoke this skill BEFORE editing XML views, JS controllers, or TSS styles. Alloy XML is NOT HTML; TSS is NOT CSS; controllers follow Alloy-specific patterns, not web MVC."
 argument-hint: "[concept]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(node *)
 ---
