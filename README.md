@@ -18,6 +18,20 @@ Vercel's AGENTS.md evaluation reports a 100% pass rate for the knowledge index a
 
 ---
 
+## Safety and disclaimer
+
+TiTools modifies files in your Titanium project. In particular, the `ti-branding` skill can write branding assets into `app/platform/android/res/` and, when invoked with the `--cleanup-legacy` flag, **delete** obsolete branding artifacts (iOS launch images, Android legacy splash, density fossil folders, etc.).
+
+Recommendations before running destructive operations:
+
+- **Commit your project with git** so you can `git restore` if anything looks wrong.
+- **Always run with `--dry-run` first** when using `--cleanup-legacy` or replacing icons. The skill prints every target and its safety reasoning before touching anything.
+- **Review the staging directory** (`.ti-branding/`) before copying generated assets into your project.
+
+The maintainers of TiTools accept no responsibility for data loss, build breakage, or any other damage caused by the use of the CLI, skills, or generated scripts. The tool is provided AS IS under the MIT License — see [`LICENSE`](./LICENSE) for the full terms. Use at your own risk.
+
+---
+
 ## Installation
 
 ### Option A: Plugin Marketplace (Claude Code only)

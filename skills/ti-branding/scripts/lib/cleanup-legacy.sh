@@ -131,6 +131,10 @@ cleanup_legacy() {
   # -------------------------------------------------------------------------
 
   echo
+  echo "${C_YELLOW}⚠  WARNING${C_RESET} — --cleanup-legacy deletes files permanently."
+  echo "   Recommended: commit your project with git before running without --dry-run."
+  echo "   Provided AS IS under the MIT License. No warranty — use at your own risk."
+  echo
   echo "${C_BOLD}Cleanup plan${C_RESET}"
   echo "  ${C_DIM}Project:            $project_root ($project_type)${C_RESET}"
   echo "  ${C_DIM}Storyboard:         $([[ $storyboard_enabled -eq 1 ]] && echo "enabled" || echo "disabled")${C_RESET}"

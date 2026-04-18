@@ -76,6 +76,10 @@ Options:
 | `--output <dir>` | `<project>/.ti-branding/` | Staging directory. Review before copying to `app/`. |
 | `--dry-run` | off | Print what would be generated/removed without writing or deleting. Works with both generation and `--cleanup-legacy`. |
 
+## Safety reminders
+
+This skill writes PNGs and an XML file into the project's `app/platform/android/res/` and `app/assets/iphone/` paths, and with `--cleanup-legacy` it deletes obsolete branding artifacts. The flow is designed to be safe (staging → review → copy, dry-run first, `tiapp.xml`-driven safety rules), but the user should commit the project before running destructive operations so that `git restore` is available as a rollback. The tool is provided AS IS under the MIT License. No warranty, no liability — see the repository's `LICENSE`.
+
 ## Workflow
 
 1. **Detect project layout** — look for `app/` (Alloy) or `Resources/` (Classic). If neither, error.
