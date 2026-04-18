@@ -4,6 +4,25 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.6.0] - 2026-04-17
+
+### Added
+- **`titools list`** (alias `titools ls`) — Enumerates available Titanium skills with their short description (first sentence of each skill's SKILL.md description). Shows install status per skill. Inspired by `tn list` for Titanium recipes.
+- **`ti-branding` skill** — 9th skill in TiTools. Generates full icon and splash-screen asset sets for modern Titanium SDK 13.x projects from a single SVG or PNG master. Outputs:
+  - `DefaultIcon-ios.png` (1024² no alpha), `iTunesConnect.png` (1024²), `MarketplaceArtwork.png` (512²)
+  - Android adaptive icon triplet (foreground + background + monochrome) × 5 densities
+  - Legacy `ic_launcher.png` × 5 densities (Android <8 fallback)
+  - `mipmap-anydpi-v26/ic_launcher.xml` binder
+  - Optional: `ic_stat_notify.png` × 5 (white+alpha for FCM), `splash_icon.png` × 5 (Android 12+ SplashScreen API)
+- **Dual-padding model** in `ti-branding`: `--padding` (Android safe-zone, default 22%) and `--ios-padding` (iOS aesthetic breathing room, default 8%). Horizontal wordmarks fit Android's 66dp safe-zone while retaining proper margin in square iOS/marketplace icons.
+- **`--cleanup-legacy` flag** in `ti-branding` — context-aware removal of obsolete branding artifacts (iOS launch images when storyboard is enabled, Android `default.png` and `appicon.png` when adaptive icons are present, `res-long-*`/`res-notlong-*` dead qualifiers, landscape variants when the app is portrait-only). Reads `tiapp.xml` to decide what's safe. `--aggressive` additionally removes `ldpi` folders (<1% global market). Runs standalone or combined with generation. Dogfooding on SNAP Gym freed ~5.5 MB (15 iOS `Default-*.png` + 2 Android legacy files + 11 Android fossil folders). Full write-up in `skills/ti-branding/references/cleanup-legacy.md`.
+- **Post-generation guidance** — `ti-branding` prints context-aware notes: brand color reminder, padding adjustment tips, iOS storyboard snippet, Android launcher snippet, Android 12+ splash wire-up (BOTH native `@android:style/Theme.DeviceDefault.NoActionBar` and `androidx.core:core-splashscreen` library approaches, with tradeoffs), FCM notification icon wire-up.
+- Explicit warnings baked into the output: `<application>` self-closing vs children-bearing form, and the Titanium `<application android:theme>` trap (splash themes set there strip the ActionBar globally — always register via `<meta-data android:name="io.tidev.titanium.splash.theme">`).
+- Targets Ti SDK 13.0–13.2 minimums. No legacy iOS launch images (storyboard-driven). No `background.9.png` (obsolete).
+- Delegates raster to ImageMagick + librsvg (system tools). Zero npm/pip dependencies.
+- Eight reference files covering canonical paths, adaptive icon spec, iOS appiconset, notification rules, modern splash API, input guidelines, `tiapp.xml` snippets, and legacy cleanup rules.
+- 13 tests covering package layout, CLI behavior, shell syntax, and cleanup-only mode.
+
 ## [2.5.1] - 2026-04-08
 
 ### Fixed

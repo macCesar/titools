@@ -1,0 +1,462 @@
+#!/usr/bin/env bash
+# ti-branding — generate icon and splash assets for Titanium SDK 13.x projects.
+# Entry point. Parses args, validates, and delegates to lib/ scripts.
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LIB_DIR="$SCRIPT_DIR/lib"
+ASSETS_DIR="$(cd "$SCRIPT_DIR/../assets" && pwd)"
+
+# shellcheck source=lib/deps.sh
+source "$LIB_DIR/deps.sh"
+# shellcheck source=lib/validate.sh
+source "$LIB_DIR/validate.sh"
+# shellcheck source=lib/prepare-master.sh
+source "$LIB_DIR/prepare-master.sh"
+# shellcheck source=lib/gen-ios.sh
+source "$LIB_DIR/gen-ios.sh"
+# shellcheck source=lib/gen-android-adaptive.sh
+source "$LIB_DIR/gen-android-adaptive.sh"
+# shellcheck source=lib/gen-android-legacy.sh
+source "$LIB_DIR/gen-android-legacy.sh"
+# shellcheck source=lib/gen-marketplace.sh
+source "$LIB_DIR/gen-marketplace.sh"
+# shellcheck source=lib/cleanup-legacy.sh
+source "$LIB_DIR/cleanup-legacy.sh"
+# shellcheck source=lib/gen-notification.sh
+source "$LIB_DIR/gen-notification.sh"
+# shellcheck source=lib/gen-splash-icon.sh
+source "$LIB_DIR/gen-splash-icon.sh"
+
+# -----------------------------------------------------------------------------
+# Defaults
+# -----------------------------------------------------------------------------
+
+MASTER=""
+BG_COLOR="#FFFFFF"
+PADDING=22
+IOS_PADDING=8
+WITH_NOTIFICATION=0
+WITH_SPLASH_ICON=0
+CLEANUP_LEGACY=0
+AGGRESSIVE=0
+OUTPUT=""
+DRY_RUN=0
+PROJECT_ROOT="$(pwd)"
+
+# -----------------------------------------------------------------------------
+# Colored output helpers
+# -----------------------------------------------------------------------------
+
+if [[ -t 1 ]]; then
+  C_RED=$'\033[31m'; C_GREEN=$'\033[32m'; C_YELLOW=$'\033[33m'
+  C_BLUE=$'\033[34m'; C_DIM=$'\033[2m'; C_BOLD=$'\033[1m'; C_RESET=$'\033[0m'
+else
+  C_RED=''; C_GREEN=''; C_YELLOW=''; C_BLUE=''; C_DIM=''; C_BOLD=''; C_RESET=''
+fi
+
+log_info()  { echo "${C_BLUE}ℹ${C_RESET} $*"; }
+log_ok()    { echo "${C_GREEN}✓${C_RESET} $*"; }
+log_warn()  { echo "${C_YELLOW}⚠${C_RESET} $*" >&2; }
+log_err()   { echo "${C_RED}✗${C_RESET} $*" >&2; }
+log_step()  { echo; echo "${C_BOLD}==>${C_RESET} $*"; }
+
+export C_RED C_GREEN C_YELLOW C_BLUE C_DIM C_BOLD C_RESET
+export -f log_info log_ok log_warn log_err log_step
+
+# -----------------------------------------------------------------------------
+# Usage
+# -----------------------------------------------------------------------------
+
+usage() {
+  cat <<'EOF'
+ti-branding — generate branding assets for Titanium SDK 13.x projects.
+
+USAGE:
+  ti-branding <master> [options]
+
+ARGUMENTS:
+  <master>                 Path to master image (SVG or PNG ≥ 1024×1024).
+
+OPTIONS:
+  --bg-color <hex>         Background color for adaptive layer + iOS alpha flatten.
+                           Default: #FFFFFF
+  --padding <pct>          Android safe-zone padding per side (0–40). Default: 22
+                           (Android official minimum is 19.44%.)
+  --ios-padding <pct>      iOS/marketplace aesthetic padding per side (0–40).
+                           Default: 8. iOS icons have no launcher mask — this
+                           is purely breathing room around the logo.
+  --with-notification      Also generate ic_stat_notify.png × 5 densities.
+  --with-splash-icon       Also generate splash_icon.png × 5 densities (Android 12+).
+  --cleanup-legacy         After generating (or standalone), remove legacy branding
+                           artifacts detected via tiapp.xml analysis. Safe by default —
+                           context-aware, always prints a plan before deleting.
+  --aggressive             With --cleanup-legacy, also remove ldpi density folders
+                           (<1% global market in 2026). Off by default.
+  --output <dir>           Staging directory. Default: <project>/.ti-branding
+  --project <dir>          Project root (default: current working directory).
+  --dry-run                Print what would be generated without writing files.
+  -h, --help               Show this help.
+
+EXAMPLES:
+  ti-branding ./logo.svg
+  ti-branding ./logo.png --bg-color "#0B1326" --padding 22
+  ti-branding ./docs/snap-logo.svg --bg-color "#0B1326" --with-notification --with-splash-icon
+EOF
+}
+
+# -----------------------------------------------------------------------------
+# Parse args
+# -----------------------------------------------------------------------------
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -h|--help) usage; exit 0 ;;
+    --bg-color) BG_COLOR="$2"; shift 2 ;;
+    --padding) PADDING="$2"; shift 2 ;;
+    --ios-padding) IOS_PADDING="$2"; shift 2 ;;
+    --with-notification) WITH_NOTIFICATION=1; shift ;;
+    --with-splash-icon) WITH_SPLASH_ICON=1; shift ;;
+    --cleanup-legacy) CLEANUP_LEGACY=1; shift ;;
+    --aggressive) AGGRESSIVE=1; shift ;;
+    --output) OUTPUT="$2"; shift 2 ;;
+    --project) PROJECT_ROOT="$2"; shift 2 ;;
+    --dry-run) DRY_RUN=1; shift ;;
+    --) shift; break ;;
+    -*) log_err "Unknown option: $1"; usage >&2; exit 2 ;;
+    *)
+      if [[ -z "$MASTER" ]]; then
+        MASTER="$1"; shift
+      else
+        log_err "Unexpected positional argument: $1"; exit 2
+      fi
+      ;;
+  esac
+done
+
+# -----------------------------------------------------------------------------
+# Validate args
+# -----------------------------------------------------------------------------
+
+# Cleanup-only mode: master image is optional when --cleanup-legacy is set alone.
+if [[ -z "$MASTER" && $CLEANUP_LEGACY -eq 0 ]]; then
+  log_err "Master image path is required (unless using --cleanup-legacy alone)."
+  usage >&2
+  exit 2
+fi
+
+if [[ -n "$MASTER" && ! -f "$MASTER" ]]; then
+  log_err "Master image not found: $MASTER"
+  exit 2
+fi
+
+# Resolve to absolute path
+if [[ -n "$MASTER" ]]; then
+  MASTER="$(cd "$(dirname "$MASTER")" && pwd)/$(basename "$MASTER")"
+fi
+PROJECT_ROOT="$(cd "$PROJECT_ROOT" && pwd)"
+
+if [[ "$PADDING" -lt 0 || "$PADDING" -gt 40 ]]; then
+  log_err "Padding must be between 0 and 40 (got: $PADDING)."
+  exit 2
+fi
+
+if [[ "$IOS_PADDING" -lt 0 || "$IOS_PADDING" -gt 40 ]]; then
+  log_err "iOS padding must be between 0 and 40 (got: $IOS_PADDING)."
+  exit 2
+fi
+
+if [[ ! "$BG_COLOR" =~ ^#[0-9A-Fa-f]{6}$ ]]; then
+  log_err "--bg-color must be a 6-digit hex like #0B1326 (got: $BG_COLOR)."
+  exit 2
+fi
+
+OUTPUT="${OUTPUT:-$PROJECT_ROOT/.ti-branding}"
+
+# -----------------------------------------------------------------------------
+# Detect project layout
+# -----------------------------------------------------------------------------
+
+PROJECT_TYPE="unknown"
+if [[ -d "$PROJECT_ROOT/app" ]]; then
+  PROJECT_TYPE="alloy"
+elif [[ -d "$PROJECT_ROOT/Resources" ]]; then
+  PROJECT_TYPE="classic"
+fi
+
+log_step "ti-branding — Titanium SDK 13.x"
+log_info "Project:      $PROJECT_ROOT ($PROJECT_TYPE)"
+if [[ -n "$MASTER" ]]; then
+  log_info "Master:       $MASTER"
+  log_info "Background:   $BG_COLOR"
+  log_info "Padding:      Android ${PADDING}% / iOS ${IOS_PADDING}% per side"
+  log_info "Staging:      $OUTPUT"
+fi
+[[ $WITH_NOTIFICATION -eq 1 ]] && log_info "Extras:       + notification icons"
+[[ $WITH_SPLASH_ICON -eq 1 ]] && log_info "Extras:       + Android 12+ splash icon"
+[[ $CLEANUP_LEGACY -eq 1 ]] && log_info "Cleanup:      --cleanup-legacy$([[ $AGGRESSIVE -eq 1 ]] && echo " --aggressive")"
+[[ $DRY_RUN -eq 1 ]] && log_warn "DRY RUN — no files will be written"
+
+# -----------------------------------------------------------------------------
+# Cleanup-only mode — skip all generation steps
+# -----------------------------------------------------------------------------
+
+if [[ -z "$MASTER" && $CLEANUP_LEGACY -eq 1 ]]; then
+  log_step "Cleanup-only mode"
+  cleanup_legacy "$PROJECT_ROOT" "$PROJECT_TYPE" "$AGGRESSIVE" "$DRY_RUN"
+  exit 0
+fi
+
+if [[ "$PROJECT_TYPE" == "unknown" ]]; then
+  log_warn "Could not detect project layout. Expected 'app/' (Alloy) or 'Resources/' (Classic)."
+  log_warn "Assets will be generated under '$OUTPUT/standalone/' so you can copy them manually."
+fi
+
+# -----------------------------------------------------------------------------
+# Pipeline
+# -----------------------------------------------------------------------------
+
+log_step "1/6 Checking dependencies"
+check_deps "$MASTER"
+
+log_step "2/6 Validating master"
+validate_master "$MASTER"
+
+log_step "3/6 Preparing masters (square for iOS, tight for Android)"
+PREPARED_BASE="$OUTPUT/_master"
+MASTER_SQUARE="${PREPARED_BASE}_square.png"
+MASTER_TIGHT="${PREPARED_BASE}_tight.png"
+if [[ $DRY_RUN -eq 0 ]]; then
+  mkdir -p "$OUTPUT"
+  prepare_master "$MASTER" "$PREPARED_BASE"
+  log_ok "Square master: $MASTER_SQUARE"
+  log_ok "Tight master:  $MASTER_TIGHT"
+else
+  log_info "[dry-run] would prepare: $MASTER_SQUARE + $MASTER_TIGHT"
+fi
+
+# Resolve target paths based on project layout
+case "$PROJECT_TYPE" in
+  alloy)   ANDROID_RES="$OUTPUT/app/platform/android/res" ;;
+  classic) ANDROID_RES="$OUTPUT/platform/android/res" ;;
+  *)       ANDROID_RES="$OUTPUT/standalone/platform/android/res" ;;
+esac
+ROOT_STAGING="$OUTPUT"
+
+log_step "4/6 Generating iOS master + marketplace artwork (square)"
+if [[ $DRY_RUN -eq 0 ]]; then
+  gen_ios "$MASTER_TIGHT" "$BG_COLOR" "$IOS_PADDING" "$ROOT_STAGING"
+  gen_marketplace "$MASTER_TIGHT" "$BG_COLOR" "$IOS_PADDING" "$ROOT_STAGING"
+else
+  log_info "[dry-run] would emit DefaultIcon-ios.png, iTunesConnect.png, MarketplaceArtwork.png"
+fi
+
+log_step "5/6 Generating Android adaptive + legacy launcher icons (tight)"
+if [[ $DRY_RUN -eq 0 ]]; then
+  gen_android_adaptive "$MASTER_TIGHT" "$BG_COLOR" "$PADDING" "$ANDROID_RES"
+  gen_android_legacy "$MASTER_TIGHT" "$BG_COLOR" "$PADDING" "$ANDROID_RES"
+  cp "$ASSETS_DIR/ic_launcher.xml" "$ANDROID_RES/mipmap-anydpi-v26/ic_launcher.xml"
+  log_ok "Adaptive icon XML bind: $ANDROID_RES/mipmap-anydpi-v26/ic_launcher.xml"
+else
+  log_info "[dry-run] would emit adaptive + legacy icons × 5 densities"
+fi
+
+if [[ $WITH_NOTIFICATION -eq 1 || $WITH_SPLASH_ICON -eq 1 ]]; then
+  log_step "6/6 Generating optional extras"
+  if [[ $WITH_NOTIFICATION -eq 1 && $DRY_RUN -eq 0 ]]; then
+    gen_notification "$MASTER_TIGHT" "$PADDING" "$ANDROID_RES"
+  elif [[ $WITH_NOTIFICATION -eq 1 ]]; then
+    log_info "[dry-run] would emit ic_stat_notify.png × 5 densities"
+  fi
+  if [[ $WITH_SPLASH_ICON -eq 1 && $DRY_RUN -eq 0 ]]; then
+    gen_splash_icon "$MASTER_TIGHT" "$ANDROID_RES"
+  elif [[ $WITH_SPLASH_ICON -eq 1 ]]; then
+    log_info "[dry-run] would emit splash_icon.png × 5 densities"
+  fi
+else
+  log_step "6/6 (skipped — no optional extras requested)"
+fi
+
+if [[ $CLEANUP_LEGACY -eq 1 ]]; then
+  log_step "Cleanup legacy artifacts"
+  cleanup_legacy "$PROJECT_ROOT" "$PROJECT_TYPE" "$AGGRESSIVE" "$DRY_RUN"
+fi
+
+log_step "Done"
+if [[ $DRY_RUN -eq 0 ]]; then
+  log_ok "All assets staged at: $OUTPUT"
+
+  # ---------------------------------------------------------------------------
+  # Post-generation notes (aclaraciones) — help the user understand what was
+  # made, how to adjust, and what tiapp.xml glue is still needed.
+  # ---------------------------------------------------------------------------
+
+  echo
+  echo "${C_BOLD}Notes on what was generated${C_RESET}"
+  echo
+  echo "  • Brand color ${BG_COLOR} was baked into Android adaptive background layer"
+  echo "    and iOS/marketplace flattened masters (Apple rejects alpha)."
+  echo "  • Android padding:  ${PADDING}%  (logo fills $((100 - 2 * PADDING))% of each mipmap canvas)"
+  echo "  • iOS padding:      ${IOS_PADDING}%  (logo fills $((100 - 2 * IOS_PADDING))% of DefaultIcon-ios and marketplace art)"
+  echo
+  echo "  If the logo looks ${C_DIM}pegado / cramped${C_RESET}: re-run with higher padding"
+  echo "      --padding ${C_YELLOW}25-30${C_RESET}      (Android)"
+  echo "      --ios-padding ${C_YELLOW}10-14${C_RESET}  (iOS)"
+  echo
+  echo "  If the logo looks ${C_DIM}too small / lost${C_RESET}: re-run with lower padding"
+  echo "      --padding ${C_YELLOW}19${C_RESET}         (Android spec floor)"
+  echo "      --ios-padding ${C_YELLOW}4-6${C_RESET}    (iOS)"
+
+  echo
+  echo "${C_BOLD}Configuration reminders${C_RESET}"
+  echo "  ${C_DIM}The skill does NOT auto-create XML resource files or edit tiapp.xml.${C_RESET}"
+  echo "  ${C_DIM}Every snippet below is optional — paste only what you need, after reviewing.${C_RESET}"
+  echo
+  echo "  ${C_YELLOW}⚠${C_RESET}  ${C_BOLD}tiapp.xml <application> tag may be self-closing${C_RESET}"
+  echo "     If yours looks like:"
+  echo "         ${C_DIM}<application android:icon=\"@mipmap/ic_launcher\" .../>${C_RESET}"
+  echo "     You must expand it BEFORE adding children:"
+  echo "         ${C_DIM}<application android:icon=\"@mipmap/ic_launcher\" ...>${C_RESET}"
+  echo "         ${C_DIM}  <meta-data .../>${C_RESET}"
+  echo "         ${C_DIM}</application>${C_RESET}"
+  echo
+  echo "  ${C_BOLD}1. iOS launch background${C_RESET} — under ${C_YELLOW}<ios>${C_RESET} in tiapp.xml:"
+  echo "  ${C_DIM}Matches your --bg-color to the launch storyboard.${C_RESET}"
+  cat <<EOF
+      <ios>
+        <enable-launch-screen-storyboard>true</enable-launch-screen-storyboard>
+        <default-background-color>${BG_COLOR}</default-background-color>
+      </ios>
+EOF
+  echo
+  echo "  ${C_BOLD}2. Android launcher icon${C_RESET} — under ${C_YELLOW}<android><manifest><application>${C_RESET}:"
+  echo "  ${C_DIM}Required for the adaptive icon you just generated to be used.${C_RESET}"
+  cat <<'EOF'
+      <application android:icon="@mipmap/ic_launcher"
+                   android:usesCleartextTraffic="false"/>
+EOF
+
+  if [[ $WITH_SPLASH_ICON -eq 1 ]]; then
+    case "$PROJECT_TYPE" in
+      alloy)   SPLASH_DIR="app/platform/android/res/values-v31" ;;
+      classic) SPLASH_DIR="platform/android/res/values-v31" ;;
+      *)       SPLASH_DIR="platform/android/res/values-v31" ;;
+    esac
+
+    echo
+    echo "  ${C_BOLD}3. Android 12+ splash screen — READ FIRST${C_RESET}"
+    echo
+    echo "  ${C_YELLOW}Titanium SDK 13.x already generates a splash screen automatically${C_RESET}"
+    echo "  ${C_YELLOW}from your launcher icon + <default-background-color>.${C_RESET} For most apps,"
+    echo "  the default is GOOD: the logo centered on your brand color, mask-aware."
+    echo
+    echo "  The ${C_DIM}splash_icon.png${C_RESET} × 5 densities were generated for ADVANCED users who"
+    echo "  want a custom splash icon distinct from the launcher icon. Wiring it up"
+    echo "  requires a theme override, which has two flavors:"
+    echo
+    echo "  ${C_BOLD}Option A — Native platform (API 31+ only, no lib needed)${C_RESET}"
+    echo "  ${C_DIM}Simpler. Works without adding any Gradle dependency. API <31 falls back${C_RESET}"
+    echo "  ${C_DIM}to Titanium's default splash (your launcher icon).${C_RESET}"
+    echo "  ${C_DIM}Create ${SPLASH_DIR}/splash_theme.xml:${C_RESET}"
+    cat <<EOF
+      <?xml version="1.0" encoding="utf-8"?>
+      <resources>
+        <style name="Theme.App.SplashScreen" parent="@android:style/Theme.DeviceDefault.NoActionBar">
+          <item name="android:windowSplashScreenBackground">${BG_COLOR}</item>
+          <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_icon</item>
+        </style>
+      </resources>
+EOF
+    echo
+    echo "  ${C_BOLD}Option B — androidx.core:core-splashscreen (works API 21+)${C_RESET}"
+    echo "  ${C_DIM}More complete (backward-compat, postSplashScreenTheme handoff). Requires${C_RESET}"
+    echo "  ${C_DIM}adding the androidx.core:core-splashscreen library as a Gradle dep, which${C_RESET}"
+    echo "  ${C_DIM}Titanium 13.x does NOT ship by default. To add it, create/edit${C_RESET}"
+    echo "  ${C_DIM}app/platform/android/build.gradle with:${C_RESET}"
+    cat <<'EOF'
+      dependencies {
+        implementation 'androidx.core:core-splashscreen:1.0.1'
+      }
+EOF
+    echo "  ${C_DIM}Then ${SPLASH_DIR}/splash_theme.xml uses the library theme:${C_RESET}"
+    cat <<EOF
+      <?xml version="1.0" encoding="utf-8"?>
+      <resources>
+        <style name="Theme.App.SplashScreen" parent="Theme.SplashScreen">
+          <item name="windowSplashScreenBackground">${BG_COLOR}</item>
+          <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon</item>
+          <item name="postSplashScreenTheme">@style/Theme.AppDerived</item>
+        </style>
+      </resources>
+EOF
+    echo
+    echo "  ${C_BOLD}Either Option A or B needs this meta-data${C_RESET}"
+    echo "  ${C_DIM}under <android><manifest><application> in tiapp.xml:${C_RESET}"
+    cat <<'EOF'
+      <meta-data android:name="io.tidev.titanium.splash.theme"
+                 android:value="@style/Theme.App.SplashScreen"/>
+EOF
+    echo
+    echo "  ${C_YELLOW}⚠  CRITICAL${C_RESET}: NEVER set android:theme=\"@style/Theme.App.SplashScreen\""
+    echo "     on ${C_BOLD}<application>${C_RESET} or any ${C_BOLD}<activity>${C_RESET}. That breaks the ActionBar in every"
+    echo "     screen. The ${C_BOLD}meta-data${C_RESET} above is the ONLY correct way to register a splash"
+    echo "     theme in Titanium."
+    echo
+    echo "  ${C_DIM}Skipping the splash theme entirely is a valid choice — the launcher icon${C_RESET}"
+    echo "  ${C_DIM}already provides a perfectly good Android 12+ splash via Titanium's default.${C_RESET}"
+  fi
+
+  if [[ $WITH_NOTIFICATION -eq 1 ]]; then
+    case "$PROJECT_TYPE" in
+      alloy)   COLORS_DIR="app/platform/android/res/values" ;;
+      classic) COLORS_DIR="platform/android/res/values" ;;
+      *)       COLORS_DIR="platform/android/res/values" ;;
+    esac
+    echo
+    echo "  ${C_BOLD}4. FCM notification icon + tint${C_RESET}"
+    echo "  ${C_DIM}Only needed if you use firebase.cloudmessaging for push. The white-on-${C_RESET}"
+    echo "  ${C_DIM}transparent icon was generated; you still need to wire it.${C_RESET}"
+    echo
+    echo "  ${C_DIM}Create ${COLORS_DIR}/colors.xml (if missing) or merge into existing:${C_RESET}"
+    cat <<EOF
+      <?xml version="1.0" encoding="utf-8"?>
+      <resources>
+        <color name="notification_tint">${BG_COLOR}</color>
+      </resources>
+EOF
+    echo
+    echo "  ${C_DIM}Then under <android><manifest><application> in tiapp.xml:${C_RESET}"
+    cat <<'EOF'
+      <meta-data android:name="com.google.firebase.messaging.default_notification_icon"
+                 android:resource="@drawable/ic_stat_notify"/>
+      <meta-data android:name="com.google.firebase.messaging.default_notification_color"
+                 android:resource="@color/notification_tint"/>
+EOF
+  fi
+
+  echo
+  echo "${C_BOLD}Next steps${C_RESET}"
+  echo
+  echo "  1. Preview in ${C_YELLOW}Preview.app${C_RESET} (never use ${C_DIM}open${C_RESET} without -a — triggers heavy editors)"
+  case "$PROJECT_TYPE" in
+    alloy)
+      echo "  2. If good, copy to project:"
+      echo "       cp $OUTPUT/DefaultIcon-ios.png $OUTPUT/iTunesConnect.png $OUTPUT/MarketplaceArtwork.png $PROJECT_ROOT/"
+      echo "       cp -R $OUTPUT/app/platform/android/res/. $PROJECT_ROOT/app/platform/android/res/"
+      ;;
+    classic)
+      echo "  2. If good, copy to project:"
+      echo "       cp $OUTPUT/DefaultIcon-ios.png $OUTPUT/iTunesConnect.png $OUTPUT/MarketplaceArtwork.png $PROJECT_ROOT/"
+      echo "       cp -R $OUTPUT/platform/android/res/. $PROJECT_ROOT/platform/android/res/"
+      ;;
+    *)
+      echo "  2. Review staging dir and copy files to their final paths manually."
+      ;;
+  esac
+  echo "  3. Cleanup staging:   rm -rf $OUTPUT"
+  echo "  4. Rebuild:           ti clean && ti build -p android -T emulator"
+  echo
+else
+  log_info "Dry-run complete. Re-run without --dry-run to write files."
+fi

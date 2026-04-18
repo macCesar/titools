@@ -14,6 +14,7 @@ import { uninstallCommand } from '../lib/commands/uninstall.js';
 import { autoUpdateCommand } from '../lib/commands/auto-update.js';
 import { statusCommand } from '../lib/commands/status.js';
 import { doctorCommand } from '../lib/commands/doctor.js';
+import { listCommand } from '../lib/commands/list.js';
 
 const program = new Command();
 
@@ -72,6 +73,13 @@ program
   .command('doctor')
   .description('Check installation health and diagnose issues')
   .action(doctorCommand);
+
+// List command
+program
+  .command('list')
+  .alias('ls')
+  .description('List available Titanium skills with short descriptions')
+  .action(listCommand);
 
 // Parse arguments
 program.parse();

@@ -8,7 +8,7 @@
 
 </div>
 
-TiTools is a CLI that installs Titanium SDK skills and a knowledge index for AI coding assistants. One command installs 8 skills, a research agent, and 100+ reference files for Titanium SDK, Alloy MVC, and PurgeTSS.
+TiTools is a Titanium SDK toolkit for AI coding assistants. It provides 9 skills, a research agent, and 100+ reference files for Titanium SDK, Alloy MVC, and PurgeTSS.
 
 The reference files are maintained against official documentation whenever an official source exists, so the assistant can retrieve current framework behavior instead of guessing from generic training data.
 
@@ -18,7 +18,27 @@ Vercel's AGENTS.md evaluation reports a 100% pass rate for the knowledge index a
 
 ---
 
-## Quick setup
+## Installation
+
+### Option A: Plugin Marketplace (Claude Code only)
+
+The fastest way to get started with Claude Code. One command to add the marketplace, one to install:
+
+```bash
+/plugin marketplace add macCesar/titools
+/plugin install titools@maccesar-titools
+```
+
+What you get:
+- All 9 Titanium skills
+- ti-pro research agent
+- Session hook that auto-detects Titanium projects (`tiapp.xml`, Alloy, PurgeTSS)
+- Slash commands: `/ti-check`, `/ti-new-screen`, `/ti-audit`
+- Auto-updates via marketplace
+
+### Option B: CLI (Claude Code, Gemini CLI, Codex CLI)
+
+Cross-platform installation via npm. Works with all three AI coding assistants:
 
 ```bash
 # 1) Install the CLI
@@ -42,7 +62,7 @@ claude   # or gemini, or codex
 ```
 
 What gets installed:
-- All 8 titanium-related skills to `~/.agents/skills/`
+- All 9 titanium-related skills to `~/.agents/skills/`
 - ti-pro agent for Claude Code
 - Platform symlinks (Claude Code, Gemini CLI, Codex CLI)
 - Knowledge index in your project's `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`
@@ -52,6 +72,20 @@ Why NPM?
 - Cross-platform (macOS, Linux, Windows)
 - No sudo required
 - Auto-updates via Claude Code hook (checks once per day)
+
+### Which option should I use?
+
+| | Plugin (Option A) | CLI (Option B) |
+|---|---|---|
+| **Claude Code** | Recommended | Supported |
+| **Gemini CLI** | Not available | Supported |
+| **Codex CLI** | Not available | Supported |
+| **Knowledge Index** | Not included | Included (`titools sync`) |
+| **Auto-updates** | Via marketplace | Via SessionStart hook |
+| **Slash commands** | `/ti-check`, `/ti-new-screen`, `/ti-audit` | Not available |
+| **Session hook** | Auto-detects Titanium projects | Auto-update only |
+
+Use **Option A** if you only use Claude Code. Use **Option B** if you use multiple AI assistants or want the Knowledge Index feature.
 
 ---
 
@@ -134,6 +168,7 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 | alloy-howtos | Alloy CLI and debugging         | Project setup, CLI commands, errors     |
 | purgetss     | Utility-first styling           | UI styling and animations               |
 | ti-api       | Complete API reference          | Properties, methods, events, constants  |
+| ti-branding  | Icon and splash generator       | App icons, adaptive icons, splash, notifications, store artwork, legacy cleanup |
 | ti-expert    | Architecture and implementation | Starting point for most tasks           |
 | ti-guides    | SDK fundamentals                | Hyperloop, distribution, configuration  |
 | ti-howtos    | Native feature integration      | Location, Push, Media, Platform APIs    |
@@ -149,14 +184,14 @@ In addition to skills, this repository includes sub-agents for Claude Code. Sub-
 
 ### ti-pro
 
-Deep-dive research specialist that preloads all 7 titanium-related skills.
+Deep-dive research specialist that preloads all 8 titanium-related documentation skills.
 
 | Aspect           | Details                                           |
 | ---------------- | ------------------------------------------------- |
 | Location         | `~/.claude/agents/ti-pro.md`                      |
 | Model            | Sonnet (comprehensive analysis)                   |
 | Tools            | Read-only (Read, Grep, Glob)                      |
-| Preloaded Skills | All 7 titanium-related skills injected at startup |
+| Preloaded Skills | All 8 Titanium documentation skills injected at startup |
 
 When to use the agent vs skills:
 
@@ -182,6 +217,35 @@ Tip: For automatic activation, include words like "Titanium", "Alloy", or "mobil
 Key difference:
 - Skills = interactive help during development (inline, conversational)
 - Agents = isolated research tasks (returns summary, keeps verbose output separate)
+
+---
+
+## Slash Commands (Plugin only)
+
+When installed as a plugin, TiTools provides slash commands for common tasks:
+
+| Command | Description |
+|---|---|
+| `/ti-check` | Verify project setup: SDK version, Alloy structure, PurgeTSS config, common issues |
+| `/ti-new-screen <name>` | Create a new Alloy screen (controller + view + style) following project conventions |
+| `/ti-audit` | Audit project for anti-patterns, memory leaks, and best practice violations |
+
+These commands automatically invoke the relevant skills:
+- `/ti-check` reads `tiapp.xml` and reports project health
+- `/ti-new-screen` uses `alloy-guides` + `purgetss` to create properly structured files
+- `/ti-audit` uses `ti-expert` + `ti-ui` + `purgetss` + `alloy-guides` for comprehensive review
+
+---
+
+## Session Hook (Plugin only)
+
+The plugin includes a session start hook that auto-detects Titanium projects. When you open Claude Code in a directory with `tiapp.xml`, it automatically reports:
+
+```
+Titanium Alloy + PurgeTSS project detected. TiTools skills are available and MUST be used...
+```
+
+This ensures Claude knows it's a Titanium project from the first prompt, preventing it from writing generic code.
 
 ---
 
