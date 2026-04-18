@@ -48,7 +48,9 @@ What you get:
 - ti-pro research agent
 - Session hook that auto-detects Titanium projects (`tiapp.xml`, Alloy, PurgeTSS)
 - Slash commands: `/ti-check`, `/ti-new-screen`, `/ti-audit`
-- Auto-updates via marketplace
+- Auto-updates via marketplace (opt-in — see note below)
+
+> **Note on auto-updates:** Claude Code disables auto-updates by default for third-party marketplaces like this one. To receive new versions automatically, open `/plugin` → **Marketplaces** tab and enable auto-update for `maccesar-titools`. When an update is applied, Claude Code prompts you to run `/reload-plugins` to activate the new code.
 
 ### Option B: CLI (Claude Code, Gemini CLI, Codex CLI)
 
@@ -89,15 +91,15 @@ Why NPM?
 
 ### Which option should I use?
 
-| | Plugin (Option A) | CLI (Option B) |
-|---|---|---|
-| **Claude Code** | Recommended | Supported |
-| **Gemini CLI** | Not available | Supported |
-| **Codex CLI** | Not available | Supported |
-| **Knowledge Index** | Not included | Included (`titools sync`) |
-| **Auto-updates** | Via marketplace | Via SessionStart hook |
-| **Slash commands** | `/ti-check`, `/ti-new-screen`, `/ti-audit` | Not available |
-| **Session hook** | Auto-detects Titanium projects | Auto-update only |
+|                     | Plugin (Option A)                          | CLI (Option B)            |
+| ------------------- | ------------------------------------------ | ------------------------- |
+| **Claude Code**     | Recommended                                | Supported                 |
+| **Gemini CLI**      | Not available                              | Supported                 |
+| **Codex CLI**       | Not available                              | Supported                 |
+| **Knowledge Index** | Not included                               | Included (`titools sync`) |
+| **Auto-updates**    | Marketplace (opt-in, enable in `/plugin`)  | SessionStart hook (daily) |
+| **Slash commands**  | `/ti-check`, `/ti-new-screen`, `/ti-audit` | Not available             |
+| **Session hook**    | Auto-detects Titanium projects             | Auto-update only          |
 
 Use **Option A** if you only use Claude Code. Use **Option B** if you use multiple AI assistants or want the Knowledge Index feature.
 
@@ -176,17 +178,17 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 
 ## Skills overview
 
-| Skill        | Purpose                         | Best For                                |
-| ------------ | ------------------------------- | --------------------------------------- |
-| alloy-guides | Alloy MVC reference             | Models, Views, Controllers, Widgets     |
-| alloy-howtos | Alloy CLI and debugging         | Project setup, CLI commands, errors     |
-| purgetss     | Utility-first styling           | UI styling and animations               |
-| ti-api       | Complete API reference          | Properties, methods, events, constants  |
+| Skill        | Purpose                         | Best For                                                                        |
+| ------------ | ------------------------------- | ------------------------------------------------------------------------------- |
+| alloy-guides | Alloy MVC reference             | Models, Views, Controllers, Widgets                                             |
+| alloy-howtos | Alloy CLI and debugging         | Project setup, CLI commands, errors                                             |
+| purgetss     | Utility-first styling           | UI styling and animations                                                       |
+| ti-api       | Complete API reference          | Properties, methods, events, constants                                          |
 | ti-branding  | Icon and splash generator       | App icons, adaptive icons, splash, notifications, store artwork, legacy cleanup |
-| ti-expert    | Architecture and implementation | Starting point for most tasks           |
-| ti-guides    | SDK fundamentals                | Hyperloop, distribution, configuration  |
-| ti-howtos    | Native feature integration      | Location, Push, Media, Platform APIs    |
-| ti-ui        | UI/UX patterns                  | Complex layouts, ListViews, platform UI |
+| ti-expert    | Architecture and implementation | Starting point for most tasks                                                   |
+| ti-guides    | SDK fundamentals                | Hyperloop, distribution, configuration                                          |
+| ti-howtos    | Native feature integration      | Location, Push, Media, Platform APIs                                            |
+| ti-ui        | UI/UX patterns                  | Complex layouts, ListViews, platform UI                                         |
 
 Note: `ti-guides`, `ti-howtos`, `ti-ui`, `alloy-guides`, and `alloy-howtos` are based on official Titanium SDK and Alloy documentation. `purgetss` is opinionated in workflow and conventions, but its reference files are audited against the official PurgeTSS documentation for verifiable classes and behavior. `ti-expert` and `purgetss` reflect personal coding conventions (biased toward PurgeTSS).
 
@@ -200,11 +202,11 @@ In addition to skills, this repository includes sub-agents for Claude Code. Sub-
 
 Deep-dive research specialist that preloads all 8 titanium-related documentation skills.
 
-| Aspect           | Details                                           |
-| ---------------- | ------------------------------------------------- |
-| Location         | `~/.claude/agents/ti-pro.md`                      |
-| Model            | Sonnet (comprehensive analysis)                   |
-| Tools            | Read-only (Read, Grep, Glob)                      |
+| Aspect           | Details                                                 |
+| ---------------- | ------------------------------------------------------- |
+| Location         | `~/.claude/agents/ti-pro.md`                            |
+| Model            | Sonnet (comprehensive analysis)                         |
+| Tools            | Read-only (Read, Grep, Glob)                            |
 | Preloaded Skills | All 8 Titanium documentation skills injected at startup |
 
 When to use the agent vs skills:
@@ -238,11 +240,11 @@ Key difference:
 
 When installed as a plugin, TiTools provides slash commands for common tasks:
 
-| Command | Description |
-|---|---|
-| `/ti-check` | Verify project setup: SDK version, Alloy structure, PurgeTSS config, common issues |
+| Command                 | Description                                                                         |
+| ----------------------- | ----------------------------------------------------------------------------------- |
+| `/ti-check`             | Verify project setup: SDK version, Alloy structure, PurgeTSS config, common issues  |
 | `/ti-new-screen <name>` | Create a new Alloy screen (controller + view + style) following project conventions |
-| `/ti-audit` | Audit project for anti-patterns, memory leaks, and best practice violations |
+| `/ti-audit`             | Audit project for anti-patterns, memory leaks, and best practice violations         |
 
 These commands automatically invoke the relevant skills:
 - `/ti-check` reads `tiapp.xml` and reports project health
@@ -660,8 +662,8 @@ titools auto-update --silent   # No output (for hooks)
 ```
 
 Options:
-| Option         | Description                        |
-| -------------- | ---------------------------------- |
+| Option         | Description                       |
+| -------------- | --------------------------------- |
 | `-s, --silent` | Suppress all output except errors |
 
 What it does:
@@ -798,11 +800,11 @@ The TiTools skills include **Community-Discovered Patterns** — verified iOS be
 
 When using Large Titles with a ScrollView inside NavigationWindow or TabGroup, three Window properties must be set together. Without all three, the ScrollView content overlaps behind the navigation bar — or the large title renders with a visible delay.
 
-| Class | Property | Purpose |
-|---|---|---|
-| `auto-adjust-scroll-view-insets` | `autoAdjustScrollViewInsets` | Adjusts ScrollView insets to prevent content overlap |
-| `extend-edges-all` | `extendEdges` | Content extends behind bars (blur/translucent effect) |
-| `large-title-enabled` | `largeTitleEnabled` | Large title that collapses on scroll |
+| Class                            | Property                     | Purpose                                               |
+| -------------------------------- | ---------------------------- | ----------------------------------------------------- |
+| `auto-adjust-scroll-view-insets` | `autoAdjustScrollViewInsets` | Adjusts ScrollView insets to prevent content overlap  |
+| `extend-edges-all`               | `extendEdges`                | Content extends behind bars (blur/translucent effect) |
+| `large-title-enabled`            | `largeTitleEnabled`          | Large title that collapses on scroll                  |
 
 **Recommended:** set the base properties as global Window defaults in `config.cjs`:
 

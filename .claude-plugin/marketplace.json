@@ -13,7 +13,19 @@
         "source": "github",
         "repo": "macCesar/titools"
       },
-      "description": "Complete Titanium SDK development toolkit: 9 specialized skills covering API reference, Alloy MVC, PurgeTSS styling, architecture, guides, how-tos, UI patterns, and automated icon/splash/branding generation. Auto-detects Titanium projects by tiapp.xml presence."
+      "description": "Complete Titanium SDK development toolkit: 9 specialized skills covering API reference, Alloy MVC, PurgeTSS styling, architecture, guides, how-tos, UI patterns, and automated icon/splash/branding generation. Auto-detects Titanium projects by tiapp.xml presence.",
+      "category": "mobile-development",
+      "tags": [
+        "titanium",
+        "titanium-sdk",
+        "alloy",
+        "purgetss",
+        "ui",
+        "api-reference",
+        "branding",
+        "ios",
+        "android"
+      ]
     }
   ]
 }

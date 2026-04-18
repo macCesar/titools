@@ -13,8 +13,9 @@
 gen_android_adaptive() {
   local master="$1"
   local bg="$2"
-  local padding="$3"      # percent per side
-  local res_root="$4"     # e.g. /path/app/platform/android/res
+  local padding="$3"        # percent per side
+  local res_root="$4"       # e.g. /path/app/platform/android/res
+  local mono_master="${5:-}" # optional dedicated silhouette master
 
   local densities=(mdpi hdpi xhdpi xxhdpi xxxhdpi)
   local sizes=(108 162 216 324 432)
@@ -38,11 +39,22 @@ gen_android_adaptive() {
       -strip \
       "$dir/ic_launcher_background.png"
 
-    # Monochrome: foreground tinted to pure white, alpha preserved
-    magick "$dir/ic_launcher_foreground.png" \
-      -channel RGB -fill white -colorize 100 +channel \
-      -strip \
-      "$dir/ic_launcher_monochrome.png"
+    # Monochrome: white silhouette with alpha. If a dedicated mono master was
+    # provided, render it fresh with the same padding. Otherwise derive from
+    # the colored foreground (naive whitening — may flatten complex logos).
+    if [[ -n "$mono_master" ]]; then
+      magick "$mono_master" \
+        -resize "${inner}x${inner}" \
+        -background none -gravity center -extent "${size}x${size}" \
+        -channel RGB -fill white -colorize 100 +channel \
+        -strip \
+        "$dir/ic_launcher_monochrome.png"
+    else
+      magick "$dir/ic_launcher_foreground.png" \
+        -channel RGB -fill white -colorize 100 +channel \
+        -strip \
+        "$dir/ic_launcher_monochrome.png"
+    fi
   done
 
   # anydpi-v26 binder directory (XML copied by caller from assets/ic_launcher.xml)
