@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [2.6.0] - 2026-04-17
 
 ### Added
+- **`LICENSE` file** — MIT license boilerplate, making the warranty disclaimer explicit. `package.json` already declared `"license": "MIT"`, but the file itself was missing. Added so scanners, GitHub, and npm show the full MIT terms.
+- **Safety & disclaimer** section in `README.md` — guidance for destructive operations (`--cleanup-legacy`, icon replacement) plus an AS-IS / no-warranty statement pointing to `LICENSE`.
+- **Runtime disclaimer** in `--cleanup-legacy` output — prints a warning before the cleanup plan recommending a git commit beforehand and noting the AS-IS delivery.
 - **`titools list`** (alias `titools ls`) — Enumerates available Titanium skills with their short description (first sentence of each skill's SKILL.md description). Shows install status per skill. Inspired by `tn list` for Titanium recipes.
 - **`ti-branding` skill** — 9th skill in TiTools. Generates full icon and splash-screen asset sets for modern Titanium SDK 13.x projects from a single SVG or PNG master. Outputs:
   - `DefaultIcon-ios.png` (1024² no alpha), `iTunesConnect.png` (1024²), `MarketplaceArtwork.png` (512²)
