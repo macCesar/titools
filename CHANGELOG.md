@@ -4,6 +4,144 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.7.0] - 2026-04-18
+
+### Fixed — `ti-branding` skill alpha handling
+
+The skill now matches what a fresh `titanium` / `alloy new` project ships by
+default. Previously the skill flattened alpha on marketplace artwork and only
+emitted `DefaultIcon-ios.png`, which diverged from Titanium's own templates.
+
+- **`gen-ios.sh`** — now produces **both** `DefaultIcon.png` (1024², alpha
+  preserved, the universal/Android source) **and** `DefaultIcon-ios.png` (1024²,
+  alpha flattened over `--bg-color`, for iOS/Apple). Previously only the
+  flattened `-ios` variant was generated, leaving projects without the
+  alpha-intact source that `ti create` ships.
+- **`gen-marketplace.sh`** — `iTunesConnect.png` (1024²) and
+  `MarketplaceArtwork.png` (512²) now preserve alpha. Previously both were
+  flattened on `--bg-color`, which didn't match what Titanium's template
+  generates and made compositing over different backgrounds impossible.
+  Apple's App Store upload still rejects alpha, but that's a final-submission
+  concern — the in-project template file keeps transparency so the developer
+  can composite before upload.
+- **`ti-branding` entry script** — "Next steps" copy command now includes
+  `DefaultIcon.png` alongside the other root-level assets. Dry-run output
+  enumerates `DefaultIcon.png` too.
+- **`SKILL.md` asset table** updated to reflect the new alpha handling and
+  the `DefaultIcon.png` addition.
+
+The `ti-branding` skill and `imgconvert-cli` npm package converge on the same
+correct alpha behavior but remain fully independent: each is self-contained,
+with no runtime dependency between them. Two audiences (Claude Code users vs.
+npm CLI users), two delivery channels, one shared specification.
+
+### Added — `--monochrome-master <path>` flag in `ti-branding`
+
+Optional dedicated silhouette master for the monochrome-destination outputs:
+
+- `mipmap-*/ic_launcher_monochrome.png` (Android 13+ themed icons)
+- `drawable-*/ic_stat_notify.png` (status bar notification icon)
+
+When `--monochrome-master` is provided, those two outputs render from the
+dedicated master (then whitened to pure white + preserved alpha). When not
+provided, fall back to the previous behavior — naively whiten the colored
+main master.
+
+**Why this matters:** a naive color→white conversion collapses multi-color
+detail into a featureless white blob. Example: a painter's palette logo with
+4 colored dots becomes 4 indistinguishable white splotches. By providing a
+monochrome variant designed with cutout holes / negative space where colors
+were, the dot-pattern detail survives in themed Android icons and in the
+notification status bar.
+
+Works in both generation modes (`--in-place` and staged). When the mono
+master is used, intermediate files `_master_mono_square.png` and
+`_master_mono_tight.png` are tracked and cleaned up in `--in-place` mode
+like the main master intermediates.
+
+### Changed — default `--padding` lowered from 22% to 20%
+
+Material Design spec floor for Android adaptive icon safe-zone is 19.44% per
+side (108dp canvas with a 66dp keyline grid). The previous default of 22%
+sat 2.5% above the floor without real-world justification — it produced
+visibly smaller logos on device (~6% less width at xxxhdpi, 18px less at
+432×432 canvas) in exchange for a "safety" margin that wasn't defending
+against any real masking scenario.
+
+New default **20%** is:
+- Just above the spec floor (0.56% buffer, still defensively rounded)
+- A clean, memorable round number
+- ~6% bigger logo across all densities
+- Still safe for every mask type (circle, squircle, rounded square)
+
+Override with `--padding N` when your logo warrants it:
+- `--padding 16` — Google keyline grid (72dp viewport), maximum icon size
+- `--padding 19` — spec exact floor, no buffer
+- `--padding 25-30` — highly stylized logos with ornament in corners
+
+### Changed — `--bg-color` now flattens marketplace artwork
+
+When `--bg-color` is **explicitly provided**, `iTunesConnect.png` (1024²) and
+`MarketplaceArtwork.png` (512²) are now flattened onto the given color instead
+of keeping alpha. This prevents the dark-mode-muddy-icon problem in Play Store
+and macOS App Store listings when the master logo has significant transparent
+areas (e.g. a wordmark-only or icon-on-transparent master).
+
+When `--bg-color` is **not provided**, both files keep alpha to match the
+`ti create` default template behavior. `DefaultIcon.png` always keeps alpha
+regardless — it is a source file that Titanium processes into the adaptive
+icon foreground layer at build time, and flattening it would break that.
+
+### Added — `--notes` flag in `ti-branding`
+
+New flag that gates the long-form post-generation output (padding tuning
+guide, iOS launch storyboard snippet, Android launcher wiring, Android 12+
+splash theme with Options A/B + critical warning, FCM notification tint) behind
+an explicit opt-in. Default output is a compact summary (~15 lines) showing
+background color, padding, destination, and 3-line next-steps — with a hint
+pointing to `--notes` for the full snippets. Before this flag the full
+output (~100+ lines) was always printed, burying the key "next steps"
+under reference documentation most users only need once per project.
+
+### Added — `--in-place` flag in `ti-branding`
+
+New flag that skips the `.ti-branding/` staging directory and writes files
+directly into the project root. Designed for the "brand a fresh project"
+flow: right after `ti create`, run `ti-branding logo.svg --in-place
+--bg-color "#XXX"` to overwrite the default Titanium/Alloy icons in one
+command instead of having to `cp -R` from staging manually.
+
+- Prints an explicit warning before writing: `⚠  --in-place mode: files in
+  your project will be OVERWRITTEN. Commit first if you want a rollback.`
+- `--output` takes precedence over `--in-place` when both are passed
+  (avoids ambiguity).
+- "Next steps" output adapts: instead of the `cp` copy-to-project command,
+  it points at `git checkout -- .` as the restore path if something looks
+  wrong.
+- Intermediate master files (`_master_square.png` / `_master_tight.png`)
+  are cleaned up at the end so only the 4 real branded icons remain in
+  the project root.
+- Works with both Alloy (`app/`) and Classic (`Resources/`) projects.
+
+This is the skill-side counterpart to the `--in-place` flag added in
+`imgconvert-cli` v2.0.0. Both tools independently offer the same UX for
+the primary "just brand my project" use case, matching the project's
+independence constraint: no runtime dependency between the skill and the
+npm package, but equivalent feature surfaces for their respective audiences.
+
+### Added — Plugin marketplace metadata
+
+- **`plugin.json`** — added `keywords` array (`titanium`, `titanium-sdk`,
+  `alloy`, `purgetss`, `mobile`, `ios`, `android`, `ui`, `api-reference`,
+  `branding`) to improve discoverability in the Claude Code plugin marketplace.
+- **`marketplace.json`** — added `category: "mobile-development"` and a `tags`
+  array to the `titools` plugin entry so users can browse and filter more
+  effectively.
+- **`README.md`** — clarified auto-update behavior for third-party marketplaces.
+  Claude Code disables auto-updates by default for non-Anthropic marketplaces;
+  the README now documents how to opt in via `/plugin` → **Marketplaces** tab
+  and the `/reload-plugins` prompt that follows each update.
+
 ## [2.6.1] - 2026-04-18
 
 ### Fixed

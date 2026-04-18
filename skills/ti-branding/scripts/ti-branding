@@ -34,15 +34,21 @@ source "$LIB_DIR/gen-splash-icon.sh"
 # -----------------------------------------------------------------------------
 
 MASTER=""
+MONOCHROME_MASTER=""
 BG_COLOR="#FFFFFF"
-PADDING=22
+BG_COLOR_EXPLICIT=0
+PADDING=20
 IOS_PADDING=8
 WITH_NOTIFICATION=0
 WITH_SPLASH_ICON=0
 CLEANUP_LEGACY=0
 AGGRESSIVE=0
 OUTPUT=""
+OUTPUT_EXPLICIT=0
 DRY_RUN=0
+IN_PLACE=0
+IS_IN_PLACE=0
+NOTES=0
 PROJECT_ROOT="$(pwd)"
 
 # -----------------------------------------------------------------------------
@@ -82,8 +88,9 @@ ARGUMENTS:
 OPTIONS:
   --bg-color <hex>         Background color for adaptive layer + iOS alpha flatten.
                            Default: #FFFFFF
-  --padding <pct>          Android safe-zone padding per side (0–40). Default: 22
-                           (Android official minimum is 19.44%.)
+  --padding <pct>          Android safe-zone padding per side (0–40). Default: 20
+                           (Material spec floor is 19.44%; default 20 gives a
+                           tiny buffer while keeping the logo visibly prominent.)
   --ios-padding <pct>      iOS/marketplace aesthetic padding per side (0–40).
                            Default: 8. iOS icons have no launcher mask — this
                            is purely breathing room around the logo.
@@ -96,6 +103,17 @@ OPTIONS:
                            (<1% global market in 2026). Off by default.
   --output <dir>           Staging directory. Default: <project>/.ti-branding
   --project <dir>          Project root (default: current working directory).
+  --in-place               Skip the staging directory — write files directly into
+                           the project root. OVERWRITES existing icons. --output
+                           takes precedence when both are passed.
+  --monochrome-master <p>  Optional dedicated silhouette master for
+                           ic_launcher_monochrome.png + ic_stat_notify.png.
+                           Use when the colored logo has multi-color detail
+                           that would collapse into a featureless blob when
+                           naively whitened. Falls back to main master if omitted.
+  --notes                  Print full tiapp.xml snippets + padding tuning guide
+                           after the run. Default is a compact summary — use this
+                           when you need the config snippets to paste into tiapp.xml.
   --dry-run                Print what would be generated without writing files.
   -h, --help               Show this help.
 
@@ -113,15 +131,18 @@ EOF
 while [[ $# -gt 0 ]]; do
   case "$1" in
     -h|--help) usage; exit 0 ;;
-    --bg-color) BG_COLOR="$2"; shift 2 ;;
+    --bg-color) BG_COLOR="$2"; BG_COLOR_EXPLICIT=1; shift 2 ;;
     --padding) PADDING="$2"; shift 2 ;;
     --ios-padding) IOS_PADDING="$2"; shift 2 ;;
     --with-notification) WITH_NOTIFICATION=1; shift ;;
     --with-splash-icon) WITH_SPLASH_ICON=1; shift ;;
     --cleanup-legacy) CLEANUP_LEGACY=1; shift ;;
     --aggressive) AGGRESSIVE=1; shift ;;
-    --output) OUTPUT="$2"; shift 2 ;;
+    --output) OUTPUT="$2"; OUTPUT_EXPLICIT=1; shift 2 ;;
     --project) PROJECT_ROOT="$2"; shift 2 ;;
+    --in-place) IN_PLACE=1; shift ;;
+    --monochrome-master) MONOCHROME_MASTER="$2"; shift 2 ;;
+    --notes) NOTES=1; shift ;;
     --dry-run) DRY_RUN=1; shift ;;
     --) shift; break ;;
     -*) log_err "Unknown option: $1"; usage >&2; exit 2 ;;
@@ -172,6 +193,14 @@ if [[ ! "$BG_COLOR" =~ ^#[0-9A-Fa-f]{6}$ ]]; then
   exit 2
 fi
 
+# Resolve staging dir:
+#   explicit --output wins over --in-place (avoids ambiguity)
+#   --in-place (no --output) → write directly into the project root
+#   neither → default to .ti-branding/ inside the project
+if [[ $IN_PLACE -eq 1 && $OUTPUT_EXPLICIT -eq 0 ]]; then
+  OUTPUT="$PROJECT_ROOT"
+  IS_IN_PLACE=1
+fi
 OUTPUT="${OUTPUT:-$PROJECT_ROOT/.ti-branding}"
 
 # -----------------------------------------------------------------------------
@@ -191,11 +220,16 @@ if [[ -n "$MASTER" ]]; then
   log_info "Master:       $MASTER"
   log_info "Background:   $BG_COLOR"
   log_info "Padding:      Android ${PADDING}% / iOS ${IOS_PADDING}% per side"
-  log_info "Staging:      $OUTPUT"
+  if [[ $IS_IN_PLACE -eq 1 ]]; then
+    log_info "Writing IN PLACE to: $PROJECT_ROOT"
+  else
+    log_info "Staging:      $OUTPUT"
+  fi
 fi
 [[ $WITH_NOTIFICATION -eq 1 ]] && log_info "Extras:       + notification icons"
 [[ $WITH_SPLASH_ICON -eq 1 ]] && log_info "Extras:       + Android 12+ splash icon"
 [[ $CLEANUP_LEGACY -eq 1 ]] && log_info "Cleanup:      --cleanup-legacy$([[ $AGGRESSIVE -eq 1 ]] && echo " --aggressive")"
+[[ $IS_IN_PLACE -eq 1 && $DRY_RUN -eq 0 ]] && log_warn "⚠  --in-place mode: files in your project will be OVERWRITTEN. Commit first if you want a rollback."
 [[ $DRY_RUN -eq 1 ]] && log_warn "DRY RUN — no files will be written"
 
 # -----------------------------------------------------------------------------
@@ -227,13 +261,27 @@ log_step "3/6 Preparing masters (square for iOS, tight for Android)"
 PREPARED_BASE="$OUTPUT/_master"
 MASTER_SQUARE="${PREPARED_BASE}_square.png"
 MASTER_TIGHT="${PREPARED_BASE}_tight.png"
+MONO_TIGHT=""
 if [[ $DRY_RUN -eq 0 ]]; then
   mkdir -p "$OUTPUT"
   prepare_master "$MASTER" "$PREPARED_BASE"
   log_ok "Square master: $MASTER_SQUARE"
   log_ok "Tight master:  $MASTER_TIGHT"
+
+  # Optional: prepare a dedicated monochrome master if provided.
+  if [[ -n "$MONOCHROME_MASTER" ]]; then
+    if [[ ! -f "$MONOCHROME_MASTER" ]]; then
+      log_err "Monochrome master not found: $MONOCHROME_MASTER"
+      exit 2
+    fi
+    local_mono_base="$OUTPUT/_master_mono"
+    prepare_master "$MONOCHROME_MASTER" "$local_mono_base"
+    MONO_TIGHT="${local_mono_base}_tight.png"
+    log_ok "Monochrome master (for ic_launcher_monochrome + ic_stat_notify): $MONO_TIGHT"
+  fi
 else
   log_info "[dry-run] would prepare: $MASTER_SQUARE + $MASTER_TIGHT"
+  [[ -n "$MONOCHROME_MASTER" ]] && log_info "[dry-run] would prepare monochrome master from: $MONOCHROME_MASTER"
 fi
 
 # Resolve target paths based on project layout
@@ -247,14 +295,14 @@ ROOT_STAGING="$OUTPUT"
 log_step "4/6 Generating iOS master + marketplace artwork (square)"
 if [[ $DRY_RUN -eq 0 ]]; then
   gen_ios "$MASTER_TIGHT" "$BG_COLOR" "$IOS_PADDING" "$ROOT_STAGING"
-  gen_marketplace "$MASTER_TIGHT" "$BG_COLOR" "$IOS_PADDING" "$ROOT_STAGING"
+  gen_marketplace "$MASTER_TIGHT" "$BG_COLOR" "$IOS_PADDING" "$ROOT_STAGING" "$BG_COLOR_EXPLICIT"
 else
-  log_info "[dry-run] would emit DefaultIcon-ios.png, iTunesConnect.png, MarketplaceArtwork.png"
+  log_info "[dry-run] would emit DefaultIcon.png, DefaultIcon-ios.png, iTunesConnect.png, MarketplaceArtwork.png"
 fi
 
 log_step "5/6 Generating Android adaptive + legacy launcher icons (tight)"
 if [[ $DRY_RUN -eq 0 ]]; then
-  gen_android_adaptive "$MASTER_TIGHT" "$BG_COLOR" "$PADDING" "$ANDROID_RES"
+  gen_android_adaptive "$MASTER_TIGHT" "$BG_COLOR" "$PADDING" "$ANDROID_RES" "$MONO_TIGHT"
   gen_android_legacy "$MASTER_TIGHT" "$BG_COLOR" "$PADDING" "$ANDROID_RES"
   cp "$ASSETS_DIR/ic_launcher.xml" "$ANDROID_RES/mipmap-anydpi-v26/ic_launcher.xml"
   log_ok "Adaptive icon XML bind: $ANDROID_RES/mipmap-anydpi-v26/ic_launcher.xml"
@@ -265,7 +313,8 @@ fi
 if [[ $WITH_NOTIFICATION -eq 1 || $WITH_SPLASH_ICON -eq 1 ]]; then
   log_step "6/6 Generating optional extras"
   if [[ $WITH_NOTIFICATION -eq 1 && $DRY_RUN -eq 0 ]]; then
-    gen_notification "$MASTER_TIGHT" "$PADDING" "$ANDROID_RES"
+    # Use monochrome master if provided, else fall back to main (whitened by the generator).
+    gen_notification "${MONO_TIGHT:-$MASTER_TIGHT}" "$ANDROID_RES"
   elif [[ $WITH_NOTIFICATION -eq 1 ]]; then
     log_info "[dry-run] would emit ic_stat_notify.png × 5 densities"
   fi
@@ -285,11 +334,62 @@ fi
 
 log_step "Done"
 if [[ $DRY_RUN -eq 0 ]]; then
-  log_ok "All assets staged at: $OUTPUT"
+  # In --in-place mode, intermediate master files (_master_square.png /
+  # _master_tight.png) land directly in the project root alongside the real
+  # branded assets. Clean them up so the user is only left with the 4 icons.
+  if [[ $IS_IN_PLACE -eq 1 ]]; then
+    rm -f "$OUTPUT/_master_square.png" "$OUTPUT/_master_tight.png"
+    log_ok "All assets written IN PLACE at: $PROJECT_ROOT"
+  else
+    log_ok "All assets staged at: $OUTPUT"
+  fi
 
   # ---------------------------------------------------------------------------
-  # Post-generation notes (aclaraciones) — help the user understand what was
-  # made, how to adjust, and what tiapp.xml glue is still needed.
+  # Post-generation output — compact summary by default, full notes with --notes.
+  # ---------------------------------------------------------------------------
+
+  if [[ $NOTES -eq 0 ]]; then
+    # Compact summary — only config/destination + 3-line next steps + hint.
+    echo
+    echo "${C_BOLD}Summary${C_RESET}"
+    echo "  Background:   ${BG_COLOR}   Padding: Android ${PADDING}% / iOS ${IOS_PADDING}%"
+    if [[ $IS_IN_PLACE -eq 1 ]]; then
+      echo "  Written in place to: $PROJECT_ROOT"
+    else
+      echo "  Staged at:    $OUTPUT"
+    fi
+    echo
+    echo "${C_BOLD}Next steps${C_RESET}"
+    if [[ $IS_IN_PLACE -eq 1 ]]; then
+      echo "  • Preview the new icons in ${C_YELLOW}Preview.app${C_RESET}."
+      echo "  • If something looks wrong: ${C_DIM}git checkout -- .${C_RESET}"
+      echo "  • Rebuild: ${C_DIM}ti clean && ti build -p android -T emulator${C_RESET}"
+    else
+      case "$PROJECT_TYPE" in
+        alloy)
+          echo "  • Preview in ${C_YELLOW}Preview.app${C_RESET}, then copy to project:"
+          echo "      ${C_DIM}cp $OUTPUT/{DefaultIcon,DefaultIcon-ios,iTunesConnect,MarketplaceArtwork}.png $PROJECT_ROOT/${C_RESET}"
+          echo "      ${C_DIM}cp -R $OUTPUT/app/platform/android/res/. $PROJECT_ROOT/app/platform/android/res/${C_RESET}"
+          ;;
+        classic)
+          echo "  • Preview in ${C_YELLOW}Preview.app${C_RESET}, then copy to project:"
+          echo "      ${C_DIM}cp $OUTPUT/{DefaultIcon,DefaultIcon-ios,iTunesConnect,MarketplaceArtwork}.png $PROJECT_ROOT/${C_RESET}"
+          echo "      ${C_DIM}cp -R $OUTPUT/platform/android/res/. $PROJECT_ROOT/platform/android/res/${C_RESET}"
+          ;;
+        *)
+          echo "  • Review ${C_YELLOW}$OUTPUT/${C_RESET} and copy files to their final paths manually."
+          ;;
+      esac
+      echo "  • Cleanup staging: ${C_DIM}rm -rf $OUTPUT${C_RESET}"
+    fi
+    echo
+    log_info "Pass ${C_BOLD}--notes${C_RESET} to print tiapp.xml snippets + padding tuning guide."
+    echo
+    exit 0
+  fi
+
+  # ---------------------------------------------------------------------------
+  # Full notes (with --notes) — tiapp.xml snippets, padding tuning, etc.
   # ---------------------------------------------------------------------------
 
   echo
@@ -438,24 +538,31 @@ EOF
   echo
   echo "${C_BOLD}Next steps${C_RESET}"
   echo
-  echo "  1. Preview in ${C_YELLOW}Preview.app${C_RESET} (never use ${C_DIM}open${C_RESET} without -a — triggers heavy editors)"
+  if [[ $IS_IN_PLACE -eq 1 ]]; then
+    echo "  1. Preview the new icons in ${C_YELLOW}Preview.app${C_RESET} — the files in your project"
+    echo "     were overwritten directly (no staging directory was used)."
+    echo "  2. If something looks wrong, restore from git:  ${C_DIM}git checkout -- .${C_RESET}"
+    echo "  3. Rebuild:           ${C_DIM}ti clean && ti build -p android -T emulator${C_RESET}"
+  else
+    echo "  1. Preview in ${C_YELLOW}Preview.app${C_RESET} (never use ${C_DIM}open${C_RESET} without -a — triggers heavy editors)"
   case "$PROJECT_TYPE" in
     alloy)
       echo "  2. If good, copy to project:"
-      echo "       cp $OUTPUT/DefaultIcon-ios.png $OUTPUT/iTunesConnect.png $OUTPUT/MarketplaceArtwork.png $PROJECT_ROOT/"
+      echo "       cp $OUTPUT/DefaultIcon.png $OUTPUT/DefaultIcon-ios.png $OUTPUT/iTunesConnect.png $OUTPUT/MarketplaceArtwork.png $PROJECT_ROOT/"
       echo "       cp -R $OUTPUT/app/platform/android/res/. $PROJECT_ROOT/app/platform/android/res/"
       ;;
     classic)
       echo "  2. If good, copy to project:"
-      echo "       cp $OUTPUT/DefaultIcon-ios.png $OUTPUT/iTunesConnect.png $OUTPUT/MarketplaceArtwork.png $PROJECT_ROOT/"
+      echo "       cp $OUTPUT/DefaultIcon.png $OUTPUT/DefaultIcon-ios.png $OUTPUT/iTunesConnect.png $OUTPUT/MarketplaceArtwork.png $PROJECT_ROOT/"
       echo "       cp -R $OUTPUT/platform/android/res/. $PROJECT_ROOT/platform/android/res/"
       ;;
     *)
       echo "  2. Review staging dir and copy files to their final paths manually."
       ;;
   esac
-  echo "  3. Cleanup staging:   rm -rf $OUTPUT"
-  echo "  4. Rebuild:           ti clean && ti build -p android -T emulator"
+    echo "  3. Cleanup staging:   rm -rf $OUTPUT"
+    echo "  4. Rebuild:           ${C_DIM}ti clean && ti build -p android -T emulator${C_RESET}"
+  fi
   echo
 else
   log_info "Dry-run complete. Re-run without --dry-run to write files."

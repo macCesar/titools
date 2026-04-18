@@ -1,7 +1,7 @@
 ---
 name: ti-branding
-description: "Generate complete app branding assets for modern Titanium SDK 13.x projects — launcher icons, adaptive icons, splash-screen icons, notification icons, and marketplace artwork — from a single SVG or PNG master. Use when the user asks to brand their app, update the app icon, set up splash screens, prepare store assets, fix generic/placeholder icons, add a notification icon, generate a launcher for Android 8+/13+, replace the TiTools default icon, or anything related to visual identity of a Titanium app (Alloy or Classic). Auto-detects Alloy vs Classic layout. Outputs iOS `DefaultIcon-ios.png` (flattened), Android adaptive triplet (foreground + background + monochrome) across 5 densities, Android legacy launcher × 5, marketplace artwork (1024² + 512²), and optionally notification icons and Android 12+ splash icons. Targets SDK 13.0–13.2 minimums without legacy cruft (post-Xcode 14 iOS minimums, no 9-patch splash, no pre-adaptive Android icons). Delegates raster work to ImageMagick + librsvg (system tools) — zero npm/pip dependencies. Invoke this skill whenever the user mentions icons, splash screens, branding, launcher, adaptive icon, mipmap, appiconset, DefaultIcon, iTunesConnect, Play Store artwork, or any visual asset for a Titanium app."
-argument-hint: "[master-path] [--bg-color <hex>] [--padding <pct>] [--with-notification] [--with-splash-icon] [--cleanup-legacy] [--aggressive] [--dry-run]"
+description: "Generate complete app branding assets for modern Titanium SDK 13.x projects — launcher icons, adaptive icons, splash-screen icons, notification icons, and marketplace artwork — from a single SVG or PNG master. Use when the user asks to brand their app, update the app icon, set up splash screens, prepare store assets, fix generic/placeholder icons, add a notification icon, generate a launcher for Android 8+/13+, replace the TiTools default icon, or anything related to visual identity of a Titanium app (Alloy or Classic). Auto-detects Alloy vs Classic layout. Outputs iOS `DefaultIcon.png` (alpha-preserved source) + `DefaultIcon-ios.png` (alpha-flattened for Apple), Android adaptive triplet (foreground + background + monochrome) across 5 densities, Android legacy launcher × 5, marketplace artwork (1024² + 512², alpha-preserved), and optionally notification icons and Android 12+ splash icons. Targets SDK 13.0–13.2 minimums without legacy cruft (post-Xcode 14 iOS minimums, no 9-patch splash, no pre-adaptive Android icons). Delegates raster work to ImageMagick + librsvg (system tools) — zero npm/pip dependencies. Invoke this skill whenever the user mentions icons, splash screens, branding, launcher, adaptive icon, mipmap, appiconset, DefaultIcon, iTunesConnect, Play Store artwork, or any visual asset for a Titanium app."
+argument-hint: "[master-path] [--bg-color <hex>] [--padding <pct>] [--with-notification] [--with-splash-icon] [--cleanup-legacy] [--aggressive] [--in-place] [--monochrome-master <path>] [--notes] [--dry-run]"
 allowed-tools: Read, Glob, Bash, Write, Edit
 ---
 
@@ -29,9 +29,10 @@ Every invocation produces (in a staging directory, reviewed before copy):
 
 | Asset | Path in project | Why |
 |---|---|---|
-| `DefaultIcon-ios.png` (1024×1024, no alpha) | Project root | iOS SDK generates the full appiconset from this at build time. Flattened because Apple rejects alpha channels. |
-| `iTunesConnect.png` (1024×1024, no alpha) | Project root | App Store submission requirement. |
-| `MarketplaceArtwork.png` (512×512, no alpha) | Project root | Google Play submission requirement. |
+| `DefaultIcon.png` (1024×1024, alpha preserved) | Project root | Universal source — Titanium's `ti create` template ships this with alpha. Used for Android / Alloy references and as the alpha-intact source of truth. |
+| `DefaultIcon-ios.png` (1024×1024, no alpha) | Project root | iOS SDK generates the full appiconset from this at build time. Flattened because Apple rejects alpha channels on App Store icon uploads. |
+| `iTunesConnect.png` (1024×1024, alpha preserved) | Project root | App Store artwork template. Matches `ti create` default — alpha preserved so the developer can composite over any background before upload. |
+| `MarketplaceArtwork.png` (512×512, alpha preserved) | Project root | Google Play feature graphic template. Matches `ti create` default — alpha preserved. |
 | `ic_launcher_foreground.png` × 5 densities | `app/platform/android/res/mipmap-{m,h,x,xx,xxx}hdpi/` | Adaptive icon foreground layer. Logo centered in 108dp canvas with configurable padding (default 22% ≈ 66dp safe-zone). |
 | `ic_launcher_background.png` × 5 densities | idem | Adaptive icon background layer — solid `--bg-color`. |
 | `ic_launcher_monochrome.png` × 5 densities | idem | Android 13+ themed icons (all non-transparent pixels → white). |
@@ -68,12 +69,15 @@ Options:
 | Flag | Default | Purpose |
 |---|---|---|
 | `--bg-color <hex>` | `#FFFFFF` | Solid color for adaptive background layer. Also used for iOS alpha flatten. |
-| `--padding <pct>` | `22` | Safe-zone padding per side (Android official minimum is 19.44% — 22% adds a small buffer against launcher masking). Range 0–40. |
+| `--padding <pct>` | `20` | Safe-zone padding per side. Material spec floor is 19.44% — default of 20 gives a tiny buffer while keeping the logo visibly prominent across launcher masks. Range 0–40. |
 | `--with-notification` | off | Emit `ic_stat_notify.png` × 5 densities. |
 | `--with-splash-icon` | off | Emit `splash_icon.png` × 5 densities (Android 12+ SplashScreen API). |
 | `--cleanup-legacy` | off | After generating (or standalone), scan the project for legacy branding artifacts — iOS launch image PNGs, Android `default.png`, `appicon.png`, `res-long-*/res-notlong-*`, etc. — and remove them. Context-aware: reads `tiapp.xml` to decide what's safe. See `references/cleanup-legacy.md`. |
 | `--aggressive` | off | With `--cleanup-legacy`, also remove `ldpi` density folders (<1% of active devices globally in 2026). Off by default to be conservative. |
 | `--output <dir>` | `<project>/.ti-branding/` | Staging directory. Review before copying to `app/`. |
+| `--in-place` | off | Skip the staging directory and write files directly into the project root. **Overwrites existing icons.** Ideal right after `ti create` when you want to replace the default Titanium/Alloy icons in one command. `--output` takes precedence if both are passed. |
+| `--monochrome-master <path>` | — | Optional dedicated silhouette master for `ic_launcher_monochrome.png` + `ic_stat_notify.png`. Use this when your colored logo has multi-color detail that would collapse into a featureless blob when naively whitened (e.g. a painter's palette with 4 color dots — provide a monochrome variant with cutout holes instead so the detail survives in themed icons and notification status bar). Falls back to whitening the main master when not provided. |
+| `--notes` | off | Print the full tiapp.xml snippets (iOS launch storyboard, Android launcher wiring, Android 12+ splash theme with Option A/B, FCM notification tint) and the padding tuning guide. Default output is a compact summary (~15 lines). |
 | `--dry-run` | off | Print what would be generated/removed without writing or deleting. Works with both generation and `--cleanup-legacy`. |
 
 ## Safety reminders
