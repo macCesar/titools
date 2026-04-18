@@ -4,6 +4,12 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.6.1] - 2026-04-18
+
+### Fixed
+- **`plugin.json` version synced** with `package.json`. Published 2.6.0 shipped with `plugin.json` pinned at `3.0.0` (pre-existing value from the `feature/plugin-marketplace` branch), which meant npm and the Claude Code plugin marketplace announced different version numbers. Now both are `2.6.1`.
+- **`CLAUDE.md` added at the repo root** so project-specific rules (release checklist, hooks format, ora async, aiskills parallel project, merge roadmap) travel with the repo. Previously these lived only in machine-local `~/.claude/projects/` memory and would be lost when cloning to a new machine.
+
 ## [2.6.0] - 2026-04-17
 
 ### Added
