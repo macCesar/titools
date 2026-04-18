@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [2.6.0] - 2026-04-17
 
 ### Added
+- **Claude Code Plugin Marketplace — officially shipped.** `.claude-plugin/marketplace.json` + `.claude-plugin/plugin.json` + `hooks/` are now committed to the repo, making `/plugin marketplace add macCesar/titools` + `/plugin install titools@maccesar-titools` work out of the box. Previously these files existed locally but were untracked, so the instructions in the README did not actually resolve.
 - **`LICENSE` file** — MIT license boilerplate, making the warranty disclaimer explicit. `package.json` already declared `"license": "MIT"`, but the file itself was missing. Added so scanners, GitHub, and npm show the full MIT terms.
 - **Safety & disclaimer** section in `README.md` — guidance for destructive operations (`--cleanup-legacy`, icon replacement) plus an AS-IS / no-warranty statement pointing to `LICENSE`.
 - **Runtime disclaimer** in `--cleanup-legacy` output — prints a warning before the cleanup plan recommending a git commit beforehand and noting the AS-IS delivery.

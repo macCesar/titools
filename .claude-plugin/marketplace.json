@@ -1,0 +1,19 @@
+{
+  "name": "maccesar-titools",
+  "owner": {
+    "name": "César Estrada"
+  },
+  "metadata": {
+    "description": "Titanium SDK skills and agents for AI coding assistants — complete API reference, Alloy MVC guide, PurgeTSS utility-first styling, architecture patterns, native feature integration, and branded icon/splash generation."
+  },
+  "plugins": [
+    {
+      "name": "titools",
+      "source": {
+        "source": "github",
+        "repo": "macCesar/titools"
+      },
+      "description": "Complete Titanium SDK development toolkit: 9 specialized skills covering API reference, Alloy MVC, PurgeTSS styling, architecture, guides, how-tos, UI patterns, and automated icon/splash/branding generation. Auto-detects Titanium projects by tiapp.xml presence."
+    }
+  ]
+}
