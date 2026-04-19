@@ -38,7 +38,7 @@ MONOCHROME_MASTER=""
 BG_COLOR="#FFFFFF"
 BG_COLOR_EXPLICIT=0
 PADDING=20
-IOS_PADDING=8
+IOS_PADDING=4
 WITH_NOTIFICATION=0
 WITH_SPLASH_ICON=0
 CLEANUP_LEGACY=0
@@ -92,8 +92,9 @@ OPTIONS:
                            (Material spec floor is 19.44%; default 20 gives a
                            tiny buffer while keeping the logo visibly prominent.)
   --ios-padding <pct>      iOS/marketplace aesthetic padding per side (0–40).
-                           Default: 8. iOS icons have no launcher mask — this
-                           is purely breathing room around the logo.
+                           Default: 4. iOS icons have no launcher mask — this
+                           is purely breathing room. Production reference apps
+                           (Mail, Safari, La Baraja) use 2-6% per side.
   --with-notification      Also generate ic_stat_notify.png × 5 densities.
   --with-splash-icon       Also generate splash_icon.png × 5 densities (Android 12+).
   --cleanup-legacy         After generating (or standalone), remove legacy branding
@@ -402,11 +403,11 @@ if [[ $DRY_RUN -eq 0 ]]; then
   echo
   echo "  If the logo looks ${C_DIM}pegado / cramped${C_RESET}: re-run with higher padding"
   echo "      --padding ${C_YELLOW}25-30${C_RESET}      (Android)"
-  echo "      --ios-padding ${C_YELLOW}10-14${C_RESET}  (iOS)"
+  echo "      --ios-padding ${C_YELLOW}8-12${C_RESET}   (iOS)"
   echo
   echo "  If the logo looks ${C_DIM}too small / lost${C_RESET}: re-run with lower padding"
   echo "      --padding ${C_YELLOW}19${C_RESET}         (Android spec floor)"
-  echo "      --ios-padding ${C_YELLOW}4-6${C_RESET}    (iOS)"
+  echo "      --ios-padding ${C_YELLOW}2-3${C_RESET}    (matches first-party apps like Mail, Safari)"
 
   echo
   echo "${C_BOLD}Configuration reminders${C_RESET}"
@@ -439,72 +440,58 @@ EOF
 
   if [[ $WITH_SPLASH_ICON -eq 1 ]]; then
     case "$PROJECT_TYPE" in
-      alloy)   SPLASH_DIR="app/platform/android/res/values-v31" ;;
-      classic) SPLASH_DIR="platform/android/res/values-v31" ;;
-      *)       SPLASH_DIR="platform/android/res/values-v31" ;;
+      alloy)   SPLASH_DIR="app/platform/android/res/values" ;;
+      classic) SPLASH_DIR="platform/android/res/values" ;;
+      *)       SPLASH_DIR="platform/android/res/values" ;;
     esac
 
     echo
-    echo "  ${C_BOLD}3. Android 12+ splash screen — READ FIRST${C_RESET}"
+    echo "  ${C_BOLD}3. Android 12+ splash screen — RECOMMENDED: match Titanium activity theme${C_RESET}"
     echo
-    echo "  ${C_YELLOW}Titanium SDK 13.x already generates a splash screen automatically${C_RESET}"
-    echo "  ${C_YELLOW}from your launcher icon + <default-background-color>.${C_RESET} For most apps,"
-    echo "  the default is GOOD: the logo centered on your brand color, mask-aware."
+    echo "  ${C_YELLOW}Titanium SDK 13.x${C_RESET} shows a system splash using your launcher icon on"
+    echo "  Android 12+. If the system splash background does NOT match your first"
+    echo "  Titanium activity background, you get a visible ${C_BOLD}FLICKER${C_RESET} at the end of"
+    echo "  the splash (navy → white → content) right before index.js renders."
     echo
-    echo "  The ${C_DIM}splash_icon.png${C_RESET} × 5 densities were generated for ADVANCED users who"
-    echo "  want a custom splash icon distinct from the launcher icon. Wiring it up"
-    echo "  requires a theme override, which has two flavors:"
+    echo "  ${C_BOLD}Fix${C_RESET}: define a custom theme that inherits from a ${C_BOLD}Titanium parent${C_RESET} theme"
+    echo "  and applies to the whole application. Keeps the ActionBar intact while"
+    echo "  synchronizing the splash background with the activity background."
     echo
-    echo "  ${C_BOLD}Option A — Native platform (API 31+ only, no lib needed)${C_RESET}"
-    echo "  ${C_DIM}Simpler. Works without adding any Gradle dependency. API <31 falls back${C_RESET}"
-    echo "  ${C_DIM}to Titanium's default splash (your launcher icon).${C_RESET}"
     echo "  ${C_DIM}Create ${SPLASH_DIR}/splash_theme.xml:${C_RESET}"
     cat <<EOF
       <?xml version="1.0" encoding="utf-8"?>
       <resources>
-        <style name="Theme.App.SplashScreen" parent="@android:style/Theme.DeviceDefault.NoActionBar">
+        <style name="Theme.App.Splash" parent="@style/Theme.Titanium.Light.NoTitle">
           <item name="android:windowSplashScreenBackground">${BG_COLOR}</item>
-          <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_icon</item>
+          <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
         </style>
       </resources>
 EOF
     echo
-    echo "  ${C_BOLD}Option B — androidx.core:core-splashscreen (works API 21+)${C_RESET}"
-    echo "  ${C_DIM}More complete (backward-compat, postSplashScreenTheme handoff). Requires${C_RESET}"
-    echo "  ${C_DIM}adding the androidx.core:core-splashscreen library as a Gradle dep, which${C_RESET}"
-    echo "  ${C_DIM}Titanium 13.x does NOT ship by default. To add it, create/edit${C_RESET}"
-    echo "  ${C_DIM}app/platform/android/build.gradle with:${C_RESET}"
+    echo "  ${C_DIM}Then in tiapp.xml under <android><manifest>:${C_RESET}"
     cat <<'EOF'
-      dependencies {
-        implementation 'androidx.core:core-splashscreen:1.0.1'
-      }
-EOF
-    echo "  ${C_DIM}Then ${SPLASH_DIR}/splash_theme.xml uses the library theme:${C_RESET}"
-    cat <<EOF
-      <?xml version="1.0" encoding="utf-8"?>
-      <resources>
-        <style name="Theme.App.SplashScreen" parent="Theme.SplashScreen">
-          <item name="windowSplashScreenBackground">${BG_COLOR}</item>
-          <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon</item>
-          <item name="postSplashScreenTheme">@style/Theme.AppDerived</item>
-        </style>
-      </resources>
+      <application android:icon="@mipmap/ic_launcher"
+                   android:theme="@style/Theme.App.Splash"
+                   android:usesCleartextTraffic="false"/>
 EOF
     echo
-    echo "  ${C_BOLD}Either Option A or B needs this meta-data${C_RESET}"
-    echo "  ${C_DIM}under <android><manifest><application> in tiapp.xml:${C_RESET}"
-    cat <<'EOF'
-      <meta-data android:name="io.tidev.titanium.splash.theme"
-                 android:value="@style/Theme.App.SplashScreen"/>
-EOF
+    echo "  ${C_BOLD}Parent theme options${C_RESET} (pick per your ActionBar needs):"
+    echo "    ${C_DIM}@style/Theme.Titanium.Light            — ActionBar + title bar${C_RESET}"
+    echo "    ${C_DIM}@style/Theme.Titanium.Light.NoTitle    — ActionBar, no title (common)${C_RESET}"
+    echo "    ${C_DIM}@style/Theme.Titanium.Light.Fullscreen — no ActionBar, no status bar${C_RESET}"
+    echo "    ${C_DIM}(plus Dark variants)${C_RESET}"
     echo
-    echo "  ${C_YELLOW}⚠  CRITICAL${C_RESET}: NEVER set android:theme=\"@style/Theme.App.SplashScreen\""
-    echo "     on ${C_BOLD}<application>${C_RESET} or any ${C_BOLD}<activity>${C_RESET}. That breaks the ActionBar in every"
-    echo "     screen. The ${C_BOLD}meta-data${C_RESET} above is the ONLY correct way to register a splash"
-    echo "     theme in Titanium."
+    echo "  ${C_YELLOW}⚠  Inherit ONLY from Titanium parents${C_RESET} (${C_BOLD}Theme.Titanium.*${C_RESET}). Do NOT"
+    echo "     inherit from ${C_DIM}@android:style/Theme.DeviceDefault.NoActionBar${C_RESET} on"
+    echo "     ${C_BOLD}<application>${C_RESET} — that strips the ActionBar from every screen."
     echo
-    echo "  ${C_DIM}Skipping the splash theme entirely is a valid choice — the launcher icon${C_RESET}"
-    echo "  ${C_DIM}already provides a perfectly good Android 12+ splash via Titanium's default.${C_RESET}"
+    echo "  ${C_DIM}The splash_icon.png × 5 files are OPTIONAL — the theme above points${C_RESET}"
+    echo "  ${C_DIM}windowSplashScreenAnimatedIcon at the launcher icon, which is usually${C_RESET}"
+    echo "  ${C_DIM}what you want. Point it at @drawable/splash_icon only if you designed${C_RESET}"
+    echo "  ${C_DIM}a distinct custom splash icon.${C_RESET}"
+    echo
+    echo "  ${C_DIM}Reference: LM - La Baraja uses this exact pattern in production with${C_RESET}"
+    echo "  ${C_DIM}zero flicker on Android 12+.${C_RESET}"
   fi
 
   if [[ $WITH_NOTIFICATION -eq 1 ]]; then

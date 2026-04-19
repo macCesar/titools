@@ -4,6 +4,46 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.7.1] - 2026-04-18
+
+### Fixed — Android splash screen guidance was misleading
+
+The `--notes` output previously warned:
+> ⚠ CRITICAL: NEVER set `android:theme="..."` on `<application>` or any `<activity>`.
+
+This was overly absolute and actively steered users AWAY from the correct
+fix for the end-of-splash flicker on Android 12+. The narrower and correct
+rule is: don't inherit from `@android:style/Theme.DeviceDefault.NoActionBar`
+(that parent strips the ActionBar). Inheriting from a Titanium parent theme
+(`Theme.Titanium.Light`, `.Light.NoTitle`, `.Light.Fullscreen`, plus Dark
+variants) preserves the ActionBar AND is the standard working pattern in
+production Titanium apps.
+
+The notes now:
+- Lead with the flicker cause (system splash color mismatches the Titanium
+  activity color → visible flash right before `index.js` renders)
+- Recommend the Titanium-parent-theme approach as the primary fix
+- Provide a complete snippet (splash_theme.xml + tiapp.xml wiring)
+- List available Titanium parent themes with guidance on when to pick each
+- Keep the narrower warning (don't inherit from `@android:style/*.NoActionBar`)
+- Reference "LM - La Baraja" as a real-world app using this pattern in
+  production with zero flicker
+
+### Changed — default `--ios-padding` lowered from 8% to 4%
+
+Per Apple's HIG and production app measurements (La Baraja uses ~2% per side,
+Mail/Safari/WhatsApp use 3-6%), iOS app icons typically fill 92-97% of the
+canvas. The previous default of 8% per side (84% fill) was noticeably more
+conservative than industry standard. iOS icons have no launcher mask — the
+padding is purely aesthetic breathing room, no cropping risk.
+
+New default 4% per side (92% fill) matches Apple's own apps. Override:
+- `--ios-padding 2` — aggressive, near-edge (matches La Baraja)
+- `--ios-padding 8` — previous default, conservative breathing room
+
+This affects: DefaultIcon.png, DefaultIcon-ios.png, iTunesConnect.png,
+MarketplaceArtwork.png. Android adaptive padding (`--padding`) stays at 20%.
+
 ## [2.7.0] - 2026-04-18
 
 ### Fixed — `ti-branding` skill alpha handling

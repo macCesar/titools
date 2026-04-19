@@ -70,6 +70,7 @@ Options:
 |---|---|---|
 | `--bg-color <hex>` | `#FFFFFF` | Solid color for adaptive background layer. Also used for iOS alpha flatten. |
 | `--padding <pct>` | `20` | Safe-zone padding per side. Material spec floor is 19.44% — default of 20 gives a tiny buffer while keeping the logo visibly prominent across launcher masks. Range 0–40. |
+| `--ios-padding <pct>` | `4` | iOS + marketplace aesthetic padding per side. iOS icons have no launcher mask — this is purely aesthetic breathing room. Apple's HIG + production apps typically use 2-6%. Override with `--ios-padding 8` for more conservative (prior default) or `--ios-padding 2` for near-edge La Baraja-style. Range 0–40. |
 | `--with-notification` | off | Emit `ic_stat_notify.png` × 5 densities. |
 | `--with-splash-icon` | off | Emit `splash_icon.png` × 5 densities (Android 12+ SplashScreen API). |
 | `--cleanup-legacy` | off | After generating (or standalone), scan the project for legacy branding artifacts — iOS launch image PNGs, Android `default.png`, `appicon.png`, `res-long-*/res-notlong-*`, etc. — and remove them. Context-aware: reads `tiapp.xml` to decide what's safe. See `references/cleanup-legacy.md`. |
