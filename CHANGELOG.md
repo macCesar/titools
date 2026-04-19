@@ -4,6 +4,34 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.7.2] - 2026-04-18
+
+### Fixed — v2.7.1 Android splash guidance was still too prescriptive
+
+v2.7.1 over-corrected the v2.7.0 splash guidance by aggressively recommending
+the `android:theme="@style/Theme.App.Splash"` approach with a concrete
+snippet inheriting from `@style/Theme.Titanium.Light.NoTitle`. Two problems:
+
+1. **Not every Titanium SDK exposes that parent theme.** Titanium SDK 13.1.1
+   does NOT have `Theme.Titanium.Light.NoTitle`. Users who copy-pasted got:
+   `resource style/Theme.Titanium.Light.NoTitle not found` on `./gradlew`.
+2. **`android:theme` on `<application>` is invasive.** It overrides whatever
+   theme the project was using and affects every activity. If a project
+   already has its own theme, the snippet stomps over it.
+
+v2.7.2 reframes the `--notes` splash section:
+- Marked **"OPTIONAL, advanced"** instead of "RECOMMENDED"
+- Leads with "for most apps the default is enough — do nothing"
+- Template uses placeholder `@style/YOUR_APP_PARENT_THEME` with clear
+  "verify this exists in your SDK" guidance
+- Lists `@style/Theme.Titanium.Light.Fullscreen` as known-working in
+  SDK 13.2.0, with caveat to verify for the user's SDK version
+- Explicit pre-flight checklist: (a) verify parent theme exists, (b) check
+  whether your project already has a custom theme (extend, don't override),
+  (c) test the build before committing tiapp.xml
+
+The `--ios-padding` 4% default from v2.7.1 is preserved.
+
 ## [2.7.1] - 2026-04-18
 
 ### Fixed — Android splash screen guidance was misleading

@@ -439,59 +439,49 @@ EOF
 EOF
 
   if [[ $WITH_SPLASH_ICON -eq 1 ]]; then
-    case "$PROJECT_TYPE" in
-      alloy)   SPLASH_DIR="app/platform/android/res/values" ;;
-      classic) SPLASH_DIR="platform/android/res/values" ;;
-      *)       SPLASH_DIR="platform/android/res/values" ;;
-    esac
-
     echo
-    echo "  ${C_BOLD}3. Android 12+ splash screen — RECOMMENDED: match Titanium activity theme${C_RESET}"
+    echo "  ${C_BOLD}3. Android 12+ splash screen — OPTIONAL, advanced${C_RESET}"
     echo
-    echo "  ${C_YELLOW}Titanium SDK 13.x${C_RESET} shows a system splash using your launcher icon on"
-    echo "  Android 12+. If the system splash background does NOT match your first"
-    echo "  Titanium activity background, you get a visible ${C_BOLD}FLICKER${C_RESET} at the end of"
-    echo "  the splash (navy → white → content) right before index.js renders."
+    echo "  Titanium SDK 13.x shows a system splash automatically using your launcher"
+    echo "  icon. ${C_YELLOW}For most apps THE DEFAULT IS ENOUGH — do nothing.${C_RESET}"
     echo
-    echo "  ${C_BOLD}Fix${C_RESET}: define a custom theme that inherits from a ${C_BOLD}Titanium parent${C_RESET} theme"
-    echo "  and applies to the whole application. Keeps the ActionBar intact while"
-    echo "  synchronizing the splash background with the activity background."
+    echo "  If you experience a visible ${C_BOLD}FLICKER${C_RESET} at the end of the splash (brief"
+    echo "  color flash before index.js renders), that is the system splash background"
+    echo "  mismatching your first Titanium activity background."
     echo
-    echo "  ${C_DIM}Create ${SPLASH_DIR}/splash_theme.xml:${C_RESET}"
+    echo "  Fixing it requires adding a custom theme + wiring it in tiapp.xml. This is"
+    echo "  ${C_BOLD}INVASIVE${C_RESET} — do NOT auto-apply the snippet below without:"
+    echo "    ${C_DIM}(a) verifying the parent theme you pick actually exists in your${C_RESET}"
+    echo "    ${C_DIM}    Titanium SDK version (theme names vary across SDK releases)${C_RESET}"
+    echo "    ${C_DIM}(b) checking whether your project already has a custom theme —${C_RESET}"
+    echo "    ${C_DIM}    if so, EXTEND it instead of overriding via android:theme${C_RESET}"
+    echo "    ${C_DIM}(c) testing the build succeeds before committing tiapp.xml${C_RESET}"
+    echo
+    echo "  ${C_DIM}Template (verify parent theme exists in your SDK before using):${C_RESET}"
     cat <<EOF
+      <!-- app/platform/android/res/values/splash_theme.xml -->
       <?xml version="1.0" encoding="utf-8"?>
       <resources>
-        <style name="Theme.App.Splash" parent="@style/Theme.Titanium.Light.NoTitle">
+        <style name="Theme.App.Splash" parent="@style/YOUR_APP_PARENT_THEME">
           <item name="android:windowSplashScreenBackground">${BG_COLOR}</item>
           <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
         </style>
       </resources>
 EOF
     echo
-    echo "  ${C_DIM}Then in tiapp.xml under <android><manifest>:${C_RESET}"
-    cat <<'EOF'
-      <application android:icon="@mipmap/ic_launcher"
-                   android:theme="@style/Theme.App.Splash"
-                   android:usesCleartextTraffic="false"/>
-EOF
+    echo "  ${C_BOLD}Known-working parent${C_RESET} (confirmed in Titanium SDK 13.2.0):"
+    echo "    ${C_DIM}@style/Theme.Titanium.Light.Fullscreen${C_RESET}"
     echo
-    echo "  ${C_BOLD}Parent theme options${C_RESET} (pick per your ActionBar needs):"
-    echo "    ${C_DIM}@style/Theme.Titanium.Light            — ActionBar + title bar${C_RESET}"
-    echo "    ${C_DIM}@style/Theme.Titanium.Light.NoTitle    — ActionBar, no title (common)${C_RESET}"
-    echo "    ${C_DIM}@style/Theme.Titanium.Light.Fullscreen — no ActionBar, no status bar${C_RESET}"
-    echo "    ${C_DIM}(plus Dark variants)${C_RESET}"
+    echo "  If your SDK does not expose Theme.Titanium.Light.Fullscreen, check the"
+    echo "  styles.xml shipped with your installed SDK under the android/ folder —"
+    echo "  the available parent themes vary across SDK versions."
     echo
-    echo "  ${C_YELLOW}⚠  Inherit ONLY from Titanium parents${C_RESET} (${C_BOLD}Theme.Titanium.*${C_RESET}). Do NOT"
-    echo "     inherit from ${C_DIM}@android:style/Theme.DeviceDefault.NoActionBar${C_RESET} on"
-    echo "     ${C_BOLD}<application>${C_RESET} — that strips the ActionBar from every screen."
+    echo "  ${C_YELLOW}⚠${C_RESET} Do NOT inherit from ${C_DIM}@android:style/Theme.DeviceDefault.NoActionBar${C_RESET}."
+    echo "  That parent strips the ActionBar from every screen in your app."
     echo
-    echo "  ${C_DIM}The splash_icon.png × 5 files are OPTIONAL — the theme above points${C_RESET}"
-    echo "  ${C_DIM}windowSplashScreenAnimatedIcon at the launcher icon, which is usually${C_RESET}"
-    echo "  ${C_DIM}what you want. Point it at @drawable/splash_icon only if you designed${C_RESET}"
-    echo "  ${C_DIM}a distinct custom splash icon.${C_RESET}"
-    echo
-    echo "  ${C_DIM}Reference: LM - La Baraja uses this exact pattern in production with${C_RESET}"
-    echo "  ${C_DIM}zero flicker on Android 12+.${C_RESET}"
+    echo "  ${C_DIM}The splash_icon.png × 5 files are generated for advanced use (custom${C_RESET}"
+    echo "  ${C_DIM}splash icon distinct from launcher). Most apps do NOT need them —${C_RESET}"
+    echo "  ${C_DIM}Titanium falls back to the launcher icon for the system splash.${C_RESET}"
   fi
 
   if [[ $WITH_NOTIFICATION -eq 1 ]]; then
