@@ -77,15 +77,15 @@ User intends to eventually merge TiTools + aiskills into a single CLI with skill
 Tests live under `test/` using Node's built-in test runner (`node:test`):
 
 ```bash
-npm test                              # all suites (60+ tests at v2.6.0)
-node --test test/ti-branding.test.js  # single file
+npm test                        # all suites
+node --test test/list.test.js   # single file
 ```
 
-Add tests whenever a new command or skill-scripted behavior ships. Skills that include executable scripts (e.g. `ti-branding/scripts/`) should have tests covering: frontmatter validity, CLI help output, argument validation, shell syntax of any bash scripts.
+Add tests whenever a new command or skill-scripted behavior ships. Skills that include executable scripts should have tests covering: frontmatter validity, CLI help output, argument validation, shell syntax of any bash scripts.
 
 ## Files worth knowing
 
 - `lib/utils.js:buildKnowledgeIndex` — scans `skills/*/references/` dynamically, so new skills with a `references/` folder appear in the Knowledge Index automatically. No list to maintain.
 - `lib/config.js:SKILLS` — hardcoded list of which skills to install. Keep in sync when adding/removing a skill.
+- `lib/config.js:LEGACY_SKILLS` — skills to actively remove during updates/uninstall. Use this when deprecating a skill so existing users get it cleaned up on their next `titools update`.
 - `EXAMPLE-PROMPTS.md` — doubles as documentation AND as a smoke test for skill triggering. New skills must add at least 2 example prompts.
-- `skills/ti-branding/scripts/ti-branding` — bash entrypoint (not JS). Demonstrates the "skill with executable scripts" pattern.

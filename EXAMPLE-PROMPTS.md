@@ -13,7 +13,7 @@ These prompts verify the assistant read the docs index from your project's instr
 ```
 Expect:
 - Titanium SDK docs index
-- All 9 skills: `alloy-guides`, `alloy-howtos`, `purgetss`, `ti-api`, `ti-branding`, `ti-expert`, `ti-guides`, `ti-howtos`, `ti-ui`
+- All 8 skills: `alloy-guides`, `alloy-howtos`, `purgetss`, `ti-api`, `ti-expert`, `ti-guides`, `ti-howtos`, `ti-ui`
 - Reference file locations
 
 ---
@@ -121,67 +121,10 @@ Expect:
 "I need to generate all the app icons for iOS and Android. What sizes do I need and where do they go?"
 ```
 Expect:
-- Activates `ti-branding` skill
-- Mentions `DefaultIcon-ios.png` (1024×1024, no alpha) as single iOS master
-- Android adaptive triplet (foreground, background, monochrome) × 5 densities
-- `mipmap-anydpi-v26/ic_launcher.xml` binder
-- Points to `ti-branding/scripts/ti-branding` as the generator
-
----
-
-### ti-branding
-```
-"My Company logo looks cramped on the edges of the Android icon. How do I fix it?"
-```
-Expect:
-- Activates `ti-branding`
-- Mentions Android safe-zone: 66dp of 108dp canvas (19.44% min padding)
-- Recommends `--padding 22` default or higher for simpler logos
-- Explains launcher masks can clip outside the safe-zone
-
-```
-"I want to brand my Titanium app. I have a logo as SVG and want the complete icon set plus the Android 12 splash screen with a custom navy background."
-```
-Expect:
-- Activates `ti-branding`
-- Example command: `bash scripts/ti-branding ./logo.svg --bg-color "#0B1326" --with-splash-icon`
-- Warns that `tiapp.xml` edits are printed as snippets, not applied automatically
-- Explains modern splash API via `io.tidev.titanium.splash.theme` meta-data (NOT `<application android:theme>`)
-
-```
-"I'm adding Firebase Cloud Messaging. Do I need a special icon for the notifications?"
-```
-Expect:
-- Activates `ti-branding`
-- Notification icons must be white-on-transparent (Android runtime applies tint)
-- Generated via `--with-notification` flag, 5 densities in `drawable-*dpi/ic_stat_notify.png`
-- `<meta-data>` FCM entries for default icon + tint color
-
-```
-"Replace the generic Titanium icon in my new project with my company's logo."
-```
-Expect:
-- Activates `ti-branding`
-- Asks for master file (SVG preferred) + brand color
-- Explains the non-destructive staging → review → copy workflow
-
-```
-"My Titanium project has like 30 PNG files with weird names like `Default-Portrait-2436h@3x.png` and folders like `res-long-notlong-port-hdpi`. Can I delete them?"
-```
-Expect:
-- Activates `ti-branding` (cleanup mode)
-- Explains legacy iOS launch images are unused when `<enable-launch-screen-storyboard>true</enable-launch-screen-storyboard>`
-- Explains `res-long-*/res-notlong-*` qualifiers have been dead since Android 3.0 (2011)
-- Recommends running: `bash scripts/ti-branding --cleanup-legacy --dry-run` first to preview
-- Mentions that the dogfooding on SNAP Gym freed ~5.5 MB
-
-```
-"I want to regenerate the branding for an old Titanium app AND clean up all the legacy launch image PNGs in one go."
-```
-Expect:
-- Single command: `bash scripts/ti-branding ./logo.svg --bg-color "#0B1326" --cleanup-legacy`
-- Warns that cleanup is context-aware — reads tiapp.xml to decide what's safe
-- Suggests `--dry-run` first for preview
+- Activates `ti-ui`
+- Explains `DefaultIcon.png` (1024×1024) as the single iOS master
+- Android adaptive icon triplet (foreground, background, monochrome) × 5 densities
+- References `mipmap-anydpi-v26/ic_launcher.xml` binder
 
 ---
 

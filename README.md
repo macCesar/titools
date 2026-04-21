@@ -8,7 +8,7 @@
 
 </div>
 
-TiTools is a Titanium SDK toolkit for AI coding assistants. It provides 9 skills, a research agent, and 100+ reference files for Titanium SDK, Alloy MVC, and PurgeTSS.
+TiTools is a Titanium SDK toolkit for AI coding assistants. It provides 8 skills, a research agent, and 100+ reference files for Titanium SDK, Alloy MVC, and PurgeTSS.
 
 The reference files are maintained against official documentation whenever an official source exists, so the assistant can retrieve current framework behavior instead of guessing from generic training data.
 
@@ -20,15 +20,9 @@ Vercel's AGENTS.md evaluation reports a 100% pass rate for the knowledge index a
 
 ## Safety and disclaimer
 
-TiTools modifies files in your Titanium project. In particular, the `ti-branding` skill can write branding assets into `app/platform/android/res/` and, when invoked with the `--cleanup-legacy` flag, **delete** obsolete branding artifacts (iOS launch images, Android legacy splash, density fossil folders, etc.).
+TiTools installs documentation skills and a research agent into your AI coding assistant's skill directories and, when you run `titools sync`, injects a knowledge index block into your project's `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`.
 
-Recommendations before running destructive operations:
-
-- **Commit your project with git** so you can `git restore` if anything looks wrong.
-- **Always run with `--dry-run` first** when using `--cleanup-legacy` or replacing icons. The skill prints every target and its safety reasoning before touching anything.
-- **Review the staging directory** (`.ti-branding/`) before copying generated assets into your project.
-
-The maintainers of TiTools accept no responsibility for data loss, build breakage, or any other damage caused by the use of the CLI, skills, or generated scripts. The tool is provided AS IS under the MIT License — see [`LICENSE`](./LICENSE) for the full terms. Use at your own risk.
+The maintainers of TiTools accept no responsibility for data loss, build breakage, or any other damage caused by the use of the CLI, skills, or the AI assistant's code suggestions. The tool is provided AS IS under the MIT License — see [`LICENSE`](./LICENSE) for the full terms. Use at your own risk.
 
 ---
 
@@ -44,7 +38,7 @@ The fastest way to get started with Claude Code. One command to add the marketpl
 ```
 
 What you get:
-- All 9 Titanium skills
+- All 8 Titanium skills
 - ti-pro research agent
 - Session hook that auto-detects Titanium projects (`tiapp.xml`, Alloy, PurgeTSS)
 - Slash commands: `/ti-check`, `/ti-new-screen`, `/ti-audit`
@@ -78,7 +72,7 @@ claude   # or gemini, or codex
 ```
 
 What gets installed:
-- All 9 titanium-related skills to `~/.agents/skills/`
+- All 8 titanium-related skills to `~/.agents/skills/`
 - ti-pro agent for Claude Code
 - Platform symlinks (Claude Code, Gemini CLI, Codex CLI)
 - Knowledge index in your project's `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`
@@ -184,7 +178,6 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 | alloy-howtos | Alloy CLI and debugging         | Project setup, CLI commands, errors                                             |
 | purgetss     | Utility-first styling           | UI styling and animations                                                       |
 | ti-api       | Complete API reference          | Properties, methods, events, constants                                          |
-| ti-branding  | Icon and splash generator       | App icons, adaptive icons, splash, notifications, store artwork, legacy cleanup |
 | ti-expert    | Architecture and implementation | Starting point for most tasks                                                   |
 | ti-guides    | SDK fundamentals                | Hyperloop, distribution, configuration                                          |
 | ti-howtos    | Native feature integration      | Location, Push, Media, Platform APIs                                            |
@@ -643,7 +636,7 @@ Behavior depends on where you run it:
 | With `--local` flag        | Installs skills locally to `./.agents/skills/` in the current project |
 
 What it does:
-- Installs all 7 titanium-related skills (global or local depending on context)
+- Installs all 8 titanium-related skills (global or local depending on context)
 - Installs ti-pro agent for Claude Code
 - Detects installed AI platforms and lets you choose which to link
 - Creates symlinks from platform directories to central skills

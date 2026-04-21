@@ -4,6 +4,71 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.8.0] - 2026-04-21
+
+### Removed — `ti-branding` skill (functionality merged into PurgeTSS)
+
+The `ti-branding` skill has been removed. Its icon/splash generation
+functionality now lives inside PurgeTSS itself, so maintaining a separate
+skill duplicated effort and shipped a second source of truth.
+
+Secondary reason: the skill's `description` field had grown to 1268
+characters, above Codex CLI's 1024-char limit. Codex sessions on machines
+with TiTools installed logged `invalid description: exceeds maximum length
+of 1024 characters` warnings every startup. Rather than trim the
+description, we chose to retire the skill entirely.
+
+Migration for existing users:
+
+- `ti-branding` moved from `SKILLS` to `LEGACY_SKILLS` in `lib/config.js`.
+  Running `titools update` (or the daily auto-update hook) on any machine
+  that has the skill installed will remove it from `~/.agents/skills/` and
+  drop the platform symlinks in `~/.claude/skills/`, `~/.gemini/skills/`,
+  and `~/.codex/skills/`.
+- For branding/icon/splash workflows, use PurgeTSS directly going forward.
+- The Knowledge Index in `AGENTS.md`/`CLAUDE.md`/`GEMINI.md` is rebuilt
+  dynamically from `skills/*/references/`, so existing projects will drop
+  the `ti-branding/` references automatically on their next
+  `titools sync` or `titools update`.
+
+Removed from the repo:
+
+- `skills/ti-branding/` (entire directory, including scripts, references,
+  assets, and SKILL.md)
+- `test/ti-branding.test.js`
+- Documentation sections in `README.md`, `EXAMPLE-PROMPTS.md`, and
+  `CLAUDE.md` referring to the skill, its scripts, or the destructive
+  `--cleanup-legacy` flag
+- `branding` keyword from `.claude-plugin/plugin.json`
+
+Skill count is now 8 (down from 9).
+
+## [2.7.3] - 2026-04-18
+
+### Fixed — `--in-place` no longer litters project root with temp files
+
+Previous `--in-place` behavior wrote the intermediate master files
+(`_master_square.png`, `_master_tight.png`, plus `_master_mono_*` when
+using `--monochrome-master`) directly into the project root alongside the
+final branded icons. They were cleaned up at the end of a successful run,
+but the root was visibly polluted during the run (IDE file watchers, git
+status, `ls` all showed them) and the cleanup code missed the `_master_mono_*`
+variants — leaving them orphaned forever if the user used `--monochrome-master`.
+
+New behavior routes temp files through `<projectRoot>/.ti-branding/` even
+in `--in-place` mode:
+
+- Temp files are created inside `.ti-branding/` (hidden, tidy)
+- If `.ti-branding/` did NOT exist before the run, the whole directory is
+  removed at the end — no trace at all
+- If `.ti-branding/` DID exist (prior staging run or user content), only
+  the specific `_master_*.png` files we created are removed — user's own
+  content inside `.ti-branding/` is untouched
+- Project root never sees temp files, before or after the run
+
+Staged mode behavior is unchanged (temp files stay in `.ti-branding/`
+alongside the final assets for review/debugging).
+
 ## [2.7.2] - 2026-04-18
 
 ### Fixed — v2.7.1 Android splash guidance was still too prescriptive
