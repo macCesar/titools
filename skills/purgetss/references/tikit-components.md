@@ -316,7 +316,9 @@ Colors: `black`, `dark`, `light`, and `white` themes that affect background and 
 
 Use this for code examples. Set `copy="true"` to add a copy button.
 
-**Pro tip:** For best results, install a monospaced font (like Fira Code or JetBrains Mono) and configure `font-mono` in your PurgeTSS config.
+> **Community-Discovered Pattern — Pro tip**
+>
+> For best results, install a monospaced font (like Fira Code or JetBrains Mono) and configure `font-mono` in your PurgeTSS config.
 
 **Localization:** The copy button uses `L('copy', 'Copy')` for its title and `L('code_copied', 'Code copied!')` for the confirmation message. Add these keys to your `strings.xml` files for translation.
 

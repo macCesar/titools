@@ -21,12 +21,13 @@ Complete inventory of all class prefixes organized by functional category. For n
 | `content-*` | ~20 | `content-h-*`, `content-w-*` |
 | `aspect-*` | 2 | `aspect-ratio-16-9`, `aspect-ratio-4-3` |
 
-**Important: `w-full` vs `w-screen`**
-- `w-full` → `width: '100%'` — 100% of parent container
-- `w-screen` → `width: Ti.UI.FILL` — Fills all available space in parent
-- `h-full` → `height: '100%'` — 100% of parent container
-- `h-screen` → `height: Ti.UI.FILL` — Fills all available space in parent
-- `wh-full` → Both `'100%'`
+> **Community-Discovered Pattern: `w-full` vs `w-screen`**
+>
+> - `w-full` → `width: '100%'` — 100% of parent container
+> - `w-screen` → `width: Ti.UI.FILL` — Fills all available space in parent
+> - `h-full` → `height: '100%'` — 100% of parent container
+> - `h-screen` → `height: Ti.UI.FILL` — Fills all available space in parent
+> - `wh-full` → Both `'100%'`
 
 ### Spacing (Margins & Padding)
 
@@ -108,7 +109,7 @@ Complete inventory of all class prefixes organized by functional category. For n
 | Prefix | Count | Examples |
 | --- | --- | --- |
 | `text-*` | 273 | Text colors, sizes, alignment |
-| `font-*` | 9 | `font-thin`, `font-light`, `font-normal`, `font-medium`, `font-semibold`, `font-bold`, `font-extrabold`, `font-black` |
+| `font-*` | 12 | Weights: `font-thin`, `font-light`, `font-normal`, `font-medium`, `font-semibold`, `font-bold`, `font-extrabold`, `font-black`. Families (v7.5.3+): `font-sans`, `font-serif`, `font-mono` |
 | `line-h-multiple-*` | ~85 | Line height as multiple |
 | `line-spacing-*` | ~85 | Line spacing |
 | `line-break-mode-*` | 7 | `line-break-mode-attribute-by-word-wrapping`, etc. |
@@ -192,6 +193,8 @@ Complete inventory of all class prefixes organized by functional category. For n
 | `duration-*` | 22 | `duration-0`, `duration-50` to `duration-5000` |
 | `delay-*` | 22 | `delay-0`, `delay-50` to `delay-5000` |
 | `repeat-*` | ~31 | `repeat-*` variants |
+| `snap-*` (v7.4.0+) | 6 | `snap-back`, `snap-back-false`, `snap-center`, `snap-center-false`, `snap-magnet`, `snap-magnet-false` — drop behaviors for draggable views |
+| `keep-z-index` (v7.4.0+) | 2 | `keep-z-index`, `keep-z-index-false` — preserves z-order during drag when using `transition` layouts |
 
 ### Shadows & Elevation
 

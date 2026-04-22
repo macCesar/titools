@@ -30,16 +30,7 @@ The most important reset is for the `View` element. By default, `View` is set to
 - Grow to accommodate explicit dimensions (`w-64`, `h-32`, etc.)
 - Expand to fill margins (`m-4`, `mx-2`, `mt-6 mb-4`, etc.)
 
-> **💡 EXPLICIT SIZE VS NATIVE UNDEFINED**
-> In Titanium, components like `Label`, `Button`, and `Switch` default to `SIZE` behavior, but their property values are `undefined`. This applies to **any component whose default size is `Ti.UI.SIZE`**, not just `Label` and `Button`.
->
-> According to the **UI Composite Layout Behavior Spec**, if a dimension is `undefined` and you apply two opposite pins (e.g., `left` and `right` via `mx-*`, or `top` and `bottom` via `my-*`), the motor will **compute the dimension based on the pins**, causing the element to stretch.
->
-> **PurgeTSS** recommends adding an explicit `SIZE` reset on the affected axis:
->
-> - Use `h-auto` when `mt-*` + `mb-*` or `my-*` would otherwise stretch the height.
-> - Use `w-auto` when `ml-*` + `mr-*` or `mx-*` would otherwise stretch the width.
-> - Use `wh-auto` as the safe reset when both axes may be affected.
+> **See also**: the "Explicit SIZE vs native undefined" callout under [Community-Discovered Patterns](#community-discovered-patterns) explains when to use `h-auto`, `w-auto`, and `wh-auto` to prevent unwanted stretching.
 
 ### Practical Examples
 
@@ -273,7 +264,7 @@ This generates classes for ALL color properties:
 When PurgeTSS generates your `app.tss`, these resets appear first:
 
 ```tss
-/* PurgeTSS v7.2.7 */
+/* PurgeTSS v7.6.0 */
 /* Created by César Estrada */
 /* https://purgetss.com */
 
@@ -291,6 +282,43 @@ When PurgeTSS generates your `app.tss`, these resets appear first:
 
 These are **always included** - they're fundamental to how PurgeTSS works.
 
+## Default font family classes (v7.5.3+)
+
+Starting with PurgeTSS v7.5.3, three `fontFamily` utility classes are auto-generated even when `theme.fontFamily` is not defined in `config.cjs`. Each class maps to a different per-platform value so iOS and Android each pick a native system font family:
+
+| Class        | iOS              | Android      |
+| ------------ | ---------------- | ------------ |
+| `font-sans`  | `Helvetica Neue` | `sans-serif` |
+| `font-serif` | `Georgia`        | `serif`      |
+| `font-mono`  | `monospace`      | `monospace`  |
+
+Usage:
+
+```xml
+<Label class="font-sans text-lg text-gray-800" text="System sans font" />
+<Label class="font-serif text-lg text-gray-800" text="System serif font" />
+<Label class="font-mono text-sm text-gray-700" text="Monospaced code" />
+```
+
+### Override behavior
+
+If you define `sans`, `serif`, or `mono` under `theme.fontFamily` (or `theme.extend.fontFamily`), your value replaces the default on **both** platforms — you no longer need a per-platform fork:
+
+```javascript
+// purgetss/config.cjs
+module.exports = {
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: 'Inter-Regular'   // replaces Helvetica Neue / sans-serif on both platforms
+      }
+    }
+  }
+};
+```
+
+This keeps `font-serif` and `font-mono` at their defaults while `font-sans` now resolves to `Inter-Regular` on iOS and Android.
+
 ## Overriding Resets
 
 If you need different default behavior, add custom rules to `_app.tss` or `config.cjs`:
@@ -304,12 +332,12 @@ If you need different default behavior, add custom rules to `_app.tss` or `confi
 }
 ```
 
-**In `config.cjs` (preferred):**
+**In `config.cjs` (preferred, v7.5.0+):**
 ```javascript
 module.exports = {
   theme: {
-    View: {
-      DEFAULT: {
+    extend: {
+      View: {
         width: Ti.UI.FILL,
         height: Ti.UI.SIZE
       }
@@ -318,8 +346,11 @@ module.exports = {
 }
 ```
 
+> **⚠️ DEPRECATED SHAPE (pre-v7.5.0)**
+> The older `theme.View.DEFAULT` shape is deprecated as of PurgeTSS v7.5.0. Migrate to `theme.extend.View` shown above. The same extend-based shape works for any Ti element default (`Window`, `Label`, `ImageView`, etc.).
+
 > **💡 TIP**
-> Prefer `config.cjs` for custom defaults because they're preserved when PurgeTSS regenerates `app.tss`.
+> Prefer `config.cjs` for custom defaults because they're preserved when PurgeTSS regenerates `app.tss`. For advanced overrides — including per-platform defaults, `apply` shorthand, and pseudo-class targeting — see `customization-deep-dive.md`.
 
 ## Summary Table
 

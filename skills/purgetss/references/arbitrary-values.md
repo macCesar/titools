@@ -306,6 +306,10 @@ Try this example on an iPad or tablet.
 </Alloy>
 ```
 
+## Community-Discovered Patterns
+
+These constraints reflect community experience using arbitrary values against the realities of the Titanium layout engine. They are not part of the official reference but prevent common mistakes.
+
 > **Titanium Layout Constraint**
 > Prefer `w-screen` instead of `w-full` when you need fill behavior. `w-full` maps to `100%`, not `Ti.UI.FILL`.
 

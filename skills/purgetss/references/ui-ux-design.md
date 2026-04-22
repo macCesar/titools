@@ -10,6 +10,16 @@ This guide collects practical UI patterns that stay aligned with Titanium layout
 - Prefer `w-screen` over `w-full` when you need `Ti.UI.FILL`.
 - For dynamic components, prefer `$.UI.create()` over manual `Ti.UI.create*()` styling.
 
+## Related References
+
+- **iOS Large Titles**: For windows inside a `NavigationWindow` or `TabGroup` that use iOS large titles, pair `content-w-screen` + `content-h-auto` on the `ScrollView` with `extendEdges`, `autoAdjustScrollViewInsets`, and `largeTitleEnabled` on the `Window`. See `ios-large-titles.md` for the full three-property pattern and `config.cjs` global defaults.
+- **Light / Dark mode**: For automatic theme switching, see `appearance-module.md` (runtime appearance detection) and `semantic-colors.md` (adaptive color tokens). These pair with PurgeTSS utility classes to produce UIs that respect system appearance.
+- **Customizing resets and defaults**: See `titanium-resets.md` and `customization-deep-dive.md` for overriding the `View`, `Window`, and `ImageView` defaults via `theme.extend.View`.
+
+## Community-Discovered Patterns
+
+The catalog below collects real-world UI patterns verified against Titanium's composite/horizontal/vertical layout behavior and PurgeTSS's utility classes. These are not copied from the upstream docs — they are curated, production-tested combinations.
+
 ## Cards
 
 ### Elevated Card
@@ -156,10 +166,23 @@ This guide collects practical UI patterns that stay aligned with Titanium layout
 
 ### Icon Button
 
+In Titanium, a `Button` with an icon typically uses a single icon-font `Button` (no adjacent `Label`). Set the icon font on the button and use the glyph as the `title`:
+
 ```xml
-<Button class="rounded-lg bg-blue-500 text-white" title="Save" />
-<Label class="fas fa-save ml-2 text-white" />
+<!-- Icon-only button using Font Awesome solid -->
+<Button class="fas rounded-lg bg-blue-500 text-white" title="&#xf0c7;" />
 ```
+
+For an icon-with-text pair, use a horizontal `View` containing an icon `Label` and a text `Label`, then bind a `touchstart`/`click` handler on the container:
+
+```xml
+<View onClick="doSave" class="horizontal rounded-lg bg-blue-500">
+  <Label class="fas ml-4 my-3 text-white" text="&#xf0c7;" />
+  <Label class="mx-3 my-3 text-base font-semibold text-white" text="Save" />
+</View>
+```
+
+> **Note**: The Font Awesome `fas` class only applies the font family. Glyphs are passed as Unicode in `title`/`text`. See the PurgeTSS Font Awesome integration docs for the full glyph map.
 
 ## Navigation Patterns
 
@@ -247,14 +270,17 @@ This guide collects practical UI patterns that stay aligned with Titanium layout
       <Label class="left-4 center text-xl font-bold text-gray-800" text="Screen Title" />
     </View>
 
-    <ScrollView class="h-screen w-screen">
-      <View class="vertical">
-        <Label class="mx-4 mt-4 text-base text-gray-700" text="Main content goes here." />
-      </View>
+    <ScrollView class="vertical content-w-screen content-h-auto">
+      <Label class="mx-4 mt-4 text-base text-gray-700" text="Main content goes here." />
     </ScrollView>
   </View>
 </Window>
 ```
+
+> **ScrollView sizing (PurgeTSS v7.3+)**
+> The recommended pattern for a vertically scrolling `ScrollView` is `class="vertical content-w-screen content-h-auto"`. This sets `layout=vertical`, `contentWidth=Ti.UI.FILL`, and `contentHeight=Ti.UI.SIZE` so the content region grows to fit its children. Older examples using `h-screen w-screen` on the `ScrollView` itself describe the viewport, not the content — use the `content-*` variants to describe how the scrollable content flows.
+>
+> For iOS windows with large titles, also apply `extendEdges`, `autoAdjustScrollViewInsets`, and `largeTitleEnabled` on the `Window`. See `ios-large-titles.md`.
 
 ### Two-Column Tablet Layout
 

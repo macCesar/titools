@@ -112,6 +112,20 @@ purgetss create 'MyApp' -d -v fa
 # -v: Copy icon fonts (fa, mi, ms, f7)
 ```
 
+## What's New in v7.6.0
+
+- `brand` command — complete Titanium branding set (launcher icons, adaptive, iOS 18+ Dark/Tinted, marketplace) from logos in `./purgetss/brand/`
+- `images` command — multi-density UI images (Android res-*dpi + iPhone @1x/@2x/@3x) from `./purgetss/images/`
+- `semantic` command — Titanium semantic colors for Light/Dark mode (palette mode + single mode)
+- `brand:` and `images:` config sections auto-injected into older configs
+- Percentages as strings (`'15%'`) for self-documenting clarity in brand/images configs
+
+## What's New in v7.5.3
+
+- Appearance module — Light/Dark/System mode switching with persistence
+- Default font family classes (`font-sans`, `font-serif`, `font-mono`) generated automatically with platform-appropriate values
+- XML validation — detects illegal `--` inside XML comments during pre-validation
+
 ## What's New in v7.5.0
 
 - `extend` support for Window, View, and ImageView in `config.cjs`
@@ -380,6 +394,8 @@ purgetss create 'MyApp' -d -v fa
 > - **[Class Index](references/class-index.md)** - Naming conventions, 416-property table, prohibited classes, verification commands (LOAD FIRST when unsure about a class)
 > - **[Class Categories](references/class-categories.md)** - Complete prefix inventory by category (layout, colors, typography, states, etc.)
 > - **[Dynamic Component Creation](references/dynamic-component-creation.md)** - `$.UI.create()` and `Alloy.createStyle()` for creating components in Controllers (READ FIRST for dynamic components)
+> - **[Appearance Module](references/appearance-module.md)** - Light/Dark/System mode switching with persistence (v7.5.3)
+> - **[Semantic Colors](references/semantic-colors.md)** - Titanium semantic colors for Light/Dark mode via `semantic` command (v7.6.0)
 >
 > ### Setup & Configuration
 > - [Installation & Setup](references/installation-setup.md) - First run, VS Code, LiveView
@@ -392,6 +408,10 @@ purgetss create 'MyApp' -d -v fa
 > - [Apply Directive](references/apply-directive.md) - Extracting utility combinations
 > - [Configurable Properties](references/configurable-properties.md) - All 80+ customizable properties
 >
+> ### Appearance & Theming
+> - **[Appearance Module](references/appearance-module.md)** - Light/Dark/System mode switching with persistence (v7.5.3)
+> - **[Semantic Colors](references/semantic-colors.md)** - `semantic` command + runtime usage for Light/Dark mode (v7.6.0)
+>
 > ### Layout & Styling
 > - **[UI/UX Design Patterns](references/ui-ux-design.md)** - Complete guide to mobile UI components with PurgeTSS (cards, lists, forms, buttons, navigation, modals, accessibility)
 > - [Grid Layout System](references/grid-layout.md) - 12-column grid, responsive layouts
@@ -400,6 +420,11 @@ purgetss create 'MyApp' -d -v fa
 > - [Platform Modifiers](references/platform-modifiers.md) - ios:, android:, tablet:, handheld:
 > - [Opacity Modifier](references/opacity-modifier.md) - Color transparency with /50 syntax
 > - [Titanium Resets](references/titanium-resets.md) - Default styles for Ti elements
+> - [iOS Large Titles](references/ios-large-titles.md) - Best practice for iOS Large Title navigation
+>
+> ### App Assets
+> - [App Branding](references/app-branding.md) - `brand` command for launcher icons, adaptive, iOS 18+ Dark/Tinted, marketplace assets (v7.6.0)
+> - [Multi-Density Images](references/multi-density-images.md) - `images` command for Android res-*dpi + iPhone @1x/@2x/@3x UI images (v7.6.0)
 >
 > ### Performance
 > - [Performance Tips](references/performance-tips.md) - Optimizing PurgeTSS apps (bridge crossings, ListView, animations)

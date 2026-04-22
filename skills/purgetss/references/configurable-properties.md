@@ -65,9 +65,6 @@ You can customize any of the following properties individually by adding them in
 - `trackTintColor`
 - `viewShadowColor`
 
-> **ℹ️ `backgroundGradient`**
-> For custom gradient rules, `backgroundGradient.colors` can use arrays of `{ color, offset }` objects. PurgeTSS v7.4.0 fixed serialization for those nested object arrays in `utilities.tss`.
-
 ## Configurable Properties
 
 - `activeTab`
@@ -152,12 +149,19 @@ You can customize any of the following properties individually by adding them in
 - `zIndex`
 - `zoomScale`
 
+## Custom Rules and Ti Elements
+
+Create your own custom rules and include Ti Elements with any number of attributes or conditional statements. See [Custom Rules](./custom-rules.md) for rule syntax and examples.
+
+## Community-Discovered Patterns
+
+The following notes come from community experience applying PurgeTSS configurable properties against Titanium's native layout constraints. They are not part of the official reference but prevent common mistakes.
+
+> **ℹ️ `backgroundGradient`**
+> For custom gradient rules, `backgroundGradient.colors` can use arrays of `{ color, offset }` objects. PurgeTSS v7.4.0 fixed serialization for those nested object arrays in `utilities.tss`.
+
 > **WARNING: Titanium Padding Constraint**
 > Titanium does not support native `padding` on `View`, `Window`, `ScrollView`, or `TableView`. Even if `padding*` is configurable, use margins on children for those elements.
 
 > **WARNING: Width Fill Constraint**
 > For full-width Titanium layouts, prefer `w-screen` (`Ti.UI.FILL`) instead of `w-full` (`100%`).
-
-## Custom Rules and Ti Elements
-
-Create your own custom rules and include Ti Elements with any number of attributes or conditional statements. See [Custom Rules](./custom-rules.md) for rule syntax and examples.

@@ -1,5 +1,10 @@
 # Performance Tips with PurgeTSS
 
+> **DISCLAIMER**
+> This entire document is curated community-verified guidance for optimizing Titanium apps that use PurgeTSS. It is **not** a mirror of the official PurgeTSS documentation. Tips are compiled from real-world project experience, Titanium bridge/memory observations, and commonly applied patterns in the Titanium community. Official PurgeTSS docs focus on utility classes and configuration, not app performance.
+
+## Community-Discovered Patterns
+
 Best practices for optimizing performance in Titanium apps using PurgeTSS utility classes.
 
 ## PurgeTSS Classes vs Inline Styles

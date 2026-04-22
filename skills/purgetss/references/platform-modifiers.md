@@ -43,5 +43,9 @@ You can set different background colors and font sizes per platform and device, 
 '.tablet:bg-green-500[formFactor=tablet]': { backgroundColor: '#22c55e' }
 ```
 
+## Community-Discovered Patterns
+
+The following guidance comes from community experience combining platform modifiers with platform-specific Titanium constants.
+
 > **Platform-Specific Properties**
 > If a style relies on `Ti.UI.iOS.*` or `Ti.UI.Android.*` constants, scope it with the matching `ios:` or `android:` modifier, or with the equivalent platform block in `config.cjs`.

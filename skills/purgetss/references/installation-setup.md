@@ -12,16 +12,11 @@ Install PurgeTSS globally on your machine using [NPM](https://www.npmjs.com/).
 > Node.js 20+ required.
 > PurgeTSS requires Node 20.0.0 or higher.
 
-## Upgrade Notes
+## XML Validation
 
-- `utilities.tss` is the generated utilities file. Update any scripts or docs that still use the previous output filename.
-- `deviceInfo()` now works in Alloy and Classic Titanium projects.
-- If an upgrade behaves unexpectedly, a clean reinstall is the recommended recovery step:
+PurgeTSS v7.5.3 added XML validation that flags any `--` (double-dash) sequence inside XML comments. Titanium's XML parser treats `--` in comments as invalid, and PurgeTSS now detects those sequences before they break the compile step.
 
-```bash
-npm uninstall -g purgetss
-npm install -g purgetss
-```
+If you see a validation warning from PurgeTSS pointing at a view file, replace the offending comment with an alternative marker (for example, `//` or `==`) and re-run the build.
 
 ## Run PurgeTSS the First Time
 
