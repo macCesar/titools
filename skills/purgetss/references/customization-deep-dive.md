@@ -18,7 +18,7 @@ If you want a clean `config.cjs`, delete the existing one and run:
 purgetss init
 ```
 
-This creates a minimal `./purgetss/config.cjs` file:
+This creates a `./purgetss/config.cjs` file with the default sections:
 
 ```javascript
 module.exports = {
@@ -34,17 +34,35 @@ module.exports = {
       plugins: [] // Array of properties to ignore
     }
   },
+  brand: {
+    splash: false,           // also generate splash_icon.png × 5
+    padding: '15%',          // Android safe-zone. Range: 12% tight (mature logos) — 20% conservative. Spec floor 19.44%.
+    iosPadding: '4%',        // iOS aesthetic. Range: 2% bold — 8% conservative. No launcher mask.
+    darkBgColor: null,       // opaque dark bg for DefaultIcon-Dark.png (null = transparent per Apple HIG)
+    bgColor: '#FFFFFF',      // Android adaptive bg + iOS/marketplace flatten
+    notification: false,     // also generate ic_stat_notify.png × 5
+    confirmOverwrites: true  // prompt before overwriting files (set false to skip)
+  },
+  images: {
+    quality: 85,             // JPEG/WebP/AVIF quality (0-100)
+    format: null,            // null = keep original; 'webp' | 'jpeg' | 'png' to convert every image
+    confirmOverwrites: true  // prompt before overwriting files (set false to skip)
+  },
   theme: {
     extend: {}
   }
 };
 ```
 
+`init` also creates empty `purgetss/fonts/`, `purgetss/brand/`, and `purgetss/images/` folders on first run, so you can see where each kind of asset goes.
+
 Every section is optional. Only add what you want to change. Anything missing falls back to the defaults.
 
 ## Structure
 
-The config file has two main sections: `purge` and `theme`.
+The config file has four main sections: `purge`, `brand`, `images`, and `theme`.
+
+`brand:` and `images:` configure the matching CLI commands — see [CLI Commands: `brand`](./cli-commands.md#brand-command) and [CLI Commands: `images`](./cli-commands.md#images-command) for the full option lists. The rest of this page covers `purge` and `theme`.
 
 ### `purge` Section
 
@@ -171,6 +189,31 @@ module.exports = {
       spacing: {
         96: '24rem',
         128: '32rem'
+      }
+    }
+  }
+};
+```
+
+### Default `font-sans`, `font-serif`, `font-mono`
+
+PurgeTSS generates three `fontFamily` classes by default, even when `theme.fontFamily` is not set in `config.cjs`. iOS and Android get different values on purpose so each platform picks its native system font:
+
+| Class        | iOS              | Android      |
+| ------------ | ---------------- | ------------ |
+| `font-sans`  | `Helvetica Neue` | `sans-serif` |
+| `font-serif` | `Georgia`        | `serif`      |
+| `font-mono`  | `monospace`      | `monospace`  |
+
+If you define a value for `sans`, `serif`, or `mono` in `theme.fontFamily` (or `theme.extend.fontFamily`), your value replaces the default on both platforms — no per-platform fork needed:
+
+`./purgetss/config.cjs`
+```javascript
+module.exports = {
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: 'Inter-Regular' // replaces Helvetica Neue / sans-serif on both platforms
       }
     }
   }
@@ -462,8 +505,13 @@ module.exports = {
 
 This generates classes like `p-72`, `m-84`, and `h-96` in addition to all of the default spacing and sizing utilities.
 
-> **WARNING: Titanium Layout Constraint**
-> Titanium does not support native `padding` on `View`, `Window`, `ScrollView`, or `TableView`. Even if PurgeTSS can generate spacing-related utilities, prefer margins on children for those elements.
+## Community-Discovered Patterns
+
+### Titanium Layout Constraint: `padding` on View / Window / ScrollView / TableView
+
+Titanium does not support native `padding` on `View`, `Window`, `ScrollView`, or `TableView`. Even if PurgeTSS generates spacing-related utilities (`p-*`, `px-*`, `py-*`), applying them to those elements is silently ignored at runtime. Prefer margins on the children of those containers instead — `m-*`, `mt-*`, `mb-*`, etc. — which Titanium honors correctly.
+
+This is a Titanium platform constraint, not a PurgeTSS bug. `Button`, `Label`, and `TextField` do accept `padding` natively.
 
 ## List of Customizable Properties
 

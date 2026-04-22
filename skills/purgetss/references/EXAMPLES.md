@@ -2,7 +2,11 @@
 
 Complete examples of common patterns with anti-patterns and correct implementations.
 
-## Titanium Layout Patterns
+## Community-Discovered Patterns
+
+The examples below catalog anti-patterns observed in real Titanium + PurgeTSS projects, paired with the correct approach. They are not exhaustive rules from official docs — they reflect pitfalls the community has hit often enough to warrant dedicated guidance.
+
+### Titanium Layout Patterns
 
 > **🚨 NO FLEXBOX IN TITANIUM**
 > Titanium does NOT support CSS Flexbox. All examples use `horizontal`, `vertical`, or `composite` layouts.
@@ -108,7 +112,7 @@ Complete examples of common patterns with anti-patterns and correct implementati
 
 ---
 
-## Manual .tss Files Anti-Pattern
+### Manual .tss Files Anti-Pattern
 
 **❌ WRONG (Creating manual .tss files):**
 ```xml
@@ -158,7 +162,7 @@ alloy compile
 
 ---
 
-## Grid with Percentages
+### Grid with Percentages
 
 **❌ WRONG (Children with % widths, parent without w-screen):**
 ```xml
@@ -179,7 +183,7 @@ alloy compile
 
 ---
 
-## Gap Usage
+### Gap Usage
 
 **❌ WRONG (gap adds margin all around, breaks % widths):**
 ```xml
@@ -200,7 +204,7 @@ alloy compile
 
 ---
 
-## Padding on Container Views
+### Padding on Container Views
 
 **❌ WRONG (Padding on Views doesn't work in Titanium):**
 ```xml
@@ -220,7 +224,7 @@ alloy compile
 
 ---
 
-## `w-full` vs `w-screen`
+### `w-full` vs `w-screen`
 
 **❌ WRONG (Using percentage-based width):**
 ```xml
@@ -244,7 +248,7 @@ alloy compile
 
 ---
 
-## `rounded-full` Without Size
+### `rounded-full` Without Size
 
 **❌ WRONG (rounded-full alone doesn't exist):**
 ```xml
@@ -266,7 +270,7 @@ alloy compile
 
 ---
 
-## Square Brackets for Arbitrary Values
+### Square Brackets for Arbitrary Values
 
 **❌ WRONG (Using square brackets like Tailwind CSS):**
 ```xml
@@ -288,7 +292,7 @@ alloy compile
 
 ---
 
-## Layout Defaults
+### Layout Defaults
 
 **❌ WRONG (Explicit composite class):**
 ```xml
@@ -318,18 +322,76 @@ alloy compile
 
 ---
 
-## Quick Reference Table
+### ScrollView Without `content-w-screen` / `content-h-auto`
 
-| Anti-Pattern          | Why It Fails             | Correct Approach         |
-| --------------------- | ------------------------ | ------------------------ |
-| `flex-row`            | Flexbox not supported    | `horizontal`             |
-| `flex-col`            | Flexbox not supported    | `vertical`               |
-| `justify-*`           | Flexbox not supported    | Use margins/positioning  |
-| `items-center`        | Flexbox mental model     | Use layout + positioning |
-| `p-4` on View         | No padding on containers | `m-4` on children        |
-| `w-full`              | Percentage-based         | `w-screen` (Ti.UI.FILL)  |
-| `rounded-full`        | Needs size suffix        | `rounded-full-12`        |
-| `composite` class     | Already default          | Omit it                  |
-| `w-[100px]`           | Wrong syntax             | `w-(100px)`              |
-| Manual `.tss`         | Overwritten by PurgeTSS  | Use utility classes      |
-| `gap` with `%` widths | Total exceeds 100%       | Use explicit margins     |
+**WRONG (ScrollView with children that overflow horizontally or never scroll vertically):**
+```xml
+<ScrollView class="w-screen h-screen">
+  <View class="vertical">
+    <Label text="Very long content..." />
+    <!-- many items -->
+  </View>
+</ScrollView>
+```
+
+**CORRECT (Explicit content sizing on the ScrollView itself):**
+```xml
+<ScrollView class="w-screen h-screen content-w-screen content-h-auto">
+  <View class="vertical">
+    <Label text="Very long content..." />
+    <!-- many items -->
+  </View>
+</ScrollView>
+```
+
+**Why:** `content-w-screen` sets `contentWidth: Ti.UI.FILL` so the scroll area matches the viewport horizontally; `content-h-auto` sets `contentHeight: Ti.UI.SIZE` so vertical scroll expands to fit children. Omitting these often produces a ScrollView that never scrolls or clips content unexpectedly.
+
+---
+
+### Deprecated `theme.View.DEFAULT` vs `theme.extend.View`
+
+**WRONG (old shape — deprecated in recent PurgeTSS):**
+```javascript
+// purgetss/config.cjs
+module.exports = {
+  theme: {
+    View: {
+      DEFAULT: { backgroundColor: '#ffffff' }
+    }
+  }
+}
+```
+
+**CORRECT (new `extend` shape):**
+```javascript
+// purgetss/config.cjs
+module.exports = {
+  theme: {
+    extend: {
+      View: { backgroundColor: '#ffffff' }
+    }
+  }
+}
+```
+
+**Why:** The nested `DEFAULT` key is a legacy artifact. Component-level theme overrides now live directly under `theme.extend.<Component>` and are merged with built-in defaults. Using the old shape silently produces unexpected styles on newer PurgeTSS versions.
+
+---
+
+### Quick Reference Table
+
+| Anti-Pattern                          | Why It Fails                         | Correct Approach                             |
+| ------------------------------------- | ------------------------------------ | -------------------------------------------- |
+| `flex-row`                            | Flexbox not supported                | `horizontal`                                 |
+| `flex-col`                            | Flexbox not supported                | `vertical`                                   |
+| `justify-*`                           | Flexbox not supported                | Use margins/positioning                      |
+| `items-center`                        | Flexbox mental model                 | Use layout + positioning                     |
+| `p-4` on View                         | No padding on containers             | `m-4` on children                            |
+| `w-full`                              | Percentage-based                     | `w-screen` (Ti.UI.FILL)                      |
+| `rounded-full`                        | Needs size suffix                    | `rounded-full-12`                            |
+| `composite` class                     | Already default                      | Omit it                                      |
+| `w-[100px]`                           | Wrong syntax                         | `w-(100px)`                                  |
+| Manual `.tss`                         | Overwritten by PurgeTSS              | Use utility classes                          |
+| `gap` with `%` widths                 | Total exceeds 100%                   | Use explicit margins                         |
+| ScrollView without `content-*` sizing | No/unexpected scroll                 | Add `content-w-screen` + `content-h-auto`    |
+| `theme.View.DEFAULT`                  | Legacy shape in newer PurgeTSS       | `theme.extend.View`                          |

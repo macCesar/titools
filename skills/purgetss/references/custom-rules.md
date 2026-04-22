@@ -31,9 +31,6 @@ Whether you want to style a Ti Element (also known as a markup element), a custo
   - `em` or `rem` values are converted with this formula: `value * 16`.
   - `dp` removes the unit and keeps the value as-is.
 
-> **Platform-Specific Constants**
-> If a rule uses `Ti.UI.iOS.*` or `Ti.UI.Android.*` constants, keep that property inside the matching `ios` or `android` block to avoid cross-platform compilation failures.
-
 ## `config.cjs` File Example
 
 `./purgetss/config.cjs`
@@ -102,3 +99,10 @@ module.exports = {
 '.gallery[formFactor=handheld]': { width: '250px' }
 '.gallery[formFactor=tablet]': { width: '500px' }
 ```
+
+## Community-Discovered Patterns
+
+The following guidance comes from community experience using PurgeTSS custom rules in real projects. It is not part of the official reference but addresses common pitfalls.
+
+> **Platform-Specific Constants**
+> If a rule uses `Ti.UI.iOS.*` or `Ti.UI.Android.*` constants, keep that property inside the matching `ios` or `android` block to avoid cross-platform compilation failures.

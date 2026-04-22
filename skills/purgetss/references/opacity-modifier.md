@@ -56,5 +56,9 @@ module.exports = {
 > **CAUTION -- Semantic Colors**
 > Semantic colors cannot be modified with the opacity modifier because they are defined as an object with light and dark values.
 
+## Community-Discovered Patterns
+
+The following note reflects community observations about how the opacity modifier interacts with gradient utilities.
+
 > **Gradients**
 > The same modifier logic applies to color-based gradient utilities such as `from-*` and `to-*`. When you define custom `backgroundGradient.colors` arrays of `{ color, offset }` objects in `config.cjs`, PurgeTSS v7.4.0 correctly serializes those nested objects in `utilities.tss`.

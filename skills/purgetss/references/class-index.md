@@ -120,10 +120,11 @@ Some PurgeTSS classes combine multiple Titanium properties under a single class 
 | `dragging-*`             | `draggingType`                                                 | Animation module dragging  |
 | `filter-attribute-*`     | `filterAttribute`                                              | ListView filtering         |
 | `flip-*`                 | `flip`                                                         | Animation flipping         |
-| `font-*`                 | `fontFamily`, `fontSize`, `fontStyle`, `fontWeight`            | Typography                 |
+| `font-*`                 | `fontFamily`, `fontSize`, `fontStyle`, `fontWeight`            | Typography (v7.5.3+: `font-sans`, `font-serif`, `font-mono` family classes) |
 | `grid-*`                 | Various                                                        | Grid layout system         |
 | `h-*`                    | `height`                                                       | All components             |
 | `hint-*`                 | `hintTextColor`                                                | TextField placeholder      |
+| `keep-z-index`           | `animationProperties.keepZIndex` (v7.4.0+)                     | Preserves z-order during drag when used with `transition` |
 | `layout-*`               | `layout`                                                       | View layout modes          |
 | `minimum-font-size-*`    | `minimumFontSize`                                              | Label auto-shrink          |
 | `navigation-*`           | `navigationMode`                                               | Navigation modes           |
@@ -135,6 +136,7 @@ Some PurgeTSS classes combine multiple Titanium properties under a single class 
 | `scroll-type-*`          | `scrollType`                                                   | Android scroll type        |
 | `shadow-*`               | `shadowOffset`, `shadowRadius`, `shadowColor`                  | Box shadows                |
 | `show-*scroll-indicator` | `showHorizontalScrollIndicator`, `showVerticalScrollIndicator` | ScrollView                 |
+| `snap-*`                 | `animationProperties.snap.{back, center, magnet}` (v7.4.0+)    | Draggable drop behaviors   |
 | `status-bar-style-*`     | `statusBarStyle`                                               | iOS status bar             |
 | `tint-*`                 | `tintColor`                                                    | View/Button tinting        |
 | `title-*`                | `titleAttributes: color/shadow`                                | iOS title styling          |
@@ -759,7 +761,11 @@ For the complete prefix inventory organized by category (Layout, Spacing, Colors
 
 ---
 
-## PROHIBITED: CSS Classes (DO NOT EXIST)
+## Community-Discovered Patterns
+
+The rest of this document collects conventions, prohibitions, and insights surfaced by PurgeTSS users in real Titanium projects. They reflect how the utility system is actually used, not just how it is defined.
+
+### PROHIBITED: CSS Classes (DO NOT EXIST)
 
 | CSS Class         | Issue                             | PurgeTSS Alternative                        |
 | ----------------- | --------------------------------- | ------------------------------------------- |
@@ -779,9 +785,25 @@ For the complete prefix inventory organized by category (Layout, Spacing, Colors
 | `leading-*`       | Uses different prefix             | Use `line-h-multiple-*` or `line-spacing-*` |
 | `tracking-*`      | Uses different prefix             | Use `letter-spacing-*`                      |
 
+### Key Insights from Real Data
+
+1. **21,236 unique classes** across **364 unique prefixes** - Far more than initially documented
+2. **Extensive state management** - Hundreds of `*enabled`, `*-false` classes for UI states
+3. **Platform-specific classes** - Many iOS/Android specific variants (like `[platform=ios]`)
+4. **Complete color coverage** - All 22 Tailwind v3 colors with 11 shades each (50-950) = 242 color variants per prefix
+5. **Boolean class pattern** - For properties like `editable`, `enabled`, `visible` → `class` and `class-false`
+6. **UI component state variants** - `selected-*`, `badge-*`, `title-*`, `disabled-*` with full color coverage
+7. **Keyboard toolbar styling** - Extensive `keyboard-toolbar-*` classes for custom keyboard accessories
+8. **Status bar & navigation** - `status-bar-*`, `tabs-*`, `nav-*` for system UI customization
+9. **Accessibility support** - `accessibility-*` classes for a11y properties
+10. **Animation system** - `duration-*`, `delay-*`, `rotate-*`, `scale-*` for PurgeTSS Animation component
+
 ---
 
 ## All 364 Unique Prefixes (Alphabetical)
+
+> **NOTE**: Recent additions — v7.4.0 introduced `snap-back`, `snap-back-false`, `snap-center`, `snap-center-false`, `snap-magnet`, `snap-magnet-false`, `keep-z-index`, and `keep-z-index-false` for the Animation module drop/drag system. v7.5.3 introduced font-family classes `font-sans`, `font-serif`, `font-mono` alongside the existing weight classes.
+
 
 ```
 accessibility, accessory, accuracy, action, active, activity, alignment, all, allow, allows,
@@ -809,7 +831,7 @@ pl, placeholder, platform, playback, pointer, portrait, position, pr, prevent, p
 prune, pt, pull, purple, px, py, ready, recording, red, remote, repeat, requires, results,
 return, reverse, right, role, rose, rotate, rounded, row, running, save, scale, scales,
 scaling, scroll, scrollable, scrolling, scrolls, search, section, secure, selected, selection,
-sentences, separator, shadow, shift, show, shows, shuffle, size, sky, slate, smooth, sorted,
+sentences, separator, shadow, shift, show, shows, shuffle, size, sky, slate, smooth, snap, sorted,
 source, split, state, status, stone, stopped, style, submit, subtitle, success, suppress,
 suppresses, sustained, swipe, swipeable, tab, tabs, target, teal, text, theme, throw, thumb,
 timeout, tint, title, tls, to, toggle, toolbar, top, torch, touch, trace, track, translucent,
@@ -868,18 +890,3 @@ These properties are NOT styled with classes in PurgeTSS - use as XML attributes
 | `bindId`       | `bindId="myData"`                 | ListView data binding    |
 
 **Note:** For `autocapitalization`, `editable`, `enabled`, `visible`, `autocorrect` - PurgeTSS DOES have classes (see above), so you CAN use either the class or the attribute depending on your preference.
-
----
-
-## Key Insights from Real Data
-
-1. **21,236 unique classes** across **364 unique prefixes** - Far more than initially documented
-2. **Extensive state management** - Hundreds of `*enabled`, `*-false` classes for UI states
-3. **Platform-specific classes** - Many iOS/Android specific variants (like `[platform=ios]`)
-4. **Complete color coverage** - All 22 Tailwind v3 colors with 11 shades each (50-950) = 242 color variants per prefix
-5. **Boolean class pattern** - For properties like `editable`, `enabled`, `visible` → `class` and `class-false`
-6. **UI component state variants** - `selected-*`, `badge-*`, `title-*`, `disabled-*` with full color coverage
-7. **Keyboard toolbar styling** - Extensive `keyboard-toolbar-*` classes for custom keyboard accessories
-8. **Status bar & navigation** - `status-bar-*`, `tabs-*`, `nav-*` for system UI customization
-9. **Accessibility support** - `accessibility-*` classes for a11y properties
-10. **Animation system** - `duration-*`, `delay-*`, `rotate-*`, `scale-*` for PurgeTSS Animation component

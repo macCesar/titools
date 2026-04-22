@@ -203,6 +203,81 @@ theme: {
 '.btn[if=Alloy.Globals.iPhoneX]': { bottom: 48 }
 ```
 
+## Customizing Window, View, and ImageView
+
+`Window`, `View`, and `ImageView` have built-in defaults (white Window background, `Ti.UI.SIZE` on View, `hires: true` on ImageView for iOS). To change those defaults globally, put the customization under `theme.extend` — the same place you would extend `colors` or `spacing`:
+
+`./purgetss/config.cjs`
+```javascript
+module.exports = {
+  theme: {
+    extend: {
+      Window: {
+        apply: 'exit-on-close-false bg-blue-500'
+      }
+    }
+  }
+};
+```
+
+Now every `<Window>` in the project picks up `backgroundColor: '#3b82f6'` and `exitOnClose: false`.
+
+The same pattern works for `View` and `ImageView`. For example, to make all `ImageView` elements use `hires: true` on iOS (which PurgeTSS already does by default on iOS), or to set a different default for `View`:
+
+`./purgetss/config.cjs`
+```javascript
+module.exports = {
+  theme: {
+    extend: {
+      ImageView: {
+        ios: {
+          apply: 'hires-true'
+        }
+      },
+      View: {
+        apply: 'wh-auto'
+      }
+    }
+  }
+};
+```
+
+### Shorthand: no `default:` wrapper needed
+
+The examples above use `{ apply: '...' }` directly. Internally that gets normalized to `{ default: { apply: '...' } }`, so both forms produce the same TSS:
+
+```javascript
+// Both of these work
+Window: { apply: 'exit-on-close-false bg-blue-500' }
+Window: { default: { apply: 'exit-on-close-false bg-blue-500' } }
+```
+
+Use the explicit `default:` wrapper when you also need platform blocks (`ios:`, `android:`) next to it. For the common case of one bundle of defaults, the shorthand reads better.
+
+### Apply Wins Over Static Defaults
+
+If `apply` sets a property that the component already has as a built-in default, the applied value replaces the original instead of both ending up in the final TSS:
+
+`./purgetss/config.cjs`
+```javascript
+module.exports = {
+  theme: {
+    extend: {
+      Window: { apply: 'bg-blue-500' }
+    }
+  }
+};
+```
+
+`./purgetss/styles/utilities.tss`
+```tss
+/* Before dedup: { backgroundColor: '#FFFFFF', backgroundColor: '#3b82f6' } */
+/* After dedup:                                                           */
+'Window': { backgroundColor: '#3b82f6' }
+```
+
+Without the dedup, both `backgroundColor` entries would land in the file; the last one would win at runtime anyway, but reading the TSS with two copies of the same property is confusing. The builder keeps only the applied value.
+
 ## Platform-Specific Classes
 
 Several classes in `utilities.tss` are platform-specific (e.g., `clip-enabled`, `status-bar-style-light-content`). These only exist with a `[platform=ios]` or `[platform=android]` suffix.
@@ -276,16 +351,21 @@ module.exports = {
 '.my-view': { backgroundColor: '#22c55e', width: 128, height: 128 }
 ```
 
-> **Titanium Fill Rule**
-> When composing layout utilities inside `apply`, prefer `w-screen` for fill behavior. `w-full` maps to `100%`, not `Ti.UI.FILL`.
-
 ## Community-Discovered Patterns
+
+### Titanium Fill Rule
+
+When composing layout utilities inside `apply`, prefer `w-screen` for fill behavior. `w-full` maps to `100%`, not `Ti.UI.FILL`. In Titanium, `Ti.UI.FILL` is the layout primitive that makes a view fill its parent; a literal `100%` can behave unexpectedly inside nested containers.
+
+### Platform-Specific Constants in `apply`
+
+Constants like `Ti.UI.iOS.CLIP_MODE_ENABLED` or `Ti.UI.iOS.StatusBar.LIGHT_CONTENT` only exist on the platform that defines them. PurgeTSS utility classes such as `clip-enabled` or `status-bar-style-light-content` therefore only exist with a `[platform=ios]` or `[platform=android]` suffix in `utilities.tss`. When you reference them from `apply`, put them inside the correct platform block (`ios:` / `android:`) so PurgeTSS resolves them — otherwise the class silently drops on the wrong platform and can throw a runtime error if it reaches it. See the "Platform-Specific Classes" section above for the resolution rules.
 
 ### Global Window defaults for Large Titles + ScrollView (iOS)
 
-When using `largeTitleEnabled` with a ScrollView inside NavigationWindow or TabGroup, three Window properties must work together: `auto-adjust-scroll-view-insets`, `extend-edges-all`, and `large-title-enabled`. Without all three, the ScrollView content overlaps behind the navigation bar — or the large title renders with a visible delay.
+**See the dedicated reference: [`ios-large-titles.md`](./ios-large-titles.md)** — it covers the full pattern (three-property pairing, global-defaults recipe, TabGroup implicit NavigationWindow behavior, detail-window opt-out, and the ScrollView `content-w-screen` / `content-h-auto` pairing).
 
-Instead of repeating these classes on every Window XML, use `apply` in `config.cjs` to set the base properties as global defaults:
+Minimal recap — when Large Titles are in use, set the base iOS Window defaults once via `apply` in `config.cjs` rather than repeating them in every XML view:
 
 `./purgetss/config.cjs`
 ```javascript
@@ -293,35 +373,11 @@ module.exports = {
   theme: {
     Window: {
       ios: {
-        apply: 'auto-adjust-scroll-view-insets extend-edges-all status-bar-style-light-content'
+        apply: 'auto-adjust-scroll-view-insets extend-edges-all large-title-enabled'
       }
     }
   }
 };
 ```
 
-`./purgetss/styles/utilities.tss`
-```tss
-'Window[platform=ios]': { autoAdjustScrollViewInsets: true, extendEdges: [ Ti.UI.EXTEND_EDGE_ALL ], statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT }
-```
-
-Then in each view XML, only add `largeTitleEnabled` and `largeTitleDisplayMode` as needed:
-
-```xml
-<Window title="Home" class="large-title-enabled">
-  <ScrollView class="vertical w-screen" contentHeight="Ti.UI.SIZE">
-    <!-- Content starts below the nav bar automatically -->
-  </ScrollView>
-</Window>
-```
-
-This works for both NavigationWindow and TabGroup — on iOS, TabGroup wraps each Tab in an implicit NavigationWindow.
-
-| Class | Property | Value |
-|---|---|---|
-| `auto-adjust-scroll-view-insets` | `autoAdjustScrollViewInsets` | `true` |
-| `extend-edges-all` | `extendEdges` | `[ Ti.UI.EXTEND_EDGE_ALL ]` |
-| `large-title-enabled` | `largeTitleEnabled` | `true` |
-| `large-title-display-mode` | `largeTitleDisplayMode` | Uses `LARGE_TITLE_DISPLAY_MODE_*` constants |
-
-> **Why `ios:` block instead of inline `ios:` prefix?** The three classes (`auto-adjust-scroll-view-insets`, `extend-edges-all`, `status-bar-style-light-content`) are platform-specific — they only exist with `[platform=ios]` suffix in `utilities.tss`. Using the `ios:` block in `config.cjs` ensures PurgeTSS resolves them correctly. See "Platform-Specific Classes" above.
+The `ios:` block (not an inline `ios:` prefix) is required because these classes only exist with a `[platform=ios]` suffix — see "Platform-Specific Classes" above. The *why* (rendering delay vs content-behind-nav-bar), the display-mode constants, and per-window overrides live in [`ios-large-titles.md`](./ios-large-titles.md) and in the official PurgeTSS docs at [Best Practices → Large Titles on iOS](https://purgetss.com/docs/best-practices/3-large-titles-on-ios).

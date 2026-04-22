@@ -166,5 +166,9 @@ exports.icons = icons;
 > **DANGER**
 > Make sure the new prefix remains unique to avoid conflicts with other class prefixes.
 
+## Community-Discovered Patterns
+
+The following note reflects community experience working with icon fonts that depend on multiple glyphs per icon.
+
 > **Font Awesome Duotone**
 > Titanium cannot render Font Awesome duotone icons correctly because each icon uses two glyphs. If you work with Font Awesome Pro, avoid documenting duotone as supported.

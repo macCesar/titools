@@ -2,9 +2,6 @@
 
 The grid system is a small layout tool that lets you build rows and columns with utility classes.
 
-> **WARNING**
-> PurgeTSS grid is not CSS Grid. It is a Titanium-oriented layout helper built around horizontal and vertical layout behavior.
-
 The snippet below shows the simplest layout. From there, you can mix columns and rows as needed.
 
 ```xml
@@ -85,10 +82,25 @@ These are the available utilities to control the grid.
 
 Control horizontal alignment of elements within a row:
 
-| Class | Effect | Use case |
-| --- | --- | --- |
-| `start` | Align to the start of the row | Left-aligned content |
-| `end` | Align to the end of the row | Right-aligned buttons or labels |
-| `center` | Align to the center of the row | Centered content blocks |
+| Class | Effect |
+| --- | --- |
+| `start` | Align to the start of the row |
+| `end` | Align to the end of the row |
+| `center` | Align to the center of the row |
 
 These apply to child views inside a `grid-cols-*` container and control horizontal placement within the grid cell.
+
+## Community-Discovered Patterns
+
+The following notes come from community experience using the PurgeTSS grid system in Titanium projects. They clarify how the grid relates to Titanium's layout engine (not CSS Grid) and offer common use cases for row placement.
+
+> **WARNING**
+> PurgeTSS grid is not CSS Grid. It is a Titanium-oriented layout helper built around horizontal and vertical layout behavior.
+
+### Common Use Cases for Row Placement
+
+| Class | Use case |
+| --- | --- |
+| `start` | Left-aligned content |
+| `end` | Right-aligned buttons or labels |
+| `center` | Centered content blocks |

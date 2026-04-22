@@ -1,5 +1,15 @@
 # Dynamic Component Creation with PurgeTSS
 
+> **SCOPE NOTE**
+>
+> This reference covers dynamic component creation using **Alloy's `$.UI.create()` helper** and **`Alloy.createStyle()` + `applyProperties()`**, both combined with PurgeTSS utility classes. It is an Alloy + PurgeTSS integration guide, **not** documentation for the `purgetss.ui` native module (see [animation-system.md](./animation-system.md) and [animation-advanced.md](./animation-advanced.md) for that module).
+>
+> For general Alloy controller and view patterns, refer to the `alloy-guides` and `alloy-howtos` skills.
+
+## Community-Discovered Patterns
+
+The guidance in this file reflects patterns that PurgeTSS users have converged on when building components imperatively from Alloy controllers. It complements — but is not a substitute for — official Alloy documentation.
+
 ## Overview
 
 When creating components dynamically in Controllers (not declaratively in XML), PurgeTSS provides two methods to apply utility classes:
@@ -7,8 +17,9 @@ When creating components dynamically in Controllers (not declaratively in XML), 
 1. **`$.UI.create()`** - Create components with PurgeTSS classes (Recommended)
 2. **`Alloy.createStyle()` + `applyProperties()`** - Apply PurgeTSS styles to existing components
 
-> **💡 BEST PRACTICE**
-> **Always prefer `$.UI.create()` for dynamic components** - it's cleaner, more readable, and PurgeTSS will process the classes automatically during build.
+> **BEST PRACTICE**
+>
+> Always prefer `$.UI.create()` for dynamic components — it's cleaner, more readable, and PurgeTSS will process the classes automatically during build.
 
 ---
 
@@ -333,24 +344,25 @@ function createIconGrid(items) {
 
 ### PurgeTSS Processes Classes During Build
 
-> **️ℹ️ HOW IT WORKS**
+> **NOTE — HOW IT WORKS**
+>
 > When you use `$.UI.create()` or `Alloy.createStyle()` with classes:
 >
 > 1. PurgeTSS scans your controllers for these class references
 > 2. It adds the classes to the generated `app.tss`
 > 3. At runtime, Alloy applies the styles to your components
 >
-> This means you get **full PurgeTSS power** even with dynamic components!
+> This means you get the full PurgeTSS utility surface even with dynamic components.
 
 ### Class Verification
 
-Just like with XML views, **always verify classes exist** before using them:
+Just like with XML views, always verify classes exist before using them:
 
 ```javascript
-// ✅ CORRECT - Verified classes
+// CORRECT - Verified classes
 classes: ['w-screen', 'h-auto', 'bg-white', 'rounded-lg']
 
-// ❌ WRONG - These classes don't exist
+// WRONG - These classes don't exist
 classes: ['flex-row', 'justify-center', 'p-4']  // No flexbox, no p-* on View
 ```
 
@@ -425,7 +437,8 @@ function setState(state) {
 }
 ```
 
-> **💡 When to Use `classes` vs `applyProperties`**
+> **NOTE — When to use `classes` vs `applyProperties`**
+>
 > - Use `classes` when you want to swap entire style sets (e.g., active/inactive states)
 > - Use `applyProperties` with direct values when changing individual properties (e.g., text, enabled)
 > - Combine both for complex state changes
@@ -434,7 +447,7 @@ function setState(state) {
 
 ## Anti-Patterns to Avoid
 
-### ❌ Don't Use `Ti.UI.create()` with Manual Styles
+### Don't use `Ti.UI.create()` with Manual Styles
 
 ```javascript
 // WRONG - Manual styling, no PurgeTSS benefits
@@ -446,7 +459,7 @@ const view = Ti.UI.createView({
 })
 ```
 
-### ✅ Use `$.UI.create()` with PurgeTSS Classes
+### Use `$.UI.create()` with PurgeTSS classes
 
 ```javascript
 // CORRECT - Full PurgeTSS power
@@ -455,7 +468,7 @@ const view = $.UI.create('View', {
 })
 ```
 
-### ❌ Don't Mix Styles and Classes
+### Don't mix inline styles and classes
 
 ```javascript
 // CONFUSING - Mix of styles and classes
@@ -465,7 +478,7 @@ const view = $.UI.create('View', {
 })
 ```
 
-### ✅ Use Only Classes (or Only Styles)
+### Use only classes (or only styles)
 
 ```javascript
 // CORRECT - Pure PurgeTSS
@@ -494,8 +507,10 @@ view.applyProperties(Alloy.createStyle('index', {
 | **`Alloy.createStyle()`** | Styling existing components | `Alloy.createStyle('view', { classes: 'bg-white' })` |
 | **`applyProperties()`**   | Apply style to component    | `component.applyProperties(style)`                   |
 
-> **💡 REMEMBER**
-> Both methods give you **full access to PurgeTSS utilities**:
+> **NOTE — REMEMBER**
+>
+> Both methods give you full access to PurgeTSS utilities:
+>
 > - All color classes (`bg-*`, `text-*`, `border-*`)
 > - All spacing classes (`m-*`, `gap-*`, and `p-*` where the Titanium component supports padding)
 > - All layout classes (`horizontal`, `vertical`)
