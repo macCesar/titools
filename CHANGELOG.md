@@ -4,6 +4,113 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.9.0] - 2026-04-22
+
+### Added — 5 new references in `purgetss` skill for v7.5.3 + v7.6.0 features
+
+The `purgetss` skill now covers every feature shipped in PurgeTSS v7.5.3
+and v7.6.0 with dedicated reference files:
+
+- `appearance-module.md` — Light/Dark/System mode switching via the
+  `Appearance` export (v7.5.3). Covers `init()`, `set(mode)`, `get()`,
+  `toggle()`, startup wiring, and a full Settings-view example.
+- `semantic-colors.md` — `semantic.colors.json` schema, `theme.extend.colors`
+  mapping, the `[object Object]` nesting trap, the numeric 11-step tonal
+  inversion pattern, alpha transparency, the `purgetss semantic` CLI
+  (palette + single modes), and three runtime consumption patterns.
+- `app-branding.md` — the `purgetss brand` command (v7.6.0): launcher
+  icons, adaptive icons, iOS 18+ Dark/Tinted variants, marketplace
+  artwork, monochrome layer handling, padding guidance, and
+  troubleshooting. Replaces the removed `ti-branding` skill as the
+  canonical reference.
+- `multi-density-images.md` — the `purgetss images` command (v7.6.0):
+  4× master convention, multi-density output, format conversion,
+  subdirectory preservation, and pipeline integration.
+- `ios-large-titles.md` — the `autoAdjustScrollViewInsets` +
+  `extendEdges` + `largeTitleEnabled` combo, global defaults pattern,
+  `largeTitleDisplayMode` constants, and `large-title-display-mode-never`
+  override for detail windows.
+
+### Added — `What's New in v7.6.0` and `What's New in v7.5.3` sections
+
+`skills/purgetss/SKILL.md` now surfaces the two most recent PurgeTSS
+releases at the top, with links to the new reference files and a
+summary of each release's additions.
+
+### Added — `brand`, `images`, and `semantic` commands in CLI reference
+
+`references/cli-commands.md` grew from ~800 to ~1000 lines to cover the
+three new v7.6.0 commands with full flag tables, positional arguments,
+config blocks, confirmation-prompt semantics, and examples. Each
+command links to its deep-dive reference.
+
+### Fixed — hallucinated `z-10`/`z-50` classes removed from smart-mappings
+
+`references/smart-mappings.md` incorrectly documented Tailwind-style
+`z-10`, `z-20`, …, `z-50` shorthand classes. Verification against
+`dist/utilities.tss` confirmed PurgeTSS only emits the `z-index-*`
+prefix (`z-index-0` through `z-index-50`). The file was rewritten
+under a `## Community-Discovered Patterns` heading with every claim
+cited against either official docs, `dist/utilities.tss` line numbers,
+or documented Titanium platform behavior.
+
+### Changed — 18 existing references aligned with v7.5.3 / v7.6.0
+
+- `migration-guide.md` — grew from 77 to 213 lines, now covers every
+  release from v7.2.6 through v7.6.0. The prior "v7.4.0
+  backgroundGradient.colors serialization fix" claim could not be tied
+  to the official changelog (which lists v7.4.0 as the Animation
+  module expansion) and was moved into a Community-Discovered Patterns
+  section with a `needs-confirmation` note instead of being silently
+  deleted.
+- `apply-directive.md` — added the three v7.5.0 `theme.extend.{Window,
+  View, ImageView}` subsections (customizing defaults, shorthand
+  `apply:` normalization, and "apply wins over static defaults").
+- `customization-deep-dive.md` — corrected stale "two main sections"
+  language to "four main sections" (`purge`, `brand`, `images`,
+  `theme`); updated default `config.cjs` template to include the
+  v7.6.0 `brand:` and `images:` blocks; added the v7.5.3 default
+  `font-sans`/`font-serif`/`font-mono` subsection with per-platform
+  values.
+- `ui-ux-design.md` — updated ScrollView examples to use the v7.3+
+  `content-w-screen content-h-auto` pattern; added cross-references
+  to the new Appearance, Semantic Colors, and Large Titles refs.
+- `titanium-resets.md` — replaced the deprecated `theme.View.DEFAULT`
+  override pattern with the v7.5.0 `theme.extend.View` shape; added
+  the v7.5.3 default font family classes subsection; bumped the stale
+  `v7.2.7` version stamp.
+- `class-index.md`, `class-categories.md` — added the v7.5.3 default
+  font family classes (`font-sans`/`font-serif`/`font-mono`) and the
+  v7.4.0 snap/keep-z-index classes to their prefix inventories.
+- `installation-setup.md` — added the v7.5.3 XML validation section
+  (illegal `--` inside comments detection).
+- `EXAMPLES.md` — added two new WRONG vs CORRECT pairs for the
+  `content-w-screen content-h-auto` ScrollView pattern and the
+  deprecated `theme.View.DEFAULT` vs `theme.extend.View` shape.
+- `dynamic-component-creation.md` — added a top-of-file scope note
+  clarifying the ref covers Alloy's `$.UI.create()` (not the
+  `purgetss.ui` module); replaced decorative emoji callouts with
+  blockquote admonitions.
+
+### Changed — `## Community-Discovered Patterns` convention applied broadly
+
+The convention that protects real-world patterns, workarounds, and
+verified best practices from aggressive auditor cleanup now covers 22
+of 28 reference files (previously 4). Unlabeled author callouts
+(`> WARNING`, `> TIP`, platform caveats) were moved under the
+protected H2 heading to make their provenance explicit.
+
+Files given a new `## Community-Discovered Patterns` section:
+`custom-rules.md`, `opacity-modifier.md`, `arbitrary-values.md`,
+`platform-modifiers.md`, `icon-fonts.md`, `configurable-properties.md`,
+`grid-layout.md`, `performance-tips.md`, `class-index.md`,
+`class-categories.md`, `EXAMPLES.md`, `dynamic-component-creation.md`,
+`tikit-components.md`, `smart-mappings.md`, `installation-setup.md`,
+`titanium-resets.md`, `ui-ux-design.md`, `customization-deep-dive.md`.
+
+Existing protected sections in `apply-directive.md` and
+`migration-guide.md` were preserved and verified against current docs.
+
 ## [2.8.0] - 2026-04-21
 
 ### Removed — `ti-branding` skill (functionality merged into PurgeTSS)
