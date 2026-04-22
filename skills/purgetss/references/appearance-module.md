@@ -1,0 +1,161 @@
+# Appearance Module
+
+The `Appearance` export from `purgetss.ui` (added in **v7.5.3**) handles Light / Dark / System mode switching and persists the user's choice across app restarts. It is a thin, deterministic wrapper around Titanium's native `Ti.UI.overrideUserInterfaceStyle` plus `Ti.App.Properties`, exposed as a singleton so every controller in the app reads and writes the same state.
+
+This file covers the four public methods, the required setup, a full Settings-view example, and the lifecycle that keeps the saved mode in sync with the UI. For the color wiring that actually makes the UI *respond* to mode changes, see [semantic-colors.md](./semantic-colors.md).
+
+> **INFO**
+>
+> Requires PurgeTSS **>= 7.5.3**. On older versions the `Appearance` export does not exist — the `require('purgetss.ui')` call will succeed, but `Appearance` will be `undefined`. Run `purgetss --version` in the project root to confirm.
+
+## Setup
+
+Call `Appearance.init()` **once** at app startup, before opening the first window. The standard place is the top of `app/controllers/index.js`.
+
+`app/controllers/index.js`
+```js
+const { Appearance } = require('purgetss.ui')
+
+Appearance.init()
+
+$.navWin.open()
+```
+
+`init()` reads the saved preference from `Ti.App.Properties` (key: `userInterfaceStyle`) and applies it through `Ti.UI.overrideUserInterfaceStyle`. If nothing has been saved yet, the system default is used, and semantic colors resolve against whatever the OS reports.
+
+> **WARNING**
+>
+> Call `Appearance.init()` **before** `$.navWin.open()` (or whichever window you open first). If the window opens first, it will render once against the system default and then flicker to the saved mode when `init()` runs — a visible flash on cold launch.
+
+## Methods
+
+| Method       | Description                                                                 |
+| ------------ | --------------------------------------------------------------------------- |
+| `init()`     | Restore the saved mode from `Ti.App.Properties` and apply it via `Ti.UI.overrideUserInterfaceStyle`. Call once at app startup before opening the first window. |
+| `set(mode)`  | Apply and persist a mode. Accepts `'system'`, `'light'`, or `'dark'`. Any other value is silently ignored. |
+| `get()`      | Returns the current mode as a string: `'system'`, `'light'`, or `'dark'`.   |
+| `toggle()`   | Switch between `'light'` and `'dark'`. Skips `'system'` — if current mode is `'system'` the next call produces `'dark'`. |
+
+All four methods are **synchronous**. They do not fire events; if you need to react to a mode change, call your update logic right after `Appearance.set(...)`.
+
+## Full Settings-view example
+
+A three-row settings panel — System / Light / Dark — where each row shows a `fa-solid fa-circle-check` icon next to the currently active mode. Tapping a row calls `Appearance.set(...)` and updates the check icons.
+
+### View
+
+`app/views/settings.xml`
+```xml
+<Alloy>
+  <Window class="bg-surface title-attributes-on-surface bar-surface nav-tint-accent" title="Settings">
+    <ScrollView class="vertical content-w-screen content-h-auto">
+
+      <Label class="mx-4 mb-2 mt-6 h-auto text-xs font-semibold text-on-surface-variant">APPEARANCE</Label>
+
+      <View class="mx-4 mb-4 h-auto w-screen rounded-xl bg-surface-high shadow-sm vertical clip-enabled">
+
+        <!-- System -->
+        <View class="horizontal mx-4 h-12 w-screen" onClick="selectSystem">
+          <Label class="fa-solid fa-mobile-screen ml-0 h-12 w-8 text-blue-500" />
+          <Label class="h-12 text-sm font-semibold text-on-surface">System</Label>
+          <Label id="themeSystemCheck" class="fa-solid fa-circle-check mr-0 h-12 w-screen text-right text-green-500" />
+        </View>
+
+        <View class="h-px w-screen bg-border" />
+
+        <!-- Light -->
+        <View class="horizontal mx-4 h-12 w-screen" onClick="selectLight">
+          <Label class="fa-solid fa-sun ml-0 h-12 w-8 text-amber-500" />
+          <Label class="h-12 text-sm font-semibold text-on-surface">Light</Label>
+          <Label id="themeLightCheck" class="fa-solid fa-circle-check mr-0 hidden h-12 w-screen text-right text-green-500" />
+        </View>
+
+        <View class="h-px w-screen bg-border" />
+
+        <!-- Dark -->
+        <View class="horizontal mx-4 h-12 w-screen" onClick="selectDark">
+          <Label class="fa-solid fa-moon ml-0 h-12 w-8 text-purple-500" />
+          <Label class="h-12 text-sm font-semibold text-on-surface">Dark</Label>
+          <Label id="themeDarkCheck" class="fa-solid fa-circle-check mr-0 hidden h-12 w-screen text-right text-green-500" />
+        </View>
+
+      </View>
+
+    </ScrollView>
+  </Window>
+</Alloy>
+```
+
+### Controller
+
+`app/controllers/settings.js`
+```js
+const { Appearance } = require('purgetss.ui')
+
+// Sync check icons with the mode saved at app startup.
+updateUI(Appearance.get())
+
+const selectDark   = () => selectAppearance('dark')
+const selectLight  = () => selectAppearance('light')
+const selectSystem = () => selectAppearance('system')
+
+const selectAppearance = (value) => {
+  Appearance.set(value)
+  updateUI(value)
+}
+
+const updateUI = (value) => {
+  $.themeDarkCheck.visible   = (value === 'dark')
+  $.themeLightCheck.visible  = (value === 'light')
+  $.themeSystemCheck.visible = (value === 'system')
+}
+```
+
+The background, text, border, and icon colors in the XML come from semantic color classes (`bg-surface`, `bg-surface-high`, `text-on-surface`, `bg-border`, etc.) — see [semantic-colors.md](./semantic-colors.md) for how to wire those up so the whole view flips when `Appearance.set('dark')` fires.
+
+## Lifecycle
+
+How the four moving parts — `Appearance.init()`, `Ti.App.Properties`, `Ti.UI.overrideUserInterfaceStyle`, and semantic colors — cooperate:
+
+```
+app startup
+  |
+  +-- 1. Appearance.init()
+  |       |
+  |       +-- reads key 'userInterfaceStyle' from Ti.App.Properties
+  |       +-- sets Ti.UI.overrideUserInterfaceStyle to the saved value
+  |       +-- stores 'system' | 'light' | 'dark' in the singleton's currentMode
+  |
+  +-- 2. First window opens
+  |       |
+  |       +-- semantic colors resolve against the now-applied mode
+  |       +-- bg-surface        -> surfaceColor       -> light or dark hex
+  |       +-- text-on-surface   -> textColor          -> light or dark hex
+  |
+  +-- 3. User taps "Dark" in Settings
+          |
+          +-- Appearance.set('dark')
+          |     |
+          |     +-- Ti.UI.overrideUserInterfaceStyle = USER_INTERFACE_STYLE_DARK
+          |     +-- Ti.App.Properties.setInt('userInterfaceStyle', ...)
+          |
+          +-- All semantic colors repaint instantly
+          +-- Preference survives the next cold launch
+```
+
+`Ti.App.Properties` is the persistence layer — the value written during `set(...)` is what `init()` reads on the next launch. Clearing app storage or reinstalling resets to `'system'`.
+
+> **INFO**
+>
+> `toggle()` intentionally skips `'system'`. If the current mode is `'system'`, calling `toggle()` produces `'dark'`. If you want a three-way cycle (System -> Light -> Dark -> System), build it in userland with `Appearance.get()` + `Appearance.set(...)`; do not expect `toggle()` to do it.
+
+## Related
+
+- [semantic-colors.md](./semantic-colors.md) — defining `app/assets/semantic.colors.json` and mapping the color names in `config.cjs` so views actually respond to mode changes.
+- [cli-commands.md#semantic-command](./cli-commands.md#semantic-command) — the `purgetss semantic` command, which writes both the JSON and the `config.cjs` mapping for you.
+- [customization-deep-dive.md](./customization-deep-dive.md) — full `config.cjs` structure, including the `theme.extend.colors` section where semantic names are registered.
+
+## Community-Discovered Patterns
+
+- **Always call `Appearance.init()` before opening the first window.** Opening the window first causes a visible flicker on cold launch as the UI repaints from the system default to the saved mode. The official best-practices guide puts `Appearance.init()` on line 3 of `app/controllers/index.js`, immediately before `$.navWin.open()`, for exactly this reason.
+- **`toggle()` is not a three-state cycle.** It only alternates between `'light'` and `'dark'`. If the saved mode is `'system'`, the first `toggle()` call lands on `'dark'`. Build a cycle yourself with `get()` + `set(...)` when you need one.
