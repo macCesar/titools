@@ -4,6 +4,80 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.10.0] - 2026-04-25
+
+### Added — `values-and-units.md` reference in `purgetss` skill
+
+New reference file covering a foundational concept that was missing from
+the skill: PurgeTSS writes **unitless** numeric values into `app.tss`,
+and Titanium interprets them at runtime via `ti.ui.defaultunit` in
+`tiapp.xml`. Most Alloy projects use `dp`, not raw pixels, so saying
+`rounded-lg` gives you "8 pixels" is wrong unless the project explicitly
+opts into `px`.
+
+The reference covers: the eight valid `ti.ui.defaultunit` values
+(`dp`, `dip`, `px`, `mm`, `cm`, `in`, `pt`, `system`), how
+explicit pixel suffixes (`'1px'`) override the project setting,
+percentage classes resolving against the parent size, and Titanium
+constants (`Ti.UI.SIZE`, `Ti.UI.FILL`) being unit-independent.
+
+Sourced from PurgeTSS v7.7.0's new official doc
+(`best-practices/4-values-and-units.md`).
+
+### Changed — `purgetss` skill aligned with PurgeTSS v7.7.0 brand restructure
+
+PurgeTSS v7.7.0 reorganized the `brand:` config from a flat structure
+to purpose-based groups. The skill now documents the new shape across
+every brand-related reference:
+
+- `brand.logos` — optional path overrides (`primary`, `androidLauncher`,
+  `androidSplash`, `monochrome`, `iosDark`, `iosTinted`)
+- `brand.padding` — separate `ios`, `androidLegacy`, `androidAdaptive`
+  with new defaults (`19%` adaptive, `10%` legacy)
+- `brand.android` — `splash` and `notification` toggles
+- `brand.ios` — optional `dark`, `tinted`, `darkBackground` overrides
+- `brand.colors` — `background` (renamed from flat `bgColor`)
+
+New CLI flags now documented:
+
+- `--icon-logo <path>` — dedicated square Android launcher mark for
+  wordmark / non-square main logos
+- `--splash-logo <path>` — Android 12+ `splash_icon.png` artwork
+  override
+- `--android-adaptive-padding <n>` — replaces the old single `--padding`
+  for the adaptive foreground (default `19%`)
+- `--android-legacy-padding <n>` — replaces the old single `--padding`
+  for legacy `ic_launcher.png` (default `10%`)
+- `--padding <n>` — now a one-shot shortcut that sets both Android
+  paddings to the same value
+
+New sections added to `references/app-branding.md`:
+
+- "Android 12+ splash artwork" — explains `--splash` + `logo-splash.svg`
+  and the Titanium splash-theme requirement to actually use the
+  generated file
+- "Android legacy splash fallback" — covers the v7.7.0 regeneration
+  of `app/assets/android/default.png` (Alloy) / `Resources/android/default.png`
+  (Classic) and why `cleanup-legacy` now keeps it on purpose
+
+Files modified:
+
+- `references/app-branding.md` — config restructured, new flags, two
+  new sections, padding tables split into adaptive/legacy/iOS, three
+  Community-Discovered Patterns added (wordmark logos need a separate
+  launcher mark; the three Android assets serve different roles;
+  iOS 18+ wiring lag in Titanium SDK)
+- `references/cli-commands.md` — `brand` command flag tables grouped
+  by purpose, `init` defaults updated, v7.7.0 + v7.6.x changes added
+  to the header banner, "Android output groups" note clarifying
+  `ic_launcher*` vs `splash_icon.png` vs `default.png`
+- `references/customization-deep-dive.md` — `brand:` block in `init`
+  defaults switched to v7.7.0 grouped structure
+- `SKILL.md` — new "What's New in v7.7.0" section, expanded
+  "What's New in v7.6.x" (covers v7.6.1 confirmation prompts and
+  v7.6.2 Classic-project support for `semantic`), `values-and-units.md`
+  link added to the Setup & Configuration group
+
 ## [2.9.0] - 2026-04-22
 
 ### Added — 5 new references in `purgetss` skill for v7.5.3 + v7.6.0 features
