@@ -1,6 +1,6 @@
 # App Icons & Branding
 
-The `purgetss brand` command (shipped in PurgeTSS v7.6.0) generates the complete Titanium branding set from a single SVG or PNG logo: launcher icons across every Android density, the adaptive-icon trio (foreground + background + monochrome), iOS 18+ Dark and Tinted variants, marketplace artwork, and optional notification/splash icons. Alloy and Classic layouts are auto-detected.
+The `purgetss brand` command (introduced in PurgeTSS v7.6.0, restructured in v7.7.0) generates the complete Titanium branding set from a single SVG or PNG logo — with optional Android-specific overrides when you need them: launcher icons across every Android density, the adaptive-icon trio (foreground + background + monochrome), iOS 18+ Dark and Tinted variants, marketplace artwork, and optional notification/splash icons. Alloy and Classic layouts are auto-detected.
 
 For the terse flag reference, see the [`brand` command reference](./cli-commands.md#brand-command). For sibling UI assets, see [Multi-Density Images](./multi-density-images.md).
 
@@ -41,21 +41,29 @@ PurgeTSS auto-discovers logo files under this folder, the same way `purgetss/fon
 ```text
 purgetss/brand/
 ├── logo.svg              required — main logo (or logo.png)
+├── logo-icon.svg         optional — square Android launcher mark
 ├── logo-mono.svg         optional — monochrome layer + notifications
 ├── logo-dark.svg         optional — iOS 18+ dark variant
+├── logo-splash.svg       optional — Android 12+ splash icon override
 └── logo-tinted.svg       optional — iOS 18+ tinted variant
 ```
 
-Only `logo.svg` (or `logo.png`) is required. The other three are **opt-in refinements**:
+Only `logo.svg` (or `logo.png`) is required. Everything else is **opt-in refinement**:
 
 | File | Required? | What it's for | Fallback when omitted |
 | --- | --- | --- | --- |
 | `logo.svg` / `logo.png` | **Required** | Main colored logo. Feeds every density and variant. | — |
+| `logo-icon.svg` / `.png` | Optional | Square Android launcher mark — use when `logo.svg` is a wide wordmark or non-square lockup. | Main logo is reused for Android launcher icons. |
 | `logo-mono.svg` / `.png` | Optional | Android adaptive monochrome layer (themed icons on Android 13+) and notification icons. | Main logo is whitened automatically. |
+| `logo-splash.svg` / `.png` | Optional | Android 12+ `splash_icon.png` artwork (only used when `--splash` / `android.splash: true`). | Falls back to the launcher artwork. |
 | `logo-dark.svg` / `.png` | Optional | iOS 18+ Dark appearance variant. | Main logo on a transparent background (Apple HIG default). |
 | `logo-tinted.svg` / `.png` | Optional | iOS 18+ Tinted appearance variant. | Grayscale of the main logo on black. |
 
+Provide a dedicated `logo-icon` when the main logo is a horizontal wordmark, a vertical lockup, or anything else that looks fine in a 1024×1024 branding canvas but feels cramped inside an Android launcher mask.
+
 Provide a dedicated `logo-mono` when the colored logo has detail that would collapse into a featureless blob under naive whitening (e.g. a painter's palette with colored dots — the monochrome variant should have cutouts instead).
+
+Provide a dedicated `logo-splash` when the Android 12+ splash should use a different composition than the launcher icon. PurgeTSS generates the file, but Titanium still needs a custom Android splash theme if you want the system splash to use it instead of `ic_launcher`.
 
 Provide a dedicated `logo-dark` when dark-mode brand guidelines use a different lockup or color treatment; provide `logo-tinted` when you want a pre-simplified silhouette that tints better than a naive grayscale of the colored version.
 
@@ -76,40 +84,106 @@ Or in `purgetss/config.cjs`:
 
 ```javascript
 brand: {
-  logo: './docs/snap-logo.svg',
-  monochromeLogo: './docs/snap-logo-mono.svg'
+  logos: {
+    primary: './docs/snap-logo.svg',
+    androidLauncher: './docs/snap-app-icon.svg',
+    monochrome: './docs/snap-logo-mono.svg'
+  }
 }
 ```
 
 Precedence: **CLI flags win over config values, and config values win over auto-discovery.**
 
-## The `brand:` config section
+## The `brand:` config section (v7.7.0 grouped structure)
 
-On the first run, `purgetss brand` injects a `brand:` block into your existing `purgetss/config.cjs` (between `purge:` and `theme:`) with these defaults:
+On the first run, `purgetss brand` injects a `brand:` block into your existing `purgetss/config.cjs` (between `purge:` and `theme:`) with these defaults. The structure is grouped by purpose:
 
 ```javascript
 brand: {
-  splash: false,           // also generate splash_icon.png × 5
-  padding: '15%',          // Android safe-zone. Range: 12% tight (mature logos) — 20% conservative. Spec floor 19.44%.
-  iosPadding: '4%',        // iOS aesthetic. Range: 2% bold — 8% conservative. No launcher mask.
-  darkBgColor: null,       // opaque dark bg for DefaultIcon-Dark.png (null = transparent per Apple HIG)
-  bgColor: '#FFFFFF',      // Android adaptive bg + iOS/marketplace flatten
-  notification: false,     // also generate ic_stat_notify.png × 5
+  logos: {
+    // Optional overrides. If omitted, PurgeTSS auto-discovers files from purgetss/brand/:
+    // primary: './docs/logo.svg',
+    // androidLauncher: './docs/app-icon.svg',
+    // androidSplash: './docs/splash.svg',
+    // monochrome: './docs/logo-mono.svg',
+    // iosDark: './docs/logo-dark.svg',
+    // iosTinted: './docs/logo-tinted.svg'
+  },
+  padding: {
+    ios: '4%',             // iOS aesthetic padding. Range 2-8%. No launcher mask.
+    androidLegacy: '10%',  // legacy ic_launcher.png padding %
+    androidAdaptive: '19%' // adaptive icon safe-zone %. Spec floor 19.44%.
+  },
+  android: {
+    splash: false,         // also generate splash_icon.png × 5
+    notification: false    // also generate ic_stat_notify.png × 5
+  },
+  colors: {
+    background: '#FFFFFF'  // Android adaptive bg + iOS/marketplace flatten
+  },
+  // Optional iOS overrides:
+  // ios: {
+  //   dark: false,           // skip DefaultIcon-Dark.png
+  //   tinted: false,         // skip DefaultIcon-Tinted.png
+  //   darkBackground: '#111' // opaque dark bg for DefaultIcon-Dark.png (null = transparent per Apple HIG)
+  // },
   confirmOverwrites: true  // prompt before overwriting files (set false to skip)
 }
 ```
 
+The recommended workflow is convention-first: drop files in `purgetss/brand/`, let auto-discovery pick them up, and only set `brand.logos.*` when you have a persistent override. CLI flags still win for one-off runs.
+
+### `brand.logos`
+
+All `logos.*` keys are optional path overrides. If you omit them, PurgeTSS auto-discovers files from `purgetss/brand/`.
+
+| Key | Auto-discovers | Purpose |
+| --- | --- | --- |
+| `logos.primary` | `purgetss/brand/logo.svg` | Main brand source. |
+| `logos.androidLauncher` | `purgetss/brand/logo-icon.svg` | Square Android launcher mark — use when the main logo is a wordmark. |
+| `logos.androidSplash` | `purgetss/brand/logo-splash.svg` | Android 12+ splash artwork. |
+| `logos.monochrome` | `purgetss/brand/logo-mono.svg` | Android themed icons + notification icons. |
+| `logos.iosDark` | `purgetss/brand/logo-dark.svg` | iOS dark variant. |
+| `logos.iosTinted` | `purgetss/brand/logo-tinted.svg` | iOS tinted variant. |
+
+### `brand.padding`
+
+All padding values accept either numbers or percentage strings like `'19%'`.
+
 | Key | Default | Purpose |
 | --- | --- | --- |
-| `splash` | `false` | When `true`, also emits `splash_icon.png` × 5 densities. |
-| `padding` | `'15%'` | Per-side safe-zone padding inside the 1024×1024 Android canvas. |
-| `iosPadding` | `'4%'` | Aesthetic padding for the iOS square icon. Smaller than Android because iOS has no launcher mask. |
-| `darkBgColor` | `null` | Opaque background baked into `DefaultIcon-Dark.png`. `null` = transparent per Apple HIG (iOS paints its own gradient). |
-| `bgColor` | `'#FFFFFF'` | Triple-purpose (see [Brand color](#brand-color) below). |
-| `notification` | `false` | When `true`, also emits `ic_stat_notify.png` × 5 densities. |
-| `confirmOverwrites` | `true` | When `false`, the `[y/N/a]` prompt is skipped. |
+| `padding.ios` | `'4%'` | Visual inset for `DefaultIcon-ios.png`, `DefaultIcon-Dark.png`, `DefaultIcon-Tinted.png`, marketplace artwork. |
+| `padding.androidLegacy` | `'10%'` | Visual inset for legacy `ic_launcher.png`. |
+| `padding.androidAdaptive` | `'19%'` | Visual inset for adaptive Android foreground (`ic_launcher_foreground.png`). Adjust this first when icons look cropped inside launcher masks. |
 
-Change whatever you want to override globally; CLI flags still win for one-off runs.
+### `brand.android`
+
+| Key | Default | Purpose |
+| --- | --- | --- |
+| `android.splash` | `false` | When `true`, also generates `drawable-*/splash_icon.png`. |
+| `android.notification` | `false` | When `true`, also generates `drawable-*/ic_stat_notify.png`. |
+
+### `brand.ios` (optional)
+
+If omitted, PurgeTSS behaves as if `ios.dark = true`, `ios.tinted = true`, `ios.darkBackground = null`.
+
+| Key | Default | Purpose |
+| --- | --- | --- |
+| `ios.dark` | `true` | Set to `false` to skip `DefaultIcon-Dark.png`. |
+| `ios.tinted` | `true` | Set to `false` to skip `DefaultIcon-Tinted.png`. |
+| `ios.darkBackground` | `null` | When `null`, `DefaultIcon-Dark.png` stays transparent per Apple HIG. Set a hex to bake in an opaque dark background. |
+
+### `brand.colors`
+
+| Key | Default | Purpose |
+| --- | --- | --- |
+| `colors.background` | `'#FFFFFF'` | Triple-purpose: Android adaptive background layer, iOS alpha flatten for `DefaultIcon-ios.png`, marketplace flatten for `iTunesConnect.png` / `MarketplaceArtwork.png` when overridden. |
+
+### `brand.confirmOverwrites`
+
+| Key | Default | Purpose |
+| --- | --- | --- |
+| `confirmOverwrites` | `true` | When `false`, the `[y/N/a]` prompt is skipped. |
 
 ## Overwrite confirmation
 
@@ -151,14 +225,17 @@ The output is automatically routed to the right directory for your project layou
 ├── iTunesConnect.png               ← 1024×1024, App Store submission
 ├── MarketplaceArtwork.png          ← 512×512, Google Play submission
 └── app/
-    └── assets/android/res/
-        ├── mipmap-mdpi/            ← 108×108 foreground + background + monochrome + legacy
-        ├── mipmap-hdpi/            ← 162×162
-        ├── mipmap-xhdpi/           ← 216×216
-        ├── mipmap-xxhdpi/          ← 324×324
-        ├── mipmap-xxxhdpi/         ← 432×432
-        └── mipmap-anydpi-v26/
-            └── ic_launcher.xml     ← adaptive-icon binder
+    └── assets/android/
+        ├── default.png             ← legacy Titanium Android splash fallback (v7.7.0)
+        └── res/
+            ├── mipmap-mdpi/        ← 108×108 foreground + background + monochrome + legacy
+            ├── mipmap-hdpi/        ← 162×162
+            ├── mipmap-xhdpi/       ← 216×216
+            ├── mipmap-xxhdpi/      ← 324×324
+            ├── mipmap-xxxhdpi/     ← 432×432
+            ├── drawable-*/         ← optional splash_icon.png when --splash is enabled
+            └── mipmap-anydpi-v26/
+                └── ic_launcher.xml ← adaptive-icon binder
 ```
 
 **Classic layout:**
@@ -166,11 +243,20 @@ The output is automatically routed to the right directory for your project layou
 ```text
 <project>/
 ├── DefaultIcon.png  DefaultIcon-ios.png  ...     ← same root-level files as Alloy
+├── Resources/
+│   └── android/default.png         ← legacy Titanium Android splash fallback (v7.7.0)
 └── platform/
     └── android/res/
         ├── mipmap-*/               ← same 5 densities as Alloy
+        ├── drawable-*/             ← optional splash_icon.png when --splash is enabled
         └── mipmap-anydpi-v26/ic_launcher.xml
 ```
+
+The Android outputs are related, but they are not interchangeable:
+
+- `ic_launcher*` drives the app icon, and by default also feeds the Android 12+ system splash
+- `splash_icon.png` is only generated when you ask for it with `--splash`
+- `default.png` is the older Titanium Android splash fallback (regenerated since v7.7.0)
 
 ## Android dark mode
 
@@ -189,6 +275,37 @@ purgetss brand
 ```
 
 The monochrome layer is pure white (`RGB 255,255,255`) with alpha preserved. Android applies the user's tint on top at render time.
+
+## Android 12+ splash artwork
+
+If you pass `--splash`, PurgeTSS generates `drawable-*/splash_icon.png` across Android densities.
+
+```bash
+purgetss brand --splash
+```
+
+If you want that artwork to differ from the launcher icon, provide `logo-splash.svg` or set `brand.logos.androidSplash`:
+
+```javascript
+brand: {
+  android: {
+    splash: true
+  },
+  logos: {
+    androidSplash: './docs/snap-splash-mark.svg'
+  }
+}
+```
+
+> **INFO**
+>
+> Generating `splash_icon.png` does not automatically switch Titanium to use it for the Android 12+ system splash. Titanium still needs a custom splash theme that points `android:windowSplashScreenAnimatedIcon` to `@drawable/splash_icon`. If you do nothing, Android keeps using `ic_launcher`.
+
+## Android legacy splash fallback
+
+Since v7.7.0, PurgeTSS regenerates `app/assets/android/default.png` in Alloy projects and `Resources/android/default.png` in Classic projects.
+
+That file still matters as a fallback on older Titanium Android splash paths, which is why `cleanup-legacy` no longer removes it.
 
 ## iOS 18+ Dark and Tinted variants
 
@@ -232,18 +349,32 @@ If you never pass the flag, background stays `#FFFFFF` and the marketplace artwo
 
 ## Padding guidance
 
-`--padding` controls how much safe-zone padding (per side, expressed as a percentage) surrounds the logo inside the Android adaptive canvas. The default `15%` matches real-world production apps like Gmail and Chrome.
+Since v7.7.0, PurgeTSS treats Android adaptive and Android legacy launcher icons as two related but different cases:
 
-| Padding | Logo fill | When to use |
+- `brand.padding.androidAdaptive` or `--android-adaptive-padding` for the adaptive foreground
+- `brand.padding.androidLegacy` or `--android-legacy-padding` for `ic_launcher.png`
+- `--padding` is a one-shot **shortcut** that sets both Android paddings to the same value for one run
+
+The adaptive default is `19%`, which stays close to the Android safe-zone. The legacy default is `10%`, so the flat `ic_launcher.png` can keep a little more visual weight.
+
+### Adaptive icon padding
+
+| Padding | Logo fill | When to use                                                                                            |
 | ------- | --------- | ------------------------------------------------------------------------------------------------------ |
-| `12%`   | 76%       | Logos with built-in breathing room (circular wordmarks, letterforms inside a shape). Tight, bold look. |
-| `15%`   | 70%       | **Default**. Balanced, safe on Pixel, Oppo, Samsung, OneUI, and Nova. |
-| `18%`   | 64%       | Defensive: for intricate logos, fine serifs, multi-element designs. |
-| `20%`   | 60%       | Conservative, spec-compliant. Safe on every launcher, including legacy aggressive masks. |
+| `15%`   | 70%       | Aggressive. Better for square symbols with lots of built-in breathing room.                            |
+| `18%`   | 64%       | Defensive: for intricate logos, fine serifs, multi-element designs.                                    |
+| `19%`   | 62%       | **Default**. Close to the Android safe-zone and safer for adaptive masks.                              |
+| `20%`   | 60%       | Conservative, spec-compliant. Safe on every launcher, including aggressive masks.                      |
 
 A useful visual check is the "corners" heuristic: imagine a circle inscribed in your 1024×1024 canvas with the given padding. If your logo's outermost corners fit inside that circle, you're safe on circular launchers (Pixel default, Oppo Android 15). If they poke out, they'll be clipped.
 
-The official Android spec floor is `19.44%` (108dp canvas, 66dp inscribed safe-zone circle). Modern launchers are more permissive: Gmail and Chrome ship at 10–14%, which is why `15%` is the default. The 19.44% floor is the theoretical worst-case for aggressive masks; if you're worried about legacy Samsung teardrop masks or similar, bump to `--padding 20` to stay inside the spec.
+The official Android spec floor is `19.44%` (108dp canvas, 66dp inscribed safe-zone circle). That is the theoretical worst-case for aggressive adaptive masks, which is why the adaptive default now sits close to it.
+
+### Legacy icon padding
+
+Legacy `ic_launcher.png` does not go through the same adaptive mask, so it can usually run tighter. That is why the default for `brand.padding.androidLegacy` is `10%`.
+
+### iOS padding
 
 `--ios-padding` is a separate lever — iOS has no launcher mask, so the range is different:
 
@@ -284,24 +415,28 @@ purgetss brand --cleanup-legacy --aggressive
 
 ### The icon looks cropped or cramped on my phone
 
-Your logo is probably landing too close to the launcher mask. Increase `--padding`:
+Your adaptive foreground is probably landing too close to the launcher mask. Increase `--android-adaptive-padding`:
 
 ```bash
-purgetss brand --padding 20
+purgetss brand --android-adaptive-padding 20
 ```
 
 Or set it in the config:
 
 ```javascript
-brand: { padding: '20%' }
+brand: {
+  padding: {
+    androidAdaptive: '20%'
+  }
+}
 ```
 
 ### The icon looks tiny / lost in the middle
 
-Padding is too generous. Lower it:
+Adaptive padding is probably too generous. Lower it:
 
 ```bash
-purgetss brand --padding 12
+purgetss brand --android-adaptive-padding 17
 ```
 
 ### The monochrome version looks like a white blob
@@ -355,7 +490,9 @@ All 5 Android densities, marketplace artwork, and iOS variants regenerate in one
 | Flag | Purpose |
 | --- | --- |
 | `--bg-color <hex>` | Background color for Android adaptive + iOS/marketplace flatten. |
-| `--padding <n>` | Android safe-zone % (range `12–20`, default `15`). |
+| `--padding <n>` | Shortcut: sets BOTH Android paddings to the same value for one run. |
+| `--android-adaptive-padding <n>` | Adaptive icon safe-zone % (default `19`). |
+| `--android-legacy-padding <n>` | Legacy `ic_launcher.png` padding % (default `10`). |
 | `--ios-padding <n>` | iOS aesthetic padding % (range `2–8`, default `4`). |
 
 **Optional asset types**
@@ -369,9 +506,11 @@ All 5 Android densities, marketplace artwork, and iOS variants regenerate in one
 
 | Flag | Purpose |
 | --- | --- |
+| `--icon-logo <path>` | Override `purgetss/brand/logo-icon.{svg,png}` for Android launcher icons. |
 | `--monochrome-logo <path>` | Override `purgetss/brand/logo-mono.{svg,png}`. |
 | `--dark-logo <path>` | Override `purgetss/brand/logo-dark.{svg,png}`. |
 | `--dark-bg-color <hex>` | Opaque dark bg for `DefaultIcon-Dark.png` (default: transparent per Apple HIG). |
+| `--splash-logo <path>` | Override `purgetss/brand/logo-splash.{svg,png}` for Android 12+ splash artwork. |
 | `--tinted-logo <path>` | Override `purgetss/brand/logo-tinted.{svg,png}`. |
 | `--no-dark` | Skip `DefaultIcon-Dark.png`. |
 | `--no-tinted` | Skip `DefaultIcon-Tinted.png`. |
@@ -380,7 +519,7 @@ All 5 Android densities, marketplace artwork, and iOS variants regenerate in one
 
 | Flag | Purpose |
 | --- | --- |
-| `--cleanup-legacy` | Remove obsolete branding artifacts (reads `tiapp.xml` for safety rules). |
+| `--cleanup-legacy` | Remove obsolete branding artifacts (reads `tiapp.xml` for safety rules). Keeps `default.png` on purpose. |
 | `--aggressive` | With `--cleanup-legacy`, also remove `ldpi` density folders. |
 
 **Diagnostics**
@@ -393,18 +532,21 @@ All 5 Android densities, marketplace artwork, and iOS variants regenerate in one
 ### Examples
 
 ```bash
-purgetss brand                                         # uses purgetss/brand/logo.svg + config
-purgetss brand --bg-color "#0B1326"                    # override bg color
-purgetss brand --notification --splash                 # add notification + splash
-purgetss brand --no-tinted                             # skip iOS 18+ tinted variant
-purgetss brand --dry-run                               # preview without writing
-purgetss brand --cleanup-legacy --dry-run              # preview legacy cleanup
+purgetss brand                                          # uses purgetss/brand/logo.svg + config
+purgetss brand --bg-color "#0B1326"                     # override bg color
+purgetss brand --icon-logo ./docs/app-icon.svg          # dedicated square Android launcher mark
+purgetss brand --splash --splash-logo ./docs/splash.svg # custom Android 12+ splash artwork
+purgetss brand --notification --splash                  # add notification + splash
+purgetss brand --no-tinted                              # skip iOS 18+ tinted variant
+purgetss brand --dry-run                                # preview without writing
+purgetss brand --cleanup-legacy --dry-run               # preview legacy cleanup
 ```
 
 ## Community-Discovered Patterns
 
 - **Titanium SDK wiring lag for iOS 18+ variants.** Titanium SDK currently wires `DefaultIcon-ios.png` into the generated appiconset automatically, but `DefaultIcon-Dark.png` and `DefaultIcon-Tinted.png` are not picked up yet. Until [tidev/titanium-sdk#14122](https://github.com/tidev/titanium-sdk/issues/14122) merges, the practical workaround is: run `ti build -p ios` once, then open `build/iphone/Assets.xcassets/AppIcon.appiconset/` in Xcode and drag the two PNGs into the "Appearance" column of the asset catalog editor. The generated PNGs are already named and sized correctly — no resizing needed.
-- **Modern launchers ship tighter than the spec.** The Android adaptive-icon spec floor is `19.44%` padding, but shipped apps like Gmail and Chrome use `10–14%`. PurgeTSS's `15%` default sits in that real-world range rather than the conservative spec floor, which is why icons look tight-but-balanced out of the box.
+- **Wordmark logos need a separate launcher mark.** When `logo.svg` is a wide wordmark or vertical lockup, it tends to look cramped inside Android launcher masks. Drop a square `logo-icon.svg` (or set `brand.logos.androidLauncher`) and the launcher icons get the dedicated mark while the rest of the brand set still uses the main logo. Same idea applies to Android 12+ splash with `logo-splash.svg`.
+- **Three Android assets, three different jobs.** `ic_launcher*` drives the app icon and the default Android 12+ splash; `splash_icon.png` is generated only when you pass `--splash` and Titanium needs an explicit splash theme to actually use it; `default.png` is the older Titanium Android splash fallback (regenerated since v7.7.0, intentionally kept by `cleanup-legacy`). Knowing which file does what saves a lot of "but the icon didn't change" debugging.
 
 ## See also
 

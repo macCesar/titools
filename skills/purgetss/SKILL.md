@@ -112,13 +112,23 @@ purgetss create 'MyApp' -d -v fa
 # -v: Copy icon fonts (fa, mi, ms, f7)
 ```
 
-## What's New in v7.6.0
+## What's New in v7.7.0
 
-- `brand` command — complete Titanium branding set (launcher icons, adaptive, iOS 18+ Dark/Tinted, marketplace) from logos in `./purgetss/brand/`
-- `images` command — multi-density UI images (Android res-*dpi + iPhone @1x/@2x/@3x) from `./purgetss/images/`
-- `semantic` command — Titanium semantic colors for Light/Dark mode (palette mode + single mode)
-- `brand:` and `images:` config sections auto-injected into older configs
-- Percentages as strings (`'15%'`) for self-documenting clarity in brand/images configs
+- `brand:` config restructured — flat keys replaced by purpose-based groups: `brand.logos`, `brand.padding`, `brand.android`, `brand.ios`, `brand.colors`
+- Separate Android brand inputs — `logos.androidLauncher` / `--icon-logo` for Android launcher icons; `logos.androidSplash` / `--splash-logo` for Android 12+ splash artwork. Drop `logo-icon.*` and `logo-splash.*` into `purgetss/brand/`
+- `--android-adaptive-padding` (default `19%`) and `--android-legacy-padding` (default `10%`) replace the single `--padding`. The shortcut `--padding` now sets both Android paddings to the same value for one run
+- Legacy Android splash fallback regenerated — `app/assets/android/default.png` (Alloy) or `Resources/android/default.png` (Classic). `cleanup-legacy` no longer removes `default.png`
+- New official doc: [Values and Units](references/values-and-units.md) — explains `ti.ui.defaultunit` interpretation of PurgeTSS unitless values
+
+## What's New in v7.6.x
+
+- `brand` command — complete Titanium branding set (launcher icons, adaptive, iOS 18+ Dark/Tinted, marketplace) from logos in `./purgetss/brand/` (v7.6.0)
+- `images` command — multi-density UI images (Android res-*dpi + iPhone @1x/@2x/@3x) from `./purgetss/images/` (v7.6.0)
+- `semantic` command — Titanium semantic colors for Light/Dark mode (palette mode + single mode) (v7.6.0)
+- `brand:` and `images:` config sections auto-injected into older configs (v7.6.0)
+- Percentages as strings (`'15%'`) for self-documenting clarity in brand/images configs (v7.6.0)
+- Confirmation prompt for destructive writes in `brand` / `images` (`y` / `N` / `a`); auto-skipped on non-TTY, with `-y`, or `PURGETSS_YES=1` (v7.6.1)
+- `semantic` command works in Classic projects — writes to `Resources/semantic.colors.json` (v7.6.2)
 
 ## What's New in v7.5.3
 
@@ -401,6 +411,7 @@ purgetss create 'MyApp' -d -v fa
 > - [Installation & Setup](references/installation-setup.md) - First run, VS Code, LiveView
 > - [CLI Commands](references/cli-commands.md) - All `purgetss` commands
 > - [Migration Guide](references/migration-guide.md) - Migrating existing apps from manual TSS to PurgeTSS
+> - **[Values and Units](references/values-and-units.md)** - How `ti.ui.defaultunit` in `tiapp.xml` interprets the unitless numeric values PurgeTSS writes (foundational concept for spacing, sizes, typography)
 >
 > ### Customization
 > - [Deep Customization](references/customization-deep-dive.md) - config.cjs, colors, spacing, Ti Elements
