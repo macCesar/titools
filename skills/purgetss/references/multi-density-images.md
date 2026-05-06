@@ -101,6 +101,62 @@ Recommended sizes for common UI elements (in source pixels, assumed 4×):
 - **List-row thumbnail**: at least `320×320`
 - **Button background**: match the intended display size × 4
 
+## Pinning the output width with `--width`
+
+The 4× master convention works well for raster sources (`.png`, `.jpg`, `.webp`) because the file's pixel dimensions usually reflect the intended 4× size. **SVGs are different.** Their logical size comes from the `viewBox`, and vector editors (Affinity Designer, Illustrator, Figma exports) frequently emit viewBoxes in points or with disproportionate values — a logo can ship with `viewBox="0 0 29559 13542"` and `purgetss images` would happily scale every density from that base, producing files far too large for any UI surface.
+
+`--width <n>` (added in PurgeTSS v7.8.0) is the escape hatch: it pins the **`mdpi` / `@1x`** output width to exactly `n` pixels, then derives every other density from that base. Height stays proportional to the source aspect ratio — you only specify width.
+
+```bash
+purgetss images logo.svg --width 256
+```
+
+### Multiplier table
+
+The pinned width drives the scale for every density:
+
+| Scale | Multiplier | Width if `--width 256` |
+| --- | --- | --- |
+| `mdpi` / `@1x` | ×1 | 256 |
+| `hdpi` | ×1.5 | 384 |
+| `xhdpi` / `@2x` | ×2 | 512 |
+| `xxhdpi` / `@3x` | ×3 | 768 |
+| `xxxhdpi` | ×4 | 1024 |
+
+### Validation
+
+`--width` accepts integers in `[1, 8192]`. Out-of-range values are rejected immediately and the command exits without writing anything:
+
+```bash
+purgetss images logo.svg --width 0
+# Invalid --width '0'. Must be an integer between 1 and 8192.
+
+purgetss images logo.svg --width 9000
+# Invalid --width '9000'. Must be an integer between 1 and 8192.
+
+purgetss images logo.svg --width abc
+# Invalid --width 'NaN'. Must be an integer between 1 and 8192.
+```
+
+The upper bound of `8192` exists because `--width 8192` already produces a `xxxhdpi` output of 32 768 px — that's Sharp's render ceiling and well beyond anything a Titanium UI needs.
+
+### The hint message for unflagged SVGs
+
+Whenever you run `purgetss images` against an SVG **without** `--width`, PurgeTSS prints a one-time hint:
+
+```text
+⚠  SVG source detected without --width. Output sizes will be derived from
+   each SVG's viewBox (treated as a 4× master).
+   For SVGs from vector editors with disproportionate viewBoxes, pass
+   --width <n> (e.g. --width 256) to pin the @1x/mdpi width.
+```
+
+This is a hint, **not an error**. The legacy 4×-from-viewBox behavior still runs in the same invocation. If your SVG has a sensible viewBox (`300×150` for a 300px-wide logo at 1×, etc.), the default is fine. If the viewBox is in points or noticeably larger than expected, re-run with `--width <n>` for predictable scaling.
+
+### Why CLI-only (no `images:` config equivalent)
+
+`--width` deliberately has **no matching property** in the `images:` block of `purgetss/config.cjs`. The reason: width is a **per-asset** decision, not a project-wide setting. A hero illustration, an inline icon, and a logo each need different widths — pinning a single value globally would make most outputs wrong. Project-wide settings like `quality` or `format` belong in `config.cjs`; per-invocation values like `--width` only make sense as CLI flags passed against the specific source you're regenerating.
+
 ## The `images:` config section
 
 On the first run, `purgetss images` injects an `images:` block into your existing `purgetss/config.cjs` (between `brand:` and `theme:`) with these defaults:
@@ -291,6 +347,7 @@ If you only tweaked CSS classes (no image changes), you don't need to re-run `pu
 | --- | --- |
 | `--format <ext>` | Convert all outputs to: `webp`, `jpeg`, `png`, `avif`, `gif`, `tiff`. Default: keep source format. |
 | `--quality <n>` | Quality `0–100` for lossy formats. Default `85`. |
+| `--width <n>` | (v7.8.0) Pin `mdpi` / `@1x` output width to `n` pixels; `[1, 8192]`. Other densities derive from this base (×1.5 / ×2 / ×3 / ×4). Most useful for SVG sources with non-standard viewBoxes. CLI-only — no `config.cjs` equivalent because width is per-asset. |
 
 **Project & output**
 

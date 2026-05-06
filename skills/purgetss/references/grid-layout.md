@@ -23,6 +23,9 @@ The snippet below shows the simplest layout. From there, you can mix columns and
 </Alloy>
 ```
 
+> **Visual Reference**
+> The official PurgeTSS docs ship a screenshot at `images/grid-system-example.png` (in the docs source repo) that visualizes how columns, rows, and spans render in a real Alloy view. Consult it when you need a quick mental model of the layout primitives — it is not embedded here, only referenced.
+
 ## Column Grid
 
 ### `grid-cols-{n}`
@@ -49,21 +52,7 @@ If a view uses `.row-span-3`, you can add three more views of the same height to
 
 ## Available Utilities
 
-These are the available utilities to control the grid.
-
-### Gutter Utilities
-
-- `gap-{size}`: Change the gap between rows and columns.
-- `gap-x-{size}` and `gap-y-{size}`: Change the gap between rows and columns independently.
-- `gap-{side}-{size}`: Change the gap on a specific side (t=top, r=right, b=bottom, l=left).
-
-### Column Span Utilities
-
-- `col-span-{n}`: Make an element span `n` columns.
-
-### Row Span Utilities
-
-- `row-span-{n}`: Make an element span `n` rows.
+The official source organizes the grid utilities into these categories. The structure below mirrors the official rewrite so you can map directly between this reference and the upstream docs.
 
 ### Direction Utilities
 
@@ -78,17 +67,47 @@ These are the available utilities to control the grid.
 
 - `grid-rows-{n}`: Create grids with `n` equally sized rows.
 
+### Column Span Utilities
+
+- `col-span-{n}`: Make an element span `n` columns inside a 12-column grid.
+
+### Row Span Utilities
+
+- `row-span-{n}`: Make an element span `n` rows inside a 12-row grid.
+
+### Gutter Utilities
+
+- `gap-{size}`: Change the gap between rows and columns.
+- `gap-x-{size}` and `gap-y-{size}`: Change the gap between rows and columns independently.
+- `gap-{side}-{size}`: Change the gap on a specific side (`t`=top, `r`=right, `b`=bottom, `l`=left).
+
 ### Row Placement Utilities
 
-Control horizontal alignment of elements within a row:
+Control horizontal placement of children inside a row:
 
-| Class | Effect |
-| --- | --- |
-| `start` | Align to the start of the row |
-| `end` | Align to the end of the row |
-| `center` | Align to the center of the row |
+| Class    | Effect                            |
+| -------- | --------------------------------- |
+| `start`  | Align to the start of the row     |
+| `end`    | Align to the end of the row       |
+| `center` | Align to the center of the row    |
 
 These apply to child views inside a `grid-cols-*` container and control horizontal placement within the grid cell.
+
+## Row Placement Use Cases
+
+Combining `row-span-{n}` with `grid-rows-{n}` lets you describe how an element occupies vertical space inside a grid column. The table below covers the most common combinations a Titanium UI tends to need. Every entry is verified against the `grid-rows-{n}` and `row-span-{n}` utilities described in the official source.
+
+| Pattern                                  | Example classes                          | Result                                                                                                  |
+| ---------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Full-height column item                  | `grid-rows-1` + `row-span-1`             | One element fills the entire vertical space of the column.                                              |
+| Two equal stacked items                  | `grid-rows-2` + two children no span     | Two views stack vertically, each taking 50% of the column height.                                       |
+| Tall hero on top, short footer at bottom | `grid-rows-12` + `row-span-9`, `row-span-3` | Hero takes 75% of the column height, footer takes 25%.                                                  |
+| 3-6-3 vertical split                     | `grid-rows-12` + `row-span-3`, `row-span-6`, `row-span-3` | Header / body / footer split. Mirrors the 3-6-3 horizontal split shown for `col-span-{n}`.              |
+| Sidebar that spans every row             | `grid-rows-4` + child with `row-span-4`  | Element occupies the full height of a 4-row column. Useful for vertical separators or full-height nav.  |
+| Two short rows above a tall row          | `grid-rows-12` + `row-span-3`, `row-span-3`, `row-span-6` | Two preview cards above a larger detail panel.                                                          |
+
+> **Note**
+> Just like `col-span-{n}`, the spans you write must add up to the value declared in `grid-rows-{n}` for the layout to fill the column without leftover space.
 
 ## Community-Discovered Patterns
 
@@ -99,8 +118,8 @@ The following notes come from community experience using the PurgeTSS grid syste
 
 ### Common Use Cases for Row Placement
 
-| Class | Use case |
-| --- | --- |
-| `start` | Left-aligned content |
-| `end` | Right-aligned buttons or labels |
-| `center` | Centered content blocks |
+| Class    | Use case                          |
+| -------- | --------------------------------- |
+| `start`  | Left-aligned content              |
+| `end`    | Right-aligned buttons or labels   |
+| `center` | Centered content blocks           |

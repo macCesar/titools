@@ -112,6 +112,18 @@ purgetss create 'MyApp' -d -v fa
 # -v: Copy icon fonts (fa, mi, ms, f7)
 ```
 
+## What's New in v7.9.0
+
+- Opacity modifier on semantic colors — `bg-surface/65` syntax now works for any class mapped through `theme.extend.colors`. PurgeTSS auto-derives `<originalKey>_<alphaPercent>` entries in `semantic.colors.json` per mode (light/dark). See [Semantic Colors → Opacity modifier auto-derivation](references/semantic-colors.md#opacity-modifier-auto-derivation). **Native rebuild required** — Liveview hot-reload alone does not refresh `semantic.colors.json`
+- `theme.Window` / `theme.View` / `theme.ImageView` presets now use **replace mode** — they no longer carry framework defaults (white background, `Ti.UI.SIZE`, iOS `hires: true`). This fixes gradient ghosting where a preset Window with `bg-gradient-*` apply was being covered by the implicit `backgroundColor: '#FFFFFF'`. Use `theme.extend.Window` / `theme.extend.View` / `theme.extend.ImageView` when you want **extend mode** (merge with defaults). See [Apply Directive → Extend mode vs replace mode](references/apply-directive.md#extend-mode-vs-replace-mode)
+- Glossary path renamed: `purgetss/experimental/tailwind-classes/` → `purgetss/glossary/tailwind-classes/`
+
+## What's New in v7.8.0
+
+- `purgetss images --width <n>` — pin SVG output to a specific base width; PurgeTSS derives per-density assets from the multiplier scale (×1 / ×1.5 / ×2 / ×3 / ×4). Range `[1, 8192]`. CLI-only (no `images:` config equivalent — width is per-asset). See [Multi-Density Images → Pinning the output width with --width](references/multi-density-images.md#pinning-the-output-width-with---width)
+- Class syntax pre-validation — the build now emits a `Class Syntax Error` block (file path + line + `Fix:` suggestion) for 5 detected patterns: inverted negative sign (`top-(-10)` → `-top-(10)`), Tailwind brackets (`top-[10px]` → `top-(10px)`), empty parens (`wh-()`), whitespace inside parens (`wh-( 200 )` → `wh-(200)`), redundant `px` unit (`top-(10px)` → `top-(10)`). See [Arbitrary Values → Class syntax pre-validation](references/arbitrary-values.md#class-syntax-pre-validation)
+- Parser fix for negative values inside parentheses — `top-(-10)` is now correctly flagged as inverted-negative-sign instead of silently misparsed
+
 ## What's New in v7.7.0
 
 - `brand:` config restructured — flat keys replaced by purpose-based groups: `brand.logos`, `brand.padding`, `brand.android`, `brand.ios`, `brand.colors`

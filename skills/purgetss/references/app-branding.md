@@ -301,6 +301,16 @@ brand: {
 >
 > Generating `splash_icon.png` does not automatically switch Titanium to use it for the Android 12+ system splash. Titanium still needs a custom splash theme that points `android:windowSplashScreenAnimatedIcon` to `@drawable/splash_icon`. If you do nothing, Android keeps using `ic_launcher`.
 
+> **WARNING**
+>
+> Merge splash settings into the existing Android theme
+> If your app already has a custom Android theme block in `tiapp.xml`, **merge** the new splash settings (the `android:windowSplashScreenAnimatedIcon` entry and any sibling theme attributes) into that existing theme. Do **not** append a second `<application>` element or a duplicate theme block — Titanium will only honor one theme definition, and the duplicate silently shadows or overrides the original, leading to "my settings were ignored" debugging sessions. Always edit the existing `<application>` / theme block in place.
+
+> **INFO**
+>
+> A brief flash on splash exit is usually the system, not your PNGs
+> If you still see a brief flash or abrupt exit transition during splash dismissal even with correct assets in place, **do not assume the PNGs PurgeTSS generates are wrong**. That artifact commonly comes from Android 12+'s system splash exit transition (or from Titanium's splash theme handoff to your first window), not from the splash icon files themselves. Regenerating `splash_icon.png` will not change it — the fix lives in the splash theme animation, not in the icon assets.
+
 ## Android legacy splash fallback
 
 Since v7.7.0, PurgeTSS regenerates `app/assets/android/default.png` in Alloy projects and `Resources/android/default.png` in Classic projects.
@@ -410,6 +420,16 @@ purgetss brand --cleanup-legacy --aggressive
 >
 > Commit first
 > `--cleanup-legacy` deletes files permanently. Commit your project to git before running without `--dry-run` so `git restore` is available as a rollback.
+
+> **INFO**
+>
+> Files kept on purpose
+> `--cleanup-legacy` intentionally does **not** remove the following files, even when modern adaptive launcher icons and splash assets are already in place:
+>
+> - `app/assets/android/default.png` (Alloy projects)
+> - `Resources/android/default.png` (Classic projects)
+>
+> These remain because they are still required by Titanium framework defaults — older Android splash code paths fall back to `default.png`, and removing it can cause build warnings or a missing-asset error on certain Titanium SDK versions even when modern splash assets exist. Treat them as part of the baseline asset set, not as legacy clutter.
 
 ## Troubleshooting
 

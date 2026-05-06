@@ -1,20 +1,21 @@
 # Icon Font Libraries
 
-> **Official Icon Fonts for PurgeTSS**
-> Previous versions of PurgeTSS included several icon font libraries such as Bootstrap Icons, Boxicons, LineIcons, and Tabler Icons. The list was reduced to keep maintenance manageable.
+> ℹ️ **INFO — Official Icon Fonts for PurgeTSS**
 >
-> These are the official icon fonts supported by PurgeTSS:
+> Older versions of PurgeTSS bundled additional icon font libraries — Bootstrap Icons, Boxicons, LineIcons, and Tabler Icons among them. **Those libraries have been deprecated and removed from the official distribution** to keep maintenance under control. They are still usable, but you must rebuild them yourself with `build-fonts` (see below).
+>
+> The icon fonts officially supported and shipped by PurgeTSS today are:
 >
 > - [Font Awesome 7 Free](https://fontawesome.com) (upgrade with `purgetss il -v=fa`)
-> - [Framework7](https://framework7.io/icons/)
+> - [Framework 7](https://framework7.io/icons/)
 > - [Material Icons](https://fonts.google.com/icons?icon.set=Material+Icons)
 > - [Material Symbols](https://fonts.google.com/icons?icon.set=Material+Symbols)
 
-For the official install flow for those vendors, see [CLI Commands](./cli-commands.md#icon-library-command).
+For the official install flow for the supported vendors, see [CLI Commands](./cli-commands.md#icon-library-command).
 
 ## Recreate Removed Libraries
 
-You can recreate removed libraries using the `build-fonts` command.
+You can recreate any deprecated library using the `build-fonts` command.
 
 ### 1. Download the Libraries
 
@@ -29,7 +30,7 @@ Start by downloading the libraries from their official websites:
 
 Put the desired libraries in the `./purgetss/fonts` folder.
 
-> **INFO**
+> ℹ️ **INFO**
 > Copy the TrueType or OpenType font files and the `.css` file.
 
 ```bash
@@ -67,14 +68,14 @@ The `build-fonts` command generates `./purgetss/styles/fonts.tss` with Unicode c
 /* To use your Icon Fonts in Buttons AND Labels each class sets 'text' and 'title' properties */
 
 /* boxicons.css */
-'.bxl-meta': { text: '\uef27', title: '\uef27' }
-'.bx-lemon': { text: '\uef28', title: '\uef28' }
-'.bxs-lemon': { text: '\uef29', title: '\uef29' }
+'.bxl-meta': { text: '', title: '' }
+'.bx-lemon': { text: '', title: '' }
+/* ... */
 
 /* lineicons.css */
-'.lni-500px': { text: '\uea03', title: '\uea03' }
-'.lni-add-files': { text: '\uea01', title: '\uea01' }
-'.lni-adobe': { text: '\uea06', title: '\uea06' }
+'.lni-500px': { text: '', title: '' }
+'.lni-add-files': { text: '', title: '' }
+/* ... */
 ```
 
 ### Rename the Style Rule Name
@@ -116,15 +117,15 @@ When you use the `--modules` option, it generates a `./app/lib/purgetss.fonts.js
 const icons = {
   /* boxicons */
   boxicons: {
-    bxlMeta: '\uef27',
-    bxLemon: '\uef28',
-    bxsLemon: '\uef29'
+    bxlMeta: '',
+    bxLemon: ''
+    /* ... */
   },
   /* lineicons */
   lni: {
-    '500px': '\uea03',
-    addFiles: '\uea01',
-    adobe: '\uea06'
+    '500px': '',
+    addFiles: ''
+    /* ... */
   }
 };
 exports.icons = icons;
@@ -147,9 +148,9 @@ New group prefix: `li`
 `./purgetss/styles/fonts.tss`
 ```tss
 /* lineicons/li.css */
-'.li-zoom-out': { text: '\uea02', title: '\uea02' }
-'.li-zoom-in': { text: '\uea03', title: '\uea03' }
-'.li-zip': { text: '\uea04', title: '\uea04' }
+'.li-zoom-out': { text: '', title: '' }
+'.li-zoom-in': { text: '', title: '' }
+/* ... */
 ```
 
 `./app/lib/purgetss.fonts.js`
@@ -163,12 +164,13 @@ const icons = {
 exports.icons = icons;
 ```
 
-> **DANGER**
-> Make sure the new prefix remains unique to avoid conflicts with other class prefixes.
+> 🛑 **DANGER**
+>
+> Make sure the new prefix stays unique so it does not collide with other class prefixes. A duplicate prefix will silently overwrite earlier rules in the generated `fonts.tss`, leaving you with icons that render the wrong glyph at runtime.
 
 ## Community-Discovered Patterns
 
 The following note reflects community experience working with icon fonts that depend on multiple glyphs per icon.
 
-> **Font Awesome Duotone**
+> 🛑 **DANGER — Font Awesome Duotone**
 > Titanium cannot render Font Awesome duotone icons correctly because each icon uses two glyphs. If you work with Font Awesome Pro, avoid documenting duotone as supported.

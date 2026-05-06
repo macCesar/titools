@@ -2,13 +2,25 @@
 
 Enabling Large Titles on a Window is not a single-property change. When you pair `largeTitleEnabled` with a `ScrollView` inside a `NavigationWindow` or `TabGroup`, **three interdependent iOS Window properties** must work together — otherwise you get either content hidden behind the nav bar or a visible rendering delay when the window opens.
 
-| Property | Value | Why it matters |
-| --- | --- | --- |
-| `autoAdjustScrollViewInsets` | `true` | iOS automatically adjusts the ScrollView content insets so content starts below the nav bar instead of behind it. |
-| `extendEdges` | `[Ti.UI.EXTEND_EDGE_ALL]` | Content extends under the nav/tab bars, producing the translucent blur effect Large Titles depend on. |
-| `largeTitleEnabled` | `true` | Shows the large title that collapses to the standard nav bar title as the user scrolls. |
+## The problem
 
-Using only `largeTitleEnabled` causes the nav bar region to render empty for a moment before the title draws. Using `extendEdges` without `autoAdjustScrollViewInsets` pushes content behind the nav bar without compensating the ScrollView insets. All three must be present.
+Setting `largeTitleEnabled: true` in isolation looks like it should be enough — Apple's docs suggest a single switch. In practice, omitting the two companion properties produces three distinct visual bugs that are easy to attribute to "iOS being weird" but really come from the layout engine not having enough information:
+
+1. **Content overlaps behind the nav bar.** The ScrollView starts at `y=0`, hidden under the translucent navigation bar. Users see the top of the list cut off and assume content is missing. This happens when `largeTitleEnabled` is set but `autoAdjustScrollViewInsets` is not.
+2. **The large title flashes / renders with a delay.** On window open, the nav bar region paints empty for a frame or two, then the title pops in. With all three properties present, iOS has the layout it needs *before* the first paint, so the title is there from frame zero. Without `extendEdges`, there is a measurable shadow flash as the system recomputes the layout.
+3. **Collapse glitches on scroll.** The large title shrinks to standard size as the user scrolls down — that is the whole point. But if `extendEdges` is missing, the collapse animation can stutter or skip frames because iOS has to recompute the safe-area inset for every scroll event instead of treating the nav bar as part of the content area.
+
+The fix is not to pick the "right" property. It is to set all three together.
+
+## The solution: 3 interdependent properties
+
+| Property                     | Value                     | What it does                                                                                                                                |
+| ---------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `autoAdjustScrollViewInsets` | `true`                    | iOS automatically adjusts the ScrollView content insets so content starts below the nav bar instead of behind it. Without this, the ScrollView's first item sits hidden behind the translucent nav bar. |
+| `extendEdges`                | `[Ti.UI.EXTEND_EDGE_ALL]` | Content extends under the nav and tab bars, producing the translucent blur/refraction effect Large Titles depend on. Skipping this causes the shadow flash on open and stutters the collapse animation. |
+| `largeTitleEnabled`          | `true`                    | Shows the oversized title in the navigation bar that collapses to standard size as the user scrolls. This is the master switch — the other two are required for it to render correctly. |
+
+Without `autoAdjustScrollViewInsets`, `extendEdges` pushes the content behind the nav bar without compensating the ScrollView insets. Without `extendEdges` + `autoAdjustScrollViewInsets`, using only `largeTitleEnabled` causes the large title to render with a visible delay: the empty nav bar area appears first, then the title draws. With all three properties, iOS calculates the layout before displaying the window.
 
 ## iOS-only — use the `ios:` modifier
 
@@ -39,7 +51,7 @@ Generated style in `./purgetss/styles/utilities.tss`:
 
 Individual windows now only need to override `largeTitleDisplayMode` when they want different collapse behavior (e.g. detail windows).
 
-> **Why an `ios:` block and not an inline `ios:` prefix?** `auto-adjust-scroll-view-insets` and `extend-edges-all` are platform-specific classes — they only exist with `[platform=ios]` suffix in `utilities.tss`. The `ios:` block ensures PurgeTSS resolves the platform-suffixed version. See [apply-directive.md](apply-directive.md) → "Platform-Specific Classes".
+> **Why an `ios:` block and not an inline `ios:` prefix?** `auto-adjust-scroll-view-insets` and `extend-edges-all` are platform-specific classes — they only exist with `[platform=ios]` suffix in `utilities.tss`. The `ios:` block ensures PurgeTSS resolves the platform-suffixed version. See [apply-directive.md](./apply-directive.md) → "Platform-Specific Classes".
 
 ## NavigationWindow example
 
@@ -77,15 +89,15 @@ On iOS, `TabGroup` wraps each `Tab`'s Window in an **implicit NavigationWindow**
 </Alloy>
 ```
 
-## Controlling the collapse behavior: `largeTitleDisplayMode`
+## Controlling large title display
 
-`largeTitleDisplayMode` controls how the title behaves in the navigation stack:
+`largeTitleDisplayMode` controls how the title behaves in the navigation stack — whether it stays large, always shrinks to standard size, or follows the previous window. Combine the three base properties (which make Large Titles render correctly at all) with `largeTitleDisplayMode` per window to get the per-screen behavior you want.
 
-| Mode | Constant | Behavior |
-| --- | --- | --- |
-| Automatic | `Ti.UI.iOS.LARGE_TITLE_DISPLAY_MODE_AUTOMATIC` | Inherits from previous window; collapses on scroll. |
-| Always | `Ti.UI.iOS.LARGE_TITLE_DISPLAY_MODE_ALWAYS` | Title stays large regardless of scroll position. |
-| Never | `Ti.UI.iOS.LARGE_TITLE_DISPLAY_MODE_NEVER` | Always uses the standard (small) title size. |
+| Mode      | Constant                                       | Behavior                                                                                                       |
+| --------- | ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Automatic | `Ti.UI.iOS.LARGE_TITLE_DISPLAY_MODE_AUTOMATIC` | Inherits the display mode from the previous window in the navigation stack and collapses on scroll. The default. |
+| Always    | `Ti.UI.iOS.LARGE_TITLE_DISPLAY_MODE_ALWAYS`    | Title stays large regardless of scroll position. Useful for top-level screens that should never collapse.       |
+| Never     | `Ti.UI.iOS.LARGE_TITLE_DISPLAY_MODE_NEVER`     | Always uses the standard (small) title size. The right choice for detail windows pushed via `openWindow()`.     |
 
 ### Detail windows: use `large-title-display-mode-never`
 
@@ -126,6 +138,10 @@ Sizing the content height to `Ti.UI.SIZE` is what lets iOS determine whether the
 | `content-w-screen` | `contentWidth` | `Ti.UI.FILL` |
 | `content-h-auto` | `contentHeight` | `Ti.UI.SIZE` |
 
+> 💡 **TIP**
+>
+> Set the three base properties (`autoAdjustScrollViewInsets`, `extendEdges`, `largeTitleEnabled`) as global defaults in `config.cjs`, then override `largeTitleDisplayMode` per window only when needed.
+
 ## Community-Discovered Patterns
 
 ### TabGroup implicit-NavigationWindow wrapping
@@ -138,4 +154,4 @@ When `theme.Window.ios.apply` sets `large-title-enabled` as a default, every pus
 
 ### Cross-reference
 
-The three-property pairing (`autoAdjustScrollViewInsets` + `extendEdges` + `largeTitleEnabled`) is also documented as a reusable global-defaults recipe in [apply-directive.md](apply-directive.md) under *Community-Discovered Patterns → Global Window defaults for Large Titles + ScrollView (iOS)*. Prefer that recipe over per-window repetition whenever the whole app uses Large Titles.
+The three-property pairing (`autoAdjustScrollViewInsets` + `extendEdges` + `largeTitleEnabled`) is also documented as a reusable global-defaults recipe in [apply-directive.md](./apply-directive.md) under *Community-Discovered Patterns → Global Window defaults for Large Titles + ScrollView (iOS)*. Prefer that recipe over per-window repetition whenever the whole app uses Large Titles.
