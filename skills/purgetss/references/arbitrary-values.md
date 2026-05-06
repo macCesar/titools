@@ -7,6 +7,47 @@ When you need a one-off value that is not in the defaults, use arbitrary values 
 >
 > You cannot use square bracket notation like in Tailwind because Titanium handles platform and conditional statements in `.tss` files differently.
 
+## Class syntax pre-validation
+
+Starting with PurgeTSS v7.8.0, the build runs a pre-validation pass over class names found in XML views and JS controllers before purging. When it spots a malformed arbitrary-value utility, it stops and prints a structured `Class Syntax Error` block so the offending class can be fixed before any TSS is generated. If multiple errors are present, all of them are reported in the same run.
+
+Each error block includes:
+
+- The file path where the offending class lives
+- The line number inside that file
+- The offending class name (as authored)
+- A `Fix:` suggestion with the corrected class name
+
+Example shape:
+
+```
+Class Syntax Error
+  File: app/views/index.xml
+  Line: 12
+  Found: top-(-10)
+  Fix:   -top-(10)
+```
+
+### Detected patterns
+
+The validator catches five narrow, actionable mistakes:
+
+| Pattern                       | Offending input | Suggested fix | Notes                                                            |
+| ----------------------------- | --------------- | ------------- | ---------------------------------------------------------------- |
+| Inverted negative sign        | `top-(-10)`     | `-top-(10)`   | The `-` prefix goes before the rule, not inside the value        |
+| Tailwind-style brackets       | `top-[10px]`    | `top-(10px)`  | PurgeTSS uses parentheses, not square brackets, for arbitrary values |
+| Empty parentheses             | `wh-()`         | (flagged, no auto-fix) | Add a value such as `wh-(10)`                           |
+| Whitespace inside parentheses | `wh-( 200 )`    | `wh-(200)`    | No spaces allowed between `(`, the value, and `)`                |
+| Redundant `px` unit           | `top-(10px)`    | `top-(10)`    | PurgeTSS treats unit-less arbitrary values as pixels             |
+
+### Unknown classes are still silently dropped
+
+The pre-validator only fires on the five patterns above. Any other unknown class — typos, custom utilities not yet declared, vendor classes that are not enabled in `config.cjs` — is **not** reported as a `Class Syntax Error`. Those classes continue to flow into the `// Unused or unsupported classes` comment block in `app.tss`, exactly like before. This keeps the validator focused on actionable mistakes and avoids noise while you sketch out class names.
+
+### v7.8.0 parser fix for negatives inside parentheses
+
+Before v7.8.0, an inverted negative such as `top-(-10)` could be silently misparsed by the arbitrary-value pipeline (the `-` inside the parentheses confused the token matcher, producing wrong or missing TSS output without any warning). v7.8.0 hardens that path: the parser now correctly recognizes `top-(-10)` as authored, classifies it as an inverted-negative-sign error, and surfaces the `Class Syntax Error` block with the `-top-(10)` fix instead of producing silent garbage.
+
 ## Color Properties
 
 You can set arbitrary color values for all available color properties using `hex`, `rgb`, or `rgba` values, directly in XML files or in `config.cjs`.

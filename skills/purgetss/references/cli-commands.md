@@ -1,6 +1,12 @@
 # PurgeTSS CLI Commands
 
-> **Info: What's new in v7.5.3 / v7.6.x / v7.7.0**
+> **Info: What's new in v7.5.3 / v7.6.x / v7.7.0 / v7.8.0 / v7.9.0**
+> - **Opacity modifiers on semantic colors (v7.9.0)** — writing `bg-surface/65` (or any opacity modifier on a class mapped to a name in `semantic.colors.json`) now produces a working rule with Light/Dark switching preserved. PurgeTSS auto-derives a `<originalKey>_<alphaPercent>` entry in `semantic.colors.json` with the original `light`/`dark` hex values plus the requested alpha for both modes, then emits the rule against the derived key. Re-runs are idempotent; manual edits with conflicting values halt the build with a `Conflict` error. New alpha entries require one full Titanium build to be picked up — Liveview hot-reload alone does not refresh `semantic.colors.json`.
+> - **Gradient + Window/View/ImageView preset fixes (v7.9.0)** — `theme.Window` / `theme.View` / `theme.ImageView` no longer leak the framework presets (white background, `Ti.UI.SIZE`, iOS `hires: true`) when defined at the top level (replace mode), so a Window declared at `theme.Window` with a `backgroundGradient` no longer ghosts on top of a default `backgroundColor: '#FFFFFF'`. `theme.extend.Window` keeps merging with the defaults as before. Also fixed: tonal palette inversion bug, position-dependent `from`/`to` color ordering after `sort()`, and `bg-gradient-to-X` direction silently dropped when combined with `from-X to-Y` colors.
+> - **Glossary path renamed (v7.9.0, breaking)** — the user-facing glossary output path was renamed from `purgetss/experimental/tailwind-classes/` to `purgetss/glossary/tailwind-classes/`. Tooling or CI that reads from the old path needs updating on upgrade — no transition shim. The `--glossary` flag and command surface are unchanged.
+> - **`images --width <n>` flag (v7.8.0)** — pins Android `mdpi` (= iPhone `@1x`) to a specific pixel width, with larger scales deriving as ×1.5, ×2, ×3, ×4 from that base. Use it for SVG sources from vector editors with disproportionate viewBoxes (Affinity, Illustrator). CLI-only; there is no matching `images:` config property because the right width is per-asset. See [`images` Command](#images-command).
+> - **Class syntax pre-validation (v7.8.0)** — `purgetss` now stops with a structured `Class Syntax Error` block (file + line + suggested fix) when it detects known class-name mistakes: inverted negative sign (`top-(-10)` → `-top-(10)`), Tailwind-style brackets (`top-[10px]` → `top-(10px)`), empty parentheses (`wh-()`), whitespace inside parentheses (`wh-( 200 )`), and redundant `px` unit (`top-(10px)` → `top-(10)`). All offenders are reported in one run. Generic unknown classes still flow into the `// Unused or unsupported classes` block in `app.tss`.
+> - **Negative-values-in-parens parser fix (v7.8.0)** — classes like `top-(-10)`, `mt-(-5)`, and `origin-(-10,-20)` no longer crash with `Cannot read properties of null (reading 'pop')`. The parser now extracts the `(...)` portion first, so a `-` inside the value does not break the split.
 > - **`brand:` config grouped (v7.7.0)** — the flat `brand:` block from v7.6.0 was reorganized into purpose-based sections: `brand.logos`, `brand.padding`, `brand.android`, `brand.ios`, and `brand.colors`. Old projects keep working — newly-generated configs use the grouped form.
 > - **Separate Android brand inputs (v7.7.0)** — `brand` can now use one logo for the general brand set, another for Android launcher icons (`logos.androidLauncher` / `--icon-logo`), and another for Android 12+ splash artwork (`logos.androidSplash` / `--splash-logo`). Drop `logo-icon.*` and `logo-splash.*` into `purgetss/brand/` or set the paths in `config.cjs`.
 > - **Legacy Android splash fallback (v7.7.0)** — `purgetss brand` now regenerates `app/assets/android/default.png` (Alloy) or `Resources/android/default.png` (Classic). `cleanup-legacy` no longer removes `default.png`.
@@ -91,15 +97,14 @@ module.exports = {
       splash: false,         // also generate splash_icon.png × 5
       notification: false    // also generate ic_stat_notify.png × 5
     },
+    ios: {
+      dark: true,            // emit DefaultIcon-Dark.png (set false to skip)
+      tinted: true,          // emit DefaultIcon-Tinted.png (set false to skip)
+      darkBackground: null   // null = transparent per Apple HIG; set a hex like '#111111' for an opaque dark bg
+    },
     colors: {
       background: '#FFFFFF'  // Android adaptive bg + iOS/marketplace flatten
     },
-    // Optional iOS overrides:
-    // ios: {
-    //   dark: false,
-    //   tinted: false,
-    //   darkBackground: '#111111'
-    // },
     confirmOverwrites: true  // prompt before overwriting files (set false to skip)
   },
   images: {
@@ -283,15 +288,14 @@ brand: {
     splash: false,         // also generate splash_icon.png × 5
     notification: false    // also generate ic_stat_notify.png × 5
   },
+  ios: {
+    dark: true,            // emit DefaultIcon-Dark.png (set false to skip)
+    tinted: true,          // emit DefaultIcon-Tinted.png (set false to skip)
+    darkBackground: null   // null = transparent per Apple HIG; set a hex like '#111' for an opaque dark bg
+  },
   colors: {
     background: '#FFFFFF'  // Android adaptive bg + iOS/marketplace flatten
   },
-  // Optional iOS overrides:
-  // ios: {
-  //   dark: false,           // skip DefaultIcon-Dark.png
-  //   tinted: false,         // skip DefaultIcon-Tinted.png
-  //   darkBackground: '#111' // opaque dark bg for DefaultIcon-Dark.png
-  // },
   confirmOverwrites: true  // prompt before overwriting files
 }
 ```
@@ -344,6 +348,7 @@ purgetss images background/                           # re-process one subfolder
 | `--ios` | Only emit iPhone scale variants. Mutually exclusive with `--android`. |
 | `--format <ext>` | Convert all outputs to `webp`, `jpeg`, `png`, `avif`, `gif`, or `tiff`. Default: keep source format. |
 | `--quality <n>` | Quality `0-100` for lossy formats. Default `85`. |
+| `--width <n>` | (v7.8.0) Pin Android `mdpi` (= iPhone `@1x`) to `<n>` pixels wide. Larger scales derive as ×1.5, ×2, ×3, ×4 from that base; height stays proportional to the source's aspect ratio. Integer in `[1, 8192]`. |
 | `--dry-run` | Preview without writing any files. |
 | `--project <path>` | Project root (defaults to cwd). |
 | `-y, --yes` | Skip the overwrite confirmation prompt. |
@@ -352,6 +357,12 @@ purgetss images background/                           # re-process one subfolder
 ### Positional argument
 
 - `[source]` (optional) — path to override auto-discovery. Resolves first against `purgetss/images/` (short paths like `buttons/btn.png`), then against cwd.
+
+### When to use `--width`
+
+Use `--width <n>` for SVG sources from vector editors with disproportionate viewBoxes — common in Affinity, Illustrator, and other design tools where the viewBox does not match the intended display size. Without the flag, every scale derives from the source's natural pixel size as a 4× master, which can produce unexpected output sizes.
+
+When you pass an SVG without `--width`, the command prints a one-time hint and falls back to the legacy 4× behavior. This is CLI-only; there is no matching `images:` config property because the right width is per-asset.
 
 ### Config block
 
@@ -375,6 +386,7 @@ purgetss images background/pink-texture.png            # re-process one file (sh
 purgetss images background/                            # re-process one subfolder
 purgetss images --android                              # only Android densities
 purgetss images --format webp --quality 90             # convert all outputs to WebP
+purgetss images logo.svg --width 256                   # pin SVG output to 256 px @1x/mdpi
 purgetss images --dry-run                              # preview
 ```
 
@@ -411,6 +423,29 @@ purgetss semantic --single '#000000' overlayColor     --alpha 50
 ```
 
 When `--dark` is omitted, it defaults to the light hex — useful for overlays/glass surfaces where alpha is the only variation.
+
+### Customizing the class name
+
+The auto-mapping uses the most literal Titanium-style transform: strip `Color`, then kebab-case the rest (e.g. `surfaceColor` → `surface`, `textSecondaryColor` → `text-secondary`). If your design system prefers different names — for example `on-surface` instead of `text`, or nesting the surface family under `DEFAULT` / `high` — edit `config.cjs` after running the `--single` batch:
+
+`./purgetss/config.cjs`
+```javascript
+theme: {
+  extend: {
+    colors: {
+      surface: { DEFAULT: 'surfaceColor', high: 'surfaceHighColor' },
+      'on-surface': 'textColor',
+      'on-surface-variant': 'textSecondaryColor',
+      muted: 'textMutedColor',
+      border: 'borderColor',
+      accent: 'accentColor',
+      overlay: 'overlayColor'
+    }
+  }
+}
+```
+
+The next `purgetss build` picks up the renamed classes. Editing one generated mapping is faster than typing the whole structure from scratch. See [semantic-colors.md](./semantic-colors.md) for the full nested-vs-flat discussion (including the `[object Object]` pitfall when nesting without `DEFAULT`).
 
 ### Smart in-place updates
 
@@ -482,10 +517,10 @@ After copying the fonts, you can use them in Buttons and Labels. For example, fo
 
 ### Available Font Classes
 
-- [fontawesome.tss](https://github.com/macCesar/purgeTSS/blob/master/dist/fontawesome.tss)
-- [materialicons.tss](https://github.com/macCesar/purgeTSS/blob/master/dist/materialicons.tss)
-- [materialsymbols.tss](https://github.com/macCesar/purgeTSS/blob/master/dist/materialsymbols.tss)
-- [framework7icons.tss](https://github.com/macCesar/purgeTSS/blob/master/dist/framework7icons.tss)
+- [fontawesome.tss](https://github.com/macCesar/purgeTSS/blob/main/dist/fontawesome.tss)
+- [materialicons.tss](https://github.com/macCesar/purgeTSS/blob/main/dist/materialicons.tss)
+- [materialsymbols.tss](https://github.com/macCesar/purgeTSS/blob/main/dist/materialsymbols.tss)
+- [framework7icons.tss](https://github.com/macCesar/purgeTSS/blob/main/dist/framework7icons.tss)
 
 ### Copying Specific Font Vendors
 

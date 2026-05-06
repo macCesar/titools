@@ -316,9 +316,7 @@ Colors: `black`, `dark`, `light`, and `white` themes that affect background and 
 
 Use this for code examples. Set `copy="true"` to add a copy button.
 
-> **Community-Discovered Pattern — Pro tip**
->
-> For best results, install a monospaced font (like Fira Code or JetBrains Mono) and configure `font-mono` in your PurgeTSS config.
+**Pro tip — recommended monospace fonts:** For best results, install a monospaced font (like Fira Code or JetBrains Mono) and configure `font-mono` in your PurgeTSS config. (Source: official tikit docs, `tikit.md` line ~390.)
 
 **Localization:** The copy button uses `L('copy', 'Copy')` for its title and `L('code_copied', 'Code copied!')` for the confirmation message. Add these keys to your `strings.xml` files for translation.
 

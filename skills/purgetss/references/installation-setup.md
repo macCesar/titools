@@ -14,9 +14,35 @@ Install PurgeTSS globally on your machine using [NPM](https://www.npmjs.com/).
 
 ## XML Validation
 
-PurgeTSS v7.5.3 added XML validation that flags any `--` (double-dash) sequence inside XML comments. Titanium's XML parser treats `--` in comments as invalid, and PurgeTSS now detects those sequences before they break the compile step.
+Before purging, PurgeTSS pre-checks every XML file in your project. One case worth calling out: double dashes (`--`) are not allowed inside XML comments. That restriction comes from the XML spec itself, not from PurgeTSS, but many people only run into it once a tool actually parses the file.
 
-If you see a validation warning from PurgeTSS pointing at a view file, replace the offending comment with an alternative marker (for example, `//` or `==`) and re-run the build.
+### Bad comment example
+
+```xml
+<!-- Options: --flag or --value -->
+```
+
+The `--flag` inside that comment is illegal. PurgeTSS stops with a pointer to the offending line:
+
+```text
+XML comment contains illegal "--" sequence ("--flag")
+Fix: Replace "--" with an em dash or reword the comment to avoid double dashes
+```
+
+### Why it fails
+
+Per the XML 1.0 specification, the two-character sequence `--` is reserved as the close-comment indicator (`-->`). It cannot appear anywhere inside a comment body, even mid-string. Any conforming XML parser will reject the document, so catching it up front is more helpful than a confusing TSS output later.
+
+### How to fix
+
+Pick whichever of these reads best:
+
+- Replace `--` with a single Unicode em dash (`—`) so the sequence is no longer two ASCII hyphens.
+- Spell out the dashes (for example, write `dash-dash flag` instead of `--flag`).
+- Move the option list outside the comment — for instance, into a sibling `<!-- Options -->` header followed by documentation in your README or `config.cjs` notes.
+- Rephrase so the two dashes simply do not sit next to each other.
+
+Any of those approaches keeps the comment readable and produces a document that every XML parser will accept.
 
 ## Run PurgeTSS the First Time
 

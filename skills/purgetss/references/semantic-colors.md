@@ -302,6 +302,48 @@ Once the JSON and the `config.cjs` mapping are in place, you use the semantic cl
 
 When the appearance changes — whether from `Appearance.set(...)` or a system-level toggle — Titanium resolves each semantic color name to its `light` or `dark` value automatically. No event listeners, no manual repaint.
 
+### Opacity modifier auto-derivation
+
+As of PurgeTSS v7.9.0, you can apply the `/N` opacity modifier to **any class that resolves to a semantic name** in `semantic.colors.json`, and PurgeTSS will derive a new semantic key with that alpha pre-applied for both `light` and `dark` modes. This works for `bg-*`, `text-*`, `border-*`, and any other color-accepting utility whose class is mapped through `theme.extend.colors` in `config.cjs`.
+
+```xml
+<View class="bg-surface/65" />
+<Label class="text-on-surface/80" text="Subtle" />
+<View class="border border-accent/40" />
+```
+
+On the next `purgetss build` (or plain `purgetss`) run, the toolchain executes a three-step flow:
+
+1. **Detects the mapping** — PurgeTSS sees that, for example, `bg-surface` is mapped to the semantic name `surfaceColor` via `config.cjs`.
+2. **Derives a new key** — it adds `surfaceColor_65` (naming convention: `<originalKey>_<alphaPercent>`, underscore + integer percent) to `semantic.colors.json`, copying the original hex values for both modes and tagging each with `alpha: "65"`:
+
+   ```json
+   "surfaceColor_65": {
+     "light": { "color": "#F9FAFB", "alpha": "65" },
+     "dark":  { "color": "#0f172a", "alpha": "65" }
+   }
+   ```
+
+3. **Emits the rule against the derived key** — for example, `'.bg-surface/65': { backgroundColor: 'surfaceColor_65' }`. Light/Dark switching keeps working because Titanium handles the lookup like any other semantic color. The same flow runs for opacity inside an `apply:` string in `config.cjs`.
+
+#### Idempotency and the `Conflict` error
+
+Re-runs are idempotent: existing derived keys are reused, never duplicated. If you manually edit a derived key with values that disagree with what PurgeTSS would generate (different base color, different alpha, different shape), the next build halts with a `Conflict` error instead of silently overwriting your edits — you have to either revert the manual change or remove the derived key so it can be regenerated cleanly.
+
+> **DANGER**
+>
+> **Native rebuild required for new alpha entries**
+>
+> `semantic.colors.json` is read at **native build time**, not at runtime. The first time a brand-new opacity variant is auto-derived (a class like `bg-surface/65` you've never used before), the running app **will not see it** until the next full Titanium build. Liveview hot-reload alone does **not** refresh `semantic.colors.json` for the running app — only the native binary does.
+>
+> In practice: after introducing a new opacity class, run `purgetss build` once, then start a fresh native build (`appc run` / `ti build`) before resuming your usual Liveview cycle. Subsequent runs of the *same* `/N` value reuse the existing derived key and need no extra rebuild.
+
+#### Constraints
+
+- **Alpha range**: integer `0–100`, matching the standard opacity modifier syntax. Values outside this range are rejected.
+- **Base key must exist**: the semantic name behind the class (`surfaceColor` in the example) must already exist in `semantic.colors.json`. If it doesn't, PurgeTSS emits a warning for direct XML usage or throws an Error for `apply:` directives, with three concrete suggestions in the message.
+- **Naming is fixed**: the derived key is always `<originalKey>_<alphaPercent>` — underscore + integer percent. This mirrors the `/65` you typed and stays quote-free in `config.cjs` if you ever need to reference it manually.
+
 ## Using semantic colors in controllers
 
 Semantic colors also work from JavaScript. Three patterns cover the cases you'll hit.
@@ -368,10 +410,11 @@ A minimal semantic palette that covers most app surfaces:
 | Cards / elevated   | `surfaceHighColor`   | `#FFFFFF` | `#1e293b` | `bg-surface-high`          |
 | Primary text       | `textColor`          | `#111827` | `#f1f5f9` | `text-on-surface`          |
 | Secondary text     | `textSecondaryColor` | `#6B7280` | `#94a3b8` | `text-on-surface-variant`  |
+| Muted text         | `textMutedColor`     | `#9CA3AF` | `#64748b` | `text-muted`               |
 | Borders / dividers | `borderColor`        | `#E5E7EB` | `#334155` | `bg-border`                |
 | Accent             | `accentColor`        | `#3B82F6` | `#60a5fa` | `text-accent`, `bg-accent` |
 
-Start with these 5-6 colors and add more only when the design requires it. Fewer semantic colors means easier maintenance.
+Start with these 6-7 colors and add more only when the design requires it. Fewer semantic colors means easier maintenance.
 
 ## Related
 

@@ -254,6 +254,66 @@ Window: { default: { apply: 'exit-on-close-false bg-blue-500' } }
 
 Use the explicit `default:` wrapper when you also need platform blocks (`ios:`, `android:`) next to it. For the common case of one bundle of defaults, the shorthand reads better.
 
+### Extend mode vs replace mode
+
+> **HEADLINE CHANGE — v7.9.0**
+> This is the headline change of PurgeTSS v7.9.0. Before v7.9.0, `theme.Window` / `theme.View` / `theme.ImageView` still had the framework defaults merged in, which caused gradient ghosting and other surprising overrides. v7.9.0 makes top-level (non-`extend`) configs behave as true replace mode.
+>
+> If you previously used `theme.Window` (no `extend`) and depended on the white background or the iOS `hires: true` / `Ti.UI.SIZE` defaults still being there, you will need to either move that config under `theme.extend.Window` (extend mode) or add the previously-implicit utilities back into your `apply` string.
+
+PurgeTSS follows the Tailwind convention for the three Ti Elements that ship with framework defaults — `Window`, `View`, and `ImageView`:
+
+- **Extend mode** — `theme.extend.Window`, `theme.extend.View`, `theme.extend.ImageView`. Your customization **merges** with the framework defaults. The white Window `backgroundColor`, `Ti.UI.SIZE` width/height on `View`, and iOS `hires: true` on `ImageView` stay in place unless you override them with `apply`. Use this when you want to add to the defaults, not replace them.
+- **Replace mode** — `theme.Window`, `theme.View`, `theme.ImageView` (top level, no `extend`). Your config **replaces** the framework defaults entirely. The white Window background is omitted, the `Ti.UI.SIZE` width/height on `View` is omitted, and the iOS `hires: true` on `ImageView` is omitted. Your `apply` becomes the source of truth for that Ti Element.
+
+Use replace mode when you want full control and do not want a preset mixed in. The canonical case is a Window declared at `theme.Window` with a `backgroundGradient`, where the previously-merged white `backgroundColor` would render on top of the gradient and produce a "ghost" white wash.
+
+`./purgetss/config.cjs - replace mode (v7.9.0+)`
+```javascript
+module.exports = {
+  theme: {
+    Window: {
+      apply: 'bg-gradient-to-b from-blue-500 to-purple-600'
+    }
+  }
+};
+```
+
+`./purgetss/styles/utilities.tss`
+```tss
+'Window': { backgroundGradient: { type: 'linear', colors: [...], startPoint: ..., endPoint: ... } }
+```
+
+Note the missing `backgroundColor: '#FFFFFF'`. Replace mode skipped the framework default, so the gradient renders cleanly. Before v7.9.0 the same config produced:
+
+```tss
+/* Pre-v7.9.0 — ghost white background covering the gradient */
+'Window': { backgroundColor: '#FFFFFF', backgroundGradient: { type: 'linear', colors: [...] } }
+```
+
+If you wanted the framework white background **and** something else on top, that is what extend mode is for:
+
+`./purgetss/config.cjs - extend mode`
+```javascript
+module.exports = {
+  theme: {
+    extend: {
+      Window: {
+        apply: 'exit-on-close-false'
+      }
+    }
+  }
+};
+```
+
+`./purgetss/styles/utilities.tss`
+```tss
+/* Framework default backgroundColor is preserved, exitOnClose merged in */
+'Window': { backgroundColor: '#FFFFFF', exitOnClose: false }
+```
+
+The same extend-vs-replace distinction applies to `View` (`Ti.UI.SIZE` width/height defaults) and `ImageView` (iOS `hires: true` default).
+
 ### Apply Wins Over Static Defaults
 
 If `apply` sets a property that the component already has as a built-in default, the applied value replaces the original instead of both ending up in the final TSS:

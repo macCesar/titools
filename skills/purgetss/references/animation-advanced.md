@@ -238,15 +238,6 @@ const { saveComponent } = require('purgetss.ui')
 saveComponent({ source: $.myView, directory: 'screenshots' })
 ```
 
-### createAnimation(args)
-
-Factory function to create Animation objects programmatically.
-
-```javascript
-const { createAnimation } = require('purgetss.ui')
-const anim = createAnimation({ duration: 300, curve: Ti.UI.ANIMATION_CURVE_EASE_IN_OUT })
-```
-
 ---
 
 ## Implementation Rules

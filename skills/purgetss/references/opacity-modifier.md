@@ -53,8 +53,17 @@ module.exports = {
 '.bg-primary': { backgroundColor: '#ce10cc' }
 ```
 
-> **CAUTION -- Semantic Colors**
-> Semantic colors cannot be modified with the opacity modifier because they are defined as an object with light and dark values.
+## Semantic colors
+
+Since v7.9.0, opacity modifiers also work on classes that resolve to a semantic color. Any class mapped to a semantic color entry can use `/<percent>` syntax.
+
+```xml
+<View class="bg-surface/65" />
+```
+
+PurgeTSS detects that `bg-surface` maps to the semantic name `surfaceColor`, then derives a new semantic key (`surfaceColor_65`) with the original `light` and `dark` hex values plus the requested alpha for both modes. It writes that key back to `semantic.colors.json` and emits the rule against the derived key. Light/Dark switching still works.
+
+See [Semantic colors — Opacity modifier auto-derivation](./semantic-colors.md#opacity-modifier-auto-derivation) for the full mechanics.
 
 ## Community-Discovered Patterns
 
