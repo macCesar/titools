@@ -4,6 +4,53 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.10.1] - 2026-05-06
+
+### Fixed
+- `update` command — when running from the home directory, local and
+  global skill detection both pointed to the same `.agents/skills` dir
+  and triggered a duplicate update prompt. Local detection is now
+  skipped when `cwd === os.homedir()`.
+
+### Changed — `purgetss` skill aligned with PurgeTSS v7.9.0 and v7.8.0
+
+The official PurgeTSS docs were fully rewritten on 2026-05-05. This
+release re-aligns 17 existing references against the new content,
+without adding new reference files.
+
+**v7.9.0 features now documented:**
+- Opacity modifier on semantic colors (`bg-surface/65`) — PurgeTSS
+  auto-derives `<originalKey>_<alphaPercent>` entries in
+  `semantic.colors.json` for each mode. Native rebuild required;
+  Liveview hot-reload alone does not refresh the file.
+- `theme.Window` / `theme.View` / `theme.ImageView` presets now use
+  **replace mode** — they no longer carry framework defaults (white
+  background, `Ti.UI.SIZE`, iOS `hires: true`). Use
+  `theme.extend.Window` etc. for **extend mode** (merge with defaults).
+  Fixes gradient ghosting on preset Windows.
+- Glossary path renamed: `purgetss/experimental/tailwind-classes/` →
+  `purgetss/glossary/tailwind-classes/`.
+
+**v7.8.0 features now documented:**
+- `purgetss images --width <n>` — pin SVG output to a specific base
+  width; per-density assets derive from the multiplier scale
+  (×1 / ×1.5 / ×2 / ×3 / ×4). CLI-only, range `[1, 8192]`.
+- Class syntax pre-validation — build emits a `Class Syntax Error`
+  block for 5 detected patterns (inverted negatives, Tailwind
+  brackets, empty parens, whitespace in parens, redundant `px`).
+- Parser fix for negative values inside parentheses.
+
+**Other corrections:**
+- Removed `createAnimation` factory hallucination from
+  `animation-advanced.md` — `purgetss.ui` does not export this
+  function; only the native `Ti.UI.createAnimation()` exists.
+- Reclassified a mislabeled "Community-Discovered Pattern — Pro tip"
+  in `tikit-components.md` (the monospace fonts tip is officially
+  documented in `tikit.md`).
+
+22 `## Community-Discovered Patterns` sections preserved intact across
+the skill (all 22 verified — no silent deletions).
+
 ## [2.10.0] - 2026-04-25
 
 ### Added — `values-and-units.md` reference in `purgetss` skill
