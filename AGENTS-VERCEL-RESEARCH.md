@@ -49,21 +49,32 @@ The index maps skills to their reference docs:
 ```
 
 How the assistant should use it:
-- Need Backbone.Models patterns? Read `~/.agents/skills/alloy-guides/references/MODELS.md`
-- Need the PurgeTSS grid system? Read `~/.agents/skills/purgetss/references/grid-layout.md`
 - Need ListView performance tips? Read `~/.agents/skills/ti-ui/references/listviews-and-performance.md`
+- Need the PurgeTSS grid system? Read `~/.agents/skills/purgetss/references/grid-layout.md`
+- Need controller cleanup patterns? Read `~/.agents/skills/ti-expert/references/controller-patterns.md`
+- Need Backbone.Models patterns (with `tidev/skills` installed)? Read `~/.agents/skills/alloy-guides/references/MODELS.md`
 
 ### Skill overview
 
-| Skill            | Purpose                       | Best for                                      |
-| ---------------- | ----------------------------- | --------------------------------------------- |
-| **alloy-guides** | Alloy MVC reference           | Models, views, controllers, widgets           |
-| **alloy-howtos** | Alloy CLI and debugging       | Project setup, CLI commands, errors           |
-| **purgetss**     | Utility-first styling         | UI styling, animations, grid layouts          |
-| **ti-expert**    | Architecture + implementation | Starting point for most Alloy tasks           |
-| **ti-guides**    | SDK fundamentals              | Hyperloop, distribution, tiapp.xml, CLI       |
-| **ti-howtos**    | Native feature integration    | Location, push, media, platform-specific APIs |
-| **ti-ui**        | UI/UX patterns                | Layouts, ListViews, gestures, platform UI     |
+TiTools ships 4 opinionated skills:
+
+| Skill         | Purpose                       | Best for                                      |
+| ------------- | ----------------------------- | --------------------------------------------- |
+| **ti-expert** | Architecture + implementation | Starting point for most Alloy tasks           |
+| **purgetss**  | Utility-first styling         | UI styling, animations, grid layouts          |
+| **ti-ui**     | UI/UX patterns                | Layouts, ListViews, gestures, platform UI     |
+| **ti-howtos** | Native feature integration    | Location, push, media, platform-specific APIs |
+
+The doc-based reference skills live in [`tidev/skills`](https://github.com/tidev/skills) (community-maintained):
+
+| Skill            | Purpose                  | Best for                                |
+| ---------------- | ------------------------ | --------------------------------------- |
+| **ti-api**       | Complete API reference   | Properties, methods, events, constants  |
+| **ti-guides**    | SDK fundamentals         | Hyperloop, distribution, tiapp.xml, CLI |
+| **alloy-guides** | Alloy MVC reference      | Models, views, controllers, widgets     |
+| **alloy-howtos** | Alloy CLI and debugging  | Project setup, CLI commands, errors     |
+
+Install both for the full coverage matrix originally shipped by TiTools v2.x.
 
 ### For complex workflows
 
@@ -73,7 +84,7 @@ The **ti-pro** agent (installed in `~/.claude/agents/`) handles:
 - Cross-referencing framework patterns
 - Platform-specific differences
 
-It preloads all 7 titanium-* skills for broader coverage.
+It preloads the 4 TiTools skills and recommends consulting `tidev/skills` when the question touches API surface, MVC reference, or SDK fundamentals.
 
 ## How to use
 

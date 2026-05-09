@@ -4,6 +4,85 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.0.0] - 2026-05-09
+
+### BREAKING — doc-based skills moved to `tidev/skills`
+
+The four documentation-only skills `ti-api`, `ti-guides`, `alloy-guides`,
+and `alloy-howtos` have been migrated to the official community
+repository [`tidev/skills`](https://github.com/tidev/skills) and removed
+from TiTools. The migration was accepted upstream by Hansemann (TiDev
+maintainer) in [tidev/skills#1](https://github.com/tidev/skills/pull/1).
+
+After this update, those four skills are listed in `LEGACY_SKILLS`,
+which means **`titools update` will silently delete them** from
+`~/.agents/skills/` (and from the platform symlink directories) on the
+next run. To get them back, install `tidev/skills` directly:
+
+```bash
+git clone https://github.com/tidev/skills.git ~/Developer/git-clones/tidev-skills
+ln -s ~/Developer/git-clones/tidev-skills/skills/ti-api        ~/.agents/skills/ti-api
+ln -s ~/Developer/git-clones/tidev-skills/skills/ti-guides     ~/.agents/skills/ti-guides
+ln -s ~/Developer/git-clones/tidev-skills/skills/alloy-guides  ~/.agents/skills/alloy-guides
+ln -s ~/Developer/git-clones/tidev-skills/skills/alloy-howtos  ~/.agents/skills/alloy-howtos
+```
+
+Refer to the [`tidev/skills` README](https://github.com/tidev/skills#readme)
+for canonical install instructions, which may evolve independently.
+
+### What stays in TiTools
+
+The four *opinionated* skills remain — they reflect personal Titanium
+conventions and toolchain choices that don't belong in the upstream
+community repo:
+
+- `ti-expert` — Architecture, patterns, controller/service structure
+- `purgetss` — PurgeTSS utility-first styling (audited against
+  PurgeTSS official docs but workflow-opinionated)
+- `ti-ui` — UI/UX patterns, ListView performance, platform UI
+- `ti-howtos` — Native feature integration recipes
+
+### Removed
+
+- `skills/ti-api/` — moved to `tidev/skills`
+- `skills/ti-guides/` — moved to `tidev/skills`
+- `skills/alloy-guides/` — moved to `tidev/skills`
+- `skills/alloy-howtos/` — moved to `tidev/skills`
+- `scripts/build-ti-api.js` — obsolete generator (the upstream repo
+  owns its own build pipeline)
+- `scripts/titools-docs` entry in `package.json` `files` array — the
+  path never existed on disk
+
+### Changed
+
+- `lib/config.js` — `SKILLS` array reduced from 8 to 4 entries; the
+  four migrated skills appended to `LEGACY_SKILLS` so existing
+  installations get cleaned up on the next `titools update`.
+- `agents/ti-pro.md` — preloaded skills reduced from 7 to 4; agent
+  now recommends consulting `tidev/skills` when API/MVC/SDK reference
+  is part of the question.
+- `hooks/session-start.sh` — message updated to point at the 4
+  TiTools skills first and `tidev/skills` second.
+- `install.sh` — `SKILLS` array trimmed; `LEGACY_SKILLS` extended.
+- `README.md` — full restructure: skill overview tables, hierarchy
+  diagram, project detection table, slash-command descriptions, and
+  contents summary all reflect the 4-skill TiTools surface plus a
+  prominent migration section pointing at `tidev/skills`.
+- `EXAMPLE-PROMPTS.md` — activation tests for the four migrated skills
+  removed; cross-skill collaboration tests retained but updated to
+  mention `tidev/skills` for doc-based references.
+- `AGENTS-VERCEL-RESEARCH.md` — split skill overview into two tables
+  (TiTools opinionated, `tidev/skills` doc-based); index examples
+  updated.
+- `.claude-plugin/plugin.json` — version synced to 3.0.0; description
+  rewritten to match the opinionated-toolkit positioning.
+
+### Migration test
+
+`test/config.test.js` now asserts that `ti-api`, `ti-guides`,
+`alloy-guides`, and `alloy-howtos` are present in `LEGACY_SKILLS` and
+absent from `SKILLS`, preventing accidental re-introduction.
+
 ## [2.10.1] - 2026-05-06
 
 ### Fixed

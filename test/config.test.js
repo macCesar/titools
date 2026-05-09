@@ -33,6 +33,13 @@ describe('config', () => {
     assert.ok(config.LEGACY_SKILLS.includes('alloy-expert'));
   });
 
+  it('should list v3.0.0 migrated skills as legacy (moved to tidev/skills)', () => {
+    for (const skill of ['ti-api', 'ti-guides', 'alloy-guides', 'alloy-howtos']) {
+      assert.ok(config.LEGACY_SKILLS.includes(skill), `${skill} should be in LEGACY_SKILLS`);
+      assert.ok(!config.SKILLS.includes(skill), `${skill} should NOT be in SKILLS`);
+    }
+  });
+
   it('should export AGENTS array', () => {
     assert.ok(Array.isArray(config.AGENTS));
     assert.ok(config.AGENTS.includes('ti-pro'));

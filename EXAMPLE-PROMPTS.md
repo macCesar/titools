@@ -13,7 +13,8 @@ These prompts verify the assistant read the docs index from your project's instr
 ```
 Expect:
 - Titanium SDK docs index
-- All 8 skills: `alloy-guides`, `alloy-howtos`, `purgetss`, `ti-api`, `ti-expert`, `ti-guides`, `ti-howtos`, `ti-ui`
+- The 4 TiTools skills: `ti-expert`, `purgetss`, `ti-ui`, `ti-howtos`
+- If `tidev/skills` is also installed: `ti-api`, `ti-guides`, `alloy-guides`, `alloy-howtos`
 - Reference file locations
 
 ---
@@ -69,7 +70,7 @@ Expect:
 Expect:
 - `$.UI.create()` syntax examples (standard Alloy API)
 - Why it's better than manual style objects
-- Reference to `alloy-guides/references/VIEWS_DYNAMIC.md` or `purgetss/references/dynamic-component-creation.md` if PurgeTSS is detected
+- Reference to `purgetss/references/dynamic-component-creation.md` if PurgeTSS is detected, or to `alloy-guides/references/VIEWS_DYNAMIC.md` if `tidev/skills` is installed
 
 ---
 
@@ -148,58 +149,7 @@ Expect:
 
 ---
 
-### ti-guides
-```
-"I need to use a native iOS API that Titanium doesn't expose. How does Hyperloop work?"
-```
-Expect:
-- Hyperloop syntax for Objective-C/Swift
-- Type casting
-- Code examples
-
-```
-"My app is ready. What's the whole process to get it on the App Store?"
-```
-Expect:
-- Certificates and provisioning
-- tiapp.xml configuration
-- Build commands
-
----
-
-### alloy-guides
-```
-"I have a list of products from an API and I want them to auto-update in the view when the data changes. How does data binding work in Alloy?"
-```
-Expect:
-- Backbone.js collections
-- dataCollection attribute in XML
-- Sync adapters
-
-```
-"I need to store user profiles locally with SQLite. How do I set up the model?"
-```
-Expect:
-- alloy generate model command
-- Adapter configuration
-- Migrations
-
----
-
-### alloy-howtos
-```
-"I'm getting 'No app.js found' when I try to build. What's going on?"
-```
-Expect:
-- Run `alloy compile --config platform=<platform>`
-
-```
-"I'm using Ti.App.fireEvent everywhere and it's turning into spaghetti. What's the better way to communicate between controllers?"
-```
-Expect:
-- Alloy.Events = _.clone(Backbone.Events)
-- .on(), .off(), .trigger() methods
-- Cleanup on window close
+> **Note:** activation tests for `ti-api`, `ti-guides`, `alloy-guides`, and `alloy-howtos` now live in [`tidev/skills`](https://github.com/tidev/skills) since those skills moved upstream in v3.0.0.
 
 ---
 
@@ -239,9 +189,6 @@ Expect:
 - [ ] purgetss: does not use flexbox, uses correct classes
 - [ ] ti-ui: mentions performance rules
 - [ ] ti-howtos: includes permissions and tiapp.xml
-- [ ] ti-guides: knows Hyperloop and distribution
-- [ ] alloy-guides: explains MVC and data binding
-- [ ] alloy-howtos: knows CLI and common errors
 - [ ] Collaboration: multiple skills work together
 
 ---
@@ -253,15 +200,12 @@ Platform: [ ] Claude Code  [ ] Gemini CLI  [ ] Codex CLI
 
 ### Results
 
-| Skill        | Active? | Correct response? | Notes |
-| ------------ | ------- | ----------------- | ----- |
-| ti-expert    |         |                   |       |
-| purgetss     |         |                   |       |
-| ti-ui        |         |                   |       |
-| ti-howtos    |         |                   |       |
-| ti-guides    |         |                   |       |
-| alloy-guides |         |                   |       |
-| alloy-howtos |         |                   |       |
+| Skill     | Active? | Correct response? | Notes |
+| --------- | ------- | ----------------- | ----- |
+| ti-expert |         |                   |       |
+| purgetss  |         |                   |       |
+| ti-ui     |         |                   |       |
+| ti-howtos |         |                   |       |
 
 ---
 
@@ -344,7 +288,7 @@ Old Titanium to modern:
 ```
 "I'm upgrading from Titanium 8.x to 12.x. What's going to break? What new stuff should I use?"
 ```
-Expect: use `ti-guides`, check version documentation
+Expect: use `ti-expert` for migration patterns; if `tidev/skills` is installed, also `ti-guides` for SDK version notes.
 
 ---
 
