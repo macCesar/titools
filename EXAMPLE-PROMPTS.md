@@ -13,8 +13,8 @@ These prompts verify the assistant read the docs index from your project's instr
 ```
 Expect:
 - Titanium SDK docs index
-- The 4 TiTools skills: `ti-expert`, `purgetss`, `ti-ui`, `ti-howtos`
-- If `tidev/skills` is also installed: `ti-api`, `ti-guides`, `alloy-guides`, `alloy-howtos`
+- The 3 TiTools skills: `ti-expert`, `purgetss`, `ti-ui`
+- If `tidev/skills` is also installed: `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`
 - Reference file locations
 
 ---
@@ -129,27 +129,7 @@ Expect:
 
 ---
 
-### ti-howtos
-```
-"I need to send push notifications to both iOS and Android. What do I need to configure?"
-```
-Expect:
-- tiapp.xml configuration
-- iOS permissions (NSNotificationUsageDescription)
-- APNs and FCM setup
-- Lifecycle handlers
-
-```
-"My app needs real-time GPS for delivery tracking but users complain it drains their battery."
-```
-Expect:
-- distanceFilter
-- accuracy settings
-- Pause in background
-
----
-
-> **Note:** activation tests for `ti-api`, `ti-guides`, `alloy-guides`, and `alloy-howtos` now live in [`tidev/skills`](https://github.com/tidev/skills) since those skills moved upstream in v3.0.0.
+> **Note:** activation tests for `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, and `alloy-howtos` now live in [`tidev/skills`](https://github.com/tidev/skills) since those skills moved upstream in v3.0.0.
 
 ---
 
@@ -162,8 +142,8 @@ Expect:
 Expect:
 - Use `ti-expert` for architecture and controller structure
 - Use `ti-ui` for animations and layout patterns
-- Use `ti-howtos` for secure token storage
 - Use `purgetss` only if PurgeTSS is detected or the user mentions it
+- For secure token storage: install `tidev/skills` and use `ti-howtos`
 
 ---
 
@@ -178,8 +158,8 @@ Expect:
 Expect:
 - `ti-expert` for project structure
 - `ti-ui` for ListView with pull-to-refresh
-- `ti-howtos` for GPS tracking
 - `purgetss` only if PurgeTSS is detected or the user mentions it
+- For GPS tracking: install `tidev/skills` and use `ti-howtos`
 
 ---
 
@@ -188,7 +168,6 @@ Expect:
 - [ ] ti-expert: responds with correct architecture
 - [ ] purgetss: does not use flexbox, uses correct classes
 - [ ] ti-ui: mentions performance rules
-- [ ] ti-howtos: includes permissions and tiapp.xml
 - [ ] Collaboration: multiple skills work together
 
 ---
@@ -205,7 +184,6 @@ Platform: [ ] Claude Code  [ ] Gemini CLI  [ ] Codex CLI
 | ti-expert |         |                   |       |
 | purgetss  |         |                   |       |
 | ti-ui     |         |                   |       |
-| ti-howtos |         |                   |       |
 
 ---
 
@@ -225,7 +203,7 @@ Social feed:
 "I'm building a social feed like Instagram, avatar, username, photo, like/comment counts.
 It needs infinite scroll, smooth animations when new posts load, and it should cache posts for offline."
 ```
-Expect: use `ti-ui`, `ti-howtos`, `ti-expert`
+Expect: use `ti-ui`, `ti-expert` (for offline caching with native APIs, install `tidev/skills` and use `ti-howtos`)
 
 Settings screen:
 ```
@@ -233,7 +211,7 @@ Settings screen:
 an account section with logout, and it should look native on both platforms
 (Action Bar on Android, Navigation Bar on iOS)."
 ```
-Expect: use `ti-ui`, `ti-howtos`
+Expect: use `ti-ui`
 
 Onboarding flow:
 ```

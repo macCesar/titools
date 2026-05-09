@@ -8,13 +8,13 @@
 
 </div>
 
-TiTools is a Titanium SDK toolkit for AI coding assistants. It ships 4 opinionated skills (`ti-expert`, `purgetss`, `ti-ui`, `ti-howtos`), a research agent, and reference files covering Titanium architecture, PurgeTSS styling, UI/UX patterns, and native-feature integration.
+TiTools is a Titanium SDK toolkit for AI coding assistants. It ships 3 opinionated skills (`ti-expert`, `purgetss`, `ti-ui`), a research agent, and reference files covering Titanium architecture, PurgeTSS styling, and UI/UX patterns.
 
 The reference files are maintained against official documentation whenever an official source exists, so the assistant can retrieve current framework behavior instead of guessing from generic training data.
 
 Without TiTools, assistants rely on general training data. That data can be outdated or too generic for Titanium work. With TiTools, the assistant can look up Alloy architecture, memory cleanup patterns, PurgeTSS utility classes, and platform-specific APIs.
 
-> **v3.0.0 — doc-based skills moved to `tidev/skills`.** The four documentation-only skills (`ti-api`, `ti-guides`, `alloy-guides`, `alloy-howtos`) are now maintained in the official [`tidev/skills`](https://github.com/tidev/skills) repository alongside the rest of the TiDev community tooling. TiTools now focuses on the four opinionated skills above. See [Doc-based skills moved to tidev/skills](#doc-based-skills-moved-to-tidevskills) below for upgrade notes.
+> **v3.0.0 — doc-based skills moved to `tidev/skills`.** Five documentation-only skills (`ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`) are now maintained in the official [`tidev/skills`](https://github.com/tidev/skills) repository alongside the rest of the TiDev community tooling. TiTools now focuses on the three opinionated skills above. See [Doc-based skills moved to tidev/skills](#doc-based-skills-moved-to-tidevskills) below for upgrade notes.
 
 Vercel's AGENTS.md evaluation reports a 100% pass rate for the knowledge index approach, compared to 53-79% using skills alone.
 
@@ -40,7 +40,7 @@ The fastest way to get started with Claude Code. One command to add the marketpl
 ```
 
 What you get:
-- All 4 TiTools skills (`ti-expert`, `purgetss`, `ti-ui`, `ti-howtos`)
+- All 3 TiTools skills (`ti-expert`, `purgetss`, `ti-ui`)
 - ti-pro research agent
 - Session hook that auto-detects Titanium projects (`tiapp.xml`, Alloy, PurgeTSS)
 - Slash commands: `/ti-check`, `/ti-new-screen`, `/ti-audit`
@@ -74,7 +74,7 @@ claude   # or gemini, or codex
 ```
 
 What gets installed:
-- The 4 TiTools skills to `~/.agents/skills/`
+- The 3 TiTools skills to `~/.agents/skills/`
 - ti-pro agent for Claude Code
 - Platform symlinks (Claude Code, Gemini CLI, Codex CLI)
 - Knowledge index in your project's `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`
@@ -103,26 +103,28 @@ Use **Option A** if you only use Claude Code. Use **Option B** if you use multip
 
 ## Doc-based skills moved to tidev/skills
 
-Starting with **v3.0.0**, the four documentation-only skills migrated to the official [`tidev/skills`](https://github.com/tidev/skills) repository:
+Starting with **v3.0.0**, five documentation-only skills migrated to the official [`tidev/skills`](https://github.com/tidev/skills) repository:
 
 - `ti-api` — Complete Titanium API reference
 - `ti-guides` — SDK fundamentals (Hyperloop, distribution, tiapp.xml)
+- `ti-howtos` — Native feature integration (location, push, media, platform-specific APIs)
 - `alloy-guides` — Alloy MVC framework reference
 - `alloy-howtos` — Alloy CLI, configuration, debugging
 
-**Why the move?** These skills are pure documentation mirrors of official Titanium and Alloy docs, so they belong in the community-maintained TiDev repository alongside the SDK source itself. Hansemann ([@hansemannn](https://github.com/hansemannn)) — TiDev maintainer — accepted the contribution in [tidev/skills#1](https://github.com/tidev/skills/pull/1).
+**Why the move?** These skills are pure documentation mirrors of official Titanium and Alloy docs, so they belong in the community-maintained TiDev repository alongside the SDK source itself. Hansemann ([@hansemannn](https://github.com/hansemannn)) — TiDev maintainer — accepted the first batch in [tidev/skills#1](https://github.com/tidev/skills/pull/1) and `ti-howtos` followed in [tidev/skills#2](https://github.com/tidev/skills/pull/2).
 
-**What stays in TiTools:** the four *opinionated* skills that reflect personal Titanium conventions and toolchain choices (PurgeTSS-first styling, specific architecture patterns).
+**What stays in TiTools:** the three *opinionated* skills that reflect personal Titanium conventions and toolchain choices (PurgeTSS-first styling, specific architecture patterns).
 
 ### Upgrading from v2.x
 
-If you have v2.x installed, the four migrated skills will be **auto-removed** the next time you run `titools update` (they're listed in `LEGACY_SKILLS`). To get them back, install from `tidev/skills` directly:
+If you have v2.x installed, the five migrated skills will be **auto-removed** the next time you run `titools update` (they're listed in `LEGACY_SKILLS`). To get them back, install from `tidev/skills` directly:
 
 ```bash
 git clone https://github.com/tidev/skills.git ~/Developer/git-clones/tidev-skills
-# Then symlink the four skills into ~/.agents/skills/ or your AI assistant's skills dir
+# Then symlink the five skills into ~/.agents/skills/ or your AI assistant's skills dir
 ln -s ~/Developer/git-clones/tidev-skills/skills/ti-api        ~/.agents/skills/ti-api
 ln -s ~/Developer/git-clones/tidev-skills/skills/ti-guides     ~/.agents/skills/ti-guides
+ln -s ~/Developer/git-clones/tidev-skills/skills/ti-howtos     ~/.agents/skills/ti-howtos
 ln -s ~/Developer/git-clones/tidev-skills/skills/alloy-guides  ~/.agents/skills/alloy-guides
 ln -s ~/Developer/git-clones/tidev-skills/skills/alloy-howtos  ~/.agents/skills/alloy-howtos
 ```
@@ -192,7 +194,7 @@ Together they work like this:
 | ------------------------------- | ------------------------------- | ----------------------------- |
 | "Create a login screen"         | Context about project structure | `ti-expert`, `ti-ui`          |
 | "Optimize ListView performance" | Points to docs location         | `ti-ui` reads specific files  |
-| "Implement push notifications"  | API reference paths             | `ti-howtos` provides workflow |
+| "Implement push notifications"  | API reference paths             | `ti-howtos` (via tidev/skills) |
 
 You do not need to explicitly invoke skills. The AI detects when to use them based on your question.
 
@@ -209,12 +211,11 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 | ti-expert | Architecture and implementation | Starting point for most tasks           |
 | purgetss  | Utility-first styling           | UI styling and animations               |
 | ti-ui     | UI/UX patterns                  | Complex layouts, ListViews, platform UI |
-| ti-howtos | Native feature integration      | Location, Push, Media, Platform APIs    |
 
 Notes:
 - `purgetss` reference files are audited against the official PurgeTSS documentation, but the workflow conventions are opinionated.
 - `ti-expert` and `ti-ui` reflect personal Titanium conventions (biased toward PurgeTSS, Alloy-first).
-- For purely doc-based references (API surface, Alloy MVC, SDK guides, Alloy CLI), install [`tidev/skills`](https://github.com/tidev/skills) — it pairs cleanly with TiTools.
+- For purely doc-based references (API surface, native-feature how-tos, Alloy MVC, SDK guides, Alloy CLI), install [`tidev/skills`](https://github.com/tidev/skills) — it pairs cleanly with TiTools.
 
 ---
 
@@ -224,14 +225,14 @@ In addition to skills, this repository includes sub-agents for Claude Code. Sub-
 
 ### ti-pro
 
-Deep-dive research specialist that preloads the 4 TiTools skills.
+Deep-dive research specialist that preloads the 3 TiTools skills.
 
 | Aspect           | Details                                          |
 | ---------------- | ------------------------------------------------ |
 | Location         | `~/.claude/agents/ti-pro.md`                     |
 | Model            | Sonnet (comprehensive analysis)                  |
 | Tools            | Read-only (Read, Grep, Glob)                     |
-| Preloaded Skills | `ti-expert`, `purgetss`, `ti-ui`, `ti-howtos`    |
+| Preloaded Skills | `ti-expert`, `purgetss`, `ti-ui`                 |
 
 When to use the agent vs skills:
 
@@ -300,7 +301,7 @@ Skills are automatically activated based on your questions. Just ask naturally:
 The AI will automatically use:
 - `ti-expert` -> Architecture and controller structure
 - `purgetss` -> Styling classes and animations (if PurgeTSS detected)
-- `ti-howtos` -> Secure token storage
+- `ti-howtos` from [`tidev/skills`](https://github.com/tidev/skills) (if installed) -> Secure token storage
 
 You do not need to call skills explicitly. The AI reads skill descriptions and loads the appropriate knowledge when needed.
 
@@ -313,7 +314,6 @@ All skills include automatic project detection to ensure compatibility:
 | purgetss  | PurgeTSS installation | Checks for `purgetss/` folder, `config.cjs`, `utilities.tss`  |
 | ti-expert | Alloy vs Classic      | Checks for `app/` (Alloy) vs `Resources/` (Classic) structure |
 | ti-ui     | Titanium projects     | Checks for `tiapp.xml` (both Alloy and Classic)               |
-| ti-howtos | Titanium projects     | Checks for `tiapp.xml` (both Alloy and Classic)               |
 
 Why this matters:
 - PurgeTSS suggestions are only provided if PurgeTSS is installed
@@ -330,16 +330,16 @@ Why this matters:
                     │  (Start Here)   │
                     └────────┬────────┘
                              │
-        ┌────────────────────┼────────────────────┐
-        │                    │                    │
-        ▼                    ▼                    ▼
-┌───────────────┐   ┌───────────────┐   ┌───────────────┐
-│   purgetss    │   │    ti-ui      │   │   ti-howtos   │
-│   (Styling)   │   │   (UI/UX)     │   │   (Native)    │
-└───────────────┘   └───────────────┘   └───────────────┘
+                ┌────────────┴────────────┐
+                │                         │
+                ▼                         ▼
+        ┌───────────────┐         ┌───────────────┐
+        │   purgetss    │         │    ti-ui      │
+        │   (Styling)   │         │   (UI/UX)     │
+        └───────────────┘         └───────────────┘
 ```
 
-For pure API/MVC/SDK reference docs, install [`tidev/skills`](https://github.com/tidev/skills) alongside TiTools — its `ti-api`, `ti-guides`, `alloy-guides`, and `alloy-howtos` skills layer below this hierarchy without conflict.
+For pure API / native-feature how-to / MVC / SDK reference docs, install [`tidev/skills`](https://github.com/tidev/skills) alongside TiTools — its `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, and `alloy-howtos` skills layer below this hierarchy without conflict.
 
 ---
 
@@ -441,45 +441,7 @@ Key rules:
 
 ---
 
-### ti-howtos
-
-Native feature integration expert.
-
-When it activates:
-- Location services and Maps
-- Push notifications (APNs/FCM)
-- Local notifications
-- Camera and Gallery
-- Audio/Video playback
-- File system operations
-- SQLite databases
-- HTTPClient networking
-- WebView integration
-- Android Intents and Services
-- iOS Background Services, iCloud, Keychain
-- Core Motion, WatchKit
-
-Example prompts:
-```
-"How do I implement battery-efficient GPS tracking?"
-"How do I set up push notifications for iOS and Android?"
-"How do I capture and resize photos from the camera?"
-"Download files with a progress indicator."
-"How should I store sensitive data in iOS Keychain?"
-"Create an Android background service."
-"Integrate with Apple Watch using WatchKit."
-"Handle background location updates on iOS."
-```
-
-Key rules:
-- Always handle both `onload` and `onerror` for HTTPClient
-- Always close database handles and result sets
-- Use `imageAsResized` to avoid memory exhaustion
-- Configure proper permissions in tiapp.xml
-
----
-
-> **Looking for `ti-api`, `ti-guides`, `alloy-guides`, or `alloy-howtos`?** Those four documentation-only skills now live in [`tidev/skills`](https://github.com/tidev/skills). See [Doc-based skills moved to tidev/skills](#doc-based-skills-moved-to-tidevskills) for install instructions.
+> **Looking for `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, or `alloy-howtos`?** Those five documentation-only skills now live in [`tidev/skills`](https://github.com/tidev/skills). See [Doc-based skills moved to tidev/skills](#doc-based-skills-moved-to-tidevskills) for install instructions.
 
 ---
 
@@ -578,7 +540,7 @@ Behavior depends on where you run it:
 | With `--local` flag        | Installs skills locally to `./.agents/skills/` in the current project |
 
 What it does:
-- Installs all 8 titanium-related skills (global or local depending on context)
+- Installs the 3 TiTools skills (global or local depending on context)
 - Installs ti-pro agent for Claude Code
 - Detects installed AI platforms and lets you choose which to link
 - Creates symlinks from platform directories to central skills
@@ -773,10 +735,9 @@ This pattern is documented across three TiTools skills: `ti-ui`, `ti-expert`, an
 
 | Skill     | SKILL.md                      | References                                            |
 | --------- | ----------------------------- | ----------------------------------------------------- |
-| ti-expert | Architecture + Implementation | 21 files (patterns, testing, security, etc.)         |
+| ti-expert | Architecture + Implementation | 21 files (patterns, testing, security, etc.)          |
 | purgetss  | Setup + Critical Rules        | 29 files (grid, animations, icons, class-index, etc.) |
 | ti-ui     | UI Rules + Platform Diffs     | 14 files (layouts, lists, gestures, etc.)             |
-| ti-howtos | Integration Workflow          | 18 files (location, media, maps, automation, etc.)    |
 
 ---
 

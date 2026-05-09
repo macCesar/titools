@@ -30,7 +30,7 @@ describe('list command', () => {
   it('lists every skill from the SKILLS array', async () => {
     const result = await run(['list']);
     assert.equal(result.code, 0);
-    for (const skill of ['ti-expert', 'purgetss', 'ti-ui', 'ti-howtos']) {
+    for (const skill of ['ti-expert', 'purgetss', 'ti-ui']) {
       assert.match(result.stdout, new RegExp(skill), `expected skill "${skill}" in list output`);
     }
   });

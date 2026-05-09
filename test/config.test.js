@@ -34,7 +34,7 @@ describe('config', () => {
   });
 
   it('should list v3.0.0 migrated skills as legacy (moved to tidev/skills)', () => {
-    for (const skill of ['ti-api', 'ti-guides', 'alloy-guides', 'alloy-howtos']) {
+    for (const skill of ['ti-api', 'ti-guides', 'ti-howtos', 'alloy-guides', 'alloy-howtos']) {
       assert.ok(config.LEGACY_SKILLS.includes(skill), `${skill} should be in LEGACY_SKILLS`);
       assert.ok(!config.SKILLS.includes(skill), `${skill} should NOT be in SKILLS`);
     }

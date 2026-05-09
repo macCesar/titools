@@ -20,5 +20,5 @@ if [ -f "tiapp.xml" ]; then
     HAS_PURGETSS=" + PurgeTSS"
   fi
 
-  echo '{"priority": "IMPORTANT", "message": "'"${PROJECT_TYPE}${HAS_PURGETSS}"' project detected. TiTools skills are available and MUST be used before writing any Titanium code. Use ti-expert for architecture, ti-ui for UI patterns, ti-howtos for native features, and purgetss for styling. If tidev/skills is installed, also consult ti-api, ti-guides, alloy-guides, and alloy-howtos. NEVER rely on training data for Titanium — always consult the skill references first."}'
+  echo '{"priority": "IMPORTANT", "message": "'"${PROJECT_TYPE}${HAS_PURGETSS}"' project detected. TiTools skills are available and MUST be used before writing any Titanium code. Use ti-expert for architecture, ti-ui for UI patterns, and purgetss for styling. If tidev/skills is installed, also consult ti-api, ti-guides, ti-howtos, alloy-guides, and alloy-howtos. NEVER rely on training data for Titanium — always consult the skill references first."}'
 fi

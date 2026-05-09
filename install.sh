@@ -8,11 +8,11 @@
 set -e
 
 REPO_URL="https://github.com/macCesar/titanium-sdk-skills"
-SKILLS=(ti-expert purgetss ti-ui ti-howtos)
+SKILLS=(ti-expert purgetss ti-ui)
 AGENTS=(ti-pro)
 LEGACY_AGENTS=(ti-researcher)
-# v3.0.0: ti-api/ti-guides/alloy-guides/alloy-howtos moved to https://github.com/tidev/skills
-LEGACY_SKILLS=(alloy-expert ti-branding ti-api ti-guides alloy-guides alloy-howtos)
+# v3.0.0: ti-api/ti-guides/ti-howtos/alloy-guides/alloy-howtos moved to https://github.com/tidev/skills
+LEGACY_SKILLS=(alloy-expert ti-branding ti-api ti-guides ti-howtos alloy-guides alloy-howtos)
 AGENTS_DIR="$HOME/.agents"
 AGENTS_SKILLS_DIR="$AGENTS_DIR/skills"
 CLAUDE_AGENTS_DIR="$HOME/.claude/agents"
