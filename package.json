@@ -1,6 +1,6 @@
 {
   "name": "@maccesar/titools",
-  "version": "2.10.1",
+  "version": "3.0.0",
   "description": "Titanium SDK skills and agents for AI coding assistants (Claude Code, Gemini CLI, Codex CLI)",
   "main": "lib/index.js",
   "type": "module",
@@ -57,8 +57,7 @@
     "lib/",
     "skills/",
     "agents/",
-    "AGENTS-VERCEL-RESEARCH.md",
-    "scripts/titools-docs"
+    "AGENTS-VERCEL-RESEARCH.md"
   ],
   "publishConfig": {
     "access": "public"

@@ -1,7 +1,7 @@
 {
   "name": "titools",
-  "description": "Complete Titanium SDK development toolkit: API reference, Alloy MVC, PurgeTSS styling, architecture, guides, how-tos, and UI patterns. Auto-detects Titanium projects.",
-  "version": "2.10.1",
+  "description": "Opinionated Titanium SDK toolkit: PurgeTSS styling, Alloy architecture, UI/UX patterns, native-feature how-tos. Pairs with tidev/skills for API and reference docs. Auto-detects Titanium projects.",
+  "version": "3.0.0",
   "keywords": [
     "titanium",
     "titanium-sdk",
