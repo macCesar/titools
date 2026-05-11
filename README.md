@@ -76,7 +76,7 @@ claude   # or gemini, or codex
 What gets installed:
 - The 3 TiTools skills to `~/.agents/skills/`
 - ti-pro agent for Claude Code
-- Platform symlinks (Claude Code, Gemini CLI, Codex CLI)
+- Platform symlinks for Claude Code and Gemini CLI (Codex CLI auto-discovers from `~/.agents/skills/` — no symlink needed)
 - Knowledge index in your project's `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`
 - Claude Code SessionStart hook for auto-updates
 
@@ -139,7 +139,7 @@ Refer to the [`tidev/skills` README](https://github.com/tidev/skills#readme) for
 | --------------------------------------------------------- | ---------------- | ------------------- |
 | [Claude Code](https://claude.ai/claude-code)              | Fully Compatible | `~/.claude/skills/` |
 | [Gemini CLI](https://github.com/google-gemini/gemini-cli) | Fully Compatible | `~/.gemini/skills/` |
-| [Codex CLI](https://developers.openai.com/codex/cli/)     | Fully Compatible | `~/.codex/skills/`  |
+| [Codex CLI](https://developers.openai.com/codex/cli/)     | Fully Compatible | `~/.agents/skills/` (auto-discovered) |
 
 All three platforms use the Agent Skills open standard: a `SKILL.md` file with YAML frontmatter.
 

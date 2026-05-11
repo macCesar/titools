@@ -54,7 +54,8 @@ describe('config', () => {
     assert.strictEqual(typeof config.getPlatforms, 'function');
     const platforms = config.getPlatforms();
     assert.ok(Array.isArray(platforms));
-    assert.strictEqual(platforms.length, 3);
+    const names = platforms.map((p) => p.name);
+    assert.deepStrictEqual(names, ['claude', 'gemini']);
   });
 
   it('should export directory getter functions', () => {

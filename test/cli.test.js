@@ -40,7 +40,6 @@ async function makeProject(dir) {
 async function makePlatformDirs(dir) {
   await mkdir(join(dir, '.claude'), { recursive: true });
   await mkdir(join(dir, '.gemini'), { recursive: true });
-  await mkdir(join(dir, '.codex'), { recursive: true });
 }
 
 async function makeLocalSkills(dir) {
