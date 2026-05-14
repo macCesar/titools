@@ -1,6 +1,6 @@
 ---
 name: ti-ui
-description: "Titanium SDK UI/UX patterns and components expert. Use when working with, reviewing, analyzing, or examining Titanium layouts, ListView/TableView performance optimization, event handling and bubbling, gestures (swipe, pinch), animations, accessibility (VoiceOver/TalkBack), orientation changes, custom fonts/icons, app icons/splash screens, or platform-specific UI (Action Bar, Navigation Bar). AUTO-DETECT: If tiapp.xml exists, invoke this skill BEFORE creating or modifying any UI view, window, or layout. Titanium layouts (composite, vertical, horizontal) differ from web/CSS — never assume web layout behavior."
+description: "Use when working with, reviewing, analyzing, or examining Titanium SDK UI/UX patterns and components — Titanium layouts, ListView/TableView performance optimization, event handling and bubbling, gestures (swipe, pinch), animations, accessibility (VoiceOver/TalkBack), orientation changes, custom fonts/icons, app icons/splash screens, or platform-specific UI (Action Bar, Navigation Bar). AUTO-DETECT: If tiapp.xml exists, invoke BEFORE creating or modifying any UI view, window, or layout. Titanium layouts (composite, vertical, horizontal) differ from web/CSS — never assume web layout behavior."
 argument-hint: "[component]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(node *)
 ---

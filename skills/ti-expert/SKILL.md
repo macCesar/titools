@@ -1,6 +1,6 @@
 ---
 name: ti-expert
-description: "Titanium SDK architecture and implementation expert. Use when designing, reviewing, analyzing, or examining Titanium project structure (Alloy or Classic), creating controllers/views/services, choosing models vs collections, implementing communication patterns, handling memory cleanup, testing, auditing code, migrating legacy apps, or building adaptive/responsive layouts for tablets, foldables, and large screens. AUTO-DETECT: If tiapp.xml exists, invoke this skill BEFORE making architectural decisions, creating new controllers/views, or restructuring code. Titanium has its own patterns for navigation (NavigationWindow, TabGroup), memory management, and event handling that differ from web frameworks."
+description: "Use when designing, reviewing, analyzing, or examining Titanium SDK architecture and implementation (Alloy or Classic) — creating controllers/views/services, choosing models vs collections, implementing communication patterns, handling memory cleanup, testing, auditing code, migrating legacy apps, or building adaptive/responsive layouts for tablets, foldables, and large screens. AUTO-DETECT: If tiapp.xml exists, invoke BEFORE making architectural decisions, creating new controllers/views, or restructuring code. Titanium has its own patterns for navigation (NavigationWindow, TabGroup), memory management, and event handling that differ from web frameworks."
 argument-hint: "[architecture-topic]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(git *), Bash(node *)
 ---
