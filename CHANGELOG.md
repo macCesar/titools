@@ -4,6 +4,85 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.2.0] - 2026-05-13
+
+### Added — repo conventions and skill output contract
+
+`AGENTS.md` lands at the repo root with the cross-agent conventions every
+TiTools skill must obey: frontmatter ≤ 1024 chars, descriptions that start
+with "Use when…", folder names matching the `name:` field, the citation
+output contract, design principles ("concrete file paths", "vendor-neutral",
+"verify before claiming success", "no backwards-compat noise"), and the
+mandatory release checklist. The doc complements the existing `CLAUDE.md`
+(Claude Code-specific notes) and is meant for Claude Code, Gemini CLI,
+Codex CLI, GitHub Copilot CLI, and any other agent contributing to the repo.
+
+The `purgetss` skill adopts the **Required workflow output contract** that
+AGENTS.md prescribes for non-trivial skills: a task → reference table near
+the top of `SKILL.md`, a citation format (`[source: references/<file>.md]`)
+for every claim, and a `FROM_MEMORY (unverified):` prefix when the agent
+answers without consulting a reference. This makes non-compliance visible
+in the agent's own response — the strongest mitigation against agents
+answering from training data instead of from the skill.
+
+### Added — `skills/purgetss/references/version-history.md`
+
+The release-by-release record (v7.4.0 → v7.10.2) was extracted out of
+`SKILL.md` into a dedicated reference file per the AGENTS.md "no
+backwards-compat noise" rule. SKILL.md stays focused on current behavior;
+historical context now has its own page, with three new entries covering
+PurgeTSS v7.10.0–v7.10.2.
+
+### Changed — skill descriptions follow the "Use when…" convention
+
+`ti-expert`, `ti-ui`, and `purgetss` descriptions were rewritten to start
+with "Use when…" in third person, matching the AGENTS.md frontmatter
+convention. Future agents scan descriptions to decide whether to load the
+full skill; the imperative trigger-led form is easier to evaluate than the
+prior "expert in X" framing.
+
+### Documentation — `purgetss` references aligned with PurgeTSS v7.10.0–v7.10.2
+
+Ten reference files were updated against the upstream PurgeTSS docs after
+v7.10.0–v7.10.2 shipped. Highlights:
+
+- `app-branding.md` — Google Play Feature Graphic (1024×500) generation via
+  `purgetss brand`: `--feature-graphic-padding`, `--feature-logo`,
+  `brand.padding.featureGraphic`, `brand.logos.featureGraphic`. Plus the
+  v7.10.2 pre-7.7.0 brand config auto-migration (legacy flat schema
+  normalized in memory before defaults apply) and the v7.10.0 `--padding`
+  shortcut fix (now applies to BOTH Android paddings).
+- `multi-density-images.md` — `--opacity`, `--padding`, `--output` flags
+  (v7.10.0) for placeholder / default-ImageView workflows.
+- `cli-commands.md` — refreshed `brand` and `images` flag tables and
+  examples with the new v7.10.0 surface.
+- `apply-directive.md` — new "Use icon font classes" section: since
+  v7.10.0, `apply:` resolves bundled icon fonts (`fas`, `fa-*`, `mi-*`,
+  `ms-*`, `f7-*`) from `dist/` without needing `build-fonts` first.
+- `arbitrary-values.md` — arbitrary nesting depth in `theme` objects
+  (v7.10.0): `theme.extend.colors.brand.primary.500` now emits recursively
+  as `brand-primary-500` instead of being silently dropped at level 2.
+  Also: the v7.10.1 rewording of the square-brackets error message.
+- `migration-guide.md` — new upgrade sections for v7.7.0, v7.8.0, v7.9.0,
+  and v7.10.x; updated quick checklist covering brand schema migration,
+  Class Syntax Error pre-validation enforcement, glossary path rename, and
+  the v7.10.x additions.
+- `customization-deep-dive.md` — `featureGraphic` in the `brand` config
+  block; explicit note that v7.10.0 image flags
+  (`--opacity` / `--padding` / `--output`) are CLI-only by design.
+- `EXAMPLES.md` — square-brackets section now points out that v7.8.0+
+  hard-fails the build with a structured `Class Syntax Error` block.
+- `class-categories.md` — `large-title` boolean row now cross-references
+  `ios-large-titles.md` for the full pattern.
+- `dynamic-component-creation.md` — small typo cleanup (`valor:`
+  placeholder removed).
+
+Source of the alignment pass: PurgeTSS docs at `purgetss-docs-context7`
+(v7.10.2 head). Every change traces back to the official source; author
+additions (`## Community-Discovered Patterns` sections) preserved intact.
+
+---
+
 ## [3.1.0] - 2026-05-11
 
 ### Changed — Codex CLI no longer gets a redundant platform symlink
