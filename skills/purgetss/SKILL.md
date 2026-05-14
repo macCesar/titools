@@ -1,6 +1,6 @@
 ---
 name: purgetss
-description: "Titanium PurgeTSS utility-first styling toolkit. Use when styling, reviewing, analyzing, or examining Titanium UI with utility classes, configuring config.cjs, creating dynamic components with $.UI.create(), building animations, using grid layouts, setting up icon fonts, or working with TSS styles. AUTO-DETECT: If purgetss/ folder or purgetss/config.cjs exists, this project uses PurgeTSS — invoke this skill BEFORE writing ANY styling code. All styling MUST use PurgeTSS utility classes in XML, NOT custom TSS. PurgeTSS classes look like Tailwind but are NOT Tailwind — verify every class exists before using it. Never use padding on Views (use margins on children), never use flexbox classes, never write manual TSS when a utility class exists."
+description: "Use when working with PurgeTSS, Titanium's utility-first styling toolkit — styling, reviewing, analyzing, or examining Titanium UI with utility classes, configuring config.cjs, creating dynamic components with $.UI.create(), building animations, grid layouts, icon fonts, or TSS styles. AUTO-DETECT: If purgetss/ folder or purgetss/config.cjs exists, invoke BEFORE writing ANY styling code. PurgeTSS classes look like Tailwind but are NOT Tailwind — verify every class exists. Never use padding on Views (use margins on children), never use flexbox classes, never write manual TSS when a utility class exists."
 argument-hint: "[class-name]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(purgetss *), Bash(node *)
 ---
@@ -8,6 +8,46 @@ allowed-tools: Read, Grep, Glob, Edit, Write, Bash(purgetss *), Bash(node *)
 # PurgeTSS Expert
 
 Utility-first styling toolkit for Titanium/Alloy mobile apps.
+
+## Required workflow (read before responding)
+
+The SKILL.md alone is an **index** of references. The detail you need
+to give accurate answers lives in the reference files. **Reading this
+SKILL.md is not enough.**
+
+### Step 1 — Open the relevant reference files
+
+| Task involves | Required reading |
+|---|---|
+| Choosing utility classes | [references/class-index.md](references/class-index.md) |
+| Layout (horizontal/vertical/composite, grid) | [references/grid-layout.md](references/grid-layout.md), [references/ui-ux-design.md](references/ui-ux-design.md) |
+| Dynamic components in controllers | [references/dynamic-component-creation.md](references/dynamic-component-creation.md) |
+| Custom values / arbitrary syntax | [references/arbitrary-values.md](references/arbitrary-values.md) |
+| Platform-specific styles (`ios:`, `android:`) | [references/platform-modifiers.md](references/platform-modifiers.md) |
+| Dark/Light mode | [references/semantic-colors.md](references/semantic-colors.md), [references/appearance-module.md](references/appearance-module.md) |
+| Apply directive / class extraction | [references/apply-directive.md](references/apply-directive.md) |
+| Animations | [references/animation-system.md](references/animation-system.md) |
+
+### Step 2 — Output contract
+
+Every utility class you suggest and every styling pattern you describe
+MUST be backed by a citation in the form:
+
+`[source: references/<file>.md]`
+
+Example: *"Use `wh-12` to set width and height to 48px [source: references/class-index.md]"*
+
+### Step 3 — If you must answer from memory
+
+If you write a claim without having read the reference that backs it,
+prepend `FROM_MEMORY (unverified):` to that claim. Do not hide it.
+
+### Banned behaviors
+
+- ❌ Writing utility classes "from memory" without citing any reference
+- ❌ Confusing PurgeTSS classes with Tailwind — they share naming but differ
+- ❌ Marking the answer complete without listing which reference files you read
+- ❌ Suggesting a class without first verifying it exists in `class-index.md`
 
 ## Project Detection
 
@@ -111,62 +151,6 @@ purgetss create 'MyApp' -d -v fa
 # -d: Install dev dependencies (ESLint, Tailwind)
 # -v: Copy icon fonts (fa, mi, ms, f7)
 ```
-
-## What's New in v7.9.0
-
-- Opacity modifier on semantic colors — `bg-surface/65` syntax now works for any class mapped through `theme.extend.colors`. PurgeTSS auto-derives `<originalKey>_<alphaPercent>` entries in `semantic.colors.json` per mode (light/dark). See [Semantic Colors → Opacity modifier auto-derivation](references/semantic-colors.md#opacity-modifier-auto-derivation). **Native rebuild required** — Liveview hot-reload alone does not refresh `semantic.colors.json`
-- `theme.Window` / `theme.View` / `theme.ImageView` presets now use **replace mode** — they no longer carry framework defaults (white background, `Ti.UI.SIZE`, iOS `hires: true`). This fixes gradient ghosting where a preset Window with `bg-gradient-*` apply was being covered by the implicit `backgroundColor: '#FFFFFF'`. Use `theme.extend.Window` / `theme.extend.View` / `theme.extend.ImageView` when you want **extend mode** (merge with defaults). See [Apply Directive → Extend mode vs replace mode](references/apply-directive.md#extend-mode-vs-replace-mode)
-- Glossary path renamed: `purgetss/experimental/tailwind-classes/` → `purgetss/glossary/tailwind-classes/`
-
-## What's New in v7.8.0
-
-- `purgetss images --width <n>` — pin SVG output to a specific base width; PurgeTSS derives per-density assets from the multiplier scale (×1 / ×1.5 / ×2 / ×3 / ×4). Range `[1, 8192]`. CLI-only (no `images:` config equivalent — width is per-asset). See [Multi-Density Images → Pinning the output width with --width](references/multi-density-images.md#pinning-the-output-width-with---width)
-- Class syntax pre-validation — the build now emits a `Class Syntax Error` block (file path + line + `Fix:` suggestion) for 5 detected patterns: inverted negative sign (`top-(-10)` → `-top-(10)`), Tailwind brackets (`top-[10px]` → `top-(10px)`), empty parens (`wh-()`), whitespace inside parens (`wh-( 200 )` → `wh-(200)`), redundant `px` unit (`top-(10px)` → `top-(10)`). See [Arbitrary Values → Class syntax pre-validation](references/arbitrary-values.md#class-syntax-pre-validation)
-- Parser fix for negative values inside parentheses — `top-(-10)` is now correctly flagged as inverted-negative-sign instead of silently misparsed
-
-## What's New in v7.7.0
-
-- `brand:` config restructured — flat keys replaced by purpose-based groups: `brand.logos`, `brand.padding`, `brand.android`, `brand.ios`, `brand.colors`
-- Separate Android brand inputs — `logos.androidLauncher` / `--icon-logo` for Android launcher icons; `logos.androidSplash` / `--splash-logo` for Android 12+ splash artwork. Drop `logo-icon.*` and `logo-splash.*` into `purgetss/brand/`
-- `--android-adaptive-padding` (default `19%`) and `--android-legacy-padding` (default `10%`) replace the single `--padding`. The shortcut `--padding` now sets both Android paddings to the same value for one run
-- Legacy Android splash fallback regenerated — `app/assets/android/default.png` (Alloy) or `Resources/android/default.png` (Classic). `cleanup-legacy` no longer removes `default.png`
-- New official doc: [Values and Units](references/values-and-units.md) — explains `ti.ui.defaultunit` interpretation of PurgeTSS unitless values
-
-## What's New in v7.6.x
-
-- `brand` command — complete Titanium branding set (launcher icons, adaptive, iOS 18+ Dark/Tinted, marketplace) from logos in `./purgetss/brand/` (v7.6.0)
-- `images` command — multi-density UI images (Android res-*dpi + iPhone @1x/@2x/@3x) from `./purgetss/images/` (v7.6.0)
-- `semantic` command — Titanium semantic colors for Light/Dark mode (palette mode + single mode) (v7.6.0)
-- `brand:` and `images:` config sections auto-injected into older configs (v7.6.0)
-- Percentages as strings (`'15%'`) for self-documenting clarity in brand/images configs (v7.6.0)
-- Confirmation prompt for destructive writes in `brand` / `images` (`y` / `N` / `a`); auto-skipped on non-TTY, with `-y`, or `PURGETSS_YES=1` (v7.6.1)
-- `semantic` command works in Classic projects — writes to `Resources/semantic.colors.json` (v7.6.2)
-
-## What's New in v7.5.3
-
-- Appearance module — Light/Dark/System mode switching with persistence
-- Default font family classes (`font-sans`, `font-serif`, `font-mono`) generated automatically with platform-appropriate values
-- XML validation — detects illegal `--` inside XML comments during pre-validation
-
-## What's New in v7.5.0
-
-- `extend` support for Window, View, and ImageView in `config.cjs`
-- Shorthand `apply` directive normalization
-- Apply directive property deduplication
-- Automatic platform resolution in apply directives
-- Updated Font Awesome to 7.2.0
-- Fixed: `extend.Window` was silently ignored
-- Fixed: Array-type properties (`extendEdges`, `mediaTypes`) bracket notation
-
-## What's New in v7.4.0
-
-- 9 new Animation methods: `transition`, `pulse`, `sequence`, `swap`, `shake`, `snapTo`, `reorder`, `undraggable`, `detectCollisions` (module now has 15 methods total)
-- Snap behavior classes: `snap-back`, `snap-center`, `snap-magnet`
-- `keep-z-index` utility class
-- Enriched callback event object with `action`, `state`, `id`, `targetId`, `index`, `total`, `getTarget()`
-- Delta-based drag for views with rotate/scale transforms
-- Position normalization for draggable views
-- Property inheritance from Animation object for all new methods
 
 > **💡 NEW PROJECT: Clean Up Default app.tss**
 > For new projects created with `purgetss create`, the default `app/styles/app.tss` contains a large commented template.
@@ -459,6 +443,9 @@ purgetss create 'MyApp' -d -v fa
 > - [Icon Fonts](references/icon-fonts.md) - Font Awesome 7, Material Icons, custom icon libraries
 > - [Animation System](references/animation-system.md) - 15 methods including collision detection, transitions, and sequential animations
 > - [Animation Advanced](references/animation-advanced.md) - Property inheritance, utility classes, implementation rules, complex UI example
+>
+> ### Release Notes
+> - [Version History](references/version-history.md) - Release-by-release feature additions and behavior changes (v7.4.0 → v7.9.0)
 >
 > **💡 TEXT FONTS (Google Fonts, Roboto, etc.)**
 > For text fonts, see [CLI Commands → build-fonts](references/cli-commands.md#purgetss-build-fonts-alias-bf).
