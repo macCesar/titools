@@ -272,7 +272,7 @@ alloy compile
 
 ### Square Brackets for Arbitrary Values
 
-**❌ WRONG (Using square brackets like Tailwind CSS):**
+**❌ WRONG (Square brackets are not supported):**
 ```xml
 <View class="w-[100px] bg-[#ff0000]" />
 ```
@@ -283,6 +283,13 @@ alloy compile
 ```
 
 **PurgeTSS syntax for arbitrary values uses `()` not `[]`.**
+
+> **🚨 v7.8.0+ HARD-FAILS THE BUILD ON SQUARE BRACKETS**
+> Since v7.8.0, the build stops with a structured `Class Syntax Error` block (file path + line number + `Fix:` suggestion) the moment it spots `top-[10px]`, `wh-[12]`, or any other square-bracket utility. Pre-v7.8.0, those classes silently dropped into the `// Unused or unsupported classes` block of `app.tss` — easy to miss. Now they're loud and actionable.
+>
+> v7.10.1 reworded the error message from `'Tailwind-style brackets "[ ]" are not supported'` to `'Square brackets "[ ]" are not supported'`. Same enforcement, less framing.
+>
+> See [Arbitrary Values → Class syntax pre-validation](arbitrary-values.md#class-syntax-pre-validation) for the full list of patterns the pre-validator catches (5 total, including inverted negative sign and whitespace inside parentheses).
 
 **Examples:**
 - `w-(100px)` - Custom width

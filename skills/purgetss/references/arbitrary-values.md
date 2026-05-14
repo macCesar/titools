@@ -5,7 +5,7 @@ When you need a one-off value that is not in the defaults, use arbitrary values 
 > **INFO**
 > To generate an arbitrary style, use parentheses notation with almost any default utility class.
 >
-> You cannot use square bracket notation like in Tailwind because Titanium handles platform and conditional statements in `.tss` files differently.
+> Square bracket notation (`[10px]`) is **not supported** because Titanium handles platform and conditional statements in `.tss` files differently. Use parentheses (`(10px)`) instead.
 
 ## Class syntax pre-validation
 
@@ -35,7 +35,7 @@ The validator catches five narrow, actionable mistakes:
 | Pattern                       | Offending input | Suggested fix | Notes                                                            |
 | ----------------------------- | --------------- | ------------- | ---------------------------------------------------------------- |
 | Inverted negative sign        | `top-(-10)`     | `-top-(10)`   | The `-` prefix goes before the rule, not inside the value        |
-| Tailwind-style brackets       | `top-[10px]`    | `top-(10px)`  | PurgeTSS uses parentheses, not square brackets, for arbitrary values |
+| Square-bracket notation       | `top-[10px]`    | `top-(10px)`  | PurgeTSS uses parentheses, not square brackets, for arbitrary values (v7.10.1 reworded the error from `Tailwind-style brackets "[ ]"` to `Square brackets "[ ]" are not supported`) |
 | Empty parentheses             | `wh-()`         | (flagged, no auto-fix) | Add a value such as `wh-(10)`                           |
 | Whitespace inside parentheses | `wh-( 200 )`    | `wh-(200)`    | No spaces allowed between `(`, the value, and `)`                |
 | Redundant `px` unit           | `top-(10px)`    | `top-(10)`    | PurgeTSS treats unit-less arbitrary values as pixels             |
@@ -47,6 +47,76 @@ The pre-validator only fires on the five patterns above. Any other unknown class
 ### v7.8.0 parser fix for negatives inside parentheses
 
 Before v7.8.0, an inverted negative such as `top-(-10)` could be silently misparsed by the arbitrary-value pipeline (the `-` inside the parentheses confused the token matcher, producing wrong or missing TSS output without any warning). v7.8.0 hardens that path: the parser now correctly recognizes `top-(-10)` as authored, classifies it as an inverted-negative-sign error, and surfaces the `Class Syntax Error` block with the `-top-(10)` fix instead of producing silent garbage.
+
+## Arbitrary nesting depth in `theme` objects (v7.10.0)
+
+Since v7.10.0, property emission walks nested `theme.*` values **recursively** instead of stopping at level 2, so deeply nested color families, gradients, and background gradients now flatten into class suffixes without being silently dropped.
+
+Before v7.10.0:
+
+```javascript
+// pre-v7.10.0 — only colors.brand was reached; .primary.500 was silently dropped
+theme: {
+  extend: {
+    colors: {
+      brand: {
+        primary: { 500: '#3b82f6', 700: '#1d4ed8' }
+      }
+    }
+  }
+}
+```
+
+The classes `bg-brand-primary-500`, `text-brand-primary-700`, etc. were **not** generated.
+
+From v7.10.0 onward:
+
+```javascript
+// v7.10.0+ — recursive walk emits the full path
+theme: {
+  extend: {
+    colors: {
+      brand: {
+        primary: { 500: '#3b82f6', 700: '#1d4ed8' }
+      }
+    }
+  }
+}
+```
+
+```tss
+/* utilities.tss */
+'.bg-brand-primary-500': { backgroundColor: '#3b82f6' }
+'.bg-brand-primary-700': { backgroundColor: '#1d4ed8' }
+'.text-brand-primary-500': { color: '#3b82f6', textColor: '#3b82f6' }
+/* ...and every other color property */
+```
+
+The same recursive emission applies to `backgroundGradient` and `backgroundSelectedGradient` definitions inside `theme.extend`.
+
+### Default modifier keys collapse silently
+
+Three special keys — `default`, `global`, `DEFAULT` — collapse without contributing to the class-name suffix. That lets you keep a default variant alongside named variants without polluting the class name:
+
+```javascript
+theme: {
+  extend: {
+    colors: {
+      surface: {
+        DEFAULT: '#f9fafb',  // emits .bg-surface (no suffix)
+        muted: '#e5e7eb'     // emits .bg-surface-muted
+      }
+    }
+  }
+}
+```
+
+```tss
+'.bg-surface':       { backgroundColor: '#f9fafb' }
+'.bg-surface-muted': { backgroundColor: '#e5e7eb' }
+```
+
+If you have a project that previously kept color shades only at depth ≤ 2 to avoid the silent-drop behavior, you can now restructure them by domain without paying for nesting.
 
 ## Color Properties
 
