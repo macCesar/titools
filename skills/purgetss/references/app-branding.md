@@ -1,6 +1,6 @@
 # App Icons & Branding
 
-The `purgetss brand` command (introduced in PurgeTSS v7.6.0, restructured in v7.7.0) generates the complete Titanium branding set from a single SVG or PNG logo — with optional Android-specific overrides when you need them: launcher icons across every Android density, the adaptive-icon trio (foreground + background + monochrome), iOS 18+ Dark and Tinted variants, marketplace artwork, and optional notification/splash icons. Alloy and Classic layouts are auto-detected.
+The `purgetss brand` command (introduced in PurgeTSS v7.6.0, restructured in v7.7.0, extended in v7.10.0 with the Google Play Feature Graphic) generates the complete Titanium branding set from a single SVG or PNG logo — with optional Android-specific overrides when you need them: launcher icons across every Android density, the adaptive-icon trio (foreground + background + monochrome), iOS 18+ Dark and Tinted variants, marketplace artwork (including the 1024×500 Feature Graphic for Google Play), and optional notification/splash icons. Alloy and Classic layouts are auto-detected.
 
 For the terse flag reference, see the [`brand` command reference](./cli-commands.md#brand-command). For sibling UI assets, see [Multi-Density Images](./multi-density-images.md).
 
@@ -45,7 +45,8 @@ purgetss/brand/
 ├── logo-mono.svg         optional — monochrome layer + notifications
 ├── logo-dark.svg         optional — iOS 18+ dark variant
 ├── logo-splash.svg       optional — Android 12+ splash icon override
-└── logo-tinted.svg       optional — iOS 18+ tinted variant
+├── logo-tinted.svg       optional — iOS 18+ tinted variant
+└── logo-feature.svg      optional — Google Play Feature Graphic (1024×500) override
 ```
 
 Only `logo.svg` (or `logo.png`) is required. Everything else is **opt-in refinement**:
@@ -58,6 +59,7 @@ Only `logo.svg` (or `logo.png`) is required. Everything else is **opt-in refinem
 | `logo-splash.svg` / `.png` | Optional | Android 12+ `splash_icon.png` artwork (only used when `--splash` / `android.splash: true`). | Falls back to the launcher artwork. |
 | `logo-dark.svg` / `.png` | Optional | iOS 18+ Dark appearance variant. | Main logo on a transparent background (Apple HIG default). |
 | `logo-tinted.svg` / `.png` | Optional | iOS 18+ Tinted appearance variant. | Grayscale of the main logo on black. |
+| `logo-feature.svg` / `.png` | Optional | Google Play Feature Graphic (1024×500). Use when the Play Store banner should differ from the main app icon (e.g. logo + tagline lockup that fills the wider rectangular canvas). | Main logo is centered inside the banner with configured vertical padding. |
 
 Provide a dedicated `logo-icon` when the main logo is a horizontal wordmark, a vertical lockup, or anything else that looks fine in a 1024×1024 branding canvas but feels cramped inside an Android launcher mask.
 
@@ -66,6 +68,8 @@ Provide a dedicated `logo-mono` when the colored logo has detail that would coll
 Provide a dedicated `logo-splash` when the Android 12+ splash should use a different composition than the launcher icon. PurgeTSS generates the file, but Titanium still needs a custom Android splash theme if you want the system splash to use it instead of `ic_launcher`.
 
 Provide a dedicated `logo-dark` when dark-mode brand guidelines use a different lockup or color treatment; provide `logo-tinted` when you want a pre-simplified silhouette that tints better than a naive grayscale of the colored version.
+
+Provide a dedicated `logo-feature` when the Google Play Feature Graphic (1024×500) should use a different composition than the main app icon — for example a logo-plus-tagline lockup or a wider artwork that takes advantage of the rectangular canvas instead of being constrained to the centered square.
 
 > **INFO**
 >
@@ -87,7 +91,8 @@ brand: {
   logos: {
     primary: './docs/snap-logo.svg',
     androidLauncher: './docs/snap-app-icon.svg',
-    monochrome: './docs/snap-logo-mono.svg'
+    monochrome: './docs/snap-logo-mono.svg',
+    featureGraphic: './docs/snap-feature.svg'   // optional — Google Play Feature Graphic
   }
 }
 ```
@@ -110,9 +115,10 @@ brand: {
     // iosTinted: './docs/logo-tinted.svg'
   },
   padding: {
-    ios: '4%',             // iOS aesthetic padding. Range 2-8%. No launcher mask.
-    androidLegacy: '10%',  // legacy ic_launcher.png padding %
-    androidAdaptive: '19%' // adaptive icon safe-zone %. Spec floor 19.44%.
+    ios: '4%',              // iOS aesthetic padding. Range 2-8%. No launcher mask.
+    androidLegacy: '10%',   // legacy ic_launcher.png padding %
+    androidAdaptive: '19%', // adaptive icon safe-zone %. Spec floor 19.44%.
+    featureGraphic: '12%'   // vertical padding for MarketplaceArtworkFeature.png (1024×500)
   },
   android: {
     splash: false,         // also generate splash_icon.png × 5
@@ -145,6 +151,7 @@ All `logos.*` keys are optional path overrides. If you omit them, PurgeTSS auto-
 | `logos.monochrome` | `purgetss/brand/logo-mono.svg` | Android themed icons + notification icons. |
 | `logos.iosDark` | `purgetss/brand/logo-dark.svg` | iOS dark variant. |
 | `logos.iosTinted` | `purgetss/brand/logo-tinted.svg` | iOS tinted variant. |
+| `logos.featureGraphic` | `purgetss/brand/logo-feature.svg` | Google Play Feature Graphic source (1024×500 rectangular canvas). |
 
 ### `brand.padding`
 
@@ -155,6 +162,7 @@ All padding values accept either numbers or percentage strings like `'19%'`.
 | `padding.ios` | `'4%'` | Visual inset for `DefaultIcon-ios.png`, `DefaultIcon-Dark.png`, `DefaultIcon-Tinted.png`, marketplace artwork. |
 | `padding.androidLegacy` | `'10%'` | Visual inset for legacy `ic_launcher.png`. |
 | `padding.androidAdaptive` | `'19%'` | Visual inset for adaptive Android foreground (`ic_launcher_foreground.png`). Adjust this first when icons look cropped inside launcher masks. |
+| `padding.featureGraphic` | `'12%'` | Vertical padding (top + bottom) for `MarketplaceArtworkFeature.png` (1024×500 Google Play banner). The logo is rendered as a square block of side `500 - 2 × pad` centered horizontally and vertically. Lower it for a more impactful banner; raise it if the logo looks cramped against the top or bottom edge on smaller Play Store crops. |
 
 ### `brand.android`
 
@@ -184,6 +192,35 @@ If omitted, PurgeTSS behaves as if `ios.dark = true`, `ios.tinted = true`, `ios.
 | Key | Default | Purpose |
 | --- | --- | --- |
 | `confirmOverwrites` | `true` | When `false`, the `[y/N/a]` prompt is skipped. |
+
+### Upgrading from pre-7.7.0 configs
+
+In v7.7.0, the `brand:` block was reorganized into grouped subsections (`logos`, `padding`, `android`, `ios`, `colors`). Since **v7.10.2**, if your `config.cjs` still uses the original flat layout, PurgeTSS auto-migrates it **in memory on every run** — your old config keeps working without any change on disk.
+
+| Pre-7.7.0 flat key | Current grouped key |
+| --- | --- |
+| `brand.padding: <number\|string>` (single value) | `brand.padding.androidLegacy` **and** `brand.padding.androidAdaptive` (same value applied to both) |
+| `brand.iosPadding` | `brand.padding.ios` |
+| `brand.bgColor` | `brand.colors.background` |
+| `brand.darkBgColor` | `brand.ios.darkBackground` |
+| `brand.notification` | `brand.android.notification` |
+| `brand.splash` | `brand.android.splash` |
+
+If both legacy and grouped keys are present for the same property, the **grouped key wins**.
+
+On first encounter per session, PurgeTSS prints a one-time deprecation notice listing the legacy keys it migrated:
+
+```text
+::PurgeTSS:: Legacy brand: schema detected in purgetss/config.cjs — auto-migrated in memory:
+     • brand.padding: 15 → brand.padding.androidLegacy + brand.padding.androidAdaptive
+     • brand.iosPadding → brand.padding.ios
+     • brand.bgColor → brand.colors.background
+     Update purgetss/config.cjs to the new grouped schema to silence this warning.
+```
+
+The notice is suppressed once you update the file to the grouped layout. Auto-migration is purely transitional and may be removed in a future major version, so a one-time update to your `config.cjs` is recommended.
+
+Prior to v7.10.2, projects on the flat layout crashed auto-purge with `TypeError: Cannot create property 'ios' on number '15'` because `brand.padding` was a number rather than an object. v7.10.2 normalizes the shape before defaults are applied.
 
 ## Overwrite confirmation
 
@@ -224,6 +261,7 @@ The output is automatically routed to the right directory for your project layou
 ├── DefaultIcon-Tinted.png          ← 1024×1024, iOS 18+ tinted (grayscale on black)
 ├── iTunesConnect.png               ← 1024×1024, App Store submission
 ├── MarketplaceArtwork.png          ← 512×512, Google Play submission
+├── MarketplaceArtworkFeature.png   ← 1024×500, Google Play Feature Graphic (v7.10.0)
 └── app/
     └── assets/android/
         ├── default.png             ← legacy Titanium Android splash fallback (v7.7.0)
@@ -243,6 +281,7 @@ The output is automatically routed to the right directory for your project layou
 ```text
 <project>/
 ├── DefaultIcon.png  DefaultIcon-ios.png  ...     ← same root-level files as Alloy
+├── MarketplaceArtworkFeature.png   ← 1024×500, Google Play Feature Graphic (v7.10.0)
 ├── Resources/
 │   └── android/default.png         ← legacy Titanium Android splash fallback (v7.7.0)
 └── platform/
@@ -343,9 +382,46 @@ purgetss brand --no-dark --no-tinted
 >
 > Until that PR lands, after your first iOS build you may need to add the two PNGs manually into `build/iphone/Assets.xcassets/AppIcon.appiconset/` in Xcode (via the "Appearance" column in the asset catalog editor). Once #14122 merges, the command becomes fully end-to-end.
 
+## Google Play Feature Graphic (v7.10.0)
+
+Since v7.10.0, `purgetss brand` also generates `MarketplaceArtworkFeature.png` — the **1024×500** banner that Google Play shows above the app description on the Play Store listing. It's submission artwork only: the file is written to the project root for upload via Play Console; it is **not** bundled into the APK.
+
+### How the source is chosen
+
+PurgeTSS resolves the Feature Graphic source in this order (first match wins):
+
+1. CLI `--feature-logo <path>` for the current run.
+2. `brand.logos.featureGraphic` in `config.cjs`.
+3. Auto-discovered `purgetss/brand/logo-feature.{svg,png}`.
+4. The main logo (centered inside the 1024×500 canvas with the configured vertical padding).
+
+```bash
+purgetss brand --feature-logo ./docs/feature.svg
+```
+
+Drop a dedicated logo when you want a logo + tagline lockup or a wider artwork that takes advantage of the rectangular canvas. Otherwise the main `logo.svg` is centered as a square block — fine for most apps.
+
+### Padding
+
+The default vertical padding is `12%` (top + bottom). Override per run with `--feature-graphic-padding <n>` (integer `0-40`), or persist it in `brand.padding.featureGraphic`:
+
+```bash
+purgetss brand --feature-graphic-padding 8
+```
+
+```javascript
+brand: {
+  padding: {
+    featureGraphic: '8%'
+  }
+}
+```
+
+The logo is rendered as a square block of side `500 - 2 × pad` and centered horizontally on the 1024-wide canvas. Lower the padding for a more impactful banner; raise it if the logo looks cramped against the top or bottom edge on smaller Play Store crops.
+
 ## Brand color
 
-The `--bg-color` flag (or `brand.bgColor` in config) controls three things at once:
+The `--bg-color` flag (or `brand.colors.background` in config) controls three things at once:
 
 1. The **Android adaptive background layer**: a solid color that fills the full 108dp canvas behind your logo.
 2. The **iOS alpha flatten** for `DefaultIcon-ios.png`. Apple rejects transparent App Store icons, so the logo is flattened on this color.
@@ -510,10 +586,11 @@ All 5 Android densities, marketplace artwork, and iOS variants regenerate in one
 | Flag | Purpose |
 | --- | --- |
 | `--bg-color <hex>` | Background color for Android adaptive + iOS/marketplace flatten. |
-| `--padding <n>` | Shortcut: sets BOTH Android paddings to the same value for one run. |
+| `--padding <n>` | Shortcut: sets BOTH Android paddings to the same value for one run. Fixed in v7.10.0 — previously only fed `androidAdaptivePadding`, leaving `androidLegacyPadding` at its own config value. |
 | `--android-adaptive-padding <n>` | Adaptive icon safe-zone % (default `19`). |
 | `--android-legacy-padding <n>` | Legacy `ic_launcher.png` padding % (default `10`). |
 | `--ios-padding <n>` | iOS aesthetic padding % (range `2–8`, default `4`). |
+| `--feature-graphic-padding <n>` | (v7.10.0) Vertical padding for `MarketplaceArtworkFeature.png` (range `0-40`, default `12`). |
 
 **Optional asset types**
 
@@ -532,6 +609,7 @@ All 5 Android densities, marketplace artwork, and iOS variants regenerate in one
 | `--dark-bg-color <hex>` | Opaque dark bg for `DefaultIcon-Dark.png` (default: transparent per Apple HIG). |
 | `--splash-logo <path>` | Override `purgetss/brand/logo-splash.{svg,png}` for Android 12+ splash artwork. |
 | `--tinted-logo <path>` | Override `purgetss/brand/logo-tinted.{svg,png}`. |
+| `--feature-logo <path>` | (v7.10.0) Override `purgetss/brand/logo-feature.{svg,png}` for the Google Play Feature Graphic. |
 | `--no-dark` | Skip `DefaultIcon-Dark.png`. |
 | `--no-tinted` | Skip `DefaultIcon-Tinted.png`. |
 
@@ -552,14 +630,16 @@ All 5 Android densities, marketplace artwork, and iOS variants regenerate in one
 ### Examples
 
 ```bash
-purgetss brand                                          # uses purgetss/brand/logo.svg + config
-purgetss brand --bg-color "#0B1326"                     # override bg color
-purgetss brand --icon-logo ./docs/app-icon.svg          # dedicated square Android launcher mark
-purgetss brand --splash --splash-logo ./docs/splash.svg # custom Android 12+ splash artwork
-purgetss brand --notification --splash                  # add notification + splash
-purgetss brand --no-tinted                              # skip iOS 18+ tinted variant
-purgetss brand --dry-run                                # preview without writing
-purgetss brand --cleanup-legacy --dry-run               # preview legacy cleanup
+purgetss brand                                            # uses purgetss/brand/logo.svg + config
+purgetss brand --bg-color "#0B1326"                       # override bg color
+purgetss brand --icon-logo ./docs/app-icon.svg            # dedicated square Android launcher mark
+purgetss brand --splash --splash-logo ./docs/splash.svg   # custom Android 12+ splash artwork
+purgetss brand --feature-logo ./docs/feature.svg          # custom Google Play Feature Graphic (v7.10.0)
+purgetss brand --feature-graphic-padding 8                # tighter Feature Graphic padding (v7.10.0)
+purgetss brand --notification --splash                    # add notification + splash
+purgetss brand --no-tinted                                # skip iOS 18+ tinted variant
+purgetss brand --dry-run                                  # preview without writing
+purgetss brand --cleanup-legacy --dry-run                 # preview legacy cleanup
 ```
 
 ## Community-Discovered Patterns

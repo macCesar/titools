@@ -221,10 +221,11 @@ purgetss brand path/to/logo.svg             # positional logo path override
 | Flag | Purpose |
 | --- | --- |
 | `--bg-color <hex>` | Background color for Android adaptive + iOS/marketplace flatten. |
-| `--padding <n>` | Shortcut: sets BOTH Android paddings to the same value for one run. |
+| `--padding <n>` | Shortcut: sets BOTH Android paddings to the same value for one run. Fixed in v7.10.0 — previously only fed `androidAdaptivePadding`, leaving `androidLegacyPadding` at its own config value. |
 | `--android-adaptive-padding <n>` | Adaptive icon safe-zone % (default `19`). |
 | `--android-legacy-padding <n>` | Legacy `ic_launcher.png` padding % (default `10`). |
 | `--ios-padding <n>` | iOS aesthetic padding % (range `2-8`, default `4`). |
+| `--feature-graphic-padding <n>` | (v7.10.0) Vertical padding for `MarketplaceArtworkFeature.png` (range `0-40`, default `12`). |
 
 **Optional asset types**
 
@@ -243,6 +244,7 @@ purgetss brand path/to/logo.svg             # positional logo path override
 | `--dark-bg-color <hex>` | Opaque dark bg for `DefaultIcon-Dark.png` (default: transparent per Apple HIG). |
 | `--splash-logo <path>` | Override `purgetss/brand/logo-splash.{svg,png}` for Android 12+ splash artwork. |
 | `--tinted-logo <path>` | Override `purgetss/brand/logo-tinted.{svg,png}`. |
+| `--feature-logo <path>` | (v7.10.0) Override `purgetss/brand/logo-feature.{svg,png}` for the Google Play Feature Graphic (1024×500). |
 | `--no-dark` | Skip `DefaultIcon-Dark.png`. |
 | `--no-tinted` | Skip `DefaultIcon-Tinted.png`. |
 
@@ -277,12 +279,14 @@ brand: {
     // androidSplash: './docs/splash.svg',
     // monochrome: './docs/logo-mono.svg',
     // iosDark: './docs/logo-dark.svg',
-    // iosTinted: './docs/logo-tinted.svg'
+    // iosTinted: './docs/logo-tinted.svg',
+    // featureGraphic: './docs/logo-feature.svg'  // Google Play 1024×500 banner (v7.10.0)
   },
   padding: {
-    ios: '4%',             // iOS aesthetic padding. Range 2-8%.
-    androidLegacy: '10%',  // legacy ic_launcher.png padding %
-    androidAdaptive: '19%' // adaptive icon safe-zone %. Spec floor 19.44%.
+    ios: '4%',              // iOS aesthetic padding. Range 2-8%.
+    androidLegacy: '10%',   // legacy ic_launcher.png padding %
+    androidAdaptive: '19%', // adaptive icon safe-zone %. Spec floor 19.44%.
+    featureGraphic: '12%'   // MarketplaceArtworkFeature.png vertical padding (v7.10.0)
   },
   android: {
     splash: false,         // also generate splash_icon.png × 5
@@ -309,14 +313,16 @@ The recommended workflow is convention-first: drop files in `purgetss/brand/`, l
 ### Examples
 
 ```bash
-purgetss brand                                          # uses purgetss/brand/logo.svg + config
-purgetss brand --bg-color "#0B1326"                     # override bg color
-purgetss brand --icon-logo ./docs/app-icon.svg          # dedicated square Android launcher mark
-purgetss brand --splash --splash-logo ./docs/splash.svg # custom Android 12+ splash artwork
-purgetss brand --notification --splash                  # add notification + splash
-purgetss brand --no-tinted                              # skip iOS 18+ tinted variant
-purgetss brand --dry-run                                # preview without writing
-purgetss brand --cleanup-legacy --dry-run               # preview legacy cleanup
+purgetss brand                                            # uses purgetss/brand/logo.svg + config
+purgetss brand --bg-color "#0B1326"                       # override bg color
+purgetss brand --icon-logo ./docs/app-icon.svg            # dedicated square Android launcher mark
+purgetss brand --splash --splash-logo ./docs/splash.svg   # custom Android 12+ splash artwork
+purgetss brand --feature-logo ./docs/feature.svg          # custom Google Play Feature Graphic (v7.10.0)
+purgetss brand --feature-graphic-padding 8                # tighter Feature Graphic padding (v7.10.0)
+purgetss brand --notification --splash                    # add notification + splash
+purgetss brand --no-tinted                                # skip iOS 18+ tinted variant
+purgetss brand --dry-run                                  # preview without writing
+purgetss brand --cleanup-legacy --dry-run                 # preview legacy cleanup
 ```
 
 ### Android output groups
@@ -349,6 +355,9 @@ purgetss images background/                           # re-process one subfolder
 | `--format <ext>` | Convert all outputs to `webp`, `jpeg`, `png`, `avif`, `gif`, or `tiff`. Default: keep source format. |
 | `--quality <n>` | Quality `0-100` for lossy formats. Default `85`. |
 | `--width <n>` | (v7.8.0) Pin Android `mdpi` (= iPhone `@1x`) to `<n>` pixels wide. Larger scales derive as ×1.5, ×2, ×3, ×4 from that base; height stays proportional to the source's aspect ratio. Integer in `[1, 8192]`. |
+| `--opacity <n>` | (v7.10.0) Multiply alpha of every density by `n/100`. Integer in `[0, 100]`. With `--format jpeg`, alpha flattens on white. |
+| `--padding <n>` | (v7.10.0) Shrink the rendered image inside each density canvas by `n%` symmetric borders. Integer in `[0, 40]`. |
+| `--output <relpath>` | (v7.10.0) Override the basename and subpath relative to each platform's `images/` root. |
 | `--dry-run` | Preview without writing any files. |
 | `--project <path>` | Project root (defaults to cwd). |
 | `-y, --yes` | Skip the overwrite confirmation prompt. |
@@ -363,6 +372,16 @@ purgetss images background/                           # re-process one subfolder
 Use `--width <n>` for SVG sources from vector editors with disproportionate viewBoxes — common in Affinity, Illustrator, and other design tools where the viewBox does not match the intended display size. Without the flag, every scale derives from the source's natural pixel size as a 4× master, which can produce unexpected output sizes.
 
 When you pass an SVG without `--width`, the command prints a one-time hint and falls back to the legacy 4× behavior. This is CLI-only; there is no matching `images:` config property because the right width is per-asset.
+
+### When to use `--opacity`, `--padding`, `--output` (v7.10.0)
+
+The three v7.10.0 flags are designed for **placeholder / default ImageView** workflows where the source asset is a brand or logo you want to re-render at reduced opacity and/or with extra breathing room — without editing the source file itself.
+
+- `--opacity` is a runtime alpha multiplier. JPEG flattens the result on white; PNG/WebP/AVIF keep alpha.
+- `--padding` shrinks the rendered image inside each density canvas, keeping the canvas dimensions and filling the difference with transparent pixels.
+- `--output` retargets the basename and subpath, useful when the source lives outside `purgetss/images/` (e.g. `purgetss/brand/`).
+
+All three are **CLI-only by design** — no `config.cjs` equivalent — because they describe per-asset render decisions, not project-wide settings.
 
 ### Config block
 
@@ -387,6 +406,11 @@ purgetss images background/                            # re-process one subfolde
 purgetss images --android                              # only Android densities
 purgetss images --format webp --quality 90             # convert all outputs to WebP
 purgetss images logo.svg --width 256                   # pin SVG output to 256 px @1x/mdpi
+purgetss images logo.svg --opacity 50 --format png     # 50% alpha placeholder (v7.10.0)
+purgetss images logo.svg --padding 15 --format png     # add 15% breathing room (v7.10.0)
+purgetss images purgetss/brand/logo.svg \
+    --opacity 30 --padding 15 \
+    --output 'logos/default-image' --format png         # placeholder under custom path (v7.10.0)
 purgetss images --dry-run                              # preview
 ```
 

@@ -1,8 +1,165 @@
 # Migration Guide
 
-This guide mirrors the official PurgeTSS changelog (see the project `README.md` / `docs/index.md`). It walks through the upgrade-relevant changes from v7.2.6 through v7.6.0, flags breaking changes, and links each section to the reference files that cover the new surface area in depth.
+This guide mirrors the official PurgeTSS changelog (see the project `README.md` / `docs/index.md`). It walks through the upgrade-relevant changes from v7.2.6 through v7.10.x, flags breaking changes, and links each section to the reference files that cover the new surface area in depth.
 
 Changelog source of truth: [https://github.com/macCesar/purgeTSS](https://github.com/macCesar/purgeTSS).
+
+---
+
+## Upgrade to v7.10.x
+
+v7.10.0 through v7.10.2 are additive — **no breaking changes**. The notable shift is internal: configs written before v7.7.0 (the `brand:` regroup) now auto-migrate in memory on every run, so projects that never updated to the grouped `brand:` schema keep working without a `TypeError` crash. Full release notes in [`version-history.md`](./version-history.md).
+
+### Added in v7.10.0
+
+- **`purgetss images --opacity / --padding / --output`** — three CLI-only flags aimed at placeholder / default ImageView workflows. `--opacity` multiplies alpha; `--padding` shrinks the rendered image inside each density canvas; `--output` retargets the basename and subpath. See [`multi-density-images.md`](./multi-density-images.md).
+- **Google Play Feature Graphic in `brand`** — `purgetss brand` now generates `MarketplaceArtworkFeature.png` (1024×500). Auto-discovers `purgetss/brand/logo-feature.{svg,png}` or reuses the master logo. Tune with `--feature-graphic-padding <n>` (range `0-40`, default `12%`), `brand.padding.featureGraphic`, or `--feature-logo <path>`. See [`app-branding.md`](./app-branding.md).
+- **Arbitrary nesting depth in `theme` objects** — property emission walks nested values recursively instead of stopping at level 2. `theme.extend.colors.brand.primary.500` now flattens to `brand-primary-500` instead of being silently dropped. Default keys (`default`, `global`, `DEFAULT`) collapse without contributing to the suffix. See [`arbitrary-values.md`](./arbitrary-values.md).
+- **`apply:` resolves bundled icon fonts from `dist/`** — `apply: 'fas fa-times-circle wh-12 ...'` now merges the FontAwesome family and glyph automatically. Same lookup runs for `mi-*` (Material Icons), `ms-*` (Material Symbols), and `f7-*` (Framework7). Project-level `purgetss/styles/fontawesome.tss` still wins over the bundled default. See [`apply-directive.md`](./apply-directive.md).
+
+### Fixed in v7.10.0
+
+- **`borderRadius` arrays inside `apply:`** — the post-merge dedup step now tracks depth on `[]` alongside `{}`, so directional rules like `rounded-{t,b,l,r,tl,tr,bl,br}-*` no longer get split on internal commas.
+- **`brand --padding <n>` shortcut** — now applies to BOTH Android paddings (`androidAdaptivePadding` AND `androidLegacyPadding`) as the help text always promised. Previously only fed the adaptive one.
+
+### v7.10.1 — copy-only changes
+
+- **"Tailwind" framing dropped** from copy that did not document a functional integration. Error block now reports `Square brackets "[ ]" are not supported` (previously `Tailwind-style brackets "[ ]"`). The promotional `<Label>` injected into new projects by `purgetss create` changed from `"Tailwind-inspired utility classes for Titanium/Alloy"` to `"Utility-first styling for Titanium/Alloy"`.
+- **Functional integrations stay**: `tailwindcss@3` dependency installed by `install-dependencies` (drives the `defaultColors` / `defaultTheme` palette base AND the VSCode IntelliSense extension); `--tailwind` flag on `purgetss shades`; recommended `Tailwind CSS IntelliSense` and `Tailwind Raw Reorder (v4)` VSCode extensions.
+
+### v7.10.2 — pre-7.7.0 brand config auto-migration
+
+If your project still uses the **flat** `brand:` config that predates v7.7.0, v7.10.2 normalizes it in memory on every run before defaults are applied. Without this, the build crashed with `TypeError: Cannot create property 'ios' on number '15'` because `brand.padding` was a number, not an object.
+
+Mapping (see [`app-branding.md` → Upgrading from pre-7.7.0 configs](./app-branding.md#upgrading-from-pre-7-7-0-configs)):
+
+| Pre-7.7.0 flat key | Current grouped key |
+| --- | --- |
+| `brand.padding: <number\|string>` | `brand.padding.androidLegacy` AND `brand.padding.androidAdaptive` (same value applied to both) |
+| `brand.iosPadding` | `brand.padding.ios` |
+| `brand.bgColor` | `brand.colors.background` |
+| `brand.darkBgColor` | `brand.ios.darkBackground` |
+| `brand.notification` | `brand.android.notification` |
+| `brand.splash` | `brand.android.splash` |
+
+The grouped key always wins when both forms coexist. A one-time deprecation notice per session lists which legacy keys were migrated. Auto-migration is transitional and may be removed in a future major version — update `config.cjs` to the grouped schema to silence the notice and stay future-proof.
+
+### What to review
+
+- If you maintain a `brand:` block from pre-7.7.0, plan the one-time update to the grouped schema (`logos`, `padding`, `android`, `ios`, `colors`).
+- If you previously skipped `apply:` with icon fonts because they were silently dropped, that workaround is no longer needed in v7.10.0.
+- Deeply nested color families in `theme.extend.colors.*` that you flattened by hand to stay at depth ≤ 2 can be restructured by domain — the recursive emission now reaches every leaf.
+
+---
+
+## Upgrade to v7.9.0
+
+v7.9.0 ships one **breaking** path rename plus a behavior change for `theme.Window` / `theme.View` / `theme.ImageView` that can surface as a regression if a project depended on the framework defaults being merged in.
+
+### Breaking — glossary output path renamed
+
+The user-facing glossary output path moved from `purgetss/experimental/tailwind-classes/` to `purgetss/glossary/tailwind-classes/`. Tooling or CI that reads from the old path needs updating on upgrade — no transition shim was added on purpose. The `--glossary` flag and command surface are unchanged.
+
+### Headline behavior change — replace mode for top-level `theme.Window` / `View` / `ImageView`
+
+Before v7.9.0, `theme.Window` (no `extend`) still merged with the framework defaults (white `backgroundColor`, `Ti.UI.SIZE` on `View`, iOS `hires: true` on `ImageView`), which produced gradient ghosting and similar overrides. v7.9.0 makes top-level configs behave as true **replace mode**.
+
+If you previously wrote:
+
+```javascript
+theme: {
+  Window: {
+    apply: 'bg-gradient-to-b from-blue-500 to-purple-600'
+  }
+}
+```
+
+…and **depended** on the implicit white background, the gradient now renders without that background underneath. Move the config under `theme.extend.Window` to keep the merged behavior, or add the previously-implicit utilities back into the `apply` string. See [`apply-directive.md` → Extend mode vs replace mode](./apply-directive.md#extend-mode-vs-replace-mode).
+
+### Added in v7.9.0
+
+- **Opacity modifiers on semantic colors** — `bg-surface/65` now works for any class mapped through `theme.extend.colors`. PurgeTSS auto-derives `<originalKey>_<alphaPercent>` entries in `semantic.colors.json` per mode (light/dark). **Native rebuild required** — Liveview hot-reload alone does not refresh `semantic.colors.json`. See [`semantic-colors.md`](./semantic-colors.md#opacity-modifier-auto-derivation).
+
+### Fixed in v7.9.0
+
+- Several fixes around semantic colors, gradients, and Ti Element defaults: tonal palette no longer inverts Light and Dark; gradient `from` / `to` color order is position-stable across `sort()`; `bg-gradient-to-X` direction is preserved when combined with `from-X to-Y` in the same `apply`; `theme.Window` / `theme.View` / `theme.ImageView` no longer ghost framework presets at the top level (see Headline behavior change above).
+
+---
+
+## Upgrade to v7.8.0
+
+v7.8.0 introduces a structured `Class Syntax Error` block that **halts the build** when it detects known class-name mistakes — previously these flowed silently into the `// Unused or unsupported classes` block of `app.tss`.
+
+### Added — Class Syntax Error pre-validation
+
+Five patterns are now caught and reported with file + line + suggested fix:
+
+| Pattern | Offending input | Fix |
+| --- | --- | --- |
+| Inverted negative sign | `top-(-10)` | `-top-(10)` |
+| Square-bracket notation | `top-[10px]` | `top-(10px)` |
+| Empty parentheses | `wh-()` | (flagged, no auto-fix) |
+| Whitespace inside parentheses | `wh-( 200 )` | `wh-(200)` |
+| Redundant `px` unit | `top-(10px)` | `top-(10)` |
+
+All offenders are reported in a single run. Generic unknown classes — typos, vendor utilities not enabled, custom classes not declared yet — continue to flow into `// Unused or unsupported classes`. See [`arbitrary-values.md` → Class syntax pre-validation](./arbitrary-values.md#class-syntax-pre-validation).
+
+### Added — `purgetss images --width <n>` (v7.8.0)
+
+Pins Android `mdpi` (= iPhone `@1x`) to `<n>` pixels wide. Larger scales derive as ×1.5, ×2, ×3, ×4 from that base. Range `[1, 8192]`. Most useful for SVG sources from vector editors (Affinity, Illustrator) with disproportionate viewBoxes. CLI-only — width is per-asset, not a project-wide setting. See [`multi-density-images.md`](./multi-density-images.md#pinning-the-output-width-with---width).
+
+### Fixed in v7.8.0
+
+- The arbitrary-value parser no longer crashes on negative values inside parentheses — `top-(-10)` is now recognized and reported as an inverted-negative-sign error instead of triggering a `Cannot read properties of null (reading 'pop')` exception.
+
+### What to review
+
+- Run the build once on the upgraded version and address every `Class Syntax Error` it surfaces. The offender list is exhaustive in one pass.
+- If a CI step depended on a malformed class quietly landing in the unused-classes block, it will now hard-fail — adjust the CI accordingly.
+
+---
+
+## Upgrade to v7.7.0
+
+v7.7.0 cleans up the `brand:` config before stabilizing it. **Pre-7.10.2** projects on the flat schema crashed; from v7.10.2 onward the flat schema auto-migrates in memory (see Upgrade to v7.10.x). The recommended migration is still a one-time update to the grouped schema.
+
+### Restructure — grouped `brand:` config
+
+Branding settings moved out of flat keys into purpose-based groups: `brand.logos`, `brand.padding`, `brand.android`, `brand.ios`, `brand.colors`.
+
+```javascript
+// Pre-7.7.0 — flat
+brand: {
+  padding: 15,
+  iosPadding: 4,
+  bgColor: '#FFFFFF',
+  notification: false,
+  splash: false
+}
+
+// v7.7.0+ — grouped
+brand: {
+  padding: {
+    ios: '4%',
+    androidLegacy: '10%',
+    androidAdaptive: '19%'
+  },
+  android: {
+    notification: false,
+    splash: false
+  },
+  colors: {
+    background: '#FFFFFF'
+  }
+}
+```
+
+### Added in v7.7.0
+
+- **Separate Android brand inputs** — `logos.androidLauncher` / `--icon-logo` for the Android launcher icon; `logos.androidSplash` / `--splash-logo` for Android 12+ splash artwork. Drop `logo-icon.*` / `logo-splash.*` into `purgetss/brand/` for auto-discovery.
+- **Independent Android paddings** — `--android-adaptive-padding` (default `19%`) and `--android-legacy-padding` (default `10%`) replace the single `--padding`. `--padding` is now a shortcut that sets both for one run (note: the shortcut bug where only `androidAdaptive` was applied was fixed in v7.10.0).
+- **Android splash fallback regenerated** — `app/assets/android/default.png` (Alloy) or `Resources/android/default.png` (Classic). `cleanup-legacy` no longer removes `default.png`.
+- **Values and Units doc** — new official reference explaining how `ti.ui.defaultunit` in `tiapp.xml` interprets PurgeTSS unitless values. See [`values-and-units.md`](./values-and-units.md).
 
 ---
 
@@ -211,3 +368,7 @@ If you previously worked around this by inlining the gradient directly in TSS, r
 - After v7.5.0: diff generated `utilities.tss` to confirm property deduplication produces the expected output.
 - After v7.5.3: consider wiring `Appearance.init()` at app boot if you want runtime Light/Dark switching.
 - After v7.6.0: run `brand`, `images`, and `semantic` once in a scratch project before pointing them at production assets, so you can preview the output layout.
+- After v7.7.0: migrate the `brand:` block in `config.cjs` to the grouped schema (`logos`, `padding`, `android`, `ios`, `colors`). v7.10.2 auto-migrates flat configs in memory, but the one-time update is recommended to silence the deprecation notice.
+- After v7.8.0: run the build once and address every `Class Syntax Error` it surfaces. Update CI to handle the new hard-fail on malformed class names. Migrate any `top-[10px]` style square brackets to `top-(10px)` parentheses.
+- After v7.9.0: search for any `purgetss/experimental/tailwind-classes/` references in tooling/CI and update to `purgetss/glossary/tailwind-classes/`. If a project used top-level `theme.Window` / `View` / `ImageView` and depended on framework defaults being merged in, decide between moving the config under `theme.extend.*` or adding the previously-implicit utilities to the `apply` string.
+- After v7.10.0: deeply nested color families (`theme.extend.colors.brand.primary.500`) now emit recursively — restructure by domain if it improves readability. `apply:` with bundled icon fonts (`fas`, `mi-*`, `ms-*`, `f7-*`) no longer requires `build-fonts` first. The Google Play Feature Graphic ships automatically with `purgetss brand`.

@@ -304,6 +304,67 @@ purgetss images --format webp --quality 85
 
 Keep the default `format: null` when you need to stay in the same format as the source — for example PNG with alpha that shouldn't be flattened.
 
+## Reducing alpha across every density with `--opacity` (v7.10.0)
+
+Since v7.10.0, `--opacity <n>` multiplies the alpha channel of every generated density by `n/100`. Useful for placeholder or default ImageView images that render at reduced opacity (loading states, watermarks behind content, "image is loading" overlays).
+
+```bash
+purgetss images logo.svg --opacity 50 --format png
+```
+
+- `--opacity` accepts integers in `[0, 100]`. Out-of-range values exit immediately without writing anything (`Invalid --opacity '150'. Must be an integer between 0 and 100.`).
+- `--opacity 100` is a no-op — the compositing pass is skipped entirely.
+- `--opacity 0` produces a fully transparent output (technically valid, visually empty).
+
+### Format interactions
+
+- **PNG / WebP / AVIF:** alpha is preserved.
+- **JPEG:** JPEG has no alpha. The existing flatten-on-white step composites the semi-transparent image onto white before writing, so `--opacity 50 --format jpeg` produces a 50%-faded version **on white**, not a transparent JPEG.
+
+## Adding breathing room with `--padding` (v7.10.0)
+
+`--padding <n>` shrinks the rendered image inside each density canvas by `n%` symmetric borders. Useful when the source logo has no built-in padding and you want a placeholder with breathing room — without editing the source asset.
+
+```bash
+purgetss images purgetss/brand/logo.png --padding 15 --format png
+```
+
+Each density's output canvas keeps the same dimensions it would have without `--padding`, but the rendered image takes only `(1 − 2 × 0.15) = 70%` of that canvas (centered). The remaining 30% of the canvas (15% on each side) is transparent.
+
+- `--padding` accepts integers in `[0, 40]`. Out-of-range or negative values are rejected (`Invalid --padding '50'. Must be an integer between 0 and 40.`).
+- `--padding 0` is a no-op (skipped — no extend pass).
+
+### When *not* to use `--padding`
+
+If your source logo already has the breathing room you want baked in, you don't need `--padding` — it compounds the existing padding. Use `--padding` when:
+
+- the source is edge-to-edge (no built-in margin) and you want a centered placeholder
+- you need a fast way to produce a "loose" variant of a logo without touching the source file
+
+## Renaming the output with `--output` (v7.10.0)
+
+By default, the output basename comes from the source filename and the subfolder mirrors the source's location inside `purgetss/images/`. When you want a different output path — for example, sourcing a logo from `purgetss/brand/` and writing it as a placeholder under `images/logos/` — `--output <relpath>` overrides both:
+
+```bash
+purgetss images purgetss/brand/logo.svg --output logos/default-image
+```
+
+That writes `images/logos/default-image.png` (or `.jpg` / `.webp` depending on `--format`) across all densities, regardless of the source's location.
+
+### Combining `--opacity`, `--padding`, and `--output`
+
+The three flags compose for the canonical "transparent placeholder with padding under a custom path" use case:
+
+```bash
+purgetss images purgetss/brand/logo.svg \
+    --opacity 30 \
+    --padding 15 \
+    --output 'logos/default-image' \
+    --format png
+```
+
+Produces a 30% opacity, 15%-padded version of the brand logo at `images/logos/default-image.png` for every Android density and iPhone scale — a one-command way to ship a default ImageView placeholder.
+
 ## Full pipeline alongside `build`
 
 The typical sequence when iterating on an app:
@@ -348,6 +409,9 @@ If you only tweaked CSS classes (no image changes), you don't need to re-run `pu
 | `--format <ext>` | Convert all outputs to: `webp`, `jpeg`, `png`, `avif`, `gif`, `tiff`. Default: keep source format. |
 | `--quality <n>` | Quality `0–100` for lossy formats. Default `85`. |
 | `--width <n>` | (v7.8.0) Pin `mdpi` / `@1x` output width to `n` pixels; `[1, 8192]`. Other densities derive from this base (×1.5 / ×2 / ×3 / ×4). Most useful for SVG sources with non-standard viewBoxes. CLI-only — no `config.cjs` equivalent because width is per-asset. |
+| `--opacity <n>` | (v7.10.0) Multiply the alpha channel of every generated density by `n/100`. Range `[0, 100]`. Combine with `--format jpeg` and the alpha is flattened on white instead of producing a transparent JPEG. CLI-only. |
+| `--padding <n>` | (v7.10.0) Shrink the rendered image inside each density canvas by `n%` symmetric borders. Range `[0, 40]`. CLI-only. |
+| `--output <relpath>` | (v7.10.0) Override the basename and subpath relative to each platform's `images/` root. Lets a source from outside `purgetss/images/` (e.g. `purgetss/brand/`) write into a custom output folder like `images/logos/`. CLI-only. |
 
 **Project & output**
 
@@ -371,6 +435,11 @@ purgetss images background/pink-texture.png            # re-process one file (sh
 purgetss images background/                            # re-process one subfolder
 purgetss images --android                              # only Android densities
 purgetss images --format webp --quality 90             # convert all outputs to WebP
+purgetss images --opacity 50 --format png              # 50% alpha placeholder (v7.10.0)
+purgetss images logo.svg --padding 15 --format png     # add 15% breathing room (v7.10.0)
+purgetss images purgetss/brand/logo.svg \
+    --opacity 30 --padding 15 \
+    --output 'logos/default-image' --format png         # placeholder under custom path (v7.10.0)
 purgetss images --dry-run                              # preview
 ```
 

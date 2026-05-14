@@ -37,9 +37,10 @@ module.exports = {
   brand: {
     logos: {},  // empty = auto-discovers from purgetss/brand/
     padding: {
-      ios: '4%',             // iOS aesthetic padding. Range 2-8%.
-      androidLegacy: '10%',  // legacy ic_launcher.png padding %
-      androidAdaptive: '19%' // adaptive icon safe-zone %. Spec floor 19.44%.
+      ios: '4%',              // iOS aesthetic padding. Range 2-8%.
+      androidLegacy: '10%',   // legacy ic_launcher.png padding %
+      androidAdaptive: '19%', // adaptive icon safe-zone %. Spec floor 19.44%.
+      featureGraphic: '12%'   // MarketplaceArtworkFeature.png vertical padding (v7.10.0)
     },
     android: {
       splash: false,         // also generate splash_icon.png × 5
@@ -59,6 +60,8 @@ module.exports = {
     quality: 85,             // JPEG/WebP/AVIF quality (0-100)
     format: null,            // null = keep original; 'webp' | 'jpeg' | 'png' to convert every image
     confirmOverwrites: true  // prompt before overwriting files (set false to skip)
+    // Note: --width (v7.8.0) and --opacity / --padding / --output (v7.10.0) are CLI-only
+    //       by design — those decisions are per-asset, not project-wide.
   },
   theme: {
     extend: {}
@@ -78,11 +81,14 @@ The config file has four main sections: `purge`, `brand`, `images`, and `theme`.
 
 For `brand`, the structure is grouped by purpose (introduced in v7.7.0, refined since):
 
-- `logos`: optional path overrides when you do not want to rely on `purgetss/brand/` auto-discovery
-- `padding`: visual sizing for iOS, Android legacy, and Android adaptive icons
+- `logos`: optional path overrides when you do not want to rely on `purgetss/brand/` auto-discovery — including `featureGraphic` for the Google Play 1024×500 banner (v7.10.0)
+- `padding`: visual sizing for iOS, Android legacy, Android adaptive icons, and the Feature Graphic banner (v7.10.0)
 - `android`: Android-only optional outputs such as `splash_icon.png` and notification icons
 - `ios`: iOS-only variant toggles (`dark`, `tinted`) and the optional `darkBackground` color
 - `colors`: shared color settings such as the adaptive background and iOS flatten color
+
+> **INFO — Pre-7.7.0 flat configs auto-migrate**
+> Since v7.10.2, projects on the flat `brand:` schema (`brand.padding: <number>`, `brand.iosPadding`, `brand.bgColor`, etc.) auto-migrate in memory on every run. The grouped key always wins when both forms coexist, and a one-time deprecation notice lists the migrated keys. Update `config.cjs` to the grouped schema to silence the notice. See [App Icons & Branding → Upgrading from pre-7.7.0 configs](./app-branding.md#upgrading-from-pre-7-7-0-configs).
 
 For the property-by-property reference, see [Configurable Properties](./configurable-properties.md).
 
@@ -94,12 +100,13 @@ By default, PurgeTSS auto-discovers logo files from `purgetss/brand/`. If you wa
 module.exports = {
   brand: {
     logos: {
-      primary: './my-logos/main.svg',         // overrides auto-discovered logo.svg
-      androidLauncher: './my-logos/icon.svg', // overrides auto-discovered logo-icon.svg
-      androidSplash: './my-logos/splash.svg', // overrides auto-discovered logo-splash.svg
-      monochrome: './my-logos/mono.svg',      // overrides auto-discovered logo-mono.svg
-      iosDark: './my-logos/dark.svg',         // overrides auto-discovered logo-dark.svg
-      iosTinted: './my-logos/tinted.svg'      // overrides auto-discovered logo-tinted.svg
+      primary: './my-logos/main.svg',          // overrides auto-discovered logo.svg
+      androidLauncher: './my-logos/icon.svg',  // overrides auto-discovered logo-icon.svg
+      androidSplash: './my-logos/splash.svg',  // overrides auto-discovered logo-splash.svg
+      monochrome: './my-logos/mono.svg',       // overrides auto-discovered logo-mono.svg
+      iosDark: './my-logos/dark.svg',          // overrides auto-discovered logo-dark.svg
+      iosTinted: './my-logos/tinted.svg',      // overrides auto-discovered logo-tinted.svg
+      featureGraphic: './my-logos/feature.svg' // overrides auto-discovered logo-feature.svg (v7.10.0)
     }
   }
 };

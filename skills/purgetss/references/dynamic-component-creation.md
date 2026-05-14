@@ -46,7 +46,6 @@ $.UI.create('ComponentType', {
 function createThemeCard(themeName, themeTitle, imagePath) {
   return $.UI.create('View', {
     // View properties
-    valor: themeName,
     title: themeTitle, // Add title for TTS support
 
     // PurgeTSS utility classes

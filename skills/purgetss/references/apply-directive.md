@@ -68,6 +68,31 @@ theme: {
 '.btn-primary': { backgroundColor: '#22c55e', borderColor: '#bbf7d0', color: '#dcfce7', textColor: '#dcfce7' }
 ```
 
+## Use Icon Font Classes (v7.10.0)
+
+Since v7.10.0, icon fonts bundled with PurgeTSS — FontAwesome (`fas`, `fab`, `fa-*`), Material Icons (`mi-*`), Material Symbols (`ms-*`), and Framework7 (`f7-*`) — can be referenced inside `apply` **without running `build-fonts` first**. The directive resolves these classes against the bundled `dist/*.tss` files, so the font family and the glyph are merged into the generated rule alongside the rest of the utilities.
+
+`./purgetss/config.cjs`
+```javascript
+module.exports = {
+  theme: {
+    '.close-button': {
+      apply: 'fas fa-times-circle wh-12 text-gray-700'
+    }
+  }
+};
+```
+
+`./purgetss/styles/utilities.tss`
+```tss
+'.close-button': { color: '#374151', textColor: '#374151', width: 48, height: 48, font: { fontFamily: 'FontAwesome7Free-Solid' }, text: '', title: '' }
+```
+
+The same lookup runs for `mi-*`, `ms-*`, and `f7-*` classes. If the project ships its own `purgetss/styles/fontawesome.tss` (for example, FontAwesome Pro or Beta), that file takes precedence over the bundled default — matching the precedence order used when the same icon class appears directly in XML.
+
+> **PRE-v7.10.0 BEHAVIOR**
+> Before v7.10.0, those icon font classes were silently dropped from `apply`-generated rules. `apply: 'fas fa-times-circle wh-12 ...'` produced every utility **except** the FontAwesome family and the icon glyph. If a project worked around this by running `build-fonts` first, that workaround is no longer required.
+
 ## Use Arbitrary Values
 
 You can use [Arbitrary Values](./arbitrary-values.md) to define your custom classes.
@@ -261,7 +286,7 @@ Use the explicit `default:` wrapper when you also need platform blocks (`ios:`, 
 >
 > If you previously used `theme.Window` (no `extend`) and depended on the white background or the iOS `hires: true` / `Ti.UI.SIZE` defaults still being there, you will need to either move that config under `theme.extend.Window` (extend mode) or add the previously-implicit utilities back into your `apply` string.
 
-PurgeTSS follows the Tailwind convention for the three Ti Elements that ship with framework defaults — `Window`, `View`, and `ImageView`:
+The three Ti Elements that ship with framework defaults — `Window`, `View`, and `ImageView` — support two declaration modes depending on where they are placed in `config.cjs`:
 
 - **Extend mode** — `theme.extend.Window`, `theme.extend.View`, `theme.extend.ImageView`. Your customization **merges** with the framework defaults. The white Window `backgroundColor`, `Ti.UI.SIZE` width/height on `View`, and iOS `hires: true` on `ImageView` stay in place unless you override them with `apply`. Use this when you want to add to the defaults, not replace them.
 - **Replace mode** — `theme.Window`, `theme.View`, `theme.ImageView` (top level, no `extend`). Your config **replaces** the framework defaults entirely. The white Window background is omitted, the `Ti.UI.SIZE` width/height on `View` is omitted, and the iOS `hires: true` on `ImageView` is omitted. Your `apply` becomes the source of truth for that Ti Element.
