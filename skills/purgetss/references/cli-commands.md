@@ -1,25 +1,6 @@
 # PurgeTSS CLI Commands
 
-> **Info: What's new in v7.5.3 / v7.6.x / v7.7.0 / v7.8.0 / v7.9.0**
-> - **Opacity modifiers on semantic colors (v7.9.0)** — writing `bg-surface/65` (or any opacity modifier on a class mapped to a name in `semantic.colors.json`) now produces a working rule with Light/Dark switching preserved. PurgeTSS auto-derives a `<originalKey>_<alphaPercent>` entry in `semantic.colors.json` with the original `light`/`dark` hex values plus the requested alpha for both modes, then emits the rule against the derived key. Re-runs are idempotent; manual edits with conflicting values halt the build with a `Conflict` error. New alpha entries require one full Titanium build to be picked up — Liveview hot-reload alone does not refresh `semantic.colors.json`.
-> - **Gradient + Window/View/ImageView preset fixes (v7.9.0)** — `theme.Window` / `theme.View` / `theme.ImageView` no longer leak the framework presets (white background, `Ti.UI.SIZE`, iOS `hires: true`) when defined at the top level (replace mode), so a Window declared at `theme.Window` with a `backgroundGradient` no longer ghosts on top of a default `backgroundColor: '#FFFFFF'`. `theme.extend.Window` keeps merging with the defaults as before. Also fixed: tonal palette inversion bug, position-dependent `from`/`to` color ordering after `sort()`, and `bg-gradient-to-X` direction silently dropped when combined with `from-X to-Y` colors.
-> - **Glossary path renamed (v7.9.0, breaking)** — the user-facing glossary output path was renamed from `purgetss/experimental/tailwind-classes/` to `purgetss/glossary/tailwind-classes/`. Tooling or CI that reads from the old path needs updating on upgrade — no transition shim. The `--glossary` flag and command surface are unchanged.
-> - **`images --width <n>` flag (v7.8.0)** — pins Android `mdpi` (= iPhone `@1x`) to a specific pixel width, with larger scales deriving as ×1.5, ×2, ×3, ×4 from that base. Use it for SVG sources from vector editors with disproportionate viewBoxes (Affinity, Illustrator). CLI-only; there is no matching `images:` config property because the right width is per-asset. See [`images` Command](#images-command).
-> - **Class syntax pre-validation (v7.8.0)** — `purgetss` now stops with a structured `Class Syntax Error` block (file + line + suggested fix) when it detects known class-name mistakes: inverted negative sign (`top-(-10)` → `-top-(10)`), Tailwind-style brackets (`top-[10px]` → `top-(10px)`), empty parentheses (`wh-()`), whitespace inside parentheses (`wh-( 200 )`), and redundant `px` unit (`top-(10px)` → `top-(10)`). All offenders are reported in one run. Generic unknown classes still flow into the `// Unused or unsupported classes` block in `app.tss`.
-> - **Negative-values-in-parens parser fix (v7.8.0)** — classes like `top-(-10)`, `mt-(-5)`, and `origin-(-10,-20)` no longer crash with `Cannot read properties of null (reading 'pop')`. The parser now extracts the `(...)` portion first, so a `-` inside the value does not break the split.
-> - **`brand:` config grouped (v7.7.0)** — the flat `brand:` block from v7.6.0 was reorganized into purpose-based sections: `brand.logos`, `brand.padding`, `brand.android`, `brand.ios`, and `brand.colors`. Old projects keep working — newly-generated configs use the grouped form.
-> - **Separate Android brand inputs (v7.7.0)** — `brand` can now use one logo for the general brand set, another for Android launcher icons (`logos.androidLauncher` / `--icon-logo`), and another for Android 12+ splash artwork (`logos.androidSplash` / `--splash-logo`). Drop `logo-icon.*` and `logo-splash.*` into `purgetss/brand/` or set the paths in `config.cjs`.
-> - **Legacy Android splash fallback (v7.7.0)** — `purgetss brand` now regenerates `app/assets/android/default.png` (Alloy) or `Resources/android/default.png` (Classic). `cleanup-legacy` no longer removes `default.png`.
-> - **`semantic` works in Classic projects (v7.6.2)** — writes to `Resources/semantic.colors.json` for Classic, keeps writing to `app/assets/semantic.colors.json` for Alloy.
-> - **Confirmation prompt for destructive writes (v7.6.1)** — `brand` and `images` ask `[y/N/a]` before overwriting (auto-skipped on non-TTY, with `-y`/`--yes`, or `PURGETSS_YES=1`).
-> - **New `brand` command (v7.6.0)** — generates the complete Titanium branding set (launcher icons, adaptive icons, iOS 18+ Dark/Tinted variants, marketplace artwork, optional notification/splash) from a single SVG or PNG logo. See [`brand` Command](#brand-command) and the deep-dive [app-branding.md](./app-branding.md).
-> - **New `images` command (v7.6.0)** — generates multi-density UI images (Android `res-*` densities + iPhone `@1x`/`@2x`/`@3x` scales) from sources in `./purgetss/images/`. See [`images` Command](#images-command) and the deep-dive [multi-density-images.md](./multi-density-images.md).
-> - **New `semantic` command (v7.6.0)** — generates Titanium semantic colors (Light/Dark) into `app/assets/semantic.colors.json` with two modes (tonal palette vs. single purpose-based color). See [`semantic` Command](#semantic-command) and the deep-dive [semantic-colors.md](./semantic-colors.md).
-> - **`brand:` and `images:` config sections** auto-injected into `purgetss/config.cjs` on first run. Percentages may be written as quoted strings like `'15%'` or as plain numbers.
-> - **Default font family classes (v7.5.3)** — `font-sans`, `font-serif`, and `font-mono` generated automatically with platform-appropriate values.
-> - **XML validation (v7.5.3)** — detects illegal `--` sequences inside XML comments during pre-validation.
-
-This page lists the commands available in PurgeTSS.
+This page lists the commands available in PurgeTSS. For release-by-release feature additions and behavior changes, see [Version History](./version-history.md).
 
 ## Setup Commands
 
@@ -506,7 +487,7 @@ purgetss id
 
 ## `icon-library` Command
 
-The `icon-library` command copies the free font files for Font Awesome, Material Icons, Material Symbols, and/or Framework7 Icons into `./app/assets/fonts`.
+Copies the bundled free font files (Font Awesome 7, Material Icons, Material Symbols, Framework7 Icons) into `./app/assets/fonts/`. Once the fonts are in place, every official icon class (`fa-home`, `ms-home`, `mi-home`, `f7-house`, etc.) works out of the box — PurgeTSS resolves them at compile time from its own bundled `dist/` files.
 
 ```bash
 purgetss icon-library [--vendor=fa,mi,ms,f7] [--module] [--styles]
@@ -515,412 +496,47 @@ purgetss icon-library [--vendor=fa,mi,ms,f7] [--module] [--styles]
 purgetss il [-v=fa,mi,ms,f7] [-m] [-s]
 ```
 
-### Options and Flags
+### Flags
 
-- `-v, --vendor [fa,mi,ms,f7]` to copy specific font vendors.
-- `-m, --module` to copy the corresponding CommonJS module into the `./app/lib/` folder.
-- `-s, --styles` to copy the corresponding `.tss` files into the `./purgetss/styles/` folder for your review.
+| Flag | Purpose |
+| --- | --- |
+| `-v, --vendor [fa,mi,ms,f7]` | Copy specific font vendors only (default copies all four). |
+| `-m, --module` | Copy the matching CommonJS module into `./app/lib/` so you can reference icons by name from controllers (`icons.fa.home`). |
+| `-s, --styles` | Copy the official `.tss` source files into `./purgetss/styles/` for reference only — not needed for the classes to work. |
 
-`./app/assets/fonts/`
-```bash
-FontAwesome7Brands-Regular.ttf
-FontAwesome7Free-Regular.ttf
-FontAwesome7Free-Solid.ttf
-Framework7-Icons.ttf
-MaterialIcons-Regular.ttf
-MaterialIconsOutlined-Regular.otf
-MaterialIconsRound-Regular.otf
-MaterialIconsSharp-Regular.otf
-MaterialIconsTwoTone-Regular.otf
-MaterialSymbolsOutlined-Regular.ttf
-MaterialSymbolsRounded-Regular.ttf
-MaterialSymbolsSharp-Regular.ttf
-```
+Vendor aliases: `fa`/`fontawesome`, `mi`/`materialicons`, `ms`/`materialsymbol`, `f7`/`framework7`.
 
-After copying the fonts, you can use them in Buttons and Labels. For example, for Font Awesome, set the font family to `fa` (Solid icons) and use a class like `fa-home`.
-
-### Available Font Classes
-
-- [fontawesome.tss](https://github.com/macCesar/purgeTSS/blob/main/dist/fontawesome.tss)
-- [materialicons.tss](https://github.com/macCesar/purgeTSS/blob/main/dist/materialicons.tss)
-- [materialsymbols.tss](https://github.com/macCesar/purgeTSS/blob/main/dist/materialsymbols.tss)
-- [framework7icons.tss](https://github.com/macCesar/purgeTSS/blob/main/dist/framework7icons.tss)
-
-### Copying Specific Font Vendors
-
-```bash
-purgetss icon-library --vendor="fontawesome, materialicons, materialsymbols, framework7"
-
-# alias:
-purgetss il -v=fa,mi,ms,f7
-```
-
-Available names and aliases:
-
-- `fa`, `fontawesome` = Font Awesome Icons
-- `mi`, `materialicons` = Material Icons
-- `ms`, `materialsymbol` = Material Symbols
-- `f7`, `framework7` = Framework7 Icons
-
-### CommonJS Module
-
-You can use the `--module` option to copy the corresponding CommonJS module into the `./app/lib/` folder.
-
-```bash
-purgetss icon-library --module [--vendor="fontawesome, materialicons, materialsymbols, framework7"]
-
-# alias:
-purgetss il -m [-v=fa,mi,ms,f7]
-```
-
-Each library includes a CommonJS module that exposes Unicode strings for the icon fonts.
-
-All prefixes are stripped from their class names and camel-cased. For example:
-
-- Font Awesome: `fa-flag` becomes `flag`.
-- Material Icons: `mi-flag` becomes `flag`.
-- Material Symbols: `ms-flag` becomes `flag`.
-- Framework7 Icons: `f7-alarm_fill` becomes `alarmFill` and `f7-clock_fill` becomes `clockFill`.
-
-### Font Awesome Pro
-
-If you have a [Font Awesome Pro account](https://fontawesome.com/pro), you can generate a custom `./purgetss/styles/fontawesome.tss` file with the Pro-only classes (except duotone icons; see note below).
-
-After setting the [@fortawesome scope](https://fontawesome.com/how-to-use/on-the-web/setup/using-package-managers#installing-pro) with your token, install it in your project's root folder using `npm init` and `npm install --save-dev @fortawesome/fontawesome-pro` (current version 7.1.0).
-
-To generate a new `purgetss/styles/fontawesome.tss`, run `purgetss build`. It also copies the Pro font files into `./app/assets/fonts` if needed.
-
-> **Caution**
-> Titanium cannot use Font Awesome duotone icons because each icon uses two glyphs.
-
-### Font Awesome 7 Beta
-
-To generate a custom `fontawesome.tss` file from [Font Awesome 7 Beta](https://fontawesome.com/download):
-
-Move the `css` and `webfonts` folders from `fontawesome-pro-7.0.0-beta3-web/`:
-
-```bash
-fontawesome-pro-7.0.0-beta3-web/
-├─ css/
-└─ webfonts/
-```
-
-Into `./purgetss/fontawesome-beta/`:
-
-```bash
-purgetss/
-└─ fontawesome-beta/
-   ├─ css/
-   └─ webfonts/
-```
-
-Then run `purgetss build` to generate your custom `fontawesome.tss` file and test the new icons.
-
-### Font Example File
-
-To use this file:
-
-1. Copy the content of `index.xml` into a new Alloy project.
-2. Install the official icon font files using `purgetss icon-library`.
-   - Without `--vendor`, PurgeTSS copies all official icon fonts.
-3. Run `purgetss` once to generate the required files.
-4. Compile your app as usual.
-5. Use `liveview` for faster testing.
-
-```xml
-<Alloy>
-  <Window>
-    <View class="grid">
-      <View class="vertical mx-auto grid-cols-2 gap-y-2">
-        <Label class="mt-2 text-gray-700" text="FontAwesome" />
-        <Button class="fa fa-home my-1 h-10 w-10 text-xl text-blue-500" />
-        <Button class="fa fa-home my-1 h-10 w-10 rounded bg-blue-500 text-xl text-white" />
-      </View>
-
-      <View class="vertical mx-auto grid-cols-2 gap-y-2">
-        <Label class="mt-2 text-gray-700" text="Material Icons" />
-        <Button class="mi mi-home my-1 h-10 w-10 text-xl text-blue-500" />
-        <Button class="mi mi-home my-1 h-10 w-10 rounded bg-blue-500 text-xl text-white" />
-      </View>
-
-      <View class="vertical mx-auto grid-cols-2 gap-y-2">
-        <Label class="mt-2 text-gray-700" text="Material Symbol" />
-        <Button class="ms ms-home my-1 h-10 w-10 text-xl text-blue-500" />
-        <Button class="ms ms-home my-1 h-10 w-10 rounded bg-blue-500 text-xl text-white" />
-      </View>
-
-      <View class="vertical mx-auto grid-cols-2 gap-y-2">
-        <Label class="mt-2 text-gray-700" text="Framework7-Icons" />
-        <Button class="f7 f7-house my-1 h-10 w-10 text-xl text-blue-500" />
-        <Button class="f7 f7-house my-1 h-10 w-10 rounded bg-blue-500 text-xl text-white" />
-      </View>
-    </View>
-  </Window>
-</Alloy>
-```
-
-```tss
-/* PurgeTSS v7.2.7
- * Created by Cesar Estrada
- * https://github.com/macCesar/purgeTSS
-*/
-
-/* Ti Elements */
-'View': { width: Ti.UI.SIZE, height: Ti.UI.SIZE }
-'Window': { backgroundColor: '#FFFFFF' }
-
-/* Main Styles */
-'.bg-blue-500': { backgroundColor: '#3b82f6' }
-'.gap-y-2': { top: 8, bottom: 8 }
-'.grid': { layout: 'horizontal', width: '100%' }
-'.grid-cols-2': { width: '50%' }
-'.h-10': { height: 40 }
-'.mt-2': { top: 8 }
-'.mx-auto': { right: null, left: null }
-'.my-1': { top: 4, bottom: 4 }
-'.rounded': { borderRadius: 4 }
-'.text-blue-500': { color: '#3b82f6', textColor: '#3b82f6' }
-'.text-gray-700': { color: '#374151', textColor: '#374151' }
-'.text-white': { color: '#ffffff', textColor: '#ffffff' }
-'.text-xl': { font: { fontSize: 20 } }
-'.vertical': { layout: 'vertical' }
-'.w-10': { width: 40 }
-
-/* Default Font Awesome */
-'.fa': { font: { fontFamily: 'FontAwesome7Free-Solid' } }
-'.fa-home': { text: '\uf015', title: '\uf015' }
-
-/* Material Icons */
-'.mi': { font: { fontFamily: 'MaterialIcons-Regular' } }
-'.mi-home': { text: '\ue88a', title: '\ue88a' }
-
-/* Material Symbols */
-'.ms': { font: { fontFamily: 'MaterialSymbolsOutlined-Regular' } }
-'.ms-home': { text: '\ue88a', title: '\ue88a' }
-
-/* Framework7 */
-'.f7': { font: { fontFamily: 'Framework7-Icons' } }
-'.f7-house': { text: 'house', title: 'house' }
-```
+> **Tip**
+> This is a quick reference. See [Icon Fonts](./icon-fonts.md) for the complete guide — variant tables (`.ms`/`.mso`/`.msr`/`.mss`, `.fa`/`.fas`/`.far`/`.fab`), XML usage patterns, the side-by-side four-family example, Font Awesome Pro / Beta workflow, and instructions for recreating removed libraries.
 
 ## `build-fonts` Command
 
-The `build-fonts` command generates a `fonts.tss` file with class definitions and `fontFamily` selectors for serif, sans-serif, cursive, fantasy, or monospace fonts.
-
-Place all `.ttf` or `.otf` files in `./purgetss/fonts/`, then run the command. You can also use `--module` to generate a CommonJS module in `./app/lib/`.
+Generates `./purgetss/styles/fonts.tss` with class definitions and `fontFamily` selectors for any user-defined fonts dropped into `./purgetss/fonts/` (Google Fonts, brand typefaces, community icon libraries with `.ttf` + `.css` pairs).
 
 ```bash
-purgetss build-fonts
+purgetss build-fonts [-m] [-f]
 
 # alias:
-purgetss bf
+purgetss bf [-m] [-f]
 ```
 
-1. Creates `./purgetss/styles/fonts.tss` with all class definitions and `fontFamily` selectors.
-2. Copies the font files into `./app/assets/fonts`.
-3. Renames the font files to match their PostScript names so they work on both iOS and Android.
+### Flags
 
-Example using Bevan and Dancing Script from Google Fonts.
+| Flag | Purpose |
+| --- | --- |
+| `-m, --module` | Also generates a CommonJS module in `./app/lib/purgetss.fonts.js` exposing `exports.icons` and `exports.families` for use from controllers. |
+| `-f, --font-class-from-filename` | Uses the font filename as the class name and icon prefix instead of the font family. Replaces the old `-p` flag. |
 
-`./purgetss/fonts/`
-```bash
-purgetss
-└─ fonts
-   ├─ Bevan-Italic.ttf
-   ├─ Bevan-Regular.ttf
-   ├─ DancingScript-Bold.ttf
-   ├─ DancingScript-Medium.ttf
-   ├─ DancingScript-Regular.ttf
-   └─ DancingScript-SemiBold.ttf
-```
+### What it does
 
-After running `purgetss build-fonts`:
+1. Creates `./purgetss/styles/fonts.tss` with one `fontFamily` class per file.
+2. Copies the font files into `./app/assets/fonts/`, renamed to their PostScript names so they work on both iOS and Android.
 
-`./purgetss/styles/fonts.tss`
-```tss
-/* Fonts TSS file generated with PurgeTSS
- * https://github.com/macCesar/purgeTSS
-*/
+> **Tip**
+> This is a quick reference. See [Custom Fonts](./custom-fonts.md) for the complete guide — folder organization, class renaming, adding icon libraries, the `--module` output structure, and `--font-class-from-filename` workflow.
 
-'.bevan-italic': { font: { fontFamily: 'Bevan-Italic' } }
-'.bevan-regular': { font: { fontFamily: 'Bevan-Regular' } }
-
-'.dancingscript-bold': { font: { fontFamily: 'DancingScript-Bold' } }
-'.dancingscript-medium': { font: { fontFamily: 'DancingScript-Medium' } }
-'.dancingscript-regular': { font: { fontFamily: 'DancingScript-Regular' } }
-'.dancingscript-semibold': { font: { fontFamily: 'DancingScript-SemiBold' } }
-```
-
-### Organizing the Fonts Folder
-
-For better organization, group each font family in subfolders:
-
-`./purgetss/fonts/`
-```bash
-purgetss
-└─ fonts
-   ├─ bevan
-   │  ├─ Bevan-Italic.ttf
-   │  └─ Bevan-Regular.ttf
-   └─ dancing-script
-      ├─ DancingScript-Bold.ttf
-      ├─ DancingScript-Medium.ttf
-      ├─ DancingScript-Regular.ttf
-      └─ DancingScript-SemiBold.ttf
-```
-
-Subfolders don't change the output -- you get the same `fonts.tss` as the flat layout above.
-
-### Renaming `fontFamily` Classes
-
-To use a shorter or different class name, rename the font file.
-
-`./purgetss/fonts/`
-```bash
-purgetss
-└─ fonts
-   └─ dancing-script
-      ├─ Script-Bold.ttf
-      ├─ Script-Medium.ttf
-      ├─ Script-Regular.ttf
-      └─ Script-SemiBold.ttf
-```
-
-Running `build-fonts` adjusts the class name accordingly:
-
-```tss
-'.script-bold': { font: { fontFamily: 'DancingScript-Bold' } }
-'.script-medium': { font: { fontFamily: 'DancingScript-Medium' } }
-'.script-regular': { font: { fontFamily: 'DancingScript-Regular' } }
-'.script-semibold': { font: { fontFamily: 'DancingScript-SemiBold' } }
-```
-
-### Icon Font Libraries
-
-You can add any icon font library that includes a `.ttf` or `.otf` file and a `.css` file with Unicode characters.
-
-`./purgetss/fonts/`
-```bash
-purgetss
-└─ fonts
-   ├─ bevan
-   ├─ dancing-script
-   ├─ map-icons
-   │  ├─ map-icons.css
-   │  └─ map-icons.ttf
-   └─ microns
-      ├─ microns.css
-      └─ microns.ttf
-```
-
-After running `purgetss build-fonts`, `fonts.tss` will include the `fontFamily` class definitions and Unicode characters.
-
-`./purgetss/styles/fonts.tss`
-```tss
-/* Fonts TSS file generated with PurgeTSS */
-/* https://github.com/macCesar/purgeTSS */
-
-'.map-icons': { font: { fontFamily: 'map-icons' } }
-'.microns': { font: { fontFamily: 'microns' } }
-
-/* Unicode Characters */
-/* To use your Icon Fonts in Buttons and Labels each class sets 'text' and 'title' properties */
-
-/* map-icons/map-icons.css */
-'.map-icon-abseiling': { text: '\ue800', title: '\ue800' }
-'.map-icon-accounting': { text: '\ue801', title: '\ue801' }
-'.map-icon-airport': { text: '\ue802', title: '\ue802' }
-'.map-icon-amusement-park': { text: '\ue803', title: '\ue803' }
-'.map-icon-aquarium': { text: '\ue804', title: '\ue804' }
-
-/* microns/microns.css */
-'.mu-arrow-left': { text: '\ue700', title: '\ue700' }
-'.mu-arrow-right': { text: '\ue701', title: '\ue701' }
-'.mu-arrow-up': { text: '\ue702', title: '\ue702' }
-'.mu-arrow-down': { text: '\ue703', title: '\ue703' }
-'.mu-left': { text: '\ue704', title: '\ue704' }
-```
-
-### Options
-
-- `-m, --module`: Generate a CommonJS module in `./app/lib/`.
-- `-f, --filename`: Use filenames as both font class names and icon prefixes (replaces the old `-p` flag).
-
-### CommonJS Module
-
-Use the `--module` option to generate a CommonJS module called `purgetss.fonts.js` in `./app/lib/`.
-
-To avoid conflicts with other icon libraries, PurgeTSS keeps each icon's prefix.
-
-```bash
-purgetss build-fonts --module
-
-# alias:
-purgetss bf -m
-```
-
-`./app/lib/purgetss.fonts.js`
-```javascript
-const icons = {
-  // map-icons/map-icons.css
-  mapIcon: {
-    abseiling: '\ue800',
-    accounting: '\ue801',
-    airport: '\ue802',
-    amusementPark: '\ue803'
-  },
-  // microns/microns.css
-  mu: {
-    arrowLeft: '\ue700',
-    arrowRight: '\ue701',
-    arrowUp: '\ue702',
-    arrowDown: '\ue703'
-  }
-};
-exports.icons = icons;
-
-const families = {
-  // map-icons/map-icons.css
-  mapIcon: 'map-icons',
-  // microns/microns.css
-  mu: 'microns'
-};
-exports.families = families;
-```
-
-### Using Filenames for Class Names and Icon Prefixes
-
-The `--filename` option uses the style's filename as both the font class name and the icon prefix in `fonts.tss` and `purgetss.fonts.js`.
-
-`./purgetss/fonts/`
-```bash
-purgetss
-└─ fonts
-   ├─ map-icons
-   │  ├─ map.ttf
-   │  └─ mp.css
-   └─ microns
-      ├─ mic.ttf
-      └─ mc.css
-```
-
-This generates:
-
-```tss
-/* fontFamily classes use the font's filename */
-'.map': { font: { fontFamily: 'map-icons' } }
-'.mic': { font: { fontFamily: 'microns' } }
-
-/* map-icons/mp.css */
-'.mp-abseiling': { text: '\ue800', title: '\ue800' }
-'.mp-accounting': { text: '\ue801', title: '\ue801' }
-
-/* microns/mc.css */
-'.mc-arrow-left': { text: '\ue700', title: '\ue700' }
-'.mc-arrow-right': { text: '\ue701', title: '\ue701' }
-```
-
-Make sure the new prefix is unique and does not conflict with other class prefixes.
+> **Note**
+> `build-fonts` is for **user-defined fonts only**. The 4 official icon families (Font Awesome 7, Material Icons, Material Symbols, Framework7) are bundled with PurgeTSS and installed via [`icon-library`](#icon-library-command), not `build-fonts`. See [Icon Fonts](./icon-fonts.md).
 
 ## `shades` Command
 

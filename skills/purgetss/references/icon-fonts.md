@@ -1,66 +1,241 @@
 # Icon Font Libraries
 
+PurgeTSS ships with four official icon font families, each preconfigured with the TSS classes and `fontFamily` mappings you need to drop icons into Buttons, Labels, and TextFields.
+
+For user-defined fonts (Google Fonts, brand typefaces, community icon libraries like map-icons or microns), see [Custom Fonts](./custom-fonts.md) — those use `build-fonts`, not `icon-library`.
+
 > ℹ️ **INFO — Official Icon Fonts for PurgeTSS**
->
-> Older versions of PurgeTSS bundled additional icon font libraries — Bootstrap Icons, Boxicons, LineIcons, and Tabler Icons among them. **Those libraries have been deprecated and removed from the official distribution** to keep maintenance under control. They are still usable, but you must rebuild them yourself with `build-fonts` (see below).
->
-> The icon fonts officially supported and shipped by PurgeTSS today are:
->
 > - [Font Awesome 7 Free](https://fontawesome.com) (upgrade with `purgetss il -v=fa`)
-> - [Framework 7](https://framework7.io/icons/)
+> - [Framework 7 Icons](https://framework7.io/icons/)
 > - [Material Icons](https://fonts.google.com/icons?icon.set=Material+Icons)
 > - [Material Symbols](https://fonts.google.com/icons?icon.set=Material+Symbols)
+>
+> Older versions of PurgeTSS bundled additional libraries (Bootstrap Icons, Boxicons, LineIcons, Tabler Icons). They were removed to keep maintenance under control, but you can [recreate them at the bottom of this page](#recreating-removed-icon-libraries).
 
-For the official install flow for the supported vendors, see [CLI Commands](./cli-commands.md#icon-library-command).
+## Icon families reference
 
-## Recreate Removed Libraries
+Each family ships one or more variant classes, each pointing to a specific font file. Combine a variant class with an icon class to render a glyph. For example, `msr ms-home` uses the Material Symbols Rounded font with the `home` icon.
 
-You can recreate any deprecated library using the `build-fonts` command.
+| Family | Variant | Class | `fontFamily` |
+|---|---|---|---|
+| **Material Symbols** | Outlined (default) | `.ms` | `MaterialSymbolsOutlined-Regular` |
+| Material Symbols | Outlined (alias) | `.mso` | `MaterialSymbolsOutlined-Regular` |
+| Material Symbols | Rounded | `.msr` | `MaterialSymbolsRounded-Regular` |
+| Material Symbols | Sharp | `.mss` | `MaterialSymbolsSharp-Regular` |
+| **Font Awesome** | Solid (default) | `.fa` | `FontAwesome7Free-Solid` |
+| Font Awesome | Solid (alias) | `.fas` | `FontAwesome7Free-Solid` |
+| Font Awesome | Regular | `.far` | `FontAwesome7Free-Regular` |
+| Font Awesome | Brands | `.fab` | `FontAwesome7Brands-Regular` |
+| **Material Icons** | Regular | `.mi` | `MaterialIcons-Regular` |
+| **Framework 7** | Regular | `.f7` | `Framework7-Icons` |
 
-### 1. Download the Libraries
+> 💡 **TIP — Icon class names**
+> Across a family, the icon class is shared by every variant. For Material Symbols, there is one `ms-home` class; pair it with `.ms`, `.mso`, `.msr`, or `.mss` to pick the shape (outlined, rounded, or sharp). FontAwesome works the same way: `fa-home` pairs with `.fa`/`.fas` (Solid) or `.far` (Regular), while brand icons like `fa-github` need `.fab`. **The variant class chooses the font file. The icon class chooses the glyph.**
 
-Start by downloading the libraries from their official websites:
+### Full class lists
 
-- [Bootstrap Icons](https://icons.getbootstrap.com)
-- [Boxicons](https://boxicons.com)
-- [LineIcons](https://lineicons.com/icons/?type=free)
-- [Tabler Icons](https://tabler-icons.io)
+The complete class definitions live in the PurgeTSS `dist/` folder:
 
-### 2. The `fonts` Folder
+- [fontawesome.tss](https://github.com/macCesar/purgeTSS/blob/main/dist/fontawesome.tss)
+- [materialicons.tss](https://github.com/macCesar/purgeTSS/blob/main/dist/materialicons.tss)
+- [materialsymbols.tss](https://github.com/macCesar/purgeTSS/blob/main/dist/materialsymbols.tss)
+- [framework7icons.tss](https://github.com/macCesar/purgeTSS/blob/main/dist/framework7icons.tss)
 
-Put the desired libraries in the `./purgetss/fonts` folder.
+## Installing the icon fonts
 
-> ℹ️ **INFO**
-> Copy the TrueType or OpenType font files and the `.css` file.
+Run `icon-library` to copy the `.ttf` files into `./app/assets/fonts/`. That is the only step you need. Once the fonts are in place, the icon classes from the table above work out of the box.
+
+```bash
+# All four families
+$ purgetss icon-library
+
+# Selective install
+$ purgetss il -v=fa,mi,ms,f7
+```
+
+> ℹ️ **INFO — You do not need the `.tss` files in `./purgetss/styles/`**
+> PurgeTSS already knows every official icon class and resolves them at compile time from its own bundled `dist/` files. You do not need `fontawesome.tss`, `materialsymbols.tss`, `materialicons.tss`, or `framework7icons.tss` inside `./purgetss/styles/` for `class="fas fa-home"` (or any other icon class) to work in your XML and controllers. Install the `.ttf` files with `icon-library` and the classes are ready.
+
+### Optional flags
+
+Two optional flags adjust what `icon-library` copies into your project:
+
+- `-s, --styles`: copies the official `.tss` source files into `./purgetss/styles/` for reference only. Useful if you want to grep the full class list, see how a class is defined, or override a specific class in your own project.
+- `-m, --module`: copies the matching CommonJS module into `./app/lib/`, which exposes each icon's Unicode string to JavaScript. Handy when you set `label.text` from a controller and prefer a friendly name like `icons.fa.home` over a raw ``.
+
+```bash
+# Add either flag when you want them
+$ purgetss il -s
+$ purgetss il -m
+$ purgetss il -m -s
+```
+
+### Vendor aliases
+
+`--vendor` accepts the short or long forms:
+
+- `fa`, `fontawesome` = Font Awesome Icons
+- `mi`, `materialicons` = Material Icons
+- `ms`, `materialsymbol` = Material Symbols
+- `f7`, `framework7` = Framework7 Icons
+
+## Using icons in XML
+
+The variant class sets the `fontFamily`. The icon class sets the glyph (`text` / `title`). Apply both together:
+
+`index.xml`
+```xml
+<Alloy>
+  <Window>
+    <View class="grid">
+      <View class="vertical mx-auto grid-cols-2 gap-y-2">
+        <!-- Material Symbols variants -->
+        <Label class="mt-2 text-gray-700" text="Material Symbols" />
+        <Button class="ms ms-home my-1 h-10 w-10 text-xl text-blue-500" />
+        <Button class="msr ms-home my-1 h-10 w-10 text-xl text-blue-500" />
+        <Button class="mss ms-home my-1 h-10 w-10 text-xl text-blue-500" />
+      </View>
+
+      <View class="vertical mx-auto grid-cols-2 gap-y-2">
+        <!-- FontAwesome variants -->
+        <Label class="mt-2 text-gray-700" text="Font Awesome" />
+        <Button class="fas fa-home my-1 h-10 w-10 text-xl text-blue-500" />
+        <Button class="far fa-bell my-1 h-10 w-10 text-xl text-blue-500" />
+        <Button class="fab fa-github my-1 h-10 w-10 text-xl text-blue-500" />
+      </View>
+    </View>
+  </Window>
+</Alloy>
+```
+
+## Complete example with all four families
+
+A side-by-side example using all four official families.
+
+To use this file:
+
+- Copy the content of `index.xml` into a new Alloy project.
+- Install the official icon font files using `purgetss icon-library` (without `--vendor`, PurgeTSS copies all official icon fonts).
+- Run `purgetss` once to generate the required files.
+- Compile your app as usual.
+- Use `liveview` if you want faster testing.
+
+`index.xml`
+```xml
+<Alloy>
+  <Window>
+    <View class="grid">
+      <View class="vertical mx-auto grid-cols-2 gap-y-2">
+        <!-- FontAwesome -->
+        <Label class="mt-2 text-gray-700" text="FontAwesome" />
+        <Button class="fa fa-home my-1 h-10 w-10 text-xl text-blue-500" />
+        <Button class="fa fa-home my-1 h-10 w-10 rounded bg-blue-500 text-xl text-white" />
+      </View>
+
+      <View class="vertical mx-auto grid-cols-2 gap-y-2">
+        <!-- Material Icons -->
+        <Label class="mt-2 text-gray-700" text="Material Icons" />
+        <Button class="mi mi-home my-1 h-10 w-10 text-xl text-blue-500" />
+        <Button class="mi mi-home my-1 h-10 w-10 rounded bg-blue-500 text-xl text-white" />
+      </View>
+
+      <View class="vertical mx-auto grid-cols-2 gap-y-2">
+        <!-- Material Symbols -->
+        <Label class="mt-2 text-gray-700" text="Material Symbol" />
+        <Button class="ms ms-home my-1 h-10 w-10 text-xl text-blue-500" />
+        <Button class="ms ms-home my-1 h-10 w-10 rounded bg-blue-500 text-xl text-white" />
+      </View>
+
+      <View class="vertical mx-auto grid-cols-2 gap-y-2">
+        <!-- Framework7-Icons -->
+        <Label class="mt-2 text-gray-700" text="Framework7-Icons" />
+        <Button class="f7 f7-house my-1 h-10 w-10 text-xl text-blue-500" />
+        <Button class="f7 f7-house my-1 h-10 w-10 rounded bg-blue-500 text-xl text-white" />
+      </View>
+    </View>
+  </Window>
+</Alloy>
+```
+
+Generated `app.tss` excerpt:
+```css
+// PurgeTSS v7.10.2
+// Created by César Estrada
+// https://purgetss.com
+
+/* Ti Elements */
+'View': { width: Ti.UI.SIZE, height: Ti.UI.SIZE }
+'Window': { backgroundColor: '#FFFFFF' }
+
+/* Default Font Awesome */
+'.fa': { font: { fontFamily: 'FontAwesome7Free-Solid' } }
+'.fa-home': { text: '', title: '' }
+
+/* Material Icons */
+'.mi': { font: { fontFamily: 'MaterialIcons-Regular' } }
+'.mi-home': { text: '', title: '' }
+
+/* Material Symbols */
+'.ms': { font: { fontFamily: 'MaterialSymbolsOutlined-Regular' } }
+'.ms-home': { text: '', title: '' }
+
+/* Framework7 */
+'.f7': { font: { fontFamily: 'Framework7-Icons' } }
+'.f7-house': { text: 'house', title: 'house' }
+```
+
+## Customizing Font Awesome
+
+If you have a [Font Awesome Pro account](https://fontawesome.com/pro) or want to try the Beta, PurgeTSS can generate a custom `./purgetss/styles/fontawesome.tss` with the Pro or Beta classes.
+
+### Font Awesome Pro
+
+After setting the [@fortawesome scope](https://fontawesome.com/how-to-use/on-the-web/setup/using-package-managers#installing-pro) with your token, install it in your project's root folder with `npm init` and `npm install --save-dev @fortawesome/fontawesome-pro` (current version 7.1.0).
+
+To generate a new `purgetss/styles/fontawesome.tss`, run `purgetss build`. It also copies the Pro font files into `./app/assets/fonts` if needed.
+
+Note: Titanium cannot use Font Awesome duotone icons because each icon uses two glyphs.
+
+### Font Awesome 7 Beta
+
+To generate a custom `fontawesome.tss` file from [Font Awesome 7 Beta](https://fontawesome.com/download):
+
+Move the `css` and `webfonts` folders from `fontawesome-pro-7.0.0-beta3-web/`:
+
+```bash
+fontawesome-pro-7.0.0-beta3-web
+└─ css
+└─ webfonts
+```
+
+Into `./purgetss/fontawesome-beta`:
 
 ```bash
 purgetss
-└─ fonts
-   └─ boxicons
-      ├─ boxicons.css
-      └─ boxicons.ttf
-   └─ lineicons
-      ├─ lineicons.css
-      └─ lineicons.ttf
+└─ fontawesome-beta
+   ├─ css
+   └─ webfonts
 ```
 
-### 3. The `build-fonts` Command
+Then run `purgetss build` to generate your custom `fontawesome.tss` file and test the new icons.
 
-Run the `build-fonts` command to create a custom `fonts.tss` file.
+## Recreating removed icon libraries
 
-```bash
-purgetss build-fonts [--modules]
+Older versions of PurgeTSS bundled Bootstrap Icons, Boxicons, LineIcons, and Tabler Icons. The list was trimmed to make maintenance easier, but you can rebuild any of them:
 
-# alias:
-purgetss bf [-m]
-```
+1. Download the library from its official site:
+   - [Bootstrap Icons](https://icons.getbootstrap.com)
+   - [Boxicons](https://boxicons.com)
+   - [LineIcons](https://lineicons.com/icons/?type=free)
+   - [Tabler Icons](https://tabler-icons.io)
+2. Place the `.ttf`/`.otf` and `.css` files into `./purgetss/fonts/<library>/`.
+3. Run `purgetss build-fonts`.
 
-### The `fonts.tss` File
+For the underlying mechanics (how `build-fonts` reads the `.css`, options like `-m` and `-f`), see [Custom Fonts](./custom-fonts.md).
 
-The `build-fonts` command generates `./purgetss/styles/fonts.tss` with Unicode characters and style rules.
+### `fonts.tss` example
 
-`./purgetss/styles/fonts.tss`
-```tss
+```css
 '.boxicons': { font: { fontFamily: 'boxicons' } }
 '.lineicons': { font: { fontFamily: 'LineIcons' } }
 
@@ -68,105 +243,15 @@ The `build-fonts` command generates `./purgetss/styles/fonts.tss` with Unicode c
 /* To use your Icon Fonts in Buttons AND Labels each class sets 'text' and 'title' properties */
 
 /* boxicons.css */
-'.bxl-meta': { text: '', title: '' }
-'.bx-lemon': { text: '', title: '' }
+'.bxl-meta': { text: '', title: '' }
+'.bx-lemon': { text: '', title: '' }
 /* ... */
 
 /* lineicons.css */
-'.lni-500px': { text: '', title: '' }
-'.lni-add-files': { text: '', title: '' }
+'.lni-500px': { text: '', title: '' }
+'.lni-add-files': { text: '', title: '' }
 /* ... */
 ```
-
-### Rename the Style Rule Name
-
-PurgeTSS uses the font file name as the style rule name. You can change it by renaming the font file.
-
-`./purgetss/fonts/`
-```bash
-purgetss
-└─ fonts
-   └─ boxicons
-      └─ bx.ttf
-```
-
-New style rule name: `'.bx'`
-
-```tss
-'.bx': { font: { fontFamily: 'boxicons' } }
-```
-
-### The `assets/fonts` Folder
-
-The `build-fonts` command copies the font files to `./app/assets/fonts` and renames them to their PostScript names so they work on both iOS and Android.
-
-```bash
-app
-└─ assets
-   └─ fonts
-      ├─ boxicons.ttf
-      └─ LineIcons.ttf
-```
-
-### The `--modules` Option
-
-When you use the `--modules` option, it generates a `./app/lib/purgetss.fonts.js` CommonJS module file.
-
-`./app/lib/purgetss.fonts.js`
-```javascript
-const icons = {
-  /* boxicons */
-  boxicons: {
-    bxlMeta: '',
-    bxLemon: ''
-    /* ... */
-  },
-  /* lineicons */
-  lni: {
-    '500px': '',
-    addFiles: ''
-    /* ... */
-  }
-};
-exports.icons = icons;
-```
-
-### The `--prefix` Option
-
-PurgeTSS determines the group's prefix for each icon family and class name. Use `--prefix` to apply the style's filename as the prefix for class names in `fonts.tss` and property names in `purgetss.fonts.js`.
-
-`./purgetss/fonts/`
-```bash
-purgetss
-└─ fonts
-   └─ lineicons
-      └─ li.css
-```
-
-New group prefix: `li`
-
-`./purgetss/styles/fonts.tss`
-```tss
-/* lineicons/li.css */
-'.li-zoom-out': { text: '', title: '' }
-'.li-zoom-in': { text: '', title: '' }
-/* ... */
-```
-
-`./app/lib/purgetss.fonts.js`
-```javascript
-const icons = {
-  /* lineicons/li.css */
-  li: {
-    /* ... */
-  }
-};
-exports.icons = icons;
-```
-
-> 🛑 **DANGER**
->
-> Make sure the new prefix stays unique so it does not collide with other class prefixes. A duplicate prefix will silently overwrite earlier rules in the generated `fonts.tss`, leaving you with icons that render the wrong glyph at runtime.
 
 ## Community-Discovered Patterns
 
@@ -174,3 +259,6 @@ The following note reflects community experience working with icon fonts that de
 
 > 🛑 **DANGER — Font Awesome Duotone**
 > Titanium cannot render Font Awesome duotone icons correctly because each icon uses two glyphs. If you work with Font Awesome Pro, avoid documenting duotone as supported.
+
+> 💡 **Mixing variant + icon in `class=`**
+> A common mistake is omitting the variant class and writing just `class="fa-github"`. The icon class only sets `text`/`title` (the glyph) — without the variant class (`.fa`, `.fas`, `.fab`, etc.) the `fontFamily` is missing and the glyph renders as the system font's fallback character. Always include both: `class="fab fa-github"` or `class="msr ms-home"`.
