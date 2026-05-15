@@ -440,15 +440,16 @@ Load these only when needed:
 - [TiKit UI Components](references/tikit-components.md) - Ready-to-use Alerts, Avatars, Buttons, Cards, Tabs built with PurgeTSS
 
 ### Fonts & Animations
-- [Icon Fonts](references/icon-fonts.md) - Font Awesome 7, Material Icons, custom icon libraries
+- [Custom Fonts](references/custom-fonts.md) - `build-fonts` command for Google Fonts, brand typefaces, and community icon fonts (.ttf + .css)
+- [Icon Fonts](references/icon-fonts.md) - The 4 official families (Font Awesome 7, Material Icons, Material Symbols, Framework7) — variant tables + `icon-library` install flow + recreating removed libraries
 - [Animation System](references/animation-system.md) - 15 methods including collision detection, transitions, and sequential animations
 - [Animation Advanced](references/animation-advanced.md) - Property inheritance, utility classes, implementation rules, complex UI example
 
 ### Release Notes
-- [Version History](references/version-history.md) - Release-by-release feature additions and behavior changes (v7.4.0 → v7.9.0)
+- [Version History](references/version-history.md) - Release-by-release feature additions and behavior changes (v7.4.0 → v7.10.2)
 
 > **💡 TEXT FONTS (Google Fonts, Roboto, etc.)**
-> For text fonts, see [CLI Commands → build-fonts](references/cli-commands.md#purgetss-build-fonts-alias-bf).
+> For text fonts, see [Custom Fonts](references/custom-fonts.md).
 
 ## Examples
 
