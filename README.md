@@ -736,7 +736,7 @@ This pattern is documented across three TiTools skills: `ti-ui`, `ti-expert`, an
 | Skill     | SKILL.md                      | References                                            |
 | --------- | ----------------------------- | ----------------------------------------------------- |
 | ti-expert | Architecture + Implementation | 21 files (patterns, testing, security, etc.)          |
-| purgetss  | Setup + Critical Rules        | 29 files (grid, animations, icons, class-index, etc.) |
+| purgetss  | Setup + Critical Rules        | 31 files (grid, animations, icons, class-index, etc.) |
 | ti-ui     | UI Rules + Platform Diffs     | 14 files (layouts, lists, gestures, etc.)             |
 
 ---
