@@ -237,9 +237,9 @@ purgetss create 'MyApp' -d -v fa
 > ```
 >
 > **Common Issue:** If you see elements appearing in unexpected positions (e.g., a header bar "behind" content), check if parent containers have conflicting layout modes. Each container's layout affects its direct children only.
->
-> ### 🚨 PLATFORM-SPECIFIC PROPERTIES REQUIRE MODIFIERS
->
+
+### 🚨 PLATFORM-SPECIFIC PROPERTIES REQUIRE MODIFIERS
+
 > **🚨 CRITICAL: Platform-Specific Properties Require Modifiers**
 > Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties WITHOUT platform modifiers causes cross-platform compilation failures.
 >
@@ -274,23 +274,23 @@ purgetss create 'MyApp' -d -v fa
 > 1. Check if user's project supports that platform
 > 2. ALWAYS use `[platform=ios]` or `[platform=android]` TSS modifier
 > 3. OR use PurgeTSS platform classes like `ios:bg-blue-500`
->
-> **For complete reference on platform modifiers, see** [Platform Modifiers](references/platform-modifiers.md).
->
-> ### Other Mandatory Rules
->
-> - **NO `p-` padding classes**: Titanium does NOT support a native `padding` property on `View`, `Window`, `ScrollView`, or `TableView`. Always use **margins on children** (`m-`) to simulate internal spacing.
-> - **View defaults to `SIZE`**: Use `w-screen`/`h-screen` to fill space when needed.
-> - **`rounded-full`**: To get a perfect circle, use `rounded-full-XX` (where XX is the width/height of the square element).
-> - **`rounded-full-XX` includes size**: These classes already set `width`, `height`, and `borderRadius`. Do **not** add `w-XX h-XX`/`wh-XX` unless you need to override.
-> - **`m-xx` on FILL elements**: Adding `m-4` to a `w-screen` element pins it to all four edges (top, bottom, left, right). This will **stretch the component vertically** to fill the parent unless you explicitly add `h-auto` (`Ti.UI.SIZE`) to constrain it to its content.
-> - **`w-XX` + `h-XX` → `wh-XX`**: If both width and height use the same scale value, prefer a single `wh-XX` (order doesn't matter: `w-10 h-10` and `h-10 w-10` are equivalent).
-> - **Use `wh-` shortcuts**: PurgeTSS provides a complete scale of combined width/height utilities:
->     - **Numeric Scale**: `wh-0` to `wh-96` (e.g., `wh-16` sets both to 64px).
->     - **Fractions**: `wh-1/2`, `wh-3/4`, up to `wh-11/12` for proportional sizing.
->     - **Special Values**: `wh-auto` (explicit `SIZE`), `wh-full` (`100%`), and `wh-screen` (`FILL`).
->     - Using these instead of separate `w-` and `h-` classes improves XML readability and reduces generated TSS size.
->
+
+**For complete reference on platform modifiers, see** [Platform Modifiers](references/platform-modifiers.md).
+
+### Other Mandatory Rules
+
+- **NO `p-` padding classes**: Titanium does NOT support a native `padding` property on `View`, `Window`, `ScrollView`, or `TableView`. Always use **margins on children** (`m-`) to simulate internal spacing.
+- **View defaults to `SIZE`**: Use `w-screen`/`h-screen` to fill space when needed.
+- **`rounded-full`**: To get a perfect circle, use `rounded-full-XX` (where XX is the width/height of the square element).
+- **`rounded-full-XX` includes size**: These classes already set `width`, `height`, and `borderRadius`. Do **not** add `w-XX h-XX`/`wh-XX` unless you need to override.
+- **`m-xx` on FILL elements**: Adding `m-4` to a `w-screen` element pins it to all four edges (top, bottom, left, right). This will **stretch the component vertically** to fill the parent unless you explicitly add `h-auto` (`Ti.UI.SIZE`) to constrain it to its content.
+- **`w-XX` + `h-XX` → `wh-XX`**: If both width and height use the same scale value, prefer a single `wh-XX` (order doesn't matter: `w-10 h-10` and `h-10 w-10` are equivalent).
+- **Use `wh-` shortcuts**: PurgeTSS provides a complete scale of combined width/height utilities:
+    - **Numeric Scale**: `wh-0` to `wh-96` (e.g., `wh-16` sets both to 64px).
+    - **Fractions**: `wh-1/2`, `wh-3/4`, up to `wh-11/12` for proportional sizing.
+    - **Special Values**: `wh-auto` (explicit `SIZE`), `wh-full` (`100%`), and `wh-screen` (`FILL`).
+    - Using these instead of separate `w-` and `h-` classes improves XML readability and reduces generated TSS size.
+
 > **💡 LAYOUT TIP: EDGE PINNING**
 > If opposite margins cause a `Label`, `Button`, or `Switch` to stretch unexpectedly, it is due to Titanium's **Edge Pinning** rule (2 opposite pins = computed dimension). This applies to **any component whose default size is `Ti.UI.SIZE`**.
 >
@@ -306,169 +306,168 @@ purgetss create 'MyApp' -d -v fa
 > <Switch class="my-1 mr-2 h-auto" />
 > <Label class="my-1 ml-2 h-auto" text="Option" />
 > ```
->
-> - **NEVER add `composite` class explicitly** - That's the default, use `horizontal`/`vertical` when needed
-> - **Arbitrary values use parentheses**: `w-(100px)`, `bg-(#ff0000)` - NO square brackets
-> - **`mode: 'all'` required** in `config.cjs` for Ti Elements styling
-> - **Classes use `kebab-case`**: `.my-class`, IDs use `camelCase`: `#myId`
->
-> ## Common Anti-Patterns
->
-> **WRONG:**
-> ```xml
-> <View class="flex-row justify-between">  <!-- Flexbox doesn't exist -->
-> <View class="p-4">  <!-- No padding on Views -->
-> <View class="composite">  <!-- Never add composite explicitly -->
-> ```
->
-> **CORRECT:**
-> ```xml
-> <View class="horizontal">
-> <View class="m-4">  <!-- Use margins on children -->
-> <View>  <!-- Omit layout = composite by default -->
-> ```
->
-> **WRONG (Dynamic Components):**
-> ```javascript
-> // Manual styling with Ti.UI.create()
-> const view = Ti.UI.createView({
->   width: Ti.UI.FILL,
->   backgroundColor: '#fff',
->   borderRadius: 8
-> })
-> ```
->
-> **CORRECT (Dynamic Components):**
-> ```javascript
-> // PurgeTSS classes with $.UI.create()
-> const view = $.UI.create('View', {
->   classes: ['w-screen', 'bg-white', 'rounded-lg']
-> })
-> ```
->
-> ## Class Verification Workflow
->
+
+- **NEVER add `composite` class explicitly** - That's the default, use `horizontal`/`vertical` when needed
+- **Arbitrary values use parentheses**: `w-(100px)`, `bg-(#ff0000)` - NO square brackets
+- **`mode: 'all'` required** in `config.cjs` for Ti Elements styling
+- **Classes use `kebab-case`**: `.my-class`, IDs use `camelCase`: `#myId`
+
+## Common Anti-Patterns
+
+**WRONG:**
+```xml
+<View class="flex-row justify-between">  <!-- Flexbox doesn't exist -->
+<View class="p-4">  <!-- No padding on Views -->
+<View class="composite">  <!-- Never add composite explicitly -->
+```
+
+**CORRECT:**
+```xml
+<View class="horizontal">
+<View class="m-4">  <!-- Use margins on children -->
+<View>  <!-- Omit layout = composite by default -->
+```
+
+**WRONG (Dynamic Components):**
+```javascript
+// Manual styling with Ti.UI.create()
+const view = Ti.UI.createView({
+  width: Ti.UI.FILL,
+  backgroundColor: '#fff',
+  borderRadius: 8
+})
+```
+
+**CORRECT (Dynamic Components):**
+```javascript
+// PurgeTSS classes with $.UI.create()
+const view = $.UI.create('View', {
+  classes: ['w-screen', 'bg-white', 'rounded-lg']
+})
+```
+
+## Class Verification Workflow
+
 > **🚨 CRITICAL: VERIFY CLASSES BEFORE SUGGESTING**
 > **NEVER guess or hallucinate classes based on other CSS Frameworks knowledge!**
->
-> PurgeTSS shares naming with some CSS Frameworks but has DIFFERENT classes for Titanium.
-> Always verify a class exists before suggesting it.
->
-> ### Verification Steps
->
-> 1. **Check if it's a KNOWN anti-pattern**
->    - See [PROHIBITED Classes](references/class-index.md#prohibited-tailwind-classes-that-do-not-exist)
->    - Common mistakes: `flex-row`, `justify-between`, `p-4` on Views (p-* not supported on Views)
->
-> 2. **Check the Class Index**
->    - See [Class Index](references/class-index.md) for available patterns
->    - Constant properties like `keyboard-type-*`, `return-key-type-*` have dedicated classes
->
-> 3. **Search the project when unsure**
->    ```bash
->    # Search for a class pattern in the project's utilities.tss
->    grep -E "keyboard-type-" ./purgetss/styles/utilities.tss
->    grep -E "return-key-type-" ./purgetss/styles/utilities.tss
->    grep -E "^'bg-" ./purgetss/styles/utilities.tss
->    ```
->
-> 4. **After making changes**
->    - Check `app.tss` for "Unused or unsupported classes" section at the end
->    - Report any typos or non-existent classes to the user
->
-> ### What HAS Classes vs What DOESN'T
->
-> | Has Classes in PurgeTSS | Does NOT Have Classes                 |
-> | ----------------------- | ------------------------------------- |
-> | `keyboard-type-email`   | `hintText` (use attribute)            |
-> | `return-key-type-next`  | `passwordMask` (use attribute)        |
-> | `text-center`           | `autocorrect` (use attribute)         |
-> | `bg-blue-500`           | `autocapitalization` (use attribute)  |
-> | `w-screen`              | `flex-row` → use `horizontal`         |
-> | `wh-16`                 | `justify-between` → use margins       |
-> | `rounded-lg`            | `w-full` → use `w-screen`             |
-> | `m-4`, `gap-4`          | `p-4` on View → use `m-4` on children |
->
+
+PurgeTSS shares naming with some CSS Frameworks but has DIFFERENT classes for Titanium.
+Always verify a class exists before suggesting it.
+
+### Verification Steps
+
+1. **Check if it's a KNOWN anti-pattern**
+   - See [PROHIBITED Classes](references/class-index.md#prohibited-tailwind-classes-that-do-not-exist)
+   - Common mistakes: `flex-row`, `justify-between`, `p-4` on Views (p-* not supported on Views)
+
+2. **Check the Class Index**
+   - See [Class Index](references/class-index.md) for available patterns
+   - Constant properties like `keyboard-type-*`, `return-key-type-*` have dedicated classes
+
+3. **Search the project when unsure**
+   ```bash
+   # Search for a class pattern in the project's utilities.tss
+   grep -E "keyboard-type-" ./purgetss/styles/utilities.tss
+   grep -E "return-key-type-" ./purgetss/styles/utilities.tss
+   grep -E "^'bg-" ./purgetss/styles/utilities.tss
+   ```
+
+4. **After making changes**
+   - Check `app.tss` for "Unused or unsupported classes" section at the end
+   - Report any typos or non-existent classes to the user
+
+### What HAS Classes vs What DOESN'T
+
+| Has Classes in PurgeTSS | Does NOT Have Classes                 |
+| ----------------------- | ------------------------------------- |
+| `keyboard-type-email`   | `hintText` (use attribute)            |
+| `return-key-type-next`  | `passwordMask` (use attribute)        |
+| `text-center`           | `autocorrect` (use attribute)         |
+| `bg-blue-500`           | `autocapitalization` (use attribute)  |
+| `w-screen`              | `flex-row` → use `horizontal`         |
+| `wh-16`                 | `justify-between` → use margins       |
+| `rounded-lg`            | `w-full` → use `w-screen`             |
+| `m-4`, `gap-4`          | `p-4` on View → use `m-4` on children |
+
 > **💡 TIP**
 > When in doubt, prefer using the search command above to verify. It's better to spend 5 seconds verifying than suggesting a class that doesn't exist and will appear in the "unused classes" warning.
->
-> ## Reference Guides
->
-> Load these only when needed:
->
-> ### Essential References
-> - **[Class Index](references/class-index.md)** - Naming conventions, 416-property table, prohibited classes, verification commands (LOAD FIRST when unsure about a class)
-> - **[Class Categories](references/class-categories.md)** - Complete prefix inventory by category (layout, colors, typography, states, etc.)
-> - **[Dynamic Component Creation](references/dynamic-component-creation.md)** - `$.UI.create()` and `Alloy.createStyle()` for creating components in Controllers (READ FIRST for dynamic components)
-> - **[Appearance Module](references/appearance-module.md)** - Light/Dark/System mode switching with persistence (v7.5.3)
-> - **[Semantic Colors](references/semantic-colors.md)** - Titanium semantic colors for Light/Dark mode via `semantic` command (v7.6.0)
->
-> ### Setup & Configuration
-> - [Installation & Setup](references/installation-setup.md) - First run, VS Code, LiveView
-> - [CLI Commands](references/cli-commands.md) - All `purgetss` commands
-> - [Migration Guide](references/migration-guide.md) - Migrating existing apps from manual TSS to PurgeTSS
-> - **[Values and Units](references/values-and-units.md)** - How `ti.ui.defaultunit` in `tiapp.xml` interprets the unitless numeric values PurgeTSS writes (foundational concept for spacing, sizes, typography)
->
-> ### Customization
-> - [Deep Customization](references/customization-deep-dive.md) - config.cjs, colors, spacing, Ti Elements
-> - [Custom Rules](references/custom-rules.md) - Styling Ti Elements, IDs, classes
-> - [Apply Directive](references/apply-directive.md) - Extracting utility combinations
-> - [Configurable Properties](references/configurable-properties.md) - All 80+ customizable properties
->
-> ### Appearance & Theming
-> - **[Appearance Module](references/appearance-module.md)** - Light/Dark/System mode switching with persistence (v7.5.3)
-> - **[Semantic Colors](references/semantic-colors.md)** - `semantic` command + runtime usage for Light/Dark mode (v7.6.0)
->
-> ### Layout & Styling
-> - **[UI/UX Design Patterns](references/ui-ux-design.md)** - Complete guide to mobile UI components with PurgeTSS (cards, lists, forms, buttons, navigation, modals, accessibility)
-> - [Grid Layout System](references/grid-layout.md) - 12-column grid, responsive layouts
-> - [Smart Mappings](references/smart-mappings.md) - How gap, shadows, and grid work under the hood
-> - [Arbitrary Values](references/arbitrary-values.md) - Parentheses notation for custom values
-> - [Platform Modifiers](references/platform-modifiers.md) - ios:, android:, tablet:, handheld:
-> - [Opacity Modifier](references/opacity-modifier.md) - Color transparency with /50 syntax
-> - [Titanium Resets](references/titanium-resets.md) - Default styles for Ti elements
-> - [iOS Large Titles](references/ios-large-titles.md) - Best practice for iOS Large Title navigation
->
-> ### App Assets
-> - [App Branding](references/app-branding.md) - `brand` command for launcher icons, adaptive, iOS 18+ Dark/Tinted, marketplace assets (v7.6.0)
-> - [Multi-Density Images](references/multi-density-images.md) - `images` command for Android res-*dpi + iPhone @1x/@2x/@3x UI images (v7.6.0)
->
-> ### Performance
-> - [Performance Tips](references/performance-tips.md) - Optimizing PurgeTSS apps (bridge crossings, ListView, animations)
->
-> ### Components
-> - [TiKit UI Components](references/tikit-components.md) - Ready-to-use Alerts, Avatars, Buttons, Cards, Tabs built with PurgeTSS
->
-> ### Fonts & Animations
-> - [Icon Fonts](references/icon-fonts.md) - Font Awesome 7, Material Icons, custom icon libraries
-> - [Animation System](references/animation-system.md) - 15 methods including collision detection, transitions, and sequential animations
-> - [Animation Advanced](references/animation-advanced.md) - Property inheritance, utility classes, implementation rules, complex UI example
->
-> ### Release Notes
-> - [Version History](references/version-history.md) - Release-by-release feature additions and behavior changes (v7.4.0 → v7.9.0)
->
+
+## Reference Guides
+
+Load these only when needed:
+
+### Essential References
+- **[Class Index](references/class-index.md)** - Naming conventions, 416-property table, prohibited classes, verification commands (LOAD FIRST when unsure about a class)
+- **[Class Categories](references/class-categories.md)** - Complete prefix inventory by category (layout, colors, typography, states, etc.)
+- **[Dynamic Component Creation](references/dynamic-component-creation.md)** - `$.UI.create()` and `Alloy.createStyle()` for creating components in Controllers (READ FIRST for dynamic components)
+- **[Appearance Module](references/appearance-module.md)** - Light/Dark/System mode switching with persistence (v7.5.3)
+- **[Semantic Colors](references/semantic-colors.md)** - Titanium semantic colors for Light/Dark mode via `semantic` command (v7.6.0)
+
+### Setup & Configuration
+- [Installation & Setup](references/installation-setup.md) - First run, VS Code, LiveView
+- [CLI Commands](references/cli-commands.md) - All `purgetss` commands
+- [Migration Guide](references/migration-guide.md) - Migrating existing apps from manual TSS to PurgeTSS
+- **[Values and Units](references/values-and-units.md)** - How `ti.ui.defaultunit` in `tiapp.xml` interprets the unitless numeric values PurgeTSS writes (foundational concept for spacing, sizes, typography)
+
+### Customization
+- [Deep Customization](references/customization-deep-dive.md) - config.cjs, colors, spacing, Ti Elements
+- [Custom Rules](references/custom-rules.md) - Styling Ti Elements, IDs, classes
+- [Apply Directive](references/apply-directive.md) - Extracting utility combinations
+- [Configurable Properties](references/configurable-properties.md) - All 80+ customizable properties
+
+### Appearance & Theming
+- **[Appearance Module](references/appearance-module.md)** - Light/Dark/System mode switching with persistence (v7.5.3)
+- **[Semantic Colors](references/semantic-colors.md)** - `semantic` command + runtime usage for Light/Dark mode (v7.6.0)
+
+### Layout & Styling
+- **[UI/UX Design Patterns](references/ui-ux-design.md)** - Complete guide to mobile UI components with PurgeTSS (cards, lists, forms, buttons, navigation, modals, accessibility)
+- [Grid Layout System](references/grid-layout.md) - 12-column grid, responsive layouts
+- [Smart Mappings](references/smart-mappings.md) - How gap, shadows, and grid work under the hood
+- [Arbitrary Values](references/arbitrary-values.md) - Parentheses notation for custom values
+- [Platform Modifiers](references/platform-modifiers.md) - ios:, android:, tablet:, handheld:
+- [Opacity Modifier](references/opacity-modifier.md) - Color transparency with /50 syntax
+- [Titanium Resets](references/titanium-resets.md) - Default styles for Ti elements
+- [iOS Large Titles](references/ios-large-titles.md) - Best practice for iOS Large Title navigation
+
+### App Assets
+- [App Branding](references/app-branding.md) - `brand` command for launcher icons, adaptive, iOS 18+ Dark/Tinted, marketplace assets (v7.6.0)
+- [Multi-Density Images](references/multi-density-images.md) - `images` command for Android res-*dpi + iPhone @1x/@2x/@3x UI images (v7.6.0)
+
+### Performance
+- [Performance Tips](references/performance-tips.md) - Optimizing PurgeTSS apps (bridge crossings, ListView, animations)
+
+### Components
+- [TiKit UI Components](references/tikit-components.md) - Ready-to-use Alerts, Avatars, Buttons, Cards, Tabs built with PurgeTSS
+
+### Fonts & Animations
+- [Icon Fonts](references/icon-fonts.md) - Font Awesome 7, Material Icons, custom icon libraries
+- [Animation System](references/animation-system.md) - 15 methods including collision detection, transitions, and sequential animations
+- [Animation Advanced](references/animation-advanced.md) - Property inheritance, utility classes, implementation rules, complex UI example
+
+### Release Notes
+- [Version History](references/version-history.md) - Release-by-release feature additions and behavior changes (v7.4.0 → v7.9.0)
+
 > **💡 TEXT FONTS (Google Fonts, Roboto, etc.)**
 > For text fonts, see [CLI Commands → build-fonts](references/cli-commands.md#purgetss-build-fonts-alias-bf).
->
-> ## Examples
->
-> For complete WRONG vs CORRECT examples including:
-> - Titanium layout patterns (horizontal, vertical, composite)
-> - Grid with percentages
-> - Gap usage
-> - Manual .tss anti-patterns
-> - Dynamic component creation with `$.UI.create()` and `Alloy.createStyle()`
->
-> See [EXAMPLES.md](references/EXAMPLES.md) and [Dynamic Component Creation](references/dynamic-component-creation.md)
->
-> ## Related Skills
->
-> For tasks beyond styling, use these complementary skills:
->
-> | Task                                         | Use This Skill |
-> | -------------------------------------------- | -------------- |
-> | Project architecture, services, controllers  | `ti-expert`    |
-> | Complex UI components, ListViews, gestures   | `ti-ui`        |
-> | Alloy MVC concepts, data binding, TSS syntax | `alloy-guides` |
-> | Native features (camera, location, push)     | `ti-howtos`    |
->
+
+## Examples
+
+For complete WRONG vs CORRECT examples including:
+- Titanium layout patterns (horizontal, vertical, composite)
+- Grid with percentages
+- Gap usage
+- Manual .tss anti-patterns
+- Dynamic component creation with `$.UI.create()` and `Alloy.createStyle()`
+
+See [EXAMPLES.md](references/EXAMPLES.md) and [Dynamic Component Creation](references/dynamic-component-creation.md)
+
+## Related Skills
+
+For tasks beyond styling, use these complementary skills:
+
+| Task                                         | Use This Skill |
+| -------------------------------------------- | -------------- |
+| Project architecture, services, controllers  | `ti-expert`    |
+| Complex UI components, ListViews, gestures   | `ti-ui`        |
+| Alloy MVC concepts, data binding, TSS syntax | `alloy-guides` |
+| Native features (camera, location, push)     | `ti-howtos`    |
