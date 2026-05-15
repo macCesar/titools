@@ -88,7 +88,7 @@ purgetss
 
 - `fonts`
 
-  Place icon, serif, sans-serif, or monospace font files here. See the [`build-fonts` command](./cli-commands.md#purgetss-build-fonts-alias-bf) for instructions.
+  Place icon, serif, sans-serif, or monospace font files here. See [Custom Fonts](./custom-fonts.md) for the full guide, or [`build-fonts` Command](./cli-commands.md#build-fonts-command) for the terse flag reference.
 
 > **CAUTION**
 > **PurgeTSS overwrites your existing `app.tss` file.**
@@ -152,9 +152,9 @@ To use the example files:
 > Every time `purgetss` runs, it copies the content of `_app.tss` to `app.tss`.
 
 ```tss
-/* PurgeTSS v7.2.7 */
-/* Created by César Estrada */
-/* https://github.com/macCesar/purgeTSS */
+// PurgeTSS v7.10.2
+// Created by César Estrada
+// https://purgetss.com
 
 /* _app.tss styles */
 '.bg-primary': {
