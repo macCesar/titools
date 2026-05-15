@@ -4,6 +4,93 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.3.0] - 2026-05-14
+
+### Fixed — `purgetss` SKILL.md blockquote that swallowed the Reference Guides
+
+The `> ` blockquote opened by the NO FLEXBOX callout (line 199 of
+`SKILL.md`) was never terminated by a blank non-quoted line. Every
+section after it — PLATFORM-SPECIFIC PROPERTIES, Other Mandatory Rules,
+Common Anti-Patterns, Class Verification Workflow, Reference Guides,
+Examples, Related Skills — rendered as nested quoted content in any
+CommonMark parser. The Reference Guides index (the file map the agent
+needs to load the right reference) was visually buried under a left-bar
+quote. The fix terminates the FLEXBOX callout cleanly and promotes the
+following 11 H2/H3 sections back to document-level headings. No content
+was removed; only the leading `> ` prefix was stripped from non-callout
+lines. Legitimate inline admonitions keep their callout formatting.
+
+### Added — `skills/purgetss/references/custom-fonts.md`
+
+PurgeTSS v7.10 docs were split upstream into
+`customization/7-custom-fonts.md` (build-fonts, brand fonts, user-defined
+icon fonts) and `customization/8-icon-fonts-libraries.md` (icon-library,
+the four bundled icon families). The skill now mirrors that split.
+`custom-fonts.md` is a port of the upstream custom-fonts page: the
+build-fonts command, fonts-folder organization, `-m` / `--module`
+CommonJS output (with both `exports.icons` and `exports.families`), the
+`-f` / `--font-class-from-filename` flag, and community patterns on
+PostScript renaming and Font Awesome duotone.
+
+### Changed — `skills/purgetss/references/icon-fonts.md` rewritten
+
+The previous file only covered "Recreate Removed Libraries" (Bootstrap
+Icons, Boxicons, LineIcons, Tabler Icons). The primary content — the 4
+official families bundled with PurgeTSS — lived inside the
+`icon-library` section of `cli-commands.md`. The rewrite consolidates
+the primary content with the variant table (`.ms`/`.mso`/`.msr`/`.mss`,
+`.fa`/`.fas`/`.far`/`.fab`, `.mi`, `.f7`), the `icon-library` install
+flow, the full four-family XML/TSS example, and the Font Awesome Pro /
+Beta workflow. The "Recreating removed libraries" section was preserved.
+
+### Changed — `skills/purgetss/references/cli-commands.md` trimmed
+
+Went from 1158 to 773 lines (under the 800-line per-reference quality
+standard). The build-fonts (~220 lines) and icon-library (~200 lines)
+sections were replaced with short stub blocks that document the command
+signature and flags, then point to the dedicated `custom-fonts.md` and
+`icon-fonts.md` refs for the full guide. Also:
+
+- Removed a 19-line "What's new in v7.5.3 / v7.6.x / v7.7.0 / v7.8.0 /
+  v7.9.0" intro block that duplicated content already in
+  `version-history.md`.
+- Fixed a `-f` flag drift: the option name was `--filename` (incorrect);
+  the actual flag is `--font-class-from-filename`.
+- Bumped a TSS example header comment from `v7.2.7` to `v7.10.2` to
+  match what current PurgeTSS emits.
+
+### Changed — `skills/purgetss/references/version-history.md` refactored
+
+PurgeTSS extracted its inline changelog (in `docs/index.md`) into its
+own dedicated changelog page at <https://purgetss.com/changelog>. The
+skill's `version-history.md` was duplicating the long narrative form,
+which meant double maintenance per release and risked drift.
+
+Trimmed from 165 to 59 lines. Each release entry now reduces to 1-5
+terse bullets answering *"what changed that the agent needs to know
+when suggesting classes or configuring `config.cjs`?"* — APIs renamed,
+breaking changes, new commands, new classes, fixes that affect user-
+facing behavior. Internal details (logger fixes, parser edge cases,
+dependency bumps) moved out. The top of the file now points to the
+canonical changelog for full release notes.
+
+### Fixed — `skills/purgetss/references/installation-setup.md` anchors and example header
+
+The "Place icon, serif, sans-serif, or monospace font files here" line
+linked to `cli-commands.md#purgetss-build-fonts-alias-bf`, an anchor
+slug that no longer existed (the current slug is
+`#build-fonts-command`). The link now points to `custom-fonts.md` as
+the primary target, with `cli-commands.md#build-fonts-command` as the
+terse flag-reference secondary. Also bumped a TSS example header
+comment from `v7.2.7` to `v7.10.2`.
+
+### Documentation — README reference count
+
+Bumped the `purgetss` reference count in the Skill contents summary
+table from `29 files` to `31 files` to reflect both the `version-
+history.md` introduced in 3.2.0 and the new `custom-fonts.md` introduced
+in this release.
+
 ## [3.2.0] - 2026-05-13
 
 ### Added — repo conventions and skill output contract
