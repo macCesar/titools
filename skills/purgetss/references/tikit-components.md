@@ -316,7 +316,7 @@ Colors: `black`, `dark`, `light`, and `white` themes that affect background and 
 
 Use this for code examples. Set `copy="true"` to add a copy button.
 
-**Pro tip — recommended monospace fonts:** For best results, install a monospaced font (like Fira Code or JetBrains Mono) and configure `font-mono` in your PurgeTSS config. (Source: official tikit docs, `tikit.md` line ~390.)
+**Pro tip — recommended monospace fonts:** For best results, install a monospaced font (like Fira Code or JetBrains Mono) and configure `font-mono` in your PurgeTSS config. (Source: the official tikit docs.)
 
 **Localization:** The copy button uses `L('copy', 'Copy')` for its title and `L('code_copied', 'Code copied!')` for the confirmation message. Add these keys to your `strings.xml` files for translation.
 
@@ -512,4 +512,4 @@ You can mix and match icons from different libraries throughout your app.
 
 ## License
 
-TiKit UI Components is open source under the MIT License (Copyright 2023-2025 Cesar Estrada).
+TiKit UI Components is open source under the MIT License (Copyright (c) 2023-2025 César Estrada).

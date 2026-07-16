@@ -356,6 +356,11 @@ Since v7.7.0, PurgeTSS regenerates `app/assets/android/default.png` in Alloy pro
 
 That file still matters as a fallback on older Titanium Android splash paths, which is why `cleanup-legacy` no longer removes it.
 
+> **INFO**
+>
+> Older Android splash theme assets are left out on purpose
+> The older Android splash **theme** assets `background.png` / `background.9.png` are intentionally **not** part of the normal `brand` flow. `brand` targets the modern Titanium icon pipeline (iOS app icons, Android adaptive icons, optional Android 12+ splash artwork), so if a project still depends on those legacy nine-patch theme assets, manage them manually. (Source: upstream `app-assets/1-app-icons-and-branding.md` ~lines 334, 386.)
+
 ## iOS 18+ Dark and Tinted variants
 
 iOS 18 added two appearance variants on top of the standard app icon: **Dark** (for the dark appearance of the Home Screen) and **Tinted** (for the user-accent-colored mode).

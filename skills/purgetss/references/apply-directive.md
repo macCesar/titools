@@ -85,7 +85,7 @@ module.exports = {
 
 `./purgetss/styles/utilities.tss`
 ```tss
-'.close-button': { color: '#374151', textColor: '#374151', width: 48, height: 48, font: { fontFamily: 'FontAwesome7Free-Solid' }, text: '', title: '' }
+'.close-button': { color: '#374151', textColor: '#374151', width: 48, height: 48, font: { fontFamily: 'FontAwesome7Free-Solid' }, text: '\uf057', title: '\uf057' }
 ```
 
 The same lookup runs for `mi-*`, `ms-*`, and `f7-*` classes. If the project ships its own `purgetss/styles/fontawesome.tss` (for example, FontAwesome Pro or Beta), that file takes precedence over the bundled default — matching the precedence order used when the same icon class appears directly in XML.

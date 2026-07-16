@@ -163,19 +163,56 @@ On the first run, `purgetss images` injects an `images:` block into your existin
 
 ```javascript
 images: {
+  autoSync: true,          // false = SVG pipeline computes dims but doesn't write to images.files
   quality: 85,             // JPEG/WebP/AVIF quality (0-100)
   format: null,            // null = keep original; 'webp' | 'jpeg' | 'png' to convert every image
-  confirmOverwrites: true  // prompt before overwriting files (set false to skip)
+  confirmOverwrites: true, // prompt before overwriting files (set false to skip)
+  files: []                // per-file overrides: [{ filename: 'images/<sub>/<name>.<ext>', width, height? }]
 }
 ```
 
 | Key | Default | Purpose |
 | --- | --- | --- |
+| `autoSync` | `true` | When `false`, the SVG pipeline still computes dimensions and generates PNGs but never writes back to `images.files`. See [SVG-aware compile-time pipeline](./svg-pipeline.md). |
 | `quality` | `85` | Quality for lossy formats (JPEG, WebP, AVIF). Range `0–100`. |
 | `format` | `null` | `null` keeps each source's original format. Set `'webp'`, `'jpeg'`, or `'png'` to convert every output. |
 | `confirmOverwrites` | `true` | When `false`, the `[y/N/a]` prompt is skipped. |
+| `files` | `[]` | Per-file dimension overrides. See [Per-file overrides](#per-file-overrides-with-imagesfiles). |
 
-Change whatever you want to override globally; CLI flags still win for one-off runs.
+Change whatever you want to override globally; CLI flags still win for one-off runs. `autoSync` and `files` arrived in v7.11.0 to support the [SVG-aware compile-time pipeline](./svg-pipeline.md).
+
+## Per-file overrides with `images.files`
+
+`images.files` (v7.11.0) is an array of per-file dimension pins. It does **not** filter which images get processed — `purgetss images` always walks every supported file under `purgetss/images/`. Entries in `files` only override the source and derived sizing for files whose `filename` matches.
+
+```javascript
+images: {
+  // ...
+  files: [
+    { filename: 'images/logos/logo.svg',    width: 256 },              // SVG: width pins @1x/mdpi
+    { filename: 'images/buttons/hero.svg',  width: 512, height: 128 }, // both dims pinned
+    { filename: 'images/photos/banner.jpg', width: 800 }               // raster: behaves like --width 800
+  ]
+}
+```
+
+Precedence is the same for every file processed:
+
+1. CLI `--width <n>` wins.
+2. Otherwise, the matching entry in `images.files` (if any).
+3. Otherwise, the source's natural size: `viewBox` for SVG, intrinsic pixel size for rasters (treated as 4× master).
+
+| Source | In `files`? | Width source | Output format |
+| --- | --- | --- | --- |
+| `logos/logo.svg` | yes | 256 px @1x (from `files`) | `png` (forced; see below) |
+| `buttons/hero.svg` | yes | 512×128 pinned | `png` (forced) |
+| `photos/banner.jpg` | yes | 800 px @1x | jpg (or `format` if set) |
+| `icons/cart.svg` (not listed) | no | from SVG viewBox | follows `format` |
+| `backgrounds/sunset.png` (not listed) | no | source as 4× master | png (or `format`) |
+
+**SVGs in `files` always emit `.png`.** PurgeTSS detects that the file is a vector source whose entry exists because the developer pinned it from a view/controller reference (`image="/.../foo.svg"`). Titanium's runtime only falls back from `.svg` references to `.png`, never `.webp`, `.jpeg`, or another format. Emitting anything else here would silently produce files Titanium cannot load.
+
+Raster entries you add by hand survive subsequent runs untouched. For SVGs detected by the [post-purge pipeline](./svg-pipeline.md), entries populate automatically — set `autoSync: false` if you do not want the pipeline writing into this section.
 
 ## Output layouts
 
@@ -303,6 +340,19 @@ purgetss images --format webp --quality 85
 ```
 
 Keep the default `format: null` when you need to stay in the same format as the source — for example PNG with alpha that shouldn't be flattened.
+
+> **WARNING — WebP and SVG references don't mix**
+>
+> Titanium's runtime fallback for `image="/.../foo.svg"` resolves to `.png` **only** (verified empirically). Other formats — `.webp`, `.jpeg`, `.avif` — are not picked up through the `.svg` reference.
+>
+> If both `.png` and `.webp` of the same basename live next to each other on disk, the `.svg` fallback **breaks entirely**. Titanium then shows nothing for that view.
+>
+> PurgeTSS protects you in two places:
+>
+> - SVGs listed in `images.files` always emit `.png`, even with `format: 'webp'`. The output line says `png (forced; ignores format: webp)`.
+> - The post-purge [SVG pipeline](./svg-pipeline.md) always emits `.png` regardless of `format`.
+>
+> `format` only applies to raster sources and SVGs not listed in `files` — the ones you reference directly as `.webp` in XML instead of through `.svg`.
 
 ## Reducing alpha across every density with `--opacity` (v7.10.0)
 
@@ -485,5 +535,6 @@ Shows every file that would be written, no side effects.
 
 ## See also
 
+- [SVG-aware compile-time pipeline](./svg-pipeline.md) — the post-purge SVG pipeline that auto-generates density PNGs from `image="/.../foo.svg"` references sized by utility classes.
 - [`images` command reference](./cli-commands.md#images-command) — terse flag list.
 - [App Icons & Branding](./app-branding.md) — sibling `brand` command for launcher icons and marketplace artwork.

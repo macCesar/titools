@@ -65,7 +65,7 @@ Complete inventory of all class prefixes organized by functional category. For n
 
 | Prefix | Count | Examples |
 | --- | --- | --- |
-| `bg-` | **1,688** | `bg-white`, `bg-gray-*` (50-950), all 22 Tailwind colors. Each color has 11 shades: 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950. Plus: `bg-black`, `bg-white`, `bg-transparent`, `bg-translucent` |
+| `bg-` | **1,688** | `bg-white`, `bg-gray-*` (50-950), all 22 Tailwind colors. Each color has 11 shades: 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950. Plus: `bg-black`, `bg-white`, `bg-transparent` |
 | `active-tint-*` | ~24 | `active-tint-*` (all colors) |
 | `selected-bg-*` | ~264 | `selected-bg-*` (selected state backgrounds) |
 | `badge-bg-*` | ~264 | `badge-bg-*` (badge backgrounds) |
