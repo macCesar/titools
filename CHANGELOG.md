@@ -4,6 +4,62 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [4.0.0] - 2026-07-15
+
+### Breaking — Doc-based skills return to TiTools as canonical source
+
+The five documentation-mirror skills that moved to `tidev/skills` in v3.0.0 are back in TiTools and ship with the CLI / plugin again:
+
+- `ti-api` — Complete Titanium API reference
+- `ti-guides` — SDK fundamentals (tiapp.xml, Hyperloop, distribution)
+- `ti-howtos` — Native feature integration (location, push, media, platform APIs)
+- `alloy-guides` — Alloy MVC framework reference
+- `alloy-howtos` — Alloy CLI, configuration, debugging
+
+This reverses the v3.0.0 donation strategy. The copies in `tidev/skills` stay community-maintained, but TiTools is the canonical source going forward — improvements land here first and propagate to users via `titools update`.
+
+Users on v3.x will get the five skills reinstalled automatically on next `titools update`. Anyone preferring the v3.x behavior (skills installed only via `tidev/skills`) can pin to `@maccesar/titools@^3.3.0`.
+
+### Changed — `lib/config.js`
+
+- `SKILLS` now includes all 8 skills (3 opinionated + 5 doc-based).
+- `LEGACY_SKILLS` no longer contains the five doc-based names.
+
+### Changed — `titools-skill-auditor` synced with upstream improvements
+
+Replaced the auditor in `.claude/skills/titools-skill-auditor/` with the latest content from `tidev/skills` (called `ti-skill-audit` there). Brings the Phase 6 cross-reference / orphan-content verification step (slug validation, residual content classification, SKILL.md quick-reference table sync) and the `metadata.internal: true` flag.
+
+### Changed — Drop redundant Gemini CLI platform symlinks
+
+Empirical evidence from running `gemini` confirmed it auto-discovers skills from `~/.agents/skills/` per the [agentskills.io](https://agentskills.io) standard — the same path Codex CLI reads. Up to v3.x, TiTools also created mirror symlinks at `~/.gemini/skills/`, which caused Gemini to report `Skill conflict detected: "X" from ".agents/skills/..." is overriding the same skill from ".gemini/skills/..."` for every installed skill on startup.
+
+This release follows the same path taken for Codex in v3.1.0:
+
+- `getPlatforms()` no longer lists Gemini CLI — installs no longer create `~/.gemini/skills/` symlinks.
+- `cleanupLegacyArtifacts()` now also calls `removeGeminiRedundantSymlinks()`. The same routine is now invoked from `titools install` (previously only `titools update`), so users who already had `~/.gemini/skills/` symlinks from v3.x get them cleaned up the next time they run either command. This also fixes a latent issue from v3.1.0 where the equivalent Codex cleanup only ran during updates.
+- The Knowledge Index emitted into `GEMINI.md` now points at `./.agents/skills` (local) or `~/.agents/skills` (global), matching where Gemini actually reads from.
+- Claude Code is now the only platform that requires TiTools-managed symlinks. Gemini CLI and Codex CLI use the canonical `~/.agents/skills/` directly.
+
+### Changed — README
+
+Removed the v3.0.0-era "Doc-based skills moved to tidev/skills" section and expanded the Skills overview table to list all 8 skills. The Compatible platforms table and CLI install description were updated to reflect the new Gemini auto-discovery model.
+
+### Added — `purgetss` references for the SVG pipeline and the property index split
+
+- **`skills/purgetss/references/svg-pipeline.md`** — new reference for the SVG-aware compile-time image pipeline introduced in PurgeTSS v7.11.0 and refined in v7.11.1. Covers the post-purge step that scans views/controllers for `.svg` references sized by `w-*`/`h-*` classes and emits the 8 Titanium density PNGs, the runtime `.svg`→`.png` fallback, the `images.files` / `images.autoSync` config surface, the current-run cascade policy, symmetric width/height derivation, and the `purgetss/.cache/svg-images.json` cache.
+- **`skills/purgetss/references/class-index-properties.md`** — the full A–Z property→class table, split out of `class-index.md` so both files stay under the 800-line reference limit. `class-index.md` keeps the naming conventions, prefix inventory, verification commands, and the PROHIBITED-classes section, and points at the new file.
+
+### Changed — `purgetss` skill audited and aligned to PurgeTSS v7.11.1
+
+Full 30-reference audit against the upstream `purgetss` (v7.11.1) and `purgetss-docs` documentation. The skill was previously aligned to v7.10.2.
+
+- **v7.11.0 / v7.11.1 coverage:** `version-history.md` and `migration-guide.md` gained 7.11.0/7.11.1 entries; `multi-density-images.md` and `customization-deep-dive.md` now document `images.autoSync` / `images.files`, the `config.cjs` syntax validator (`theme.fontFamily` must be a string), and the recursive theme-nesting behavior.
+- **Icon compile-time resolution:** `icon-fonts.md` and `custom-fonts.md` now state that resolved icon classes are written to the generated `app/styles/app.tss` (not `purgetss/styles/utilities.tss`), matching the upstream doc clarification.
+- **Removed hallucinated classes:** the non-existent bare `center` class (in `ui-ux-design.md` and `EXAMPLES.md`) and `bg-translucent` (in `class-categories.md`) — both verified absent from `dist/utilities.tss` — were replaced with real patterns (`text-center` / composite-omit).
+- **Corrections:** `class-index.md` class count refreshed (`21,236` → `23,000+`, framed as approximate); `cli-commands.md` gained four real flags (`create -m`, `shades -o`, `build --glossary`, `watch -d`); `custom-rules.md` "ESM-style" → "CommonJS-style"; restored lost FontAwesome/Material glyphs; version-header and license/citation nits.
+- **Broken-anchor fixes:** `SKILL.md`'s PROHIBITED-classes link and `titanium-resets.md`'s cross-link now target existing section slugs.
+- All `## Community-Discovered Patterns` sections preserved. `README.md` purgetss reference count updated (`31` → `33`).
+
 ## [3.3.0] - 2026-05-14
 
 ### Fixed — `purgetss` SKILL.md blockquote that swallowed the Reference Guides

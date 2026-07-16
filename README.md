@@ -8,13 +8,11 @@
 
 </div>
 
-TiTools is a Titanium SDK toolkit for AI coding assistants. It ships 3 opinionated skills (`ti-expert`, `purgetss`, `ti-ui`), a research agent, and reference files covering Titanium architecture, PurgeTSS styling, and UI/UX patterns.
+TiTools is a Titanium SDK toolkit for AI coding assistants. It ships 8 skills — 3 opinionated (`ti-expert`, `purgetss`, `ti-ui`) plus 5 documentation-mirror skills (`ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`) — a research agent, and reference files covering Titanium architecture, API reference, native how-tos, Alloy MVC, PurgeTSS styling, and UI/UX patterns.
 
 The reference files are maintained against official documentation whenever an official source exists, so the assistant can retrieve current framework behavior instead of guessing from generic training data.
 
 Without TiTools, assistants rely on general training data. That data can be outdated or too generic for Titanium work. With TiTools, the assistant can look up Alloy architecture, memory cleanup patterns, PurgeTSS utility classes, and platform-specific APIs.
-
-> **v3.0.0 — doc-based skills moved to `tidev/skills`.** Five documentation-only skills (`ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`) are now maintained in the official [`tidev/skills`](https://github.com/tidev/skills) repository alongside the rest of the TiDev community tooling. TiTools now focuses on the three opinionated skills above. See [Doc-based skills moved to tidev/skills](#doc-based-skills-moved-to-tidevskills) below for upgrade notes.
 
 Vercel's AGENTS.md evaluation reports a 100% pass rate for the knowledge index approach, compared to 53-79% using skills alone.
 
@@ -74,9 +72,9 @@ claude   # or gemini, or codex
 ```
 
 What gets installed:
-- The 3 TiTools skills to `~/.agents/skills/`
+- The 8 TiTools skills to `~/.agents/skills/`
 - ti-pro agent for Claude Code
-- Platform symlinks for Claude Code and Gemini CLI (Codex CLI auto-discovers from `~/.agents/skills/` — no symlink needed)
+- Platform symlinks for Claude Code (Gemini CLI and Codex CLI auto-discover from `~/.agents/skills/` — no symlinks needed)
 - Knowledge index in your project's `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`
 - Claude Code SessionStart hook for auto-updates
 
@@ -101,47 +99,15 @@ Use **Option A** if you only use Claude Code. Use **Option B** if you use multip
 
 ---
 
-## Doc-based skills moved to tidev/skills
-
-Starting with **v3.0.0**, five documentation-only skills migrated to the official [`tidev/skills`](https://github.com/tidev/skills) repository:
-
-- `ti-api` — Complete Titanium API reference
-- `ti-guides` — SDK fundamentals (Hyperloop, distribution, tiapp.xml)
-- `ti-howtos` — Native feature integration (location, push, media, platform-specific APIs)
-- `alloy-guides` — Alloy MVC framework reference
-- `alloy-howtos` — Alloy CLI, configuration, debugging
-
-**Why the move?** These skills are pure documentation mirrors of official Titanium and Alloy docs, so they belong in the community-maintained TiDev repository alongside the SDK source itself. Hansemann ([@hansemannn](https://github.com/hansemannn)) — TiDev maintainer — accepted the first batch in [tidev/skills#1](https://github.com/tidev/skills/pull/1) and `ti-howtos` followed in [tidev/skills#2](https://github.com/tidev/skills/pull/2).
-
-**What stays in TiTools:** the three *opinionated* skills that reflect personal Titanium conventions and toolchain choices (PurgeTSS-first styling, specific architecture patterns).
-
-### Upgrading from v2.x
-
-If you have v2.x installed, the five migrated skills will be **auto-removed** the next time you run `titools update` (they're listed in `LEGACY_SKILLS`). To get them back, install from `tidev/skills` directly:
-
-```bash
-git clone https://github.com/tidev/skills.git ~/Developer/git-clones/tidev-skills
-# Then symlink the five skills into ~/.agents/skills/ or your AI assistant's skills dir
-ln -s ~/Developer/git-clones/tidev-skills/skills/ti-api        ~/.agents/skills/ti-api
-ln -s ~/Developer/git-clones/tidev-skills/skills/ti-guides     ~/.agents/skills/ti-guides
-ln -s ~/Developer/git-clones/tidev-skills/skills/ti-howtos     ~/.agents/skills/ti-howtos
-ln -s ~/Developer/git-clones/tidev-skills/skills/alloy-guides  ~/.agents/skills/alloy-guides
-ln -s ~/Developer/git-clones/tidev-skills/skills/alloy-howtos  ~/.agents/skills/alloy-howtos
-```
-
-Refer to the [`tidev/skills` README](https://github.com/tidev/skills#readme) for the canonical install instructions, which may evolve independently of TiTools.
-
----
-
 ## Compatible platforms
 
-| Platform                                                  | Status           | Installation Path   |
-| --------------------------------------------------------- | ---------------- | ------------------- |
-| [Claude Code](https://claude.ai/claude-code)              | Fully Compatible | `~/.claude/skills/` |
-| [Gemini CLI](https://github.com/google-gemini/gemini-cli) | Fully Compatible | `~/.gemini/skills/` |
+| Platform                                                  | Status           | Skills Path                           |
+| --------------------------------------------------------- | ---------------- | ------------------------------------- |
+| [Claude Code](https://claude.ai/claude-code)              | Fully Compatible | `~/.claude/skills/` (symlinked)       |
+| [Gemini CLI](https://github.com/google-gemini/gemini-cli) | Fully Compatible | `~/.agents/skills/` (auto-discovered) |
 | [Codex CLI](https://developers.openai.com/codex/cli/)     | Fully Compatible | `~/.agents/skills/` (auto-discovered) |
 
-All three platforms use the Agent Skills open standard: a `SKILL.md` file with YAML frontmatter.
+All three platforms use the Agent Skills open standard: a `SKILL.md` file with YAML frontmatter. Gemini CLI and Codex CLI auto-discover skills from `~/.agents/skills/` per [agentskills.io](https://agentskills.io), so TiTools does not create redundant platform-specific symlinks for them.
 
 ---
 
@@ -194,7 +160,7 @@ Together they work like this:
 | ------------------------------- | ------------------------------- | ----------------------------- |
 | "Create a login screen"         | Context about project structure | `ti-expert`, `ti-ui`          |
 | "Optimize ListView performance" | Points to docs location         | `ti-ui` reads specific files  |
-| "Implement push notifications"  | API reference paths             | `ti-howtos` (via tidev/skills) |
+| "Implement push notifications"  | API reference paths             | `ti-howtos`                   |
 
 You do not need to explicitly invoke skills. The AI detects when to use them based on your question.
 
@@ -206,16 +172,21 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 
 ## Skills overview
 
-| Skill     | Purpose                         | Best For                                |
-| --------- | ------------------------------- | --------------------------------------- |
-| ti-expert | Architecture and implementation | Starting point for most tasks           |
-| purgetss  | Utility-first styling           | UI styling and animations               |
-| ti-ui     | UI/UX patterns                  | Complex layouts, ListViews, platform UI |
+| Skill        | Purpose                             | Best For                                |
+| ------------ | ----------------------------------- | --------------------------------------- |
+| ti-expert    | Architecture and implementation     | Starting point for most tasks           |
+| purgetss     | Utility-first styling               | UI styling and animations               |
+| ti-ui        | UI/UX patterns                      | Complex layouts, ListViews, platform UI |
+| ti-api       | Complete Titanium API reference     | Looking up properties, methods, events  |
+| ti-guides    | SDK fundamentals                    | tiapp.xml, Hyperloop, distribution      |
+| ti-howtos    | Native feature integration          | Location, push, media, platform APIs    |
+| alloy-guides | Alloy MVC framework reference       | Controllers, models, views, widgets     |
+| alloy-howtos | Alloy CLI, configuration, debugging | alloy.jmk, config.json, custom XML tags |
 
 Notes:
-- `purgetss` reference files are audited against the official PurgeTSS documentation, but the workflow conventions are opinionated.
-- `ti-expert` and `ti-ui` reflect personal Titanium conventions (biased toward PurgeTSS, Alloy-first).
-- For purely doc-based references (API surface, native-feature how-tos, Alloy MVC, SDK guides, Alloy CLI), install [`tidev/skills`](https://github.com/tidev/skills) — it pairs cleanly with TiTools.
+- The first three (`ti-expert`, `purgetss`, `ti-ui`) are opinionated workflow skills reflecting TiTools' Titanium conventions.
+- The latter five are documentation-mirror skills sourced from the official Titanium SDK docs (`tidev/titanium-docs`) and audited against them via the internal `titools-skill-auditor`.
+- `purgetss` reference files are audited against the official PurgeTSS documentation, but its workflow conventions are opinionated.
 
 ---
 
@@ -441,10 +412,6 @@ Key rules:
 
 ---
 
-> **Looking for `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, or `alloy-howtos`?** Those five documentation-only skills now live in [`tidev/skills`](https://github.com/tidev/skills). See [Doc-based skills moved to tidev/skills](#doc-based-skills-moved-to-tidevskills) for install instructions.
-
----
-
 ## Usage examples and best practices
 
 ### Example prompts
@@ -540,13 +507,12 @@ Behavior depends on where you run it:
 | With `--local` flag        | Installs skills locally to `./.agents/skills/` in the current project |
 
 What it does:
-- Installs the 3 TiTools skills (global or local depending on context)
+- Installs the 8 TiTools skills (global or local depending on context)
 - Installs ti-pro agent for Claude Code
-- Detects installed AI platforms and lets you choose which to link
-- Creates symlinks from platform directories to central skills
-- Cleans up legacy artifacts (`alloy-expert` skill, `ti-researcher` agent)
+- Detects installed AI platforms and lets you choose which to link (only Claude Code needs platform symlinks; Gemini CLI and Codex CLI auto-discover from `~/.agents/skills/`)
+- Creates symlinks from `~/.claude/skills/` to the central `~/.agents/skills/`
+- Cleans up legacy artifacts (`alloy-expert` skill, `ti-researcher` agent, redundant Gemini/Codex symlinks)
 - If run inside a Titanium project, prompts to run `titools sync` afterward
-- Warns Gemini users if local skills override existing global Gemini skills
 - Installs Claude Code SessionStart hook for auto-updates
 
 ### titools auto-update
@@ -736,7 +702,7 @@ This pattern is documented across three TiTools skills: `ti-ui`, `ti-expert`, an
 | Skill     | SKILL.md                      | References                                            |
 | --------- | ----------------------------- | ----------------------------------------------------- |
 | ti-expert | Architecture + Implementation | 21 files (patterns, testing, security, etc.)          |
-| purgetss  | Setup + Critical Rules        | 31 files (grid, animations, icons, class-index, etc.) |
+| purgetss  | Setup + Critical Rules        | 33 files (grid, animations, icons, class-index, SVG pipeline, etc.) |
 | ti-ui     | UI Rules + Platform Diffs     | 14 files (layouts, lists, gestures, etc.)             |
 
 ---
