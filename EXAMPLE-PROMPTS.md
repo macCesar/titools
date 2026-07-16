@@ -13,8 +13,7 @@ These prompts verify the assistant read the docs index from your project's instr
 ```
 Expect:
 - Titanium SDK docs index
-- The 3 TiTools skills: `ti-expert`, `purgetss`, `ti-ui`
-- If `tidev/skills` is also installed: `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`
+- All 8 TiTools skills: `ti-expert`, `purgetss`, `ti-ui`, `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`
 - Reference file locations
 
 ---
@@ -70,7 +69,7 @@ Expect:
 Expect:
 - `$.UI.create()` syntax examples (standard Alloy API)
 - Why it's better than manual style objects
-- Reference to `purgetss/references/dynamic-component-creation.md` if PurgeTSS is detected, or to `alloy-guides/references/VIEWS_DYNAMIC.md` if `tidev/skills` is installed
+- Reference to `purgetss/references/dynamic-component-creation.md` if PurgeTSS is detected, or to `alloy-guides/references/VIEWS_DYNAMIC.md` otherwise
 
 ---
 
@@ -129,7 +128,73 @@ Expect:
 
 ---
 
-> **Note:** activation tests for `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, and `alloy-howtos` now live in [`tidev/skills`](https://github.com/tidev/skills) since those skills moved upstream in v3.0.0.
+### ti-api
+```
+"What events does `Ti.UI.ListView` fire and what data do their callbacks receive?"
+```
+```
+"Show me the full signature of `Ti.Network.createHTTPClient` — every property and method."
+```
+Expect:
+- Activates `ti-api`
+- References `ti-api/references/api-ui-lists.md` (ListView) or `api-data-network.md` (HTTPClient)
+- Concrete property/method/event names, not generic descriptions
+
+---
+
+### ti-guides
+```
+"How do I set the iOS bundle identifier and the Android applicationId in `tiapp.xml`?"
+```
+```
+"What's the right way to wire up Hyperloop to call a native iOS class from JavaScript?"
+```
+Expect:
+- Activates `ti-guides`
+- References `ti-guides/references/tiapp-config.md` or `hyperloop-native-access.md`
+- Concrete XML/JS examples, no hand-waving
+
+---
+
+### ti-howtos
+```
+"How do I add Android push notifications using Firebase in a Titanium app?"
+```
+```
+"How do I show a Google Maps v2 view on Android with a custom marker?"
+```
+Expect:
+- Activates `ti-howtos`
+- References `ti-howtos/references/notification-services.md` or `google-maps-v2.md`
+- Working integration code, not pseudocode
+
+---
+
+### alloy-guides
+```
+"How do I bind a Backbone Collection to a TableView in Alloy and update the UI when items change?"
+```
+```
+"Explain how Alloy widgets work and how to share one between two projects."
+```
+Expect:
+- Activates `alloy-guides`
+- References `alloy-guides/references/MODELS.md` or `WIDGETS.md`
+- XML/TSS/controller patterns specific to Alloy
+
+---
+
+### alloy-howtos
+```
+"What does `alloy.jmk` do and when should I add a pre:compile hook?"
+```
+```
+"How do I make `config.json` use different values for iOS vs Android in production?"
+```
+Expect:
+- Activates `alloy-howtos`
+- References `alloy-howtos/references/config_files.md` or the related Alloy CLI reference
+- Concrete examples of conditionals and build hooks
 
 ---
 
@@ -143,7 +208,7 @@ Expect:
 - Use `ti-expert` for architecture and controller structure
 - Use `ti-ui` for animations and layout patterns
 - Use `purgetss` only if PurgeTSS is detected or the user mentions it
-- For secure token storage: install `tidev/skills` and use `ti-howtos`
+- For secure token storage: use `ti-howtos`
 
 ---
 
@@ -159,7 +224,7 @@ Expect:
 - `ti-expert` for project structure
 - `ti-ui` for ListView with pull-to-refresh
 - `purgetss` only if PurgeTSS is detected or the user mentions it
-- For GPS tracking: install `tidev/skills` and use `ti-howtos`
+- For GPS tracking: use `ti-howtos`
 
 ---
 
@@ -168,6 +233,11 @@ Expect:
 - [ ] ti-expert: responds with correct architecture
 - [ ] purgetss: does not use flexbox, uses correct classes
 - [ ] ti-ui: mentions performance rules
+- [ ] ti-api: cites specific properties/methods/events
+- [ ] ti-guides: references tiapp.xml / Hyperloop / distribution docs
+- [ ] ti-howtos: provides working integration code
+- [ ] alloy-guides: uses Alloy XML/TSS patterns
+- [ ] alloy-howtos: references alloy.jmk / config.json correctly
 - [ ] Collaboration: multiple skills work together
 
 ---
@@ -179,11 +249,16 @@ Platform: [ ] Claude Code  [ ] Gemini CLI  [ ] Codex CLI
 
 ### Results
 
-| Skill     | Active? | Correct response? | Notes |
-| --------- | ------- | ----------------- | ----- |
-| ti-expert |         |                   |       |
-| purgetss  |         |                   |       |
-| ti-ui     |         |                   |       |
+| Skill        | Active? | Correct response? | Notes |
+| ------------ | ------- | ----------------- | ----- |
+| ti-expert    |         |                   |       |
+| purgetss     |         |                   |       |
+| ti-ui        |         |                   |       |
+| ti-api       |         |                   |       |
+| ti-guides    |         |                   |       |
+| ti-howtos    |         |                   |       |
+| alloy-guides |         |                   |       |
+| alloy-howtos |         |                   |       |
 
 ---
 
@@ -203,7 +278,7 @@ Social feed:
 "I'm building a social feed like Instagram, avatar, username, photo, like/comment counts.
 It needs infinite scroll, smooth animations when new posts load, and it should cache posts for offline."
 ```
-Expect: use `ti-ui`, `ti-expert` (for offline caching with native APIs, install `tidev/skills` and use `ti-howtos`)
+Expect: use `ti-ui`, `ti-expert` (for offline caching with native APIs, use `ti-howtos`)
 
 Settings screen:
 ```
@@ -266,7 +341,7 @@ Old Titanium to modern:
 ```
 "I'm upgrading from Titanium 8.x to 12.x. What's going to break? What new stuff should I use?"
 ```
-Expect: use `ti-expert` for migration patterns; if `tidev/skills` is installed, also `ti-guides` for SDK version notes.
+Expect: use `ti-expert` for migration patterns and `ti-guides` for SDK version notes.
 
 ---
 
