@@ -16,7 +16,7 @@ Whether you want to style a Ti Element (a markup element such as `Label`), a cus
 
 > **CAUTION — Migrating from PurgeTSS v4 or v5 to v7+**
 >
-> If your project started on PurgeTSS v5 or earlier and you are now on 7.x.x or later, the class-naming convention changed (`camelCase` -> `kebab-case`) and the config moved to ESM-style `config.cjs`. The recommended upgrade path is:
+> If your project started on PurgeTSS v5 or earlier and you are now on 7.x.x or later, the class-naming convention changed (`camelCase` -> `kebab-case`) and the config moved to CommonJS-style `config.cjs`. The recommended upgrade path is:
 >
 > 1. **Audit current usage.** Set `purge.options.missing` to `true` in `config.cjs`. PurgeTSS will append a list of missing classes at the end of `app.tss` after the next compile — every entry is a class name you still need to migrate.
 > 2. **Rename selectors.** Convert every `.myCustomClassName` to `.my-custom-class-name` in both XML markup and `config.cjs`. The old camelCase names will not match anymore.

@@ -1,8 +1,59 @@
 # Migration Guide
 
-This guide mirrors the official PurgeTSS changelog (see the project `README.md` / `docs/index.md`). It walks through the upgrade-relevant changes from v7.2.6 through v7.10.x, flags breaking changes, and links each section to the reference files that cover the new surface area in depth.
+This guide mirrors the official PurgeTSS changelog (see the project `README.md` / `docs/index.md`). It walks through the upgrade-relevant changes from v7.2.6 through v7.11.x, flags breaking changes, and links each section to the reference files that cover the new surface area in depth.
 
 Changelog source of truth: [https://github.com/macCesar/purgeTSS](https://github.com/macCesar/purgeTSS).
+
+---
+
+## Upgrade to v7.11.x
+
+v7.11.0 and v7.11.1 are additive — **no breaking changes**. The headline addition is a compile-time SVG image pipeline that runs automatically as a post-step of `purgetss`, plus a `config.cjs` syntax validator. Nothing new is required on upgrade; the new surface is opt-in. Full release notes in [`version-history.md`](./version-history.md).
+
+### Added in v7.11.0 — SVG compile-time image pipeline (opt-in)
+
+Reference an `.svg` in a view or controller with `image="/images/<sub>/<name>.svg"` (or `backgroundImage="..."`) **alongside** utility classes that resolve to a numeric width/height (`w-32`, `w-(300)`, `h-auto`, …), and after the regular purge finishes PurgeTSS compiles that SVG into the 8 Titanium density variants (5 Android + 3 iPhone PNGs), sizing them from the dimensions resolved in `app.tss`. Titanium loads the generated `.png` automatically at runtime even though the source still references `.svg` — the SVG attribute is never rewritten.
+
+- Cache lives at `purgetss/.cache/svg-images.json` — **add it to `.gitignore`**.
+- Projects that never reference `.svg` images with sizing classes see no change. This is entirely opt-in by usage.
+
+See [`multi-density-images.md`](./multi-density-images.md).
+
+### Added in v7.11.0 — `images.files` override array
+
+`config.cjs` accepts an `images.files` array to pin width/height for individual files in `purgetss/images/`:
+
+```javascript
+images: {
+  autoSync: true,
+  files: [
+    { filename: 'images/logos/logo.png', width: 128, height: 52 }
+  ]
+}
+```
+
+Entries override a source's natural dimensions when `purgetss images` runs; CLI `--width` still wins over both. SVGs detected by the purge pipeline populate entries automatically (subject to `images.autoSync`). Raster entries you add by hand survive subsequent runs untouched.
+
+### Added in v7.11.0 — `images.autoSync` opt-out
+
+`images.autoSync` (boolean, default `true`). When `false`, purge still computes dimensions and generates the density PNGs, but never writes back to `config.cjs` — for devs who manage `images.files` by hand.
+
+### Added in v7.11.0 — `config.cjs` syntax validator
+
+Type mismatches in known config fields now print a formatted `Config Syntax Error` block (file, JSON path, context, issue, and a fix snippet) instead of a cryptic downstream crash like `rule.startsWith is not a function`. Currently validated: `theme.fontFamily.*` and `theme.extend.fontFamily.*` — **each font-family value must be a string**. The validator runs at config load time.
+
+### Changed in v7.11.1 — symmetric cascade + current-run sync
+
+- **Symmetric width/height cascade** — a class can pin width-only, height-only, or both. The unpinned side stays `null` in `images.files` and is re-derived from the SVG viewBox on every run, so no stale auto-derived dimension gets frozen into config.
+- **`syncConfigImages` mirrors the current run** instead of taking `max()` across past runs. Shrinking a class (e.g. `h-52` → `h-16`) now propagates to `config.cjs` rather than freezing the entry at the larger past size. Pin manually with `images.autoSync: false`.
+- **`purgetss images` respects `--yes`** for overwrite confirmations — the prompt no longer reappears when `--yes` is supplied.
+- **SVGs listed in `images.files` always emit `.png`** regardless of `images.format`, because Titanium's `.svg → .png`-only runtime fallback means other formats wouldn't load. Raster files and SVGs not in `images.files` still honor `format`.
+
+### What to review
+
+- Add `purgetss/.cache/` to `.gitignore` before your next commit if you reference `.svg` images with sizing classes.
+- If your `config.cjs` sets `theme.fontFamily` or `theme.extend.fontFamily` to anything other than a string, fix it now — the validator will halt with a `Config Syntax Error` block.
+- If you manage `images.files` by hand and don't want purge overwriting your sizes, set `images.autoSync: false`.
 
 ---
 
@@ -372,3 +423,4 @@ If you previously worked around this by inlining the gradient directly in TSS, r
 - After v7.8.0: run the build once and address every `Class Syntax Error` it surfaces. Update CI to handle the new hard-fail on malformed class names. Migrate any `top-[10px]` style square brackets to `top-(10px)` parentheses.
 - After v7.9.0: search for any `purgetss/experimental/tailwind-classes/` references in tooling/CI and update to `purgetss/glossary/tailwind-classes/`. If a project used top-level `theme.Window` / `View` / `ImageView` and depended on framework defaults being merged in, decide between moving the config under `theme.extend.*` or adding the previously-implicit utilities to the `apply` string.
 - After v7.10.0: deeply nested color families (`theme.extend.colors.brand.primary.500`) now emit recursively — restructure by domain if it improves readability. `apply:` with bundled icon fonts (`fas`, `mi-*`, `ms-*`, `f7-*`) no longer requires `build-fonts` first. The Google Play Feature Graphic ships automatically with `purgetss brand`.
+- After v7.11.0: reference `.svg` images with numeric `w-*`/`h-*` classes to opt into the compile-time SVG pipeline (add `purgetss/.cache/` to `.gitignore`). Ensure every `theme.fontFamily.*` value is a string, not a Tailwind-style array, or the new config validator hard-fails. Use `images.files` to pin per-file sizes and `images.autoSync: false` to stop the pipeline writing back to `config.cjs`.

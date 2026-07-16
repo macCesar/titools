@@ -55,6 +55,8 @@ $ purgetss il -v=fa,mi,ms,f7
 
 > ℹ️ **INFO — You do not need the `.tss` files in `./purgetss/styles/`**
 > PurgeTSS already knows every official icon class and resolves them at compile time from its own bundled `dist/` files. You do not need `fontawesome.tss`, `materialsymbols.tss`, `materialicons.tss`, or `framework7icons.tss` inside `./purgetss/styles/` for `class="fas fa-home"` (or any other icon class) to work in your XML and controllers. Install the `.ttf` files with `icon-library` and the classes are ready.
+>
+> The resolved classes are written to the generated `app/styles/app.tss`, not to `purgetss/styles/utilities.tss`. If you go looking for a class like `.ms-home`, check `app.tss`.
 
 ### Optional flags
 

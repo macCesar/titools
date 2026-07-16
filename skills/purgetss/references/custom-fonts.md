@@ -54,6 +54,9 @@ What it does:
 1. Creates `./purgetss/styles/fonts.tss` with one `fontFamily` class per file.
 2. Copies the font files into `./app/assets/fonts/`, renamed to their PostScript names so they work on both iOS and Android.
 
+> ℹ️ **INFO — How this differs from the official icon fonts**
+> Unlike the [official icon fonts](./icon-fonts.md), which PurgeTSS resolves automatically from its own bundled files and need no `.tss` in your project, custom fonts **do** generate `./purgetss/styles/fonts.tss`. That file is then folded into the generated `app/styles/app.tss` when you run `purgetss` (or compile your app) — that is where the final classes used by Alloy live.
+
 After running `purgetss build-fonts` with the Bevan and Dancing Script example above:
 
 `./purgetss/styles/fonts.tss`
@@ -133,19 +136,19 @@ After `purgetss build-fonts`, the generated `fonts.tss` includes the family clas
 /* To use your Icon Fonts in Buttons AND Labels each class sets 'text' and 'title' properties */
 
 /* map-icons/map-icons.css */
-'.map-icon-abseiling': { text: '', title: '' }
-'.map-icon-accounting': { text: '', title: '' }
-'.map-icon-airport': { text: '', title: '' }
-'.map-icon-amusement-park': { text: '', title: '' }
-'.map-icon-aquarium': { text: '', title: '' }
+'.map-icon-abseiling': { text: '\ue800', title: '\ue800' }
+'.map-icon-accounting': { text: '\ue801', title: '\ue801' }
+'.map-icon-airport': { text: '\ue802', title: '\ue802' }
+'.map-icon-amusement-park': { text: '\ue803', title: '\ue803' }
+'.map-icon-aquarium': { text: '\ue804', title: '\ue804' }
 /* ... */
 
 /* microns/microns.css */
-'.mu-arrow-left': { text: '', title: '' }
-'.mu-arrow-right': { text: '', title: '' }
-'.mu-arrow-up': { text: '', title: '' }
-'.mu-arrow-down': { text: '', title: '' }
-'.mu-left': { text: '', title: '' }
+'.mu-arrow-left': { text: '\ue700', title: '\ue700' }
+'.mu-arrow-right': { text: '\ue701', title: '\ue701' }
+'.mu-arrow-up': { text: '\ue702', title: '\ue702' }
+'.mu-arrow-down': { text: '\ue703', title: '\ue703' }
+'.mu-left': { text: '\ue704', title: '\ue704' }
 /* ... */
 ```
 
@@ -172,18 +175,18 @@ To avoid prefix conflicts between libraries, each icon keeps its prefix as a nes
 const icons = {
   // map-icons/map-icons.css
   'mapIcon': {
-    'abseiling': '',
-    'accounting': '',
-    'airport': '',
-    'amusementPark': '',
+    'abseiling': '\ue800',
+    'accounting': '\ue801',
+    'airport': '\ue802',
+    'amusementPark': '\ue803',
     // ...
   },
   // microns/microns.css
   'mu': {
-    'arrowLeft': '',
-    'arrowRight': '',
-    'arrowUp': '',
-    'arrowDown': '',
+    'arrowLeft': '\ue700',
+    'arrowRight': '\ue701',
+    'arrowUp': '\ue702',
+    'arrowDown': '\ue703',
     // ...
   }
 };
@@ -221,19 +224,19 @@ purgetss
 '.mic': { font: { fontFamily: 'microns' } }
 
 /* map-icons/mp.css */
-'.mp-abseiling': { text: '', title: '' }
-'.mp-accounting': { text: '', title: '' }
-'.mp-airport': { text: '', title: '' }
-'.mp-amusement-park': { text: '', title: '' }
-'.mp-aquarium': { text: '', title: '' }
+'.mp-abseiling': { text: '\ue800', title: '\ue800' }
+'.mp-accounting': { text: '\ue801', title: '\ue801' }
+'.mp-airport': { text: '\ue802', title: '\ue802' }
+'.mp-amusement-park': { text: '\ue803', title: '\ue803' }
+'.mp-aquarium': { text: '\ue804', title: '\ue804' }
 /* ... */
 
 /* microns/mc.css */
-'.mc-arrow-left': { text: '', title: '' }
-'.mc-arrow-right': { text: '', title: '' }
-'.mc-arrow-up': { text: '', title: '' }
-'.mc-arrow-down': { text: '', title: '' }
-'.mc-left': { text: '', title: '' }
+'.mc-arrow-left': { text: '\ue700', title: '\ue700' }
+'.mc-arrow-right': { text: '\ue701', title: '\ue701' }
+'.mc-arrow-up': { text: '\ue702', title: '\ue702' }
+'.mc-arrow-down': { text: '\ue703', title: '\ue703' }
+'.mc-left': { text: '\ue704', title: '\ue704' }
 /* ... */
 ```
 
@@ -242,18 +245,18 @@ purgetss
 const icons = {
   // map-icons/mp.css
   'mp': {
-    'abseiling': '',
-    'accounting': '',
-    'airport': '',
-    'amusementPark': '',
+    'abseiling': '\ue800',
+    'accounting': '\ue801',
+    'airport': '\ue802',
+    'amusementPark': '\ue803',
     // ...
   },
   // microns/mc.css
   'mc': {
-    'arrowLeft': '',
-    'arrowRight': '',
-    'arrowUp': '',
-    'arrowDown': '',
+    'arrowLeft': '\ue700',
+    'arrowRight': '\ue701',
+    'arrowUp': '\ue702',
+    'arrowDown': '\ue703',
     // ...
   }
 };

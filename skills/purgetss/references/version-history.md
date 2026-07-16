@@ -8,6 +8,18 @@ When in doubt about whether a class, flag, or config key exists in the user's in
 
 ---
 
+## v7.11.1
+- Symmetric width/height cascade in the SVG image pipeline: a class can pin width-only, height-only, or both; the unpinned side stays `null` in `images.files` and is re-derived from the SVG viewBox on every run (no stale auto-derived dimensions frozen in config).
+- `syncConfigImages` mirrors the **current** run instead of taking `max()` across past runs — shrinking a class (e.g. `h-52` → `h-16`) now propagates to `config.cjs`. Pin manually with `images.autoSync: false`.
+- Fix: `purgetss images` respects `--yes` for overwrite confirmations (prompt no longer reappears).
+- Fix: SVGs listed in `images.files` always emit `.png` regardless of `images.format` (Titanium's `.svg → .png`-only runtime fallback). Raster files and SVGs not in `images.files` still honor `format`.
+
+## v7.11.0
+- SVG-aware compile-time image pipeline runs as a `purgetss` post-step. When XML/controllers reference `image="/images/x.svg"` (or `backgroundImage`) alongside utility classes that resolve to numeric width/height (`w-32`, `w-(300)`, `h-auto`), purge compiles the SVG into the 8 Titanium density PNGs (5 Android + 3 iPhone) using dimensions resolved from `app.tss`. Titanium loads the generated `.png` at runtime; the `.svg` attribute in your source is never rewritten. Cache: `purgetss/.cache/svg-images.json` (add to `.gitignore`). See [multi-density-images.md](multi-density-images.md).
+- `images.files` array in `config.cjs` — per-file width/height override: `[{ filename: 'images/logos/logo.png', width: 128, height: 52 }]`. CLI `--width` still wins over entries. SVGs detected by the pipeline populate entries automatically (subject to `images.autoSync`); hand-added raster entries survive untouched.
+- `images.autoSync` boolean (default `true`) — opt-out for devs managing `images.files` by hand. When `false`, purge still computes dimensions and generates PNGs but never writes back to `config.cjs`.
+- `config.cjs` syntax validator emits a formatted `Config Syntax Error` block (file, JSON path, context, issue, fix snippet) for type mismatches in known fields, currently `theme.fontFamily.*` — must be a **string** — replacing cryptic crashes like `rule.startsWith is not a function`.
+
 ## v7.10.2
 - Pre-v7.7.0 `brand:` configs (flat layout: `brand.padding: <number>`, `brand.iosPadding`, `brand.bgColor`, top-level `brand.notification`/`brand.splash`) auto-migrate to the grouped layout in memory. A one-time per-session notice lists the migrated keys.
 

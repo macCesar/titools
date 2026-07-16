@@ -116,6 +116,7 @@ The `create` command generates a new Alloy project with PurgeTSS already set up.
 
 - `-f, --force` to overwrite an existing project.
 - `-d, --dependencies` to install ESLint and Tailwind CSS.
+- `-m, --module` to install the `purgetss.ui.js` module in the project's `./app/lib/` folder.
 - `-v, --vendor [fa,mi,ms,f7]` to copy the selected fonts into your project and add the CommonJS module in `./app/lib/`. See the `icon-library` command for available fonts.
 
 If a project with the same name already exists, the command will prompt you to confirm whether you want to overwrite it.
@@ -559,6 +560,7 @@ purgetss s [hexcode] [name]
 - `-n, --name`: Specifies the name of the color.
 - `-q, --quotes`: Retains double quotes in the `config.cjs` file.
 - `-r, --random`: Generates shades from a random color.
+- `-o, --override`: Places the new shades in `theme.colors` (instead of `theme.extend.colors`) to override default colors.
 - `-s, --single`: Generates a single color definition.
 - `-t, --tailwind`: Logs the generated shades with a `tailwind.config.js` compatible structure.
 - `-l, --log`: Logs the generated shades instead of saving them.
@@ -685,6 +687,10 @@ purgetss b
 
 When `purgetss` runs (manually or via `watch`), it checks for changes in `config.cjs` and regenerates `utilities.tss` when needed.
 
+### Options
+
+- `--glossary`: Creates a glossary folder with all generated classes.
+
 ## `watch` Command
 
 The `watch` command runs PurgeTSS on each project compile. You do not need to run `build` manually after each change.
@@ -716,6 +722,15 @@ purgetss watch --off
 
 # alias:
 purgetss w -o
+```
+
+To completely remove the Auto-Purging hook from `alloy.jmk`, use `-d, --delete`.
+
+```bash
+purgetss watch --delete
+
+# alias:
+purgetss w -d
 ```
 
 ## `module` Command

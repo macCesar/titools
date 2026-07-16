@@ -47,11 +47,12 @@ The examples below catalog anti-patterns observed in real Titanium + PurgeTSS pr
 </View>
 ```
 
-**✅ CORRECT (Composite layout + center class):**
+**✅ CORRECT (Composite layout, no positioning on the child):**
 ```xml
-<!-- Parent defaults to composite, no layout class needed -->
+<!-- Parent defaults to composite, no layout class needed.
+     A child with no top/left/bottom/right centers itself. -->
 <View class="h-screen w-screen">
-  <Label text="Centered" class="center" />
+  <Label text="Centered" />
 </View>
 ```
 
@@ -95,8 +96,9 @@ The examples below catalog anti-patterns observed in real Titanium + PurgeTSS pr
 **✅ CORRECT (Composite + positioning):**
 ```xml
 <View class="h-14 w-screen">
-  <Label text="Title" class="center left-4 font-bold" />
-  <Label class="fas fa-bars center right-4" />
+  <!-- Omitting top/bottom lets each child center vertically in the composite bar -->
+  <Label text="Title" class="left-4 font-bold" />
+  <Label class="fas fa-bars right-4" />
 </View>
 ```
 
@@ -392,7 +394,7 @@ module.exports = {
 | `flex-row`                            | Flexbox not supported                | `horizontal`                                 |
 | `flex-col`                            | Flexbox not supported                | `vertical`                                   |
 | `justify-*`                           | Flexbox not supported                | Use margins/positioning                      |
-| `items-center`                        | Flexbox mental model                 | Use layout + positioning                     |
+| `items-center`                        | Exists but maps to fill, not centering — avoid for centering | Use layout + positioning         |
 | `p-4` on View                         | No padding on containers             | `m-4` on children                            |
 | `w-full`                              | Percentage-based                     | `w-screen` (Ti.UI.FILL)                      |
 | `rounded-full`                        | Needs size suffix                    | `rounded-full-12`                            |

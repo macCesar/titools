@@ -22,6 +22,7 @@ SKILL.md is not enough.**
 | Choosing utility classes | [references/class-index.md](references/class-index.md) |
 | Layout (horizontal/vertical/composite, grid) | [references/grid-layout.md](references/grid-layout.md), [references/ui-ux-design.md](references/ui-ux-design.md) |
 | Dynamic components in controllers | [references/dynamic-component-creation.md](references/dynamic-component-creation.md) |
+| SVG / multi-density image assets | [references/svg-pipeline.md](references/svg-pipeline.md), [references/multi-density-images.md](references/multi-density-images.md) |
 | Custom values / arbitrary syntax | [references/arbitrary-values.md](references/arbitrary-values.md) |
 | Platform-specific styles (`ios:`, `android:`) | [references/platform-modifiers.md](references/platform-modifiers.md) |
 | Dark/Light mode | [references/semantic-colors.md](references/semantic-colors.md), [references/appearance-module.md](references/appearance-module.md) |
@@ -357,7 +358,7 @@ Always verify a class exists before suggesting it.
 ### Verification Steps
 
 1. **Check if it's a KNOWN anti-pattern**
-   - See [PROHIBITED Classes](references/class-index.md#prohibited-tailwind-classes-that-do-not-exist)
+   - See [PROHIBITED Classes](references/class-index.md#prohibited-css-classes-do-not-exist)
    - Common mistakes: `flex-row`, `justify-between`, `p-4` on Views (p-* not supported on Views)
 
 2. **Check the Class Index**
@@ -397,7 +398,8 @@ Always verify a class exists before suggesting it.
 Load these only when needed:
 
 ### Essential References
-- **[Class Index](references/class-index.md)** - Naming conventions, 416-property table, prohibited classes, verification commands (LOAD FIRST when unsure about a class)
+- **[Class Index](references/class-index.md)** - Naming conventions, prohibited classes, prefix inventory, verification commands (LOAD FIRST when unsure about a class)
+- **[Class Index — Properties (A–Z)](references/class-index-properties.md)** - Full A–Z table of every Titanium property and its PurgeTSS class prefix
 - **[Class Categories](references/class-categories.md)** - Complete prefix inventory by category (layout, colors, typography, states, etc.)
 - **[Dynamic Component Creation](references/dynamic-component-creation.md)** - `$.UI.create()` and `Alloy.createStyle()` for creating components in Controllers (READ FIRST for dynamic components)
 - **[Appearance Module](references/appearance-module.md)** - Light/Dark/System mode switching with persistence (v7.5.3)
@@ -432,6 +434,7 @@ Load these only when needed:
 ### App Assets
 - [App Branding](references/app-branding.md) - `brand` command for launcher icons, adaptive, iOS 18+ Dark/Tinted, marketplace assets (v7.6.0)
 - [Multi-Density Images](references/multi-density-images.md) - `images` command for Android res-*dpi + iPhone @1x/@2x/@3x UI images (v7.6.0)
+- [SVG Pipeline](references/svg-pipeline.md) - SVG-aware compile-time image pipeline: `.svg` refs + numeric `w-*`/`h-*` classes compile to 8 density PNGs; `images.files`/`images.autoSync` (v7.11.0–v7.11.1)
 
 ### Performance
 - [Performance Tips](references/performance-tips.md) - Optimizing PurgeTSS apps (bridge crossings, ListView, animations)
@@ -446,7 +449,7 @@ Load these only when needed:
 - [Animation Advanced](references/animation-advanced.md) - Property inheritance, utility classes, implementation rules, complex UI example
 
 ### Release Notes
-- [Version History](references/version-history.md) - Release-by-release feature additions and behavior changes (v7.4.0 → v7.10.2)
+- [Version History](references/version-history.md) - Release-by-release feature additions and behavior changes (v7.4.0 → v7.11.1)
 
 > **💡 TEXT FONTS (Google Fonts, Roboto, etc.)**
 > For text fonts, see [Custom Fonts](references/custom-fonts.md).

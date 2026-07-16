@@ -30,7 +30,7 @@ The most important reset is for the `View` element. By default, `View` is set to
 - Grow to accommodate explicit dimensions (`w-64`, `h-32`, etc.)
 - Expand to fill margins (`m-4`, `mx-2`, `mt-6 mb-4`, etc.)
 
-> **See also**: the "Explicit SIZE vs native undefined" callout under [Community-Discovered Patterns](#community-discovered-patterns) explains when to use `h-auto`, `w-auto`, and `wh-auto` to prevent unwanted stretching.
+> **See also**: [Width/Height Inheritance](#widthheight-inheritance) explains when to use `h-auto`, `w-auto`, and `wh-auto` to prevent unwanted stretching.
 
 ### Practical Examples
 
@@ -264,7 +264,7 @@ This generates classes for ALL color properties:
 When PurgeTSS generates your `app.tss`, these resets appear first:
 
 ```tss
-/* PurgeTSS v7.6.0 */
+/* PurgeTSS v7.11.1 */
 /* Created by César Estrada */
 /* https://purgetss.com */
 

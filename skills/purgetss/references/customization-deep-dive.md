@@ -57,9 +57,11 @@ module.exports = {
     confirmOverwrites: true  // prompt before overwriting files (set false to skip)
   },
   images: {
+    autoSync: true,          // false = SVG pipeline computes dims but doesn't write to images.files (v7.11.0)
     quality: 85,             // JPEG/WebP/AVIF quality (0-100)
     format: null,            // null = keep original; 'webp' | 'jpeg' | 'png' to convert every image
-    confirmOverwrites: true  // prompt before overwriting files (set false to skip)
+    confirmOverwrites: true, // prompt before overwriting files (set false to skip)
+    files: []                // per-file overrides: [{ filename, width, height? }] (v7.11.0)
     // Note: --width (v7.8.0) and --opacity / --padding / --output (v7.10.0) are CLI-only
     //       by design — those decisions are per-asset, not project-wide.
   },
@@ -270,6 +272,37 @@ module.exports = {
 };
 ```
 
+### Config Syntax Validation (v7.11.0)
+
+Since v7.11.0, PurgeTSS validates known fields in `config.cjs` at load time. On a type mismatch it prints a formatted `Config Syntax Error` block — file, JSON path, context, issue, and a fix snippet — instead of crashing downstream with a cryptic message like `rule.startsWith is not a function`.
+
+The validator runs on every config load and covers the case that trips up developers coming from Tailwind: `fontFamily` values must be a **string**, not a Tailwind-style array. It currently validates:
+
+- `theme.fontFamily.*` — expected a string.
+- `theme.extend.fontFamily.*` — expected a string.
+
+```javascript
+// ✗ Tailwind-style array — triggers a Config Syntax Error
+theme: {
+  extend: {
+    fontFamily: {
+      sans: ['Inter', 'sans-serif']
+    }
+  }
+}
+
+// ✓ Single font family per element (Titanium accepts one)
+theme: {
+  extend: {
+    fontFamily: {
+      sans: 'Inter-Regular'
+    }
+  }
+}
+```
+
+The scope is defined by the `FIELD_RULES` array in `src/shared/validation/config-validator.js`; additional fields can be added there. Today only the two `fontFamily` paths are validated.
+
 ## Overriding and Extending Properties
 
 By default, your project inherits values from the default theme. You have two options depending on your goal.
@@ -395,6 +428,36 @@ module.exports = {
 ```
 
 The nested keys are combined with the parent key to form class names like `bg-tahiti-400` or `text-tahiti-400`.
+
+### Nesting beyond one level
+
+Since v7.10.0, `theme` and `theme.extend` values are walked recursively, so you can group categories more than one level deep. Each level flattens into a kebab-case suffix on the generated class names:
+
+```javascript
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        brand: {
+          primary: {
+            500: '#0ea5e9',
+            900: '#0c4a6e'
+          },
+          accent: '#f97316'
+        }
+      }
+    }
+  }
+};
+```
+
+```tss
+'.bg-brand-primary-500': { backgroundColor: '#0ea5e9' }
+'.bg-brand-primary-900': { backgroundColor: '#0c4a6e' }
+'.bg-brand-accent': { backgroundColor: '#f97316' }
+```
+
+Default modifier keys (`default`, `global`, `DEFAULT`) collapse without contributing to the suffix. The same flattening applies to other property categories that accept nested objects, including `backgroundGradient` and `backgroundSelectedGradient`. One-level configs behave exactly as before.
 
 ### Override a Default Color
 

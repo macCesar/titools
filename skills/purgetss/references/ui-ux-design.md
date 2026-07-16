@@ -75,7 +75,8 @@ The catalog below collects real-world UI patterns verified against Titanium's co
 ```xml
 <View class="horizontal border-b border-gray-200 bg-white">
   <View class="ml-4 my-4 rounded-full-12 bg-blue-500">
-    <Label class="center text-lg font-bold text-white" text="JD" />
+    <!-- A child with no top/left centers itself in a composite parent -->
+    <Label class="text-lg font-bold text-white" text="JD" />
   </View>
 
   <View class="vertical ml-3 my-4">
@@ -93,7 +94,7 @@ The catalog below collects real-world UI patterns verified against Titanium's co
     <ItemTemplate name="cardTemplate" class="h-20">
       <View bindId="container" class="horizontal mx-4 my-2 rounded-lg bg-white shadow-lg">
         <View bindId="iconWrap" class="ml-4 my-4 rounded-full-10 bg-blue-100">
-          <Label bindId="icon" class="center fas fa-home text-blue-500" />
+          <Label bindId="icon" class="fas fa-home text-blue-500" />
         </View>
 
         <View class="vertical ml-3 my-4">
@@ -190,8 +191,9 @@ For an icon-with-text pair, use a horizontal `View` containing an icon `Label` a
 
 ```xml
 <View class="h-14 w-screen bg-white border-b border-gray-200">
-  <Label class="left-4 center text-lg font-bold text-gray-800" text="Dashboard" />
-  <Label class="right-4 center fas fa-bars text-gray-700" />
+  <!-- Omitting top/bottom lets each child center vertically in the composite bar -->
+  <Label class="left-4 text-lg font-bold text-gray-800" text="Dashboard" />
+  <Label class="right-4 fas fa-bars text-gray-700" />
 </View>
 ```
 
@@ -267,7 +269,7 @@ For an icon-with-text pair, use a horizontal `View` containing an icon `Label` a
 <Window class="bg-gray-100">
   <View class="vertical h-screen w-screen">
     <View class="h-14 w-screen border-b border-gray-200 bg-white">
-      <Label class="left-4 center text-xl font-bold text-gray-800" text="Screen Title" />
+      <Label class="left-4 text-xl font-bold text-gray-800" text="Screen Title" />
     </View>
 
     <ScrollView class="vertical content-w-screen content-h-auto">
