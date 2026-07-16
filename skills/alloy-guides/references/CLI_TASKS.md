@@ -1,0 +1,233 @@
+# Alloy Tasks with the CLI
+
+Alloy provides command-line interface (CLI) tasks to create a new project, generate skeleton components such as controllers and models, and compile the source files into the Titanium project.
+
+## Creating a New Application
+
+> **Recommended:** Use `ti create --alloy` to create a new Alloy project in one step.
+
+```bash
+ti create -t app --alloy --id com.example.myapp -n MyApp -p android,ios
+```
+
+This creates a complete Alloy project structure with the `app` folder containing controllers, views, styles, models, and migrations.
+
+**Alternative (interactive):**
+```bash
+ti create
+```
+
+You will be prompted to enter an application name and application ID. When prompted for project type, select **Alloy**.
+
+**Legacy method (not recommended):**
+```bash
+ti create
+cd PROJECTDIRECTORY
+alloy new
+```
+
+This two-step approach is discouraged in favor of using `--alloy` directly.
+
+## Creating a New Application Using a Test Application
+
+You can generate a new Alloy project using a test application from the Alloy Github repo.
+
+```bash
+ti create -t app --classic -i com.appc.picker -n AlloyPicker
+cd AlloyPicker
+alloy new --testapp ui/picker
+```
+
+## Generating Components
+
+The CLI can generate skeleton controllers (with views and styles), models, database migrations and widgets.
+
+### Generating a Controller
+
+To generate a controller with a style and view:
+
+```bash
+alloy generate controller <name> [--widgetname <widget_name>] [-o path_to_project/app] [--platform <platform>]
+```
+
+This creates `app/controllers/<name>.js`, `app/styles/<name>.tss`, and `app/views/<name>.xml`.
+
+### Generating a View
+
+To generate a view and style **without** a controller:
+
+```bash
+alloy generate view <name> [--widgetname <widget_name>] [-o path_to_project/app] [--platform <platform>]
+```
+
+This creates `app/styles/<name>.tss` and `app/views/<name>.xml`.
+
+### Generating a Style
+
+To generate a style for a view-controller:
+
+```bash
+alloy generate style <name> [--widgetname <widget_name>]
+```
+
+Alloy uses the id and attribute names in the markup file to populate the skeleton style file. This creates `app/styles/<name>.tss`. If you add new `id` or `class` attributes to the markup file, running either of these commands updates the style file with the new attributes.
+
+To generate style files for all view-controllers:
+
+```bash
+alloy generate style --all
+```
+
+### Generating a Model
+
+To generate a model:
+
+```bash
+alloy generate model <name> <adapter> [<col_name_1>:<col_type_1> <col_name_2>:<col_type_2> ...] [-o path_to_project/app]
+```
+
+The fourth parameter selects the adapter type: `sql` for SQLite or `properties` for local storage. The fifth parameter defines the table schema. This is required for `sql` and `properties` adapter types.
+
+This creates `app/models/<name>.js`, and `app/migrations/DATETIME_<name>.js` if the adapter type is 'sql'.
+
+### Generating a Migration
+
+To generate a standalone migration for a specific model:
+
+```bash
+alloy generate migration <name> [-o path_to_project/app]
+```
+
+This creates `app/migrations/DATETIME_<name>.js`.
+
+### Generating a Widget
+
+To generate a basic widget:
+
+```bash
+alloy generate widget <name> [-o path_to_project/app]
+```
+
+This creates `app/widgets/<name>/widget.json`, `app/widgets/<name>/controllers/widget.js`, `app/widgets/<name>/styles/widget.tss`, and `app/widgets/<name>/views/widget.xml`. The widget is automatically added to `config.json`.
+
+### Generating alloy.jmk
+
+To generate the build customization file:
+
+```bash
+alloy generate jmk [-o path_to_project/app]
+```
+
+This creates `app/alloy.jmk` with a few task hooks in place.
+
+## Extracting Localization Strings
+
+The `alloy extract-i18n` command inspects your JS, TSS and XML files (since Alloy 1.6.0) for instances of Titanium's localization functions and adds those strings to an i18n strings.xml file.
+
+```bash
+alloy extract-i18n [language] [--apply]
+```
+
+**Parameters**:
+
+* `language` – Optional. Two-letter language code (`en`, `es`, etc.). Default is `en`.
+* `--apply` – Optional. Writes new entries to `strings.xml`. Without it, displays a preview. This is a safe operation: it only adds new entries and never removes existing ones.
+
+Supported functions:
+
+* `Titanium.Locale.getString()`
+* `Ti.Locale.getString()`
+* `L()`
+
+**Example**:
+
+```javascript
+// In JavaScript/TSS
+const name = Ti.Locale.getString('name');
+const color = Titanium.Locale.getString('color');
+const currency = L('currency');
+```
+
+```xml
+<!-- In XML (since Alloy 1.6.0) -->
+<Label textid="greeting" />
+<Button titleid="submit_button" />
+```
+
+**Preview Output** (without --apply):
+
+```
+[INFO] ######## BEFORE ########
+[INFO] <?xml version="1.0" encoding="UTF-8"?>
+[INFO] <resources>
+[INFO] </resources>
+[INFO]
+[INFO] ######## AFTER ########
+[INFO] <?xml version="1.0" encoding="UTF-8"?>
+[INFO] <resources>
+[INFO]     <string name="name">name</string>
+[INFO]     <string name="color">color</string>
+[INFO]     <string name="currency">currency</string>
+[INFO]     <string name="greeting">greeting</string>
+[INFO]     <string name="submit_button">submit_button</string>
+[INFO] </resources>
+```
+
+Running with `--apply`:
+
+```bash
+alloy extract-i18n --apply
+```
+
+Generates `app/i18n/en/strings.xml`.
+
+To generate strings for another language, pass the language code:
+
+```bash
+alloy extract-i18n es --apply
+```
+
+This generates `app/i18n/es/strings.xml`.
+
+```xml
+<resources>
+  <string name="name">name</string>
+  <string name="color">color</string>
+  <string name="currency">currency</string>
+  <string name="greeting">greeting</string>
+  <string name="submit_button">submit_button</string>
+</resources>
+```
+
+## Compiling a Specific View-Controller
+
+To select which Alloy view-controller to compile to Titanium code:
+
+```bash
+alloy compile --config platform=<platform>,file=<file>
+
+## Example
+alloy compile --config platform=android,file=app/controller/index.js
+```
+
+## Building an Application
+
+To build and run an application:
+
+```bash
+ti build --platform <platform> [--project-dir <value>] [--sdk <value>] [<platform_build_options>]
+```
+
+Running this from the root directory of the project compiles the files to the correct location automatically.
+
+## Installing Special Project Components
+
+### Installing the Compiler Plugin
+
+To install the compiler plugin that hooks the Alloy project to Studio:
+
+```bash
+alloy install plugin [path_to_project]
+```
+
+Use this command to update the compiler plugin if your project was created using an older version of Alloy.
