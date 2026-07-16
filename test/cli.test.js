@@ -80,7 +80,7 @@ describe('titools CLI', () => {
     await rm(home, { recursive: true, force: true });
   });
 
-  it('install: local install links platforms (no prompt)', async () => {
+  it('install: local install links Claude only (Gemini auto-discovers from .agents/skills/)', async () => {
     const cwd = await makeTempDir('titools-project-');
     const home = await makeTempDir('titools-home-');
     await makeProject(cwd);
@@ -98,9 +98,10 @@ describe('titools CLI', () => {
     assert.ok(existsSync(skillsDir));
 
     const claudeLink = join(cwd, '.claude', 'skills', 'ti-expert');
-    const geminiLink = join(cwd, '.gemini', 'skills', 'ti-expert');
     assert.ok(lstatSync(claudeLink).isSymbolicLink());
-    assert.ok(lstatSync(geminiLink).isSymbolicLink());
+
+    const geminiSkillPath = join(cwd, '.gemini', 'skills', 'ti-expert');
+    assert.ok(!existsSync(geminiSkillPath), '.gemini/skills/ symlinks should not be created (Gemini auto-discovers from .agents/skills/)');
 
     await rm(cwd, { recursive: true, force: true });
     await rm(home, { recursive: true, force: true });

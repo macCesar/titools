@@ -33,10 +33,10 @@ describe('config', () => {
     assert.ok(config.LEGACY_SKILLS.includes('alloy-expert'));
   });
 
-  it('should list v3.0.0 migrated skills as legacy (moved to tidev/skills)', () => {
+  it('should include doc-based skills restored from tidev/skills in v4.0.0', () => {
     for (const skill of ['ti-api', 'ti-guides', 'ti-howtos', 'alloy-guides', 'alloy-howtos']) {
-      assert.ok(config.LEGACY_SKILLS.includes(skill), `${skill} should be in LEGACY_SKILLS`);
-      assert.ok(!config.SKILLS.includes(skill), `${skill} should NOT be in SKILLS`);
+      assert.ok(config.SKILLS.includes(skill), `${skill} should be in SKILLS`);
+      assert.ok(!config.LEGACY_SKILLS.includes(skill), `${skill} should NOT be in LEGACY_SKILLS`);
     }
   });
 
@@ -50,12 +50,12 @@ describe('config', () => {
     assert.ok(config.LEGACY_AGENTS.includes('ti-researcher'));
   });
 
-  it('should export getPlatforms', () => {
+  it('should export getPlatforms with Claude only (Gemini and Codex auto-discover from ~/.agents/skills/)', () => {
     assert.strictEqual(typeof config.getPlatforms, 'function');
     const platforms = config.getPlatforms();
     assert.ok(Array.isArray(platforms));
     const names = platforms.map((p) => p.name);
-    assert.deepStrictEqual(names, ['claude', 'gemini']);
+    assert.deepStrictEqual(names, ['claude']);
   });
 
   it('should export directory getter functions', () => {
