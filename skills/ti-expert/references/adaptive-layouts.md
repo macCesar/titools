@@ -19,6 +19,26 @@ Scope: Only affects screens >= 600dp. Phones (< 600dp) and games (`android:appCa
 
 What this means: portrait-only apps will be forced into landscape/resized on large screens. If the UI doesn't support it, it will break.
 
+### It already started in Android 16 (API 36)
+
+This is usually described as an API 37 change, but it lands one release earlier: an app
+targeting **API 36** already has `android:screenOrientation` ignored on >= 600dp displays
+running Android 16. The difference is that API 36 still ships an opt-out:
+
+```xml
+<!-- inside <application>, or on an individual <activity> -->
+<property
+  android:name="android.window.PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY"
+  android:value="true"/>
+```
+
+The opt-out stops working the moment you target API 37, so treat it as a bridge while the
+layout is made adaptive — not as a fix. Source: [Android 16 behavior changes](https://developer.android.com/about/versions/16/behavior-changes-16).
+
+Worth knowing when debugging: this only kicks in at >= 600dp. If a **phone** is rotating
+despite a portrait lock, the cause is in the app, not in Android — see the orientation
+debugging recipe in section 7.
+
 ### Related: edge-to-edge (API 36)
 
 Before the resizability requirement (API 37), Android SDK 36 removes the opt-out for edge-to-edge rendering, causing Titanium layouts to overlap system navigation bars. The Titanium core team has a PR to handle this at the SDK level: tidev/titanium-sdk#14399 — adds an `EdgeToEdgeHelper` with correct padding so existing apps work without code changes.
@@ -343,6 +363,24 @@ const dpWidth = $.win.size.width / density  // WRONG: halves the value
 Ti.Gesture.isPortrait()   // TypeError!
 Ti.Gesture.portrait       // correct — boolean property
 
+// ❌ Setting orientation imperatively — silently overrides the manifest
+$.win.activity.requestedOrientation = Ti.Android.SCREEN_ORIENTATION_PORTRAIT
+// The manifest value is applied in onCreate; this runs afterwards and always wins.
+// Nothing in tiapp.xml can beat it, which makes it invisible when debugging.
+// Declare `orientationModes` on the window instead (see section 7).
+
+// ❌ Detecting tablets with a pixel threshold
+Math.min(displayCaps.platformWidth, displayCaps.platformHeight) >= 600
+// platformWidth returns PIXELS on Android. A 720x1604 @xhdpi phone is 360dp wide,
+// but 720 >= 600 reports "tablet". Use Alloy.isTablet / the formFactor query, which
+// read Ti.Platform.Android.physicalSizeCategory instead of raw pixels.
+
+// ❌ Passing an empty orientationModes array to mean "no preference"
+orientationModes: []
+// An empty array maps to SCREEN_ORIENTATION_SENSOR (TiWindowProxy.setOrientationModes),
+// so it doesn't clear the setting — it actively unlocks rotation, overriding the manifest.
+// To leave orientation alone, don't set the property at all.
+
 // ❌ Using gap property — does NOT exist in Titanium
 { layout: 'horizontal', gap: 10 }
 
@@ -373,7 +411,129 @@ Titanium generates the main activity name as `<app-id>.<Appname>Activity`. For e
 </android>
 ```
 
-To verify the exact generated activity name, check `build/android/AndroidManifest.xml` after a build.
+To verify the exact generated activity name, check `build/android/app/src/main/AndroidManifest.xml` after a build.
+
+### Which activities a lock has to cover
+
+`android:screenOrientation` is per-activity — it is not inherited from `<application>`. Every
+window the app opens runs inside one of a small, fixed set of activities declared by the
+Titanium AAR, so read the canonical list from the SDK instead of memorising it:
+
+```bash
+cat ~/.gradle/caches/*/transforms/*/transformed/jetified-titanium-*/AndroidManifest.xml
+```
+
+As of 13.4.0 there are exactly six, and `android:name` takes the fully-qualified form:
+
+```
+org.appcelerator.titanium.TiActivity
+org.appcelerator.titanium.TiTranslucentActivity
+ti.modules.titanium.media.TiCameraActivity
+ti.modules.titanium.media.TiCameraXActivity
+ti.modules.titanium.media.TiVideoActivity
+ti.modules.titanium.ui.android.TiPreferencesActivity
+```
+
+The seventh is the app's own root activity, generated from the `<name>` in tiapp.xml (see the
+derivation rule above). Which one hosts what:
+
+| What the app does | Activity |
+|---|---|
+| `Window.open()`, Tab, TabGroup, NavigationWindow | `org.appcelerator.titanium.TiActivity` |
+| Window with `modal:true`, `opacity`, or a `backgroundColor` with alpha < 255 | `org.appcelerator.titanium.TiTranslucentActivity` |
+| `showCamera({ overlay })` | `ti.modules.titanium.media.TiCameraActivity` (`TiCameraXActivity` when `useCameraX:true`) |
+| `showCamera()` with no overlay | none of yours — Titanium launches the system camera app |
+| VideoPlayer added to a regular Window | `org.appcelerator.titanium.TiActivity` |
+
+Two things are better left undeclared:
+
+- **`android:configChanges`.** The CLI strips it before the merge even happens — `_build.js`
+  keeps a list of the `TiBaseActivity`-derived activities and calls
+  `removeActivityAttribute(name, 'android:configChanges')` on each, with the reason spelled out
+  in the source: *"Most devs don't set this right, causing UI to disappear when a config change
+  occurs for a missing setting."* So a hand-written subset is not dangerous, just dead weight —
+  Titanium's full list always wins.
+- **A lock on `TiTranslucentActivity`.** Android 8–11 throws `IllegalStateException` ("Only
+  fullscreen opaque activities can request orientation") when a translucent activity requests a
+  fixed orientation. Declaring `orientationModes` on those windows is safer: the SDK applies it
+  inside a try/catch (`TiWindowProxy.setOrientationModes`), so the worst case is a modal that
+  rotates instead of an app that crashes.
+
+### Prefer orientationModes over the manifest
+
+`orientationModes` is defined on `TiWindowProxy`, so the same declaration works on `Window`,
+`TabGroup` and `NavigationWindow`. Being per-window it also composes with form-factor queries,
+which is what you usually want:
+
+```xml
+<!-- PurgeTSS -->
+<TabGroup class="handheld:portrait tablet:landscape">
+```
+
+```tss
+/* plain TSS equivalent */
+'#tabs[formFactor=handheld]': { orientationModes: [ Ti.UI.PORTRAIT ] }
+```
+
+Alloy resolves `formFactor` from `Ti.Platform.Android.physicalSizeCategory`, which is why this
+is more reliable than any width comparison you could write yourself.
+
+Keep the manifest for what Alloy cannot reach: the root activity, which shows the splash before
+any JS runs, and optionally `TiActivity` as a blanket fallback for windows that carry no class.
+
+A single Ti Element rule covers every window in the app without touching a single view, which
+is usually all an Alloy app needs:
+
+```javascript
+// purgetss/config.cjs
+module.exports = {
+  theme: { extend: {} },
+  'Window': { handheld: { apply: 'portrait' } }
+}
+```
+
+```tss
+/* generated — applies to every Window, including modal ones */
+'Window[formFactor=handheld]': { orientationModes: [ Ti.UI.PORTRAIT ] }
+```
+
+Note it matches `Window` only, so a `TabGroup` still needs its own class. And because the
+declaration is per-window, it does nothing for the splash — that one stays in the manifest.
+
+### Debugging a rotation that shouldn't happen
+
+Ask the system for the effective value instead of re-reading the manifest:
+
+```bash
+adb shell dumpsys activity activities | grep -E "topResumedActivity|requestedOrientation"
+```
+
+If `requestedOrientation` disagrees with what tiapp.xml declares, something overrode it at
+runtime — grep the app for `requestedOrientation` and `orientationModes` before touching the
+manifest again. Note that an *existing* `orientationModes` can be the bug rather than the fix:
+an empty array unlocks rotation (see the anti-patterns above).
+
+Before blaming the OS, let the SDK tell you. Titanium logs a warning when Android drops the
+request on a large screen, so this either hits or rules that cause out immediately:
+
+```bash
+adb logcat | grep "Orientation request will be ignored"
+# Fixed orientation is not supported on large screens (smallest width: <N>dp).
+# Orientation request will be ignored on Android 16+.
+```
+
+And to see the size bucket the device actually reports — `normal` means a phone, so the >= 600dp
+rule does not apply and the cause is in the app:
+
+```bash
+adb shell am get-config    # e.g. ...-sw360dp-w360dp-h802dp-normal-...
+```
+
+To confirm what actually shipped in the binary:
+
+```bash
+aapt2 dump xmltree --file AndroidManifest.xml <apk> | grep -A2 "E: activity"
+```
 
 ### iOS: support all orientations on iPad
 
@@ -405,6 +565,9 @@ To verify the exact generated activity name, check `build/android/AndroidManifes
 | Device screen size | `Ti.Platform.displayCaps.platformWidth` — pixels on Android, needs `/logicalDensityFactor` |
 | Orientation (boolean) | `Ti.Gesture.portrait`, `Ti.Gesture.landscape` — properties, not methods |
 | Orientation event | `Ti.Gesture.addEventListener('orientationchange', handler)` |
+| Lock orientation | `orientationModes` on the window — not `activity.requestedOrientation` |
+| Tablet detection | `Alloy.isTablet` / `[formFactor=tablet]` — never a pixel threshold |
+| Effective orientation at runtime | `adb shell dumpsys activity activities \| grep requestedOrientation` |
 | Window resize event | `$.win.addEventListener('postlayout', handler)` — fires on rotation, split-screen, resize |
 | Auto-size | `Ti.UI.SIZE` (fit content), `Ti.UI.FILL` (fill remaining) |
 | Percentages | `width: '50%'` relative to parent |
