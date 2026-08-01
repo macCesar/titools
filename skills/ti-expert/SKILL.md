@@ -149,7 +149,7 @@ For the complete reference with examples, see [Alloy builtins and globals](refer
 - [Contracts & Communication](references/contracts.md)
 - [State Management](references/state-management.md)
 - [Anti-patterns to Avoid](references/anti-patterns.md)
-- [Adaptive Layouts](references/adaptive-layouts.md) (responsive breakpoints, tablet/foldable/desktop support, Android 17 resizability compliance)
+- [Adaptive Layouts](references/adaptive-layouts.md) (responsive breakpoints, tablet/foldable/desktop support, Android 16/17 resizability compliance, orientation locks and which Android activities they must cover)
 
 ### Implementation & API
 - [Alloy Builtins & Globals](references/alloy-builtins.md)
