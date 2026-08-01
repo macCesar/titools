@@ -4,6 +4,38 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [4.1.0] - 2026-07-31
+
+### Changed — `ti-expert` / `references/adaptive-layouts.md`
+
+Orientation on Android was only covered from the layout side. Three days were lost on a
+portrait-locked app that kept rotating on a phone, so the reference now carries what was
+missing to diagnose it:
+
+- The resizability restriction starts at **API 36**, not 37, with a temporary opt-out
+  (`PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY`) that expires when targeting API 37.
+- Table of which Titanium activity hosts what (`TiActivity`, `TiTranslucentActivity`,
+  the camera and video ones), plus how to read the canonical list from the SDK's AAR
+  instead of memorising it.
+- Why `android:configChanges` and a lock on `TiTranslucentActivity` are better left
+  undeclared — the second one throws `IllegalStateException` on Android 8–11.
+- `orientationModes` (with form-factor queries) as the preferred way to lock orientation,
+  since it is resolved from `physicalSizeCategory` rather than pixel widths.
+- New anti-patterns: setting `activity.requestedOrientation` imperatively, which silently
+  overrides the manifest, and detecting tablets by comparing `platformWidth` (pixels on
+  Android) against a dp threshold.
+- A debugging recipe based on `dumpsys activity activities | grep requestedOrientation`,
+  which reports the *effective* orientation, plus `adb logcat | grep "Orientation request
+  will be ignored"` (the SDK's own warning when Android drops the request on a large screen)
+  and `adb shell am get-config` to read the device's size bucket.
+- New anti-pattern: `orientationModes: []`. An empty array maps to `SCREEN_ORIENTATION_SENSOR`,
+  so it unlocks rotation instead of clearing the setting — an existing `orientationModes` can
+  be the bug rather than the fix.
+- Corrected the `android:configChanges` advice: the CLI *removes* the attribute from
+  TiBaseActivity-derived activities before the merge (`_build.js`), so a hand-written subset is
+  dead weight rather than a hazard.
+- Fixed the generated-manifest path: `build/android/app/src/main/AndroidManifest.xml`.
+
 ## [4.0.0] - 2026-07-15
 
 ### Breaking — Doc-based skills return to TiTools as canonical source
