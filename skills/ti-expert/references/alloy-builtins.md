@@ -1,5 +1,20 @@
 # Alloy builtins & globals
 
+<!-- TOC-START -->
+## Contents
+
+- [Compiler directives](#compiler-directives)
+- [Alloy.Globals](#alloyglobals)
+- [Alloy.CFG](#alloycfg)
+- [Alloy.isTablet / Alloy.isHandheld](#alloyistablet-alloyishandheld)
+- [$.args , controller arguments](#args-controller-arguments)
+- [Alloy.createController / Alloy.createWidget](#alloycreatecontroller-alloycreatewidget)
+- [Alloy.createModel / Alloy.createCollection](#alloycreatemodel-alloycreatecollection)
+- [Conditional code in XML](#conditional-code-in-xml)
+- [Quick reference](#quick-reference)
+
+<!-- TOC-END -->
+
 ## Compiler directives
 
 Alloy provides compile-time constants that are replaced with `true`/`false` during build. Use them for platform-specific code without runtime cost.

@@ -10,6 +10,21 @@ For the mode-switching runtime that drives all of this (`Appearance.init()`, `Ap
 >
 > Semantic color resolution is a **Titanium** feature, not PurgeTSS magic. Titanium natively reads `semantic.colors.json` (at `app/assets/` on Alloy, `Resources/` on Classic) and resolves any color-accepting property whose value matches a key in that file. PurgeTSS only generates the utility classes that point *at* those keys — the switching behavior is 100% native.
 
+<!-- TOC-START -->
+## Contents
+
+- [Setting up `semantic.colors.json`](#setting-up-semanticcolorsjson)
+- [Registering in `config.cjs`](#registering-in-configcjs)
+- [Numeric 11-step tonal-inversion palette](#numeric-11-step-tonal-inversion-palette)
+- [The `semantic` CLI command](#the-semantic-cli-command)
+- [Using semantic classes in views](#using-semantic-classes-in-views)
+- [Using semantic colors in controllers](#using-semantic-colors-in-controllers)
+- [Recommended starter palette](#recommended-starter-palette)
+- [Related](#related)
+- [Community-Discovered Patterns](#community-discovered-patterns)
+
+<!-- TOC-END -->
+
 ## Setting up `semantic.colors.json`
 
 Create the `semantic.colors.json` file with your color definitions. The file location depends on your project type, per the TiDev convention:

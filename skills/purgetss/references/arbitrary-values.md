@@ -7,6 +7,19 @@ When you need a one-off value that is not in the defaults, use arbitrary values 
 >
 > Square bracket notation (`[10px]`) is **not supported** because Titanium handles platform and conditional statements in `.tss` files differently. Use parentheses (`(10px)`) instead.
 
+<!-- TOC-START -->
+## Contents
+
+- [Class syntax pre-validation](#class-syntax-pre-validation)
+- [Arbitrary nesting depth in `theme` objects (v7.10.0)](#arbitrary-nesting-depth-in-theme-objects-v7100)
+- [Color Properties](#color-properties)
+- [Spacing Properties](#spacing-properties)
+- [Miscellaneous Properties](#miscellaneous-properties)
+- [Examples](#examples)
+- [Community-Discovered Patterns](#community-discovered-patterns)
+
+<!-- TOC-END -->
+
 ## Class syntax pre-validation
 
 Starting with PurgeTSS v7.8.0, the build runs a pre-validation pass over class names found in XML views and JS controllers before purging. When it spots a malformed arbitrary-value utility, it stops and prints a structured `Class Syntax Error` block so the offending class can be fixed before any TSS is generated. If multiple errors are present, all of them are reported in the same run.

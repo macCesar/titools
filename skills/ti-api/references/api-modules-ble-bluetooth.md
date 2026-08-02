@@ -1,5 +1,31 @@
 # Modules: BLE & Bluetooth API Reference
 
+<!-- TOC-START -->
+## Contents
+
+- [Modules.BLE](#modulesble)
+- [Modules.BLE.Beacon](#modulesblebeacon)
+- [Modules.BLE.BeaconIdentityConstraint](#modulesblebeaconidentityconstraint)
+- [Modules.BLE.BeaconRegion](#modulesblebeaconregion)
+- [Modules.BLE.Central](#modulesblecentral)
+- [Modules.BLE.CentralManager](#modulesblecentralmanager)
+- [Modules.BLE.Characteristic](#modulesblecharacteristic)
+- [Modules.BLE.DescriptorRequest](#modulesbledescriptorrequest)
+- [Modules.BLE.L2CAPChannel](#modulesblel2capchannel)
+- [Modules.BLE.MutableCharacteristic](#modulesblemutablecharacteristic)
+- [Modules.BLE.Peer](#modulesblepeer)
+- [Modules.BLE.Peripheral](#modulesbleperipheral)
+- [Modules.BLE.PeripheralManager](#modulesbleperipheralmanager)
+- [Modules.BLE.RegionManager](#modulesbleregionmanager)
+- [Modules.BLE.Request](#modulesblerequest)
+- [Modules.BLE.Service](#modulesbleservice)
+- [Modules.Bluetooth](#modulesbluetooth)
+- [Modules.Bluetooth.BluetoothDevice](#modulesbluetoothbluetoothdevice)
+- [Modules.Bluetooth.BluetoothServerSocket](#modulesbluetoothbluetoothserversocket)
+- [Modules.Bluetooth.BluetoothSocket](#modulesbluetoothbluetoothsocket)
+
+<!-- TOC-END -->
+
 ## Modules.BLE
 > Add-on Bluetooth Low Energy module
 > Extends Ti.Module

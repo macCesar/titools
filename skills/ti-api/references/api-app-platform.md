@@ -1,5 +1,29 @@
 # Ti.App & Ti.Platform API Reference
 
+<!-- TOC-START -->
+## Contents
+
+- [Ti.App](#tiapp)
+- [Ti.App.Android](#tiappandroid)
+- [Ti.App.Properties](#tiappproperties)
+- [Ti.App.iOS](#tiappios)
+- [Ti.App.iOS.BackgroundService](#tiappiosbackgroundservice)
+- [Ti.App.iOS.LocalNotification](#tiappioslocalnotification)
+- [Ti.App.iOS.SearchQuery](#tiappiossearchquery)
+- [Ti.App.iOS.SearchableIndex](#tiappiossearchableindex)
+- [Ti.App.iOS.SearchableItem](#tiappiossearchableitem)
+- [Ti.App.iOS.SearchableItemAttributeSet](#tiappiossearchableitemattributeset)
+- [Ti.App.iOS.UserActivity](#tiappiosuseractivity)
+- [Ti.App.iOS.UserDefaults](#tiappiosuserdefaults)
+- [Ti.App.iOS.UserNotificationAction](#tiappiosusernotificationaction)
+- [Ti.App.iOS.UserNotificationCategory](#tiappiosusernotificationcategory)
+- [Ti.App.iOS.UserNotificationCenter](#tiappiosusernotificationcenter)
+- [Ti.Platform](#tiplatform)
+- [Ti.Platform.Android](#tiplatformandroid)
+- [Ti.Platform.DisplayCaps](#tiplatformdisplaycaps)
+
+<!-- TOC-END -->
+
 ## Ti.App
 > The top-level App module is mainly used for accessing information about the application at runtime, and for sending or listening for system events.
 > Extends Ti.Module

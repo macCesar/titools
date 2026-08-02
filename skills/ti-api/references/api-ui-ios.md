@@ -1,5 +1,47 @@
 # Ti.UI.iOS API Reference
 
+<!-- TOC-START -->
+## Contents
+
+- [Ti.UI.iOS](#tiuiios)
+- [Ti.UI.iOS.AlertDialogStyle](#tiuiiosalertdialogstyle)
+- [Ti.UI.iOS.AnimationStyle](#tiuiiosanimationstyle)
+- [Ti.UI.iOS.ApplicationShortcuts](#tiuiiosapplicationshortcuts)
+- [Ti.UI.iOS.BlurView](#tiuiiosblurview)
+- [Ti.UI.iOS.ButtonConfiguration](#tiuiiosbuttonconfiguration)
+- [Ti.UI.iOS.CoverFlowView](#tiuiioscoverflowview)
+- [Ti.UI.iOS.DocumentViewer](#tiuiiosdocumentviewer)
+- [Ti.UI.iOS.FeedbackGenerator](#tiuiiosfeedbackgenerator)
+- [Ti.UI.iOS.ListViewCellSelectionStyle](#tiuiioslistviewcellselectionstyle)
+- [Ti.UI.iOS.ListViewScrollPosition](#tiuiioslistviewscrollposition)
+- [Ti.UI.iOS.ListViewStyle](#tiuiioslistviewstyle)
+- [Ti.UI.iOS.LivePhoto](#tiuiioslivephoto)
+- [Ti.UI.iOS.LivePhotoView](#tiuiioslivephotoview)
+- [Ti.UI.iOS.MenuPopup](#tiuiiosmenupopup)
+- [Ti.UI.iOS.NavigationWindow](#tiuiiosnavigationwindow)
+- [Ti.UI.iOS.PreviewAction](#tiuiiospreviewaction)
+- [Ti.UI.iOS.PreviewActionGroup](#tiuiiospreviewactiongroup)
+- [Ti.UI.iOS.PreviewContext](#tiuiiospreviewcontext)
+- [Ti.UI.iOS.ProgressBarStyle](#tiuiiosprogressbarstyle)
+- [Ti.UI.iOS.RowAnimationStyle](#tiuiiosrowanimationstyle)
+- [Ti.UI.iOS.ScrollIndicatorStyle](#tiuiiosscrollindicatorstyle)
+- [Ti.UI.iOS.SplitWindow](#tiuiiossplitwindow)
+- [Ti.UI.iOS.StatusBar](#tiuiiosstatusbar)
+- [Ti.UI.iOS.Stepper](#tiuiiosstepper)
+- [Ti.UI.iOS.SystemButton](#tiuiiossystembutton)
+- [Ti.UI.iOS.SystemIcon](#tiuiiossystemicon)
+- [Ti.UI.iOS.TabbedBar](#tiuiiostabbedbar)
+- [Ti.UI.iOS.TableViewCellSelectionStyle](#tiuiiostableviewcellselectionstyle)
+- [Ti.UI.iOS.TableViewScrollPosition](#tiuiiostableviewscrollposition)
+- [Ti.UI.iOS.TableViewStyle](#tiuiiostableviewstyle)
+- [Ti.UI.iOS.Toolbar](#tiuiiostoolbar)
+- [Ti.UI.iOS.TransitionAnimation](#tiuiiostransitionanimation)
+- [Ti.UI.iOS.WebViewConfiguration](#tiuiioswebviewconfiguration)
+- [Ti.UI.iOS.WebViewDecisionHandler](#tiuiioswebviewdecisionhandler)
+- [Ti.UI.iOS.WebViewProcessPool](#tiuiioswebviewprocesspool)
+
+<!-- TOC-END -->
+
 ## Ti.UI.iOS
 > Apple iOS specific UI capabilities.  All properties, methods and events in this namespace will only work on Apple iOS devices.
 > Extends Ti.Module

@@ -1,5 +1,23 @@
 # Custom fonts and attributed strings
 
+<!-- TOC-START -->
+## Contents
+
+- [1. Custom fonts overview](#1-custom-fonts-overview)
+- [2. Platform-specific font loading](#2-platform-specific-font-loading)
+- [3. Alloy projects](#3-alloy-projects)
+- [4. Classic Titanium projects](#4-classic-titanium-projects)
+- [5. Finding the PostScript name](#5-finding-the-postscript-name)
+- [6. iOS platform notes](#6-ios-platform-notes)
+- [7. Attributed strings](#7-attributed-strings)
+- [8. Attribute types](#8-attribute-types)
+- [9. iOS-exclusive attributes](#9-ios-exclusive-attributes)
+- [10. Multiple attributes example](#10-multiple-attributes-example)
+- [11. Best practices](#11-best-practices)
+- [12. Common issues](#12-common-issues)
+
+<!-- TOC-END -->
+
 ## 1. Custom fonts overview
 
 Titanium supports TrueType (`.ttf`) and OpenType (`.otf`) fonts on iOS and Android. Custom fonts are a practical way to match a brand or add a distinct tone to your UI.

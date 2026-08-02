@@ -1,5 +1,25 @@
 # Android UI components and conventions
 
+<!-- TOC-START -->
+## Contents
+
+- [1. Action bar](#1-action-bar)
+- [2. Android themes](#2-android-themes)
+- [3. Options menu](#3-options-menu)
+- [4. Status bar notifications](#4-status-bar-notifications)
+- [5. Progress bars](#5-progress-bars)
+- [6. Tab groups and tabs](#6-tab-groups-and-tabs)
+- [7. Hardware back button handling](#7-hardware-back-button-handling)
+- [8. Notification drawer](#8-notification-drawer)
+- [9. Android UI conventions](#9-android-ui-conventions)
+- [10. Material design components](#10-material-design-components)
+- [11. Toast notifications](#11-toast-notifications)
+- [12. HTML labels and linkification](#12-html-labels-and-linkification)
+- [13. Nine-patch images](#13-nine-patch-images)
+- [Best practices](#best-practices)
+
+<!-- TOC-END -->
+
 ## 1. Action bar
 
 ### Overview

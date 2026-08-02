@@ -2,6 +2,33 @@
 
 This page lists the commands available in PurgeTSS. For release-by-release feature additions and behavior changes, see [Version History](./version-history.md).
 
+<!-- TOC-START -->
+## Contents
+
+- [Setup Commands](#setup-commands)
+- [Development Commands](#development-commands)
+- [Asset Commands](#asset-commands)
+- [Utility Commands](#utility-commands)
+- [Maintenance Commands](#maintenance-commands)
+- [`init` Command](#init-command)
+- [`create` Command](#create-command)
+- [`brand` Command](#brand-command)
+- [`images` Command](#images-command)
+- [`semantic` Command](#semantic-command)
+- [`install-dependencies` Command](#install-dependencies-command)
+- [`icon-library` Command](#icon-library-command)
+- [`build-fonts` Command](#build-fonts-command)
+- [`shades` Command](#shades-command)
+- [`color-module` Command](#color-module-command)
+- [`build` Command](#build-command)
+- [`watch` Command](#watch-command)
+- [`module` Command](#module-command)
+- [`update` Command](#update-command)
+- [`sudo-update` Command](#sudo-update-command)
+- [Community-Discovered Patterns](#community-discovered-patterns)
+
+<!-- TOC-END -->
+
 ## Setup Commands
 
 - `init`: Initializes PurgeTSS on an existing Alloy project.

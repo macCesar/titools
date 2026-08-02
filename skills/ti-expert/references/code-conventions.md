@@ -1,5 +1,24 @@
 # TSS styling & code conventions
 
+<!-- TOC-START -->
+## Contents
+
+- [Module system: CommonJS (NOT ES6 modules)](#module-system-commonjs-not-es6-modules)
+- [ES6+ features (Non-Module)](#es6-features-non-module)
+- [No semicolons](#no-semicolons)
+- [Styling with TSS](#styling-with-tss)
+- [Platform & device modifiers](#platform-device-modifiers)
+- [applyProperties() pattern](#applyproperties-pattern)
+- [ListView templates](#listview-templates)
+- [Memory cleanup](#memory-cleanup)
+- [i18n and accessibility (a11y)](#i18n-and-accessibility-a11y)
+- [Percentage-based layouts](#percentage-based-layouts)
+- [Naming conventions](#naming-conventions)
+- [Import/Export patterns](#importexport-patterns)
+- [Async/Promise patterns](#asyncpromise-patterns)
+
+<!-- TOC-END -->
+
 ## Module system: CommonJS (NOT ES6 modules)
 
 Titanium uses **CommonJS** for modules. Do NOT use ES6 `import`/`export`:

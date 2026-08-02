@@ -6,6 +6,26 @@ Changelog source of truth: [https://github.com/macCesar/purgeTSS](https://github
 
 ---
 
+<!-- TOC-START -->
+## Contents
+
+- [Upgrade to v7.11.x](#upgrade-to-v711x)
+- [Upgrade to v7.10.x](#upgrade-to-v710x)
+- [Upgrade to v7.9.0](#upgrade-to-v790)
+- [Upgrade to v7.8.0](#upgrade-to-v780)
+- [Upgrade to v7.7.0](#upgrade-to-v770)
+- [Upgrade to v7.6.0](#upgrade-to-v760)
+- [Upgrade to v7.5.3](#upgrade-to-v753)
+- [Upgrade to v7.5.0](#upgrade-to-v750)
+- [Upgrade to v7.4.0](#upgrade-to-v740)
+- [Upgrade to v7.3.x](#upgrade-to-v73x)
+- [Upgrade to v7.2.7](#upgrade-to-v727)
+- [Upgrade to v7.2.6](#upgrade-to-v726)
+- [Community-Discovered Patterns](#community-discovered-patterns)
+- [Quick Checklist](#quick-checklist)
+
+<!-- TOC-END -->
+
 ## Upgrade to v7.11.x
 
 v7.11.0 and v7.11.1 are additive — **no breaking changes**. The headline addition is a compile-time SVG image pipeline that runs automatically as a post-step of `purgetss`, plus a `config.cjs` syntax validator. Nothing new is required on upgrade; the new surface is opt-in. Full release notes in [`version-history.md`](./version-history.md).

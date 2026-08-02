@@ -1,5 +1,24 @@
 # Ti.UI Core Views API Reference
 
+<!-- TOC-START -->
+## Contents
+
+- [Ti.UI.View](#tiuiview)
+- [Ti.UI.Label](#tiuilabel)
+- [Ti.UI.Button](#tiuibutton)
+- [Ti.UI.ImageView](#tiuiimageview)
+- [Ti.UI.ScrollView](#tiuiscrollview)
+- [Ti.UI.ScrollableView](#tiuiscrollableview)
+- [Ti.UI.ActivityIndicator](#tiuiactivityindicator)
+- [Ti.UI.ActivityIndicatorStyle](#tiuiactivityindicatorstyle)
+- [Ti.UI.ProgressBar](#tiuiprogressbar)
+- [Ti.UI.Slider](#tiuislider)
+- [Ti.UI.Switch](#tiuiswitch)
+- [Ti.UI.MaskedImage](#tiuimaskedimage)
+- [Ti.UI.RefreshControl](#tiuirefreshcontrol)
+
+<!-- TOC-END -->
+
 ## Ti.UI.View
 > An empty drawing surface or container
 > Extends Ti.Proxy

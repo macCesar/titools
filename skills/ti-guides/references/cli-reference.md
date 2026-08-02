@@ -2,6 +2,22 @@
 
 Reference for Titanium CLI commands, options, and configuration.
 
+<!-- TOC-START -->
+## Contents
+
+- [Environment setup](#environment-setup)
+- [Project commands](#project-commands)
+- [Build commands](#build-commands)
+- [Distribution commands](#distribution-commands)
+- [SDK management](#sdk-management)
+- [Configuration options](#configuration-options)
+- [Common issues](#common-issues)
+- [Command quick reference](#command-quick-reference)
+- [SDK version precedence](#sdk-version-precedence)
+- [References](#references)
+
+<!-- TOC-END -->
+
 ## Environment setup
 
 ### Check environment

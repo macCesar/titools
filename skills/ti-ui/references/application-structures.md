@@ -1,5 +1,24 @@
 # Application structures and core building blocks
 
+<!-- TOC-START -->
+## Contents
+
+- [1. Overview](#1-overview)
+- [2. Windows](#2-windows)
+- [3. Views](#3-views)
+- [4. TabGroups](#4-tabgroups)
+- [6. NavigationWindow (iOS)](#6-navigationwindow-ios)
+- [7. Modal windows](#7-modal-windows)
+- [8. Heavyweight vs lightweight windows](#8-heavyweight-vs-lightweight-windows)
+- [9. Window hierarchy and stacking](#9-window-hierarchy-and-stacking)
+- [10. Platform-specific navigation](#10-platform-specific-navigation)
+- [11. Execution contexts](#11-execution-contexts)
+- [12. Common patterns](#12-common-patterns)
+- [13. Best practices](#13-best-practices)
+- [14. Platform differences summary](#14-platform-differences-summary)
+
+<!-- TOC-END -->
+
 ## 1. Overview
 
 Titanium apps are built from three core components.

@@ -9,6 +9,29 @@ For the terse flag reference, see the [`brand` command reference](./cli-commands
 > The `brand` command at a glance
 > `purgetss brand` turns one logo into every asset a Titanium app needs to ship — launcher icons, adaptive icons, iOS 18+ Dark/Tinted variants, marketplace artwork, and optional notification/splash icons. Works on both Alloy and Classic projects.
 
+<!-- TOC-START -->
+## Contents
+
+- [Quick start](#quick-start)
+- [The `purgetss/brand/` convention](#the-purgetssbrand-convention)
+- [The `brand:` config section (v7.7.0 grouped structure)](#the-brand-config-section-v770-grouped-structure)
+- [Overwrite confirmation](#overwrite-confirmation)
+- [What gets generated](#what-gets-generated)
+- [Android dark mode](#android-dark-mode)
+- [Android 12+ splash artwork](#android-12-splash-artwork)
+- [Android legacy splash fallback](#android-legacy-splash-fallback)
+- [iOS 18+ Dark and Tinted variants](#ios-18-dark-and-tinted-variants)
+- [Google Play Feature Graphic (v7.10.0)](#google-play-feature-graphic-v7100)
+- [Brand color](#brand-color)
+- [Padding guidance](#padding-guidance)
+- [Cleanup legacy branding artifacts](#cleanup-legacy-branding-artifacts)
+- [Troubleshooting](#troubleshooting)
+- [Full flag reference](#full-flag-reference)
+- [Community-Discovered Patterns](#community-discovered-patterns)
+- [See also](#see-also)
+
+<!-- TOC-END -->
+
 ## Quick start
 
 Drop a logo file into `purgetss/brand/`, then run the command. That's the whole workflow.

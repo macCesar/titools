@@ -1,5 +1,21 @@
 # Layouts, positioning, and view hierarchy
 
+<!-- TOC-START -->
+## Contents
+
+- [Critical: platform-specific properties require modifiers](#critical-platform-specific-properties-require-modifiers)
+- [1. Units of measurement](#1-units-of-measurement)
+- [2. Positioning properties](#2-positioning-properties)
+- [3. Layout modes](#3-layout-modes)
+- [4. Auto-size behaviors](#4-auto-size-behaviors)
+- [5. Combining layouts](#5-combining-layouts)
+- [6. View hierarchy and zIndex](#6-view-hierarchy-and-zindex)
+- [7. Common layout patterns](#7-common-layout-patterns)
+- [8. Platform considerations](#8-platform-considerations)
+- [Best practices](#best-practices)
+
+<!-- TOC-END -->
+
 ## Critical: platform-specific properties require modifiers
 
 Do not use `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties without modifiers. It will break builds.

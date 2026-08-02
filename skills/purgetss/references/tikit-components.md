@@ -13,6 +13,23 @@ TiKit is meant to help you move faster without fighting styling details.
 - Customizable colors and styles via `classes` property.
 - You only pass what you need.
 
+<!-- TOC-START -->
+## Contents
+
+- [Getting Started](#getting-started)
+- [Setting Up Your Project](#setting-up-your-project)
+- [Component Default Values](#component-default-values)
+- [Alerts](#alerts)
+- [Avatars](#avatars)
+- [Buttons](#buttons)
+- [Cards](#cards)
+- [Tabs](#tabs)
+- [Updating Components Dynamically](#updating-components-dynamically)
+- [Working with Icon Fonts](#working-with-icon-fonts)
+- [License](#license)
+
+<!-- TOC-END -->
+
 ## Getting Started
 
 First, install the TiKit CLI:

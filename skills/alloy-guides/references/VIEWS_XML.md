@@ -1,5 +1,23 @@
 # Alloy XML Markup
 
+<!-- TOC-START -->
+## Contents
+
+- [Introduction](#introduction)
+- [Collection Element](#collection-element)
+- [Model Element](#model-element)
+- [Module Attribute](#module-attribute)
+- [Module Element](#module-element)
+- [Require Element](#require-element)
+- [Namespace](#namespace)
+- [Conditional Code](#conditional-code)
+- [Property Mapping](#property-mapping)
+- [Event Handling](#event-handling)
+- [Data Binding](#data-binding)
+- [Non-Standard Syntax](#non-standard-syntax)
+
+<!-- TOC-END -->
+
 ## Introduction
 
 In Alloy, the XML markup abstracts the Titanium SDK UI components, so you do not need to code the creation and setup of these components using JavaScript and the Titanium SDK API. All view files must be placed in the `app/views` folder of your project with the `.xml` file extension.

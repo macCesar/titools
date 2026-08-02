@@ -1,5 +1,25 @@
 # Orientation
 
+<!-- TOC-START -->
+## Contents
+
+- [1. Overview](#1-overview)
+- [2. Design principles](#2-design-principles)
+- [3. Orientation modes](#3-orientation-modes)
+- [4. Locking orientation](#4-locking-orientation)
+- [5. Handling orientation changes](#5-handling-orientation-changes)
+- [6. Adapting UI to orientation](#6-adapting-ui-to-orientation)
+- [7. Platform differences](#7-platform-differences)
+- [8. Checking current orientation](#8-checking-current-orientation)
+- [9. Disabling orientation change](#9-disabling-orientation-change)
+- [10. Orientation lock limitations](#10-orientation-lock-limitations)
+- [11. Modal window constraints (iOS)](#11-modal-window-constraints-ios)
+- [12. Splash screen configuration](#12-splash-screen-configuration)
+- [13. Best practices](#13-best-practices)
+- [14. Common issues](#14-common-issues)
+
+<!-- TOC-END -->
+
 ## 1. Overview
 
 Orientation is whether the app displays in portrait or landscape, and how it reacts when the device rotates.

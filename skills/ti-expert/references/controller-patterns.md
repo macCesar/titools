@@ -1,5 +1,23 @@
 # Alloy controller patterns
 
+<!-- TOC-START -->
+## Contents
+
+- [Titanium layout rules](#titanium-layout-rules)
+- [Animation usage](#animation-usage)
+- [Dynamic styling](#dynamic-styling)
+- [Percentage-based layouts](#percentage-based-layouts)
+- [Controller lifecycle patterns](#controller-lifecycle-patterns)
+- [Form handling patterns](#form-handling-patterns)
+- [Loading state patterns](#loading-state-patterns)
+- [Modal and dialog patterns](#modal-and-dialog-patterns)
+- [Tabgroup pattern](#tabgroup-pattern)
+- [Navigationwindow pattern (iOS)](#navigationwindow-pattern-ios)
+- [Searchbar with ListView](#searchbar-with-listview)
+- [Pull-to-refresh pattern](#pull-to-refresh-pattern)
+
+<!-- TOC-END -->
+
 ## Titanium layout rules
 
 - Use `layout: 'horizontal'` for left-to-right

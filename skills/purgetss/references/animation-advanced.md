@@ -6,6 +6,18 @@ For core animation methods (play, toggle, apply, open, close, draggable, undragg
 
 ---
 
+<!-- TOC-START -->
+## Contents
+
+- [Property Inheritance from the Animation Object](#property-inheritance-from-the-animation-object)
+- [Timing and Utility Classes](#timing-and-utility-classes)
+- [Utility Functions](#utility-functions)
+- [Implementation Rules](#implementation-rules)
+- [Method Implementation Template](#method-implementation-template)
+- [Complex UI Example](#complex-ui-example)
+
+<!-- TOC-END -->
+
 ## Property Inheritance from the Animation Object
 
 All methods in the Animation module inherit properties from the `<Animation>` object's classes. You configure animation behavior in XML and it applies to every method call.

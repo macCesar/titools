@@ -1,5 +1,19 @@
 # Extending Titanium
 
+<!-- TOC-START -->
+## Contents
+
+- [1. Module architecture (core concepts)](#1-module-architecture-core-concepts)
+- [2. Module debugging in Xcode (iOS)](#2-module-debugging-in-xcode-ios)
+- [3. Upgrading to SDK 9.0.0+ (Android)](#3-upgrading-to-sdk-900-android)
+- [4. Hyperloop](#4-hyperloop)
+- [3. Native module development](#3-native-module-development)
+- [4. Choosing between Hyperloop and native modules](#4-choosing-between-hyperloop-and-native-modules)
+- [5. Finding and using third-party modules](#5-finding-and-using-third-party-modules)
+- [Best practices summary](#best-practices-summary)
+
+<!-- TOC-END -->
+
 ## 1. Module architecture (core concepts)
 
 Titanium modules are based on a native class hierarchy that communicates with JavaScript:

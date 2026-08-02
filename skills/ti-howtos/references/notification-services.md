@@ -2,6 +2,18 @@
 
 Guide to local and push notifications on iOS and Android.
 
+<!-- TOC-START -->
+## Contents
+
+- [Local notifications: Android](#local-notifications-android)
+- [Local notifications: iOS](#local-notifications-ios)
+- [Interactive notifications: iOS (iOS 8+)](#interactive-notifications-ios-ios-8)
+- [Push notifications](#push-notifications)
+- [Common patterns](#common-patterns)
+- [Platform-specific notes](#platform-specific-notes)
+
+<!-- TOC-END -->
+
 ## Local notifications: Android
 
 ### Notification display locations

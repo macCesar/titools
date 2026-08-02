@@ -1,5 +1,20 @@
 # Android platform deep dives
 
+<!-- TOC-START -->
+## Contents
+
+- [1. Android intent filters (advanced)](#1-android-intent-filters-advanced)
+- [2. Broadcast intents with permissions](#2-broadcast-intents-with-permissions)
+- [3. FusedLocationProvider (TiSDK 7.1.0+)](#3-fusedlocationprovider-tisdk-710)
+- [4. Android intents](#4-android-intents)
+- [5. Intent filters](#5-intent-filters)
+- [6. Broadcast intents and receivers](#6-broadcast-intents-and-receivers)
+- [7. Android services](#7-android-services)
+- [8. Android permissions](#8-android-permissions)
+- [Best practices](#best-practices)
+
+<!-- TOC-END -->
+
 ## 1. Android intent filters (advanced)
 
 To receive implicit intents (for example, opening a PDF file or a web link), register a filter in the manifest.

@@ -2,6 +2,21 @@
 
 Guide to debugging Titanium apps, managing memory, finding leaks, and using native tools.
 
+<!-- TOC-START -->
+## Contents
+
+- [Debugging overview](#debugging-overview)
+- [Memory management](#memory-management)
+- [Memory leak detection](#memory-leak-detection)
+- [Android debugging tools](#android-debugging-tools)
+- [iOS debugging tools](#ios-debugging-tools)
+- [6. Automation and UI testing](#6-automation-and-ui-testing)
+- [Best practices](#best-practices)
+- [Platform-specific notes](#platform-specific-notes)
+- [Resources](#resources)
+
+<!-- TOC-END -->
+
 ## Debugging overview
 
 ### Essential elements of debugging

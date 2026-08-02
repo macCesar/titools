@@ -1,5 +1,22 @@
 # The `apply` Directive
 
+<!-- TOC-START -->
+## Contents
+
+- [Create Complex Classes and IDs](#create-complex-classes-and-ids)
+- [Set Any ID, Class, or Ti Element](#set-any-id-class-or-ti-element)
+- [Use Default Classes](#use-default-classes)
+- [Use Icon Font Classes (v7.10.0)](#use-icon-font-classes-v7100)
+- [Use Arbitrary Values](#use-arbitrary-values)
+- [Use Newly Defined Classes in `config.cjs`](#use-newly-defined-classes-in-configcjs)
+- [Set a String of Classes or an Array of Classes](#set-a-string-of-classes-or-an-array-of-classes)
+- [Combine with Platform, Device, or Conditional Blocks](#combine-with-platform-device-or-conditional-blocks)
+- [Customizing Window, View, and ImageView](#customizing-window-view-and-imageview)
+- [Platform-Specific Classes](#platform-specific-classes)
+- [Community-Discovered Patterns](#community-discovered-patterns)
+
+<!-- TOC-END -->
+
 ## Create Complex Classes and IDs
 
 > **INFO**

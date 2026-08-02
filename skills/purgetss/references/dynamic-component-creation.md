@@ -6,6 +6,22 @@
 >
 > For general Alloy controller and view patterns, refer to the `alloy-guides` and `alloy-howtos` skills.
 
+<!-- TOC-START -->
+## Contents
+
+- [Community-Discovered Patterns](#community-discovered-patterns)
+- [Overview](#overview)
+- [Method 1: `$.UI.create()` (Recommended)](#method-1-uicreate-recommended)
+- [Method 2: `Alloy.createStyle()` + `applyProperties()`](#method-2-alloycreatestyle-applyproperties)
+- [Comparison: Which Method to Use?](#comparison-which-method-to-use)
+- [Real-World Examples](#real-world-examples)
+- [Important Notes](#important-notes)
+- [Dynamic Styling with `classes` Property](#dynamic-styling-with-classes-property)
+- [Anti-Patterns to Avoid](#anti-patterns-to-avoid)
+- [Summary](#summary)
+
+<!-- TOC-END -->
+
 ## Community-Discovered Patterns
 
 The guidance in this file reflects patterns that PurgeTSS users have converged on when building components imperatively from Alloy controllers. It complements — but is not a substitute for — official Alloy documentation.

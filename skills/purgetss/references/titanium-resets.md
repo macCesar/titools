@@ -2,6 +2,22 @@
 
 PurgeTSS automatically resets certain Titanium elements to facilitate UI layout. Understanding these resets is critical for effective PurgeTSS usage.
 
+<!-- TOC-START -->
+## Contents
+
+- [The Three Default Resets](#the-three-default-resets)
+- [View Reset: `Ti.UI.SIZE`](#view-reset-tiuisize)
+- [ImageView Reset: iOS Hi-Res](#imageview-reset-ios-hi-res)
+- [Window Reset: White Background](#window-reset-white-background)
+- [Width/Height Inheritance](#widthheight-inheritance)
+- [Common Pitfalls](#common-pitfalls)
+- [Reset Behavior in Generated app.tss](#reset-behavior-in-generated-apptss)
+- [Default font family classes (v7.5.3+)](#default-font-family-classes-v753)
+- [Overriding Resets](#overriding-resets)
+- [Summary Table](#summary-table)
+
+<!-- TOC-END -->
+
 ## The Three Default Resets
 
 ```tss

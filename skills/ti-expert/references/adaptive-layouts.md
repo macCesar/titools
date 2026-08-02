@@ -4,6 +4,20 @@ Patterns for building responsive Titanium apps that work across phones, tablets,
 
 This reference is NOT derived from official Titanium documentation. It addresses Google's Android 17 resizability requirements and provides reusable patterns for adaptive UI in Titanium/Alloy apps.
 
+<!-- TOC-START -->
+## Contents
+
+- [1. Context: Android 17 resizability requirements](#1-context-android-17-resizability-requirements)
+- [2. Detecting window size](#2-detecting-window-size)
+- [3. Layout strategy](#3-layout-strategy)
+- [4. Controller pattern](#4-controller-pattern)
+- [5. Grid simulation](#5-grid-simulation)
+- [6. Anti-patterns](#6-anti-patterns)
+- [7. tiapp.xml configuration](#7-tiappxml-configuration)
+- [8. Quick reference](#8-quick-reference)
+
+<!-- TOC-END -->
+
 ## 1. Context: Android 17 resizability requirements
 
 Starting with Android 17 (API 37), on devices with screens >= 600dp (tablets, foldables, desktop mode), Google ignores these manifest attributes:

@@ -1,5 +1,22 @@
 # End-to-end testing & CI/CD
 
+<!-- TOC-START -->
+## Contents
+
+- [Appium setup](#appium-setup)
+- [Appium configuration](#appium-configuration)
+- [Webdriverio integration](#webdriverio-integration)
+- [E2E test example](#e2e-test-example)
+- [Adding accessibility IDs for testing](#adding-accessibility-ids-for-testing)
+- [Page object pattern](#page-object-pattern)
+- [CI/CD integration](#cicd-integration)
+- [Fastlane integration](#fastlane-integration)
+- [Package.json scripts](#packagejson-scripts)
+- [Branch protection rules](#branch-protection-rules)
+- [Testing best practices summary](#testing-best-practices-summary)
+
+<!-- TOC-END -->
+
 ## Appium setup
 
 ```bash

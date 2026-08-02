@@ -2,6 +2,21 @@
 
 Reference for Titanium app configuration files. `tiapp.xml` is the main config file for Titanium apps. `timodule.xml` is for custom modules.
 
+<!-- TOC-START -->
+## Contents
+
+- [tiapp.xml structure](#tiappxml-structure)
+- [Top-level elements](#top-level-elements)
+- [Application properties](#application-properties)
+- [Android section](#android-section)
+- [iOS section](#ios-section)
+- [Google Play Services](#google-play-services)
+- [timodule.xml (module configuration)](#timodulexml-module-configuration)
+- [SDK version precedence](#sdk-version-precedence)
+- [References](#references)
+
+<!-- TOC-END -->
+
 ## tiapp.xml structure
 
 ```xml

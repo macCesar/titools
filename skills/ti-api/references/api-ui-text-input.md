@@ -1,5 +1,20 @@
 # Ti.UI Text & Input API Reference
 
+<!-- TOC-START -->
+## Contents
+
+- [Ti.UI.TextField](#tiuitextfield)
+- [Ti.UI.TextArea](#tiuitextarea)
+- [Ti.UI.SearchBar](#tiuisearchbar)
+- [Ti.UI.AttributedString](#tiuiattributedstring)
+- [Ti.UI.Color](#tiuicolor)
+- [Ti.UI.Clipboard](#tiuiclipboard)
+- [Ti.UI.Picker](#tiuipicker)
+- [Ti.UI.PickerColumn](#tiuipickercolumn)
+- [Ti.UI.PickerRow](#tiuipickerrow)
+
+<!-- TOC-END -->
+
 ## Ti.UI.TextField
 > A single line text field.
 > Extends Ti.UI.View

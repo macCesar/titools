@@ -1,5 +1,29 @@
 # TableViews
 
+<!-- TOC-START -->
+## Contents
+
+- [1. Overview](#1-overview)
+- [2. TableView vs ListView](#2-tableview-vs-listview)
+- [3. Creating a TableView](#3-creating-a-tableview)
+- [4. Creating rows](#4-creating-rows)
+- [5. Row properties](#5-row-properties)
+- [6. Custom rows](#6-custom-rows)
+- [7. Headers and footers](#7-headers-and-footers)
+- [8. Grouped table style (iOS)](#8-grouped-table-style-ios)
+- [9. Editing mode](#9-editing-mode)
+- [10. TableView events](#10-tableview-events)
+- [11. Searching](#11-searching)
+- [12. Updating table data](#12-updating-table-data)
+- [13. TableView sections](#13-tableview-sections)
+- [14. Performance optimization](#14-performance-optimization)
+- [15. Common patterns](#15-common-patterns)
+- [16. Platform differences](#16-platform-differences)
+- [17. Migration: TableView to ListView](#17-migration-tableview-to-listview)
+- [Best practices](#best-practices)
+
+<!-- TOC-END -->
+
 ## 1. Overview
 
 TableView is a scrolling list component that displays rows of data. ListView is the recommended modern API for most cases, but TableView is still useful for:

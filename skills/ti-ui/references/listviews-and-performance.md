@@ -1,5 +1,26 @@
 # ListViews and performance optimization
 
+<!-- TOC-START -->
+## Contents
+
+- [1. Overview](#1-overview)
+- [2. Basic ListView structure](#2-basic-listview-structure)
+- [3. Templates](#3-templates)
+- [4. Data binding](#4-data-binding)
+- [5. Section operations](#5-section-operations)
+- [6. Events](#6-events)
+- [7. Critical performance rules](#7-critical-performance-rules)
+- [8. iOS action items (swipe actions)](#8-ios-action-items-swipe-actions)
+- [9. Editing mode (iOS)](#9-editing-mode-ios)
+- [10. Search](#10-search)
+- [11. Performance best practices](#11-performance-best-practices)
+- [12. Transitioning from TableView](#12-transitioning-from-tableview)
+- [13. Common patterns](#13-common-patterns)
+- [14. Platform differences](#14-platform-differences)
+- [15. Debugging](#15-debugging)
+
+<!-- TOC-END -->
+
 ## 1. Overview
 
 ListView is a data-oriented, high-performance replacement for TableView. It handles large datasets by recycling native views and managing the item lifecycle for you.

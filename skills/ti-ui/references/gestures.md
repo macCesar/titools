@@ -1,5 +1,22 @@
 # Gestures
 
+<!-- TOC-START -->
+## Contents
+
+- [1. Overview](#1-overview)
+- [2. Touch events](#2-touch-events)
+- [3. Swipe gesture](#3-swipe-gesture)
+- [4. Pinch gesture (iOS only)](#4-pinch-gesture-ios-only)
+- [5. Long press gesture](#5-long-press-gesture)
+- [6. Shake gesture](#6-shake-gesture)
+- [7. Accelerometer as input](#7-accelerometer-as-input)
+- [8. Gesture lifecycle management](#8-gesture-lifecycle-management)
+- [9. Platform-specific considerations](#9-platform-specific-considerations)
+- [10. Best practices](#10-best-practices)
+- [11. Combining gestures](#11-combining-gestures)
+
+<!-- TOC-END -->
+
 ## 1. Overview
 
 Titanium supports more than simple taps.
