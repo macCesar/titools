@@ -177,8 +177,27 @@ marketplace users (the plugin serves `commands/` from the repo) and not npm user
 the README documented them anyway.
 
 Adding one means: the file in `commands/`, the name in `lib/config.js:COMMANDS`, a
-row in the README table, and a passing `test/commands.test.js` (it fails on any
-mismatch between `COMMANDS` and the directory).
+row in the README table, and a passing `test/manifest.test.js`.
+
+### `test/manifest.test.js` guards the registration wiring
+
+Every assertion there corresponds to a failure one of the two repos has shipped —
+the class of bug where nothing is broken, something is merely never reached:
+
+- a skill, command or agent present on disk but absent from `lib/config.js`, so the
+  CLI never installs it (and the reverse — listed but missing);
+- `package.json` → `files` omitting a directory that has to ship, which publishes a
+  tarball the installer cannot use, or including `scripts/` and `.claude/`, which
+  should never ship;
+- `package.json` and `plugin.json` versions drifting apart;
+- frontmatter whose `name` disagrees with its directory or filename, or exceeding
+  the 1024-char spec limit;
+- `references/*.md` pointers in a SKILL.md that resolve to nothing;
+- the flat hook format in `hooks.json` that caused the v2.4.0 → v2.4.1 hotfix.
+
+When adding a skill or command, this suite is what tells you the registration was
+actually done. Ported from aiskills, where it was written after the same class of
+bug; extended here for agents, the hook and the wider `files` allowlist.
 
 ### Maintainer scripts
 

@@ -107,11 +107,11 @@ survives.
   `--strip` those indexes. Porting them is not a `cp`: `fix-fences.mjs` carries
   Titanium-specific reasoning and the `*(See full overview in titanium-docs)*`
   boundary pattern, which would need adapting.
-- **aiskills has `test/manifest.test.js`, which is broader than the
-  `commands.test.js` written here.** It guards skills present on disk but missing
-  from `SKILLS`, orphaned command files, frontmatter/directory mismatches, dead
-  `references/*.md` pointers, and version drift between the two manifests. Worth
-  pulling in this direction.
+- **The `manifest.test.js` port went further than aiskills' version.** It now also
+  covers agents, the nested hook format, and the `files` allowlist in both
+  directions — what must ship and what must not. That extension is worth sending
+  back the other way; aiskills has no agents but does have the hook and `files`
+  concerns.
 - **`docs/PENDING-IMPROVEMENTS.md`, TiTools item 2, is obsolete.** It plans migrating
   the doc-based skills to `tidev/skills`; v4.0.0 reversed that. TiTools items 1
   (documenting the `~/.claude/CLAUDE.md` enforcement block in the README) and 3

@@ -145,6 +145,7 @@ appeared to work because Claude Code reads `.claude/commands/` as project-local
 commands — but only for someone sitting inside this repo, which is not a Titanium
 project and cannot meaningfully run any of them.
 
-**Consequences:** `test/commands.test.js` fails on any drift between `COMMANDS` and
+**Consequences:** `test/manifest.test.js` fails on any drift between `COMMANDS` and
 the directory, on a frontmatter `name` that stops matching its filename, and on
-`commands/` falling out of `files`.
+`commands/` falling out of `files`. (Originally `test/commands.test.js`; folded into
+the broader manifest suite when that was ported from aiskills on the same day.)
