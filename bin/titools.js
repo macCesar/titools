@@ -26,7 +26,7 @@ program
 // Install command
 program
   .command('install')
-  .description('Install Titanium knowledge packages and platform links')
+  .description('Install Titanium skills, the ti-pro agent, slash commands and platform links')
   .option('-l, --local', 'Install skills locally in the current project')
   .option('-a, --all', 'Install all detected platforms without prompting')
   .option('--path <path>', 'Install to a custom path (skips symlink setup)')
@@ -44,14 +44,14 @@ program
 // Update command
 program
   .command('update')
-  .description('Check for newer CLI versions, then sync installed knowledge packages and agent')
+  .description('Check for newer CLI versions, then sync installed skills, agent and slash commands')
   .option('-l, --local', 'Update local skills in the current project')
   .action(updateCommand);
 
 // Remove command
 program
   .command('remove')
-  .description('Remove Titanium knowledge packages and agent')
+  .description('Remove Titanium skills, the ti-pro agent and slash commands')
   .option('-l, --local', 'Remove local skills from the current project')
   .action(uninstallCommand);
 
@@ -71,7 +71,7 @@ program
 // Doctor command
 program
   .command('doctor')
-  .description('Check installation health and diagnose issues')
+  .description('Check installation health, including marketplace-plugin overlap, and diagnose issues')
   .action(doctorCommand);
 
 // List command
