@@ -1,5 +1,19 @@
 # Ti.UI Lists & Tables API Reference
 
+<!-- TOC-START -->
+## Contents
+
+- [Ti.UI.ListView](#tiuilistview)
+- [Ti.UI.ListItem](#tiuilistitem)
+- [Ti.UI.ListSection](#tiuilistsection)
+- [Ti.UI.ListViewScrollPosition](#tiuilistviewscrollposition)
+- [Ti.UI.TableView](#tiuitableview)
+- [Ti.UI.TableViewRow](#tiuitableviewrow)
+- [Ti.UI.TableViewSection](#tiuitableviewsection)
+- [Ti.UI.TableViewScrollPosition](#tiuitableviewscrollposition)
+
+<!-- TOC-END -->
+
 ## Ti.UI.ListView
 > A list view is used to present information, organized in to sections and items, in a vertically-scrolling view.
 > Extends Ti.UI.View
@@ -15,7 +29,6 @@ A `ListView` object is a container for [ListSection](Titanium.UI.ListSection)
 objects that are, in turn, containers for [ListItem](Titanium.UI.ListItem) objects. This is
 easily visualized as an Alloy view:
 
-``` xml
 
 ### Properties (unique: 54/122)
 | Property | Type | Default | Platform | Description |
@@ -155,7 +168,6 @@ Alloy applications can use **`<ListItem>`** elements to create `ListItem` object
 must be nested inside a **`<ListSection>`** element, which itself is nested in a `<ListView>` element,
 as shown below:
 
-``` xml
 
 ### Properties (unique: 26/28)
 | Property | Type | Default | Platform | Description |

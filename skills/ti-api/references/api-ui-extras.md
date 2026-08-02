@@ -1,5 +1,24 @@
 # Ti.UI Extras API Reference
 
+<!-- TOC-START -->
+## Contents
+
+- [Ti.UI.Animation](#tiuianimation)
+- [Ti.UI.Matrix2D](#tiuimatrix2d)
+- [Ti.UI.Matrix3D](#tiuimatrix3d)
+- [Ti.UI.WebView](#tiuiwebview)
+- [Ti.UI.Toolbar](#tiuitoolbar)
+- [Ti.UI.ButtonBar](#tiuibuttonbar)
+- [Ti.UI.TabbedBar](#tiuitabbedbar)
+- [Ti.UI.OptionBar](#tiuioptionbar)
+- [Ti.UI.Shortcut](#tiuishortcut)
+- [Ti.UI.ShortcutItem](#tiuishortcutitem)
+- [Ti.UI.EmailDialog](#tiuiemaildialog)
+- [Ti.UI.DashboardView](#tiuidashboardview)
+- [Ti.UI.DashboardItem](#tiuidashboarditem)
+
+<!-- TOC-END -->
+
 ## Ti.UI.Animation
 > The `Animation` object defines an animation that can be applied to a view.
 > Extends Ti.Proxy
@@ -523,7 +542,6 @@ Google documents how to add static shortcuts
 [here](https://developer.android.com/guide/topics/ui/shortcuts/creating-shortcuts#static).
 
 In the `tiapp.xml` file, you will need to add a shortcuts `<meta-data/>` element to your main activity.
-``` xml
 
 ### Properties (unique: 6/9)
 | Property | Type | Default | Platform | Description |

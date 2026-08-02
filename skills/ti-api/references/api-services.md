@@ -1,5 +1,26 @@
 # Ti.Geolocation, Ti.Contacts, Ti.Calendar & Ti.WatchSession API Reference
 
+<!-- TOC-START -->
+## Contents
+
+- [Ti.Calendar](#ticalendar)
+- [Ti.Calendar.Alert](#ticalendaralert)
+- [Ti.Calendar.Attendee](#ticalendarattendee)
+- [Ti.Calendar.Calendar](#ticalendarcalendar)
+- [Ti.Calendar.Event](#ticalendarevent)
+- [Ti.Calendar.RecurrenceRule](#ticalendarrecurrencerule)
+- [Ti.Calendar.Reminder](#ticalendarreminder)
+- [Ti.Contacts](#ticontacts)
+- [Ti.Contacts.Group](#ticontactsgroup)
+- [Ti.Contacts.Person](#ticontactsperson)
+- [Ti.Geolocation](#tigeolocation)
+- [Ti.Geolocation.Android](#tigeolocationandroid)
+- [Ti.Geolocation.Android.LocationProvider](#tigeolocationandroidlocationprovider)
+- [Ti.Geolocation.Android.LocationRule](#tigeolocationandroidlocationrule)
+- [Ti.WatchSession](#tiwatchsession)
+
+<!-- TOC-END -->
+
 ## Ti.Calendar
 > The Calendar module provides an API for accessing the native calendar functionality.
 > Extends Ti.Module
@@ -14,7 +35,6 @@ On Android, calendar permissions must be explicitly configured in `tiapp.xml` in
 calendar and you have to use [requestCalendarPermissions](Titanium.Calendar.requestCalendarPermissions)
 to request runtime permissions.
 
-``` xml
 
 ### Properties (unique: 6/72)
 | Property | Type | Default | Platform | Description |

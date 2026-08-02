@@ -1,5 +1,27 @@
 # Ti Core API Reference
 
+<!-- TOC-START -->
+## Contents
+
+- [Titanium](#titanium)
+- [Ti.UI](#tiui)
+- [Ti.API](#tiapi)
+- [Ti.Accelerometer](#tiaccelerometer)
+- [Ti.Blob](#tiblob)
+- [Ti.BlobStream](#tiblobstream)
+- [Ti.Buffer](#tibuffer)
+- [Ti.BufferStream](#tibufferstream)
+- [Ti.Codec](#ticodec)
+- [Ti.Gesture](#tigesture)
+- [Ti.IOStream](#tiiostream)
+- [Ti.Locale](#tilocale)
+- [Ti.Stream](#tistream)
+- [Ti.Utils](#tiutils)
+- [Ti.Proxy](#tiproxy)
+- [Ti.Module](#timodule)
+
+<!-- TOC-END -->
+
 ## Titanium
 > The top-level Titanium module.
 > Extends Ti.Module
@@ -20,6 +42,7 @@ For example, the following pairs of Titanium calls behave exactly the same.
 ``` js
 Titanium.API.info('Hello Titanium!');
 Ti.API.info('Hello Titanium!');
+```
 
 
 *(See full overview in titanium-docs)*
@@ -497,6 +520,7 @@ If we represent a buffer as an array of byte values, a big-endian encoding of
 
 ``` js
 [ 0xFE, 0xDC, 0xBA, 0x98 ]
+```
 
 *(See full overview in titanium-docs)*
 

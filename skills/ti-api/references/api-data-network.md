@@ -1,5 +1,25 @@
 # Ti.Network, Ti.Database & Ti.Filesystem API Reference
 
+<!-- TOC-START -->
+## Contents
+
+- [Ti.Database](#tidatabase)
+- [Ti.Database.DB](#tidatabasedb)
+- [Ti.Database.ResultSet](#tidatabaseresultset)
+- [Ti.Filesystem](#tifilesystem)
+- [Ti.Filesystem.File](#tifilesystemfile)
+- [Ti.Filesystem.FileStream](#tifilesystemfilestream)
+- [Ti.Network](#tinetwork)
+- [Ti.Network.BonjourBrowser](#tinetworkbonjourbrowser)
+- [Ti.Network.BonjourService](#tinetworkbonjourservice)
+- [Ti.Network.Cookie](#tinetworkcookie)
+- [Ti.Network.HTTPClient](#tinetworkhttpclient)
+- [Ti.Network.Socket](#tinetworksocket)
+- [Ti.Network.Socket.TCP](#tinetworksockettcp)
+- [Ti.Network.TCPSocket](#tinetworktcpsocket)
+
+<!-- TOC-END -->
+
 ## Ti.Database
 > The top-level `Database` module, used for creating and accessing the in-application SQLite database.
 > Extends Ti.Module
@@ -416,6 +436,7 @@ if (!Date.prototype.toISOString) {
     }
 
     Date.prototype.toISOString = function() {
+```
 
 *(See full overview in titanium-docs)*
 

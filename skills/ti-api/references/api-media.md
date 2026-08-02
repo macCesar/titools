@@ -1,5 +1,20 @@
 # Ti.Media API Reference
 
+<!-- TOC-START -->
+## Contents
+
+- [Ti.Media](#timedia)
+- [Ti.Media.Android](#timediaandroid)
+- [Ti.Media.AudioPlayer](#timediaaudioplayer)
+- [Ti.Media.AudioRecorder](#timediaaudiorecorder)
+- [Ti.Media.Item](#timediaitem)
+- [Ti.Media.MusicPlayer](#timediamusicplayer)
+- [Ti.Media.Sound](#timediasound)
+- [Ti.Media.SystemAlert](#timediasystemalert)
+- [Ti.Media.VideoPlayer](#timediavideoplayer)
+
+<!-- TOC-END -->
+
 ## Ti.Media
 > The top-level Media module.
 > Extends Ti.Module
@@ -336,7 +351,6 @@ request audio-permissions.
 **Android Platform Note**: On Android, you also need to include the following permission
 into the `<android>` section of the tiapp.xml:
 
-``` xml
 
 ### Properties (unique: 5/8)
 | Property | Type | Default | Platform | Description |
