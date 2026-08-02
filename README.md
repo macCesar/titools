@@ -92,8 +92,12 @@ Why NPM?
 | **Codex CLI**       | Not available                              | Supported                 |
 | **Knowledge Index** | Not included                               | Included (`titools sync`) |
 | **Auto-updates**    | Marketplace (opt-in, enable in `/plugin`)  | SessionStart hook (daily) |
-| **Slash commands**  | `/ti-check`, `/ti-new-screen`, `/ti-audit` | Not available             |
+| **Slash commands**  | `/ti-check`, `/ti-new-screen`, `/ti-audit` | Same three (`~/.claude/commands/`) |
 | **Session hook**    | Auto-detects Titanium projects             | Auto-update only          |
+
+Having both installed is fine: the CLI detects an enabled marketplace plugin and skips
+its own skill symlinks and command copies, so nothing shows up twice. `titools doctor`
+reports which channel is serving Claude Code.
 
 Use **Option A** if you only use Claude Code. Use **Option B** if you use multiple AI assistants or want the Knowledge Index feature.
 
@@ -232,9 +236,12 @@ Key difference:
 
 ---
 
-## Slash Commands (Plugin only)
+## Slash Commands (Claude Code)
 
-When installed as a plugin, TiTools provides slash commands for common tasks:
+TiTools provides slash commands for common tasks. Both channels ship them: the
+plugin serves them from its own cache, and `titools install` copies them into
+`~/.claude/commands/`. If you have both, the CLI detects the plugin and skips its
+own copy so the command does not appear twice in the autocomplete.
 
 | Command                 | Description                                                                         |
 | ----------------------- | ----------------------------------------------------------------------------------- |
@@ -342,7 +349,7 @@ Example prompts:
 
 Key features:
 - Quick decision matrix for common questions
-- 18 reference guides for deep dives
+- 21 reference guides for deep dives
 - Delegates to specialized skills when needed
 
 ---
@@ -485,7 +492,7 @@ More examples: See [Example Prompts](EXAMPLE-PROMPTS.md) for detailed prompts th
 
 ### titools install
 
-Installs Titanium skills, agents, and platform symlinks.
+Installs Titanium skills, the ti-pro agent, slash commands, and platform symlinks.
 
 ```bash
 titools install [options]
@@ -509,8 +516,10 @@ Behavior depends on where you run it:
 What it does:
 - Installs the 8 TiTools skills (global or local depending on context)
 - Installs ti-pro agent for Claude Code
+- Installs the `/ti-check`, `/ti-new-screen` and `/ti-audit` slash commands into `~/.claude/commands/`
 - Detects installed AI platforms and lets you choose which to link (only Claude Code needs platform symlinks; Gemini CLI and Codex CLI auto-discover from `~/.agents/skills/`)
 - Creates symlinks from `~/.claude/skills/` to the central `~/.agents/skills/`
+- Skips any skill or command already served by an enabled marketplace plugin, and removes a duplicate left by an earlier install
 - Cleans up legacy artifacts (`alloy-expert` skill, `ti-researcher` agent, redundant Gemini/Codex symlinks)
 - If run inside a Titanium project, prompts to run `titools sync` afterward
 - Installs Claude Code SessionStart hook for auto-updates
@@ -557,7 +566,15 @@ Diagnoses installation health.
 titools doctor
 ```
 
-Checks: skill directories exist, symlinks are valid (not broken), agent is installed, hook is configured, cache is readable, Knowledge Index version matches CLI version. Reports issues with fix suggestions.
+Checks: skill directories exist, symlinks are valid (not broken), agent is installed, slash commands are installed, hook is configured, cache is readable, Knowledge Index version matches CLI version. Reports issues with fix suggestions.
+
+It also reports the marketplace plugin's state, which changes what "healthy" means:
+
+| Plugin state                       | What doctor reports                                                     |
+| ---------------------------------- | ----------------------------------------------------------------------- |
+| Enabled                            | Claude Code is served by the plugin — missing mirrors are correct        |
+| Not installed                      | Skills reach Claude Code through npm mirrors — mirrors must be present   |
+| Uninstalled, cache directory left  | Warns and prints the `rm -rf` that clears the leftover                   |
 
 ### titools sync
 

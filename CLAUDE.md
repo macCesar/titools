@@ -2,9 +2,19 @@
 
 Project-specific instructions for Claude Code sessions working on this repo. These rules travel with the repo via git, unlike machine-local `~/.claude/projects/` memory which is lost when the repo is cloned elsewhere.
 
+## Project state
+
+- `docs/project/requirements.md` — what the system must do
+- `docs/project/context.md` — architecture and conventions
+- `docs/project/decisions.md` — what was decided and why
+- `docs/project/status.md` — where the work stands right now
+
+Read `status.md` when resuming work. Do not import it at startup: it changes
+constantly, and loading it invalidates the cached prefix behind it.
+
 ## What TiTools is
 
-- An npm CLI (`@maccesar/titools`) + Claude Code plugin marketplace that ships 9 Titanium SDK skills, 1 agent (ti-pro), a SessionStart hook, and slash commands.
+- An npm CLI (`@maccesar/titools`) + Claude Code plugin marketplace that ships 8 Titanium SDK skills, 1 agent (ti-pro), a SessionStart hook, and 3 slash commands.
 - Distribution channels:
   - **npm**: `npm install -g @maccesar/titools` then `titools install` (works with Claude Code, Gemini CLI, Codex CLI).
   - **Claude Code plugin marketplace**: `/plugin marketplace add macCesar/titools` then `/plugin install titools@maccesar-titools` (Claude Code only).
@@ -35,6 +45,27 @@ v2.6.0 shipped with `plugin.json` frozen at `3.0.0` (pre-existing value from the
 
 ## Code conventions
 
+### Both channels installed at once
+
+A user can have the npm CLI *and* the marketplace plugin. When the plugin is
+enabled it already serves the skills and slash commands, so the CLI must not
+install its own copy — that duplicates every entry in the autocomplete.
+
+`lib/claude-plugin.js` requires the plugin to be **enabled AND cached**. A cache
+directory alone proves nothing: uninstalling a plugin removes it from
+`enabledPlugins` in `settings.json` but leaves the cache behind. Reading that
+leftover as an installed plugin is what left aiskills users with zero skills and
+an install command that correctly did nothing. Detection fails toward `false`
+everywhere, because a wrong `false` costs a duplicate entry and a wrong `true`
+costs the user every skill they have.
+
+### Slash commands live in `commands/`, never `.claude/commands/`
+
+`.claude/` is gitignored. A command parked there ships to nobody — the plugin
+serves `commands/` from the repo, and the npm tarball only carries what
+`package.json` → `files` lists. The three commands sat in `.claude/commands/`
+until 4.2.0 while the README advertised them.
+
 ### Claude Code hooks format in `settings.json`
 
 Hooks must use the nested format:
@@ -64,9 +95,14 @@ Never `execFileSync` — it blocks the Node.js event loop, freezing the spinner 
 
 ## Parallel project: `aiskills`
 
-`@maccesar/aiskills` lives at `~/Developer/openSource/aiskills` and shares **identical** `lib/` infrastructure (Commander.js, ora, chalk, ESM, same install paths, same symlink pattern). Only the `skills/` contents differ — aiskills ships general-purpose skills (humaniza, refactoring-ui, stitch-showcase, vscode-extension-dev), TiTools ships Titanium-specific skills.
+`@maccesar/aiskills` lives at `~/Developer/openSource/aiskills`. The two repos are the **same tool shipped twice with different payloads**: same CLI (`install`, `update`, `auto-update`, `status`, `doctor`, `list`, `remove`), same `~/.agents/skills/` layout, same symlink mirrors, same marketplace-plugin detection, same release mechanics. What differs is the content — the skills each ships (here: 8 Titanium skills; aiskills: 6 general-purpose) and the slash commands that drive them (here: `ti-check`, `ti-new-screen`, `ti-audit`; aiskills: `release`).
 
-**When implementing features in TiTools, consider porting the equivalent to aiskills in the same session** — adapted to remove Titanium-specific pieces (agents, Knowledge Index, `tiapp.xml` detection).
+**A change to shared machinery belongs in both repos, in the same session.** Port the *behavior*, not the bytes — names and paths are supposed to differ.
+
+`docs/project/context.md` § "Sibling project" carries the full contract: the table of
+what legitimately diverges (the `ti-pro` agent, the Knowledge Index / `sync`, and the
+`tiapp.xml` SessionStart hook are TiTools-only by design), plus a measured per-file
+comparison. Read it before assuming two files should match.
 
 ### Long-term direction
 

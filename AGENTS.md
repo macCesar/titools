@@ -4,6 +4,16 @@ Guidance for AI agents — **Claude Code, Gemini CLI, Codex / OpenAI Codex CLI, 
 
 If you are an agent invoked by a user in a Titanium project to *use* a skill, read the relevant `skills/<name>/SKILL.md` directly and follow it — not this file.
 
+## Project state
+
+- `docs/project/requirements.md` — what the system must do
+- `docs/project/context.md` — architecture and conventions
+- `docs/project/decisions.md` — what was decided and why
+- `docs/project/status.md` — where the work stands right now
+
+Read `status.md` when resuming work. Do not import it at startup: it changes
+constantly, and loading it invalidates the cached prefix behind it.
+
 ## What this repo is
 
 TiTools ships two things from a single source:
@@ -13,7 +23,9 @@ TiTools ships two things from a single source:
 
 Skills conform to the [agentskills.io specification](https://agentskills.io/specification) so any compatible agent can load them. The CLI itself is ESM Node.js with Commander.js and `ora` spinners.
 
-Sibling project: **`@maccesar/aiskills`** at `~/Developer/openSource/aiskills` shares the same `lib/` infrastructure but ships general-purpose skills (humaniza, refactoring-ui, stitch-showcase, vscode-extension-dev). When you change `lib/`, consider porting the change there too — see [CLAUDE.md](CLAUDE.md) § "Parallel project: aiskills".
+Sibling project: **`@maccesar/aiskills`** at `~/Developer/openSource/aiskills` — the same tool shipped twice with different payloads. Same CLI, same install paths, same plugin detection, same release mechanics; what differs is the skills each ships (8 Titanium ones here, 6 general-purpose there) and their slash commands. The `ti-pro` agent, the Knowledge Index (`titools sync`) and the `tiapp.xml` SessionStart hook are TiTools-only.
+
+**When you change shared machinery, port it there in the same session.** The full contract, including the table of what legitimately diverges and a measured per-file comparison, is in [docs/project/context.md](docs/project/context.md) § "Sibling project".
 
 ## Layout
 
@@ -35,6 +47,10 @@ Sibling project: **`@maccesar/aiskills`** at `~/Developer/openSource/aiskills` s
 │   ├── cleanup.js        # legacy artifact removal on update/uninstall
 │   ├── utils.js          # buildKnowledgeIndex, helpers
 │   └── platform.js
+├── commands/             # slash commands — SHIPPED, must stay out of .claude/
+│   ├── ti-check.md
+│   ├── ti-new-screen.md
+│   └── ti-audit.md
 ├── hooks/
 │   └── session-start.sh  # SessionStart hook bundled with the plugin
 ├── skills/
@@ -128,10 +144,75 @@ Hooks in `settings.json` must use the nested form:
 
 NOT the flat `{ "command": "...", "timeout": 30000 }` form. Flat triggers a settings validation error on session start (caused the v2.4.0 → v2.4.1 hotfix).
 
+### Two channels, one rule: never install what the plugin already serves
+
+TiTools ships through the npm CLI *and* the Claude Code marketplace plugin, and a
+user may have both. When the plugin is enabled, Claude Code already lists our
+skills and slash commands from its own cache; a second copy installed by the CLI
+appears twice in the autocomplete.
+
+`lib/claude-plugin.js` answers the question, and the distinction it draws is the
+whole point: **an enabled plugin implies a cache, but a cache implies nothing.**
+Uninstalling a plugin removes it from `enabledPlugins` in `settings.json` and
+leaves the cache directory behind. Reading that leftover as proof of installation
+makes the CLI skip work it should do — which in the sibling project left Claude
+Code with no skills at all and no way to repair it by re-running install.
+
+- `pluginProvidesSkill()` / `pluginProvidesCommand()` require **enabled AND cached**.
+- Both fail toward `false` on missing or malformed settings. A wrong `false` costs
+  a duplicate entry; a wrong `true` costs the user every skill they have.
+- `createSkillSymlinks` and `installCommands` skip the entry and remove any stale
+  copy; both return a `skipped` array that the CLI reports instead of a warning.
+- `doctor` subtracts plugin-served entries from the expected total, so a healthy
+  marketplace install stops reading as a wall of errors.
+
+Covered by `test/claude-plugin.test.js`.
+
+### Slash commands ship from `commands/`, not `.claude/`
+
+`commands/*.md` is versioned and listed in `package.json` → `files`. It must stay
+that way: `.claude/` is gitignored, so commands parked there reach nobody — not
+marketplace users (the plugin serves `commands/` from the repo) and not npm users
+(the tarball would not carry them). Until 4.2.0 the three commands lived there and
+the README documented them anyway.
+
+Adding one means: the file in `commands/`, the name in `lib/config.js:COMMANDS`, a
+row in the README table, and a passing `test/commands.test.js` (it fails on any
+mismatch between `COMMANDS` and the directory).
+
+### Maintainer scripts
+
+`scripts/` holds tools for the repo itself. They are versioned but deliberately absent
+from `package.json` → `files`, so they never reach users.
+
+- `scripts/generate-toc.mjs` — inserts a linked index into references over 300 lines.
+  Idempotent; output is delimited by `<!-- TOC-START -->` / `<!-- TOC-END -->`. Run it
+  after adding or substantially growing a reference. It **refuses** to index a file with
+  malformed fences, because an unclosed fence hides headings and the resulting index
+  would be truncated without looking wrong.
+- `scripts/fix-fences.mjs` — repairs code fences that open and never close, a recurring
+  artifact of converting upstream docs. Run it before `generate-toc.mjs` if the latter
+  reports skipped files.
+
+Both default to a dry run. Read the output before passing `--write`.
+
+### What is versioned under `.claude/`
+
+`.claude/` is ignored except `.claude/skills/`, which carries the maintainer-only
+`titools-skill-auditor`. The pattern is `.claude/*` plus `!.claude/skills/` — a bare
+`!.claude/skills/` under a `.claude/` rule does nothing, since git will not descend into
+an excluded directory. Keeping the skill at that path means Claude Code still discovers
+it automatically while working in this repo.
+
+`settings.local.json` and any local drafts stay ignored, and nothing under `.claude/`
+ships to npm.
+
 ### Files worth knowing
 
 - `lib/utils.js:buildKnowledgeIndex` — dynamically scans `skills/*/references/` so new reference folders appear in the Knowledge Index without code changes.
+- `lib/claude-plugin.js` — marketplace-plugin detection; see the rule above before touching it.
 - `lib/config.js:SKILLS` — hardcoded list of which skills to install. Update when adding/removing a skill.
+- `lib/config.js:COMMANDS` — same, for slash commands.
 - `lib/config.js:LEGACY_SKILLS` — skills to actively remove during `update`/`uninstall`. Use when deprecating a skill so existing users get a clean migration.
 - `EXAMPLE-PROMPTS.md` — doubles as documentation AND smoke test for skill triggering. New skills must add at least 2 example prompts.
 
@@ -194,6 +275,8 @@ With 2FA enabled, each `npm publish` invocation needs a fresh OTP — even if a 
 ### Don't
 
 - ❌ Skip the `plugin.json` version bump when shipping code changes. Marketplace users will get stale cache.
+- ❌ Put a slash command in `.claude/commands/`. That path is gitignored — it ships to nobody.
+- ❌ Treat the presence of `~/.claude/plugins/cache/maccesar-titools` as proof the plugin is installed. Check `enabledPlugins` too.
 - ❌ Use `execFileSync` inside an `ora` wrapper. Freezes the spinner.
 - ❌ Use the flat hook format in `settings.json`. Validation fails.
 - ❌ Add a feature to TiTools without considering whether the equivalent belongs in aiskills.
