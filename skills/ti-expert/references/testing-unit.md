@@ -5,6 +5,26 @@
 > Testing is useful for teams practicing CI/CD, projects with complex business logic, or refactoring confidence.
 > If you prefer manual testing on device, you can safely skip this guide.
 
+<!-- TOC-START -->
+## Contents
+
+- [What can be tested (Without Compiling)](#what-can-be-tested-without-compiling)
+- [What cannot be easily tested](#what-cannot-be-easily-tested)
+- [Testing philosophy](#testing-philosophy)
+- [Project structure](#project-structure)
+- [Writing testable code](#writing-testable-code)
+- [Unit testing services](#unit-testing-services)
+- [Unit testing helpers](#unit-testing-helpers)
+- [Integration testing controllers](#integration-testing-controllers)
+- [Mock factory](#mock-factory)
+- [Test helper functions](#test-helper-functions)
+- [Test setup configuration](#test-setup-configuration)
+- [Running tests](#running-tests)
+- [Anti-patterns to avoid](#anti-patterns-to-avoid)
+- [Test checklist](#test-checklist)
+
+<!-- TOC-END -->
+
 ## What can be tested (Without Compiling)
 
 **Pure JavaScript Logic:**

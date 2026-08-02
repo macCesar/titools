@@ -1,5 +1,25 @@
 # Theming & dark mode
 
+<!-- TOC-START -->
+## Contents
+
+- [Alloy theme system](#alloy-theme-system)
+  - [Theme folder structure](#theme-folder-structure)
+  - [Activating a theme](#activating-a-theme)
+  - [Theme cascade](#theme-cascade)
+- [Dynamic theming with Alloy.Globals](#dynamic-theming-with-alloyglobals)
+  - [Step 1: define color palette](#step-1-define-color-palette)
+  - [Step 2: use in TSS with Alloy.Globals](#step-2-use-in-tss-with-alloyglobals)
+  - [Step 3: theme switching service](#step-3-theme-switching-service)
+  - [Step 4: respond to theme changes in controllers](#step-4-respond-to-theme-changes-in-controllers)
+- [System dark mode detection](#system-dark-mode-detection)
+  - [iOS 13+ / Android 10+](#ios-13-android-10)
+  - [Semantic colors (Cross-Platform)](#semantic-colors-cross-platform)
+- [Reusable style classes pattern](#reusable-style-classes-pattern)
+  - [Using style classes in views](#using-style-classes-in-views)
+
+<!-- TOC-END -->
+
 ## Alloy theme system
 
 Alloy has a built-in theme system via the `app/themes/` folder. Themes override views, styles, and assets without modifying originals.

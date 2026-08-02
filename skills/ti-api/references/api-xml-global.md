@@ -1,5 +1,36 @@
 # Ti.XML & Global API Reference
 
+<!-- TOC-START -->
+## Contents
+
+- [Ti.XML](#tixml)
+- [Ti.XML.Attr](#tixmlattr)
+- [Ti.XML.CDATASection](#tixmlcdatasection)
+- [Ti.XML.CharacterData](#tixmlcharacterdata)
+- [Ti.XML.Comment](#tixmlcomment)
+- [Ti.XML.DOMImplementation](#tixmldomimplementation)
+- [Ti.XML.Document](#tixmldocument)
+- [Ti.XML.DocumentFragment](#tixmldocumentfragment)
+- [Ti.XML.DocumentType](#tixmldocumenttype)
+- [Ti.XML.Element](#tixmlelement)
+- [Ti.XML.Entity](#tixmlentity)
+- [Ti.XML.EntityReference](#tixmlentityreference)
+- [Ti.XML.NamedNodeMap](#tixmlnamednodemap)
+- [Ti.XML.Node](#tixmlnode)
+- [Ti.XML.NodeList](#tixmlnodelist)
+- [Ti.XML.Notation](#tixmlnotation)
+- [Ti.XML.ProcessingInstruction](#tixmlprocessinginstruction)
+- [Ti.XML.Text](#tixmltext)
+- [Global](#global)
+- [Global.Console](#globalconsole)
+- [Global.Intl](#globalintl)
+- [Global.Intl.Collator](#globalintlcollator)
+- [Global.Intl.DateTimeFormat](#globalintldatetimeformat)
+- [Global.Intl.NumberFormat](#globalintlnumberformat)
+- [Global.String](#globalstring)
+
+<!-- TOC-END -->
+
 ## Ti.XML
 > The top level XML module.  The XML module is used for parsing and processing XML-based content.
 > Extends Ti.Module

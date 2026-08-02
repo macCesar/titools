@@ -6,6 +6,29 @@ Models, collections, and how to bind them to views in Alloy. For sync adapters, 
 2. [Alloy Collection and Model Objects](#alloy-collection-and-model-objects)
 3. [Alloy Data Binding](#alloy-data-binding)
 
+<!-- TOC-START -->
+## Contents
+
+- [Overview](#overview)
+- [Alloy Collection and Model Objects](#alloy-collection-and-model-objects)
+  - [Models](#models)
+  - [Collections](#collections)
+  - [Event Handling](#event-handling)
+- [Alloy Data Binding](#alloy-data-binding)
+  - [Introduction](#introduction)
+  - [Alloy Binding](#alloy-binding)
+  - [Collection vs Model Data Binding](#collection-vs-model-data-binding)
+  - [Global Singleton vs Local Instance](#global-singleton-vs-local-instance)
+  - [Simple vs Complex Data Binding](#simple-vs-complex-data-binding)
+  - [Backbone Binding](#backbone-binding)
+  - [Bind Deep Object Properties](#bind-deep-object-properties)
+  - [Use Models and Properties with Special Characters](#use-models-and-properties-with-special-characters)
+  - [Bind Multiple Models to the Same View](#bind-multiple-models-to-the-same-view)
+  - [Define Transformations in the Model](#define-transformations-in-the-model)
+  - [Tips and Tricks](#tips-and-tricks)
+
+<!-- TOC-END -->
+
 ## Overview
 
 Alloy uses Backbone.js to provide support for its models and collections. Alloy also borrows the concepts of migrations and adapters from Rails for storage integration.

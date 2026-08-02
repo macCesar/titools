@@ -1,5 +1,21 @@
 # State management patterns
 
+<!-- TOC-START -->
+## Contents
+
+- [The problem](#the-problem)
+- [Solution: centralized state store](#solution-centralized-state-store)
+- [State store usage](#state-store-usage)
+- [Service layer state caching](#service-layer-state-caching)
+- [Collections vs state store](#collections-vs-state-store)
+- [State synchronization pattern](#state-synchronization-pattern)
+- [Anti-patterns](#anti-patterns)
+- [Persistence strategies](#persistence-strategies)
+- [State middleware](#state-middleware)
+- [State debugging](#state-debugging)
+
+<!-- TOC-END -->
+
 ## The problem
 
 As apps grow, state gets scattered:

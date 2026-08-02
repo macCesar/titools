@@ -2,6 +2,27 @@
 
 Hyperloop lets you access native APIs (iOS Objective-C/Swift and Android Java/Kotlin) directly from JavaScript. It ships with the Titanium SDK and works as a native module.
 
+<!-- TOC-START -->
+## Contents
+
+- [1. Requirements](#1-requirements)
+- [2. Enabling Hyperloop](#2-enabling-hyperloop)
+- [3. Framework namespace conventions](#3-framework-namespace-conventions)
+- [4. iOS (Objective-C)](#4-ios-objective-c)
+- [5. iOS: creating custom classes](#5-ios-creating-custom-classes)
+- [6. iOS: CocoaPods support](#6-ios-cocoapods-support)
+- [7. iOS: Swift support](#7-ios-swift-support)
+- [8. iOS: XIB and Storyboards](#8-ios-xib-and-storyboards)
+- [9. iOS: customizing the Xcode build](#9-ios-customizing-the-xcode-build)
+- [10. Android (Java)](#10-android-java)
+- [11. Android: native XML layouts](#11-android-native-xml-layouts)
+- [12. Android: third-party libraries](#12-android-third-party-libraries)
+- [13. Debugging Hyperloop](#13-debugging-hyperloop)
+- [14. Performance tips](#14-performance-tips)
+- [15. Sample projects](#15-sample-projects)
+
+<!-- TOC-END -->
+
 ## 1. Requirements
 
 - Titanium SDK: 9.0.0+

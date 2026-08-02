@@ -2,6 +2,18 @@
 
 Essential JavaScript concepts, resources, and best practices for Titanium development.
 
+<!-- TOC-START -->
+## Contents
+
+- [JavaScript overview](#javascript-overview)
+- [Learning resources](#learning-resources)
+- [Best practices](#best-practices)
+- [Common patterns](#common-patterns)
+- [ES6+ features in Titanium](#es6-features-in-titanium)
+- [Gotchas to avoid](#gotchas-to-avoid)
+
+<!-- TOC-END -->
+
 ## JavaScript overview
 
 JavaScript is the language of Titanium. It is lightweight and dynamic, with object-oriented and functional features.

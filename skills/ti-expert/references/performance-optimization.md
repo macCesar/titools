@@ -1,5 +1,22 @@
 # Performance optimization: bridge, memory, animation & timing
 
+<!-- TOC-START -->
+## Contents
+
+- [Bridge optimization](#bridge-optimization)
+- [Memory management](#memory-management)
+- [Image memory management](#image-memory-management)
+- [Lazy loading pattern](#lazy-loading-pattern)
+- [Database performance](#database-performance)
+- [Performance monitoring](#performance-monitoring)
+- [Animation performance](#animation-performance)
+- [Hardware-accelerated properties](#hardware-accelerated-properties)
+- [Animation cleanup](#animation-cleanup)
+- [Debouncing and throttling](#debouncing-and-throttling)
+- [Performance checklist](#performance-checklist)
+
+<!-- TOC-END -->
+
 ## Bridge optimization
 
 ### Minimize bridge crossings

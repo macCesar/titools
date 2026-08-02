@@ -1,5 +1,21 @@
 # Event handling
 
+<!-- TOC-START -->
+## Contents
+
+- [1. Event listener pattern](#1-event-listener-pattern)
+- [3. Firing events](#3-firing-events)
+- [5. Touch events](#5-touch-events)
+- [6. Named vs anonymous functions](#6-named-vs-anonymous-functions)
+- [7. Removing event listeners](#7-removing-event-listeners)
+- [8. Android hardware button events](#8-android-hardware-button-events)
+- [9. Android menu](#9-android-menu)
+- [10. Event listener best practices](#10-event-listener-best-practices)
+- [11. Special considerations](#11-special-considerations)
+- [Best practices summary](#best-practices-summary)
+
+<!-- TOC-END -->
+
 ## 1. Event listener pattern
 
 ### Basic pattern

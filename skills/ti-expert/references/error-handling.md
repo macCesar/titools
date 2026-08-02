@@ -1,5 +1,21 @@
 # Error handling & logging guide
 
+<!-- TOC-START -->
+## Contents
+
+- [Apperror classes](#apperror-classes)
+- [Logger service](#logger-service)
+- [Error handler service](#error-handler-service)
+- [Using the logger](#using-the-logger)
+- [API client error handling](#api-client-error-handling)
+- [Controller error handling pattern](#controller-error-handling-pattern)
+- [Global error handler](#global-error-handler)
+- [Crash reporting integration](#crash-reporting-integration)
+- [Validation helper](#validation-helper)
+- [Logging best practices](#logging-best-practices)
+
+<!-- TOC-END -->
+
 ## Apperror classes
 
 ```javascript

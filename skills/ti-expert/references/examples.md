@@ -1,5 +1,22 @@
 # Alloy implementation examples
 
+<!-- TOC-START -->
+## Contents
+
+- [API client service](#api-client-service)
+- [Native module wrapper service](#native-module-wrapper-service)
+- [i18n helper](#i18n-helper)
+- [Model with SQL adapter](#model-with-sql-adapter)
+- [Fully styled & accessible view](#fully-styled-accessible-view)
+- [Cleanup pattern in controller](#cleanup-pattern-in-controller)
+- [Animation usage](#animation-usage)
+- [Complete crud example](#complete-crud-example)
+- [ListView with search and filter](#listview-with-search-and-filter)
+- [Form with validation example](#form-with-validation-example)
+- [Tab-based navigation example](#tab-based-navigation-example)
+
+<!-- TOC-END -->
+
 ## API client service
 Standard logic for network requests.
 

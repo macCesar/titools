@@ -2,6 +2,26 @@
 
 This guide collects practical UI patterns that stay aligned with Titanium layout behavior and verified PurgeTSS conventions.
 
+<!-- TOC-START -->
+## Contents
+
+- [Core Rules](#core-rules)
+- [Related References](#related-references)
+- [Community-Discovered Patterns](#community-discovered-patterns)
+- [Cards](#cards)
+- [Lists](#lists)
+- [Forms](#forms)
+- [Buttons](#buttons)
+- [Navigation Patterns](#navigation-patterns)
+- [Modals, Sheets, and Feedback](#modals-sheets-and-feedback)
+- [Layout Patterns](#layout-patterns)
+- [Typography and Icons](#typography-and-icons)
+- [Accessibility](#accessibility)
+- [Performance Notes](#performance-notes)
+- [Quick Reference](#quick-reference)
+
+<!-- TOC-END -->
+
 ## Core Rules
 
 - PurgeTSS is not Tailwind CSS. Verify classes before recommending them.

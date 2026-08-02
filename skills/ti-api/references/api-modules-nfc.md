@@ -1,5 +1,39 @@
 # Modules: NFC API Reference
 
+<!-- TOC-START -->
+## Contents
+
+- [Modules.Nfc](#modulesnfc)
+- [Modules.Nfc.MifareTagTechnology](#modulesnfcmifaretagtechnology)
+- [Modules.Nfc.NativeTagTechnology](#modulesnfcnativetagtechnology)
+- [Modules.Nfc.NdefMessage](#modulesnfcndefmessage)
+- [Modules.Nfc.NdefRecord](#modulesnfcndefrecord)
+- [Modules.Nfc.NdefRecordApplication](#modulesnfcndefrecordapplication)
+- [Modules.Nfc.NdefRecordEmpty](#modulesnfcndefrecordempty)
+- [Modules.Nfc.NdefRecordExternal](#modulesnfcndefrecordexternal)
+- [Modules.Nfc.NdefRecordMedia](#modulesnfcndefrecordmedia)
+- [Modules.Nfc.NdefRecordSmartPoster](#modulesnfcndefrecordsmartposter)
+- [Modules.Nfc.NdefRecordText](#modulesnfcndefrecordtext)
+- [Modules.Nfc.NdefRecordUnknown](#modulesnfcndefrecordunknown)
+- [Modules.Nfc.NdefRecordUri](#modulesnfcndefrecorduri)
+- [Modules.Nfc.NfcAdapter](#modulesnfcnfcadapter)
+- [Modules.Nfc.NfcForegroundDispatchFilter](#modulesnfcnfcforegrounddispatchfilter)
+- [Modules.Nfc.NfcNDEFTag](#modulesnfcnfcndeftag)
+- [Modules.Nfc.NfcNDEFTagTechnology](#modulesnfcnfcndeftagtechnology)
+- [Modules.Nfc.NfcTag](#modulesnfcnfctag)
+- [Modules.Nfc.TagTechnology](#modulesnfctagtechnology)
+- [Modules.Nfc.TagTechnologyIsoDep](#modulesnfctagtechnologyisodep)
+- [Modules.Nfc.TagTechnologyMifareClassic](#modulesnfctagtechnologymifareclassic)
+- [Modules.Nfc.TagTechnologyMifareUltralight](#modulesnfctagtechnologymifareultralight)
+- [Modules.Nfc.TagTechnologyNdef](#modulesnfctagtechnologyndef)
+- [Modules.Nfc.TagTechnologyNdefFormatable](#modulesnfctagtechnologyndefformatable)
+- [Modules.Nfc.TagTechnologyNfcA](#modulesnfctagtechnologynfca)
+- [Modules.Nfc.TagTechnologyNfcB](#modulesnfctagtechnologynfcb)
+- [Modules.Nfc.TagTechnologyNfcF](#modulesnfctagtechnologynfcf)
+- [Modules.Nfc.TagTechnologyNfcV](#modulesnfctagtechnologynfcv)
+
+<!-- TOC-END -->
+
 ## Modules.Nfc
 > A cross-platform Near-Field-Communication (NFC) module for iOS and Android.  Download the latest release via [Github](https://github.com/appcelerator-modules/ti.nfc/releases).
 > Extends Ti.Module

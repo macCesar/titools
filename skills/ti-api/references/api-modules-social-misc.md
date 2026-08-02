@@ -1,5 +1,27 @@
 # Modules: Facebook, Identity, Crypto & More API Reference
 
+<!-- TOC-START -->
+## Contents
+
+- [Modules.Applesignin](#modulesapplesignin)
+- [Modules.Applesignin.LoginButton](#modulesapplesigninloginbutton)
+- [Modules.Barcode](#modulesbarcode)
+- [Modules.Crypto](#modulescrypto)
+- [Modules.Crypto.Cryptor](#modulescryptocryptor)
+- [Modules.EncryptedDatabase](#modulesencrypteddatabase)
+- [Modules.Facebook](#modulesfacebook)
+- [Modules.Facebook.LoginButton](#modulesfacebookloginbutton)
+- [Modules.Geofence](#modulesgeofence)
+- [Modules.Geofence.Region](#modulesgeofenceregion)
+- [Modules.Https](#moduleshttps)
+- [Modules.Identity](#modulesidentity)
+- [Modules.Identity.KeychainItem](#modulesidentitykeychainitem)
+- [Modules.PlayServices](#modulesplayservices)
+- [Modules.WebDialog](#moduleswebdialog)
+- [Modules.WebDialog.AuthenticationSession](#moduleswebdialogauthenticationsession)
+
+<!-- TOC-END -->
+
 ## Modules.Applesignin
 > A module to use apple signin functionality.
 > Extends Ti.Module

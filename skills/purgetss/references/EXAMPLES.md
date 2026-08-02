@@ -2,6 +2,30 @@
 
 Complete examples of common patterns with anti-patterns and correct implementations.
 
+<!-- TOC-START -->
+## Contents
+
+- [Community-Discovered Patterns](#community-discovered-patterns)
+  - [Titanium Layout Patterns](#titanium-layout-patterns)
+  - [Horizontal Row with Space Between](#horizontal-row-with-space-between)
+  - [Centered Content (Vertically and Horizontally)](#centered-content-vertically-and-horizontally)
+  - [Vertical Stack with Spacing](#vertical-stack-with-spacing)
+  - [Header with Left/Right Elements](#header-with-leftright-elements)
+  - [Available Layout Classes](#available-layout-classes)
+  - [Manual .tss Files Anti-Pattern](#manual-tss-files-anti-pattern)
+  - [Grid with Percentages](#grid-with-percentages)
+  - [Gap Usage](#gap-usage)
+  - [Padding on Container Views](#padding-on-container-views)
+  - [`w-full` vs `w-screen`](#w-full-vs-w-screen)
+  - [`rounded-full` Without Size](#rounded-full-without-size)
+  - [Square Brackets for Arbitrary Values](#square-brackets-for-arbitrary-values)
+  - [Layout Defaults](#layout-defaults)
+  - [ScrollView Without `content-w-screen` / `content-h-auto`](#scrollview-without-content-w-screen-content-h-auto)
+  - [Deprecated `theme.View.DEFAULT` vs `theme.extend.View`](#deprecated-themeviewdefault-vs-themeextendview)
+  - [Quick Reference Table](#quick-reference-table)
+
+<!-- TOC-END -->
+
 ## Community-Discovered Patterns
 
 The examples below catalog anti-patterns observed in real Titanium + PurgeTSS projects, paired with the correct approach. They are not exhaustive rules from official docs — they reflect pitfalls the community has hit often enough to warrant dedicated guidance.

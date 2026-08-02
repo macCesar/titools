@@ -1,5 +1,28 @@
 # Ti.Android API Reference
 
+<!-- TOC-START -->
+## Contents
+
+- [Ti.Android](#tiandroid)
+- [Ti.Android.ActionBar](#tiandroidactionbar)
+- [Ti.Android.Activity](#tiandroidactivity)
+- [Ti.Android.BigPictureStyle](#tiandroidbigpicturestyle)
+- [Ti.Android.BigTextStyle](#tiandroidbigtextstyle)
+- [Ti.Android.BroadcastReceiver](#tiandroidbroadcastreceiver)
+- [Ti.Android.Intent](#tiandroidintent)
+- [Ti.Android.Menu](#tiandroidmenu)
+- [Ti.Android.MenuItem](#tiandroidmenuitem)
+- [Ti.Android.Notification](#tiandroidnotification)
+- [Ti.Android.NotificationChannel](#tiandroidnotificationchannel)
+- [Ti.Android.NotificationManager](#tiandroidnotificationmanager)
+- [Ti.Android.PendingIntent](#tiandroidpendingintent)
+- [Ti.Android.QuickSettingsService](#tiandroidquicksettingsservice)
+- [Ti.Android.R](#tiandroidr)
+- [Ti.Android.RemoteViews](#tiandroidremoteviews)
+- [Ti.Android.Service](#tiandroidservice)
+
+<!-- TOC-END -->
+
 ## Ti.Android
 > The top-level Android module.
 > Extends Ti.Module

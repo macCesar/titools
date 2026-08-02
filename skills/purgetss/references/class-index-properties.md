@@ -4,6 +4,17 @@ Full A–Z table of every Titanium property and its PurgeTSS class prefix. Split
 
 > Before suggesting ANY class, verify it exists: `grep -E "PATTERN" ./purgetss/styles/utilities.tss`
 
+<!-- TOC-START -->
+## Contents
+
+- [All 416 Titanium Properties with Classes](#all-416-titanium-properties-with-classes)
+  - [A-E](#a-e)
+  - [F-L](#f-l)
+  - [M-P](#m-p)
+  - [R-Z](#r-z)
+
+<!-- TOC-END -->
+
 ## All 416 Titanium Properties with Classes
 
 The following properties have PurgeTSS utility classes. Each property name converts to kebab-case for the class prefix.

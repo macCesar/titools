@@ -1,5 +1,18 @@
 # Device security: biometrics, deep links & integrity
 
+<!-- TOC-START -->
+## Contents
+
+- [Biometric authentication](#biometric-authentication)
+- [Biometric login flow](#biometric-login-flow)
+- [Deep link security](#deep-link-security)
+- [Registering deep link handler](#registering-deep-link-handler)
+- [Jailbreak/Root detection](#jailbreakroot-detection)
+- [Integrating security checks](#integrating-security-checks)
+- [Security checklist](#security-checklist)
+
+<!-- TOC-END -->
+
 ## Biometric authentication
 
 ### Using ti.identity module

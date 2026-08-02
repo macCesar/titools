@@ -1,5 +1,19 @@
 # Ti.UI.iOS Animator & Physics API Reference
 
+<!-- TOC-START -->
+## Contents
+
+- [Ti.UI.iOS.AnchorAttachmentBehavior](#tiuiiosanchorattachmentbehavior)
+- [Ti.UI.iOS.Animator](#tiuiiosanimator)
+- [Ti.UI.iOS.CollisionBehavior](#tiuiioscollisionbehavior)
+- [Ti.UI.iOS.DynamicItemBehavior](#tiuiiosdynamicitembehavior)
+- [Ti.UI.iOS.GravityBehavior](#tiuiiosgravitybehavior)
+- [Ti.UI.iOS.PushBehavior](#tiuiiospushbehavior)
+- [Ti.UI.iOS.SnapBehavior](#tiuiiossnapbehavior)
+- [Ti.UI.iOS.ViewAttachmentBehavior](#tiuiiosviewattachmentbehavior)
+
+<!-- TOC-END -->
+
 ## Ti.UI.iOS.AnchorAttachmentBehavior
 > Dynamic behavior to support connections between an anchor point and an item.
 > Extends Ti.Proxy

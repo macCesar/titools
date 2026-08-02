@@ -1,5 +1,20 @@
 # Alloy MVC structure reference
 
+<!-- TOC-START -->
+## Contents
+
+- [Standard project structure](#standard-project-structure)
+- [Organization strategy](#organization-strategy)
+- [lib/ folder and module require paths](#lib-folder-and-module-require-paths)
+- [Data layer: two approaches](#data-layer-two-approaches)
+- [Controller rules](#controller-rules)
+- [Navigation & cleanup pattern](#navigation-cleanup-pattern)
+- [i18n and accessibility rules](#i18n-and-accessibility-rules)
+- [Widget structure](#widget-structure)
+- [config.json reference](#configjson-reference)
+
+<!-- TOC-END -->
+
 ## Standard project structure
 
 ```

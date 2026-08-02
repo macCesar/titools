@@ -2,6 +2,22 @@
 
 Strategies for building Titanium apps that run on iOS and Android from a single codebase.
 
+<!-- TOC-START -->
+## Contents
+
+- [Philosophy](#philosophy)
+- [Platform identification](#platform-identification)
+- [Coding strategies](#coding-strategies)
+- [Platform-specific resources](#platform-specific-resources)
+- [5. Webpack build pipeline (TiSDK 9.1.0+)](#5-webpack-build-pipeline-tisdk-910)
+- [6. Internationalization (i18n)](#6-internationalization-i18n)
+- [Platform-specific APIs](#platform-specific-apis)
+- [Common cross-platform patterns](#common-cross-platform-patterns)
+- [Best practices](#best-practices)
+- [Resources](#resources)
+
+<!-- TOC-END -->
+
 ## Philosophy
 
 ### "Write once, adapt everywhere"

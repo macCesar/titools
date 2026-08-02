@@ -1,5 +1,20 @@
 # PurgeTSS Configuration Deep Dive
 
+<!-- TOC-START -->
+## Contents
+
+- [The `config` File](#the-config-file)
+- [Create the `config.cjs` File](#create-the-configcjs-file)
+- [Structure](#structure)
+- [Overriding and Extending Properties](#overriding-and-extending-properties)
+- [Customize Colors](#customize-colors)
+- [Customize Spacing](#customize-spacing)
+- [Community-Discovered Patterns](#community-discovered-patterns)
+- [List of Customizable Properties](#list-of-customizable-properties)
+- [Custom Rules and Ti Elements](#custom-rules-and-ti-elements)
+
+<!-- TOC-END -->
+
 ## The `config` File
 
 > **ℹ️ INFO**

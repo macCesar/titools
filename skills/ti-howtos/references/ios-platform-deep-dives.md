@@ -1,5 +1,21 @@
 # iOS platform deep dives
 
+<!-- TOC-START -->
+## Contents
+
+- [1. iOS 17+ privacy requirements (critical)](#1-ios-17-privacy-requirements-critical)
+- [2. Background services and silent push](#2-background-services-and-silent-push)
+- [3. iCloud services and backup control](#3-icloud-services-and-backup-control)
+- [4. WatchKit and Ti.WatchSession](#4-watchkit-and-tiwatchsession)
+- [5. SiriKit and Siri intents](#5-sirikit-and-siri-intents)
+- [6. Spotlight search (Core Spotlight)](#6-spotlight-search-core-spotlight)
+- [7. Core Motion module](#7-core-motion-module)
+- [8. Handoff user activities](#8-handoff-user-activities)
+- [9. Additional iOS features](#9-additional-ios-features)
+- [Best practices summary](#best-practices-summary)
+
+<!-- TOC-END -->
+
 ## 1. iOS 17+ privacy requirements (critical)
 Apple requires declaring the use of certain APIs to prevent fingerprinting.
 

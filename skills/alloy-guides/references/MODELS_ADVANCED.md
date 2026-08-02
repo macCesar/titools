@@ -6,6 +6,25 @@ Persistence, custom adapters, schema migrations, plain Backbone usage, and the B
 2. [Backbone Objects without Alloy](#backbone-objects-without-alloy)
 3. [Alloy Backbone Migration](#alloy-backbone-migration)
 
+<!-- TOC-START -->
+## Contents
+
+- [Alloy Sync Adapters and Migrations](#alloy-sync-adapters-and-migrations)
+  - [Sync Adapters](#sync-adapters)
+  - [Custom Sync Adapters](#custom-sync-adapters)
+  - [Migrations](#migrations)
+- [Backbone Objects without Alloy](#backbone-objects-without-alloy)
+  - [Using Backbone Objects with Alloy Data Binding](#using-backbone-objects-with-alloy-data-binding)
+- [Alloy Backbone Migration](#alloy-backbone-migration)
+  - [Overview](#overview)
+  - [Setup](#setup)
+  - [Summary of Changes](#summary-of-changes)
+  - [Parse Method](#parse-method)
+  - [Silent Option](#silent-option)
+  - [API Changes](#api-changes)
+
+<!-- TOC-END -->
+
 ## Alloy Sync Adapters and Migrations
 
 ### Sync Adapters

@@ -1,5 +1,23 @@
 # Modules: CoreMotion & URLSession API Reference
 
+<!-- TOC-START -->
+## Contents
+
+- [Modules.CoreMotion](#modulescoremotion)
+- [Modules.CoreMotion.Accelerometer](#modulescoremotionaccelerometer)
+- [Modules.CoreMotion.Altimeter](#modulescoremotionaltimeter)
+- [Modules.CoreMotion.DeviceMotion](#modulescoremotiondevicemotion)
+- [Modules.CoreMotion.Gyroscope](#modulescoremotiongyroscope)
+- [Modules.CoreMotion.Magnetometer](#modulescoremotionmagnetometer)
+- [Modules.CoreMotion.MotionActivity](#modulescoremotionmotionactivity)
+- [Modules.CoreMotion.Pedometer](#modulescoremotionpedometer)
+- [Modules.CoreMotion.StepCounter](#modulescoremotionstepcounter)
+- [Modules.URLSession](#modulesurlsession)
+- [Modules.URLSession.Session](#modulesurlsessionsession)
+- [Modules.URLSession.SessionConfiguration](#modulesurlsessionsessionconfiguration)
+
+<!-- TOC-END -->
+
 ## Modules.CoreMotion
 > Allows Titanium client applications to access Apple's CoreMotion APIs.
 > Extends Ti.Module

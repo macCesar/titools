@@ -1,5 +1,37 @@
 # Local data sources
 
+<!-- TOC-START -->
+## Contents
+
+- [1. Filesystem access and storage](#1-filesystem-access-and-storage)
+  - [Modules overview](#modules-overview)
+  - [Storage locations](#storage-locations)
+  - [File operations](#file-operations)
+  - [Directory operations](#directory-operations)
+  - [Case sensitivity warning](#case-sensitivity-warning)
+- [2. SQLite database](#2-sqlite-database)
+  - [Installing a pre-populated database](#installing-a-pre-populated-database)
+  - [Opening databases](#opening-databases)
+  - [Querying data](#querying-data)
+  - [Parameterized queries](#parameterized-queries)
+  - [Data modification](#data-modification)
+  - [Transactions for batch operations](#transactions-for-batch-operations)
+  - [SQLite limitations](#sqlite-limitations)
+  - [Disable iCloud backup for databases (iOS)](#disable-icloud-backup-for-databases-ios)
+  - [Always close connections](#always-close-connections)
+- [3. Properties API (Ti.App.Properties)](#3-properties-api-tiappproperties)
+  - [Overview](#overview)
+  - [Data type methods](#data-type-methods)
+  - [Usage examples](#usage-examples)
+  - [Storing complex objects as JSON](#storing-complex-objects-as-json)
+  - [Platform storage](#platform-storage)
+- [4. Advanced data manipulation (Buffer, Codec, and Streams)](#4-advanced-data-manipulation-buffer-codec-and-streams)
+- [5. Choosing a persistence strategy](#5-choosing-a-persistence-strategy)
+  - [Decision guide](#decision-guide)
+  - [Best practices](#best-practices)
+
+<!-- TOC-END -->
+
 ## 1. Filesystem access and storage
 
 ### Modules overview

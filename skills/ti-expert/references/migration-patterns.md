@@ -1,5 +1,20 @@
 # Migration patterns for legacy Titanium apps
 
+<!-- TOC-START -->
+## Contents
+
+- [Assessment checklist](#assessment-checklist)
+- [Phase 1: TSS organization](#phase-1-tss-organization)
+- [Phase 2: service layer extraction](#phase-2-service-layer-extraction)
+- [Phase 3: event system migration](#phase-3-event-system-migration)
+- [Phase 4: navigation service](#phase-4-navigation-service)
+- [Phase 5: state management](#phase-5-state-management)
+- [Migration order](#migration-order)
+- [Rollback strategy](#rollback-strategy)
+- [Common migration pitfalls](#common-migration-pitfalls)
+
+<!-- TOC-END -->
+
 ## Assessment checklist
 
 Before migrating, evaluate the current codebase:

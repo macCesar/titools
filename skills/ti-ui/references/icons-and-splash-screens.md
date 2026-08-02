@@ -1,5 +1,22 @@
 # Icons and splash screens
 
+<!-- TOC-START -->
+## Contents
+
+- [1. Overview](#1-overview)
+- [2. Asset locations](#2-asset-locations)
+- [3. DefaultIcon.png (recommended)](#3-defaulticonpng-recommended)
+- [4. iOS icons](#4-ios-icons)
+- [5. Android icons](#5-android-icons)
+- [6. Android splash screens](#6-android-splash-screens)
+- [7. Localized splash screens](#7-localized-splash-screens)
+- [8. Adaptive icons (Android 8.0+)](#8-adaptive-icons-android-80)
+- [9. Common issues](#9-common-issues)
+- [11. iOS launch files (storyboards)](#11-ios-launch-files-storyboards)
+- [Best practices](#best-practices)
+
+<!-- TOC-END -->
+
 ## 1. Overview
 
 App icons and splash screens are required for app store submissions and give users a branded first impression.

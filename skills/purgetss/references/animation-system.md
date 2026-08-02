@@ -1,5 +1,28 @@
 # PurgeTSS Animation System
 
+<!-- TOC-START -->
+## Contents
+
+- [Introduction](#introduction)
+- [Methods Reference (All 15)](#methods-reference-all-15)
+- [Modifiers](#modifiers)
+- [The `play` Method](#the-play-method)
+- [Callback Event Object](#callback-event-object)
+- [The `apply` Method](#the-apply-method)
+- [The `open` and `close` Methods](#the-open-and-close-methods)
+- [The `draggable` Method](#the-draggable-method)
+- [The `undraggable` Method](#the-undraggable-method)
+- [The `detectCollisions` Method](#the-detectcollisions-method)
+- [The `sequence` Method](#the-sequence-method)
+- [The `swap` Method](#the-swap-method)
+- [The `pulse` Method](#the-pulse-method)
+- [The `shake` Method](#the-shake-method)
+- [The `snapTo` Method](#the-snapto-method)
+- [The `reorder` Method](#the-reorder-method)
+- [The `transition` Method](#the-transition-method)
+
+<!-- TOC-END -->
+
 ## Introduction
 
 PurgeTSS includes an Animation module for 2D Matrix animations and transformations. It works on single elements, arrays of elements, or individual children of an element.

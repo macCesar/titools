@@ -1,5 +1,20 @@
 # Remote data sources
 
+<!-- TOC-START -->
+## Contents
+
+- [1. HTTPClient and request lifecycle](#1-httpclient-and-request-lifecycle)
+- [2. Working with JSON data](#2-working-with-json-data)
+- [3. Working with XML data](#3-working-with-xml-data)
+- [4. File uploads and downloads](#4-file-uploads-and-downloads)
+- [5. Sockets](#5-sockets)
+- [6. Dealing with SOAP web services](#6-dealing-with-soap-web-services)
+- [7. SSL certificate and SecurityManager](#7-ssl-certificate-and-securitymanager)
+- [8. CORS considerations for Mobile Web](#8-cors-considerations-for-mobile-web)
+- [Best practices](#best-practices)
+
+<!-- TOC-END -->
+
 ## 1. HTTPClient and request lifecycle
 
 ### Basic pattern

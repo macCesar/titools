@@ -2,6 +2,40 @@
 
 Guide for distributing Titanium apps to Google Play (Android) and the App Store (iOS).
 
+<!-- TOC-START -->
+## Contents
+
+- [Android distribution](#android-distribution)
+  - [1. Generate keystore and certificate](#1-generate-keystore-and-certificate)
+  - [2. Verify keystore](#2-verify-keystore)
+  - [3. Build for Google Play](#3-build-for-google-play)
+  - [4. Verify APK signing](#4-verify-apk-signing)
+  - [5. Deploy to device for testing](#5-deploy-to-device-for-testing)
+  - [6. Google Play submission requirements](#6-google-play-submission-requirements)
+  - [7. SD card installation](#7-sd-card-installation)
+- [iOS distribution](#ios-distribution)
+  - [1. Distribution types](#1-distribution-types)
+  - [2. Create distribution certificate](#2-create-distribution-certificate)
+  - [3. Create distribution provisioning profile](#3-create-distribution-provisioning-profile)
+  - [4. Create App ID on App Store Connect](#4-create-app-id-on-app-store-connect)
+  - [5. Build and package](#5-build-and-package)
+  - [6. Upload to App Store Connect](#6-upload-to-app-store-connect)
+  - [7. Ad Hoc distribution](#7-ad-hoc-distribution)
+- [Mac Catalyst distribution (Mac App Store)](#mac-catalyst-distribution-mac-app-store)
+  - [1. Enable Mac Catalyst for your App ID](#1-enable-mac-catalyst-for-your-app-id)
+  - [2. Create Mac App Store Distribution Certificate](#2-create-mac-app-store-distribution-certificate)
+  - [3. Mac Catalyst build targets](#3-mac-catalyst-build-targets)
+  - [4. Build for Mac Catalyst (Development)](#4-build-for-mac-catalyst-development)
+  - [5. Build for Mac App Store (Distribution)](#5-build-for-mac-app-store-distribution)
+  - [6. Upload to Mac App Store Connect](#6-upload-to-mac-app-store-connect)
+  - [7. Create app listing in App Store Connect](#7-create-app-listing-in-app-store-connect)
+  - [8. Mac Catalyst entitlements](#8-mac-catalyst-entitlements)
+  - [9. Common issues](#9-common-issues)
+  - [10. Versioning](#10-versioning)
+  - [11. Testing on Mac](#11-testing-on-mac)
+
+<!-- TOC-END -->
+
 ## Android distribution
 
 ### 1. Generate keystore and certificate

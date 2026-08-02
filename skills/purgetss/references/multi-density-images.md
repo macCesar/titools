@@ -12,6 +12,33 @@ For the terse flag reference, see the [`images` command reference](./cli-command
 > The `images` command at a glance
 > One source per image in `purgetss/images/`, run `purgetss images`, and every density lands in the right place under `app/assets/android/images/res-*/` and `app/assets/iphone/images/`. Works on both Alloy and Classic projects.
 
+<!-- TOC-START -->
+## Contents
+
+- [Why multi-density?](#why-multi-density)
+- [Quick start](#quick-start)
+- [The `purgetss/images/` convention](#the-purgetssimages-convention)
+- [Source sizes — the 4× master convention](#source-sizes-the-4-master-convention)
+- [Pinning the output width with `--width`](#pinning-the-output-width-with---width)
+- [The `images:` config section](#the-images-config-section)
+- [Per-file overrides with `images.files`](#per-file-overrides-with-imagesfiles)
+- [Output layouts](#output-layouts)
+- [Overwrite confirmation](#overwrite-confirmation)
+- [Re-processing a single file or subfolder](#re-processing-a-single-file-or-subfolder)
+- [Platform filter](#platform-filter)
+- [Format conversion](#format-conversion)
+- [Reducing alpha across every density with `--opacity` (v7.10.0)](#reducing-alpha-across-every-density-with---opacity-v7100)
+- [Adding breathing room with `--padding` (v7.10.0)](#adding-breathing-room-with---padding-v7100)
+- [Renaming the output with `--output` (v7.10.0)](#renaming-the-output-with---output-v7100)
+- [Full pipeline alongside `build`](#full-pipeline-alongside-build)
+- [Cleaning up](#cleaning-up)
+- [Full flag reference](#full-flag-reference)
+- [Troubleshooting](#troubleshooting)
+- [Community-Discovered Patterns](#community-discovered-patterns)
+- [See also](#see-also)
+
+<!-- TOC-END -->
+
 ## Why multi-density?
 
 Android's UI toolkit resolves images by **density**: a Pixel 7 (xxhdpi ≈ 3×) picks files from `res-xxhdpi/`, a low-end Moto (hdpi ≈ 1.5×) picks from `res-hdpi/`. If the right density isn't available, Android upscales the closest one, which looks noticeably blurry on high-DPI screens.

@@ -1,5 +1,22 @@
 # iOS UI components and conventions
 
+<!-- TOC-START -->
+## Contents
+
+- [1. Overview](#1-overview)
+- [2. iPad-only UI components](#2-ipad-only-ui-components)
+- [3. Badges](#3-badges)
+- [4. Settings.bundle integration](#4-settingsbundle-integration)
+- [5. Quick Actions and 3D Touch](#5-quick-actions-and-3d-touch)
+- [6. Navigation bar (iOS)](#6-navigation-bar-ios)
+- [Community-Discovered Patterns](#community-discovered-patterns)
+- [7. Tab bar](#7-tab-bar)
+- [8. Activity indicator](#8-activity-indicator)
+- [9. Platform best practices](#9-platform-best-practices)
+- [10. Common issues](#10-common-issues)
+
+<!-- TOC-END -->
+
 ## 1. Overview
 
 iOS has UI components and patterns that differ from Android. This guide covers iPad-only controls, badges, Settings integration, 3D Touch, and iOS navigation patterns.

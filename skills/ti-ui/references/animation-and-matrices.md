@@ -1,5 +1,22 @@
 # Animation, matrices, and transitions
 
+<!-- TOC-START -->
+## Contents
+
+- [1. Overview](#1-overview)
+- [2. Basic animations](#2-basic-animations)
+- [3. 2D matrix animations](#3-2d-matrix-animations)
+- [4. 3D matrix animations (iOS only)](#4-3d-matrix-animations-ios-only)
+- [5. iOS transitions](#5-ios-transitions)
+- [6. Dynamic animations (iOS only)](#6-dynamic-animations-ios-only)
+- [7. Animation events](#7-animation-events)
+- [8. Common animation patterns](#8-common-animation-patterns)
+- [9. Performance considerations](#9-performance-considerations)
+- [10. Platform differences](#10-platform-differences)
+- [Best practices](#best-practices)
+
+<!-- TOC-END -->
+
 ## 1. Overview
 
 Animations make state changes easier to read and can help an interface feel responsive. Use them with restraint. Titanium includes:
