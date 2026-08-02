@@ -43,6 +43,28 @@ Anthropic's exact wording: *"If you change your plugin's code but don't bump the
 
 v2.6.0 shipped with `plugin.json` frozen at `3.0.0` (pre-existing value from the feature branch). npm would publish 2.6.0 but the marketplace would announce 3.0.0. Had to sync manually and amend the release. Always sync before the release commit.
 
+Step 8 has also been skipped outright: v4.1.0 was tagged and pushed on 2026-07-31 and never published, so CLI users sat on 4.0.0 for two days while marketplace users had the release. Finishing the checklist means checking `npm view @maccesar/titools version` afterwards, not assuming the tag implies the publish.
+
+### How a release propagates to each install channel
+
+`npm publish` is **not** the whole story. A release reaches users through two independent channels and `npm publish` feeds only one of them.
+
+The mechanics below were established empirically in the sibling repo (aiskills v1.15.0, 2026-07-13) by inspecting the plugin cache. They are Claude Code behaviors, not project-specific, so they apply here — but they have not been re-verified against `maccesar-titools`. Treat them as reliable and worth confirming the first time you use them.
+
+- **npm channel** (`~/.agents/skills/`) — read by Gemini CLI and Codex CLI directly, and by Claude Code through the symlink mirrors. End users get it via `npm update -g @maccesar/titools` followed by **one** of `titools update` / `titools install` (not both — `update` already re-syncs skills). TiTools also ships a SessionStart hook that runs `titools auto-update --silent` at most once a day, so users with Claude Code drift onto a new release on their own; users on Gemini or Codex only do not.
+- **Marketplace channel** (`~/.claude/plugins/cache/maccesar-titools/`) — used by plugin installs. **`npm publish` does nothing here.**
+
+Marketplace facts (not in Anthropic's docs):
+
+- **Third-party marketplaces do not auto-update by default** — only Anthropic's own do. A release does not show up on its own. Either enable auto-update once via `/plugin` → Marketplaces → `maccesar-titools`, or refresh every release by hand.
+- The refresh is **`/plugin marketplace update maccesar-titools`** (it does the `git pull`), then **`/reload-plugins`** to apply it in the live session. There is **no** `/plugin update <plugin>` command.
+- `marketplace.json` declares `source` as `{github, repo}` with no pinned version, so the update tracks **default-branch HEAD, not the latest tag**, and ignores the numeric version of a stale cache. This is why pushing `main` matters as much as tagging — and why the `plugin.json` bump still matters for *end users*, whose cache does compare versions.
+- **Duplicate cleanup applies here as of 4.3.0, not before.** While a skill or command exists only on npm, `titools install` creates the `~/.claude/` copy so Claude Code sees it; once the marketplace cache catches up and the user re-runs install, the CLI detects the plugin now provides it and removes that copy. TiTools had no such detection until 4.3.0, so anyone running both channels on an earlier version had every skill listed twice.
+
+**Full post-release sequence on the maintainer's machine:** `/release` → `npm publish` (manual, 2FA) → `/plugin marketplace update maccesar-titools` → `titools install` → `/reload-plugins`.
+
+The maintainer's own CLI is `npm link`-ed to this repo, so `titools update` here reads straight from the working tree — `npm publish` refreshes *other people's* installs, never this box. `isDevMode()` in `lib/commands/auto-update.js` detects the repo's `.git` and skips `npm update -g` so the link is never clobbered.
+
 ## Code conventions
 
 ### Both channels installed at once

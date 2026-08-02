@@ -1,35 +1,29 @@
 # Status — 2026-08-02
 
-**Phase:** live and maintained. v4.1.0 is out on both channels; **v4.2.0 is built
-and green but not released** — see below.
+**Phase:** live and maintained. **v4.3.0 shipped on both channels** on 2026-08-02.
 
-**Branch:** `main`, in sync with `origin/main` (0 ahead, 0 behind), with the
-uncommitted changes listed below.
+**Branch:** `main`, in sync with `origin/main`, clean apart from the doc commit
+described under "Changed after the release".
 
 **Sibling:** `~/Developer/openSource/aiskills` (`@maccesar/aiskills`) — shares this
-repo's `lib/`. Not opened this session; its own state is unknown from here.
+repo's `lib/`. See `context.md` § "Sibling project" for the parity contract.
 
-## Release state — both channels on 4.1.0
+## Release state — both channels on 4.3.0
 
 | Channel | Version | Verified |
 |---|---|---|
-| npm | 4.1.0 | `npm view` — published 2026-08-02 20:33 UTC |
-| Claude Code marketplace | 4.1.0 | `.claude-plugin/plugin.json` on `main`, tag `v4.1.0` pushed |
+| npm | 4.3.0 | tarball downloaded from the registry and inspected, 2026-08-02 21:36 UTC |
+| Claude Code marketplace | 4.3.0 | `plugin.json` on `main`, tag `v4.3.0` pushed, GitHub release created |
 
-The release checklist is complete for 4.1.0. It had stalled at step 8 — the tag was
-pushed on 2026-07-31 but `npm publish` never ran, leaving CLI users on 4.0.0 without
-the Android 16 resizability work in `ti-expert` for two days. Published this session.
+v4.3.0 bundles **4.2.0, which was prepared but never released**, so the tag and the
+release notes carry both CHANGELOG sections. Users going from 4.1.0 get everything at
+once: plugin detection, the three slash commands, the fence repairs and the indexes.
 
-The `README.md` correction below made it into the published tarball: the README on
-npm reads "21 reference guides".
+Verification went past the version number — the published tarball was downloaded and
+checked: `commands/` present (3 files), `lib/claude-plugin.js` present, `scripts/` and
+`.claude/` correctly absent, indexes present in the references.
 
-## v4.2.0 — built, not released
-
-Version bumped in `package.json`, `.claude-plugin/plugin.json` and the lockfile;
-CHANGELOG written. Steps 1–4 of the release checklist are done. **Nothing is
-committed, tagged, pushed or published.**
-
-Two things ship in it:
+What 4.2.0 + 4.3.0 shipped:
 
 1. **Marketplace-plugin detection** (`lib/claude-plugin.js`, ported from aiskills
    v1.16.1 with its tests). Nothing previously checked whether the plugin already
@@ -39,6 +33,11 @@ Two things ship in it:
 2. **The three slash commands actually ship.** They sat in gitignored
    `.claude/commands/` since April, reaching neither channel while the README
    advertised them.
+3. **Nine references had unclosed code fences**, one of them swallowing 684 of 701
+   lines into a single code block. Repaired; content verified byte-identical.
+4. **83 references gained a table of contents** (1,038 anchors, none broken).
+5. **The maintainer-only auditor skill is versioned**, via the same `.gitignore`
+   pattern used for `docs/project/`.
 
 ## Verified this session
 
@@ -65,21 +64,37 @@ Two things ship in it:
   `architecture-tiers.md` and `adaptive-layouts.md`.
 - `CLAUDE.md:7` said "9 Titanium SDK skills"; corrected to 8, and it now names the
   3 slash commands.
-- Everything for v4.2.0 above: `lib/claude-plugin.js`, changes across `config.js`,
-  `symlink.js`, `installer.js`, `cleanup.js` and the `skills` / `update` /
-  `uninstall` / `doctor` commands, the CLI help strings, `commands/`, two new test
-  files, and README / AGENTS.md / CLAUDE.md / CHANGELOG.
+- Everything listed under the release above, landed as 7 semantic commits plus
+  `chore(release): v4.3.0`.
 
-All of it is uncommitted.
+## Changed after the release
 
-## Local install is behind
+Documentation only, no version bump — the content joins the next real release's
+CHANGELOG:
+
+- **How a release propagates to each install channel**, ported from aiskills into
+  `CLAUDE.md` with a short pointer in `AGENTS.md`. `npm publish` feeds one channel;
+  the marketplace cache needs `/plugin marketplace update maccesar-titools` +
+  `/reload-plugins`, and third-party marketplaces do not auto-update. The mechanics
+  were verified in aiskills, not here — the port says so rather than claiming a
+  verification that did not happen.
+
+Also this session, in the sibling repo: the three references over 300 lines gained
+indexes, run with this repo's `scripts/generate-toc.mjs`. aiskills has **no unclosed
+fences** — that damage was specific to the Titanium docs conversion. The scripts
+themselves were not copied there; see "Open, not blocked".
+
+## Local install
 
 This machine runs TiTools via `npm link` — `/usr/local/lib/node_modules/@maccesar/titools`
-is a symlink to this repo, so the `titools` binary executes the working tree, not
-what npm published. The **skills copied into `~/.agents/skills/` are from May 18**
-and lack the v4.1.0 Android 16 work in `ti-expert` (414 lines installed vs 577 here)
-plus two `purgetss` references. `titools update` copies from the repo and fixes it;
-`isDevMode()` keeps it from clobbering the link with an npm install.
+is a symlink to this repo, so the `titools` binary executes the working tree rather
+than what npm published. `npm publish` refreshes *other people's* installs, never this
+one; `isDevMode()` detects the repo's `.git` and skips `npm update -g` so the link
+survives.
+
+`titools update` was run on 2026-08-02 and the installed skills now match the repo
+(`adaptive-layouts.md` 577 = 577, `purgetss` 33 = 33, the three slash commands in
+`~/.claude/commands/`). Before that they were from May 18.
 
 ## Open, not blocked
 
@@ -87,9 +102,16 @@ plus two `purgetss` references. `titools update` copies from the repo and fixes 
   adaptive layouts.** It lists 8 scenarios, none covering tablets, foldables or
   large screens — which the skill's own `description` announces and which v4.1.0
   expanded. Incomplete rather than wrong.
-- **aiskills has no equivalent of `commands.test.js`.** Its `release` command was
-  already in `commands/`, so it never had this bug — but nothing there pins
-  `COMMANDS` to the directory either.
+- **`scripts/generate-toc.mjs` and `fix-fences.mjs` live only here.** aiskills was
+  indexed by running them across the fence, so nobody there can regenerate or
+  `--strip` those indexes. Porting them is not a `cp`: `fix-fences.mjs` carries
+  Titanium-specific reasoning and the `*(See full overview in titanium-docs)*`
+  boundary pattern, which would need adapting.
+- **aiskills has `test/manifest.test.js`, which is broader than the
+  `commands.test.js` written here.** It guards skills present on disk but missing
+  from `SKILLS`, orphaned command files, frontmatter/directory mismatches, dead
+  `references/*.md` pointers, and version drift between the two manifests. Worth
+  pulling in this direction.
 - **`docs/PENDING-IMPROVEMENTS.md`, TiTools item 2, is obsolete.** It plans migrating
   the doc-based skills to `tidev/skills`; v4.0.0 reversed that. TiTools items 1
   (documenting the `~/.claude/CLAUDE.md` enforcement block in the README) and 3

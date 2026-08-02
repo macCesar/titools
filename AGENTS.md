@@ -248,6 +248,23 @@ v2.6.0 shipped with `plugin.json` frozen at `3.0.0` (a stale value from a prior 
 
 With 2FA enabled, each `npm publish` invocation needs a fresh OTP — even if a prior publish in the same session succeeded. Pass it via `--otp=XXXXXX` or respond to the prompt.
 
+### Publishing is not the same as shipping
+
+`npm publish` feeds one of the two channels. The marketplace cache at
+`~/.claude/plugins/cache/maccesar-titools/` is untouched by it, and third-party
+marketplaces do **not** auto-update — a release does not reach plugin users on its
+own. The refresh is `/plugin marketplace update maccesar-titools` followed by
+`/reload-plugins`; there is no `/plugin update <plugin>` command.
+
+Because `marketplace.json` pins no version, that update tracks **default-branch HEAD
+rather than the tag** — pushing `main` matters as much as pushing the tag.
+
+Verifying a release means checking what each channel actually serves:
+`npm view @maccesar/titools version` for one, the `version` in `plugin.json` on `main`
+for the other. v4.1.0 was tagged and pushed but never published, and the gap went
+unnoticed for two days. Full detail in [CLAUDE.md](CLAUDE.md) § "How a release
+propagates to each install channel".
+
 ## Common operations
 
 ### Add a new skill
