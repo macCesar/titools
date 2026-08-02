@@ -4,6 +4,112 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [4.3.0] - 2026-08-02
+
+### Fixed — Unclosed code fences in 9 reference files
+
+Nine references carried code fences that opened and never closed, a leftover from the
+conversion of the upstream Titanium docs. Rendered, the damage was severe:
+`api-services.md` opened a ```` ```xml ```` on line 17 and never closed it, so 684 of its
+701 lines displayed as one code block. `api-ui-android.md` had 484 lines in the same
+state.
+
+It also broke the boundary between content and structure that any tool reading these
+files depends on — the first draft of the TOC generator produced an 8-entry index for
+`api-core.md`, which has 16 headings, because an open fence swallowed the rest.
+
+Two shapes, opposite fixes: 7 orphan fences whose example never survived the conversion
+were removed, and 8 blocks carrying real code got their terminator. Verified by
+comparing every file with fence lines excluded — the content is byte-identical.
+
+`scripts/fix-fences.mjs` performs the repair and is idempotent.
+
+### Added — Tables of contents in 83 long reference files
+
+Skill references load on demand, so a 750-line file with no index costs the reading
+agent the whole file to reach one section. Following the skill-creator guidance
+(index anything over 300 lines), `scripts/generate-toc.mjs` adds a linked index to
+every reference past that threshold — 1,038 anchors, all verified to resolve against
+a real heading.
+
+The generator refuses to index a file with malformed fences rather than emitting a
+silently truncated index, and delimits its output with `<!-- TOC-START -->` /
+`<!-- TOC-END -->` so re-running refreshes instead of duplicating.
+
+Both scripts are maintainer tools: versioned, absent from the npm `files` allowlist.
+
+### Changed — The maintainer-only auditor skill is now versioned
+
+`.claude/skills/titools-skill-auditor/` sat under a gitignored path, so the tool used
+to keep the five doc-mirror skills aligned with upstream existed on one machine only.
+Same failure as the slash commands in 4.2.0.
+
+`.gitignore` changes from `.claude/` to `.claude/*` plus `!.claude/skills/`, which keeps
+`settings.local.json` and local drafts out while tracking the skill. It stays in place
+rather than moving, so Claude Code still loads it automatically when working in this
+repo, and it is still excluded from the npm tarball.
+
+## [4.2.0] - 2026-08-02
+
+### Added — Slash commands actually ship
+
+`/ti-check`, `/ti-new-screen` and `/ti-audit` lived in `.claude/commands/`, a path
+covered by the first line of `.gitignore`. They reached nobody: not marketplace users,
+since the plugin serves `commands/` from the repo, and not npm users, since the tarball
+only carries what `package.json` → `files` lists. The README documented all three under
+a "Plugin only" heading the whole time.
+
+- Moved to `commands/`, versioned, and added to the npm `files` allowlist.
+- `lib/config.js` gains `COMMANDS` / `LEGACY_COMMANDS`; `installer.js` gains
+  `installCommand` / `installCommands`; `cleanup.js` gains `removeCommands`.
+- `install`, `update` and `remove` handle them alongside skills and the agent.
+  `remove` lists them as their own checkbox entry.
+- `test/commands.test.js` fails if `COMMANDS` and the directory ever disagree, if a
+  command's frontmatter `name` stops matching its filename, or if `commands/` falls out
+  of `files`.
+
+### Fixed — Having both channels installed no longer duplicates everything
+
+TiTools ships through the npm CLI and the Claude Code marketplace plugin, and a user can
+have both. Nothing checked for that: `createSkillSymlinks` mirrored all 8 skills into
+`~/.claude/skills/` even when the plugin already served them, so every skill — and now
+every command — appeared twice in the autocomplete.
+
+New `lib/claude-plugin.js` answers whether the plugin already provides a given skill or
+command. It requires the plugin to be **enabled and cached**, never merely cached:
+uninstalling a plugin removes it from `enabledPlugins` in `settings.json` but leaves the
+cache directory on disk. In the sibling project (aiskills v1.16.0), reading that leftover
+as proof of installation made the CLI skip every symlink and report `0/6 skills linked`,
+leaving Claude Code with no skills and no way to repair it by re-running install. That
+bug is covered here by tests rather than rediscovered.
+
+Detection fails toward `false` on missing or malformed settings — a wrong `false` costs a
+duplicate entry, a wrong `true` costs the user every skill they have.
+
+- `createSkillSymlinks` and `installCommands` skip plugin-served entries and remove any
+  stale copy left by an earlier install; both return a `skipped` array.
+- `install` and `update` report what was skipped instead of warning about a shortfall.
+- `titools doctor` subtracts plugin-served skills from the expected total — a healthy
+  marketplace install used to render as a wall of errors advising a command that
+  correctly does nothing — and gained a "Marketplace plugin" section separating the three
+  states: enabled, not installed, and uninstalled-with-cache-left-behind (printed with
+  the `rm -rf` that clears it).
+- `test/claude-plugin.test.js` covers both failure modes across 20 new assertions.
+
+### Changed — Install output says what it is doing
+
+"✓ Claude Code detected", printed alone, read as though Gemini and Codex had been looked
+for and not found. They never appear there: only assistants that need TiTools-managed
+mirrors are listed, and the rest read `~/.agents/skills/` directly — which the install
+has already done by that point.
+
+### Fixed — README
+
+- The `ti-expert` "Key features" list said 18 reference guides; there are 21. The table
+  further down already said 21, so the file contradicted itself.
+- The "Slash Commands (Plugin only)" section is now "Slash Commands (Claude Code)" and
+  documents both channels.
+
 ## [4.1.0] - 2026-07-31
 
 ### Changed — `ti-expert` / `references/adaptive-layouts.md`
