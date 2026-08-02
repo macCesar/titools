@@ -1,5 +1,7 @@
-.claude/
-docs/
+.claude/*
+!.claude/skills/
+docs/*
+!docs/project/
 
 # Node.js
 node_modules/
