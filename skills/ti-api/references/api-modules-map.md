@@ -1,5 +1,23 @@
 # Modules: Map API Reference
 
+<!-- TOC-START -->
+## Contents
+
+- [Modules.Map](#modulesmap)
+- [Modules.Map.Annotation](#modulesmapannotation)
+- [Modules.Map.Camera](#modulesmapcamera)
+- [Modules.Map.Circle](#modulesmapcircle)
+- [Modules.Map.ImageOverlay](#modulesmapimageoverlay)
+- [Modules.Map.Polygon](#modulesmappolygon)
+- [Modules.Map.Polyline](#modulesmappolyline)
+- [Modules.Map.Route](#modulesmaproute)
+- [Modules.Map.Snapshotter](#modulesmapsnapshotter)
+- [Examples](#examples)
+- [Modules.Map.StreetViewPanorama](#modulesmapstreetviewpanorama)
+- [Modules.Map.View](#modulesmapview)
+
+<!-- TOC-END -->
+
 ## Modules.Map
 > Add-on Map module
 > Extends Ti.Module
@@ -21,6 +39,7 @@
         <modules>
             <!-- Add this line to your modules section -->
             <module platform="android">ti.map</module>
+```
 
 *(See full overview in titanium-docs)*
 
@@ -183,7 +202,6 @@ If `altitude`, `eyeCoordinate`, and `centerCoordinate` are passed in on creation
 returned using the specified viewing angle information.
 
 ### Example:
-``` javascript
 
 *(See full overview in titanium-docs)*
 
@@ -344,6 +362,7 @@ const polyline = Map.createPolyline({
         },
         [-33.87365, 151.20689]
     ],
+```
 
 *(See full overview in titanium-docs)*
 
@@ -414,6 +433,7 @@ const win = Ti.UI.createWindow({
 
 const Snapshotter = MapModule.createSnapshotter({
     mapType: MapModule.HYBRID_TYPE,
+```
 
 *(See full overview in titanium-docs)*
 
@@ -506,7 +526,6 @@ Use the <Modules.Map.createView> method to create a map view.
 In Alloy, use the **`<Module>`** element with the `module` attribute set to `ti.map`
 and `method` attribute set to `createView` to create a map view in XML markup:
 
-``` xml
 
 ### Properties (unique: 29/101)
 | Property | Type | Default | Platform | Description |

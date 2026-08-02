@@ -1,5 +1,20 @@
 # Architectural patterns for Titanium + Alloy
 
+<!-- TOC-START -->
+## Contents
+
+- [1. Native module abstraction (Wrapper)](#1-native-module-abstraction-wrapper)
+- [2. Repository pattern for data](#2-repository-pattern-for-data)
+- [3. Service layer pattern](#3-service-layer-pattern)
+- [4. Event bus for decoupling](#4-event-bus-for-decoupling)
+- [5. Factory pattern for dynamic views](#5-factory-pattern-for-dynamic-views)
+- [6. Navigation service pattern](#6-navigation-service-pattern)
+- [7. Collection binding pattern](#7-collection-binding-pattern)
+- [8. Cleanup pattern](#8-cleanup-pattern)
+- [9. Singleton service pattern](#9-singleton-service-pattern)
+
+<!-- TOC-END -->
+
 ## 1. Native module abstraction (Wrapper)
 
 **Use when:** Using native modules like Maps, Biometrics, or specialized Media players.
@@ -446,3 +461,4 @@ class AnalyticsService {
 }
 
 exports.Analytics = new AnalyticsService()
+```

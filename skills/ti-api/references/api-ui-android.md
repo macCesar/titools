@@ -1,5 +1,22 @@
 # Ti.UI.Android API Reference
 
+<!-- TOC-START -->
+## Contents
+
+- [Ti.UI.Android](#tiuiandroid)
+- [Examples](#examples)
+- [Ti.UI.Android.CardView](#tiuiandroidcardview)
+- [Ti.UI.Android.CollapseToolbar](#tiuiandroidcollapsetoolbar)
+- [Ti.UI.Android.DrawerLayout](#tiuiandroiddrawerlayout)
+- [Ti.UI.Android.FloatingActionButton](#tiuiandroidfloatingactionbutton)
+- [Ti.UI.Android.ProgressIndicator](#tiuiandroidprogressindicator)
+- [Ti.UI.Android.SearchView](#tiuiandroidsearchview)
+- [Ti.UI.Android.Snackbar](#tiuiandroidsnackbar)
+- [Ti.UI.iPad.Popover](#tiuiipadpopover)
+- [Ti.UI.iPad](#tiuiipad)
+
+<!-- TOC-END -->
+
 ## Ti.UI.Android
 > The Android-specific UI capabilities. All properties, methods and events in this namespace will only work on Android systems.  #### Drawer Layout  The drawer-layout components acts as a top-level container for window content that allows for interactive "drawer" views to be pulled out from one or both vertical edges of the window. It is represented by a `centerView` and optional `leftView` and `rightView` components that can be swiped in and out with additional configuration and transitions. Learn more about drawer-layouts in it's dedicated <Titanium.UI.Android.DrawerLayout> docs.
 > Extends Ti.Module
@@ -21,6 +38,7 @@ button.addEventListener('click', function() {
   Ti.API.info('Current value for editText: ' + Ti.App.Properties.getString('editText'));
   Ti.UI.Android.openPreferences();
 });
+```
 
 *(See full overview in titanium-docs)*
 
