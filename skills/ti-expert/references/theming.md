@@ -1,448 +1,190 @@
-# Theming & dark mode
+# Theming and dark mode
 
-<!-- TOC-START -->
+Choose the styling path from the project, not from personal memory. Semantic
+roles are the shared contract; PurgeTSS or standard Alloy materializes them.
+
 ## Contents
 
-- [Alloy theme system](#alloy-theme-system)
-  - [Theme folder structure](#theme-folder-structure)
-  - [Activating a theme](#activating-a-theme)
-  - [Theme cascade](#theme-cascade)
-- [Dynamic theming with Alloy.Globals](#dynamic-theming-with-alloyglobals)
-  - [Step 1: define color palette](#step-1-define-color-palette)
-  - [Step 2: use in TSS with Alloy.Globals](#step-2-use-in-tss-with-alloyglobals)
-  - [Step 3: theme switching service](#step-3-theme-switching-service)
-  - [Step 4: respond to theme changes in controllers](#step-4-respond-to-theme-changes-in-controllers)
-- [System dark mode detection](#system-dark-mode-detection)
-  - [iOS 13+ / Android 10+](#ios-13-android-10)
-  - [Semantic colors (Cross-Platform)](#semantic-colors-cross-platform)
-- [Reusable style classes pattern](#reusable-style-classes-pattern)
-  - [Using style classes in views](#using-style-classes-in-views)
+- [Decision path](#decision-path)
+- [Semantic color contract](#semantic-color-contract)
+- [PurgeTSS projects](#purgetss-projects)
+- [Standard Alloy projects](#standard-alloy-projects)
+- [Alloy build-time themes](#alloy-build-time-themes)
+- [Runtime custom themes](#runtime-custom-themes)
+- [Component rules](#component-rules)
+- [Verification](#verification)
 
-<!-- TOC-END -->
+## Decision path
 
-## Alloy theme system
+1. Detect `purgetss/` or `purgetss/config.cjs`.
+2. If detected, invoke the `purgetss` skill before writing any class or style.
+3. If not detected, use standard Alloy TSS and Titanium semantic colors.
+4. Use `Alloy.Globals` for a runtime palette only when the product requires
+   custom themes beyond the semantic light/dark/system model.
 
-Alloy has a built-in theme system via the `app/themes/` folder. Themes override views, styles, and assets without modifying originals.
+Do not mix these paths accidentally. In particular, never teach a PurgeTSS
+project to maintain the generated `app/styles/app.tss` by hand.
 
-### Theme folder structure
+## Semantic color contract
 
-```
-app/
-├── themes/
-│   ├── light/                   # Light theme (or default)
-│   │   ├── styles/
-│   │   │   └── app.tss          # Overrides app/styles/app.tss
-│   │   └── assets/
-│   │       └── images/
-│   │           └── logo.png     # Overrides app/assets/images/logo.png
-│   └── dark/                    # Dark theme
-│       ├── styles/
-│       │   └── app.tss          # Dark overrides
-│       └── assets/
-│           └── images/
-│               └── logo.png     # Dark version of logo
-├── styles/
-│   └── app.tss                  # Base styles (used when no theme active)
-├── config.json
-```
+Name colors by purpose rather than appearance. A practical design-system
+contract includes:
 
-### Activating a theme
+- app background and elevated surface;
+- primary and secondary text;
+- border/divider;
+- accent and text on accent;
+- modal overlay;
+- success, warning, error, and their readable foreground colors;
+- disabled surface/text where needed.
 
-Set the theme in `config.json`:
+Define light and dark values in:
+
+- Alloy: `app/assets/semantic.colors.json`
+- Classic: `Resources/semantic.colors.json`
+
+Example:
 
 ```json
 {
-  "global": {
-    "theme": "light"
+  "surfaceColor": {
+    "light": "#FFFFFF",
+    "dark": "#1E293B"
   },
-  "env:development": {
-    "theme": "light"
-  }
-}
-```
-
-> **⚠️ Theme is compile-time only**
-> Alloy themes are applied at **build time**. You cannot switch themes at runtime using this system alone. For runtime switching, use the Dynamic Theming approach below.
-
-### Theme cascade
-
-When a theme is active, Alloy merges files in this order:
-1. `app/styles/app.tss` (base)
-2. `app/themes/<theme>/styles/app.tss` (theme override)
-3. `app/styles/<controller>.tss` (controller-specific)
-4. `app/themes/<theme>/styles/<controller>.tss` (theme + controller override)
-
-Theme files **merge** with base files , you only need to include properties you want to override.
-
----
-
-## Dynamic theming with Alloy.Globals
-
-For runtime theme switching (including Dark Mode), use `Alloy.Globals` as a centralized color palette.
-
-### Step 1: define color palette
-
-```javascript
-// alloy.js
-const themes = {
-  light: {
-    bg: '#ffffff',
-    bgSecondary: '#f3f4f6',
-    text: '#111827',
-    textSecondary: '#6b7280',
-    primary: '#2563eb',
-    primaryText: '#ffffff',
-    border: '#e5e7eb',
-    card: '#ffffff',
-    danger: '#ef4444',
-    success: '#22c55e'
-  },
-  dark: {
-    bg: '#111827',
-    bgSecondary: '#1f2937',
-    text: '#f9fafb',
-    textSecondary: '#9ca3af',
-    primary: '#3b82f6',
-    primaryText: '#ffffff',
-    border: '#374151',
-    card: '#1f2937',
-    danger: '#f87171',
-    success: '#4ade80'
-  }
-}
-
-// Load saved preference or default to light
-const savedTheme = Ti.App.Properties.getString('app:theme', 'light')
-Alloy.Globals.theme = themes[savedTheme]
-Alloy.Globals.themeName = savedTheme
-```
-
-### Step 2: use in TSS with Alloy.Globals
-
-```tss
-/* app.tss - Global base styles using theme colors */
-"Window": {
-  backgroundColor: Alloy.Globals.theme.bg
-}
-
-"Label": {
-  color: Alloy.Globals.theme.text
-}
-
-".card": {
-  backgroundColor: Alloy.Globals.theme.card,
-  borderWidth: 1,
-  borderColor: Alloy.Globals.theme.border,
-  borderRadius: 12
-}
-
-".btn-primary": {
-  backgroundColor: Alloy.Globals.theme.primary,
-  color: Alloy.Globals.theme.primaryText,
-  height: 48,
-  borderRadius: 8,
-  font: { fontWeight: 'bold' }
-}
-
-".text-secondary": {
-  color: Alloy.Globals.theme.textSecondary
-}
-
-".bg-secondary": {
-  backgroundColor: Alloy.Globals.theme.bgSecondary
-}
-```
-
-### Step 3: theme switching service
-
-```javascript
-// lib/services/themeService.js
-const EventBus = require('services/eventBus')
-
-const themes = {
-  light: { /* ... same as alloy.js ... */ },
-  dark: { /* ... same as alloy.js ... */ }
-}
-
-exports.ThemeService = {
-  getCurrentTheme() {
-    return Alloy.Globals.themeName
-  },
-
-  setTheme(name) {
-    if (!themes[name]) return
-
-    Alloy.Globals.theme = themes[name]
-    Alloy.Globals.themeName = name
-    Ti.App.Properties.setString('app:theme', name)
-
-    // Notify all listeners
-    EventBus.trigger('theme:changed', { theme: name })
-  },
-
-  toggle() {
-    const next = Alloy.Globals.themeName === 'light' ? 'dark' : 'light'
-    this.setTheme(next)
-  },
-
-  // Follow system Dark Mode (iOS 13+, Android 10+)
-  followSystem() {
-    if (Ti.UI.semanticColorType !== undefined) {
-      const isDark = Ti.UI.semanticColorType === Ti.UI.SEMANTIC_COLOR_TYPE_DARK
-      this.setTheme(isDark ? 'dark' : 'light')
-    }
-  }
-}
-```
-
-### Step 4: respond to theme changes in controllers
-
-> **⚠️ Theme change requires UI rebuild**
-> Since TSS is applied at controller creation time, changing `Alloy.Globals.theme` does NOT retroactively update already-rendered views. You must manually update visible elements or restart the root controller.
-
-**Approach A: Rebuild root controller (simplest)**
-
-```javascript
-// controllers/settings.js
-const { ThemeService } = require('services/themeService')
-
-function onToggleTheme() {
-  ThemeService.toggle()
-
-  // Restart app from root controller
-  const root = Alloy.createController('index')
-  root.getView().open()
-
-  // Close current window tree
-  $.getView().close()
-}
-```
-
-**Approach B: Update visible elements in-place (smoother)**
-
-```javascript
-// controllers/settings.js
-const EventBus = require('services/eventBus')
-const { ThemeService } = require('services/themeService')
-
-function init() {
-  EventBus.on('theme:changed', applyTheme)
-}
-
-function applyTheme() {
-  const t = Alloy.Globals.theme
-
-  $.settingsWindow.applyProperties({ backgroundColor: t.bg })
-  $.titleLabel.applyProperties({ color: t.text })
-  $.themeToggle.applyProperties({ backgroundColor: t.bgSecondary })
-}
-
-function onToggleTheme() {
-  ThemeService.toggle()
-}
-
-function cleanup() {
-  EventBus.off('theme:changed', applyTheme)
-  $.destroy()
-}
-
-$.cleanup = cleanup
-```
-
----
-
-## System dark mode detection
-
-### iOS 13+ / Android 10+
-
-```javascript
-// lib/services/themeService.js (add to existing service)
-
-exports.ThemeService = {
-  // ... existing methods ...
-
-  // Initialize system theme listener
-  initSystemListener() {
-    // Detect current system theme at startup
-    this.followSystem()
-
-    // Re-check on resume (user may have changed system Dark Mode while app was backgrounded)
-    // Note: Titanium does not fire a dedicated dark-mode-change event.
-    // `Ti.UI.semanticColorType` is the correct way to check the current setting.
-    Ti.App.addEventListener('resumed', () => {
-      this.followSystem()
-    })
-  }
-}
-```
-
-### Semantic colors (Cross-Platform)
-
-Titanium provides a cross-platform semantic colors API for Dark Mode support. Define colors in a `semantic.colors.json` file:
-
-**File location:**
-- **Classic apps**: `Resources/semantic.colors.json`
-- **Alloy apps**: `app/assets/semantic.colors.json`
-
-```json
-{
   "textColor": {
-    "dark": {
-      "color": "#ff85e2",
-      "alpha": "50"
-    },
-    "light": "#ff1f1f"
+    "light": "#111827",
+    "dark": "#F1F5F9"
   },
-  "backgroundColor": {
-    "dark": "#1a1a2e",
-    "light": "#ffffff"
-  },
-  "primaryColor": {
-    "dark": {
-      "color": "#4ade80",
-      "alpha": "100"
-    },
-    "light": {
-      "color": "#22c55e",
-      "alpha": "100"
+  "overlayColor": {
+    "light": "#00000080",
+    "dark": "#000000CC"
+  }
+}
+```
+
+Titanium resolves a semantic color name when a color-accepting property uses
+that name. Keep component APIs tone-based (`neutral`, `success`, `warning`,
+`error`) and map tones to semantic roles inside the visual layer. Do not pass
+raw brand hex values through business controllers.
+
+## PurgeTSS projects
+
+The `purgetss` skill is the source of truth for supported classes, configuration,
+appearance behavior, and commands. Apply these integration rules:
+
+- Map semantic color names under `theme.extend.colors` in
+  `purgetss/config.cjs`.
+- Use verified utility classes in Alloy XML.
+- Configure `options.widgets: true` when Widgets contain utility classes.
+- Prefer `config.cjs` for reusable custom rules.
+- Treat `app/styles/app.tss` as generated output and never edit it.
+- Keep only truly specific properties in Widget/controller TSS when no verified
+  utility exists.
+- Use the PurgeTSS Appearance module for light/dark/system selection instead of
+  creating a competing mode service.
+- Read the current PurgeTSS references before naming any utility. Similarity to
+  Tailwind is not evidence that a class exists.
+
+Conceptual mapping only; verify the actual PurgeTSS syntax before use:
+
+```javascript
+// purgetss/config.cjs
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        surface: 'surfaceColor',
+        'on-surface': 'textColor',
+        overlay: 'overlayColor'
+      }
     }
   }
 }
 ```
 
-**Using semantic colors:**
+After generation, inspect the final `app.tss` section for unused or unsupported
+classes. A clean build that still lists a new unsupported class is not complete.
+
+## Standard Alloy projects
+
+Without PurgeTSS:
+
+- keep global selectors in manually maintained `app/styles/app.tss`;
+- keep screen-specific selectors in `app/styles/<controller>.tss`;
+- keep Widget-specific properties in `app/widgets/<id>/styles/widget.tss`;
+- reference semantic color names from TSS or controller properties;
+- use platform and form-factor modifiers for platform-specific properties.
+
+Example:
 
 ```tss
-/* Reference via Ti.UI.fetchSemanticColor() */
-"#label": {
-  color: Ti.UI.fetchSemanticColor('textColor')
+"Window": {
+  backgroundColor: "backgroundColor"
 }
 
-"#container": {
-  backgroundColor: Ti.UI.fetchSemanticColor('backgroundColor')
-}
-```
-
-```javascript
-// Or use color names directly as property values
-$.label.color = 'textColor';
-$.container.backgroundColor = 'backgroundColor';
-```
-
-**How it works:**
-- On iOS 13+ it uses the native system method that checks the user's system-wide Dark Mode setting
-- On all other platforms it checks `Ti.UI.semanticColorType` and returns the correct color variant
-- Alpha can be set from 0.0-100.0 (integer or float)
-- Light values can use hex with alpha via ARGB/AARRGGBB format
-
-> **💡 When to use Semantic Colors vs Alloy.Globals**
-> - **Semantic Colors**: Built-in Dark Mode support, automatic switching, simpler setup. Works cross-platform.
-> - **Alloy.Globals palette**: More control over when/how themes switch, easier to add custom themes beyond light/dark, runtime theme changes with UI rebuild.
-
----
-
-## Reusable style classes pattern
-
-Define a library of reusable TSS classes in `app.tss` for consistency across the app:
-
-```tss
-/* app.tss - Design System */
-
-/* === Layout === */
-".row": { layout: 'horizontal', width: Ti.UI.FILL, height: Ti.UI.SIZE }
-".col": { layout: 'vertical', width: Ti.UI.FILL, height: Ti.UI.SIZE }
-".centered": { width: Ti.UI.SIZE, height: Ti.UI.SIZE }
-
-/* === Cards === */
 ".card": {
-  backgroundColor: Alloy.Globals.theme.card,
-  borderRadius: 12,
-  borderWidth: 1,
-  borderColor: Alloy.Globals.theme.border,
-  width: Ti.UI.FILL,
-  height: Ti.UI.SIZE
+  backgroundColor: "surfaceColor",
+  borderColor: "borderColor",
+  borderWidth: 1
 }
 
-/* === Buttons === */
-".btn-primary": {
-  backgroundColor: Alloy.Globals.theme.primary,
-  color: Alloy.Globals.theme.primaryText,
-  height: 48,
-  width: Ti.UI.FILL,
-  borderRadius: 8,
-  font: { fontSize: 16, fontWeight: 'bold' }
+".bodyText": {
+  color: "textColor"
 }
-
-".btn-secondary": {
-  backgroundColor: 'transparent',
-  color: Alloy.Globals.theme.primary,
-  height: 48,
-  width: Ti.UI.FILL,
-  borderRadius: 8,
-  borderWidth: 1,
-  borderColor: Alloy.Globals.theme.primary,
-  font: { fontSize: 16, fontWeight: 'bold' }
-}
-
-".btn-danger": {
-  backgroundColor: Alloy.Globals.theme.danger,
-  color: '#ffffff',
-  height: 48,
-  width: Ti.UI.FILL,
-  borderRadius: 8,
-  font: { fontSize: 16, fontWeight: 'bold' }
-}
-
-/* === Typography === */
-".text-title": { font: { fontSize: 24, fontWeight: 'bold' }, color: Alloy.Globals.theme.text }
-".text-subtitle": { font: { fontSize: 18, fontWeight: 'semibold' }, color: Alloy.Globals.theme.text }
-".text-body": { font: { fontSize: 16 }, color: Alloy.Globals.theme.text }
-".text-caption": { font: { fontSize: 14 }, color: Alloy.Globals.theme.textSecondary }
-".text-small": { font: { fontSize: 12 }, color: Alloy.Globals.theme.textSecondary }
-
-/* === Inputs === */
-".input": {
-  height: 48,
-  width: Ti.UI.FILL,
-  borderRadius: 8,
-  borderWidth: 1,
-  borderColor: Alloy.Globals.theme.border,
-  backgroundColor: Alloy.Globals.theme.bg,
-  color: Alloy.Globals.theme.text,
-  paddingLeft: 12,
-  font: { fontSize: 16 }
-}
-
-/* === Spacing (applied via class in XML) === */
-".mt-sm": { top: 8 }
-".mt-md": { top: 16 }
-".mt-lg": { top: 24 }
-".mt-xl": { top: 32 }
-".mx-md": { left: 16, right: 16 }
-".mx-lg": { left: 24, right: 24 }
 ```
 
-### Using style classes in views
+Do not copy a large utility system into manual TSS. Create only the small set of
+selectors the app actually uses.
 
-```xml
-<Alloy>
-  <Window>
-    <View class="col mx-md">
-      <Label class="text-title mt-lg" text="L('settings')" />
+## Alloy build-time themes
 
-      <View class="card mt-md">
-        <Label class="text-body mx-md mt-md" text="L('appearance')" />
-        <Button class="btn-secondary mx-md mt-md" title="L('toggle_theme')" onClick="onToggleTheme" />
-      </View>
+Alloy's `app/themes/<name>/` folders can override views, styles, and assets at
+build time. Select a theme through `app/config.json`. This is appropriate for
+separate branded builds or compile-time variants.
 
-      <Button class="btn-danger mt-xl mx-md" title="L('logout')" onClick="onLogout" />
-    </View>
-  </Window>
-</Alloy>
-```
+Do not describe an Alloy build-time theme as runtime light/dark switching.
+Semantic colors are the default for appearance changes while the app runs.
 
-This approach gives you:
-- Consistent spacing and typography across the entire app
-- Theme-aware colors that change with `Alloy.Globals.theme`
-- Clean XML views without inline styles
-- A single place to update design decisions (`app.tss`)
+## Runtime custom themes
+
+Use a centralized runtime palette or theme service only when semantic
+light/dark/system colors cannot model the requirement, such as multiple user
+selectable brand themes.
+
+If that exception applies:
+
+- keep the selected theme in one service;
+- expose semantic roles, not control IDs;
+- document how already-created proxies receive updates;
+- remove all listeners in controller cleanup;
+- avoid rebuilding the entire window tree unless the app has measured and
+  accepted that tradeoff.
+
+`Alloy.Globals` is a legacy/advanced interoperability option, not the first
+recommendation for ordinary dark mode.
+
+## Component rules
+
+- Components consume semantic roles owned by the host app.
+- Widgets own anatomy and behavior, not the product palette.
+- Localized strings and business callbacks come from the host.
+- Destructive styling must remain distinguishable in both appearances.
+- Overlays, focus indicators, disabled states, and text must retain usable
+  contrast in light, dark, and system modes.
+- Do not create separate light/dark controller branches when a semantic color
+  can express the difference.
+
+## Verification
+
+For every supported platform and form factor:
+
+1. test light, dark, and follow-system modes;
+2. change appearance while the relevant window remains open;
+3. inspect dialogs, sheets, Snackbars, disabled controls, and overlays;
+4. test localized long text and accessibility focus;
+5. run PurgeTSS generation when detected and resolve unsupported classes;
+6. compile and build both platform targets before claiming completion.
+
+For exact PurgeTSS behavior, load its current `semantic-colors.md` and
+`appearance-module.md` references. For Titanium property availability, verify
+against the current `ti-api` skill.

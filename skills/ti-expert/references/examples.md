@@ -3,6 +3,7 @@
 <!-- TOC-START -->
 ## Contents
 
+- [Reading these examples](#reading-these-examples)
 - [API client service](#api-client-service)
 - [Native module wrapper service](#native-module-wrapper-service)
 - [i18n helper](#i18n-helper)
@@ -16,6 +17,19 @@
 - [Tab-based navigation example](#tab-based-navigation-example)
 
 <!-- TOC-END -->
+
+## Reading these examples
+
+Snippets that call `$.dialog`, `$.bottomSheet`, or `$.snackbar` expect the app to
+own those surfaces as Alloy Widgets under `app/widgets/`. Their public API,
+queueing, and cleanup rules live in [Feedback Widget Contracts](feedback-widget-contracts.md);
+[Feedback Surfaces](feedback-surfaces.md) covers which surface a given event
+deserves. The `<Widget>` declaration alone will not compile until those Widgets
+exist and are registered in `app/config.json`.
+
+Styles below carry literal hex values so each example reads on its own. Production
+code should name semantic color roles instead, so light and dark resolve without a
+second code path — see [Theming and dark mode](theming.md).
 
 ## API client service
 Standard logic for network requests.
@@ -350,6 +364,8 @@ $.cleanup = cleanup
       <ImageView id="emptyIcon" image="/images/search.png" />
       <Label id="emptyLabel" text="L('no_results')" />
     </View>
+
+    <Widget id="bottomSheet" src="com.example.ui.bottomsheet" />
   </Window>
 </Alloy>
 ```
@@ -375,6 +391,7 @@ let searchQuery = ''
 let debounceTimer = null
 
 function init() {
+  $.bottomSheet.attach($.contactsWindow)
   loadData()
 
   $.searchBar.addEventListener('cancel', clearSearch)
@@ -395,21 +412,23 @@ function clearSearch() {
 }
 
 function showFilters() {
-  const dialog = Ti.UI.createOptionDialog({
-    title: L('filter_by_category'),
-    options: ['All', 'Work', 'Personal', 'Family', L('cancel')],
-    cancel: 4
-  })
+  const items = [
+    { id: 'all', title: L('all') },
+    { id: 'work', title: L('work') },
+    { id: 'personal', title: L('personal') },
+    { id: 'family', title: L('family') }
+  ]
 
-  dialog.addEventListener('click', (e) => {
-    if (e.index < 4) {
-      activeFilters.category = e.index === 0 ? null : ['work', 'personal', 'family'][e.index - 1]
+  $.bottomSheet.show({
+    title: L('filter_by_category'),
+    items,
+    selectedId: activeFilters.category || 'all',
+    onSelect: item => {
+      activeFilters.category = item.id === 'all' ? null : item.id
       updateFilterTags()
       applyFilters()
     }
   })
-
-  dialog.show()
 }
 
 function applyFilters() {
@@ -465,6 +484,7 @@ function createFilterTag(label, onRemove) {
 
 function cleanup() {
   clearTimeout(debounceTimer)
+  $.bottomSheet.destroy()
   $.searchBar.removeEventListener('change', onSearchChange)
   $.destroy()
 }
@@ -530,6 +550,7 @@ $.cleanup = cleanup
           <Switch id="termsSwitch" />
           <Label id="termsLabel" text="L('accept_terms')" />
         </View>
+        <Label id="termsError" />
 
         <!-- Register Button -->
         <Button id="registerBtn"
@@ -544,6 +565,8 @@ $.cleanup = cleanup
         </View>
       </View>
     </ScrollView>
+
+    <Widget id="dialog" src="com.example.ui.dialog" />
   </Window>
 </Alloy>
 ```
@@ -570,6 +593,7 @@ $.cleanup = cleanup
 "#termsRow": { layout: 'horizontal', left: 16, right: 16, top: 24, width: Ti.UI.FILL }
 "#termsSwitch": { width: 48 }
 "#termsLabel": { left: 8 }
+"#termsError": { left: 16, right: 16, top: 4, font: { fontSize: 12 }, color: '#ef4444', visible: false }
 "#registerBtn": { left: 16, right: 16, top: 24, height: 56, borderRadius: 12, backgroundColor: '#2563eb', color: '#fff', font: { fontWeight: 'bold' } }
 "#loginRow": { layout: 'horizontal', top: 16 }
 "#haveAccountLabel": { font: { fontSize: 14 }, color: '#4b5563' }
@@ -611,6 +635,8 @@ const validators = {
 }
 
 function init() {
+  $.dialog.attach($.registerWindow)
+
   // Field navigation
   $.nameField.addEventListener('return', () => $.emailField.focus())
   $.emailField.addEventListener('return', () => $.passwordField.focus())
@@ -658,16 +684,14 @@ function validateAll() {
   const emailValid = validateField('email')
   const passwordValid = validateField('password')
   const confirmValid = validateField('confirm')
+  const termsValid = $.termsSwitch.value
 
-  if (!$.termsSwitch.value) {
-    Ti.UI.createAlertDialog({
-      title: L('error'),
-      message: L('error_accept_terms')
-    }).show()
-    return false
-  }
+  $.termsError.applyProperties({
+    text: termsValid ? '' : L('error_accept_terms'),
+    visible: !termsValid
+  })
 
-  return nameValid && emailValid && passwordValid && confirmValid
+  return nameValid && emailValid && passwordValid && confirmValid && termsValid
 }
 
 async function onRegister() {
@@ -686,10 +710,12 @@ async function onRegister() {
     Navigation.replace('main')
 
   } catch (error) {
-    Ti.UI.createAlertDialog({
+    $.dialog.show({
       title: L('error'),
-      message: error.message
-    }).show()
+      message: error.message,
+      tone: 'error',
+      confirmTitle: L('close')
+    })
   } finally {
     setLoading(false)
   }
@@ -707,6 +733,7 @@ function goToLogin() {
 }
 
 function cleanup() {
+  $.dialog.destroy()
   $.destroy()
 }
 

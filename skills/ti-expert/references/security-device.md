@@ -105,6 +105,9 @@ const { TokenStorage } = require('services/tokenStorage')
 const { AuthService } = require('services/authService')
 
 function init() {
+  // The login view declares the app-owned Dialog Widget as its last child.
+  $.dialog.attach($.getView())
+
   // Check if biometric login is available and enabled
   const { available, type } = BiometricService.checkAvailability()
   const biometricEnabled = Ti.App.Properties.getBool('biometricEnabled', false)
@@ -143,22 +146,25 @@ async function onLoginSuccess(user) {
   if (available && !Ti.App.Properties.getBool('askedBiometric', false)) {
     Ti.App.Properties.setBool('askedBiometric', true)
 
-    // Ask user if they want to enable biometric login
-    const dialog = Ti.UI.createAlertDialog({
+    // The choice is app-owned; the later biometric authentication prompt remains native.
+    $.dialog.show({
       title: String.format(L('enable_biometric_title'), type),
       message: String.format(L('enable_biometric_msg'), type),
-      buttonNames: [L('not_now'), L('enable')]
-    })
-
-    dialog.addEventListener('click', (e) => {
-      if (e.index === 1) {
+      cancelTitle: L('not_now'),
+      confirmTitle: L('enable'),
+      onConfirm: () => {
         Ti.App.Properties.setBool('biometricEnabled', true)
       }
     })
-
-    dialog.show()
   }
 }
+
+function cleanup() {
+  $.dialog.destroy()
+  $.destroy()
+}
+
+$.cleanup = cleanup
 ```
 
 ## Deep link security
@@ -482,7 +488,9 @@ exports.SecurityService = {
   enforceSecurityPolicy() {
     const { compromised, reasons } = this.checkDeviceIntegrity()
 
-    if (!compromised) return true
+    if (!compromised) {
+      return { outcome: 'allow', reasons: [], restricted: false }
+    }
 
     // Log security event
     logger.error('Security', 'Compromised device detected', {
@@ -496,50 +504,16 @@ exports.SecurityService = {
 
     switch (policy) {
       case 'block':
-        // Prevent app usage
-        this._showBlockedScreen()
-        return false
+        return { outcome: 'block', reasons, restricted: true }
 
       case 'restrict':
-        // Disable sensitive features
         Ti.App.Properties.setBool('restrictedMode', true)
-        this._showWarning()
-        return true
+        return { outcome: 'warn', reasons, restricted: true }
 
       case 'warn':
       default:
-        // Just warn the user
-        this._showWarning()
-        return true
+        return { outcome: 'warn', reasons, restricted: false }
     }
-  },
-
-  _showBlockedScreen() {
-    // Note: iOS guidelines prohibit programmatically terminating an app.
-    // The best practice is to show a blocking dialog and prevent further interaction.
-    // On Android you can call Ti.Android.currentActivity.finish() to close the activity.
-    const dialog = Ti.UI.createAlertDialog({
-      title: L('security_blocked_title'),
-      message: L('security_blocked_msg'),
-      buttonNames: [L('close')]
-    })
-
-    dialog.addEventListener('click', () => {
-      if (OS_ANDROID) {
-        Ti.Android.currentActivity.finish()
-      }
-      // On iOS: leave the dialog visible — Apple guidelines prohibit force-quitting apps.
-    })
-
-    dialog.show()
-  },
-
-  _showWarning() {
-    Ti.UI.createAlertDialog({
-      title: L('security_warning_title'),
-      message: L('security_warning_msg'),
-      buttonNames: [L('i_understand')]
-    }).show()
   }
 }
 ```
@@ -550,18 +524,45 @@ exports.SecurityService = {
 // alloy.js
 const { SecurityService } = require('services/securityService')
 
-// Check device integrity at app start
-const securityCheck = SecurityService.enforceSecurityPolicy()
+// Services return policy; they do not create UI before the root exists.
+const securityDecision = SecurityService.enforceSecurityPolicy()
+const root = Alloy.createController('index', { securityDecision })
+root.getView().open()
+```
 
-if (!securityCheck) {
-  // Don't initialize the app
-  return
+```javascript
+// controllers/index.js
+const decision = $.args.securityDecision
+
+function init() {
+  $.dialog.attach($.indexWindow)
+
+  if (decision.outcome === 'block') {
+    // Show a dedicated blocking state in the root XML and do not initialize
+    // protected application content. Do not force-quit the app.
+    $.blockingState.visible = true
+    $.appContent.visible = false
+    return
+  }
+
+  initializeAppContent({ restricted: decision.restricted })
+
+  if (decision.outcome === 'warn') {
+    $.dialog.show({
+      title: L('security_warning_title'),
+      message: L('security_warning_msg'),
+      tone: 'warning',
+      confirmTitle: L('i_understand')
+    })
+  }
 }
 
-// Check again periodically (in case of runtime jailbreak tools)
-setInterval(() => {
-  SecurityService.checkDeviceIntegrity()
-}, 5 * 60 * 1000) // Every 5 minutes
+function cleanup() {
+  $.dialog.destroy()
+  $.destroy()
+}
+
+$.cleanup = cleanup
 ```
 
 ## Security checklist
@@ -578,3 +579,4 @@ setInterval(() => {
 | **Integrity**  | Check for jailbreak/root   | checkDeviceIntegrity()   |
 | **Integrity**  | Define security policy     | block/restrict/warn      |
 | **Integrity**  | Log security events        | Always log compromises   |
+| **Integrity UI** | Keep policy out of services | Root controller presents blocking state or Dialog |

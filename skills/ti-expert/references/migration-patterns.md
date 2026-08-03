@@ -4,7 +4,8 @@
 ## Contents
 
 - [Assessment checklist](#assessment-checklist)
-- [Phase 1: TSS organization](#phase-1-tss-organization)
+- [Phase 1: styling-system organization](#phase-1-styling-system-organization)
+- [Phase 1B: feedback surfaces](#phase-1b-feedback-surfaces)
 - [Phase 2: service layer extraction](#phase-2-service-layer-extraction)
 - [Phase 3: event system migration](#phase-3-event-system-migration)
 - [Phase 4: navigation service](#phase-4-navigation-service)
@@ -21,24 +22,36 @@ Before migrating, evaluate the current codebase:
 
 | Area        | Signs of Legacy Code                               | Target State                                  |
 | ----------- | -------------------------------------------------- | --------------------------------------------- |
-| Styling     | Inline attributes, scattered styles                | Organized TSS files (per-controller + global) |
+| Styling     | Inline attributes, scattered styles                | PurgeTSS utilities when detected; otherwise organized Alloy TSS |
 | Controllers | 200+ lines, API calls, business logic              | Thin orchestrators (<100 lines)               |
 | Events      | `Ti.App.fireEvent` everywhere                      | Backbone.Events or StateStore                 |
 | Navigation  | Direct `Alloy.createController().getView().open()` | Navigation service                            |
 | Data        | Scattered `Ti.App.Properties`, no collections      | Centralized state + Collections               |
 
-## Phase 1: TSS organization
+## Phase 1: styling-system organization
 
-**Goal**: Migrate from inline styling and scattered styles to well-organized TSS files.
+**Goal**: Migrate from inline and scattered styling into the styling system the
+project actually uses.
+
+### Step 0: detect PurgeTSS
+
+Check for `purgetss/` or `purgetss/config.cjs` before editing styles.
+
+- **PurgeTSS detected:** invoke the `purgetss` skill, use verified utilities and
+  semantic colors, configure reusable rules in `config.cjs`, and never edit the
+  generated `app/styles/app.tss`.
+- **No PurgeTSS:** use standard per-controller TSS and a manually maintained
+  `app/styles/app.tss` for genuinely global selectors.
+
+Do not migrate a PurgeTSS application back into manual TSS by following a generic
+Alloy example.
 
 ### Step 1: audit existing styles
 
-Find all inline attributes and consolidate into TSS files:
+Find inline attributes and classify them for the detected styling system:
 ```bash
 # Find inline styling in XML views
-grep -r 'backgroundColor=' app/views/
-grep -r 'font=' app/views/
-grep -r 'color=' app/views/
+rg -n 'backgroundColor=|font=|color=' app/views/
 ```
 
 ### Step 2: move inline attributes to TSS
@@ -51,7 +64,7 @@ grep -r 'color=' app/views/
 ```
 
 ```xml
-<!-- AFTER: Clean XML + TSS file -->
+<!-- AFTER in standard Alloy: clean XML + TSS file -->
 <View id="header">
   <Label id="title" text="L('welcome')" />
 </View>
@@ -63,9 +76,11 @@ grep -r 'color=' app/views/
 "#title": { color: "#333", font: { fontSize: 18, fontWeight: "bold" } }
 ```
 
-### Step 3: organize TSS structure
+### Step 3: organize standard Alloy TSS
 
-1. Use `app.tss` for global styles (shared across all views)
+This step applies only when PurgeTSS is not present.
+
+1. Use `app.tss` for genuinely global styles shared across views
 2. Use per-controller TSS files for view-specific styles
 3. Use class selectors for reusable style patterns:
 ```tss
@@ -73,6 +88,18 @@ grep -r 'color=' app/views/
 ".card": { borderRadius: 12, backgroundColor: '#fff' }
 ".btn-primary": { backgroundColor: '#2563eb', color: '#fff', height: 44, borderRadius: 8 }
 ```
+
+In either styling path, replace hard-coded visual colors with semantic roles as
+part of the migration. See [Theming and Dark Mode](theming.md).
+
+## Phase 1B: feedback surfaces
+
+Inventory native alerts, option dialogs, Toasts, and local overlays. Classify
+each occurrence before replacing it, then migrate one window at a time. Preserve
+system-owned pickers, permission prompts, sharing, and biometric UI.
+
+Use [Feedback Migration](feedback-migration.md) for the sequence, deliberate
+silence rules, and verification contract.
 
 ## Phase 2: service layer extraction
 
@@ -280,11 +307,12 @@ const { user } = appStore.getState()
 
 Recommended sequence to minimize risk:
 
-1. **TSS Organization** - Visual only, no logic changes
-2. **Service Layer** - Extract logic without changing behavior
-3. **Navigation Service** - Centralize with cleanup
-4. **Event System** - Replace Ti.App events
-5. **State Management** - Last, as it touches everything
+1. **Styling-system organization** - Establish semantic tokens and the correct PurgeTSS/Alloy path
+2. **Feedback surfaces** - Migrate one window without changing domain outcomes
+3. **Service Layer** - Extract logic without changing behavior
+4. **Navigation Service** - Centralize with cleanup
+5. **Event System** - Replace Ti.App events
+6. **State Management** - Last, as it touches everything
 
 ## Rollback strategy
 
@@ -293,16 +321,10 @@ For each phase:
 1. **Create a branch** before starting
 2. **Migrate one feature** completely
 3. **Test thoroughly** before moving to next feature
-4. **Keep legacy code** commented until stable
+4. **Delete the replaced implementation** after the vertical slice passes
 
-```javascript
-// Temporary: Keep both during migration
-// Legacy:
-// Ti.App.fireEvent('user:updated', data)
-
-// New:
-Alloy.Events.trigger('user:updated', data)
-```
+Use version control for rollback. Do not keep commented legacy implementations:
+they conceal duplicate listeners, stale callbacks, and incomplete migrations.
 
 ## Common migration pitfalls
 

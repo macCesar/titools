@@ -54,9 +54,15 @@ const name = user.name
 
 ## Styling with TSS
 
+First detect `purgetss/` or `purgetss/config.cjs`. If present, invoke the
+`purgetss` skill, use verified utilities, and do not edit generated
+`app/styles/app.tss`. The manual TSS organization below applies when PurgeTSS is
+not present or to specific properties for which that skill confirms no utility.
+
 ### TSS file organization
 
-Every controller can have a matching TSS file. Alloy also supports a global `app.tss`.
+Every controller can have a matching TSS file. Standard Alloy also supports a
+manually maintained global `app.tss`.
 
 ```
 app/styles/
@@ -95,7 +101,7 @@ app/styles/
 | Selector            | Use for                     | Example                |
 | ------------------- | --------------------------- | ---------------------- |
 | Element (`"Label"`) | App-wide defaults           | Base font, color       |
-| Class (`".card"`)   | Reusable patterns (3+ uses) | Cards, buttons, inputs |
+| Class (`".card"`)   | Reusable visual pattern     | Cards, buttons, inputs |
 | ID (`"#name"`)      | Unique element positioning  | Specific layout needs  |
 
 ### Class selectors in XML
@@ -127,7 +133,7 @@ When an element has both an ID and classes, properties merge with ID taking prio
 <Button id="saveButton" class="btn-primary" title="L('save')" />
 ```
 
-### Building a design system in app.tss
+### Building a standard Alloy design system in app.tss
 
 Define reusable style classes for consistency:
 
