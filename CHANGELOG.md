@@ -4,6 +4,43 @@ All notable changes to titools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+## [4.4.0] - 2026-08-03
+
+### Added — Feedback surfaces and Widget contracts in `ti-expert`
+
+Three new references cover the ground between "something happened" and "which proxy
+draws it": `feedback-surfaces.md` picks the surface from the meaning of the event
+(owner, blocking, reversibility, persistence, choice shape) rather than from whichever
+dialog is easiest to call, and draws the line between what an app may style and what
+must stay system-owned. `feedback-widget-contracts.md` fixes the public API and
+lifecycle of Snackbar, Dialog and Bottom Sheet as Alloy Widgets — exactly-once
+callbacks, FIFO queueing, idempotent `destroy()`, accessibility focus handling.
+`feedback-migration.md` replaces native dialogs one window at a time, migrating
+semantics instead of proxy names.
+
+Ten existing references were revised alongside them. `theming.md` was rewritten around
+a semantic color contract and now defers utility naming to the `purgetss` skill instead
+of carrying its own copy.
+
+The skill's `description` gained the feedback and Widget triggers, and kept the ones it
+had: auditing, memory leaks, migrating legacy apps, and adaptive layouts for tablets,
+foldables and large screens.
+
+### Fixed — Documentation drift around `ti-expert`
+
+The reference count said 21 in two places in the README; the skill has 24. The
+"When it activates" list omitted feedback surfaces, Widgets, adaptive layouts and
+theming — the adaptive-layouts gap had been open since v4.1.0. `EXAMPLE-PROMPTS.md`,
+which doubles as the activation smoke test, had no prompt exercising any of the new
+material.
+
+Inside the skill, `examples.md` had started calling `$.dialog` and `$.bottomSheet`
+without saying anywhere that the app must build those Widgets first, so its snippets
+read as copy-ready when they are not. It now names their contract and the color
+convention its styles follow, and its index was regenerated to match.
+
 ## [4.3.0] - 2026-08-02
 
 ### Fixed — Unclosed code fences in 9 reference files
