@@ -333,6 +333,10 @@ When it activates:
 - Choosing data strategies (Models vs Collections)
 - Writing clean ES6+ code
 - Memory management and cleanup patterns
+- Choosing a feedback surface (Snackbar, Dialog, Bottom Sheet) and deciding what stays native
+- Designing reusable Alloy Widgets and their lifecycle contracts
+- Adaptive layouts for tablets, foldables, and large screens
+- Theming and dark mode
 - Performance optimization
 - Security patterns
 - Migrating legacy apps
@@ -343,13 +347,15 @@ Example prompts:
 "Create a user service that fetches data from an API."
 "What's the best pattern for navigation between screens?"
 "Prevent memory leaks in my controllers."
+"Every confirmation in my app is an alertDialog — what should each one actually be?"
+"Should this be a Widget or just a <Require>?"
 "Migrate classic Titanium code to modern Alloy patterns."
 "What's a clean way to organize services in an Alloy app?"
 ```
 
 Key features:
 - Quick decision matrix for common questions
-- 21 reference guides for deep dives
+- 24 reference guides for deep dives
 - Delegates to specialized skills when needed
 
 ---
@@ -718,7 +724,7 @@ This pattern is documented across three TiTools skills: `ti-ui`, `ti-expert`, an
 
 | Skill     | SKILL.md                      | References                                            |
 | --------- | ----------------------------- | ----------------------------------------------------- |
-| ti-expert | Architecture + Implementation | 21 files (patterns, testing, security, etc.)          |
+| ti-expert | Architecture + Implementation | 24 files (patterns, feedback surfaces, testing, security, etc.) |
 | purgetss  | Setup + Critical Rules        | 33 files (grid, animations, icons, class-index, SVG pipeline, etc.) |
 | ti-ui     | UI Rules + Platform Diffs     | 14 files (layouts, lists, gestures, etc.)             |
 
