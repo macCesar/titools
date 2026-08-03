@@ -87,6 +87,23 @@ Expect:
 - cleanup() pattern for memory management
 - Mention EventBus (Backbone.Events) instead of Ti.App.fireEvent
 
+Feedback surfaces:
+```
+"Every confirmation in my app is a createAlertDialog and it all looks the same. Saving a draft, deleting an account, picking a category — same ugly box. Where do I start?"
+```
+Expect:
+- Classify by meaning first (owner, blocking, reversible, persistence, choice shape) before naming a proxy
+- Snackbar with Undo for ordinary/undoable success, Dialog for blocking or destructive, Bottom Sheet for related choices
+- Alloy Widget under `app/widgets/` registered in `config.json`, with `attach()` / `destroy()` lifecycle
+
+```
+"Should the file picker and the 'are you sure you want to delete this?' both become custom styled components, or do I leave them native?"
+```
+Expect:
+- Keep OS-owned flows native (pickers, permissions, share sheets, biometrics)
+- App-owned feedback (the delete confirmation) may be styled
+- Never imitate a trusted system prompt
+
 ---
 
 ### purgetss
@@ -231,6 +248,7 @@ Expect:
 ## Validation checklist
 
 - [ ] ti-expert: responds with correct architecture
+- [ ] ti-expert: classifies the feedback surface before naming a proxy
 - [ ] purgetss: does not use flexbox, uses correct classes
 - [ ] ti-ui: mentions performance rules
 - [ ] ti-api: cites specific properties/methods/events
