@@ -30,7 +30,7 @@ app/
 │   ├── home.xml
 │   └── userProfile.xml
 ├── styles/               # TSS styles (one per view + global)
-│   ├── app.tss           # Global application styles
+│   ├── app.tss           # Standard Alloy global styles or PurgeTSS generated output
 │   ├── index.tss         # Styles for index view
 │   ├── home.tss
 │   └── userProfile.tss
@@ -59,7 +59,7 @@ app/
 │   └── providers/
 │       ├── containerProvider.js
 │       └── loggerProvider.js
-├── widgets/              # Truly reusable components (used in 3+ places)
+├── widgets/              # Self-contained components with an API/lifecycle boundary
 │   └── customButton/
 ├── config.json           # Alloy configuration
 └── alloy.js              # Collections & Global services
@@ -188,7 +188,8 @@ api.getFrames()
 ## Controller rules
 
 **DO:**
-- Define styles in TSS files (per-controller + `app.tss` for global).
+- Use verified PurgeTSS utilities when detected; otherwise define styles in
+  per-controller TSS and manually maintained global TSS.
 - Orchestrate view and model/collection interactions.
 - Handle UI events and delegate to services.
 - Format data for display (simple cases).
@@ -196,7 +197,7 @@ api.getFrames()
 - Keep `lib` modules flat and easy to locate.
 
 **DON'T:**
-- Use inline style attributes in XML (define in TSS files).
+- Scatter visual properties inline when the active style system can express them.
 - Make direct API calls (use lib/api/ or lib/services/).
 - Contain heavy business logic.
 - Call native modules directly (use a service wrapper).
@@ -245,7 +246,10 @@ See [ControllerAutoCleanup.js](../assets/ControllerAutoCleanup.js) for the compl
 
 ## Widget structure
 
-Widgets are self-contained, reusable components used in 3+ places across the app.
+Widgets are self-contained components with their own public API, state, assets,
+and lifecycle. Choose one for a portable boundary, not after an arbitrary number
+of usages. A first-use component with timers, modal state, and cleanup can merit
+a Widget; repeated static styling does not.
 
 ```
 app/widgets/
@@ -255,7 +259,7 @@ app/widgets/
     ├── views/
     │   └── widget.xml     # Main widget view
     ├── styles/
-    │   └── widget.tss     # Widget-specific styles
+    │   └── widget.tss     # Optional component-specific styles
     └── widget.json        # Widget manifest
 ```
 
@@ -276,6 +280,17 @@ app/widgets/
 }
 ```
 
+Register the Widget in the app's `app/config.json`; the dependency key must
+match the manifest `id`:
+
+```json
+{
+  "dependencies": {
+    "com.app.loadingOverlay": "1.0.0"
+  }
+}
+```
+
 ### Widget view (widget.xml)
 ```xml
 <Alloy>
@@ -290,10 +305,10 @@ app/widgets/
 
 ```tss
 /* styles/widget.tss */
-"#container": { width: Ti.UI.FILL, height: Ti.UI.FILL, visible: false, backgroundColor: 'rgba(0,0,0,0.5)' }
-"#box": { width: 128, height: 128, layout: 'vertical', borderRadius: 16, backgroundColor: '#fff' }
+"#container": { width: Ti.UI.FILL, height: Ti.UI.FILL, visible: false, backgroundColor: 'overlayColor' }
+"#box": { width: 128, height: 128, layout: 'vertical', borderRadius: 16, backgroundColor: 'surfaceColor' }
 "#spinner": { top: 24 }
-"#messageLabel": { left: 16, right: 16, top: 16, font: { fontSize: 14 }, color: '#4b5563' }
+"#messageLabel": { left: 16, right: 16, top: 16, font: { fontSize: 14 }, color: 'textColor' }
 ```
 
 ### Widget controller (widget.js)
@@ -352,8 +367,12 @@ const loadData = () => {
 }
 ```
 
-> **💡 Widget Styles**
-> Widgets have their own `styles/widget.tss` file. Define all widget-specific styles there to keep them self-contained and portable.
+> **Widget styles**
+> In a standard Alloy project, keep component-specific properties in
+> `styles/widget.tss` and consume semantic colors. If PurgeTSS is detected, load
+> its skill first, enable Widget scanning, place verified utilities in XML, and
+> reserve `widget.tss` for properties with no utility. Never edit the generated
+> `app/styles/app.tss`.
 
 ### Widget ↔ controller communication
 
@@ -464,13 +483,18 @@ render()
 
 ### When to use widget vs require
 
-| Use `<Widget>` when                   | Use `<Require>` when            |
-| ------------------------------------- | ------------------------------- |
-| Component is used in 3+ places        | Component is used in 1-2 places |
-| Needs its own self-contained styles   | Shares styles with parent       |
-| Has public API (show/hide/setValue)   | Just renders, no API needed     |
-| Could be extracted to another project | Specific to this app            |
-| Needs its own `widget.json` manifest  | Lightweight, no manifest needed |
+| Use `<Widget>` when                   | Use `<Require>` when                 |
+| ------------------------------------- | ------------------------------------ |
+| Owns a stable public API              | Composes an app-specific controller  |
+| Owns state, timers, listeners, or cleanup | Shares the host's lifecycle       |
+| Has a portable design-system boundary | Shares the host's domain and styling |
+| Could be extracted to another project | Has no independent package contract  |
+| Needs its own `widget.json` manifest  | Remains lightweight and app-local    |
+
+Usage count is supporting evidence only. Also consider a screen-local XML state
+for loading/empty/error content, a style class for appearance without behavior,
+or native UI when the operating system owns the workflow. See
+[Feedback Widget Contracts](feedback-widget-contracts.md).
 
 ## config.json reference
 

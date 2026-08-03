@@ -281,43 +281,42 @@ async function loadData() {
 
 ## Modal and dialog patterns
 
+Declare the app-owned `dialog` and `bottomSheet` Widgets in the window XML.
+Attach them after the host exists and destroy them from the controller cleanup.
+Keep a modal Window for a distinct multi-step task, not for ordinary feedback.
+
 ```javascript
-// AlertDialog
-function showConfirmDelete(itemName) {
-  const dialog = Ti.UI.createAlertDialog({
-    title: L('confirm_delete'),
-    message: String.format(L('delete_message'), itemName),
-    buttonNames: [L('cancel'), L('delete')],
-    cancel: 0,
-    destructive: 1 // iOS: red button
-  })
-
-  dialog.addEventListener('click', (e) => {
-    if (e.index === 1) {
-      performDelete()
-    }
-  })
-
-  dialog.show()
+function attachFeedback(hostWindow) {
+  $.dialog.attach(hostWindow)
+  $.bottomSheet.attach(hostWindow)
 }
 
-// OptionDialog (Action Sheet)
+// Critical, irreversible confirmation
+function showConfirmDelete(itemName) {
+  $.dialog.show({
+    title: L('confirm_delete'),
+    message: String.format(L('delete_message'), itemName),
+    cancelTitle: L('cancel'),
+    confirmTitle: L('delete'),
+    destructive: true,
+    tone: 'warning',
+    onConfirm: performDelete
+  })
+}
+
+// Contextual choices
 function showSortOptions() {
-  const options = [L('sort_name'), L('sort_date'), L('sort_price')]
+  const items = [
+    { id: 'name', title: L('sort_name') },
+    { id: 'date', title: L('sort_date') },
+    { id: 'price', title: L('sort_price') }
+  ]
 
-  const dialog = Ti.UI.createOptionDialog({
+  $.bottomSheet.show({
     title: L('sort_by'),
-    options: [...options, L('cancel')],
-    cancel: options.length
+    items,
+    onSelect: item => applySortOption(item.id)
   })
-
-  dialog.addEventListener('click', (e) => {
-    if (e.index < options.length) {
-      applySortOption(e.index)
-    }
-  })
-
-  dialog.show()
 }
 
 // Modal Window
@@ -341,6 +340,14 @@ function openModal(route, params) {
 
   return controller
 }
+
+function cleanup() {
+  $.dialog.destroy()
+  $.bottomSheet.destroy()
+  $.destroy()
+}
+
+$.cleanup = cleanup
 ```
 
 ## Tabgroup pattern

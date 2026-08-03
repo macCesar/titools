@@ -75,13 +75,6 @@ Shared state and utilities accessible from any controller or lib file. Set in `a
 // alloy.js
 const Backbone = require('alloy/backbone')
 
-// --- Theme / Design Tokens ---
-Alloy.Globals.theme = {
-  primary: '#2563eb',
-  bg: '#ffffff',
-  text: '#111827'
-}
-
 // --- Device Info (cached once) ---
 Alloy.Globals.isTablet = Alloy.isTablet
 Alloy.Globals.screenWidth = Ti.Platform.displayCaps.platformWidth
@@ -100,27 +93,23 @@ Alloy.Collections.notifications = new Backbone.Collection()
 ### Access from anywhere
 
 ```javascript
-// In any controller
-const theme = Alloy.Globals.theme
-$.label.color = theme.primary
-
-// In TSS (evaluated at compile time for controller creation)
-"#header": {
-  backgroundColor: Alloy.Globals.theme.primary
-}
-
 // In XML with conditional binding
 // <View if="Alloy.Globals.isLoggedIn">
 ```
 
+Do not use `Alloy.Globals` as the default dark-mode palette. Prefer Titanium
+semantic colors; when PurgeTSS is detected, use its semantic color and Appearance
+workflow. Reserve a global runtime palette for custom theme requirements that
+semantic light/dark/system roles cannot model. See [Theming](theming.md).
+
 ### Globals vs services
 
-| Use `Alloy.Globals` for            | Use a Service for             |
-| ---------------------------------- | ----------------------------- |
-| Static config (theme, device info) | Business logic                |
-| Simple flags (isLoggedIn)          | Complex state with listeners  |
-| Values set once in `alloy.js`      | Values that change frequently |
-| Read-only data                     | Data with side effects        |
+| Use `Alloy.Globals` for               | Use a Service for             |
+| ------------------------------------- | ----------------------------- |
+| Immutable device/build facts          | Business logic                |
+| Framework-level shared registries     | Complex state with listeners  |
+| Values initialized once in `alloy.js` | Values that change frequently |
+| Read-only interoperability data       | Data with side effects        |
 
 ---
 

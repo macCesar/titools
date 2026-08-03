@@ -67,14 +67,22 @@
 ## 13. Using `Ti.UI.createNotification`
 **Symptom:** `Ti.UI.createNotification({ message: 'Hi' }).show()`
 **Problem:** This API doesn't exist in Titanium. Causes "invalid method" error.
-**Solution:** Use `Ti.UI.createAlertDialog` for simple messages, or create custom toast views.
+**Solution:** Classify the feedback before choosing UI. Use the app's Snackbar
+Widget for transient foreground feedback, inline/Banner state for persistent
+conditions, and an app-owned Dialog only for blocking or critical information.
+Use the supported platform notification APIs only for actual OS notifications.
+See [Feedback Surfaces](feedback-surfaces.md).
 
 ## 14. Using nonexistent iOS share APIs
 **Symptom:** `Ti.UI.iOS.createActivityPopover` or `alloy/social` with wrong methods.
 **Problem:** These APIs either don't exist or have changed. Causes runtime errors.
 **Solution:**
-- iOS: Use `Ti.UI.iOS.createDocumentViewer` for files, or simple `Ti.UI.createOptionDialog` + `Ti.UI.Clipboard` for links
-- Android: Use `Ti.Android.createIntent` with ACTION_SEND
+- Keep sharing system-owned. Use the currently supported Titanium share/document
+  API or native module for the target platform and verify its current contract
+  with the `ti-api` skill.
+- Do not imitate a share sheet with an app-owned `OptionDialog`. A Bottom Sheet
+  may choose an app action such as an export format, but the OS share surface
+  owns the final destination.
 
 ## Community-Discovered Patterns
 
@@ -117,8 +125,8 @@ This applies to Windows inside both standalone NavigationWindow and TabGroup (wh
 | ----------------------- | ------------------------ | --------------------- |
 | `padding` on View       | No padding on containers | Margins on children   |
 | `layout: 'composite'`   | Already default          | Omit it               |
-| Inline style attributes | Scattered styling        | Define in TSS files   |
+| Inline style attributes | Scattered styling        | PurgeTSS utilities when detected; otherwise TSS |
 | `lib/` prefix           | lib/ is flattened        | Use path without lib/ |
 | `$.index.open()`        | Wrong ID reference       | Use actual Window ID  |
-| `createNotification`    | API doesn't exist        | `createAlertDialog`   |
+| `createNotification`    | API doesn't exist        | Classify feedback; Snackbar is the transient default |
 | `extendEdges` alone     | Content behind nav bar   | Add `autoAdjustScrollViewInsets: true` |

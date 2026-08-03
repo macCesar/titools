@@ -746,6 +746,7 @@ appStore.use(debugMiddleware)
 // controllers/debug/stateViewer.js (Development only)
 const { StateDebug } = require('services/stateDebug')
 const { appStore } = require('services/stateStore')
+const { Navigation } = require('services/navigation')
 
 function init() {
   if (!Alloy.CFG.debug) {
@@ -779,12 +780,11 @@ function onHistoryItemClick(e) {
   const index = e.itemIndex
   const entry = StateDebug.getHistory()[index]
 
-  // Show diff
-  Ti.UI.createAlertDialog({
+  // Structured, potentially long content belongs in a scrollable debug screen.
+  Navigation.open('debug/stateDiff', {
     title: entry.action,
-    message: JSON.stringify(entry.diff, null, 2),
-    buttonNames: ['OK']
-  }).show()
+    content: JSON.stringify(entry.diff, null, 2)
+  })
 }
 
 function cleanup() {
