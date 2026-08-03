@@ -1,6 +1,6 @@
 ---
 name: ti-expert
-description: "Use when designing, reviewing, analyzing, or examining Titanium SDK architecture and implementation (Alloy or Classic) — creating controllers/views/services, choosing models vs collections, implementing communication patterns, handling memory cleanup, testing, auditing code, migrating legacy apps, or building adaptive/responsive layouts for tablets, foldables, and large screens. AUTO-DETECT: If tiapp.xml exists, invoke BEFORE making architectural decisions, creating new controllers/views, or restructuring code. Titanium has its own patterns for navigation (NavigationWindow, TabGroup), memory management, and event handling that differ from web frameworks."
+description: "Use when designing, reviewing, auditing, analyzing, or examining Titanium SDK architecture and implementation (Alloy or Classic) — creating controllers/views/services, choosing models vs collections, deciding between app-owned and system UI, designing reusable Widgets or feedback/modality patterns, hunting memory leaks and cleanup gaps, testing, migrating legacy apps, or building adaptive layouts for tablets, foldables, and large screens. AUTO-DETECT: If tiapp.xml exists, invoke BEFORE architectural decisions, new controllers/views, feedback components, or restructuring. Titanium navigation, memory, event, and modal patterns differ from web frameworks."
 argument-hint: "[architecture-topic]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(git *), Bash(node *)
 ---
@@ -8,6 +8,26 @@ allowed-tools: Read, Grep, Glob, Edit, Write, Bash(git *), Bash(node *)
 # Titanium expert
 
 Practical architecture and implementation guidance for Titanium SDK apps (Alloy and Classic). Focus on maintainability, clear boundaries, and low-friction testing.
+
+## Required workflow
+
+This file is an index. Read the references that govern the task before making a
+recommendation or changing code.
+
+| Task | Required reading |
+| --- | --- |
+| Architecture tier, folders, or boundaries | [Architecture tiers](references/architecture-tiers.md), [Alloy structure](references/alloy-structure.md) |
+| Feedback, alerts, choices, or app-owned versus system UI | [Feedback surfaces](references/feedback-surfaces.md) |
+| Reusable Snackbar, Dialog, Bottom Sheet, Widget, or `<Require>` | [Feedback Widget contracts](references/feedback-widget-contracts.md), [Alloy structure](references/alloy-structure.md) |
+| Migrating native dialogs, Toasts, or local overlays | [Feedback migration](references/feedback-migration.md), [Migration patterns](references/migration-patterns.md) |
+| Theme or dark mode | [Theming](references/theming.md); if PurgeTSS is detected, invoke the `purgetss` skill before styling |
+| Tablet, foldable, large screen, or responsive behavior | [Adaptive layouts](references/adaptive-layouts.md) |
+| Security architecture | [Security fundamentals](references/security-fundamentals.md), [Device security](references/security-device.md) |
+| Testing or performance | Load the matching guide under Quality & Performance below |
+
+Support recommendations with `[source: references/<file>.md]`. If a claim cannot
+be verified from the loaded references or inspected project, prefix it with
+`FROM_MEMORY (unverified):` and do not present it as a settled project fact.
 
 ## Project detection
 
@@ -33,9 +53,10 @@ Practical architecture and implementation guidance for Titanium SDK apps (Alloy 
 1. Architecture: define structure by technical type with flat folders (`lib/api`, `lib/services`, `lib/actions`, `lib/repositories`, `lib/helpers`)
 2. Data strategy: choose Models (SQLite) or Collections (API)
 3. Contracts: define I/O specs between layers
-4. Implementation: write XML views and ES6+ controllers
-5. Quality: testing, error handling, logging, performance
-6. Cleanup: implement a `cleanup()` pattern for memory management
+4. UI ownership: classify app-owned feedback, screen state, and system-owned flows
+5. Implementation: write XML views and ES6+ controllers
+6. Quality: testing, error handling, logging, performance
+7. Cleanup: implement a `cleanup()` pattern for memory management
 
 ## Architectural Maturity Tiers
 
@@ -83,6 +104,12 @@ Detailed examples and full implementation samples are available in: [Architectur
 - Testable code: inject dependencies, avoid hard coupling
 
 ## Titanium style sheets rules (low freedom)
+
+Before styling, detect `purgetss/` or `purgetss/config.cjs`. If present, invoke
+the `purgetss` skill, verify every utility, and never edit the generated
+`app/styles/app.tss`. Without PurgeTSS, use standard Alloy TSS files. In either
+case, keep behavior in XML/controllers and use semantic colors for app-owned
+surfaces when the project supports them.
 
 > **🚨 Critical: platform-specific properties require modifiers**
 > Using `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties without platform modifiers breaks cross-platform builds.
@@ -138,7 +165,10 @@ For the complete reference with examples, see [Alloy builtins and globals](refer
 | Models or Collections?             | Collections for API data, Models for SQLite persistence        |
 | Ti.App.fireEvent or EventBus?      | Always EventBus (Backbone.Events)                              |
 | Direct navigation or service?      | Always Navigation service (auto cleanup)                       |
-| Inline styles or TSS files?        | Always TSS files (per-controller + `app.tss` for global)       |
+| Snackbar, Dialog, or Bottom Sheet? | Classify urgency, persistence, reversibility, and choice first |
+| Widget or `<Require>`?             | Widget for a self-contained API/lifecycle; `<Require>` for app composition |
+| App-owned or native UI?            | Keep OS trust/protected flows native; style app-owned feedback |
+| Inline styles or style system?     | PurgeTSS utilities when detected; otherwise Alloy TSS          |
 
 ## Reference guides (progressive disclosure)
 
@@ -155,6 +185,9 @@ For the complete reference with examples, see [Alloy builtins and globals](refer
 - [Alloy Builtins & Globals](references/alloy-builtins.md)
 - [Code Conventions](references/code-conventions.md)
 - [Controller Patterns](references/controller-patterns.md)
+- [Feedback Surfaces & App-Owned UI](references/feedback-surfaces.md)
+- [Feedback Widget Contracts](references/feedback-widget-contracts.md)
+- [Feedback Migration](references/feedback-migration.md)
 - [Theming & Dark Mode](references/theming.md)
 - [Migration Patterns](references/migration-patterns.md)
 - [Examples Collection](references/examples.md)
