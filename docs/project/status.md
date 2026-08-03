@@ -1,9 +1,10 @@
-# Status — 2026-08-02
+# Status — 2026-08-03
 
 **Phase:** live and maintained. **v4.3.0 shipped on both channels** on 2026-08-02.
 
-**Branch:** `main`, in sync with `origin/main`, clean apart from the doc commit
-described under "Changed after the release".
+**Branch:** `main`, in sync with `origin/main`. Uncommitted: the `ti-expert` feedback
+work and its documentation sync, described under "Changed 2026-08-03". Nothing is
+released yet — the CHANGELOG entry sits under `[Unreleased]` and no version was bumped.
 
 **Sibling:** `~/Developer/openSource/aiskills` (`@maccesar/aiskills`) — shares this
 repo's `lib/`. See `context.md` § "Sibling project" for the parity contract.
@@ -84,6 +85,35 @@ indexes, run with this repo's `scripts/generate-toc.mjs`. aiskills has **no uncl
 fences** — that damage was specific to the Titanium docs conversion. The scripts
 themselves were not copied there; see "Open, not blocked".
 
+## Changed 2026-08-03
+
+`ti-expert` gained three feedback references (`feedback-surfaces.md`,
+`feedback-widget-contracts.md`, `feedback-migration.md`) and revisions to ten existing
+ones. Reviewed against the skill-creator guidance — structurally clean: SKILL.md at
+207 lines, all 24 references linked from it, every file over 300 lines carrying an
+index, zero broken relative links or anchors (checked with a script over all 24), the
+`ControllerAutoCleanup.js` asset still reachable, and no protected
+`## Community-Discovered Patterns` heading lost in the rewrite.
+
+Four gaps found and closed:
+
+- The rewritten `description` had dropped `auditing`, `memory leaks`, `migrating legacy
+  apps` and the `tablets, foldables, large screens` wording. `commands/ti-audit.md:8`
+  invokes the skill precisely for "memory leaks", and `adaptive-layouts.md` is 591 lines
+  whose trigger vocabulary had disappeared. Restored alongside the new feedback triggers.
+- `EXAMPLE-PROMPTS.md` had no prompt touching feedback surfaces. Two added, plus a
+  checklist line.
+- The README said 21 references in two places (now 24) and its "When it activates" list
+  omitted four topics — closing the adaptive-layouts item that was open below.
+- `feedback-widget-contracts.md` told the reader not to fold these Widgets into TiKit
+  without saying what TiKit is; it is only explained inside the `purgetss` skill.
+  Reworded as a general boundary rule.
+
+**No evals were run.** The skill-creator's triggering measurement is `run_eval.py`, the
+same instrument that scored 0/5 on a known-good control (`audit-codebase`) in aiskills
+on 2026-08-01 — it returned zero for everything. Running it here would repeat that
+mistake. If triggering ever needs measuring, the positive control comes first.
+
 ## Local install
 
 This machine runs TiTools via `npm link` — `/usr/local/lib/node_modules/@maccesar/titools`
@@ -98,10 +128,6 @@ survives.
 
 ## Open, not blocked
 
-- **The README's "When it activates" list for `ti-expert` (~line 323) omits
-  adaptive layouts.** It lists 8 scenarios, none covering tablets, foldables or
-  large screens — which the skill's own `description` announces and which v4.1.0
-  expanded. Incomplete rather than wrong.
 - **`scripts/generate-toc.mjs` and `fix-fences.mjs` live only here.** aiskills was
   indexed by running them across the fence, so nobody there can regenerate or
   `--strip` those indexes. Porting them is not a `cp`: `fix-fences.mjs` carries
