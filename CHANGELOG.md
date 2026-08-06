@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added — File type association in `ti-expert`
+
+`file-type-association.md` covers making the OS hand a file to the app: exported
+versus imported UTIs on iOS, `CFBundleDocumentTypes`, the Android intent filter,
+and receiving a document from AirDrop, Quick Share or a file manager.
+
+The reference is built around the failure mode that costs the most time, because
+nothing reports it. `LSSupportsOpeningDocumentsInPlace` is a root-level
+`Info.plist` key; nested inside the `CFBundleDocumentTypes` dict — where it reads
+as belonging — iOS ignores it silently. The app still registers as owner of the
+type, so the symptom is Files previewing the document instead of launching the
+app, which is indistinguishable from iOS refusing to launch third-party apps at
+all. That wrong conclusion is easy to reach and easy to build on.
+
+Alongside it: why conforming to `public.zip-archive` makes Files list a backup's
+contents instead of opening it, why `UIFileSharingEnabled` is a product decision
+rather than a fix, why Android `pathPattern` needs one variant per dot in the
+filename, and why an `ACTION_SEND` filter can put an app in its own share sheet.
+Closes with `plutil -extract` and `cmd package query-activities` commands that
+check the built binary rather than what `tiapp.xml` says, and a symptom-to-cause
+table.
+
 ## [4.4.0] - 2026-08-03
 
 ### Added — Feedback surfaces and Widget contracts in `ti-expert`

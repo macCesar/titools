@@ -336,6 +336,7 @@ When it activates:
 - Choosing a feedback surface (Snackbar, Dialog, Bottom Sheet) and deciding what stays native
 - Designing reusable Alloy Widgets and their lifecycle contracts
 - Adaptive layouts for tablets, foldables, and large screens
+- Associating a custom file type with the app so tapping a document opens it
 - Theming and dark mode
 - Performance optimization
 - Security patterns
@@ -349,6 +350,7 @@ Example prompts:
 "Prevent memory leaks in my controllers."
 "Every confirmation in my app is an alertDialog — what should each one actually be?"
 "Should this be a Widget or just a <Require>?"
+"Tapping my .backup file in iOS Files previews it instead of opening my app."
 "Migrate classic Titanium code to modern Alloy patterns."
 "What's a clean way to organize services in an Alloy app?"
 ```
@@ -724,7 +726,7 @@ This pattern is documented across three TiTools skills: `ti-ui`, `ti-expert`, an
 
 | Skill     | SKILL.md                      | References                                            |
 | --------- | ----------------------------- | ----------------------------------------------------- |
-| ti-expert | Architecture + Implementation | 24 files (patterns, feedback surfaces, testing, security, etc.) |
+| ti-expert | Architecture + Implementation | 25 files (patterns, feedback surfaces, file type association, testing, security, etc.) |
 | purgetss  | Setup + Critical Rules        | 33 files (grid, animations, icons, class-index, SVG pipeline, etc.) |
 | ti-ui     | UI Rules + Platform Diffs     | 14 files (layouts, lists, gestures, etc.)             |
 

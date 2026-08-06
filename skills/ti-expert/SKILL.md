@@ -1,6 +1,6 @@
 ---
 name: ti-expert
-description: "Use when designing, reviewing, auditing, analyzing, or examining Titanium SDK architecture and implementation (Alloy or Classic) — creating controllers/views/services, choosing models vs collections, deciding between app-owned and system UI, designing reusable Widgets or feedback/modality patterns, hunting memory leaks and cleanup gaps, testing, migrating legacy apps, or building adaptive layouts for tablets, foldables, and large screens. AUTO-DETECT: If tiapp.xml exists, invoke BEFORE architectural decisions, new controllers/views, feedback components, or restructuring. Titanium navigation, memory, event, and modal patterns differ from web frameworks."
+description: "Use when designing, reviewing, auditing, analyzing, or examining Titanium SDK architecture and implementation (Alloy or Classic) — creating controllers/views/services, choosing models vs collections, deciding between app-owned and system UI, designing reusable Widgets or feedback/modality patterns, hunting memory leaks and cleanup gaps, testing, migrating legacy apps, building adaptive layouts for tablets, foldables, and large screens, or associating a custom file type with the app so tapping a document opens it — UTIs, CFBundleDocumentTypes, Android intent filters, files arriving by AirDrop or Quick Share, document icons. AUTO-DETECT: If tiapp.xml exists, invoke BEFORE architectural decisions, new controllers/views, feedback components, or restructuring. Titanium navigation, memory, event, and modal patterns differ from web frameworks."
 argument-hint: "[architecture-topic]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(git *), Bash(node *)
 ---
@@ -22,6 +22,7 @@ recommendation or changing code.
 | Migrating native dialogs, Toasts, or local overlays | [Feedback migration](references/feedback-migration.md), [Migration patterns](references/migration-patterns.md) |
 | Theme or dark mode | [Theming](references/theming.md); if PurgeTSS is detected, invoke the `purgetss` skill before styling |
 | Tablet, foldable, large screen, or responsive behavior | [Adaptive layouts](references/adaptive-layouts.md) |
+| Opening or receiving files: custom extensions, UTIs, intent filters, AirDrop, Quick Share, document icons | [File type association](references/file-type-association.md) |
 | Security architecture | [Security fundamentals](references/security-fundamentals.md), [Device security](references/security-device.md) |
 | Testing or performance | Load the matching guide under Quality & Performance below |
 
@@ -185,6 +186,7 @@ For the complete reference with examples, see [Alloy builtins and globals](refer
 - [Alloy Builtins & Globals](references/alloy-builtins.md)
 - [Code Conventions](references/code-conventions.md)
 - [Controller Patterns](references/controller-patterns.md)
+- [File Type Association](references/file-type-association.md) (custom extensions and UTIs, `CFBundleDocumentTypes`, Android intent filters, receiving files from AirDrop/Quick Share, document icons)
 - [Feedback Surfaces & App-Owned UI](references/feedback-surfaces.md)
 - [Feedback Widget Contracts](references/feedback-widget-contracts.md)
 - [Feedback Migration](references/feedback-migration.md)
