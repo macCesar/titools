@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.4.1] - 2026-08-05
+
 ### Added — File type association in `ti-expert`
 
 `file-type-association.md` covers making the OS hand a file to the app: exported
