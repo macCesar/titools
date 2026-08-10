@@ -2,9 +2,7 @@
 
 <div align="center">
 
-![npm](https://img.shields.io/npm/dm/@maccesar%2Ftitools)
-![npm](https://img.shields.io/npm/v/@maccesar%2Ftitools)
-![NPM](https://img.shields.io/npm/l/@maccesar%2Ftitools)
+![npm](https://img.shields.io/npm/dm/@maccesar%2Ftitools) ![npm](https://img.shields.io/npm/v/@maccesar%2Ftitools) ![NPM](https://img.shields.io/npm/l/@maccesar%2Ftitools)
 
 </div>
 
@@ -95,9 +93,7 @@ Why NPM?
 | **Slash commands**  | `/ti-check`, `/ti-new-screen`, `/ti-audit` | Same three (`~/.claude/commands/`) |
 | **Session hook**    | Auto-detects Titanium projects             | Auto-update only          |
 
-Having both installed is fine: the CLI detects an enabled marketplace plugin and skips
-its own skill symlinks and command copies, so nothing shows up twice. `titools doctor`
-reports which channel is serving Claude Code.
+Having both installed is fine: the CLI detects an enabled marketplace plugin and skips its own skill symlinks and command copies, so nothing shows up twice. `titools doctor` reports which channel is serving Claude Code.
 
 Use **Option A** if you only use Claude Code. Use **Option B** if you use multiple AI assistants or want the Knowledge Index feature.
 
@@ -238,10 +234,7 @@ Key difference:
 
 ## Slash Commands (Claude Code)
 
-TiTools provides slash commands for common tasks. Both channels ship them: the
-plugin serves them from its own cache, and `titools install` copies them into
-`~/.claude/commands/`. If you have both, the CLI detects the plugin and skips its
-own copy so the command does not appear twice in the autocomplete.
+TiTools provides slash commands for common tasks. Both channels ship them: the plugin serves them from its own cache, and `titools install` copies them into `~/.claude/commands/`. If you have both, the CLI detects the plugin and skips its own copy so the command does not appear twice in the autocomplete.
 
 | Command                 | Description                                                                         |
 | ----------------------- | ----------------------------------------------------------------------------------- |

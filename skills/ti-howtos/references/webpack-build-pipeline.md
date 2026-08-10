@@ -53,8 +53,7 @@ Example:
 When you `import { func } from '@/utils'`, Webpack picks the correct version for the build target.
 
 ## 5. Diagnostic web UI
-Webpack includes a web interface to analyze builds and asset sizes.
-Default URL: `http://localhost:1732/webpack/latest/web`
+Webpack includes a web interface to analyze builds and asset sizes. Default URL: `http://localhost:1732/webpack/latest/web`
 
 ## 6. Project plugins
 Webpack support is powered by plugins chosen based on project type:

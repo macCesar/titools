@@ -1,7 +1,6 @@
 # Feedback surfaces and app-owned UI
 
-Use this guide before choosing a Titanium proxy or drawing a component. The
-surface follows the meaning of the event: style comes afterwards.
+Use this guide before choosing a Titanium proxy or drawing a component. The surface follows the meaning of the event: style comes afterwards.
 
 ## Contents
 
@@ -21,12 +20,9 @@ Classify the event in this order:
 3. **Recovery**: is the action reversible or is data at risk?
 4. **Location**: does the message belong to a field, a screen, or the whole app?
 5. **Persistence**: is it transient, persistent until state changes, or modal?
-6. **Choice shape**: is there one acknowledgement, a binary decision, or a list
-   of related actions?
+6. **Choice shape**: is there one acknowledgement, a binary decision, or a list of related actions?
 
-Do not begin with "which native dialog can display this string?" That turns
-different meanings into the same interruption and makes the app feel visually
-inconsistent.
+Do not begin with "which native dialog can display this string?" That turns different meanings into the same interruption and makes the app feel visually inconsistent.
 
 ## Feedback scale
 
@@ -46,20 +42,13 @@ inconsistent.
 | No content yet | Empty State inside the screen | This is screen state, not transient feedback |
 | Initial or blocking work | Loading/Progress state in context | Communicates progress without inventing a message |
 
-Reserve Dialogs for critical information. Do not use them merely because they
-are easy to create. If an action is common and undoable, prefer immediate
-execution plus Undo over confirmation.
+Reserve Dialogs for critical information. Do not use them merely because they are easy to create. If an action is common and undoable, prefer immediate execution plus Undo over confirmation.
 
 ### Snackbar versus Toast
 
-For app-owned foreground feedback, standardize on Snackbar. It supports the
-app's semantic colors, accessibility, safe-area positioning, duration policy,
-and one optional recovery action. Do not maintain both a custom Toast and a
-Snackbar for the same job.
+For app-owned foreground feedback, standardize on Snackbar. It supports the app's semantic colors, accessibility, safe-area positioning, duration policy, and one optional recovery action. Do not maintain both a custom Toast and a Snackbar for the same job.
 
-A platform Toast can remain only when the operating system owns the behavior or
-when a documented platform fallback is necessary. It is not the default design
-surface.
+A platform Toast can remain only when the operating system owns the behavior or when a documented platform fallback is necessary. It is not the default design surface.
 
 ### Banner versus Snackbar
 
@@ -69,17 +58,13 @@ surface.
 
 ### Bottom Sheet versus Dialog
 
-- Use Bottom Sheet for related choices: sorting, exporting, selecting a category,
-  or choosing an action for an item.
+- Use Bottom Sheet for related choices: sorting, exporting, selecting a category, or choosing an action for an item.
 - Use Dialog for acknowledgement or a consequential confirm/cancel decision.
-- Move long prose, structured data, search, or complex input into a sheet or
-  dedicated screen.
+- Move long prose, structured data, search, or complex input into a sheet or dedicated screen.
 
 ## App-owned versus system-owned
 
-Recreate and brand a surface only when the app owns its content and behavior.
-Keep the platform UI when the system owns trust, permissions, identity, files,
-or another protected workflow.
+Recreate and brand a surface only when the app owns its content and behavior. Keep the platform UI when the system owns trust, permissions, identity, files, or another protected workflow.
 
 | Keep native/system-owned | May be app-owned and styled |
 | --- | --- |
@@ -91,43 +76,29 @@ or another protected workflow.
 | Biometric authentication prompt | Banners and inline validation |
 | Keyboard, autofill, purchases, notifications, and OS settings | App-specific onboarding or education |
 
-An app may explain why a system surface is about to appear, but it must not
-imitate the trusted system prompt. Use the official Titanium API or native module
-for the system-owned part.
+An app may explain why a system surface is about to appear, but it must not imitate the trusted system prompt. Use the official Titanium API or native module for the system-owned part.
 
-Cancellation is often a normal system outcome. Do not turn every cancellation
-into an error, a "Cancelled" message, or an unsupported success claim. Document
-silence explicitly at the call site when it is meaningful.
+Cancellation is often a normal system outcome. Do not turn every cancellation into an error, a "Cancelled" message, or an unsupported success claim. Document silence explicitly at the call site when it is meaningful.
 
 ## What to standardize next
 
 After Snackbar, Dialog, and Bottom Sheet, the highest-value shared patterns are:
 
 1. **Banner / Inline Notice** for persistent app state.
-2. **Loading / Progress wrapper** that uses the native activity indicator but
-   standardizes placement, text, blocking behavior, and cleanup.
+2. **Loading / Progress wrapper** that uses the native activity indicator but standardizes placement, text, blocking behavior, and cleanup.
 3. **Empty / Error State** for consistent screen-level recovery.
 4. **Field Validation** for message placement, focus, accessibility, and colors.
 
-Standardize buttons, cards, badges, chips, skeletons, and coach marks only when
-real product repetition exposes a stable contract. A visual resemblance alone
-does not justify a Widget.
+Standardize buttons, cards, badges, chips, skeletons, and coach marks only when real product repetition exposes a stable contract. A visual resemblance alone does not justify a Widget.
 
 ## Phone, tablet, and accessibility
 
-- On phones, present contextual choices from the bottom and keep touch targets
-  reachable.
-- On tablets and large screens, use a centered, width-limited action surface or
-  a platform-appropriate anchored presentation; do not stretch phone geometry
-  edge to edge.
-- Respect safe areas, bottom navigation, orientation, split screen, text scaling,
-  and localized strings.
-- Announce transient feedback appropriately and move accessibility focus into a
-  modal surface when it opens.
-- While a modal is active, prevent interaction with and accessibility traversal
-  into the underlying content. Restore the exact previous state on close.
-- Back, backdrop, Cancel, and destructive actions must have predictable semantics
-  and must never execute callbacks more than once.
+- On phones, present contextual choices from the bottom and keep touch targets reachable.
+- On tablets and large screens, use a centered, width-limited action surface or a platform-appropriate anchored presentation; do not stretch phone geometry edge to edge.
+- Respect safe areas, bottom navigation, orientation, split screen, text scaling, and localized strings.
+- Announce transient feedback appropriately and move accessibility focus into a modal surface when it opens.
+- While a modal is active, prevent interaction with and accessibility traversal into the underlying content. Restore the exact previous state on close.
+- Back, backdrop, Cancel, and destructive actions must have predictable semantics and must never execute callbacks more than once.
 
 ## References
 

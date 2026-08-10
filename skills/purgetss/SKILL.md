@@ -11,9 +11,7 @@ Utility-first styling toolkit for Titanium/Alloy mobile apps.
 
 ## Required workflow (read before responding)
 
-The SKILL.md alone is an **index** of references. The detail you need
-to give accurate answers lives in the reference files. **Reading this
-SKILL.md is not enough.**
+The SKILL.md alone is an **index** of references. The detail you need to give accurate answers lives in the reference files. **Reading this SKILL.md is not enough.**
 
 ### Step 1 — Open the relevant reference files
 
@@ -31,8 +29,7 @@ SKILL.md is not enough.**
 
 ### Step 2 — Output contract
 
-Every utility class you suggest and every styling pattern you describe
-MUST be backed by a citation in the form:
+Every utility class you suggest and every styling pattern you describe MUST be backed by a citation in the form:
 
 `[source: references/<file>.md]`
 
@@ -40,8 +37,7 @@ Example: *"Use `wh-12` to set width and height to 48px [source: references/class
 
 ### Step 3 — If you must answer from memory
 
-If you write a claim without having read the reference that backs it,
-prepend `FROM_MEMORY (unverified):` to that claim. Do not hide it.
+If you write a claim without having read the reference that backs it, prepend `FROM_MEMORY (unverified):` to that claim. Do not hide it.
 
 ### Banned behaviors
 
@@ -352,8 +348,7 @@ const view = $.UI.create('View', {
 > **🚨 CRITICAL: VERIFY CLASSES BEFORE SUGGESTING**
 > **NEVER guess or hallucinate classes based on other CSS Frameworks knowledge!**
 
-PurgeTSS shares naming with some CSS Frameworks but has DIFFERENT classes for Titanium.
-Always verify a class exists before suggesting it.
+PurgeTSS shares naming with some CSS Frameworks but has DIFFERENT classes for Titanium. Always verify a class exists before suggesting it.
 
 ### Verification Steps
 

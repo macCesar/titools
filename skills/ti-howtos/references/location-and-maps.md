@@ -3,8 +3,7 @@
 ## 1. GPS position tracking
 
 ### FusedLocationProvider (Android)
-Since TiSDK 7.1.0, Titanium supports `FusedLocationProvider` for significant battery savings.
-Requirement: include the `ti.playservices` module in your project.
+Since TiSDK 7.1.0, Titanium supports `FusedLocationProvider` for significant battery savings. Requirement: include the `ti.playservices` module in your project.
 
 ### Accuracy configuration
 

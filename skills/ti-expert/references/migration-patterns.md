@@ -30,21 +30,16 @@ Before migrating, evaluate the current codebase:
 
 ## Phase 1: styling-system organization
 
-**Goal**: Migrate from inline and scattered styling into the styling system the
-project actually uses.
+**Goal**: Migrate from inline and scattered styling into the styling system the project actually uses.
 
 ### Step 0: detect PurgeTSS
 
 Check for `purgetss/` or `purgetss/config.cjs` before editing styles.
 
-- **PurgeTSS detected:** invoke the `purgetss` skill, use verified utilities and
-  semantic colors, configure reusable rules in `config.cjs`, and never edit the
-  generated `app/styles/app.tss`.
-- **No PurgeTSS:** use standard per-controller TSS and a manually maintained
-  `app/styles/app.tss` for genuinely global selectors.
+- **PurgeTSS detected:** invoke the `purgetss` skill, use verified utilities and semantic colors, configure reusable rules in `config.cjs`, and never edit the generated `app/styles/app.tss`.
+- **No PurgeTSS:** use standard per-controller TSS and a manually maintained `app/styles/app.tss` for genuinely global selectors.
 
-Do not migrate a PurgeTSS application back into manual TSS by following a generic
-Alloy example.
+Do not migrate a PurgeTSS application back into manual TSS by following a generic Alloy example.
 
 ### Step 1: audit existing styles
 
@@ -89,17 +84,13 @@ This step applies only when PurgeTSS is not present.
 ".btn-primary": { backgroundColor: '#2563eb', color: '#fff', height: 44, borderRadius: 8 }
 ```
 
-In either styling path, replace hard-coded visual colors with semantic roles as
-part of the migration. See [Theming and Dark Mode](theming.md).
+In either styling path, replace hard-coded visual colors with semantic roles as part of the migration. See [Theming and Dark Mode](theming.md).
 
 ## Phase 1B: feedback surfaces
 
-Inventory native alerts, option dialogs, Toasts, and local overlays. Classify
-each occurrence before replacing it, then migrate one window at a time. Preserve
-system-owned pickers, permission prompts, sharing, and biometric UI.
+Inventory native alerts, option dialogs, Toasts, and local overlays. Classify each occurrence before replacing it, then migrate one window at a time. Preserve system-owned pickers, permission prompts, sharing, and biometric UI.
 
-Use [Feedback Migration](feedback-migration.md) for the sequence, deliberate
-silence rules, and verification contract.
+Use [Feedback Migration](feedback-migration.md) for the sequence, deliberate silence rules, and verification contract.
 
 ## Phase 2: service layer extraction
 
@@ -323,8 +314,7 @@ For each phase:
 3. **Test thoroughly** before moving to next feature
 4. **Delete the replaced implementation** after the vertical slice passes
 
-Use version control for rollback. Do not keep commented legacy implementations:
-they conceal duplicate listeners, stale callbacks, and incomplete migrations.
+Use version control for rollback. Do not keep commented legacy implementations: they conceal duplicate listeners, stale callbacks, and incomplete migrations.
 
 ## Common migration pitfalls
 

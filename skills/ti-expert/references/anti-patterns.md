@@ -1,46 +1,35 @@
 # Titanium Alloy anti-patterns
 
 ## 1. Inline styling instead of TSS
-**Symptom:** Using inline attributes like `backgroundColor="#fff"` directly in XML views.
-**Problem:** Inline attributes make theme changes impossible and scatter visual definitions across views.
-**Solution:** Define styles in TSS files using IDs or class selectors.
+**Symptom:** Using inline attributes like `backgroundColor="#fff"` directly in XML views. **Problem:** Inline attributes make theme changes impossible and scatter visual definitions across views. **Solution:** Define styles in TSS files using IDs or class selectors.
 
 ## 2. Fat controllers
-**Symptom:** Controllers with 100+ lines handling logic, API, and UI.
-**Solution:** Delegate business logic to `lib/services/` and API calls to `lib/api/`.
+**Symptom:** Controllers with 100+ lines handling logic, API, and UI. **Solution:** Delegate business logic to `lib/services/` and API calls to `lib/api/`.
 
 ## 3. Memory leaks (Missing Cleanup)
-**Symptom:** Adding `Ti.App` or `Alloy.Collections` listeners without a `cleanup()` function.
-**Solution:** Always implement `$.cleanup = cleanup` and remove listeners there.
+**Symptom:** Adding `Ti.App` or `Alloy.Collections` listeners without a `cleanup()` function. **Solution:** Always implement `$.cleanup = cleanup` and remove listeners there.
 
 ## 4. Direct native module calls
-**Symptom:** Calling `require('ti.module')` directly in a controller.
-**Solution:** Wrap it in a service in `lib/services/` (e.g., `audioService.js`).
+**Symptom:** Calling `require('ti.module')` directly in a controller. **Solution:** Wrap it in a service in `lib/services/` (e.g., `audioService.js`).
 
 ## 5. Direct controller navigation
-**Symptom:** `Alloy.createController('name').getView().open()`.
-**Solution:** Use a Navigation Service to centralize `open/close` and trigger the `cleanup()` function automatically.
+**Symptom:** `Alloy.createController('name').getView().open()`. **Solution:** Use a Navigation Service to centralize `open/close` and trigger the `cleanup()` function automatically.
 
 ## 6. Complex matrix animations
-**Symptom:** Manual use of `Ti.UI.create2DMatrix()` for simple animations.
-**Solution:** Use `Ti.UI.createAnimation()` for opacity, transform, and duration-based animations. Reserve 2D Matrix for complex multi-property transforms.
+**Symptom:** Manual use of `Ti.UI.create2DMatrix()` for simple animations. **Solution:** Use `Ti.UI.createAnimation()` for opacity, transform, and duration-based animations. Reserve 2D Matrix for complex multi-property transforms.
 
 ## 7. Hardcoded strings & missing a11y
-**Symptom:** `text="Login"` instead of `text="L('login')"`, or missing `accessibilityLabel`.
-**Solution:** Always use i18n and accessibility properties.
+**Symptom:** `text="Login"` instead of `text="L('login')"`, or missing `accessibilityLabel`. **Solution:** Always use i18n and accessibility properties.
 
 ## 8. Logic in TSS
-**Symptom:** Using conditionals or calculations inside TSS.
-**Solution:** Keep styling declarative in TSS files.
+**Symptom:** Using conditionals or calculations inside TSS. **Solution:** Keep styling declarative in TSS files.
 
 ---
 
 ## Titanium layout anti-patterns
 
 ## 9. Padding on container views
-**Symptom:** Setting `padding` on View, Window, ScrollView, or TableView.
-**Problem:** Base container elements don't support padding in Titanium.
-**Solution:** Use margins on children instead:
+**Symptom:** Setting `padding` on View, Window, ScrollView, or TableView. **Problem:** Base container elements don't support padding in Titanium. **Solution:** Use margins on children instead:
 ```tss
 /* WRONG */
 "#container": { padding: 16 }
@@ -50,39 +39,21 @@
 ```
 
 ## 10. Redundant composite layout
-**Symptom:** Adding `layout: 'composite'` to Views.
-**Problem:** Composite (absolute positioning) is the DEFAULT layout. Setting it is redundant.
-**Solution:** Omit `layout` for composite, only specify `layout: 'horizontal'` or `layout: 'vertical'` when needed.
+**Symptom:** Adding `layout: 'composite'` to Views. **Problem:** Composite (absolute positioning) is the DEFAULT layout. Setting it is redundant. **Solution:** Omit `layout` for composite, only specify `layout: 'horizontal'` or `layout: 'vertical'` when needed.
 
 ## 11. Using `lib/` prefix in require statements
-**Symptom:** `const service = require('lib/services/picsum')`
-**Problem:** Alloy flattens the `lib/` folder during build. Files in `app/lib/services/` become `Resources/iphone/services/`.
-**Solution:** Omit the `lib/` prefix: `const service = require('services/picsum')`
+**Symptom:** `const service = require('lib/services/picsum')` **Problem:** Alloy flattens the `lib/` folder during build. Files in `app/lib/services/` become `Resources/iphone/services/`. **Solution:** Omit the `lib/` prefix: `const service = require('services/picsum')`
 
 ## 12. Wrong window ID in controller
-**Symptom:** Using `$.index.open()` when the Window has `id="mainWindow"`.
-**Problem:** Alloy generates `$` references from XML IDs. If Window is `id="mainWindow"`, `$.index` doesn't exist.
-**Solution:** Match the ID: `$.mainWindow.open()`
+**Symptom:** Using `$.index.open()` when the Window has `id="mainWindow"`. **Problem:** Alloy generates `$` references from XML IDs. If Window is `id="mainWindow"`, `$.index` doesn't exist. **Solution:** Match the ID: `$.mainWindow.open()`
 
 ## 13. Using `Ti.UI.createNotification`
-**Symptom:** `Ti.UI.createNotification({ message: 'Hi' }).show()`
-**Problem:** This API doesn't exist in Titanium. Causes "invalid method" error.
-**Solution:** Classify the feedback before choosing UI. Use the app's Snackbar
-Widget for transient foreground feedback, inline/Banner state for persistent
-conditions, and an app-owned Dialog only for blocking or critical information.
-Use the supported platform notification APIs only for actual OS notifications.
-See [Feedback Surfaces](feedback-surfaces.md).
+**Symptom:** `Ti.UI.createNotification({ message: 'Hi' }).show()` **Problem:** This API doesn't exist in Titanium. Causes "invalid method" error. **Solution:** Classify the feedback before choosing UI. Use the app's Snackbar Widget for transient foreground feedback, inline/Banner state for persistent conditions, and an app-owned Dialog only for blocking or critical information. Use the supported platform notification APIs only for actual OS notifications. See [Feedback Surfaces](feedback-surfaces.md).
 
 ## 14. Using nonexistent iOS share APIs
-**Symptom:** `Ti.UI.iOS.createActivityPopover` or `alloy/social` with wrong methods.
-**Problem:** These APIs either don't exist or have changed. Causes runtime errors.
-**Solution:**
-- Keep sharing system-owned. Use the currently supported Titanium share/document
-  API or native module for the target platform and verify its current contract
-  with the `ti-api` skill.
-- Do not imitate a share sheet with an app-owned `OptionDialog`. A Bottom Sheet
-  may choose an app action such as an export format, but the OS share surface
-  owns the final destination.
+**Symptom:** `Ti.UI.iOS.createActivityPopover` or `alloy/social` with wrong methods. **Problem:** These APIs either don't exist or have changed. Causes runtime errors. **Solution:**
+- Keep sharing system-owned. Use the currently supported Titanium share/document API or native module for the target platform and verify its current contract with the `ti-api` skill.
+- Do not imitate a share sheet with an app-owned `OptionDialog`. A Bottom Sheet may choose an app action such as an export format, but the OS share surface owns the final destination.
 
 ## Community-Discovered Patterns
 

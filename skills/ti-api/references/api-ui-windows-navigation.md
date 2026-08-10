@@ -20,13 +20,9 @@
 
 To create a window, use the <Titanium.UI.createWindow> method or a **`<Window>`** Alloy element.
 
-A window is a top-level container which can contain other views. Windows can
-be *opened* and *closed*.  Opening a window causes the window and its child
-views to be added to the application's render stack, on top of any previously opened
-windows. Closing a window removes the window and its children from the render stack.
+A window is a top-level container which can contain other views. Windows can be *opened* and *closed*.  Opening a window causes the window and its child views to be added to the application's render stack, on top of any previously opened windows. Closing a window removes the window and its children from the render stack.
 
-Windows *contain* other views, but in general they are not *contained* inside
-other views. There are a few specialized views that manage windows:
+Windows *contain* other views, but in general they are not *contained* inside other views. There are a few specialized views that manage windows:
 
 * [NavigationWindow](Titanium.UI.NavigationWindow)
 * [SplitWindow](Titanium.UI.iOS.SplitWindow)
@@ -202,13 +198,9 @@ This applies to Windows inside both standalone NavigationWindow and TabGroup (wh
 > Extends Ti.UI.Window
 > Platforms: both
 
-You create a `NavigationWindow` with the <Titanium.UI.createNavigationWindow> factory method or
-a `<NavigationWindow>` Alloy element.
+You create a `NavigationWindow` with the <Titanium.UI.createNavigationWindow> factory method or a `<NavigationWindow>` Alloy element.
 
-All `NavigationWindow` objects must have at least one root window that cannot be removed. When
-creating a `NavigationWindow` with the factory method, you must set its `window` property to the
-root level window. Equivalently, in an Alloy application, insert a `<Window>` element as a child of the
-`<NavigationWindow>` element. See examples below.
+All `NavigationWindow` objects must have at least one root window that cannot be removed. When creating a `NavigationWindow` with the factory method, you must set its `window` property to the root level window. Equivalently, in an Alloy application, insert a `<Window>` element as a child of the `<NavigationWindow>` element. See examples below.
 
 This object is not meant to be added to other windows. However, it can be used within a <Titanium.UI.iOS.SplitWindow>.
 
@@ -250,14 +242,11 @@ This object is not meant to be added to other windows. However, it can be used w
 | ------- | --- |
 | ![Android](./tabgroup_android.png) |  |
 
-A tab group can contain one or more [Tab](Titanium.UI.Tab) objects, each of which has an
-associated tab control that is used to bring it into focus.
+A tab group can contain one or more [Tab](Titanium.UI.Tab) objects, each of which has an associated tab control that is used to bring it into focus.
 
-Use the <Titanium.UI.createTabGroup> method or **`<TabGroup>`** Alloy element to create a tab group
-that, in turn, contains one or more `<Tab>` elements.
+Use the <Titanium.UI.createTabGroup> method or **`<TabGroup>`** Alloy element to create a tab group that, in turn, contains one or more `<Tab>` elements.
 
-You can add tabs to the group using [addTab](Titanium.UI.TabGroup.addTab), and programmatically
-switch to a specific tab using [setActiveTab](Titanium.UI.TabGroup.setActiveTab).
+You can add tabs to the group using [addTab](Titanium.UI.TabGroup.addTab), and programmatically switch to a specific tab using [setActiveTab](Titanium.UI.TabGroup.setActiveTab).
 
 ### Platform Implementation Notes
 
@@ -392,21 +381,17 @@ switch to a specific tab using [setActiveTab](Titanium.UI.TabGroup.setActiveTab)
 > Extends Ti.UI.View
 > Platforms: both
 
-A `TabGroup` tab instance. Each tab includes a button and one or more windows, which
-holds the "contents" of the tab. Users can select a tab by clicking on the tab button.
+A `TabGroup` tab instance. Each tab includes a button and one or more windows, which holds the "contents" of the tab. Users can select a tab by clicking on the tab button.
 
 Use the <Titanium.UI.createTab> method or **`<Tab>`** Alloy element to create a tab.
 
-Use [TabGroup.setActiveTab](Titanium.UI.TabGroup.setActiveTab) to switch between tabs
-in a tab group.
+Use [TabGroup.setActiveTab](Titanium.UI.TabGroup.setActiveTab) to switch between tabs in a tab group.
 
-The behavior of tabs and tab groups follows the platform's native navigation style,
-which varies significantly between platforms.
+The behavior of tabs and tab groups follows the platform's native navigation style, which varies significantly between platforms.
 
 ### iOS Platform Implementation Notes
 
-On iOS, the tab maintains a stack of windows. Windows on top
-of the stack can partially or totally obscure windows lower in the stack.  Calling
+On iOS, the tab maintains a stack of windows. Windows on top of the stack can partially or totally obscure windows lower in the stack.  Calling
 
 *(See full overview in titanium-docs)*
 
@@ -502,15 +487,11 @@ of the stack can partially or totally obscure windows lower in the stack.  Calli
 
 An alert dialog is created using <Titanium.UI.createAlertDialog> or **`<AlertDialog>`** Alloy element.
 
-Although this dialog always appears in the middle of the display (not touching the edges),
-other aspects of its aesthetics and the way the user interacts with it are different for each
-platform, as described below.
+Although this dialog always appears in the middle of the display (not touching the edges), other aspects of its aesthetics and the way the user interacts with it are different for each platform, as described below.
 
 ### Android
 
-On Android, the default alert dialog displays text information, via a title and message, without
-any buttons. As the user can use the system hardware `back` button to dismiss it, a button is
-optional.
+On Android, the default alert dialog displays text information, via a title and message, without any buttons. As the user can use the system hardware `back` button to dismiss it, a button is optional.
 
 *(See full overview in titanium-docs)*
 
@@ -586,16 +567,13 @@ optional.
 | ------- | ------ | ---- |
 | ![Android](./optiondialog_android.png) | ![iPhone](./optiondialog_iphone.png) | ![iPad](./optiondialog_ipad.png) |
 
-An option dialog is created using <Titanium.UI.createOptionDialog> or Alloy `<OptionDialog>`
-element. See Examples below for usage.
+An option dialog is created using <Titanium.UI.createOptionDialog> or Alloy `<OptionDialog>` element. See Examples below for usage.
 
 This dialog is presented differently on each platform, as described below.
 
 ### Android
 
-On Android, the dialog is shown in the middle of the display (not touching the edges),
-with the option items represented in a picker. The previously-selected, or default, item can be
-set on creation.
+On Android, the dialog is shown in the middle of the display (not touching the edges), with the option items represented in a picker. The previously-selected, or default, item can be set on creation.
 
 
 *(See full overview in titanium-docs)*
@@ -659,13 +637,9 @@ set on creation.
 | ------- | --- |
 | ![Android](./toast_android.png) |  |
 
-A toast notification is an unobtrusive, pop-up notification that does not
-block the UI. Use the <Titanium.UI.createNotification> method or **`<Notification>`** Alloy element
-to create a Toast notification.
+A toast notification is an unobtrusive, pop-up notification that does not block the UI. Use the <Titanium.UI.createNotification> method or **`<Notification>`** Alloy element to create a Toast notification.
 
-On Android, by default, a toast notification appears centered on the bottom half of the screen.
-On Windows Phone, by default, a toast notification appears over the status bar on the top part
-of the screen.
+On Android, by default, a toast notification appears centered on the bottom half of the screen. On Windows Phone, by default, a toast notification appears over the status bar on the top part of the screen.
 
 ### Properties (unique: 7/10)
 | Property | Type | Default | Platform | Description |

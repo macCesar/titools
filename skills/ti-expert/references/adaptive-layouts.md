@@ -35,9 +35,7 @@ What this means: portrait-only apps will be forced into landscape/resized on lar
 
 ### It already started in Android 16 (API 36)
 
-This is usually described as an API 37 change, but it lands one release earlier: an app
-targeting **API 36** already has `android:screenOrientation` ignored on >= 600dp displays
-running Android 16. The difference is that API 36 still ships an opt-out:
+This is usually described as an API 37 change, but it lands one release earlier: an app targeting **API 36** already has `android:screenOrientation` ignored on >= 600dp displays running Android 16. The difference is that API 36 still ships an opt-out:
 
 ```xml
 <!-- inside <application>, or on an individual <activity> -->
@@ -46,12 +44,9 @@ running Android 16. The difference is that API 36 still ships an opt-out:
   android:value="true"/>
 ```
 
-The opt-out stops working the moment you target API 37, so treat it as a bridge while the
-layout is made adaptive — not as a fix. Source: [Android 16 behavior changes](https://developer.android.com/about/versions/16/behavior-changes-16).
+The opt-out stops working the moment you target API 37, so treat it as a bridge while the layout is made adaptive — not as a fix. Source: [Android 16 behavior changes](https://developer.android.com/about/versions/16/behavior-changes-16).
 
-Worth knowing when debugging: this only kicks in at >= 600dp. If a **phone** is rotating
-despite a portrait lock, the cause is in the app, not in Android — see the orientation
-debugging recipe in section 7.
+Worth knowing when debugging: this only kicks in at >= 600dp. If a **phone** is rotating despite a portrait lock, the cause is in the app, not in Android — see the orientation debugging recipe in section 7.
 
 ### Related: edge-to-edge (API 36)
 
@@ -429,9 +424,7 @@ To verify the exact generated activity name, check `build/android/app/src/main/A
 
 ### Which activities a lock has to cover
 
-`android:screenOrientation` is per-activity — it is not inherited from `<application>`. Every
-window the app opens runs inside one of a small, fixed set of activities declared by the
-Titanium AAR, so read the canonical list from the SDK instead of memorising it:
+`android:screenOrientation` is per-activity — it is not inherited from `<application>`. Every window the app opens runs inside one of a small, fixed set of activities declared by the Titanium AAR, so read the canonical list from the SDK instead of memorising it:
 
 ```bash
 cat ~/.gradle/caches/*/transforms/*/transformed/jetified-titanium-*/AndroidManifest.xml
@@ -448,8 +441,7 @@ ti.modules.titanium.media.TiVideoActivity
 ti.modules.titanium.ui.android.TiPreferencesActivity
 ```
 
-The seventh is the app's own root activity, generated from the `<name>` in tiapp.xml (see the
-derivation rule above). Which one hosts what:
+The seventh is the app's own root activity, generated from the `<name>` in tiapp.xml (see the derivation rule above). Which one hosts what:
 
 | What the app does | Activity |
 |---|---|
@@ -461,23 +453,12 @@ derivation rule above). Which one hosts what:
 
 Two things are better left undeclared:
 
-- **`android:configChanges`.** The CLI strips it before the merge even happens — `_build.js`
-  keeps a list of the `TiBaseActivity`-derived activities and calls
-  `removeActivityAttribute(name, 'android:configChanges')` on each, with the reason spelled out
-  in the source: *"Most devs don't set this right, causing UI to disappear when a config change
-  occurs for a missing setting."* So a hand-written subset is not dangerous, just dead weight —
-  Titanium's full list always wins.
-- **A lock on `TiTranslucentActivity`.** Android 8–11 throws `IllegalStateException` ("Only
-  fullscreen opaque activities can request orientation") when a translucent activity requests a
-  fixed orientation. Declaring `orientationModes` on those windows is safer: the SDK applies it
-  inside a try/catch (`TiWindowProxy.setOrientationModes`), so the worst case is a modal that
-  rotates instead of an app that crashes.
+- **`android:configChanges`.** The CLI strips it before the merge even happens — `_build.js` keeps a list of the `TiBaseActivity`-derived activities and calls `removeActivityAttribute(name, 'android:configChanges')` on each, with the reason spelled out in the source: *"Most devs don't set this right, causing UI to disappear when a config change occurs for a missing setting."* So a hand-written subset is not dangerous, just dead weight — Titanium's full list always wins.
+- **A lock on `TiTranslucentActivity`.** Android 8–11 throws `IllegalStateException` ("Only fullscreen opaque activities can request orientation") when a translucent activity requests a fixed orientation. Declaring `orientationModes` on those windows is safer: the SDK applies it inside a try/catch (`TiWindowProxy.setOrientationModes`), so the worst case is a modal that rotates instead of an app that crashes.
 
 ### Prefer orientationModes over the manifest
 
-`orientationModes` is defined on `TiWindowProxy`, so the same declaration works on `Window`,
-`TabGroup` and `NavigationWindow`. Being per-window it also composes with form-factor queries,
-which is what you usually want:
+`orientationModes` is defined on `TiWindowProxy`, so the same declaration works on `Window`, `TabGroup` and `NavigationWindow`. Being per-window it also composes with form-factor queries, which is what you usually want:
 
 ```xml
 <!-- PurgeTSS -->
@@ -489,14 +470,11 @@ which is what you usually want:
 '#tabs[formFactor=handheld]': { orientationModes: [ Ti.UI.PORTRAIT ] }
 ```
 
-Alloy resolves `formFactor` from `Ti.Platform.Android.physicalSizeCategory`, which is why this
-is more reliable than any width comparison you could write yourself.
+Alloy resolves `formFactor` from `Ti.Platform.Android.physicalSizeCategory`, which is why this is more reliable than any width comparison you could write yourself.
 
-Keep the manifest for what Alloy cannot reach: the root activity, which shows the splash before
-any JS runs, and optionally `TiActivity` as a blanket fallback for windows that carry no class.
+Keep the manifest for what Alloy cannot reach: the root activity, which shows the splash before any JS runs, and optionally `TiActivity` as a blanket fallback for windows that carry no class.
 
-A single Ti Element rule covers every window in the app without touching a single view, which
-is usually all an Alloy app needs:
+A single Ti Element rule covers every window in the app without touching a single view, which is usually all an Alloy app needs:
 
 ```javascript
 // purgetss/config.cjs
@@ -511,8 +489,7 @@ module.exports = {
 'Window[formFactor=handheld]': { orientationModes: [ Ti.UI.PORTRAIT ] }
 ```
 
-Note it matches `Window` only, so a `TabGroup` still needs its own class. And because the
-declaration is per-window, it does nothing for the splash — that one stays in the manifest.
+Note it matches `Window` only, so a `TabGroup` still needs its own class. And because the declaration is per-window, it does nothing for the splash — that one stays in the manifest.
 
 ### Debugging a rotation that shouldn't happen
 
@@ -522,13 +499,9 @@ Ask the system for the effective value instead of re-reading the manifest:
 adb shell dumpsys activity activities | grep -E "topResumedActivity|requestedOrientation"
 ```
 
-If `requestedOrientation` disagrees with what tiapp.xml declares, something overrode it at
-runtime — grep the app for `requestedOrientation` and `orientationModes` before touching the
-manifest again. Note that an *existing* `orientationModes` can be the bug rather than the fix:
-an empty array unlocks rotation (see the anti-patterns above).
+If `requestedOrientation` disagrees with what tiapp.xml declares, something overrode it at runtime — grep the app for `requestedOrientation` and `orientationModes` before touching the manifest again. Note that an *existing* `orientationModes` can be the bug rather than the fix: an empty array unlocks rotation (see the anti-patterns above).
 
-Before blaming the OS, let the SDK tell you. Titanium logs a warning when Android drops the
-request on a large screen, so this either hits or rules that cause out immediately:
+Before blaming the OS, let the SDK tell you. Titanium logs a warning when Android drops the request on a large screen, so this either hits or rules that cause out immediately:
 
 ```bash
 adb logcat | grep "Orientation request will be ignored"
@@ -536,8 +509,7 @@ adb logcat | grep "Orientation request will be ignored"
 # Orientation request will be ignored on Android 16+.
 ```
 
-And to see the size bucket the device actually reports — `normal` means a phone, so the >= 600dp
-rule does not apply and the cause is in the app:
+And to see the size bucket the device actually reports — `normal` means a phone, so the >= 600dp rule does not apply and the cause is in the app:
 
 ```bash
 adb shell am get-config    # e.g. ...-sw360dp-w360dp-h802dp-normal-...

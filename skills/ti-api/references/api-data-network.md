@@ -73,17 +73,11 @@
 
 A result set represents the results returned by a database query.
 
-The [rowCount](Titanium.Database.ResultSet.rowCount) property identifies the number of
-rows in the result set. The `ResultSet` object maintains an internal record of the 
-current row. As shown in the example, you can use the 
-[next](Titanium.Database.ResultSet.next) method to iterate through the rows in the set.
+The [rowCount](Titanium.Database.ResultSet.rowCount) property identifies the number of rows in the result set. The `ResultSet` object maintains an internal record of the current row. As shown in the example, you can use the [next](Titanium.Database.ResultSet.next) method to iterate through the rows in the set.
 
-Use the [field](Titanium.Database.ResultSet.field) or
-[fieldByName](Titanium.Database.ResultSet.fieldByName) methods to query the fields for
-the current row.
+Use the [field](Titanium.Database.ResultSet.field) or [fieldByName](Titanium.Database.ResultSet.fieldByName) methods to query the fields for the current row.
 
-On the iOS platform, closing the database also closes the result set, that is,
-you can only access the result set if the database is currently open.
+On the iOS platform, closing the database also closes the result set, that is, you can only access the result set if the database is currently open.
 
 ### Properties (unique: 3/6)
 | Property | Type | Default | Platform | Description |
@@ -113,9 +107,7 @@ you can only access the result set if the database is currently open.
 > Platforms: both
 > Type: module
 
-For examples of using the Filesystem APIs, refer to the
-[Filesystem Access and Storage guide](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_How-tos/Working_with_Local_Data_Sources/Filesystem_Access_and_Storage.html)
-as well as the other Filesystem submodule API documentation.
+For examples of using the Filesystem APIs, refer to the [Filesystem Access and Storage guide](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_How-tos/Working_with_Local_Data_Sources/Filesystem_Access_and_Storage.html) as well as the other Filesystem submodule API documentation.
 
 ### Properties (unique: 11/21)
 | Property | Type | Default | Platform | Description |
@@ -160,20 +152,13 @@ as well as the other Filesystem submodule API documentation.
 > Extends Ti.Proxy
 > Platforms: both
 
-Use the <Titanium.Filesystem.getFile> method to get a handle to a `File` object,
-which represents a given path.  There does not need to be an existing file or directory
-does not need to exist before `getFile` is called. If the file doesn't exist, and
-the file path identifies a file in a writable directory, writing to the file
-creates the file implicitly.
+Use the <Titanium.Filesystem.getFile> method to get a handle to a `File` object, which represents a given path.  There does not need to be an existing file or directory does not need to exist before `getFile` is called. If the file doesn't exist, and the file path identifies a file in a writable directory, writing to the file creates the file implicitly.
 
 See <Titanium.Filesystem> for constants identifying commonly-used device directories.
 
 Use the [exists](Titanium.Filesystem.File.exists) method to test whether the file exists.
 
-A file object can point to an ordinary file, a directory or a symbolic link.
-Use [createDirectory](Titanium.Filesystem.File.createDirectory) to create a directory.
-Use the [getDirectoryListing](Titanium.Filesystem.File.getDirectoryListing) method to
-retrieve a list of the directory's contents.
+A file object can point to an ordinary file, a directory or a symbolic link. Use [createDirectory](Titanium.Filesystem.File.createDirectory) to create a directory. Use the [getDirectoryListing](Titanium.Filesystem.File.getDirectoryListing) method to retrieve a list of the directory's contents.
 
 
 *(See full overview in titanium-docs)*
@@ -249,16 +234,13 @@ The `Network` module is used to access networking related functionality.
 
 For TCP sockets, see <Titanium.Network.Socket.TCP>.
 
-The legacy <Titanium.Network.TCPSocket> object is still required
-by the [BonjourBrowser](Titanium.Network.BonjourBrowser) and
-[BonjourService](Titanium.Network.BonjourService) objects.
+The legacy <Titanium.Network.TCPSocket> object is still required by the [BonjourBrowser](Titanium.Network.BonjourBrowser) and [BonjourService](Titanium.Network.BonjourService) objects.
 
 For all other socket needs, use <Titanium.Network.Socket.TCP>.
 
 ### App Transport Security
 
-Starting with iOS 9, Apple introduced new security and compatibility guidelines for networking
-and connectivity, which include:
+Starting with iOS 9, Apple introduced new security and compatibility guidelines for networking and connectivity, which include:
 
 
 *(See full overview in titanium-docs)*
@@ -330,16 +312,7 @@ and connectivity, which include:
 
 Use the <Titanium.Network.createBonjourBrowser> method to create a `BonjourBrowser` instance.
 
-If your application publishes Bonjour services itself, that service will be discovered 
-by the browser if necessary; be prepared to perform a check if you do not want to list 
-local services as available.  Bonjour service browsing is an asynchronous operation, 
-meaning that you should be extremely careful when caching values from the `services` 
-property returned by the `updatedservices` event.  In particular, if you maintain a 
-local copy of available services and a user tries to connect to one, you should be prepared 
-to handle failures gracefully; the next `updatedservices` event should provide the new 
-services list, but you should not rely on it being delivered before user input.  When 
-a window which uses Bonjour browsing is closed, if you do not want to continue searching, 
-you must call the stop() method.
+If your application publishes Bonjour services itself, that service will be discovered by the browser if necessary; be prepared to perform a check if you do not want to list local services as available.  Bonjour service browsing is an asynchronous operation, meaning that you should be extremely careful when caching values from the `services` property returned by the `updatedservices` event.  In particular, if you maintain a local copy of available services and a user tries to connect to one, you should be prepared to handle failures gracefully; the next `updatedservices` event should provide the new services list, but you should not rely on it being delivered before user input.  When a window which uses Bonjour browsing is closed, if you do not want to continue searching, you must call the stop() method.
 
 In iOS 14.0+, to browse services add key `NSLocalNetworkUsageDescription` and `NSBonjourServices` to the `ios plist` section of the tiapp.xml file.
 
@@ -372,16 +345,9 @@ In iOS 14.0+, to browse services add key `NSLocalNetworkUsageDescription` and `N
 > Extends Ti.Proxy
 > Platforms: ios
 
-You can obtain a `BonjourService` instance by calling <Titanium.Network.createBonjourService> 
-or from the `service` list from a [BonjourBrowser](Titanium.Network.BonjourBrowser)  
-`updatedservices` event.   
+You can obtain a `BonjourService` instance by calling <Titanium.Network.createBonjourService> or from the `service` list from a [BonjourBrowser](Titanium.Network.BonjourBrowser) `updatedservices` event.
 
-You can only publish Bonjour services attached to a socket which is currently listening; 
-you cannot publish a service for a remotely connected socket.  If you stop the Bonjour 
-service and wish to close the socket it uses, it is strongly recommended that you stop 
-the service first.  When a window which publishes a Bonjour service is closed, you must 
-stop the service if the associated socket is also to be closed, or if it is no longer 
-necessary to publish.  Bonjour service resolution and publishing is asynchronous.
+You can only publish Bonjour services attached to a socket which is currently listening; you cannot publish a service for a remotely connected socket.  If you stop the Bonjour service and wish to close the socket it uses, it is strongly recommended that you stop the service first.  When a window which publishes a Bonjour service is closed, you must stop the service if the associated socket is also to be closed, or if it is no longer necessary to publish.  Bonjour service resolution and publishing is asynchronous.
 
 In iOS 14.0+, to publish service add key `NSLocalNetworkUsageDescription` and `NSBonjourServices` in tiapp.xml file.
 
@@ -421,8 +387,7 @@ Example:
 > Extends Ti.Proxy
 > Platforms: both
 
-Use <Titanium.Network.createCookie> to create a new `Cookie` object.
-The following is an example of how to setup and read a cookie on a web view:
+Use <Titanium.Network.createCookie> to create a new `Cookie` object. The following is an example of how to setup and read a cookie on a web view:
 
 ``` js
 if (!Date.prototype.toISOString) {
@@ -471,8 +436,7 @@ if (!Date.prototype.toISOString) {
 
 Use <Titanium.Network.createHTTPClient> to create a new `HTTPClient` object.
 
-An `HTTPClient` object is intended to be used for a single request. It may be
-possible to re-use an `HTTPClient` object, but this use case is not tested.
+An `HTTPClient` object is intended to be used for a single request. It may be possible to re-use an `HTTPClient` object, but this use case is not tested.
 
 There are three steps in making a typical HTTP request:
 
@@ -480,8 +444,7 @@ There are three steps in making a typical HTTP request:
 * Opening the `HTTPClient` object.
 * Sending the request.
 
-Before opening the request, you must define one or more callbacks to handle
-the HTTP response, as well as errors, progress updates, and other conditions.
+Before opening the request, you must define one or more callbacks to handle the HTTP response, as well as errors, progress updates, and other conditions.
 
 The `HTTPClient` callbacks operate somewhat differently from other
 
@@ -573,21 +536,13 @@ The `HTTPClient` callbacks operate somewhat differently from other
 > Extends Ti.IOStream
 > Platforms: both
 
-Most socket operations are asynchronous. When you create a socket, you can define
-callback functions to receive the results of API calls, as well as to handle incoming
-data.
+Most socket operations are asynchronous. When you create a socket, you can define callback functions to receive the results of API calls, as well as to handle incoming data.
 
-For example, for a client-side socket, you define
-[connected](Titanium.Network.Socket.TCP.connected) and
-[error](Titanium.Network.Socket.TCP.error) callback functions.
+For example, for a client-side socket, you define [connected](Titanium.Network.Socket.TCP.connected) and [error](Titanium.Network.Socket.TCP.error) callback functions.
 
-To connect to a remote host, call the socket's
-[connect](Titanium.Network.Socket.TCP.connect) method. If the socket connects
-successfully, your `connected` callback is invoked, and you can send and receive data
-on the socket. If the socket connection fails, your `error` callback is invoked.
+To connect to a remote host, call the socket's [connect](Titanium.Network.Socket.TCP.connect) method. If the socket connects successfully, your `connected` callback is invoked, and you can send and receive data on the socket. If the socket connection fails, your `error` callback is invoked.
 
-After a socket is connected, you can access it like any other <Titanium.IOStream>.
-Note that the socket's `read` and `write` methods may block, so in most cases
+After a socket is connected, you can access it like any other <Titanium.IOStream>. Note that the socket's `read` and `write` methods may block, so in most cases
 
 *(See full overview in titanium-docs)*
 

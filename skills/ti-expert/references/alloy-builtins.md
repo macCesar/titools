@@ -97,10 +97,7 @@ Alloy.Collections.notifications = new Backbone.Collection()
 // <View if="Alloy.Globals.isLoggedIn">
 ```
 
-Do not use `Alloy.Globals` as the default dark-mode palette. Prefer Titanium
-semantic colors; when PurgeTSS is detected, use its semantic color and Appearance
-workflow. Reserve a global runtime palette for custom theme requirements that
-semantic light/dark/system roles cannot model. See [Theming](theming.md).
+Do not use `Alloy.Globals` as the default dark-mode palette. Prefer Titanium semantic colors; when PurgeTSS is detected, use its semantic color and Appearance workflow. Reserve a global runtime palette for custom theme requirements that semantic light/dark/system roles cannot model. See [Theming](theming.md).
 
 ### Globals vs services
 

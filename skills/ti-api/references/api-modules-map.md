@@ -110,21 +110,15 @@
 > Extends Ti.Proxy
 > Platforms: both
 
-The `Annotation` object gives you low-level control over annotations that can be added to
-[map view](Modules.Map.View). An annotation must have its `latitude` and `longitude`
-properties set to appear on a map.
+The `Annotation` object gives you low-level control over annotations that can be added to [map view](Modules.Map.View). An annotation must have its `latitude` and `longitude` properties set to appear on a map.
 
-Use the <Modules.Map.createAnnotation> method to create an annotation.  Starting with Alloy
-1.4.0, use the **`<Annotation>`** Alloy element to define one in XML markup.
+Use the <Modules.Map.createAnnotation> method to create an annotation.  Starting with Alloy 1.4.0, use the **`<Annotation>`** Alloy element to define one in XML markup.
 
-An annotation can also have a title, a subtitle, and two inset buttons or views on the left
-and right side of the title. All of these items are optional.
+An annotation can also have a title, a subtitle, and two inset buttons or views on the left and right side of the title. All of these items are optional.
 
-The controls on the left and right side of the annotation can be specified in one of two
-ways:
+The controls on the left and right side of the annotation can be specified in one of two ways:
 
-* To display an image, set the [leftButton](Titanium.Map.Annotation.leftButton) or
-  [rightButton](Titanium.Map.Annotation.rightButton) property to an image URL. (On
+* To display an image, set the [leftButton](Titanium.Map.Annotation.leftButton) or [rightButton](Titanium.Map.Annotation.rightButton) property to an image URL. (On
 
 *(See full overview in titanium-docs)*
 
@@ -188,18 +182,13 @@ ways:
 > Extends Ti.Proxy
 > Platforms: both
 
-Applying a camera to a map has the effect of giving the map a 3D-like appearance.
-You can use a camera to rotate the map so that it is oriented to match the user's
-heading or to apply a pitch angle to tilt the plane of the map.
+Applying a camera to a map has the effect of giving the map a 3D-like appearance. You can use a camera to rotate the map so that it is oriented to match the user's heading or to apply a pitch angle to tilt the plane of the map.
 
-If the app is run on pre iOS 7, camera functionality will not be available.
-After creating a `Camera` object, it can be applied to the map by setting the `camera` property of the
-[map view](Modules.Map.View).
+If the app is run on pre iOS 7, camera functionality will not be available. After creating a `Camera` object, it can be applied to the map by setting the `camera` property of the [map view](Modules.Map.View).
 
 Use the <Modules.Map.createCamera> method to create a camera.
 
-If `altitude`, `eyeCoordinate`, and `centerCoordinate` are passed in on creation, a camera will be
-returned using the specified viewing angle information.
+If `altitude`, `eyeCoordinate`, and `centerCoordinate` are passed in on creation, a camera will be returned using the specified viewing angle information.
 
 ### Example:
 
@@ -234,8 +223,7 @@ returned using the specified viewing angle information.
 > Extends Ti.Proxy
 > Platforms: both
 
-The `Circle` object gives you low-level control over circles that can be added to a
-[map view](Modules.Map.View). A circle must have a `center` property and a `radius` set to appear on a map.
+The `Circle` object gives you low-level control over circles that can be added to a [map view](Modules.Map.View). A circle must have a `center` property and a `radius` set to appear on a map.
 
 Use the <Modules.Map.createCircle> method to create a circle.
 
@@ -272,9 +260,7 @@ Use the <Modules.Map.createCircle> method to create a circle.
 > Extends Ti.Proxy
 > Platforms: both
 
-The `ImageOverlay` object gives you low-level control over image overlays that can be added to a
-[map view](Modules.Map.View). An image overlay must have a `boundsCoordinate` property and a `image` 
-set to appear on a map.
+The `ImageOverlay` object gives you low-level control over image overlays that can be added to a [map view](Modules.Map.View). An image overlay must have a `boundsCoordinate` property and a `image` set to appear on a map.
 
 Use the <Modules.Map.createImageOverlay> method to create an image overlay.
 
@@ -304,8 +290,7 @@ Use the <Modules.Map.createImageOverlay> method to create an image overlay.
 > Extends Ti.Proxy
 > Platforms: both
 
-The `Polygon` object gives you low-level control over polygons that can be added to a
-[map view](Modules.Map.View). A polygon must have its `points` property set to appear on a map.
+The `Polygon` object gives you low-level control over polygons that can be added to a [map view](Modules.Map.View). A polygon must have its `points` property set to appear on a map.
 
 Use the <Modules.Map.createPolygon> method to create a polygon.
 
@@ -347,8 +332,7 @@ Use the <Modules.Map.createPolygon> method to create a polygon.
 > Extends Ti.Proxy
 > Platforms: both
 
-The `Polyline` object gives you low-level control over polylines that can be added to a
-[map view](Modules.Map.View). A polyline must have its `points` property set to appear on a map.
+The `Polyline` object gives you low-level control over polylines that can be added to a [map view](Modules.Map.View). A polyline must have its `points` property set to appear on a map.
 
 Use the <Modules.Map.createPolyline> method to create a polyline.
 
@@ -387,8 +371,7 @@ const polyline = Map.createPolyline({
 > Extends Ti.Proxy
 > Platforms: both
 
-The `Route` object gives you low-level control over routes that can be added to a
-[map view](Modules.Map.View). A route must have its `points` property set to appear on a map.
+The `Route` object gives you low-level control over routes that can be added to a [map view](Modules.Map.View). A route must have its `points` property set to appear on a map.
 
 Use the <Modules.Map.createRoute> method to create a route.
 
@@ -397,8 +380,7 @@ Use the <Modules.Map.createRoute> method to create a route.
 The `addRoute` method no longer accepts a dictionary as a parameter. Pass a <Modules.Map.Route> object instead.
 
 ### Android Platform Notes
-The parameter `points` accepts additional the route in format `encoded polyline`.  
-https://developers.google.com/maps/documentation/utilities/polylinealgorithm
+The parameter `points` accepts additional the route in format `encoded polyline`. https://developers.google.com/maps/documentation/utilities/polylinealgorithm
 
 ### Properties (unique: 4/7)
 | Property | Type | Default | Platform | Description |
@@ -484,9 +466,7 @@ const Snapshotter = MapModule.createSnapshotter({
 > Extends Ti.UI.View
 > Platforms: android
 
-Each street view panorama is an image, or set of images, that provides a full 360-degree view from
-a single location. It provides a viewer that renders the panorama as a sphere with a camera at its center.
-A window can only contain one street view.
+Each street view panorama is an image, or set of images, that provides a full 360-degree view from a single location. It provides a viewer that renders the panorama as a sphere with a camera at its center. A window can only contain one street view.
 
 ### Properties (unique: 5/66)
 | Property | Type | Default | Platform | Description |
@@ -517,14 +497,11 @@ A window can only contain one street view.
 > Extends Ti.UI.View
 > Platforms: both
 
-With native maps, you can control the mapping location, the type of map, the zoom level
-and you can add custom annotations and routes directly to the map. Once the map view is
-displayed, the user can pan, zoom and tilt the map using the native control gestures.
+With native maps, you can control the mapping location, the type of map, the zoom level and you can add custom annotations and routes directly to the map. Once the map view is displayed, the user can pan, zoom and tilt the map using the native control gestures.
 
 Use the <Modules.Map.createView> method to create a map view.
 
-In Alloy, use the **`<Module>`** element with the `module` attribute set to `ti.map`
-and `method` attribute set to `createView` to create a map view in XML markup:
+In Alloy, use the **`<Module>`** element with the `module` attribute set to `ti.map` and `method` attribute set to `createView` to create a map view in XML markup:
 
 
 ### Properties (unique: 29/101)

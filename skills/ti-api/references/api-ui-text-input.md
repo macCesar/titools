@@ -28,8 +28,7 @@ Use the <Titanium.UI.createTextField> method or **`<TextField>`** Alloy element 
 
 ### `click` event in iOS
 
-In iOS 11+, `click` event in text field is not fired due to changes from apple.
-Use `touchstart` event instead of `click` event.
+In iOS 11+, `click` event in text field is not fired due to changes from apple. Use `touchstart` event instead of `click` event.
 
 ### Properties (unique: 45/116)
 | Property | Type | Default | Platform | Description |
@@ -144,8 +143,7 @@ Use the <Titanium.UI.createTextArea> method or **&lt;TextArea&gt;** Alloy elemen
 
 ### `click` event in iOS
 
-In iOS 11+, `click` event in text area is not fired due to changes from apple.
-Use `touchstart` event instead of `click` event.
+In iOS 11+, `click` event in text area is not fired due to changes from apple. Use `touchstart` event instead of `click` event.
 
 ### Properties (unique: 40/111)
 | Property | Type | Default | Platform | Description |
@@ -252,10 +250,7 @@ Use `touchstart` event instead of `click` event.
 | ------- | --- |
 | ![Android](./searchbar_android.png) | ![iOS](./searchbar_ios.png) |
 
-Search bars are most commonly used for filtering the rows in a [TableView](Titanium.UI.TableView) and
-[ListView](Titanium.UI.ListView). You can add a search bar to a table view via its
-[search](Titanium.UI.TableView.search) property. You can add a search bar to a list view via its
-[searchBar](Titanium.UI.SearchBar) property.
+Search bars are most commonly used for filtering the rows in a [TableView](Titanium.UI.TableView) and [ListView](Titanium.UI.ListView). You can add a search bar to a table view via its [search](Titanium.UI.TableView.search) property. You can add a search bar to a list view via its [searchBar](Titanium.UI.SearchBar) property.
 
 A search bar can also be used on its own.
 
@@ -340,11 +335,9 @@ Use the <Titanium.UI.createSearchBar> method or Alloy **`<SearchBar>`** element 
 
 The AttributedString proxy is created with the <Titanium.UI.createAttributedString> method.
 
-The `text` property must be set initially in the constructor when creating an attributed string.
-The [attributes](Titanium.UI.AttributedString.attributes) can either be set in the constructor or after it has been created.
+The `text` property must be set initially in the constructor when creating an attributed string. The [attributes](Titanium.UI.AttributedString.attributes) can either be set in the constructor or after it has been created.
 
-For examples of Attributed Strings, see the
-[Attributed Strings guide](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_How-tos/User_Interface_Deep_Dives/Attributed_Strings.html).
+For examples of Attributed Strings, see the [Attributed Strings guide](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_How-tos/User_Interface_Deep_Dives/Attributed_Strings.html).
 
 ### Properties (unique: 2/5)
 | Property | Type | Default | Platform | Description |
@@ -377,9 +370,7 @@ For examples of Attributed Strings, see the
 > Extends Ti.Proxy
 > Platforms: both
 
-This type may be used on iOS for assignment to any property typically taking a String color value.
-A developer is not expected to typically interact with a <Titanium.UI.Color> object, as we generate them
-under the hood when converting the passed in String representations. One major exception is use of the
+This type may be used on iOS for assignment to any property typically taking a String color value. A developer is not expected to typically interact with a <Titanium.UI.Color> object, as we generate them under the hood when converting the passed in String representations. One major exception is use of the
 
 
 ### Methods (1)
@@ -396,18 +387,11 @@ under the hood when converting the passed in String representations. One major e
 > Platforms: both
 > Type: module
 
-The Clipboard is a temporary data store, used to save a single item of data that may then
-be accessed by the user using UI copy and paste interactions within an app or between apps.
+The Clipboard is a temporary data store, used to save a single item of data that may then be accessed by the user using UI copy and paste interactions within an app or between apps.
 
-On iOS, the module's `setData()` and `getData()` methods enable multiple representations of the
-same data item to be stored together with their respective
-[MIME type](http://en.wikipedia.org/wiki/Internet_media_type) to describe their format. For
-example, `'text'` and `'text/plain'` for text, and `'image/jpg'` and `'image/png'` for an image.
-iOS Will report back the type of data representation in `getItems()` as 
-[Universal Type Identifiers](https://developer.apple.com/library/archive/documentation/Miscellaneous/Reference/UTIRef/Articles/System-DeclaredUniformTypeIdentifiers.html).
+On iOS, the module's `setData()` and `getData()` methods enable multiple representations of the same data item to be stored together with their respective [MIME type](http://en.wikipedia.org/wiki/Internet_media_type) to describe their format. For example, `'text'` and `'text/plain'` for text, and `'image/jpg'` and `'image/png'` for an image. iOS Will report back the type of data representation in `getItems()` as [Universal Type Identifiers](https://developer.apple.com/library/archive/documentation/Miscellaneous/Reference/UTIRef/Articles/System-DeclaredUniformTypeIdentifiers.html).
 
-When working with text, either of the `getData()`/`setData()` methods may be used with a `'text/plain'` type, or
-the `getText()`/`hasText()`/`setText()` methods without the need to specify the type.
+When working with text, either of the `getData()`/`setData()` methods may be used with a `'text/plain'` type, or the `getText()`/`hasText()`/`setText()` methods without the need to specify the type.
 
 Android currently only supports text data to be stored.
 
@@ -464,15 +448,9 @@ Android currently only supports text data to be stored.
 
 Use the <Titanium.UI.createPicker> method or Alloy **`<Picker>`** element to create a picker control.
 
-On Android, the `useSpinner` property must be enabled to support multiple columns.
-By default, the spinner is automatically sized to fit its content and can overflow
-to additional spinner rows. The size of the picker can be adjusted with the `width`
-and `height` properties, but may omit picker columns or cut off picker rows
-if the size is set too small. This property is deprecated. Please use the default
-Android native "dropdown" style by not setting `useSpinner` to `true`.
+On Android, the `useSpinner` property must be enabled to support multiple columns. By default, the spinner is automatically sized to fit its content and can overflow to additional spinner rows. The size of the picker can be adjusted with the `width` and `height` properties, but may omit picker columns or cut off picker rows if the size is set too small. This property is deprecated. Please use the default Android native "dropdown" style by not setting `useSpinner` to `true`.
 
-On iOS, the `height` property is only available in iOS 9 and later.
-By default, the size of the picker, including its background, is fixed at the
+On iOS, the `height` property is only available in iOS 9 and later. By default, the size of the picker, including its background, is fixed at the
 
 *(See full overview in titanium-docs)*
 
@@ -542,9 +520,7 @@ By default, the size of the picker, including its background, is fixed at the
 > Extends Ti.UI.View
 > Platforms: both
 
-Use the <Titanium.UI.createPickerColumn> method to create a picker column control. In an Alloy application,
-you can use a **`<PickerColumn>`** element inside a `<Picker>` element. You can also use `<Column>`
-as a shorthand for `<PickerColumn>` (see Examples).
+Use the <Titanium.UI.createPickerColumn> method to create a picker column control. In an Alloy application, you can use a **`<PickerColumn>`** element inside a `<Picker>` element. You can also use `<Column>` as a shorthand for `<PickerColumn>` (see Examples).
 
 On Android, the `useSpinner` property must be enabled to support multiple columns.
 
@@ -585,9 +561,7 @@ See <Titanium.UI.Picker> for further examples of usage.
 > Extends Ti.UI.View
 > Platforms: both
 
-Use the <Titanium.UI.createPickerRow> method to create a picker row control. In an Alloy application,
-you can use a **`<PickerRow>`** element inside a `<PickerColumn>` element. You can also use `<Row>`
-as a shorthand for `<PickerRow>` (see Examples).
+Use the <Titanium.UI.createPickerRow> method to create a picker row control. In an Alloy application, you can use a **`<PickerRow>`** element inside a `<PickerColumn>` element. You can also use `<Row>` as a shorthand for `<PickerRow>` (see Examples).
 
 Views added to picker rows is only supported on iOS.
 
