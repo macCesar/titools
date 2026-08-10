@@ -202,8 +202,7 @@ The following views can be used as child elements in custom templates: ActivityI
 
 ### Binding syntax
 
-XML (Alloy): `bindId:property="value"`
-JavaScript: `{ bindId: { property: value } }`
+XML (Alloy): `bindId:property="value"` JavaScript: `{ bindId: { property: value } }`
 
 ### Programmatic binding with custom templates
 
@@ -741,14 +740,10 @@ $.myList.cacheSize = 3;  // Default
 
 ### Common issues
 
-Problem: Jerky scrolling
-Solution: Remove `Ti.UI.SIZE` from templates
+Problem: Jerky scrolling Solution: Remove `Ti.UI.SIZE` from templates
 
-Problem: Data changes not visible
-Solution: Use `updateItemAt()` instead of modifying views
+Problem: Data changes not visible Solution: Use `updateItemAt()` instead of modifying views
 
-Problem: Event not firing on template element
-Solution: Check `bindId` in event handler
+Problem: Event not firing on template element Solution: Check `bindId` in event handler
 
-Problem: Wrong item updated
-Solution: Use `e.section.getItemAt(e.itemIndex)` not a global reference
+Problem: Wrong item updated Solution: Use `e.section.getItemAt(e.itemIndex)` not a global reference

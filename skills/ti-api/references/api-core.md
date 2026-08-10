@@ -28,14 +28,11 @@
 > Platforms: both
 > Type: module
 
-The Titanium module provides the Titanium Mobile API, allowing developers to access native
-features of each target environment. Currently, the Android and iOSenvironments are supported.
+The Titanium module provides the Titanium Mobile API, allowing developers to access native features of each target environment. Currently, the Android and iOSenvironments are supported.
 
 ### Titanium Namespace
 
-The complete Titanium API is accessible from the `Titanium` namespace but, for convenience and
-brevity, the alias `Ti` is also provided. As the `Titanium` namespace is functionally-identical
-to its `Ti` alias, it is always recommended to use `Ti` in your code.
+The complete Titanium API is accessible from the `Titanium` namespace but, for convenience and brevity, the alias `Ti` is also provided. As the `Titanium` namespace is functionally-identical to its `Ti` alias, it is always recommended to use `Ti` in your code.
 
 For example, the following pairs of Titanium calls behave exactly the same.
 
@@ -82,21 +79,13 @@ Ti.API.info('Hello Titanium!');
 > Platforms: both
 > Type: module
 
-The UI module is responsible for native user-interface components and interaction inside
-Titanium.  The goal of the UI module is to provide a native experience along with native
-performance by compiling Javascript code into their native counterparts as part of the
-build process.
+The UI module is responsible for native user-interface components and interaction inside Titanium.  The goal of the UI module is to provide a native experience along with native performance by compiling Javascript code into their native counterparts as part of the build process.
 
 ### Design
 
 The UI module is broken down into 3 major area:
 
-* **Views** - [Views](Titanium.UI.View) are containers that host visual elements such as
-controls or other views.  Views can have their properties customized, such as their border color
-and radius, can fire events such as swipe events or touches, and can optionally contain a
-hierarchy or other views as children. In Titanium, most views are specialized to perform both a
-visual function and set of interaction behaviors such as [Table View](Titanium.UI.TableView) or
-[Coverflow View](Titanium.UI.iOS.CoverFlowView).  Views are always named with the suffix `View`.
+* **Views** - [Views](Titanium.UI.View) are containers that host visual elements such as controls or other views.  Views can have their properties customized, such as their border color and radius, can fire events such as swipe events or touches, and can optionally contain a hierarchy or other views as children. In Titanium, most views are specialized to perform both a visual function and set of interaction behaviors such as [Table View](Titanium.UI.TableView) or [Coverflow View](Titanium.UI.iOS.CoverFlowView).  Views are always named with the suffix `View`.
 
 *(See full overview in titanium-docs)*
 
@@ -350,16 +339,11 @@ visual function and set of interaction behaviors such as [Table View](Titanium.U
 > Platforms: both
 > Type: module
 
-An accelerometer is a hardware unit integrated into a mobile device, that detects when the 
-device has moved, and returns its new orientation in a three-dimensional space. With its 
-single `update` event, this module provides an interface to access the output positional data.
+An accelerometer is a hardware unit integrated into a mobile device, that detects when the device has moved, and returns its new orientation in a three-dimensional space. With its single `update` event, this module provides an interface to access the output positional data.
 
-An accelerometer needs to be switched on in order for it to report to the operating system, 
-which consumes a lot of power that will deplete the battery over time. This is why it is 
-recommended that the accelerometer is switched off when not in use.
+An accelerometer needs to be switched on in order for it to report to the operating system, which consumes a lot of power that will deplete the battery over time. This is why it is recommended that the accelerometer is switched off when not in use.
 
-The accelerometer may be switched on and off by simply adding and removing the `update` 
-event listener function. See the example for a demonstration.
+The accelerometer may be switched on and off by simply adding and removing the `update` event listener function. See the example for a demonstration.
 
 
 
@@ -375,21 +359,15 @@ event listener function. See the example for a demonstration.
 > Extends Ti.Proxy
 > Platforms: both
 
-A `Blob` represents a chunk of binary information, often obtained through
-an [HTTPClient](Titanium.Network.HTTPClient) or by reading a [File](Titanium.Filesystem.File).
+A `Blob` represents a chunk of binary information, often obtained through an [HTTPClient](Titanium.Network.HTTPClient) or by reading a [File](Titanium.Filesystem.File).
 
-Blobs are often used to store text or image data.
-The `Blob` object includes a number of properties and methods specific to image blobs.
+Blobs are often used to store text or image data. The `Blob` object includes a number of properties and methods specific to image blobs.
 
-Android supports an [append](Titanium.Blob.append) method, but
-otherwise blobs are immutable.
+Android supports an [append](Titanium.Blob.append) method, but otherwise blobs are immutable.
 
-The <Titanium.Utils> module provides several utility methods for working with
-blobs, including methods for converting between blobs and Base64-encoded strings,
-and methods for generating SHA-1 and SHA-256 hashes and MD5 digests from blob data.
+The <Titanium.Utils> module provides several utility methods for working with blobs, including methods for converting between blobs and Base64-encoded strings, and methods for generating SHA-1 and SHA-256 hashes and MD5 digests from blob data.
 
-The [Buffer](Titanium.Buffer) object can also contain binary data, and is
-more easily mutable. Extracting blob data to a buffer is somewhat roundabout:
+The [Buffer](Titanium.Buffer) object can also contain binary data, and is more easily mutable. Extracting blob data to a buffer is somewhat roundabout:
 
 *(See full overview in titanium-docs)*
 
@@ -444,8 +422,7 @@ more easily mutable. Extracting blob data to a buffer is somewhat roundabout:
 > Extends Ti.IOStream
 > Platforms: both
 
-Use the <Titanium.Stream.createStream> method to create a `BlobStream` instance from a
-`Blob`.
+Use the <Titanium.Stream.createStream> method to create a `BlobStream` instance from a `Blob`.
 
 
 
@@ -491,8 +468,7 @@ Use the <Titanium.createBuffer> method to create a buffer.
 > Extends Ti.IOStream
 > Platforms: both
 
-Use the <Titanium.Stream.createStream> method to create a `BufferStream` instance from a
-`Buffer`.
+Use the <Titanium.Stream.createStream> method to create a `BufferStream` instance from a `Buffer`.
 
 
 
@@ -505,18 +481,13 @@ Use the <Titanium.Stream.createStream> method to create a `BufferStream` instanc
 > Platforms: both
 > Type: module
 
-The `Codec` module can be used for encoding strings and numbers into [Buffer](Titanium.Buffer)
-objects, and decoding primitive types from buffers.
+The `Codec` module can be used for encoding strings and numbers into [Buffer](Titanium.Buffer) objects, and decoding primitive types from buffers.
 
 ### Byte Order
 
-Multi-byte data can be stored in two different byte orders: big-endian or
-little-endian. In big-endian byte order, the most significant or highest-value
-byte is stored first. For example, the 4-byte integer 0xFEDCBA98 is made up of the
-bytes 0xFE, 0xDC, 0xBA and 0x98, from most-significant to least-significant.
+Multi-byte data can be stored in two different byte orders: big-endian or little-endian. In big-endian byte order, the most significant or highest-value byte is stored first. For example, the 4-byte integer 0xFEDCBA98 is made up of the bytes 0xFE, 0xDC, 0xBA and 0x98, from most-significant to least-significant.
 
-If we represent a buffer as an array of byte values, a big-endian encoding of
-0xFEDCBA98 would look like this:
+If we represent a buffer as an array of byte values, a big-endian encoding of 0xFEDCBA98 would look like this:
 
 ``` js
 [ 0xFE, 0xDC, 0xBA, 0x98 ]
@@ -609,8 +580,7 @@ If we represent a buffer as an array of byte values, a big-endian encoding of
 > Extends Ti.Proxy
 > Platforms: both
 
-See the <Titanium.Stream> module for related utility methods that support asynchronous
-I/O.
+See the <Titanium.Stream> module for related utility methods that support asynchronous I/O.
 
 
 ### Methods (5)
@@ -631,10 +601,7 @@ I/O.
 > Platforms: both
 > Type: module
 
-The `Locale` module works with localization files to which are generated during compilation 
-into the operating system specific localization formats. The `Locale` module provides 
-locale-specific strings which can be referenced at runtime.  Additionally, the module 
-contains a few methods and properties for querying device locale information.
+The `Locale` module works with localization files to which are generated during compilation into the operating system specific localization formats. The `Locale` module provides locale-specific strings which can be referenced at runtime.  Additionally, the module contains a few methods and properties for querying device locale information.
 
 The macro `L` can be used as an alias for the <Titanium.Locale.getString> method.
 
@@ -670,11 +637,7 @@ The macro `L` can be used as an alias for the <Titanium.Locale.getString> method
 > Platforms: both
 > Type: module
 
-This module provides a set of methods for interacting with
-[IOStream](Titanium.IOStream) objects, including asynchronous versions of the
-`read` and `write` methods offered by all stream objects. These
-methods should be used in any place where reading from or writing
-to a stream might block.
+This module provides a set of methods for interacting with [IOStream](Titanium.IOStream) objects, including asynchronous versions of the `read` and `write` methods offered by all stream objects. These methods should be used in any place where reading from or writing to a stream might block.
 
 See also:
 
@@ -735,14 +698,9 @@ See also:
 > Extends Object
 > Platforms: both
 
-On platforms that use native code (Android and iOS), the `Proxy` type represents a
-JavaScript wrapper or _proxy_ around a native object. Setting or getting a property
-on a proxy object results in a method invocation on the native object. Likewise,
-calling a method on the proxy object results in a method invocation on the native
-object.
+On platforms that use native code (Android and iOS), the `Proxy` type represents a JavaScript wrapper or _proxy_ around a native object. Setting or getting a property on a proxy object results in a method invocation on the native object. Likewise, calling a method on the proxy object results in a method invocation on the native object.
 
-Some Titanium objects are _createable_: new instances of these objects can be created using
-factory methods. For example, a [Window](Titanium.UI.Window) object can be created using the
+Some Titanium objects are _createable_: new instances of these objects can be created using factory methods. For example, a [Window](Titanium.UI.Window) object can be created using the
 
 ### Properties (unique: 3/3)
 | Property | Type | Default | Platform | Description |
@@ -774,12 +732,9 @@ factory methods. For example, a [Window](Titanium.UI.Window) object can be creat
 > Platforms: both
 > Type: module
 
-A Titanium module is a non-createable Titanium object that is exposed through the
-global Titanium object.
+A Titanium module is a non-createable Titanium object that is exposed through the global Titanium object.
 
-For example, the <Titanium.UI> module provides constants and factory methods related
-to UI objects, as well as a few UI-related properties that are not related to a
-specific object.
+For example, the <Titanium.UI> module provides constants and factory methods related to UI objects, as well as a few UI-related properties that are not related to a specific object.
 
 
 

@@ -39,8 +39,7 @@
 
 The API for this module is based on the W3C DOM specification.
 
-Android and iOS implement the [DOM Level 2](https://www.w3.org/TR/DOM-Level-2-Core/core.html) specification
-with some non-standard extensions, which are documented in the appropriate places.
+Android and iOS implement the [DOM Level 2](https://www.w3.org/TR/DOM-Level-2-Core/core.html) specification with some non-standard extensions, which are documented in the appropriate places.
 
 Both iOS and Android lack DTD support.
 
@@ -59,8 +58,7 @@ Both iOS and Android lack DTD support.
 > Extends Ti.XML.Node
 > Platforms: both
 
-Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-637646024) on
-Android and iOS.
+Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-637646024) on Android and iOS.
 
 ### Properties (unique: 4/35)
 | Property | Type | Default | Platform | Description |
@@ -80,8 +78,7 @@ Android and iOS.
 > Extends Ti.XML.Text
 > Platforms: both
 
-Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-667469212) on
-Android and iOS with some non-standard extensions.
+Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-667469212) on Android and iOS with some non-standard extensions.
 
 
 
@@ -117,8 +114,7 @@ Android and iOS with some non-standard extensions.
 > Extends Ti.XML.CharacterData
 > Platforms: both
 
-Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-1728279322) on
-Android and iOS with some non-standard extensions.
+Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-1728279322) on Android and iOS with some non-standard extensions.
 
 
 
@@ -146,12 +142,9 @@ Android and iOS with some non-standard extensions.
 > Extends Ti.XML.Node
 > Platforms: both
 
-Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#i-Document) on
-Android and iOS.
+Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#i-Document) on Android and iOS.
 
-As of version 3.1, Android does not truly support DTDs.  A document with a DTD can be
-parsed, however it is not validated, its default attributes are not be automatically
-added into the DOM tree, and so on.
+As of version 3.1, Android does not truly support DTDs.  A document with a DTD can be parsed, however it is not validated, its default attributes are not be automatically added into the DOM tree, and so on.
 
 This has been reported as [Android Issue #7395](http://code.google.com/p/android/issues/detail?id=7395).
 
@@ -189,11 +182,9 @@ This has been reported as [Android Issue #7395](http://code.google.com/p/android
 > Extends Ti.XML.Node
 > Platforms: both
 
-When a `DocumentFragment` is inserted into a DOM tree, children of the `DocumentFragment` are
-added, not the `DocumentFragment` itself.
+When a `DocumentFragment` is inserted into a DOM tree, children of the `DocumentFragment` are added, not the `DocumentFragment` itself.
 
-Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-B63ED1A3) on
-Android and iOS with some non-standard extensions.
+Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-B63ED1A3) on Android and iOS with some non-standard extensions.
 
 
 
@@ -205,12 +196,9 @@ Android and iOS with some non-standard extensions.
 > Extends Ti.XML.Node
 > Platforms: both
 
-This provides an interface to the list of entities that are defined for the document. Implements the
-[DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-412266927) on Android and iOS.
+This provides an interface to the list of entities that are defined for the document. Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-412266927) on Android and iOS.
 
-As of version 3.1, Android still does not truly support DTDs.  A document with a DTD can be
-parsed, however it is not validated, none of its default attributes will automatically be put
-into the tree, etc.  [Google is aware of the issue](http://code.google.com/p/android/issues/detail?id=7395).
+As of version 3.1, Android still does not truly support DTDs.  A document with a DTD can be parsed, however it is not validated, none of its default attributes will automatically be put into the tree, etc.  [Google is aware of the issue](http://code.google.com/p/android/issues/detail?id=7395).
 
 ### Properties (unique: 6/37)
 | Property | Type | Default | Platform | Description |
@@ -284,8 +272,7 @@ into the tree, etc.  [Google is aware of the issue](http://code.google.com/p/and
 > Extends Ti.XML.Node
 > Platforms: both
 
-Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-11C98490)
-on Android and iOS.
+Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-11C98490) on Android and iOS.
 
 
 
@@ -322,13 +309,9 @@ on Android and iOS.
 > Extends Ti.Proxy
 > Platforms: both
 
-Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-1950641247)
-on Android and iOS.
+Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-1950641247) on Android and iOS.
 
-Note that on iOS, only [Element](Titanium.XML.Element) nodes are mutable. This means
-that the methods `appendChild`, `insertBefore`, `removeChild`, and
-`replaceChild` only work on `Element` objects. If one of these methods is called on
-another type of node, it throws an exception.
+Note that on iOS, only [Element](Titanium.XML.Element) nodes are mutable. This means that the methods `appendChild`, `insertBefore`, `removeChild`, and `replaceChild` only work on `Element` objects. If one of these methods is called on another type of node, it throws an exception.
 
 ### Properties (unique: 16/31)
 | Property | Type | Default | Platform | Description |
@@ -461,13 +444,11 @@ Titanium provides a number of global built-in objects, detailed below.
 
 ### String Utilities
 
-Titanium includes several extra utility functions for formatting text, attached to the
-global [String](Global.String) object.
+Titanium includes several extra utility functions for formatting text, attached to the global [String](Global.String) object.
 
 ### console
 
-Titanium provides [console](Global.Console) support familiar to many JavaScript developers
-for logging at the toplevel, in addition to the [Titanium](Titanium.API) logging facilities.
+Titanium provides [console](Global.Console) support familiar to many JavaScript developers for logging at the toplevel, in addition to the [Titanium](Titanium.API) logging facilities.
 
 ### Timers
 
@@ -551,13 +532,9 @@ Titanium has built-in support for one-off and repeating timers:
 > Platforms: both
 > Type: module
 
-The toplevel `console` support is intended to supplement <Titanium.API>
-and make it easier for developers to port existing JavaScript code
-(especially CommonJS modules) to Titanium.
+The toplevel `console` support is intended to supplement <Titanium.API> and make it easier for developers to port existing JavaScript code (especially CommonJS modules) to Titanium.
 
-Note that `console` does not currently implement the complete
-[Console](https://developer.mozilla.org/de/docs/Web/API/Console) specification.
-See the following supported methods for details and submit a pull request to add more!
+Note that `console` does not currently implement the complete [Console](https://developer.mozilla.org/de/docs/Web/API/Console) specification. See the following supported methods for details and submit a pull request to add more!
 
 
 ### Methods (15)
@@ -588,11 +565,9 @@ See the following supported methods for details and submit a pull request to add
 > Platforms: both
 > Type: module
 
-Provides support for localized number formatting, date/time formatting,
-and language sensitive string comparisons.
+Provides support for localized number formatting, date/time formatting, and language sensitive string comparisons.
 
-For more detail, see the MDN website about
-[Intl](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Intl).
+For more detail, see the MDN website about [Intl](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Intl).
 
 
 ### Methods (1)
@@ -611,8 +586,7 @@ For more detail, see the MDN website about
 
 A collator is used to perform a localized string compare or sort using a given language locale.
 
-For more detail, see the MDN website about
-[Intl.Collator](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Intl/Collator).
+For more detail, see the MDN website about [Intl.Collator](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Intl/Collator).
 
 ### Properties (unique: 1/1)
 | Property | Type | Default | Platform | Description |
@@ -650,13 +624,9 @@ For more detail, see the MDN website about
 > Platforms: both
 > Type: module
 
-A `DateTimeFormat` object is used to format a `Date` object to a localized date and/or time string.
-This will respect the system's current language setting when outputting a full month or weekday name.
-It will also respect the current locale's date component ordering such as Month/Day/Year,
-Day/Month/Year, and Year/Month/Day.
+A `DateTimeFormat` object is used to format a `Date` object to a localized date and/or time string. This will respect the system's current language setting when outputting a full month or weekday name. It will also respect the current locale's date component ordering such as Month/Day/Year, Day/Month/Year, and Year/Month/Day.
 
-For more detail, see the MDN website about
-[Intl.DateTimeFormat](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat).
+For more detail, see the MDN website about [Intl.DateTimeFormat](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat).
 
 ### Properties (unique: 1/1)
 | Property | Type | Default | Platform | Description |
@@ -707,13 +677,9 @@ For more detail, see the MDN website about
 > Platforms: both
 > Type: module
 
-A `NumberFormat` object is used to convert a `Number` value to a localized numeric string.
-It provides various formatting options controlling the number of integer and fractional digits
-to be displayed. It can also output currency values, percentage based values, and
-scientific notation.
+A `NumberFormat` object is used to convert a `Number` value to a localized numeric string. It provides various formatting options controlling the number of integer and fractional digits to be displayed. It can also output currency values, percentage based values, and scientific notation.
 
-For more detail, see the MDN website about
-[Intl.NumberFormat](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat).
+For more detail, see the MDN website about [Intl.NumberFormat](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat).
 
 ### Properties (unique: 1/1)
 | Property | Type | Default | Platform | Description |
@@ -756,8 +722,7 @@ For more detail, see the MDN website about
 > Platforms: both
 > Type: module
 
-This module contains Titanium-only extensions for formatting data into locale-specific strings. 
-The target locale is configured by the user in the device's system Settings.
+This module contains Titanium-only extensions for formatting data into locale-specific strings. The target locale is configured by the user in the device's system Settings.
 
 
 ### Methods (5)

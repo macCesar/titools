@@ -54,15 +54,11 @@ const name = user.name
 
 ## Styling with TSS
 
-First detect `purgetss/` or `purgetss/config.cjs`. If present, invoke the
-`purgetss` skill, use verified utilities, and do not edit generated
-`app/styles/app.tss`. The manual TSS organization below applies when PurgeTSS is
-not present or to specific properties for which that skill confirms no utility.
+First detect `purgetss/` or `purgetss/config.cjs`. If present, invoke the `purgetss` skill, use verified utilities, and do not edit generated `app/styles/app.tss`. The manual TSS organization below applies when PurgeTSS is not present or to specific properties for which that skill confirms no utility.
 
 ### TSS file organization
 
-Every controller can have a matching TSS file. Standard Alloy also supports a
-manually maintained global `app.tss`.
+Every controller can have a matching TSS file. Standard Alloy also supports a manually maintained global `app.tss`.
 
 ```
 app/styles/

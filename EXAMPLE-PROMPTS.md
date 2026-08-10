@@ -262,8 +262,7 @@ Expect:
 
 ## Testing notes
 
-Date: ___________
-Platform: [ ] Claude Code  [ ] Gemini CLI  [ ] Codex CLI
+Date: ___________ Platform: [ ] Claude Code  [ ] Gemini CLI  [ ] Codex CLI
 
 ### Results
 
@@ -328,15 +327,13 @@ Build failure:
 "My build fails on Android with 'Property opaque is not allowed in android platform'.
 I'm using PurgeTSS. What did I do wrong?"
 ```
-Expect: use `purgetss` (references/platform-modifiers.md)
-Explain: missing `[platform=ios]` modifier
+Expect: use `purgetss` (references/platform-modifiers.md) Explain: missing `[platform=ios]` modifier
 
 Slow ListView:
 ```
 "My product list with ~1000 items is choppy and laggy when scrolling fast. How do I fix it?"
 ```
-Expect: use `ti-ui` (references/listviews-and-performance.md)
-Check: using `Ti.UI.SIZE`? using proper templates?
+Expect: use `ti-ui` (references/listviews-and-performance.md) Check: using `Ti.UI.SIZE`? using proper templates?
 
 Performance audit:
 ```

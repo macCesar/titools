@@ -80,8 +80,7 @@ Events:
 
 ### Local web content communication
 
-Logging from WebView:
-Ti.API methods work inside local HTML.
+Logging from WebView: Ti.API methods work inside local HTML.
 
 ```html
 <html>

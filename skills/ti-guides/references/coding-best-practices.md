@@ -66,8 +66,7 @@ if (isAndroid) { /* Android path */ } else { /* iOS path */ }
 - Avoid extending the `Ti` namespace. Three reasons:
   1. Ti objects are proxies to native OS components — your extensions may conflict with native functionality.
   2. Arrays stored on the namespace may be immutable; objects may be null unexpectedly.
-  3. There is no guarantee properties persist across SDK versions.
-  Use your own namespace or CommonJS module instead of modifying `Ti`.
+  3. There is no guarantee properties persist across SDK versions. Use your own namespace or CommonJS module instead of modifying `Ti`.
 
 ## 5. App architecture recommendations
 

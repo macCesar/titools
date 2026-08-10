@@ -141,8 +141,7 @@ Ti.Gesture.addEventListener('orientationchange', (e) => {
 });
 ```
 
-Anti-pattern warning: Do not use `orientationchange` listeners to force an orientation. It causes the wrong orientation to flash, repeated firing, and bad behavior. Use `tiapp.xml` or window `orientationModes`.
-...
+Anti-pattern warning: Do not use `orientationchange` listeners to force an orientation. It causes the wrong orientation to flash, repeated firing, and bad behavior. Use `tiapp.xml` or window `orientationModes`. ...
 ### Window orientation events
 
 ```javascript

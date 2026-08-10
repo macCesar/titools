@@ -20,16 +20,9 @@
 
 ## Reading these examples
 
-Snippets that call `$.dialog`, `$.bottomSheet`, or `$.snackbar` expect the app to
-own those surfaces as Alloy Widgets under `app/widgets/`. Their public API,
-queueing, and cleanup rules live in [Feedback Widget Contracts](feedback-widget-contracts.md);
-[Feedback Surfaces](feedback-surfaces.md) covers which surface a given event
-deserves. The `<Widget>` declaration alone will not compile until those Widgets
-exist and are registered in `app/config.json`.
+Snippets that call `$.dialog`, `$.bottomSheet`, or `$.snackbar` expect the app to own those surfaces as Alloy Widgets under `app/widgets/`. Their public API, queueing, and cleanup rules live in [Feedback Widget Contracts](feedback-widget-contracts.md); [Feedback Surfaces](feedback-surfaces.md) covers which surface a given event deserves. The `<Widget>` declaration alone will not compile until those Widgets exist and are registered in `app/config.json`.
 
-Styles below carry literal hex values so each example reads on its own. Production
-code should name semantic color roles instead, so light and dark resolve without a
-second code path — see [Theming and dark mode](theming.md).
+Styles below carry literal hex values so each example reads on its own. Production code should name semantic color roles instead, so light and dark resolve without a second code path — see [Theming and dark mode](theming.md).
 
 ## API client service
 Standard logic for network requests.

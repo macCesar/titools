@@ -25,9 +25,7 @@
 
 Use the <Titanium.UI.createListView> method or **`<ListView>`** Alloy element to create a `ListView`.
 
-A `ListView` object is a container for [ListSection](Titanium.UI.ListSection)
-objects that are, in turn, containers for [ListItem](Titanium.UI.ListItem) objects. This is
-easily visualized as an Alloy view:
+A `ListView` object is a container for [ListSection](Titanium.UI.ListSection) objects that are, in turn, containers for [ListItem](Titanium.UI.ListItem) objects. This is easily visualized as an Alloy view:
 
 
 ### Properties (unique: 54/122)
@@ -157,16 +155,11 @@ easily visualized as an Alloy view:
 > Extends Ti.Proxy
 > Platforms: both
 
-A list item is a combination of a <ListDataItem> and <ItemTemplate>.  The list data item
-represents the actual data, while the item template represents the style elements of the item.
+A list item is a combination of a <ListDataItem> and <ItemTemplate>.  The list data item represents the actual data, while the item template represents the style elements of the item.
 
-You should not create `ListItem` objects with a JavaScript factory method, as you do other Titanium proxies.
-Instead, you should pass a <ListDataItem> array to the `setItems` method of a `ListSection`. The list data items
-contain the data you want to display in the list.
+You should not create `ListItem` objects with a JavaScript factory method, as you do other Titanium proxies. Instead, you should pass a <ListDataItem> array to the `setItems` method of a `ListSection`. The list data items contain the data you want to display in the list.
 
-Alloy applications can use **`<ListItem>`** elements to create `ListItem` objects. `<ListItem>` elements
-must be nested inside a **`<ListSection>`** element, which itself is nested in a `<ListView>` element,
-as shown below:
+Alloy applications can use **`<ListItem>`** elements to create `ListItem` objects. `<ListItem>` elements must be nested inside a **`<ListSection>`** element, which itself is nested in a `<ListView>` element, as shown below:
 
 
 ### Properties (unique: 26/28)
@@ -238,8 +231,7 @@ as shown below:
 
 Use the <Titanium.UI.createListSection> method or **`<ListSection>`** Alloy element to create a `ListSection`.
 
-List sections are used to manipulate and organize list items contained within it. For examples 
-of using list sections, see the examples in <Titanium.UI.ListView> and <Titanium.UI.ListItem>.
+List sections are used to manipulate and organize list items contained within it. For examples of using list sections, see the examples in <Titanium.UI.ListView> and <Titanium.UI.ListItem>.
 
 ### Properties (unique: 7/9)
 | Property | Type | Default | Platform | Description |
@@ -308,8 +300,7 @@ of using list sections, see the examples in <Titanium.UI.ListView> and <Titanium
 | ------- | --- |
 | ![Android](./tableview_android.png) | ![iOS](./tableview_ios.png) |
 
-A `TableView` object is a container for [TableViewSection](Titanium.UI.TableViewSection)
-objects that are, in turn, containers for [TableViewRow](Titanium.UI.TableViewRow) objects.
+A `TableView` object is a container for [TableViewSection](Titanium.UI.TableViewSection) objects that are, in turn, containers for [TableViewRow](Titanium.UI.TableViewRow) objects.
 
 Use the <Titanium.UI.createTableView> method or **`<TableView>`** Alloy element to create a `TableView`.
 
@@ -460,20 +451,15 @@ There are few approaches to creating and using `TableView` object.
 > Extends Ti.UI.View
 > Platforms: both
 
-Use the <Titanium.UI.createTableViewRow> method or **`<TableViewRow>`** Alloy element to create
-a table view row.
+Use the <Titanium.UI.createTableViewRow> method or **`<TableViewRow>`** Alloy element to create a table view row.
 
-These may be explicitly added to [TableViewSection](Titanium.UI.TableViewSection) objects, which are applied
-to a [TableView](Titanium.UI.TableView). If a table section is not specified, one will be
-automatically created.
+These may be explicitly added to [TableViewSection](Titanium.UI.TableViewSection) objects, which are applied to a [TableView](Titanium.UI.TableView). If a table section is not specified, one will be automatically created.
 
-A row's contents can be as simple as a single line of text, or comprised of a completely
-customized layout of child views.
+A row's contents can be as simple as a single line of text, or comprised of a completely customized layout of child views.
 
 ### Creating Table View Rows
 
-Rows may be created using the properties directly available on the `TableViewRow` object, to
-achieve the following:
+Rows may be created using the properties directly available on the `TableViewRow` object, to achieve the following:
 
 
 *(See full overview in titanium-docs)*
@@ -539,20 +525,13 @@ achieve the following:
 > Extends Ti.Proxy
 > Platforms: both
 
-Use the <Titanium.UI.createTableViewSection> method or **`<TableViewSection>`** Alloy element to 
-create a `TableViewSection`.
+Use the <Titanium.UI.createTableViewSection> method or **`<TableViewSection>`** Alloy element to create a `TableViewSection`.
 
-Before the table is rendered, the `TableViewSection` [add](Titanium.UI.TableViewSection.add) 
-method may be used to add [TableViewRow](Titanium.UI.TableViewRow) objects to a section. After 
-it is rendered, one of the `TableView` [insertRowBefore](Titanium.UI.TableView.insertRowBefore), 
-[insertRowAfter](Titanium.UI.TableView.insertRowAfter), or 
-[appendRow](Titanium.UI.TableView.appendRow) methods must be used instead. 
+Before the table is rendered, the `TableViewSection` [add](Titanium.UI.TableViewSection.add) method may be used to add [TableViewRow](Titanium.UI.TableViewRow) objects to a section. After it is rendered, one of the `TableView` [insertRowBefore](Titanium.UI.TableView.insertRowBefore), [insertRowAfter](Titanium.UI.TableView.insertRowAfter), or [appendRow](Titanium.UI.TableView.appendRow) methods must be used instead.
 
-To remove a row from a section after the table is rendered, use the `TableView` 
-[deleteRow](Titanium.UI.TableView.deleteRow) method. 
+To remove a row from a section after the table is rendered, use the `TableView` [deleteRow](Titanium.UI.TableView.deleteRow) method.
 
-In order for a section to be visible, either its `headerTitle` or `headerView` property must be 
-configured. 
+In order for a section to be visible, either its `headerTitle` or `headerView` property must be configured.
 
 
 *(See full overview in titanium-docs)*

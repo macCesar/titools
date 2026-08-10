@@ -25,8 +25,7 @@ Community modules:
 - From Zero To App list: https://fromzerotoapp.com/modules/
 - Curated list of modules maintained by Michael Gangolf
 
-Marketplace:
-The original Appcelerator Marketplace is no longer available. Find community modules on GitHub and npm. A curated list is at https://fromzerotoapp.com/modules/.
+Marketplace: The original Appcelerator Marketplace is no longer available. Find community modules on GitHub and npm. A curated list is at https://fromzerotoapp.com/modules/.
 
 ### Pre-installed modules
 Some modules ship with the SDK and do not need separate installation: `ti.map`, `ti.identity`, `ti.webdialog`, `ti.applesignin`.

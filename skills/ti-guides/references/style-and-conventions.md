@@ -46,8 +46,7 @@ else
 const fullName = firstName + ' ' + lastName
 ```
 
-Return statement placement:
-Do not put `return` on its own line followed by an object literal. JavaScript will insert a semicolon automatically and return `undefined`.
+Return statement placement: Do not put `return` on its own line followed by an object literal. JavaScript will insert a semicolon automatically and return `undefined`.
 ```javascript
 // Wrong
 return

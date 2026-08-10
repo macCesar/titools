@@ -10,197 +10,101 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added — File type association in `ti-expert`
 
-`file-type-association.md` covers making the OS hand a file to the app: exported
-versus imported UTIs on iOS, `CFBundleDocumentTypes`, the Android intent filter,
-and receiving a document from AirDrop, Quick Share or a file manager.
+`file-type-association.md` covers making the OS hand a file to the app: exported versus imported UTIs on iOS, `CFBundleDocumentTypes`, the Android intent filter, and receiving a document from AirDrop, Quick Share or a file manager.
 
-The reference is built around the failure mode that costs the most time, because
-nothing reports it. `LSSupportsOpeningDocumentsInPlace` is a root-level
-`Info.plist` key; nested inside the `CFBundleDocumentTypes` dict — where it reads
-as belonging — iOS ignores it silently. The app still registers as owner of the
-type, so the symptom is Files previewing the document instead of launching the
-app, which is indistinguishable from iOS refusing to launch third-party apps at
-all. That wrong conclusion is easy to reach and easy to build on.
+The reference is built around the failure mode that costs the most time, because nothing reports it. `LSSupportsOpeningDocumentsInPlace` is a root-level `Info.plist` key; nested inside the `CFBundleDocumentTypes` dict — where it reads as belonging — iOS ignores it silently. The app still registers as owner of the type, so the symptom is Files previewing the document instead of launching the app, which is indistinguishable from iOS refusing to launch third-party apps at all. That wrong conclusion is easy to reach and easy to build on.
 
-Alongside it: why conforming to `public.zip-archive` makes Files list a backup's
-contents instead of opening it, why `UIFileSharingEnabled` is a product decision
-rather than a fix, why Android `pathPattern` needs one variant per dot in the
-filename, and why an `ACTION_SEND` filter can put an app in its own share sheet.
-Closes with `plutil -extract` and `cmd package query-activities` commands that
-check the built binary rather than what `tiapp.xml` says, and a symptom-to-cause
-table.
+Alongside it: why conforming to `public.zip-archive` makes Files list a backup's contents instead of opening it, why `UIFileSharingEnabled` is a product decision rather than a fix, why Android `pathPattern` needs one variant per dot in the filename, and why an `ACTION_SEND` filter can put an app in its own share sheet. Closes with `plutil -extract` and `cmd package query-activities` commands that check the built binary rather than what `tiapp.xml` says, and a symptom-to-cause table.
 
 ## [4.4.0] - 2026-08-03
 
 ### Added — Feedback surfaces and Widget contracts in `ti-expert`
 
-Three new references cover the ground between "something happened" and "which proxy
-draws it": `feedback-surfaces.md` picks the surface from the meaning of the event
-(owner, blocking, reversibility, persistence, choice shape) rather than from whichever
-dialog is easiest to call, and draws the line between what an app may style and what
-must stay system-owned. `feedback-widget-contracts.md` fixes the public API and
-lifecycle of Snackbar, Dialog and Bottom Sheet as Alloy Widgets — exactly-once
-callbacks, FIFO queueing, idempotent `destroy()`, accessibility focus handling.
-`feedback-migration.md` replaces native dialogs one window at a time, migrating
-semantics instead of proxy names.
+Three new references cover the ground between "something happened" and "which proxy draws it": `feedback-surfaces.md` picks the surface from the meaning of the event (owner, blocking, reversibility, persistence, choice shape) rather than from whichever dialog is easiest to call, and draws the line between what an app may style and what must stay system-owned. `feedback-widget-contracts.md` fixes the public API and lifecycle of Snackbar, Dialog and Bottom Sheet as Alloy Widgets — exactly-once callbacks, FIFO queueing, idempotent `destroy()`, accessibility focus handling. `feedback-migration.md` replaces native dialogs one window at a time, migrating semantics instead of proxy names.
 
-Ten existing references were revised alongside them. `theming.md` was rewritten around
-a semantic color contract and now defers utility naming to the `purgetss` skill instead
-of carrying its own copy.
+Ten existing references were revised alongside them. `theming.md` was rewritten around a semantic color contract and now defers utility naming to the `purgetss` skill instead of carrying its own copy.
 
-The skill's `description` gained the feedback and Widget triggers, and kept the ones it
-had: auditing, memory leaks, migrating legacy apps, and adaptive layouts for tablets,
-foldables and large screens.
+The skill's `description` gained the feedback and Widget triggers, and kept the ones it had: auditing, memory leaks, migrating legacy apps, and adaptive layouts for tablets, foldables and large screens.
 
 ### Fixed — Documentation drift around `ti-expert`
 
-The reference count said 21 in two places in the README; the skill has 24. The
-"When it activates" list omitted feedback surfaces, Widgets, adaptive layouts and
-theming — the adaptive-layouts gap had been open since v4.1.0. `EXAMPLE-PROMPTS.md`,
-which doubles as the activation smoke test, had no prompt exercising any of the new
-material.
+The reference count said 21 in two places in the README; the skill has 24. The "When it activates" list omitted feedback surfaces, Widgets, adaptive layouts and theming — the adaptive-layouts gap had been open since v4.1.0. `EXAMPLE-PROMPTS.md`, which doubles as the activation smoke test, had no prompt exercising any of the new material.
 
-Inside the skill, `examples.md` had started calling `$.dialog` and `$.bottomSheet`
-without saying anywhere that the app must build those Widgets first, so its snippets
-read as copy-ready when they are not. It now names their contract and the color
-convention its styles follow, and its index was regenerated to match.
+Inside the skill, `examples.md` had started calling `$.dialog` and `$.bottomSheet` without saying anywhere that the app must build those Widgets first, so its snippets read as copy-ready when they are not. It now names their contract and the color convention its styles follow, and its index was regenerated to match.
 
 ## [4.3.0] - 2026-08-02
 
 ### Fixed — Unclosed code fences in 9 reference files
 
-Nine references carried code fences that opened and never closed, a leftover from the
-conversion of the upstream Titanium docs. Rendered, the damage was severe:
-`api-services.md` opened a ```` ```xml ```` on line 17 and never closed it, so 684 of its
-701 lines displayed as one code block. `api-ui-android.md` had 484 lines in the same
-state.
+Nine references carried code fences that opened and never closed, a leftover from the conversion of the upstream Titanium docs. Rendered, the damage was severe: `api-services.md` opened a ```` ```xml ```` on line 17 and never closed it, so 684 of its 701 lines displayed as one code block. `api-ui-android.md` had 484 lines in the same state.
 
-It also broke the boundary between content and structure that any tool reading these
-files depends on — the first draft of the TOC generator produced an 8-entry index for
-`api-core.md`, which has 16 headings, because an open fence swallowed the rest.
+It also broke the boundary between content and structure that any tool reading these files depends on — the first draft of the TOC generator produced an 8-entry index for `api-core.md`, which has 16 headings, because an open fence swallowed the rest.
 
-Two shapes, opposite fixes: 7 orphan fences whose example never survived the conversion
-were removed, and 8 blocks carrying real code got their terminator. Verified by
-comparing every file with fence lines excluded — the content is byte-identical.
+Two shapes, opposite fixes: 7 orphan fences whose example never survived the conversion were removed, and 8 blocks carrying real code got their terminator. Verified by comparing every file with fence lines excluded — the content is byte-identical.
 
 `scripts/fix-fences.mjs` performs the repair and is idempotent.
 
 ### Added — Tables of contents in 83 long reference files
 
-Skill references load on demand, so a 750-line file with no index costs the reading
-agent the whole file to reach one section. Following the skill-creator guidance
-(index anything over 300 lines), `scripts/generate-toc.mjs` adds a linked index to
-every reference past that threshold — 1,038 anchors, all verified to resolve against
-a real heading.
+Skill references load on demand, so a 750-line file with no index costs the reading agent the whole file to reach one section. Following the skill-creator guidance (index anything over 300 lines), `scripts/generate-toc.mjs` adds a linked index to every reference past that threshold — 1,038 anchors, all verified to resolve against a real heading.
 
-The generator refuses to index a file with malformed fences rather than emitting a
-silently truncated index, and delimits its output with `<!-- TOC-START -->` /
-`<!-- TOC-END -->` so re-running refreshes instead of duplicating.
+The generator refuses to index a file with malformed fences rather than emitting a silently truncated index, and delimits its output with `<!-- TOC-START -->` / `<!-- TOC-END -->` so re-running refreshes instead of duplicating.
 
 Both scripts are maintainer tools: versioned, absent from the npm `files` allowlist.
 
 ### Changed — The maintainer-only auditor skill is now versioned
 
-`.claude/skills/titools-skill-auditor/` sat under a gitignored path, so the tool used
-to keep the five doc-mirror skills aligned with upstream existed on one machine only.
-Same failure as the slash commands in 4.2.0.
+`.claude/skills/titools-skill-auditor/` sat under a gitignored path, so the tool used to keep the five doc-mirror skills aligned with upstream existed on one machine only. Same failure as the slash commands in 4.2.0.
 
-`.gitignore` changes from `.claude/` to `.claude/*` plus `!.claude/skills/`, which keeps
-`settings.local.json` and local drafts out while tracking the skill. It stays in place
-rather than moving, so Claude Code still loads it automatically when working in this
-repo, and it is still excluded from the npm tarball.
+`.gitignore` changes from `.claude/` to `.claude/*` plus `!.claude/skills/`, which keeps `settings.local.json` and local drafts out while tracking the skill. It stays in place rather than moving, so Claude Code still loads it automatically when working in this repo, and it is still excluded from the npm tarball.
 
 ## [4.2.0] - 2026-08-02
 
 ### Added — Slash commands actually ship
 
-`/ti-check`, `/ti-new-screen` and `/ti-audit` lived in `.claude/commands/`, a path
-covered by the first line of `.gitignore`. They reached nobody: not marketplace users,
-since the plugin serves `commands/` from the repo, and not npm users, since the tarball
-only carries what `package.json` → `files` lists. The README documented all three under
-a "Plugin only" heading the whole time.
+`/ti-check`, `/ti-new-screen` and `/ti-audit` lived in `.claude/commands/`, a path covered by the first line of `.gitignore`. They reached nobody: not marketplace users, since the plugin serves `commands/` from the repo, and not npm users, since the tarball only carries what `package.json` → `files` lists. The README documented all three under a "Plugin only" heading the whole time.
 
 - Moved to `commands/`, versioned, and added to the npm `files` allowlist.
-- `lib/config.js` gains `COMMANDS` / `LEGACY_COMMANDS`; `installer.js` gains
-  `installCommand` / `installCommands`; `cleanup.js` gains `removeCommands`.
-- `install`, `update` and `remove` handle them alongside skills and the agent.
-  `remove` lists them as their own checkbox entry.
-- `test/commands.test.js` fails if `COMMANDS` and the directory ever disagree, if a
-  command's frontmatter `name` stops matching its filename, or if `commands/` falls out
-  of `files`.
+- `lib/config.js` gains `COMMANDS` / `LEGACY_COMMANDS`; `installer.js` gains `installCommand` / `installCommands`; `cleanup.js` gains `removeCommands`.
+- `install`, `update` and `remove` handle them alongside skills and the agent. `remove` lists them as their own checkbox entry.
+- `test/commands.test.js` fails if `COMMANDS` and the directory ever disagree, if a command's frontmatter `name` stops matching its filename, or if `commands/` falls out of `files`.
 
 ### Fixed — Having both channels installed no longer duplicates everything
 
-TiTools ships through the npm CLI and the Claude Code marketplace plugin, and a user can
-have both. Nothing checked for that: `createSkillSymlinks` mirrored all 8 skills into
-`~/.claude/skills/` even when the plugin already served them, so every skill — and now
-every command — appeared twice in the autocomplete.
+TiTools ships through the npm CLI and the Claude Code marketplace plugin, and a user can have both. Nothing checked for that: `createSkillSymlinks` mirrored all 8 skills into `~/.claude/skills/` even when the plugin already served them, so every skill — and now every command — appeared twice in the autocomplete.
 
-New `lib/claude-plugin.js` answers whether the plugin already provides a given skill or
-command. It requires the plugin to be **enabled and cached**, never merely cached:
-uninstalling a plugin removes it from `enabledPlugins` in `settings.json` but leaves the
-cache directory on disk. In the sibling project (aiskills v1.16.0), reading that leftover
-as proof of installation made the CLI skip every symlink and report `0/6 skills linked`,
-leaving Claude Code with no skills and no way to repair it by re-running install. That
-bug is covered here by tests rather than rediscovered.
+New `lib/claude-plugin.js` answers whether the plugin already provides a given skill or command. It requires the plugin to be **enabled and cached**, never merely cached: uninstalling a plugin removes it from `enabledPlugins` in `settings.json` but leaves the cache directory on disk. In the sibling project (aiskills v1.16.0), reading that leftover as proof of installation made the CLI skip every symlink and report `0/6 skills linked`, leaving Claude Code with no skills and no way to repair it by re-running install. That bug is covered here by tests rather than rediscovered.
 
-Detection fails toward `false` on missing or malformed settings — a wrong `false` costs a
-duplicate entry, a wrong `true` costs the user every skill they have.
+Detection fails toward `false` on missing or malformed settings — a wrong `false` costs a duplicate entry, a wrong `true` costs the user every skill they have.
 
-- `createSkillSymlinks` and `installCommands` skip plugin-served entries and remove any
-  stale copy left by an earlier install; both return a `skipped` array.
+- `createSkillSymlinks` and `installCommands` skip plugin-served entries and remove any stale copy left by an earlier install; both return a `skipped` array.
 - `install` and `update` report what was skipped instead of warning about a shortfall.
-- `titools doctor` subtracts plugin-served skills from the expected total — a healthy
-  marketplace install used to render as a wall of errors advising a command that
-  correctly does nothing — and gained a "Marketplace plugin" section separating the three
-  states: enabled, not installed, and uninstalled-with-cache-left-behind (printed with
-  the `rm -rf` that clears it).
+- `titools doctor` subtracts plugin-served skills from the expected total — a healthy marketplace install used to render as a wall of errors advising a command that correctly does nothing — and gained a "Marketplace plugin" section separating the three states: enabled, not installed, and uninstalled-with-cache-left-behind (printed with the `rm -rf` that clears it).
 - `test/claude-plugin.test.js` covers both failure modes across 20 new assertions.
 
 ### Changed — Install output says what it is doing
 
-"✓ Claude Code detected", printed alone, read as though Gemini and Codex had been looked
-for and not found. They never appear there: only assistants that need TiTools-managed
-mirrors are listed, and the rest read `~/.agents/skills/` directly — which the install
-has already done by that point.
+"✓ Claude Code detected", printed alone, read as though Gemini and Codex had been looked for and not found. They never appear there: only assistants that need TiTools-managed mirrors are listed, and the rest read `~/.agents/skills/` directly — which the install has already done by that point.
 
 ### Fixed — README
 
-- The `ti-expert` "Key features" list said 18 reference guides; there are 21. The table
-  further down already said 21, so the file contradicted itself.
-- The "Slash Commands (Plugin only)" section is now "Slash Commands (Claude Code)" and
-  documents both channels.
+- The `ti-expert` "Key features" list said 18 reference guides; there are 21. The table further down already said 21, so the file contradicted itself.
+- The "Slash Commands (Plugin only)" section is now "Slash Commands (Claude Code)" and documents both channels.
 
 ## [4.1.0] - 2026-07-31
 
 ### Changed — `ti-expert` / `references/adaptive-layouts.md`
 
-Orientation on Android was only covered from the layout side. Three days were lost on a
-portrait-locked app that kept rotating on a phone, so the reference now carries what was
-missing to diagnose it:
+Orientation on Android was only covered from the layout side. Three days were lost on a portrait-locked app that kept rotating on a phone, so the reference now carries what was missing to diagnose it:
 
-- The resizability restriction starts at **API 36**, not 37, with a temporary opt-out
-  (`PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY`) that expires when targeting API 37.
-- Table of which Titanium activity hosts what (`TiActivity`, `TiTranslucentActivity`,
-  the camera and video ones), plus how to read the canonical list from the SDK's AAR
-  instead of memorising it.
-- Why `android:configChanges` and a lock on `TiTranslucentActivity` are better left
-  undeclared — the second one throws `IllegalStateException` on Android 8–11.
-- `orientationModes` (with form-factor queries) as the preferred way to lock orientation,
-  since it is resolved from `physicalSizeCategory` rather than pixel widths.
-- New anti-patterns: setting `activity.requestedOrientation` imperatively, which silently
-  overrides the manifest, and detecting tablets by comparing `platformWidth` (pixels on
-  Android) against a dp threshold.
-- A debugging recipe based on `dumpsys activity activities | grep requestedOrientation`,
-  which reports the *effective* orientation, plus `adb logcat | grep "Orientation request
-  will be ignored"` (the SDK's own warning when Android drops the request on a large screen)
-  and `adb shell am get-config` to read the device's size bucket.
-- New anti-pattern: `orientationModes: []`. An empty array maps to `SCREEN_ORIENTATION_SENSOR`,
-  so it unlocks rotation instead of clearing the setting — an existing `orientationModes` can
-  be the bug rather than the fix.
-- Corrected the `android:configChanges` advice: the CLI *removes* the attribute from
-  TiBaseActivity-derived activities before the merge (`_build.js`), so a hand-written subset is
-  dead weight rather than a hazard.
+- The resizability restriction starts at **API 36**, not 37, with a temporary opt-out (`PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY`) that expires when targeting API 37.
+- Table of which Titanium activity hosts what (`TiActivity`, `TiTranslucentActivity`, the camera and video ones), plus how to read the canonical list from the SDK's AAR instead of memorising it.
+- Why `android:configChanges` and a lock on `TiTranslucentActivity` are better left undeclared — the second one throws `IllegalStateException` on Android 8–11.
+- `orientationModes` (with form-factor queries) as the preferred way to lock orientation, since it is resolved from `physicalSizeCategory` rather than pixel widths.
+- New anti-patterns: setting `activity.requestedOrientation` imperatively, which silently overrides the manifest, and detecting tablets by comparing `platformWidth` (pixels on Android) against a dp threshold.
+- A debugging recipe based on `dumpsys activity activities | grep requestedOrientation`, which reports the *effective* orientation, plus `adb logcat | grep "Orientation request will be ignored"` (the SDK's own warning when Android drops the request on a large screen) and `adb shell am get-config` to read the device's size bucket.
+- New anti-pattern: `orientationModes: []`. An empty array maps to `SCREEN_ORIENTATION_SENSOR`, so it unlocks rotation instead of clearing the setting — an existing `orientationModes` can be the bug rather than the fix.
+- Corrected the `android:configChanges` advice: the CLI *removes* the attribute from TiBaseActivity-derived activities before the merge (`_build.js`), so a hand-written subset is dead weight rather than a hazard.
 - Fixed the generated-manifest path: `build/android/app/src/main/AndroidManifest.xml`.
 
 ## [4.0.0] - 2026-07-15
@@ -263,165 +167,70 @@ Full 30-reference audit against the upstream `purgetss` (v7.11.1) and `purgetss-
 
 ### Fixed — `purgetss` SKILL.md blockquote that swallowed the Reference Guides
 
-The `> ` blockquote opened by the NO FLEXBOX callout (line 199 of
-`SKILL.md`) was never terminated by a blank non-quoted line. Every
-section after it — PLATFORM-SPECIFIC PROPERTIES, Other Mandatory Rules,
-Common Anti-Patterns, Class Verification Workflow, Reference Guides,
-Examples, Related Skills — rendered as nested quoted content in any
-CommonMark parser. The Reference Guides index (the file map the agent
-needs to load the right reference) was visually buried under a left-bar
-quote. The fix terminates the FLEXBOX callout cleanly and promotes the
-following 11 H2/H3 sections back to document-level headings. No content
-was removed; only the leading `> ` prefix was stripped from non-callout
-lines. Legitimate inline admonitions keep their callout formatting.
+The `> ` blockquote opened by the NO FLEXBOX callout (line 199 of `SKILL.md`) was never terminated by a blank non-quoted line. Every section after it — PLATFORM-SPECIFIC PROPERTIES, Other Mandatory Rules, Common Anti-Patterns, Class Verification Workflow, Reference Guides, Examples, Related Skills — rendered as nested quoted content in any CommonMark parser. The Reference Guides index (the file map the agent needs to load the right reference) was visually buried under a left-bar quote. The fix terminates the FLEXBOX callout cleanly and promotes the following 11 H2/H3 sections back to document-level headings. No content was removed; only the leading `> ` prefix was stripped from non-callout lines. Legitimate inline admonitions keep their callout formatting.
 
 ### Added — `skills/purgetss/references/custom-fonts.md`
 
-PurgeTSS v7.10 docs were split upstream into
-`customization/7-custom-fonts.md` (build-fonts, brand fonts, user-defined
-icon fonts) and `customization/8-icon-fonts-libraries.md` (icon-library,
-the four bundled icon families). The skill now mirrors that split.
-`custom-fonts.md` is a port of the upstream custom-fonts page: the
-build-fonts command, fonts-folder organization, `-m` / `--module`
-CommonJS output (with both `exports.icons` and `exports.families`), the
-`-f` / `--font-class-from-filename` flag, and community patterns on
-PostScript renaming and Font Awesome duotone.
+PurgeTSS v7.10 docs were split upstream into `customization/7-custom-fonts.md` (build-fonts, brand fonts, user-defined icon fonts) and `customization/8-icon-fonts-libraries.md` (icon-library, the four bundled icon families). The skill now mirrors that split. `custom-fonts.md` is a port of the upstream custom-fonts page: the build-fonts command, fonts-folder organization, `-m` / `--module` CommonJS output (with both `exports.icons` and `exports.families`), the `-f` / `--font-class-from-filename` flag, and community patterns on PostScript renaming and Font Awesome duotone.
 
 ### Changed — `skills/purgetss/references/icon-fonts.md` rewritten
 
-The previous file only covered "Recreate Removed Libraries" (Bootstrap
-Icons, Boxicons, LineIcons, Tabler Icons). The primary content — the 4
-official families bundled with PurgeTSS — lived inside the
-`icon-library` section of `cli-commands.md`. The rewrite consolidates
-the primary content with the variant table (`.ms`/`.mso`/`.msr`/`.mss`,
-`.fa`/`.fas`/`.far`/`.fab`, `.mi`, `.f7`), the `icon-library` install
-flow, the full four-family XML/TSS example, and the Font Awesome Pro /
-Beta workflow. The "Recreating removed libraries" section was preserved.
+The previous file only covered "Recreate Removed Libraries" (Bootstrap Icons, Boxicons, LineIcons, Tabler Icons). The primary content — the 4 official families bundled with PurgeTSS — lived inside the `icon-library` section of `cli-commands.md`. The rewrite consolidates the primary content with the variant table (`.ms`/`.mso`/`.msr`/`.mss`, `.fa`/`.fas`/`.far`/`.fab`, `.mi`, `.f7`), the `icon-library` install flow, the full four-family XML/TSS example, and the Font Awesome Pro / Beta workflow. The "Recreating removed libraries" section was preserved.
 
 ### Changed — `skills/purgetss/references/cli-commands.md` trimmed
 
-Went from 1158 to 773 lines (under the 800-line per-reference quality
-standard). The build-fonts (~220 lines) and icon-library (~200 lines)
-sections were replaced with short stub blocks that document the command
-signature and flags, then point to the dedicated `custom-fonts.md` and
-`icon-fonts.md` refs for the full guide. Also:
+Went from 1158 to 773 lines (under the 800-line per-reference quality standard). The build-fonts (~220 lines) and icon-library (~200 lines) sections were replaced with short stub blocks that document the command signature and flags, then point to the dedicated `custom-fonts.md` and `icon-fonts.md` refs for the full guide. Also:
 
-- Removed a 19-line "What's new in v7.5.3 / v7.6.x / v7.7.0 / v7.8.0 /
-  v7.9.0" intro block that duplicated content already in
-  `version-history.md`.
-- Fixed a `-f` flag drift: the option name was `--filename` (incorrect);
-  the actual flag is `--font-class-from-filename`.
-- Bumped a TSS example header comment from `v7.2.7` to `v7.10.2` to
-  match what current PurgeTSS emits.
+- Removed a 19-line "What's new in v7.5.3 / v7.6.x / v7.7.0 / v7.8.0 / v7.9.0" intro block that duplicated content already in `version-history.md`.
+- Fixed a `-f` flag drift: the option name was `--filename` (incorrect); the actual flag is `--font-class-from-filename`.
+- Bumped a TSS example header comment from `v7.2.7` to `v7.10.2` to match what current PurgeTSS emits.
 
 ### Changed — `skills/purgetss/references/version-history.md` refactored
 
-PurgeTSS extracted its inline changelog (in `docs/index.md`) into its
-own dedicated changelog page at <https://purgetss.com/changelog>. The
-skill's `version-history.md` was duplicating the long narrative form,
-which meant double maintenance per release and risked drift.
+PurgeTSS extracted its inline changelog (in `docs/index.md`) into its own dedicated changelog page at <https://purgetss.com/changelog>. The skill's `version-history.md` was duplicating the long narrative form, which meant double maintenance per release and risked drift.
 
-Trimmed from 165 to 59 lines. Each release entry now reduces to 1-5
-terse bullets answering *"what changed that the agent needs to know
-when suggesting classes or configuring `config.cjs`?"* — APIs renamed,
-breaking changes, new commands, new classes, fixes that affect user-
-facing behavior. Internal details (logger fixes, parser edge cases,
-dependency bumps) moved out. The top of the file now points to the
-canonical changelog for full release notes.
+Trimmed from 165 to 59 lines. Each release entry now reduces to 1-5 terse bullets answering *"what changed that the agent needs to know when suggesting classes or configuring `config.cjs`?"* — APIs renamed, breaking changes, new commands, new classes, fixes that affect user- facing behavior. Internal details (logger fixes, parser edge cases, dependency bumps) moved out. The top of the file now points to the canonical changelog for full release notes.
 
 ### Fixed — `skills/purgetss/references/installation-setup.md` anchors and example header
 
-The "Place icon, serif, sans-serif, or monospace font files here" line
-linked to `cli-commands.md#purgetss-build-fonts-alias-bf`, an anchor
-slug that no longer existed (the current slug is
-`#build-fonts-command`). The link now points to `custom-fonts.md` as
-the primary target, with `cli-commands.md#build-fonts-command` as the
-terse flag-reference secondary. Also bumped a TSS example header
-comment from `v7.2.7` to `v7.10.2`.
+The "Place icon, serif, sans-serif, or monospace font files here" line linked to `cli-commands.md#purgetss-build-fonts-alias-bf`, an anchor slug that no longer existed (the current slug is `#build-fonts-command`). The link now points to `custom-fonts.md` as the primary target, with `cli-commands.md#build-fonts-command` as the terse flag-reference secondary. Also bumped a TSS example header comment from `v7.2.7` to `v7.10.2`.
 
 ### Documentation — README reference count
 
-Bumped the `purgetss` reference count in the Skill contents summary
-table from `29 files` to `31 files` to reflect both the `version-
-history.md` introduced in 3.2.0 and the new `custom-fonts.md` introduced
-in this release.
+Bumped the `purgetss` reference count in the Skill contents summary table from `29 files` to `31 files` to reflect both the `version- history.md` introduced in 3.2.0 and the new `custom-fonts.md` introduced in this release.
 
 ## [3.2.0] - 2026-05-13
 
 ### Added — repo conventions and skill output contract
 
-`AGENTS.md` lands at the repo root with the cross-agent conventions every
-TiTools skill must obey: frontmatter ≤ 1024 chars, descriptions that start
-with "Use when…", folder names matching the `name:` field, the citation
-output contract, design principles ("concrete file paths", "vendor-neutral",
-"verify before claiming success", "no backwards-compat noise"), and the
-mandatory release checklist. The doc complements the existing `CLAUDE.md`
-(Claude Code-specific notes) and is meant for Claude Code, Gemini CLI,
-Codex CLI, GitHub Copilot CLI, and any other agent contributing to the repo.
+`AGENTS.md` lands at the repo root with the cross-agent conventions every TiTools skill must obey: frontmatter ≤ 1024 chars, descriptions that start with "Use when…", folder names matching the `name:` field, the citation output contract, design principles ("concrete file paths", "vendor-neutral", "verify before claiming success", "no backwards-compat noise"), and the mandatory release checklist. The doc complements the existing `CLAUDE.md` (Claude Code-specific notes) and is meant for Claude Code, Gemini CLI, Codex CLI, GitHub Copilot CLI, and any other agent contributing to the repo.
 
-The `purgetss` skill adopts the **Required workflow output contract** that
-AGENTS.md prescribes for non-trivial skills: a task → reference table near
-the top of `SKILL.md`, a citation format (`[source: references/<file>.md]`)
-for every claim, and a `FROM_MEMORY (unverified):` prefix when the agent
-answers without consulting a reference. This makes non-compliance visible
-in the agent's own response — the strongest mitigation against agents
-answering from training data instead of from the skill.
+The `purgetss` skill adopts the **Required workflow output contract** that AGENTS.md prescribes for non-trivial skills: a task → reference table near the top of `SKILL.md`, a citation format (`[source: references/<file>.md]`) for every claim, and a `FROM_MEMORY (unverified):` prefix when the agent answers without consulting a reference. This makes non-compliance visible in the agent's own response — the strongest mitigation against agents answering from training data instead of from the skill.
 
 ### Added — `skills/purgetss/references/version-history.md`
 
-The release-by-release record (v7.4.0 → v7.10.2) was extracted out of
-`SKILL.md` into a dedicated reference file per the AGENTS.md "no
-backwards-compat noise" rule. SKILL.md stays focused on current behavior;
-historical context now has its own page, with three new entries covering
-PurgeTSS v7.10.0–v7.10.2.
+The release-by-release record (v7.4.0 → v7.10.2) was extracted out of `SKILL.md` into a dedicated reference file per the AGENTS.md "no backwards-compat noise" rule. SKILL.md stays focused on current behavior; historical context now has its own page, with three new entries covering PurgeTSS v7.10.0–v7.10.2.
 
 ### Changed — skill descriptions follow the "Use when…" convention
 
-`ti-expert`, `ti-ui`, and `purgetss` descriptions were rewritten to start
-with "Use when…" in third person, matching the AGENTS.md frontmatter
-convention. Future agents scan descriptions to decide whether to load the
-full skill; the imperative trigger-led form is easier to evaluate than the
-prior "expert in X" framing.
+`ti-expert`, `ti-ui`, and `purgetss` descriptions were rewritten to start with "Use when…" in third person, matching the AGENTS.md frontmatter convention. Future agents scan descriptions to decide whether to load the full skill; the imperative trigger-led form is easier to evaluate than the prior "expert in X" framing.
 
 ### Documentation — `purgetss` references aligned with PurgeTSS v7.10.0–v7.10.2
 
-Ten reference files were updated against the upstream PurgeTSS docs after
-v7.10.0–v7.10.2 shipped. Highlights:
+Ten reference files were updated against the upstream PurgeTSS docs after v7.10.0–v7.10.2 shipped. Highlights:
 
-- `app-branding.md` — Google Play Feature Graphic (1024×500) generation via
-  `purgetss brand`: `--feature-graphic-padding`, `--feature-logo`,
-  `brand.padding.featureGraphic`, `brand.logos.featureGraphic`. Plus the
-  v7.10.2 pre-7.7.0 brand config auto-migration (legacy flat schema
-  normalized in memory before defaults apply) and the v7.10.0 `--padding`
-  shortcut fix (now applies to BOTH Android paddings).
-- `multi-density-images.md` — `--opacity`, `--padding`, `--output` flags
-  (v7.10.0) for placeholder / default-ImageView workflows.
-- `cli-commands.md` — refreshed `brand` and `images` flag tables and
-  examples with the new v7.10.0 surface.
-- `apply-directive.md` — new "Use icon font classes" section: since
-  v7.10.0, `apply:` resolves bundled icon fonts (`fas`, `fa-*`, `mi-*`,
-  `ms-*`, `f7-*`) from `dist/` without needing `build-fonts` first.
-- `arbitrary-values.md` — arbitrary nesting depth in `theme` objects
-  (v7.10.0): `theme.extend.colors.brand.primary.500` now emits recursively
-  as `brand-primary-500` instead of being silently dropped at level 2.
-  Also: the v7.10.1 rewording of the square-brackets error message.
-- `migration-guide.md` — new upgrade sections for v7.7.0, v7.8.0, v7.9.0,
-  and v7.10.x; updated quick checklist covering brand schema migration,
-  Class Syntax Error pre-validation enforcement, glossary path rename, and
-  the v7.10.x additions.
-- `customization-deep-dive.md` — `featureGraphic` in the `brand` config
-  block; explicit note that v7.10.0 image flags
-  (`--opacity` / `--padding` / `--output`) are CLI-only by design.
-- `EXAMPLES.md` — square-brackets section now points out that v7.8.0+
-  hard-fails the build with a structured `Class Syntax Error` block.
-- `class-categories.md` — `large-title` boolean row now cross-references
-  `ios-large-titles.md` for the full pattern.
-- `dynamic-component-creation.md` — small typo cleanup (`valor:`
-  placeholder removed).
+- `app-branding.md` — Google Play Feature Graphic (1024×500) generation via `purgetss brand`: `--feature-graphic-padding`, `--feature-logo`, `brand.padding.featureGraphic`, `brand.logos.featureGraphic`. Plus the v7.10.2 pre-7.7.0 brand config auto-migration (legacy flat schema normalized in memory before defaults apply) and the v7.10.0 `--padding` shortcut fix (now applies to BOTH Android paddings).
+- `multi-density-images.md` — `--opacity`, `--padding`, `--output` flags (v7.10.0) for placeholder / default-ImageView workflows.
+- `cli-commands.md` — refreshed `brand` and `images` flag tables and examples with the new v7.10.0 surface.
+- `apply-directive.md` — new "Use icon font classes" section: since v7.10.0, `apply:` resolves bundled icon fonts (`fas`, `fa-*`, `mi-*`, `ms-*`, `f7-*`) from `dist/` without needing `build-fonts` first.
+- `arbitrary-values.md` — arbitrary nesting depth in `theme` objects (v7.10.0): `theme.extend.colors.brand.primary.500` now emits recursively as `brand-primary-500` instead of being silently dropped at level 2. Also: the v7.10.1 rewording of the square-brackets error message.
+- `migration-guide.md` — new upgrade sections for v7.7.0, v7.8.0, v7.9.0, and v7.10.x; updated quick checklist covering brand schema migration, Class Syntax Error pre-validation enforcement, glossary path rename, and the v7.10.x additions.
+- `customization-deep-dive.md` — `featureGraphic` in the `brand` config block; explicit note that v7.10.0 image flags (`--opacity` / `--padding` / `--output`) are CLI-only by design.
+- `EXAMPLES.md` — square-brackets section now points out that v7.8.0+ hard-fails the build with a structured `Class Syntax Error` block.
+- `class-categories.md` — `large-title` boolean row now cross-references `ios-large-titles.md` for the full pattern.
+- `dynamic-component-creation.md` — small typo cleanup (`valor:` placeholder removed).
 
-Source of the alignment pass: PurgeTSS docs at `purgetss-docs-context7`
-(v7.10.2 head). Every change traces back to the official source; author
-additions (`## Community-Discovered Patterns` sections) preserved intact.
+Source of the alignment pass: PurgeTSS docs at `purgetss-docs-context7` (v7.10.2 head). Every change traces back to the official source; author additions (`## Community-Discovered Patterns` sections) preserved intact.
 
 ---
 
@@ -429,33 +238,21 @@ additions (`## Community-Discovered Patterns` sections) preserved intact.
 
 ### Changed — Codex CLI no longer gets a redundant platform symlink
 
-Codex CLI auto-discovers skills from the canonical `~/.agents/skills/` per the
-agentskills.io standard, so the symlinks TiTools was creating at
-`~/.codex/skills/<skill>` were redundant — Codex never actually read from
-there. Verified against the [official Codex CLI skills
-documentation](https://developers.openai.com/codex/skills/), which lists
-`$HOME/.agents/skills` (not `~/.codex/skills/`) as the user-scope location.
+Codex CLI auto-discovers skills from the canonical `~/.agents/skills/` per the agentskills.io standard, so the symlinks TiTools was creating at `~/.codex/skills/<skill>` were redundant — Codex never actually read from there. Verified against the [official Codex CLI skills documentation](https://developers.openai.com/codex/skills/), which lists `$HOME/.agents/skills` (not `~/.codex/skills/`) as the user-scope location.
 
-Codex remains fully supported by TiTools; users simply don't need a
-platform-specific symlink.
+Codex remains fully supported by TiTools; users simply don't need a platform-specific symlink.
 
 ### Removed
 
-- Codex entry in `getPlatforms()` (`lib/config.js`). The platform detector
-  and install/sync flow no longer treat Codex as a symlink target.
-- `.codex/` fixture in `test/cli.test.js` (no longer relevant to the install
-  flow).
+- Codex entry in `getPlatforms()` (`lib/config.js`). The platform detector and install/sync flow no longer treat Codex as a symlink target.
+- `.codex/` fixture in `test/cli.test.js` (no longer relevant to the install flow).
 - README references implying Codex needs `~/.codex/skills/` symlinks.
 
 ### Migration for existing users
 
-`titools update` now removes any stale `~/.codex/skills/<skill>` symlinks
-that TiTools created in earlier versions (active and legacy skill names
-alike). The cleanup is scoped to TiTools-managed skill names, so symlinks
-placed there by other tools (for example `npx skills add`) are left alone.
+`titools update` now removes any stale `~/.codex/skills/<skill>` symlinks that TiTools created in earlier versions (active and legacy skill names alike). The cleanup is scoped to TiTools-managed skill names, so symlinks placed there by other tools (for example `npx skills add`) are left alone.
 
-No action is required from users — the next `titools update` cleans up
-automatically.
+No action is required from users — the next `titools update` cleans up automatically.
 
 ---
 
@@ -463,18 +260,9 @@ automatically.
 
 ### BREAKING — doc-based skills moved to `tidev/skills`
 
-Five documentation-only skills (`ti-api`, `ti-guides`, `ti-howtos`,
-`alloy-guides`, `alloy-howtos`) have been migrated to the official
-community repository [`tidev/skills`](https://github.com/tidev/skills)
-and removed from TiTools. The first batch was accepted upstream by
-Hansemann (TiDev maintainer) in
-[tidev/skills#1](https://github.com/tidev/skills/pull/1) and `ti-howtos`
-followed in [tidev/skills#2](https://github.com/tidev/skills/pull/2).
+Five documentation-only skills (`ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`) have been migrated to the official community repository [`tidev/skills`](https://github.com/tidev/skills) and removed from TiTools. The first batch was accepted upstream by Hansemann (TiDev maintainer) in [tidev/skills#1](https://github.com/tidev/skills/pull/1) and `ti-howtos` followed in [tidev/skills#2](https://github.com/tidev/skills/pull/2).
 
-After this update, those five skills are listed in `LEGACY_SKILLS`,
-which means **`titools update` will silently delete them** from
-`~/.agents/skills/` (and from the platform symlink directories) on the
-next run. To get them back, install `tidev/skills` directly:
+After this update, those five skills are listed in `LEGACY_SKILLS`, which means **`titools update` will silently delete them** from `~/.agents/skills/` (and from the platform symlink directories) on the next run. To get them back, install `tidev/skills` directly:
 
 ```bash
 git clone https://github.com/tidev/skills.git ~/Developer/git-clones/tidev-skills
@@ -485,20 +273,15 @@ ln -s ~/Developer/git-clones/tidev-skills/skills/alloy-guides  ~/.agents/skills/
 ln -s ~/Developer/git-clones/tidev-skills/skills/alloy-howtos  ~/.agents/skills/alloy-howtos
 ```
 
-Refer to the [`tidev/skills` README](https://github.com/tidev/skills#readme)
-for canonical install instructions, which may evolve independently.
+Refer to the [`tidev/skills` README](https://github.com/tidev/skills#readme) for canonical install instructions, which may evolve independently.
 
 ### What stays in TiTools
 
-The three *opinionated* skills remain — they reflect personal Titanium
-conventions and toolchain choices that don't belong in the upstream
-community repo:
+The three *opinionated* skills remain — they reflect personal Titanium conventions and toolchain choices that don't belong in the upstream community repo:
 
 - `ti-expert` — Architecture, patterns, controller/service structure
-- `purgetss` — PurgeTSS utility-first styling (audited against
-  PurgeTSS official docs but workflow-opinionated)
-- `ti-ui` — UI/UX patterns, ListView performance, platform UI
-  (includes Community-Discovered Patterns not in the official docs)
+- `purgetss` — PurgeTSS utility-first styling (audited against PurgeTSS official docs but workflow-opinionated)
+- `ti-ui` — UI/UX patterns, ListView performance, platform UI (includes Community-Discovered Patterns not in the official docs)
 
 ### Removed
 
@@ -507,309 +290,152 @@ community repo:
 - `skills/ti-howtos/` — moved to `tidev/skills`
 - `skills/alloy-guides/` — moved to `tidev/skills`
 - `skills/alloy-howtos/` — moved to `tidev/skills`
-- `scripts/build-ti-api.js` — obsolete generator (the upstream repo
-  owns its own build pipeline)
-- `scripts/titools-docs` entry in `package.json` `files` array — the
-  path never existed on disk
+- `scripts/build-ti-api.js` — obsolete generator (the upstream repo owns its own build pipeline)
+- `scripts/titools-docs` entry in `package.json` `files` array — the path never existed on disk
 
 ### Changed
 
-- `lib/config.js` — `SKILLS` array reduced from 8 to 3 entries; the
-  five migrated skills appended to `LEGACY_SKILLS` so existing
-  installations get cleaned up on the next `titools update`.
-- `agents/ti-pro.md` — preloaded skills reduced from 7 to 3; agent
-  now recommends consulting `tidev/skills` when API surface,
-  native-feature how-tos, MVC reference, or SDK fundamentals are part
-  of the question.
-- `hooks/session-start.sh` — message updated to point at the 3
-  TiTools skills first and `tidev/skills` second (now including
-  `ti-howtos`).
+- `lib/config.js` — `SKILLS` array reduced from 8 to 3 entries; the five migrated skills appended to `LEGACY_SKILLS` so existing installations get cleaned up on the next `titools update`.
+- `agents/ti-pro.md` — preloaded skills reduced from 7 to 3; agent now recommends consulting `tidev/skills` when API surface, native-feature how-tos, MVC reference, or SDK fundamentals are part of the question.
+- `hooks/session-start.sh` — message updated to point at the 3 TiTools skills first and `tidev/skills` second (now including `ti-howtos`).
 - `install.sh` — `SKILLS` array trimmed; `LEGACY_SKILLS` extended.
-- `README.md` — full restructure: skill overview tables, hierarchy
-  diagram, project detection table, slash-command descriptions, and
-  contents summary all reflect the 3-skill TiTools surface plus a
-  prominent migration section pointing at `tidev/skills`.
-- `EXAMPLE-PROMPTS.md` — activation tests for the five migrated skills
-  removed; cross-skill collaboration tests retained but updated to
-  mention `tidev/skills` for doc-based references including
-  `ti-howtos`.
-- `AGENTS-VERCEL-RESEARCH.md` — split skill overview into two tables
-  (3 TiTools opinionated, 5 `tidev/skills` doc-based); index examples
-  updated.
-- `.claude-plugin/plugin.json` — version synced to 3.0.0; description
-  trimmed to remove the "native-feature how-tos" claim now covered by
-  `tidev/skills`.
+- `README.md` — full restructure: skill overview tables, hierarchy diagram, project detection table, slash-command descriptions, and contents summary all reflect the 3-skill TiTools surface plus a prominent migration section pointing at `tidev/skills`.
+- `EXAMPLE-PROMPTS.md` — activation tests for the five migrated skills removed; cross-skill collaboration tests retained but updated to mention `tidev/skills` for doc-based references including `ti-howtos`.
+- `AGENTS-VERCEL-RESEARCH.md` — split skill overview into two tables (3 TiTools opinionated, 5 `tidev/skills` doc-based); index examples updated.
+- `.claude-plugin/plugin.json` — version synced to 3.0.0; description trimmed to remove the "native-feature how-tos" claim now covered by `tidev/skills`.
 
 ### Migration test
 
-`test/config.test.js` now asserts that `ti-api`, `ti-guides`,
-`ti-howtos`, `alloy-guides`, and `alloy-howtos` are present in
-`LEGACY_SKILLS` and absent from `SKILLS`, preventing accidental
-re-introduction.
+`test/config.test.js` now asserts that `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, and `alloy-howtos` are present in `LEGACY_SKILLS` and absent from `SKILLS`, preventing accidental re-introduction.
 
 ## [2.10.1] - 2026-05-06
 
 ### Fixed
-- `update` command — when running from the home directory, local and
-  global skill detection both pointed to the same `.agents/skills` dir
-  and triggered a duplicate update prompt. Local detection is now
-  skipped when `cwd === os.homedir()`.
+- `update` command — when running from the home directory, local and global skill detection both pointed to the same `.agents/skills` dir and triggered a duplicate update prompt. Local detection is now skipped when `cwd === os.homedir()`.
 
 ### Changed — `purgetss` skill aligned with PurgeTSS v7.9.0 and v7.8.0
 
-The official PurgeTSS docs were fully rewritten on 2026-05-05. This
-release re-aligns 17 existing references against the new content,
-without adding new reference files.
+The official PurgeTSS docs were fully rewritten on 2026-05-05. This release re-aligns 17 existing references against the new content, without adding new reference files.
 
 **v7.9.0 features now documented:**
-- Opacity modifier on semantic colors (`bg-surface/65`) — PurgeTSS
-  auto-derives `<originalKey>_<alphaPercent>` entries in
-  `semantic.colors.json` for each mode. Native rebuild required;
-  Liveview hot-reload alone does not refresh the file.
-- `theme.Window` / `theme.View` / `theme.ImageView` presets now use
-  **replace mode** — they no longer carry framework defaults (white
-  background, `Ti.UI.SIZE`, iOS `hires: true`). Use
-  `theme.extend.Window` etc. for **extend mode** (merge with defaults).
-  Fixes gradient ghosting on preset Windows.
-- Glossary path renamed: `purgetss/experimental/tailwind-classes/` →
-  `purgetss/glossary/tailwind-classes/`.
+- Opacity modifier on semantic colors (`bg-surface/65`) — PurgeTSS auto-derives `<originalKey>_<alphaPercent>` entries in `semantic.colors.json` for each mode. Native rebuild required; Liveview hot-reload alone does not refresh the file.
+- `theme.Window` / `theme.View` / `theme.ImageView` presets now use **replace mode** — they no longer carry framework defaults (white background, `Ti.UI.SIZE`, iOS `hires: true`). Use `theme.extend.Window` etc. for **extend mode** (merge with defaults). Fixes gradient ghosting on preset Windows.
+- Glossary path renamed: `purgetss/experimental/tailwind-classes/` → `purgetss/glossary/tailwind-classes/`.
 
 **v7.8.0 features now documented:**
-- `purgetss images --width <n>` — pin SVG output to a specific base
-  width; per-density assets derive from the multiplier scale
-  (×1 / ×1.5 / ×2 / ×3 / ×4). CLI-only, range `[1, 8192]`.
-- Class syntax pre-validation — build emits a `Class Syntax Error`
-  block for 5 detected patterns (inverted negatives, Tailwind
-  brackets, empty parens, whitespace in parens, redundant `px`).
+- `purgetss images --width <n>` — pin SVG output to a specific base width; per-density assets derive from the multiplier scale (×1 / ×1.5 / ×2 / ×3 / ×4). CLI-only, range `[1, 8192]`.
+- Class syntax pre-validation — build emits a `Class Syntax Error` block for 5 detected patterns (inverted negatives, Tailwind brackets, empty parens, whitespace in parens, redundant `px`).
 - Parser fix for negative values inside parentheses.
 
 **Other corrections:**
-- Removed `createAnimation` factory hallucination from
-  `animation-advanced.md` — `purgetss.ui` does not export this
-  function; only the native `Ti.UI.createAnimation()` exists.
-- Reclassified a mislabeled "Community-Discovered Pattern — Pro tip"
-  in `tikit-components.md` (the monospace fonts tip is officially
-  documented in `tikit.md`).
+- Removed `createAnimation` factory hallucination from `animation-advanced.md` — `purgetss.ui` does not export this function; only the native `Ti.UI.createAnimation()` exists.
+- Reclassified a mislabeled "Community-Discovered Pattern — Pro tip" in `tikit-components.md` (the monospace fonts tip is officially documented in `tikit.md`).
 
-22 `## Community-Discovered Patterns` sections preserved intact across
-the skill (all 22 verified — no silent deletions).
+22 `## Community-Discovered Patterns` sections preserved intact across the skill (all 22 verified — no silent deletions).
 
 ## [2.10.0] - 2026-04-25
 
 ### Added — `values-and-units.md` reference in `purgetss` skill
 
-New reference file covering a foundational concept that was missing from
-the skill: PurgeTSS writes **unitless** numeric values into `app.tss`,
-and Titanium interprets them at runtime via `ti.ui.defaultunit` in
-`tiapp.xml`. Most Alloy projects use `dp`, not raw pixels, so saying
-`rounded-lg` gives you "8 pixels" is wrong unless the project explicitly
-opts into `px`.
+New reference file covering a foundational concept that was missing from the skill: PurgeTSS writes **unitless** numeric values into `app.tss`, and Titanium interprets them at runtime via `ti.ui.defaultunit` in `tiapp.xml`. Most Alloy projects use `dp`, not raw pixels, so saying `rounded-lg` gives you "8 pixels" is wrong unless the project explicitly opts into `px`.
 
-The reference covers: the eight valid `ti.ui.defaultunit` values
-(`dp`, `dip`, `px`, `mm`, `cm`, `in`, `pt`, `system`), how
-explicit pixel suffixes (`'1px'`) override the project setting,
-percentage classes resolving against the parent size, and Titanium
-constants (`Ti.UI.SIZE`, `Ti.UI.FILL`) being unit-independent.
+The reference covers: the eight valid `ti.ui.defaultunit` values (`dp`, `dip`, `px`, `mm`, `cm`, `in`, `pt`, `system`), how explicit pixel suffixes (`'1px'`) override the project setting, percentage classes resolving against the parent size, and Titanium constants (`Ti.UI.SIZE`, `Ti.UI.FILL`) being unit-independent.
 
-Sourced from PurgeTSS v7.7.0's new official doc
-(`best-practices/4-values-and-units.md`).
+Sourced from PurgeTSS v7.7.0's new official doc (`best-practices/4-values-and-units.md`).
 
 ### Changed — `purgetss` skill aligned with PurgeTSS v7.7.0 brand restructure
 
-PurgeTSS v7.7.0 reorganized the `brand:` config from a flat structure
-to purpose-based groups. The skill now documents the new shape across
-every brand-related reference:
+PurgeTSS v7.7.0 reorganized the `brand:` config from a flat structure to purpose-based groups. The skill now documents the new shape across every brand-related reference:
 
-- `brand.logos` — optional path overrides (`primary`, `androidLauncher`,
-  `androidSplash`, `monochrome`, `iosDark`, `iosTinted`)
-- `brand.padding` — separate `ios`, `androidLegacy`, `androidAdaptive`
-  with new defaults (`19%` adaptive, `10%` legacy)
+- `brand.logos` — optional path overrides (`primary`, `androidLauncher`, `androidSplash`, `monochrome`, `iosDark`, `iosTinted`)
+- `brand.padding` — separate `ios`, `androidLegacy`, `androidAdaptive` with new defaults (`19%` adaptive, `10%` legacy)
 - `brand.android` — `splash` and `notification` toggles
 - `brand.ios` — optional `dark`, `tinted`, `darkBackground` overrides
 - `brand.colors` — `background` (renamed from flat `bgColor`)
 
 New CLI flags now documented:
 
-- `--icon-logo <path>` — dedicated square Android launcher mark for
-  wordmark / non-square main logos
-- `--splash-logo <path>` — Android 12+ `splash_icon.png` artwork
-  override
-- `--android-adaptive-padding <n>` — replaces the old single `--padding`
-  for the adaptive foreground (default `19%`)
-- `--android-legacy-padding <n>` — replaces the old single `--padding`
-  for legacy `ic_launcher.png` (default `10%`)
-- `--padding <n>` — now a one-shot shortcut that sets both Android
-  paddings to the same value
+- `--icon-logo <path>` — dedicated square Android launcher mark for wordmark / non-square main logos
+- `--splash-logo <path>` — Android 12+ `splash_icon.png` artwork override
+- `--android-adaptive-padding <n>` — replaces the old single `--padding` for the adaptive foreground (default `19%`)
+- `--android-legacy-padding <n>` — replaces the old single `--padding` for legacy `ic_launcher.png` (default `10%`)
+- `--padding <n>` — now a one-shot shortcut that sets both Android paddings to the same value
 
 New sections added to `references/app-branding.md`:
 
-- "Android 12+ splash artwork" — explains `--splash` + `logo-splash.svg`
-  and the Titanium splash-theme requirement to actually use the
-  generated file
-- "Android legacy splash fallback" — covers the v7.7.0 regeneration
-  of `app/assets/android/default.png` (Alloy) / `Resources/android/default.png`
-  (Classic) and why `cleanup-legacy` now keeps it on purpose
+- "Android 12+ splash artwork" — explains `--splash` + `logo-splash.svg` and the Titanium splash-theme requirement to actually use the generated file
+- "Android legacy splash fallback" — covers the v7.7.0 regeneration of `app/assets/android/default.png` (Alloy) / `Resources/android/default.png` (Classic) and why `cleanup-legacy` now keeps it on purpose
 
 Files modified:
 
-- `references/app-branding.md` — config restructured, new flags, two
-  new sections, padding tables split into adaptive/legacy/iOS, three
-  Community-Discovered Patterns added (wordmark logos need a separate
-  launcher mark; the three Android assets serve different roles;
-  iOS 18+ wiring lag in Titanium SDK)
-- `references/cli-commands.md` — `brand` command flag tables grouped
-  by purpose, `init` defaults updated, v7.7.0 + v7.6.x changes added
-  to the header banner, "Android output groups" note clarifying
-  `ic_launcher*` vs `splash_icon.png` vs `default.png`
-- `references/customization-deep-dive.md` — `brand:` block in `init`
-  defaults switched to v7.7.0 grouped structure
-- `SKILL.md` — new "What's New in v7.7.0" section, expanded
-  "What's New in v7.6.x" (covers v7.6.1 confirmation prompts and
-  v7.6.2 Classic-project support for `semantic`), `values-and-units.md`
-  link added to the Setup & Configuration group
+- `references/app-branding.md` — config restructured, new flags, two new sections, padding tables split into adaptive/legacy/iOS, three Community-Discovered Patterns added (wordmark logos need a separate launcher mark; the three Android assets serve different roles; iOS 18+ wiring lag in Titanium SDK)
+- `references/cli-commands.md` — `brand` command flag tables grouped by purpose, `init` defaults updated, v7.7.0 + v7.6.x changes added to the header banner, "Android output groups" note clarifying `ic_launcher*` vs `splash_icon.png` vs `default.png`
+- `references/customization-deep-dive.md` — `brand:` block in `init` defaults switched to v7.7.0 grouped structure
+- `SKILL.md` — new "What's New in v7.7.0" section, expanded "What's New in v7.6.x" (covers v7.6.1 confirmation prompts and v7.6.2 Classic-project support for `semantic`), `values-and-units.md` link added to the Setup & Configuration group
 
 ## [2.9.0] - 2026-04-22
 
 ### Added — 5 new references in `purgetss` skill for v7.5.3 + v7.6.0 features
 
-The `purgetss` skill now covers every feature shipped in PurgeTSS v7.5.3
-and v7.6.0 with dedicated reference files:
+The `purgetss` skill now covers every feature shipped in PurgeTSS v7.5.3 and v7.6.0 with dedicated reference files:
 
-- `appearance-module.md` — Light/Dark/System mode switching via the
-  `Appearance` export (v7.5.3). Covers `init()`, `set(mode)`, `get()`,
-  `toggle()`, startup wiring, and a full Settings-view example.
-- `semantic-colors.md` — `semantic.colors.json` schema, `theme.extend.colors`
-  mapping, the `[object Object]` nesting trap, the numeric 11-step tonal
-  inversion pattern, alpha transparency, the `purgetss semantic` CLI
-  (palette + single modes), and three runtime consumption patterns.
-- `app-branding.md` — the `purgetss brand` command (v7.6.0): launcher
-  icons, adaptive icons, iOS 18+ Dark/Tinted variants, marketplace
-  artwork, monochrome layer handling, padding guidance, and
-  troubleshooting. Replaces the removed `ti-branding` skill as the
-  canonical reference.
-- `multi-density-images.md` — the `purgetss images` command (v7.6.0):
-  4× master convention, multi-density output, format conversion,
-  subdirectory preservation, and pipeline integration.
-- `ios-large-titles.md` — the `autoAdjustScrollViewInsets` +
-  `extendEdges` + `largeTitleEnabled` combo, global defaults pattern,
-  `largeTitleDisplayMode` constants, and `large-title-display-mode-never`
-  override for detail windows.
+- `appearance-module.md` — Light/Dark/System mode switching via the `Appearance` export (v7.5.3). Covers `init()`, `set(mode)`, `get()`, `toggle()`, startup wiring, and a full Settings-view example.
+- `semantic-colors.md` — `semantic.colors.json` schema, `theme.extend.colors` mapping, the `[object Object]` nesting trap, the numeric 11-step tonal inversion pattern, alpha transparency, the `purgetss semantic` CLI (palette + single modes), and three runtime consumption patterns.
+- `app-branding.md` — the `purgetss brand` command (v7.6.0): launcher icons, adaptive icons, iOS 18+ Dark/Tinted variants, marketplace artwork, monochrome layer handling, padding guidance, and troubleshooting. Replaces the removed `ti-branding` skill as the canonical reference.
+- `multi-density-images.md` — the `purgetss images` command (v7.6.0): 4× master convention, multi-density output, format conversion, subdirectory preservation, and pipeline integration.
+- `ios-large-titles.md` — the `autoAdjustScrollViewInsets` + `extendEdges` + `largeTitleEnabled` combo, global defaults pattern, `largeTitleDisplayMode` constants, and `large-title-display-mode-never` override for detail windows.
 
 ### Added — `What's New in v7.6.0` and `What's New in v7.5.3` sections
 
-`skills/purgetss/SKILL.md` now surfaces the two most recent PurgeTSS
-releases at the top, with links to the new reference files and a
-summary of each release's additions.
+`skills/purgetss/SKILL.md` now surfaces the two most recent PurgeTSS releases at the top, with links to the new reference files and a summary of each release's additions.
 
 ### Added — `brand`, `images`, and `semantic` commands in CLI reference
 
-`references/cli-commands.md` grew from ~800 to ~1000 lines to cover the
-three new v7.6.0 commands with full flag tables, positional arguments,
-config blocks, confirmation-prompt semantics, and examples. Each
-command links to its deep-dive reference.
+`references/cli-commands.md` grew from ~800 to ~1000 lines to cover the three new v7.6.0 commands with full flag tables, positional arguments, config blocks, confirmation-prompt semantics, and examples. Each command links to its deep-dive reference.
 
 ### Fixed — hallucinated `z-10`/`z-50` classes removed from smart-mappings
 
-`references/smart-mappings.md` incorrectly documented Tailwind-style
-`z-10`, `z-20`, …, `z-50` shorthand classes. Verification against
-`dist/utilities.tss` confirmed PurgeTSS only emits the `z-index-*`
-prefix (`z-index-0` through `z-index-50`). The file was rewritten
-under a `## Community-Discovered Patterns` heading with every claim
-cited against either official docs, `dist/utilities.tss` line numbers,
-or documented Titanium platform behavior.
+`references/smart-mappings.md` incorrectly documented Tailwind-style `z-10`, `z-20`, …, `z-50` shorthand classes. Verification against `dist/utilities.tss` confirmed PurgeTSS only emits the `z-index-*` prefix (`z-index-0` through `z-index-50`). The file was rewritten under a `## Community-Discovered Patterns` heading with every claim cited against either official docs, `dist/utilities.tss` line numbers, or documented Titanium platform behavior.
 
 ### Changed — 18 existing references aligned with v7.5.3 / v7.6.0
 
-- `migration-guide.md` — grew from 77 to 213 lines, now covers every
-  release from v7.2.6 through v7.6.0. The prior "v7.4.0
-  backgroundGradient.colors serialization fix" claim could not be tied
-  to the official changelog (which lists v7.4.0 as the Animation
-  module expansion) and was moved into a Community-Discovered Patterns
-  section with a `needs-confirmation` note instead of being silently
-  deleted.
-- `apply-directive.md` — added the three v7.5.0 `theme.extend.{Window,
-  View, ImageView}` subsections (customizing defaults, shorthand
-  `apply:` normalization, and "apply wins over static defaults").
-- `customization-deep-dive.md` — corrected stale "two main sections"
-  language to "four main sections" (`purge`, `brand`, `images`,
-  `theme`); updated default `config.cjs` template to include the
-  v7.6.0 `brand:` and `images:` blocks; added the v7.5.3 default
-  `font-sans`/`font-serif`/`font-mono` subsection with per-platform
-  values.
-- `ui-ux-design.md` — updated ScrollView examples to use the v7.3+
-  `content-w-screen content-h-auto` pattern; added cross-references
-  to the new Appearance, Semantic Colors, and Large Titles refs.
-- `titanium-resets.md` — replaced the deprecated `theme.View.DEFAULT`
-  override pattern with the v7.5.0 `theme.extend.View` shape; added
-  the v7.5.3 default font family classes subsection; bumped the stale
-  `v7.2.7` version stamp.
-- `class-index.md`, `class-categories.md` — added the v7.5.3 default
-  font family classes (`font-sans`/`font-serif`/`font-mono`) and the
-  v7.4.0 snap/keep-z-index classes to their prefix inventories.
-- `installation-setup.md` — added the v7.5.3 XML validation section
-  (illegal `--` inside comments detection).
-- `EXAMPLES.md` — added two new WRONG vs CORRECT pairs for the
-  `content-w-screen content-h-auto` ScrollView pattern and the
-  deprecated `theme.View.DEFAULT` vs `theme.extend.View` shape.
-- `dynamic-component-creation.md` — added a top-of-file scope note
-  clarifying the ref covers Alloy's `$.UI.create()` (not the
-  `purgetss.ui` module); replaced decorative emoji callouts with
-  blockquote admonitions.
+- `migration-guide.md` — grew from 77 to 213 lines, now covers every release from v7.2.6 through v7.6.0. The prior "v7.4.0 backgroundGradient.colors serialization fix" claim could not be tied to the official changelog (which lists v7.4.0 as the Animation module expansion) and was moved into a Community-Discovered Patterns section with a `needs-confirmation` note instead of being silently deleted.
+- `apply-directive.md` — added the three v7.5.0 `theme.extend.{Window, View, ImageView}` subsections (customizing defaults, shorthand `apply:` normalization, and "apply wins over static defaults").
+- `customization-deep-dive.md` — corrected stale "two main sections" language to "four main sections" (`purge`, `brand`, `images`, `theme`); updated default `config.cjs` template to include the v7.6.0 `brand:` and `images:` blocks; added the v7.5.3 default `font-sans`/`font-serif`/`font-mono` subsection with per-platform values.
+- `ui-ux-design.md` — updated ScrollView examples to use the v7.3+ `content-w-screen content-h-auto` pattern; added cross-references to the new Appearance, Semantic Colors, and Large Titles refs.
+- `titanium-resets.md` — replaced the deprecated `theme.View.DEFAULT` override pattern with the v7.5.0 `theme.extend.View` shape; added the v7.5.3 default font family classes subsection; bumped the stale `v7.2.7` version stamp.
+- `class-index.md`, `class-categories.md` — added the v7.5.3 default font family classes (`font-sans`/`font-serif`/`font-mono`) and the v7.4.0 snap/keep-z-index classes to their prefix inventories.
+- `installation-setup.md` — added the v7.5.3 XML validation section (illegal `--` inside comments detection).
+- `EXAMPLES.md` — added two new WRONG vs CORRECT pairs for the `content-w-screen content-h-auto` ScrollView pattern and the deprecated `theme.View.DEFAULT` vs `theme.extend.View` shape.
+- `dynamic-component-creation.md` — added a top-of-file scope note clarifying the ref covers Alloy's `$.UI.create()` (not the `purgetss.ui` module); replaced decorative emoji callouts with blockquote admonitions.
 
 ### Changed — `## Community-Discovered Patterns` convention applied broadly
 
-The convention that protects real-world patterns, workarounds, and
-verified best practices from aggressive auditor cleanup now covers 22
-of 28 reference files (previously 4). Unlabeled author callouts
-(`> WARNING`, `> TIP`, platform caveats) were moved under the
-protected H2 heading to make their provenance explicit.
+The convention that protects real-world patterns, workarounds, and verified best practices from aggressive auditor cleanup now covers 22 of 28 reference files (previously 4). Unlabeled author callouts (`> WARNING`, `> TIP`, platform caveats) were moved under the protected H2 heading to make their provenance explicit.
 
-Files given a new `## Community-Discovered Patterns` section:
-`custom-rules.md`, `opacity-modifier.md`, `arbitrary-values.md`,
-`platform-modifiers.md`, `icon-fonts.md`, `configurable-properties.md`,
-`grid-layout.md`, `performance-tips.md`, `class-index.md`,
-`class-categories.md`, `EXAMPLES.md`, `dynamic-component-creation.md`,
-`tikit-components.md`, `smart-mappings.md`, `installation-setup.md`,
-`titanium-resets.md`, `ui-ux-design.md`, `customization-deep-dive.md`.
+Files given a new `## Community-Discovered Patterns` section: `custom-rules.md`, `opacity-modifier.md`, `arbitrary-values.md`, `platform-modifiers.md`, `icon-fonts.md`, `configurable-properties.md`, `grid-layout.md`, `performance-tips.md`, `class-index.md`, `class-categories.md`, `EXAMPLES.md`, `dynamic-component-creation.md`, `tikit-components.md`, `smart-mappings.md`, `installation-setup.md`, `titanium-resets.md`, `ui-ux-design.md`, `customization-deep-dive.md`.
 
-Existing protected sections in `apply-directive.md` and
-`migration-guide.md` were preserved and verified against current docs.
+Existing protected sections in `apply-directive.md` and `migration-guide.md` were preserved and verified against current docs.
 
 ## [2.8.0] - 2026-04-21
 
 ### Removed — `ti-branding` skill (functionality merged into PurgeTSS)
 
-The `ti-branding` skill has been removed. Its icon/splash generation
-functionality now lives inside PurgeTSS itself, so maintaining a separate
-skill duplicated effort and shipped a second source of truth.
+The `ti-branding` skill has been removed. Its icon/splash generation functionality now lives inside PurgeTSS itself, so maintaining a separate skill duplicated effort and shipped a second source of truth.
 
-Secondary reason: the skill's `description` field had grown to 1268
-characters, above Codex CLI's 1024-char limit. Codex sessions on machines
-with TiTools installed logged `invalid description: exceeds maximum length
-of 1024 characters` warnings every startup. Rather than trim the
-description, we chose to retire the skill entirely.
+Secondary reason: the skill's `description` field had grown to 1268 characters, above Codex CLI's 1024-char limit. Codex sessions on machines with TiTools installed logged `invalid description: exceeds maximum length of 1024 characters` warnings every startup. Rather than trim the description, we chose to retire the skill entirely.
 
 Migration for existing users:
 
-- `ti-branding` moved from `SKILLS` to `LEGACY_SKILLS` in `lib/config.js`.
-  Running `titools update` (or the daily auto-update hook) on any machine
-  that has the skill installed will remove it from `~/.agents/skills/` and
-  drop the platform symlinks in `~/.claude/skills/`, `~/.gemini/skills/`,
-  and `~/.codex/skills/`.
+- `ti-branding` moved from `SKILLS` to `LEGACY_SKILLS` in `lib/config.js`. Running `titools update` (or the daily auto-update hook) on any machine that has the skill installed will remove it from `~/.agents/skills/` and drop the platform symlinks in `~/.claude/skills/`, `~/.gemini/skills/`, and `~/.codex/skills/`.
 - For branding/icon/splash workflows, use PurgeTSS directly going forward.
-- The Knowledge Index in `AGENTS.md`/`CLAUDE.md`/`GEMINI.md` is rebuilt
-  dynamically from `skills/*/references/`, so existing projects will drop
-  the `ti-branding/` references automatically on their next
-  `titools sync` or `titools update`.
+- The Knowledge Index in `AGENTS.md`/`CLAUDE.md`/`GEMINI.md` is rebuilt dynamically from `skills/*/references/`, so existing projects will drop the `ti-branding/` references automatically on their next `titools sync` or `titools update`.
 
 Removed from the repo:
 
-- `skills/ti-branding/` (entire directory, including scripts, references,
-  assets, and SKILL.md)
+- `skills/ti-branding/` (entire directory, including scripts, references, assets, and SKILL.md)
 - `test/ti-branding.test.js`
-- Documentation sections in `README.md`, `EXAMPLE-PROMPTS.md`, and
-  `CLAUDE.md` referring to the skill, its scripts, or the destructive
-  `--cleanup-legacy` flag
+- Documentation sections in `README.md`, `EXAMPLE-PROMPTS.md`, and `CLAUDE.md` referring to the skill, its scripts, or the destructive `--cleanup-legacy` flag
 - `branding` keyword from `.claude-plugin/plugin.json`
 
 Skill count is now 8 (down from 9).
@@ -818,53 +444,32 @@ Skill count is now 8 (down from 9).
 
 ### Fixed — `--in-place` no longer litters project root with temp files
 
-Previous `--in-place` behavior wrote the intermediate master files
-(`_master_square.png`, `_master_tight.png`, plus `_master_mono_*` when
-using `--monochrome-master`) directly into the project root alongside the
-final branded icons. They were cleaned up at the end of a successful run,
-but the root was visibly polluted during the run (IDE file watchers, git
-status, `ls` all showed them) and the cleanup code missed the `_master_mono_*`
-variants — leaving them orphaned forever if the user used `--monochrome-master`.
+Previous `--in-place` behavior wrote the intermediate master files (`_master_square.png`, `_master_tight.png`, plus `_master_mono_*` when using `--monochrome-master`) directly into the project root alongside the final branded icons. They were cleaned up at the end of a successful run, but the root was visibly polluted during the run (IDE file watchers, git status, `ls` all showed them) and the cleanup code missed the `_master_mono_*` variants — leaving them orphaned forever if the user used `--monochrome-master`.
 
-New behavior routes temp files through `<projectRoot>/.ti-branding/` even
-in `--in-place` mode:
+New behavior routes temp files through `<projectRoot>/.ti-branding/` even in `--in-place` mode:
 
 - Temp files are created inside `.ti-branding/` (hidden, tidy)
-- If `.ti-branding/` did NOT exist before the run, the whole directory is
-  removed at the end — no trace at all
-- If `.ti-branding/` DID exist (prior staging run or user content), only
-  the specific `_master_*.png` files we created are removed — user's own
-  content inside `.ti-branding/` is untouched
+- If `.ti-branding/` did NOT exist before the run, the whole directory is removed at the end — no trace at all
+- If `.ti-branding/` DID exist (prior staging run or user content), only the specific `_master_*.png` files we created are removed — user's own content inside `.ti-branding/` is untouched
 - Project root never sees temp files, before or after the run
 
-Staged mode behavior is unchanged (temp files stay in `.ti-branding/`
-alongside the final assets for review/debugging).
+Staged mode behavior is unchanged (temp files stay in `.ti-branding/` alongside the final assets for review/debugging).
 
 ## [2.7.2] - 2026-04-18
 
 ### Fixed — v2.7.1 Android splash guidance was still too prescriptive
 
-v2.7.1 over-corrected the v2.7.0 splash guidance by aggressively recommending
-the `android:theme="@style/Theme.App.Splash"` approach with a concrete
-snippet inheriting from `@style/Theme.Titanium.Light.NoTitle`. Two problems:
+v2.7.1 over-corrected the v2.7.0 splash guidance by aggressively recommending the `android:theme="@style/Theme.App.Splash"` approach with a concrete snippet inheriting from `@style/Theme.Titanium.Light.NoTitle`. Two problems:
 
-1. **Not every Titanium SDK exposes that parent theme.** Titanium SDK 13.1.1
-   does NOT have `Theme.Titanium.Light.NoTitle`. Users who copy-pasted got:
-   `resource style/Theme.Titanium.Light.NoTitle not found` on `./gradlew`.
-2. **`android:theme` on `<application>` is invasive.** It overrides whatever
-   theme the project was using and affects every activity. If a project
-   already has its own theme, the snippet stomps over it.
+1. **Not every Titanium SDK exposes that parent theme.** Titanium SDK 13.1.1 does NOT have `Theme.Titanium.Light.NoTitle`. Users who copy-pasted got: `resource style/Theme.Titanium.Light.NoTitle not found` on `./gradlew`.
+2. **`android:theme` on `<application>` is invasive.** It overrides whatever theme the project was using and affects every activity. If a project already has its own theme, the snippet stomps over it.
 
 v2.7.2 reframes the `--notes` splash section:
 - Marked **"OPTIONAL, advanced"** instead of "RECOMMENDED"
 - Leads with "for most apps the default is enough — do nothing"
-- Template uses placeholder `@style/YOUR_APP_PARENT_THEME` with clear
-  "verify this exists in your SDK" guidance
-- Lists `@style/Theme.Titanium.Light.Fullscreen` as known-working in
-  SDK 13.2.0, with caveat to verify for the user's SDK version
-- Explicit pre-flight checklist: (a) verify parent theme exists, (b) check
-  whether your project already has a custom theme (extend, don't override),
-  (c) test the build before committing tiapp.xml
+- Template uses placeholder `@style/YOUR_APP_PARENT_THEME` with clear "verify this exists in your SDK" guidance
+- Lists `@style/Theme.Titanium.Light.Fullscreen` as known-working in SDK 13.2.0, with caveat to verify for the user's SDK version
+- Explicit pre-flight checklist: (a) verify parent theme exists, (b) check whether your project already has a custom theme (extend, don't override), (c) test the build before committing tiapp.xml
 
 The `--ios-padding` 4% default from v2.7.1 is preserved.
 
@@ -875,69 +480,38 @@ The `--ios-padding` 4% default from v2.7.1 is preserved.
 The `--notes` output previously warned:
 > ⚠ CRITICAL: NEVER set `android:theme="..."` on `<application>` or any `<activity>`.
 
-This was overly absolute and actively steered users AWAY from the correct
-fix for the end-of-splash flicker on Android 12+. The narrower and correct
-rule is: don't inherit from `@android:style/Theme.DeviceDefault.NoActionBar`
-(that parent strips the ActionBar). Inheriting from a Titanium parent theme
-(`Theme.Titanium.Light`, `.Light.NoTitle`, `.Light.Fullscreen`, plus Dark
-variants) preserves the ActionBar AND is the standard working pattern in
-production Titanium apps.
+This was overly absolute and actively steered users AWAY from the correct fix for the end-of-splash flicker on Android 12+. The narrower and correct rule is: don't inherit from `@android:style/Theme.DeviceDefault.NoActionBar` (that parent strips the ActionBar). Inheriting from a Titanium parent theme (`Theme.Titanium.Light`, `.Light.NoTitle`, `.Light.Fullscreen`, plus Dark variants) preserves the ActionBar AND is the standard working pattern in production Titanium apps.
 
 The notes now:
-- Lead with the flicker cause (system splash color mismatches the Titanium
-  activity color → visible flash right before `index.js` renders)
+- Lead with the flicker cause (system splash color mismatches the Titanium activity color → visible flash right before `index.js` renders)
 - Recommend the Titanium-parent-theme approach as the primary fix
 - Provide a complete snippet (splash_theme.xml + tiapp.xml wiring)
 - List available Titanium parent themes with guidance on when to pick each
 - Keep the narrower warning (don't inherit from `@android:style/*.NoActionBar`)
-- Reference "LM - La Baraja" as a real-world app using this pattern in
-  production with zero flicker
+- Reference "LM - La Baraja" as a real-world app using this pattern in production with zero flicker
 
 ### Changed — default `--ios-padding` lowered from 8% to 4%
 
-Per Apple's HIG and production app measurements (La Baraja uses ~2% per side,
-Mail/Safari/WhatsApp use 3-6%), iOS app icons typically fill 92-97% of the
-canvas. The previous default of 8% per side (84% fill) was noticeably more
-conservative than industry standard. iOS icons have no launcher mask — the
-padding is purely aesthetic breathing room, no cropping risk.
+Per Apple's HIG and production app measurements (La Baraja uses ~2% per side, Mail/Safari/WhatsApp use 3-6%), iOS app icons typically fill 92-97% of the canvas. The previous default of 8% per side (84% fill) was noticeably more conservative than industry standard. iOS icons have no launcher mask — the padding is purely aesthetic breathing room, no cropping risk.
 
 New default 4% per side (92% fill) matches Apple's own apps. Override:
 - `--ios-padding 2` — aggressive, near-edge (matches La Baraja)
 - `--ios-padding 8` — previous default, conservative breathing room
 
-This affects: DefaultIcon.png, DefaultIcon-ios.png, iTunesConnect.png,
-MarketplaceArtwork.png. Android adaptive padding (`--padding`) stays at 20%.
+This affects: DefaultIcon.png, DefaultIcon-ios.png, iTunesConnect.png, MarketplaceArtwork.png. Android adaptive padding (`--padding`) stays at 20%.
 
 ## [2.7.0] - 2026-04-18
 
 ### Fixed — `ti-branding` skill alpha handling
 
-The skill now matches what a fresh `titanium` / `alloy new` project ships by
-default. Previously the skill flattened alpha on marketplace artwork and only
-emitted `DefaultIcon-ios.png`, which diverged from Titanium's own templates.
+The skill now matches what a fresh `titanium` / `alloy new` project ships by default. Previously the skill flattened alpha on marketplace artwork and only emitted `DefaultIcon-ios.png`, which diverged from Titanium's own templates.
 
-- **`gen-ios.sh`** — now produces **both** `DefaultIcon.png` (1024², alpha
-  preserved, the universal/Android source) **and** `DefaultIcon-ios.png` (1024²,
-  alpha flattened over `--bg-color`, for iOS/Apple). Previously only the
-  flattened `-ios` variant was generated, leaving projects without the
-  alpha-intact source that `ti create` ships.
-- **`gen-marketplace.sh`** — `iTunesConnect.png` (1024²) and
-  `MarketplaceArtwork.png` (512²) now preserve alpha. Previously both were
-  flattened on `--bg-color`, which didn't match what Titanium's template
-  generates and made compositing over different backgrounds impossible.
-  Apple's App Store upload still rejects alpha, but that's a final-submission
-  concern — the in-project template file keeps transparency so the developer
-  can composite before upload.
-- **`ti-branding` entry script** — "Next steps" copy command now includes
-  `DefaultIcon.png` alongside the other root-level assets. Dry-run output
-  enumerates `DefaultIcon.png` too.
-- **`SKILL.md` asset table** updated to reflect the new alpha handling and
-  the `DefaultIcon.png` addition.
+- **`gen-ios.sh`** — now produces **both** `DefaultIcon.png` (1024², alpha preserved, the universal/Android source) **and** `DefaultIcon-ios.png` (1024², alpha flattened over `--bg-color`, for iOS/Apple). Previously only the flattened `-ios` variant was generated, leaving projects without the alpha-intact source that `ti create` ships.
+- **`gen-marketplace.sh`** — `iTunesConnect.png` (1024²) and `MarketplaceArtwork.png` (512²) now preserve alpha. Previously both were flattened on `--bg-color`, which didn't match what Titanium's template generates and made compositing over different backgrounds impossible. Apple's App Store upload still rejects alpha, but that's a final-submission concern — the in-project template file keeps transparency so the developer can composite before upload.
+- **`ti-branding` entry script** — "Next steps" copy command now includes `DefaultIcon.png` alongside the other root-level assets. Dry-run output enumerates `DefaultIcon.png` too.
+- **`SKILL.md` asset table** updated to reflect the new alpha handling and the `DefaultIcon.png` addition.
 
-The `ti-branding` skill and `imgconvert-cli` npm package converge on the same
-correct alpha behavior but remain fully independent: each is self-contained,
-with no runtime dependency between them. Two audiences (Claude Code users vs.
-npm CLI users), two delivery channels, one shared specification.
+The `ti-branding` skill and `imgconvert-cli` npm package converge on the same correct alpha behavior but remain fully independent: each is self-contained, with no runtime dependency between them. Two audiences (Claude Code users vs. npm CLI users), two delivery channels, one shared specification.
 
 ### Added — `--monochrome-master <path>` flag in `ti-branding`
 
@@ -946,31 +520,15 @@ Optional dedicated silhouette master for the monochrome-destination outputs:
 - `mipmap-*/ic_launcher_monochrome.png` (Android 13+ themed icons)
 - `drawable-*/ic_stat_notify.png` (status bar notification icon)
 
-When `--monochrome-master` is provided, those two outputs render from the
-dedicated master (then whitened to pure white + preserved alpha). When not
-provided, fall back to the previous behavior — naively whiten the colored
-main master.
+When `--monochrome-master` is provided, those two outputs render from the dedicated master (then whitened to pure white + preserved alpha). When not provided, fall back to the previous behavior — naively whiten the colored main master.
 
-**Why this matters:** a naive color→white conversion collapses multi-color
-detail into a featureless white blob. Example: a painter's palette logo with
-4 colored dots becomes 4 indistinguishable white splotches. By providing a
-monochrome variant designed with cutout holes / negative space where colors
-were, the dot-pattern detail survives in themed Android icons and in the
-notification status bar.
+**Why this matters:** a naive color→white conversion collapses multi-color detail into a featureless white blob. Example: a painter's palette logo with 4 colored dots becomes 4 indistinguishable white splotches. By providing a monochrome variant designed with cutout holes / negative space where colors were, the dot-pattern detail survives in themed Android icons and in the notification status bar.
 
-Works in both generation modes (`--in-place` and staged). When the mono
-master is used, intermediate files `_master_mono_square.png` and
-`_master_mono_tight.png` are tracked and cleaned up in `--in-place` mode
-like the main master intermediates.
+Works in both generation modes (`--in-place` and staged). When the mono master is used, intermediate files `_master_mono_square.png` and `_master_mono_tight.png` are tracked and cleaned up in `--in-place` mode like the main master intermediates.
 
 ### Changed — default `--padding` lowered from 22% to 20%
 
-Material Design spec floor for Android adaptive icon safe-zone is 19.44% per
-side (108dp canvas with a 66dp keyline grid). The previous default of 22%
-sat 2.5% above the floor without real-world justification — it produced
-visibly smaller logos on device (~6% less width at xxxhdpi, 18px less at
-432×432 canvas) in exchange for a "safety" margin that wasn't defending
-against any real masking scenario.
+Material Design spec floor for Android adaptive icon safe-zone is 19.44% per side (108dp canvas with a 66dp keyline grid). The previous default of 22% sat 2.5% above the floor without real-world justification — it produced visibly smaller logos on device (~6% less width at xxxhdpi, 18px less at 432×432 canvas) in exchange for a "safety" margin that wasn't defending against any real masking scenario.
 
 New default **20%** is:
 - Just above the spec floor (0.56% buffer, still defensively rounded)
@@ -985,66 +543,31 @@ Override with `--padding N` when your logo warrants it:
 
 ### Changed — `--bg-color` now flattens marketplace artwork
 
-When `--bg-color` is **explicitly provided**, `iTunesConnect.png` (1024²) and
-`MarketplaceArtwork.png` (512²) are now flattened onto the given color instead
-of keeping alpha. This prevents the dark-mode-muddy-icon problem in Play Store
-and macOS App Store listings when the master logo has significant transparent
-areas (e.g. a wordmark-only or icon-on-transparent master).
+When `--bg-color` is **explicitly provided**, `iTunesConnect.png` (1024²) and `MarketplaceArtwork.png` (512²) are now flattened onto the given color instead of keeping alpha. This prevents the dark-mode-muddy-icon problem in Play Store and macOS App Store listings when the master logo has significant transparent areas (e.g. a wordmark-only or icon-on-transparent master).
 
-When `--bg-color` is **not provided**, both files keep alpha to match the
-`ti create` default template behavior. `DefaultIcon.png` always keeps alpha
-regardless — it is a source file that Titanium processes into the adaptive
-icon foreground layer at build time, and flattening it would break that.
+When `--bg-color` is **not provided**, both files keep alpha to match the `ti create` default template behavior. `DefaultIcon.png` always keeps alpha regardless — it is a source file that Titanium processes into the adaptive icon foreground layer at build time, and flattening it would break that.
 
 ### Added — `--notes` flag in `ti-branding`
 
-New flag that gates the long-form post-generation output (padding tuning
-guide, iOS launch storyboard snippet, Android launcher wiring, Android 12+
-splash theme with Options A/B + critical warning, FCM notification tint) behind
-an explicit opt-in. Default output is a compact summary (~15 lines) showing
-background color, padding, destination, and 3-line next-steps — with a hint
-pointing to `--notes` for the full snippets. Before this flag the full
-output (~100+ lines) was always printed, burying the key "next steps"
-under reference documentation most users only need once per project.
+New flag that gates the long-form post-generation output (padding tuning guide, iOS launch storyboard snippet, Android launcher wiring, Android 12+ splash theme with Options A/B + critical warning, FCM notification tint) behind an explicit opt-in. Default output is a compact summary (~15 lines) showing background color, padding, destination, and 3-line next-steps — with a hint pointing to `--notes` for the full snippets. Before this flag the full output (~100+ lines) was always printed, burying the key "next steps" under reference documentation most users only need once per project.
 
 ### Added — `--in-place` flag in `ti-branding`
 
-New flag that skips the `.ti-branding/` staging directory and writes files
-directly into the project root. Designed for the "brand a fresh project"
-flow: right after `ti create`, run `ti-branding logo.svg --in-place
---bg-color "#XXX"` to overwrite the default Titanium/Alloy icons in one
-command instead of having to `cp -R` from staging manually.
+New flag that skips the `.ti-branding/` staging directory and writes files directly into the project root. Designed for the "brand a fresh project" flow: right after `ti create`, run `ti-branding logo.svg --in-place --bg-color "#XXX"` to overwrite the default Titanium/Alloy icons in one command instead of having to `cp -R` from staging manually.
 
-- Prints an explicit warning before writing: `⚠  --in-place mode: files in
-  your project will be OVERWRITTEN. Commit first if you want a rollback.`
-- `--output` takes precedence over `--in-place` when both are passed
-  (avoids ambiguity).
-- "Next steps" output adapts: instead of the `cp` copy-to-project command,
-  it points at `git checkout -- .` as the restore path if something looks
-  wrong.
-- Intermediate master files (`_master_square.png` / `_master_tight.png`)
-  are cleaned up at the end so only the 4 real branded icons remain in
-  the project root.
+- Prints an explicit warning before writing: `⚠  --in-place mode: files in your project will be OVERWRITTEN. Commit first if you want a rollback.`
+- `--output` takes precedence over `--in-place` when both are passed (avoids ambiguity).
+- "Next steps" output adapts: instead of the `cp` copy-to-project command, it points at `git checkout -- .` as the restore path if something looks wrong.
+- Intermediate master files (`_master_square.png` / `_master_tight.png`) are cleaned up at the end so only the 4 real branded icons remain in the project root.
 - Works with both Alloy (`app/`) and Classic (`Resources/`) projects.
 
-This is the skill-side counterpart to the `--in-place` flag added in
-`imgconvert-cli` v2.0.0. Both tools independently offer the same UX for
-the primary "just brand my project" use case, matching the project's
-independence constraint: no runtime dependency between the skill and the
-npm package, but equivalent feature surfaces for their respective audiences.
+This is the skill-side counterpart to the `--in-place` flag added in `imgconvert-cli` v2.0.0. Both tools independently offer the same UX for the primary "just brand my project" use case, matching the project's independence constraint: no runtime dependency between the skill and the npm package, but equivalent feature surfaces for their respective audiences.
 
 ### Added — Plugin marketplace metadata
 
-- **`plugin.json`** — added `keywords` array (`titanium`, `titanium-sdk`,
-  `alloy`, `purgetss`, `mobile`, `ios`, `android`, `ui`, `api-reference`,
-  `branding`) to improve discoverability in the Claude Code plugin marketplace.
-- **`marketplace.json`** — added `category: "mobile-development"` and a `tags`
-  array to the `titools` plugin entry so users can browse and filter more
-  effectively.
-- **`README.md`** — clarified auto-update behavior for third-party marketplaces.
-  Claude Code disables auto-updates by default for non-Anthropic marketplaces;
-  the README now documents how to opt in via `/plugin` → **Marketplaces** tab
-  and the `/reload-plugins` prompt that follows each update.
+- **`plugin.json`** — added `keywords` array (`titanium`, `titanium-sdk`, `alloy`, `purgetss`, `mobile`, `ios`, `android`, `ui`, `api-reference`, `branding`) to improve discoverability in the Claude Code plugin marketplace.
+- **`marketplace.json`** — added `category: "mobile-development"` and a `tags` array to the `titools` plugin entry so users can browse and filter more effectively.
+- **`README.md`** — clarified auto-update behavior for third-party marketplaces. Claude Code disables auto-updates by default for non-Anthropic marketplaces; the README now documents how to opt in via `/plugin` → **Marketplaces** tab and the `/reload-plugins` prompt that follows each update.
 
 ## [2.6.1] - 2026-04-18
 

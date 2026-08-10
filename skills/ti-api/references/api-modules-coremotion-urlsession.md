@@ -24,19 +24,14 @@
 > Platforms: ios
 > Type: module
 
-The Core Motion module provides access to Apple's CoreMotion APIs. The Core Motion module provides support
-for monitoring various hardware sensors on iOS devices, such as the accelerometer, gyroscope, and
-magnetometer. The Core Motion module allows you to access the metrics provided by these sensors.
+The Core Motion module provides access to Apple's CoreMotion APIs. The Core Motion module provides support for monitoring various hardware sensors on iOS devices, such as the accelerometer, gyroscope, and magnetometer. The Core Motion module allows you to access the metrics provided by these sensors.
 
-For instruction and examples of using the Core Motion Module, see the
-[Core Motion Module guide]().
+For instruction and examples of using the Core Motion Module, see the [Core Motion Module guide]().
 
 
 ### Requirements
 
-This module only works with devices running iOS 7 and later. Not all devices have the same hardware sensors,
-so all features may not be available for all devices. Be sure to use the API to check the device
-for the existence of a feature.
+This module only works with devices running iOS 7 and later. Not all devices have the same hardware sensors, so all features may not be available for all devices. Be sure to use the API to check the device for the existence of a feature.
 
 You can only test the Core Motion module on a device. The Core Motion API cannot be tested on the iOS
 
@@ -313,8 +308,7 @@ You can only test the Core Motion module on a device. The Core Motion API cannot
 
 These APIs are supported on iOS 7 and later.
 
-The URL session module (`com.appcelerator.urlSession`) provides the application the ability to
-download large content via HTTP while the application is in the background. With this module, you can
+The URL session module (`com.appcelerator.urlSession`) provides the application the ability to download large content via HTTP while the application is in the background. With this module, you can
 
   1. Create a URL session and a background download task.
   2. Monitor events to check the progress of the download and session.
@@ -353,10 +347,7 @@ URL session events are monitored through the following iOS application-level eve
 
 These APIs are supported on iOS 7 and later.
 
-The NSURLSession class and related classes provide an API for downloading content. 
-This API provides a rich set of delegate methods for supporting authentication and gives 
-your app the ability to perform background downloads when your app is not running or, in iOS, 
-while your app is suspended.
+The NSURLSession class and related classes provide an API for downloading content. This API provides a rich set of delegate methods for supporting authentication and gives your app the ability to perform background downloads when your app is not running or, in iOS, while your app is suspended.
 
 [iOS Background Services guide]().
 
@@ -407,12 +398,7 @@ while your app is suspended.
 
 These APIs are supported on iOS 7 and later.
 
-An NSURLSessionConfiguration object defines the behavior and policies to use
-when uploading and downloading data using an URLSession object. When uploading
-or downloading data, creating a configuration object is always the first step
-you must take. You use this object to configure the timeout values, caching
-policies, connection requirements, and other types of information that you
-intend to use with your URLSession object.
+An NSURLSessionConfiguration object defines the behavior and policies to use when uploading and downloading data using an URLSession object. When uploading or downloading data, creating a configuration object is always the first step you must take. You use this object to configure the timeout values, caching policies, connection requirements, and other types of information that you intend to use with your URLSession object.
 
 [iOS Background Services guide]().
 

@@ -21,17 +21,7 @@
 > Platforms: both
 > Type: module
 
-The Media module is used to access the device's media-related functionality, such
-as using the device's camera and photo gallery, playing media files, or recording
-audio or video.
-For examples of using the Media APIs, refer to the
-[Working with Media APIs guide](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_How-tos/Working_with_Media_APIs/)
-in addition to the other media submodule API documentation.
-**Note**: Some third party Android camera apps may choose to ignore video recording quality
-settings. If you wish to specifically set the video quality, don't assume
-`EXTRA_VIDEO_QUALITY` intent will be respected by the camera app and use Titanium's built-in
-camera window which can be used to assign the `overlay` property when calling the
-`showCamera()` method.
+The Media module is used to access the device's media-related functionality, such as using the device's camera and photo gallery, playing media files, or recording audio or video. For examples of using the Media APIs, refer to the [Working with Media APIs guide](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_How-tos/Working_with_Media_APIs/) in addition to the other media submodule API documentation. **Note**: Some third party Android camera apps may choose to ignore video recording quality settings. If you wish to specifically set the video quality, don't assume `EXTRA_VIDEO_QUALITY` intent will be respected by the camera app and use Titanium's built-in camera window which can be used to assign the `overlay` property when calling the `showCamera()` method.
 
 ### Properties (unique: 28/178)
 | Property | Type | Default | Platform | Description |
@@ -263,16 +253,9 @@ camera window which can be used to assign the `overlay` property when calling th
 > Extends Ti.Proxy
 > Platforms: both
 
-On Android, when you are done playing a given audio file, you must call the
-[release](Titanium.Media.AudioPlayer.release) method to stop buffering audio data and
-release associated system resources. Since 7.5.0, this method is available on iOS as well
-and will release all audio-player related resources. After this method has been called,
-the object should not be accessed anymore.
+On Android, when you are done playing a given audio file, you must call the [release](Titanium.Media.AudioPlayer.release) method to stop buffering audio data and release associated system resources. Since 7.5.0, this method is available on iOS as well and will release all audio-player related resources. After this method has been called, the object should not be accessed anymore.
 
-On iOS, you can control how the audio stream interacts with other system sounds
-by setting <Titanium.Media.audioSessionCategory>. Since Titanium 7.5.0, this API
-uses the [AVPlayer API](https://developer.apple.com/documentation/avfoundation/avplayer) for a more modern
-and performant audio playback.
+On iOS, you can control how the audio stream interacts with other system sounds by setting <Titanium.Media.audioSessionCategory>. Since Titanium 7.5.0, this API uses the [AVPlayer API](https://developer.apple.com/documentation/avfoundation/avplayer) for a more modern and performant audio playback.
 
 Use the <Titanium.Media.createAudioPlayer> method to create an audio player.
 
@@ -343,13 +326,9 @@ Use the <Titanium.Media.createAudioPlayer> method to create an audio player.
 
 Use the <Titanium.Media.createAudioRecorder> method to create an audio recorder.
 
-Ensure to request the permissions for audio-recording before starting a new record-session.
-This can be done by using <Titanium.Media.hasAudioRecorderPermissions> to check whether
-audio-permissions are granted and <Titanium.Media.requestAudioRecorderPermissions> to 
-request audio-permissions. 
+Ensure to request the permissions for audio-recording before starting a new record-session. This can be done by using <Titanium.Media.hasAudioRecorderPermissions> to check whether audio-permissions are granted and <Titanium.Media.requestAudioRecorderPermissions> to request audio-permissions.
 
-**Android Platform Note**: On Android, you also need to include the following permission
-into the `<android>` section of the tiapp.xml:
+**Android Platform Note**: On Android, you also need to include the following permission into the `<android>` section of the tiapp.xml:
 
 
 ### Properties (unique: 5/8)
@@ -378,13 +357,9 @@ into the `<android>` section of the tiapp.xml:
 > Extends Ti.Proxy
 > Platforms: ios
 
-This is a read-only object that describes a single media item, not a playlist. 
-Titanium does not support access to playlists.
+This is a read-only object that describes a single media item, not a playlist. Titanium does not support access to playlists.
 
-`Item` objects cannot be created explicitly.  The 
-[openMusicLibrary](Titanium.Media.openMusicLibrary) returns `Item` objects in its
-`success` callback function, while [queryMusicLibrary](Titanium.Media.queryMusicLibrary)
-returns an array of `Item` objects.
+`Item` objects cannot be created explicitly.  The [openMusicLibrary](Titanium.Media.openMusicLibrary) returns `Item` objects in its `success` callback function, while [queryMusicLibrary](Titanium.Media.queryMusicLibrary) returns an array of `Item` objects.
 
 ### Properties (unique: 36/38)
 | Property | Type | Default | Platform | Description |
@@ -477,14 +452,11 @@ To retrieve an instance of a MusicPlayer object, use either the
 > Extends Ti.Proxy
 > Platforms: both
 
-The `Sound` object loads the entire media resource in memory before playing.  If you need to 
-support streaming, use the [AudioPlayer](Titanium.Media.AudioPlayer) API.
+The `Sound` object loads the entire media resource in memory before playing.  If you need to support streaming, use the [AudioPlayer](Titanium.Media.AudioPlayer) API.
 
-You can control how the sound interacts with other system sounds
-by setting <Titanium.Media.audioSessionCategory>.
+You can control how the sound interacts with other system sounds by setting <Titanium.Media.audioSessionCategory>.
 
-Use the <Titanium.Media.createSound> method to create a `Sound` object. You can play audio 
-in any format supported by the target platform(s), as described in the following documents:
+Use the <Titanium.Media.createSound> method to create a `Sound` object. You can play audio in any format supported by the target platform(s), as described in the following documents:
 
 * [Android](https://developer.android.com/guide/topics/media/media-formats#core)
 * [iOS](https://developer.apple.com/audio/)
@@ -538,10 +510,9 @@ in any format supported by the target platform(s), as described in the following
 > Extends Ti.Proxy
 > Platforms: ios
 
-You can use this module to provide audible system alerts. 
+You can use this module to provide audible system alerts.
 
-You can use it to play short (30 seconds or shorter) sounds. The interface does not provide level, positioning, 
-looping, or timing control, and does not support simultaneous playback: You can play only one sound at a time. 
+You can use it to play short (30 seconds or shorter) sounds. The interface does not provide level, positioning, looping, or timing control, and does not support simultaneous playback: You can play only one sound at a time.
 
 This module differs from the Sound module because it honors the ringtone volume, not the Music volume.
 
@@ -568,20 +539,15 @@ Know more about [System Sound Services](https://developer.apple.com/reference/au
 > Extends Ti.UI.View
 > Platforms: both
 
-The video player is a native view that can be used to play videos, either stored
-locally or streamed from a web server. The player can occupy the full screen, or can
-be used as a view that can be added to other views.
+The video player is a native view that can be used to play videos, either stored locally or streamed from a web server. The player can occupy the full screen, or can be used as a view that can be added to other views.
 
 Use the <Titanium.Media.createVideoPlayer> method to create a video player.
 
-All platforms support specifying the video content as a URL, either to a local file or
-a remote stream. This is done by setting the [url](Titanium.Media.VideoPlayer.url) property.
+All platforms support specifying the video content as a URL, either to a local file or a remote stream. This is done by setting the [url](Titanium.Media.VideoPlayer.url) property.
 
 ### iOS Implementation Notes
 
-On iOS, video content can also be specified as a [Blob](Titanium.Blob) or
-[File](Titanium.Filesystem.File) object using the
-[media](Titanium.Media.VideoPlayer.media) property.
+On iOS, video content can also be specified as a [Blob](Titanium.Blob) or [File](Titanium.Filesystem.File) object using the [media](Titanium.Media.VideoPlayer.media) property.
 
 
 *(See full overview in titanium-docs)*

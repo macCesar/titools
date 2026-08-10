@@ -11,8 +11,7 @@ If you are an agent invoked by a user in a Titanium project to *use* a skill, re
 - `docs/project/decisions.md` — what was decided and why
 - `docs/project/status.md` — where the work stands right now
 
-Read `status.md` when resuming work. Do not import it at startup: it changes
-constantly, and loading it invalidates the cached prefix behind it.
+Read `status.md` when resuming work. Do not import it at startup: it changes constantly, and loading it invalidates the cached prefix behind it.
 
 ## What this repo is
 
@@ -146,85 +145,50 @@ NOT the flat `{ "command": "...", "timeout": 30000 }` form. Flat triggers a sett
 
 ### Two channels, one rule: never install what the plugin already serves
 
-TiTools ships through the npm CLI *and* the Claude Code marketplace plugin, and a
-user may have both. When the plugin is enabled, Claude Code already lists our
-skills and slash commands from its own cache; a second copy installed by the CLI
-appears twice in the autocomplete.
+TiTools ships through the npm CLI *and* the Claude Code marketplace plugin, and a user may have both. When the plugin is enabled, Claude Code already lists our skills and slash commands from its own cache; a second copy installed by the CLI appears twice in the autocomplete.
 
-`lib/claude-plugin.js` answers the question, and the distinction it draws is the
-whole point: **an enabled plugin implies a cache, but a cache implies nothing.**
-Uninstalling a plugin removes it from `enabledPlugins` in `settings.json` and
-leaves the cache directory behind. Reading that leftover as proof of installation
-makes the CLI skip work it should do — which in the sibling project left Claude
-Code with no skills at all and no way to repair it by re-running install.
+`lib/claude-plugin.js` answers the question, and the distinction it draws is the whole point: **an enabled plugin implies a cache, but a cache implies nothing.** Uninstalling a plugin removes it from `enabledPlugins` in `settings.json` and leaves the cache directory behind. Reading that leftover as proof of installation makes the CLI skip work it should do — which in the sibling project left Claude Code with no skills at all and no way to repair it by re-running install.
 
 - `pluginProvidesSkill()` / `pluginProvidesCommand()` require **enabled AND cached**.
-- Both fail toward `false` on missing or malformed settings. A wrong `false` costs
-  a duplicate entry; a wrong `true` costs the user every skill they have.
-- `createSkillSymlinks` and `installCommands` skip the entry and remove any stale
-  copy; both return a `skipped` array that the CLI reports instead of a warning.
-- `doctor` subtracts plugin-served entries from the expected total, so a healthy
-  marketplace install stops reading as a wall of errors.
+- Both fail toward `false` on missing or malformed settings. A wrong `false` costs a duplicate entry; a wrong `true` costs the user every skill they have.
+- `createSkillSymlinks` and `installCommands` skip the entry and remove any stale copy; both return a `skipped` array that the CLI reports instead of a warning.
+- `doctor` subtracts plugin-served entries from the expected total, so a healthy marketplace install stops reading as a wall of errors.
 
 Covered by `test/claude-plugin.test.js`.
 
 ### Slash commands ship from `commands/`, not `.claude/`
 
-`commands/*.md` is versioned and listed in `package.json` → `files`. It must stay
-that way: `.claude/` is gitignored, so commands parked there reach nobody — not
-marketplace users (the plugin serves `commands/` from the repo) and not npm users
-(the tarball would not carry them). Until 4.2.0 the three commands lived there and
-the README documented them anyway.
+`commands/*.md` is versioned and listed in `package.json` → `files`. It must stay that way: `.claude/` is gitignored, so commands parked there reach nobody — not marketplace users (the plugin serves `commands/` from the repo) and not npm users (the tarball would not carry them). Until 4.2.0 the three commands lived there and the README documented them anyway.
 
-Adding one means: the file in `commands/`, the name in `lib/config.js:COMMANDS`, a
-row in the README table, and a passing `test/manifest.test.js`.
+Adding one means: the file in `commands/`, the name in `lib/config.js:COMMANDS`, a row in the README table, and a passing `test/manifest.test.js`.
 
 ### `test/manifest.test.js` guards the registration wiring
 
-Every assertion there corresponds to a failure one of the two repos has shipped —
-the class of bug where nothing is broken, something is merely never reached:
+Every assertion there corresponds to a failure one of the two repos has shipped — the class of bug where nothing is broken, something is merely never reached:
 
-- a skill, command or agent present on disk but absent from `lib/config.js`, so the
-  CLI never installs it (and the reverse — listed but missing);
-- `package.json` → `files` omitting a directory that has to ship, which publishes a
-  tarball the installer cannot use, or including `scripts/` and `.claude/`, which
-  should never ship;
+- a skill, command or agent present on disk but absent from `lib/config.js`, so the CLI never installs it (and the reverse — listed but missing);
+- `package.json` → `files` omitting a directory that has to ship, which publishes a tarball the installer cannot use, or including `scripts/` and `.claude/`, which should never ship;
 - `package.json` and `plugin.json` versions drifting apart;
-- frontmatter whose `name` disagrees with its directory or filename, or exceeding
-  the 1024-char spec limit;
+- frontmatter whose `name` disagrees with its directory or filename, or exceeding the 1024-char spec limit;
 - `references/*.md` pointers in a SKILL.md that resolve to nothing;
 - the flat hook format in `hooks.json` that caused the v2.4.0 → v2.4.1 hotfix.
 
-When adding a skill or command, this suite is what tells you the registration was
-actually done. Ported from aiskills, where it was written after the same class of
-bug; extended here for agents, the hook and the wider `files` allowlist.
+When adding a skill or command, this suite is what tells you the registration was actually done. Ported from aiskills, where it was written after the same class of bug; extended here for agents, the hook and the wider `files` allowlist.
 
 ### Maintainer scripts
 
-`scripts/` holds tools for the repo itself. They are versioned but deliberately absent
-from `package.json` → `files`, so they never reach users.
+`scripts/` holds tools for the repo itself. They are versioned but deliberately absent from `package.json` → `files`, so they never reach users.
 
-- `scripts/generate-toc.mjs` — inserts a linked index into references over 300 lines.
-  Idempotent; output is delimited by `<!-- TOC-START -->` / `<!-- TOC-END -->`. Run it
-  after adding or substantially growing a reference. It **refuses** to index a file with
-  malformed fences, because an unclosed fence hides headings and the resulting index
-  would be truncated without looking wrong.
-- `scripts/fix-fences.mjs` — repairs code fences that open and never close, a recurring
-  artifact of converting upstream docs. Run it before `generate-toc.mjs` if the latter
-  reports skipped files.
+- `scripts/generate-toc.mjs` — inserts a linked index into references over 300 lines. Idempotent; output is delimited by `<!-- TOC-START -->` / `<!-- TOC-END -->`. Run it after adding or substantially growing a reference. It **refuses** to index a file with malformed fences, because an unclosed fence hides headings and the resulting index would be truncated without looking wrong.
+- `scripts/fix-fences.mjs` — repairs code fences that open and never close, a recurring artifact of converting upstream docs. Run it before `generate-toc.mjs` if the latter reports skipped files.
 
 Both default to a dry run. Read the output before passing `--write`.
 
 ### What is versioned under `.claude/`
 
-`.claude/` is ignored except `.claude/skills/`, which carries the maintainer-only
-`titools-skill-auditor`. The pattern is `.claude/*` plus `!.claude/skills/` — a bare
-`!.claude/skills/` under a `.claude/` rule does nothing, since git will not descend into
-an excluded directory. Keeping the skill at that path means Claude Code still discovers
-it automatically while working in this repo.
+`.claude/` is ignored except `.claude/skills/`, which carries the maintainer-only `titools-skill-auditor`. The pattern is `.claude/*` plus `!.claude/skills/` — a bare `!.claude/skills/` under a `.claude/` rule does nothing, since git will not descend into an excluded directory. Keeping the skill at that path means Claude Code still discovers it automatically while working in this repo.
 
-`settings.local.json` and any local drafts stay ignored, and nothing under `.claude/`
-ships to npm.
+`settings.local.json` and any local drafts stay ignored, and nothing under `.claude/` ships to npm.
 
 ### Files worth knowing
 
@@ -269,20 +233,11 @@ With 2FA enabled, each `npm publish` invocation needs a fresh OTP — even if a 
 
 ### Publishing is not the same as shipping
 
-`npm publish` feeds one of the two channels. The marketplace cache at
-`~/.claude/plugins/cache/maccesar-titools/` is untouched by it, and third-party
-marketplaces do **not** auto-update — a release does not reach plugin users on its
-own. The refresh is `/plugin marketplace update maccesar-titools` followed by
-`/reload-plugins`; there is no `/plugin update <plugin>` command.
+`npm publish` feeds one of the two channels. The marketplace cache at `~/.claude/plugins/cache/maccesar-titools/` is untouched by it, and third-party marketplaces do **not** auto-update — a release does not reach plugin users on its own. The refresh is `/plugin marketplace update maccesar-titools` followed by `/reload-plugins`; there is no `/plugin update <plugin>` command.
 
-Because `marketplace.json` pins no version, that update tracks **default-branch HEAD
-rather than the tag** — pushing `main` matters as much as pushing the tag.
+Because `marketplace.json` pins no version, that update tracks **default-branch HEAD rather than the tag** — pushing `main` matters as much as pushing the tag.
 
-Verifying a release means checking what each channel actually serves:
-`npm view @maccesar/titools version` for one, the `version` in `plugin.json` on `main`
-for the other. v4.1.0 was tagged and pushed but never published, and the gap went
-unnoticed for two days. Full detail in [CLAUDE.md](CLAUDE.md) § "How a release
-propagates to each install channel".
+Verifying a release means checking what each channel actually serves: `npm view @maccesar/titools version` for one, the `version` in `plugin.json` on `main` for the other. v4.1.0 was tagged and pushed but never published, and the gap went unnoticed for two days. Full detail in [CLAUDE.md](CLAUDE.md) § "How a release propagates to each install channel".
 
 ## Common operations
 

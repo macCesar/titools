@@ -188,8 +188,7 @@ api.getFrames()
 ## Controller rules
 
 **DO:**
-- Use verified PurgeTSS utilities when detected; otherwise define styles in
-  per-controller TSS and manually maintained global TSS.
+- Use verified PurgeTSS utilities when detected; otherwise define styles in per-controller TSS and manually maintained global TSS.
 - Orchestrate view and model/collection interactions.
 - Handle UI events and delegate to services.
 - Format data for display (simple cases).
@@ -246,10 +245,7 @@ See [ControllerAutoCleanup.js](../assets/ControllerAutoCleanup.js) for the compl
 
 ## Widget structure
 
-Widgets are self-contained components with their own public API, state, assets,
-and lifecycle. Choose one for a portable boundary, not after an arbitrary number
-of usages. A first-use component with timers, modal state, and cleanup can merit
-a Widget; repeated static styling does not.
+Widgets are self-contained components with their own public API, state, assets, and lifecycle. Choose one for a portable boundary, not after an arbitrary number of usages. A first-use component with timers, modal state, and cleanup can merit a Widget; repeated static styling does not.
 
 ```
 app/widgets/
@@ -280,8 +276,7 @@ app/widgets/
 }
 ```
 
-Register the Widget in the app's `app/config.json`; the dependency key must
-match the manifest `id`:
+Register the Widget in the app's `app/config.json`; the dependency key must match the manifest `id`:
 
 ```json
 {
@@ -491,10 +486,7 @@ render()
 | Could be extracted to another project | Has no independent package contract  |
 | Needs its own `widget.json` manifest  | Remains lightweight and app-local    |
 
-Usage count is supporting evidence only. Also consider a screen-local XML state
-for loading/empty/error content, a style class for appearance without behavior,
-or native UI when the operating system owns the workflow. See
-[Feedback Widget Contracts](feedback-widget-contracts.md).
+Usage count is supporting evidence only. Also consider a screen-local XML state for loading/empty/error content, a style class for appearance without behavior, or native UI when the operating system owns the workflow. See [Feedback Widget Contracts](feedback-widget-contracts.md).
 
 ## config.json reference
 

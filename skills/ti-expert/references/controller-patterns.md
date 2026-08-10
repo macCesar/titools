@@ -281,9 +281,7 @@ async function loadData() {
 
 ## Modal and dialog patterns
 
-Declare the app-owned `dialog` and `bottomSheet` Widgets in the window XML.
-Attach them after the host exists and destroy them from the controller cleanup.
-Keep a modal Window for a distinct multi-step task, not for ordinary feedback.
+Declare the app-owned `dialog` and `bottomSheet` Widgets in the window XML. Attach them after the host exists and destroy them from the controller cleanup. Keep a modal Window for a distinct multi-step task, not for ordinary feedback.
 
 ```javascript
 function attachFeedback(hostWindow) {

@@ -9,8 +9,7 @@ Project-specific instructions for Claude Code sessions working on this repo. The
 - `docs/project/decisions.md` — what was decided and why
 - `docs/project/status.md` — where the work stands right now
 
-Read `status.md` when resuming work. Do not import it at startup: it changes
-constantly, and loading it invalidates the cached prefix behind it.
+Read `status.md` when resuming work. Do not import it at startup: it changes constantly, and loading it invalidates the cached prefix behind it.
 
 ## What TiTools is
 
@@ -69,24 +68,13 @@ The maintainer's own CLI is `npm link`-ed to this repo, so `titools update` here
 
 ### Both channels installed at once
 
-A user can have the npm CLI *and* the marketplace plugin. When the plugin is
-enabled it already serves the skills and slash commands, so the CLI must not
-install its own copy — that duplicates every entry in the autocomplete.
+A user can have the npm CLI *and* the marketplace plugin. When the plugin is enabled it already serves the skills and slash commands, so the CLI must not install its own copy — that duplicates every entry in the autocomplete.
 
-`lib/claude-plugin.js` requires the plugin to be **enabled AND cached**. A cache
-directory alone proves nothing: uninstalling a plugin removes it from
-`enabledPlugins` in `settings.json` but leaves the cache behind. Reading that
-leftover as an installed plugin is what left aiskills users with zero skills and
-an install command that correctly did nothing. Detection fails toward `false`
-everywhere, because a wrong `false` costs a duplicate entry and a wrong `true`
-costs the user every skill they have.
+`lib/claude-plugin.js` requires the plugin to be **enabled AND cached**. A cache directory alone proves nothing: uninstalling a plugin removes it from `enabledPlugins` in `settings.json` but leaves the cache behind. Reading that leftover as an installed plugin is what left aiskills users with zero skills and an install command that correctly did nothing. Detection fails toward `false` everywhere, because a wrong `false` costs a duplicate entry and a wrong `true` costs the user every skill they have.
 
 ### Slash commands live in `commands/`, never `.claude/commands/`
 
-`.claude/` is gitignored. A command parked there ships to nobody — the plugin
-serves `commands/` from the repo, and the npm tarball only carries what
-`package.json` → `files` lists. The three commands sat in `.claude/commands/`
-until 4.2.0 while the README advertised them.
+`.claude/` is gitignored. A command parked there ships to nobody — the plugin serves `commands/` from the repo, and the npm tarball only carries what `package.json` → `files` lists. The three commands sat in `.claude/commands/` until 4.2.0 while the README advertised them.
 
 ### Claude Code hooks format in `settings.json`
 
@@ -121,10 +109,7 @@ Never `execFileSync` — it blocks the Node.js event loop, freezing the spinner 
 
 **A change to shared machinery belongs in both repos, in the same session.** Port the *behavior*, not the bytes — names and paths are supposed to differ.
 
-`docs/project/context.md` § "Sibling project" carries the full contract: the table of
-what legitimately diverges (the `ti-pro` agent, the Knowledge Index / `sync`, and the
-`tiapp.xml` SessionStart hook are TiTools-only by design), plus a measured per-file
-comparison. Read it before assuming two files should match.
+`docs/project/context.md` § "Sibling project" carries the full contract: the table of what legitimately diverges (the `ti-pro` agent, the Knowledge Index / `sync`, and the `tiapp.xml` SessionStart hook are TiTools-only by design), plus a measured per-file comparison. Read it before assuming two files should match.
 
 ### Long-term direction
 

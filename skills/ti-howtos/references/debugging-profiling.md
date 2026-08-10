@@ -382,8 +382,7 @@ Android Studio (GUI): Tools → Device Manager → Create Device.
 
 ### Modifying emulators
 
-Increase disk space:
-Edit `~/.android/avd/<NAME>.avd/config.ini`:
+Increase disk space: Edit `~/.android/avd/<NAME>.avd/config.ini`:
 ```
 disk.dataPartition.size=1024m
 ```

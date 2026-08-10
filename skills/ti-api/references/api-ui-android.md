@@ -138,8 +138,7 @@ Use a CardView to layout content that:
   * Supports variable length content or displays more than three lines of text
   * Contains rich content or interactive elements, such as comments or a favorite button
 
-If you are displaying a collection of the same type in a uniform layout without many actions,
-use a [ListView](Titanium.UI.ListView) or [TableView](Titanium.UI.TableView) instead.
+If you are displaying a collection of the same type in a uniform layout without many actions, use a [ListView](Titanium.UI.ListView) or [TableView](Titanium.UI.TableView) instead.
 
 For design guidelines, see
 
@@ -174,8 +173,7 @@ For design guidelines, see
 | ------- |
 | ![Android](./collpasetoolbar_android.jpg) |
 
-CollapseToolbar acts as a top-level container for window content that allows to set a parallax image and title
-in the toolbar. The main content goes into `centerView` and will automatically be scrollable.
+CollapseToolbar acts as a top-level container for window content that allows to set a parallax image and title in the toolbar. The main content goes into `centerView` and will automatically be scrollable.
 
 ### Properties (unique: 11/18)
 | Property | Type | Default | Platform | Description |
@@ -206,15 +204,11 @@ in the toolbar. The main content goes into `centerView` and will automatically b
 | ------- |
 | ![Android](./drawerlayout_android.png) |
 
-DrawerLayout acts as a top-level container for window content that allows for interactive "drawer"
-views to be pulled out from one or both vertical edges of the window.
+DrawerLayout acts as a top-level container for window content that allows for interactive "drawer" views to be pulled out from one or both vertical edges of the window.
 
-As per the Android Design guide, any drawers positioned to the left/start should always contain
-content for navigating around the application, whereas any drawers positioned to the right/end
-should always contain actions to take on the current content.
+As per the Android Design guide, any drawers positioned to the left/start should always contain content for navigating around the application, whereas any drawers positioned to the right/end should always contain actions to take on the current content.
 
-For design guidelines, see
-[Google Design Guidelines: DrawerLayout](https://developer.android.com/training/implementing-navigation/nav-drawer.html)
+For design guidelines, see [Google Design Guidelines: DrawerLayout](https://developer.android.com/training/implementing-navigation/nav-drawer.html)
 
 ### Properties (unique: 15/80)
 | Property | Type | Default | Platform | Description |
@@ -266,8 +260,7 @@ For design guidelines, see
 > Extends Ti.UI.View
 > Platforms: android
 
-For design guidelines, see
-[Material design: Snackbars](https://material.io/components/buttons-floating-action-button)
+For design guidelines, see [Material design: Snackbars](https://material.io/components/buttons-floating-action-button)
 
 ### Properties (unique: 4/30)
 | Property | Type | Default | Platform | Description |
@@ -295,15 +288,11 @@ For design guidelines, see
 | ------- |
 | ![Android](./progressindicator_android.png) |
 
-A progress indicator can be used to show the progress of an operation in the UI to let the
-user know that some action is taking place. It is used to indicate an ongoing activity of
-determinate or indeterminate length.
+A progress indicator can be used to show the progress of an operation in the UI to let the user know that some action is taking place. It is used to indicate an ongoing activity of determinate or indeterminate length.
 
-Use the <Titanium.UI.Android.createProgressIndicator> method or **`<ProgressIndicator>`** Alloy
-element to create a progress indicator.
+Use the <Titanium.UI.Android.createProgressIndicator> method or **`<ProgressIndicator>`** Alloy element to create a progress indicator.
 
-A progress indicator can be either a progress dialog or a horizontal progress bar in the title
-of the window. The progress dialog is a modal dialog that blocks the UI. See also:
+A progress indicator can be either a progress dialog or a horizontal progress bar in the title of the window. The progress dialog is a modal dialog that blocks the UI. See also:
 
 ### Properties (unique: 8/29)
 | Property | Type | Default | Platform | Description |
@@ -351,12 +340,9 @@ of the window. The progress dialog is a modal dialog that blocks the UI. See als
 
 `SearchView` provides a user interface to enter a search query and submit a request to a search provider.
 
-Search views are most commonly used for filtering the rows in a [TableView](Titanium.UI.TableView).
-Similar to [SearchBar](Titanium.UI.SearchBar), you can add a search view to a table view by setting the table view's
-[search](Titanium.UI.TableView.search) property. A search view can be used without a `TableView`.
+Search views are most commonly used for filtering the rows in a [TableView](Titanium.UI.TableView). Similar to [SearchBar](Titanium.UI.SearchBar), you can add a search view to a table view by setting the table view's [search](Titanium.UI.TableView.search) property. A search view can be used without a `TableView`.
 
-You can also use a `SearchView` object as the <Titanium.UI.ListView.searchView>
-property of a [ListView](Titanium.UI.ListView) object.
+You can also use a `SearchView` object as the <Titanium.UI.ListView.searchView> property of a [ListView](Titanium.UI.ListView) object.
 
 You can also add `SearchView` to an `ActionBar` as a view (see example below).
 
@@ -401,8 +387,7 @@ You can also add `SearchView` to an `ActionBar` as a view (see example below).
 | ------- |
 | ![Android](./snackbar_android.png) |
 
-For design guidelines, see
-[Material design: Snackbars](https://material.io/components/snackbars)
+For design guidelines, see [Material design: Snackbars](https://material.io/components/snackbars)
 
 ### Properties (unique: 3/27)
 | Property | Type | Default | Platform | Description |
@@ -443,14 +428,9 @@ For design guidelines, see
 
 A popover is created using the <Titanium.UI.iPad.createPopover> method or **`<Popover>`** Alloy element.
 
-Popovers are used to present information temporarily, but in a way that does not take over
-the entire screen in the way that a modal view does. The popover content is layered on top of
-the existing content in a special type of window. The popover remains visible until the user
-taps outside of the popover window or it is explicitly dismissed.
+Popovers are used to present information temporarily, but in a way that does not take over the entire screen in the way that a modal view does. The popover content is layered on top of the existing content in a special type of window. The popover remains visible until the user taps outside of the popover window or it is explicitly dismissed.
 
-Do not add top-level view containers, such as a `SplitWindow` or `TabGroup`, to a popover.
-Adding top-level view containers may have unintended side effects. See the [contentView](Titanium.UI.iPad.Popover.contentView)
-property for more information.
+Do not add top-level view containers, such as a `SplitWindow` or `TabGroup`, to a popover. Adding top-level view containers may have unintended side effects. See the [contentView](Titanium.UI.iPad.Popover.contentView) property for more information.
 
 ### Properties (unique: 4/13)
 | Property | Type | Default | Platform | Description |
@@ -498,10 +478,9 @@ property for more information.
 > Platforms: ios
 > Type: module
 
-All properties, methods and events in this namespace will only work on the Apple iPad devices. 
+All properties, methods and events in this namespace will only work on the Apple iPad devices.
 
-For iOS UI programming guidelines, review the
-[iOS Human Interface Guidelines](https://developer.apple.com/ios/human-interface-guidelines/overview/themes/).
+For iOS UI programming guidelines, review the [iOS Human Interface Guidelines](https://developer.apple.com/ios/human-interface-guidelines/overview/themes/).
 
 ### Constants (6)
 - **POPOVER_ARROW_DIRECTION_\***: POPOVER_ARROW_DIRECTION_ANY, POPOVER_ARROW_DIRECTION_DOWN, POPOVER_ARROW_DIRECTION_LEFT, POPOVER_ARROW_DIRECTION_RIGHT, POPOVER_ARROW_DIRECTION_UNKNOWN, POPOVER_ARROW_DIRECTION_UP
