@@ -104,6 +104,23 @@ Expect:
 - App-owned feedback (the delete confirmation) may be styled
 - Never imitate a trusted system prompt
 
+Sharing content out:
+```
+"My Share button opens the sheet on Android but does nothing on iOS, and there's no error in the log. It's a .backup file I generate in the app."
+```
+Expect:
+- The type is not previewable, so `Ti.UI.iOS.DocumentViewer` presents nothing and reports nothing
+- iOS needs a native module for opaque types — `dk.napp.social`, from the maintained `hansemannn` fork, not the archived `viezel` one
+- Android needs no module at all: `Ti.Android.createIntent` + `createIntentChooser`
+
+```
+"When I share my backup file and pick 'Save to Files', it saves the backup AND a stray .txt with the title in it. Why?"
+```
+Expect:
+- `text` passed alongside `file` becomes a second item in the iOS sheet
+- Use `subject` instead, so the title rides along without becoming an item
+- Mention that this only shows up in destinations that write to disk, which is why it survives testing
+
 ---
 
 ### purgetss
@@ -249,6 +266,7 @@ Expect:
 
 - [ ] ti-expert: responds with correct architecture
 - [ ] ti-expert: classifies the feedback surface before naming a proxy
+- [ ] ti-expert: splits sharing by platform instead of routing both through a module
 - [ ] purgetss: does not use flexbox, uses correct classes
 - [ ] ti-ui: mentions performance rules
 - [ ] ti-api: cites specific properties/methods/events
