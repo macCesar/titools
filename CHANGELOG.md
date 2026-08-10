@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added — Sharing content out in `ti-expert`
+
+`sharing.md` covers handing a link, a text or a file to the rest of the system: the iOS share sheet and the Android intent chooser.
+
+The reference is built around the asymmetry that explains most of the confusing sharing code in older projects. Android does this with the core SDK — `Ti.Android.createIntent` plus `createIntentChooser`, no module. iOS does not: the SDK exposes nothing wrapping `UIActivityViewController`, so a native module is still required. Code written before that split settled routes both platforms through the module, or through a cross-platform wrapper that only ever needed to exist for iOS.
+
+Alongside it: why `dk.napp.social` must come from the maintained `hansemannn` fork rather than the `viezel` repository search engines surface (archived April 2021, and 3.0.2 is the highest published release); why the same `public.data` conformance that makes tapping a file open your app is what stops `DocumentViewer` from previewing it; why passing `text` alongside `file` makes "Save to Files" write a stray `.txt` next to the document; why Android file shares need `FLAG_GRANT_READ_URI_PERMISSION`; and why iPad needs `activityPopover` with a source view, which changes the signature of any sharing service that takes only a URL.
+
+Closes with a query against the installed SDK's `api.jsca` that settles what the SDK does and does not expose, and a symptom-to-cause table.
+
+### Changed — Markdown is no longer hard-wrapped
+
+Most of the documentation was wrapped at roughly 80 columns. One paragraph is now one line, so editing a word touches one line of diff instead of five and a sentence can be found with `grep`. Text layout only: with whitespace collapsed every file is byte-identical to its previous version, and no fenced code block changed.
+
 ## [4.4.1] - 2026-08-05
 
 ### Added — File type association in `ti-expert`
