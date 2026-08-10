@@ -1,19 +1,21 @@
 # Status — 2026-08-10
 
-**Phase:** live and maintained. Working tree clean, `main`, three commits ahead of `origin/main` and not yet released — the next step is cutting 4.5.0.
+**Phase:** live and maintained. **v4.4.2 tagged, pushed and released on GitHub.** The one thing left is `npm publish --access public`, which needs the maintainer's 2FA and has not been run.
 
 **Sibling:** `~/Developer/openSource/aiskills` (`@maccesar/aiskills`) — shares this repo's `lib/`. See `context.md` § "Sibling project" for the parity contract.
 
-## Release state — the channels are out of sync again
+## Release state — one channel still behind
 
 | Channel | Version | Checked |
 |---|---|---|
-| npm | **4.4.0** | `npm view @maccesar/titools version`, 2026-08-10 |
-| Claude Code marketplace | 4.4.1 | `plugin.json` on `main`, tag `v4.4.1` pushed |
+| npm | **4.4.0** | `npm view @maccesar/titools version`, 2026-08-10 — two releases behind |
+| Claude Code marketplace | 4.4.2 | `plugin.json` on `main`, tag `v4.4.2` pushed, GitHub release created |
 
-**v4.4.1 was tagged and pushed on 2026-08-05 and never published to npm.** Same failure as v4.1.0, which sat unpublished for two days in July: step 8 of the release checklist — `npm publish` — is the one that gets skipped, because tagging feels like finishing. CLI users have been on 4.4.0 since then and never received `file-type-association.md`.
+**v4.4.1 was tagged and pushed on 2026-08-05 and never published to npm.** Same failure as v4.1.0, which sat unpublished for two days in July: step 8 of the checklist — `npm publish` — is the one that gets skipped, because tagging feels like finishing. CLI users never received `file-type-association.md` at all.
 
-Cutting 4.5.0 clears it: the tarball carries both releases' content. Verify with `npm view @maccesar/titools version` afterwards rather than assuming the tag implies the publish.
+**The 4.4.2 tarball carries both releases' content**, so publishing once clears the gap. It has not been published yet: `npm publish --access public` needs 2FA and only the maintainer can run it. Confirm with `npm view @maccesar/titools version` afterwards rather than assuming the tag implies the publish.
+
+This is the second time the same step has been missed in six weeks. If it happens again, the fix is mechanical rather than a note: a check that compares `npm view` against `plugin.json` and fails loudly.
 
 ## Changed 2026-08-10
 
@@ -46,11 +48,16 @@ While counting, the README was found two references behind — it said 24 in one
 
 This machine runs TiTools via `npm link`, so the `titools` binary executes the working tree. `npm publish` refreshes *other people's* installs, never this one; `isDevMode()` detects the repo's `.git` and skips `npm update -g` so the link survives.
 
+## Closed after the release
+
+Two items from this file, both landed after `v4.4.2` was cut and neither shipped in it.
+
+- **`file-type-association.md` now has example prompts.** It went out in 4.4.1 with none, so 237 lines of reference had nothing checking the skill still triggers on them. Two prompts phrased as the symptom (Files previewing the document; an Android filter that matches `backup.snapgym` but not `backup.2026-08-10.snapgym`) plus a checklist line. No release needed — `EXAMPLE-PROMPTS.md` is not in `package.json` → `files`, so it never reaches users.
+- **aiskills' leftover hard-wrap is gone** (`9969de7`). Worth recording how the first count was wrong: this file previously said 9 of 67 files were affected. That number came from a heuristic that counted numbered-list items as wrapped prose, so 6 of the 9 were false positives and a 7th (`vscode-extension-dev/references/debugger.md`) was structural on purpose. The real answer was **two** `stitch-showcase` references plus the header block of that repo's own `status.md`, which `f61b57c` had missed. Same verification as here: identical with whitespace collapsed, code blocks untouched, 52 tests passing.
+
 ## Open, not blocked
 
-- **aiskills has the same hard-wrap problem, at a tenth the scale.** 9 of its 67 markdown files show the symptom, concentrated in `stitch-showcase` and `refactoring-ui` references. Worth the same sweep, with the same verification.
 - **`scripts/generate-toc.mjs` and `fix-fences.mjs` live only here** — `~/Developer/openSource/aiskills/scripts/` does not exist, so nobody there can regenerate or `--strip` the indexes that were produced across the fence. Porting is not a `cp`: `fix-fences.mjs` carries Titanium-specific reasoning.
-- **`file-type-association.md` shipped without example prompts.** `EXAMPLE-PROMPTS.md` doubles as the activation smoke test, and the reference added in 4.4.1 has no prompt exercising it. `sharing.md` got two; this one is still owed them.
 - **The `manifest.test.js` port went further than aiskills' version** — it also covers agents, the nested hook format and the `files` allowlist in both directions. Worth sending back.
 - **`docs/PENDING-IMPROVEMENTS.md`, TiTools item 2, is obsolete** (it plans a migration v4.0.0 reversed). Items 1 and 3 still stand.
 - **`docs/actualizar-skill.md` describes a pending correction to `ti-howtos`.** Not checked against the current skill — it may already be fixed.
