@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.4.2] - 2026-08-10
+
 ### Added — Sharing content out in `ti-expert`
 
 `sharing.md` covers handing a link, a text or a file to the rest of the system: the iOS share sheet and the Android intent chooser.
