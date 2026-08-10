@@ -1,21 +1,21 @@
 # Status — 2026-08-10
 
-**Phase:** live and maintained. **v4.4.2 tagged, pushed and released on GitHub.** The one thing left is `npm publish --access public`, which needs the maintainer's 2FA and has not been run.
+**Phase:** live and maintained. **v4.4.2 shipped on both channels**, working tree clean, nothing in flight.
 
 **Sibling:** `~/Developer/openSource/aiskills` (`@maccesar/aiskills`) — shares this repo's `lib/`. See `context.md` § "Sibling project" for the parity contract.
 
-## Release state — one channel still behind
+## Release state — both channels on 4.4.2
 
-| Channel | Version | Checked |
+| Channel | Version | Verified |
 |---|---|---|
-| npm | **4.4.0** | `npm view @maccesar/titools version`, 2026-08-10 — two releases behind |
+| npm | 4.4.2 | tarball downloaded from the registry and inspected, 2026-08-10 |
 | Claude Code marketplace | 4.4.2 | `plugin.json` on `main`, tag `v4.4.2` pushed, GitHub release created |
 
-**v4.4.1 was tagged and pushed on 2026-08-05 and never published to npm.** Same failure as v4.1.0, which sat unpublished for two days in July: step 8 of the checklist — `npm publish` — is the one that gets skipped, because tagging feels like finishing. CLI users never received `file-type-association.md` at all.
+Verification went past the version number: the published tarball was pulled and listed — 181 files, `sharing.md` and `file-type-association.md` both present, the three `commands/` present, and `scripts/`, `.claude/` and `EXAMPLE-PROMPTS.md` correctly absent.
 
-**The 4.4.2 tarball carries both releases' content**, so publishing once clears the gap. It has not been published yet: `npm publish --access public` needs 2FA and only the maintainer can run it. Confirm with `npm view @maccesar/titools version` afterwards rather than assuming the tag implies the publish.
+**v4.4.1 had been tagged and pushed on 2026-08-05 and never published**, so CLI users had been stuck on 4.4.0 and never received `file-type-association.md`. The 4.4.2 tarball carried both releases' content, which closed the gap in one publish. Same failure as v4.1.0 in July — twice in six weeks, always step 8, because tagging feels like finishing.
 
-This is the second time the same step has been missed in six weeks. If it happens again, the fix is mechanical rather than a note: a check that compares `npm view` against `plugin.json` and fails loudly.
+**If it happens a third time, stop writing it down and automate it**: a check comparing `npm view @maccesar/titools version` against `plugin.json` that fails loudly. The note has now been written twice and has not prevented anything.
 
 ## Changed 2026-08-10
 
@@ -68,4 +68,4 @@ Nothing.
 
 ## Deployment
 
-Not applicable in the usual sense — distribution *is* the release. Nothing here deploys by file sync; a change reaches users only through `npm publish` (CLI) or a pushed `plugin.json` version bump (marketplace). Because those are two separate acts, the channels drift — as they have since 2026-08-05. Check both whenever you need to know what users actually have.
+Not applicable in the usual sense — distribution *is* the release. Nothing here deploys by file sync; a change reaches users only through `npm publish` (CLI) or a pushed `plugin.json` version bump (marketplace). Because those are two separate acts, the channels drift — they had been apart since 2026-08-05 and were realigned today. Check both whenever you need to know what users actually have.
