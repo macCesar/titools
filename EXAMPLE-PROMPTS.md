@@ -104,6 +104,23 @@ Expect:
 - App-owned feedback (the delete confirmation) may be styled
 - Never imitate a trusted system prompt
 
+Receiving files:
+```
+"I gave my backup files a .snapgym extension and declared them in tiapp.xml, but tapping one in iOS Files just previews it — my app never opens. Does iOS even allow this?"
+```
+Expect:
+- `LSSupportsOpeningDocumentsInPlace` is a root-level `Info.plist` key; nested inside `CFBundleDocumentTypes` iOS ignores it without a word
+- The app still registers as owner of the type, which is why the symptom looks like iOS refusing to launch third-party apps
+- Check the built binary with `plutil -extract`, not what `tiapp.xml` says
+
+```
+"On Android my app opens files named backup.snapgym but not backup.2026-08-10.snapgym. Same extension, same intent filter."
+```
+Expect:
+- `pathPattern` matches greedily, so one variant is needed per dot in the filename
+- A `content://` URI whose path carries no filename cannot match at all — a limit of name-based matching, not a misconfiguration
+- Verify with `cmd package query-activities`
+
 Sharing content out:
 ```
 "My Share button opens the sheet on Android but does nothing on iOS, and there's no error in the log. It's a .backup file I generate in the app."
@@ -266,6 +283,7 @@ Expect:
 
 - [ ] ti-expert: responds with correct architecture
 - [ ] ti-expert: classifies the feedback surface before naming a proxy
+- [ ] ti-expert: places `LSSupportsOpeningDocumentsInPlace` at the root of Info.plist
 - [ ] ti-expert: splits sharing by platform instead of routing both through a module
 - [ ] purgetss: does not use flexbox, uses correct classes
 - [ ] ti-ui: mentions performance rules
