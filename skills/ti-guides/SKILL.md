@@ -1,6 +1,6 @@
 ---
 name: ti-guides
-description: 'Use when working on Titanium SDK fundamentals: project configuration (`tiapp.xml`, `timodule.xml`), CommonJS modules, Hyperloop native access, app distribution (App Store / Google Play, certificates, provisioning), Titanium CLI usage, memory management, bridge optimization, SQLite transactions, image memory, or coding standards. Triggers include `tiapp.xml` in the project root, for either Alloy (`app/`) or Classic (`Resources/`) Titanium projects.'
+description: 'Use when working on Titanium SDK fundamentals: project configuration (`tiapp.xml`, `timodule.xml`), CommonJS modules, Hyperloop native access, app distribution (App Store / Google Play, certificates, provisioning), Titanium CLI usage, memory management, bridge optimization, SQLite transactions, image memory, coding standards, the compatibility matrix (which JDK, Node.js, Xcode or Android SDK a given Titanium SDK needs), or what changed in a Titanium SDK release. Triggers include `tiapp.xml` in the project root, for either Alloy (`app/`) or Classic (`Resources/`) Titanium projects.'
 ---
 
 # ti-guides
@@ -19,6 +19,8 @@ Use this skill when:
 - Using Hyperloop to call native APIs (Objective-C / Swift / Java)
 - Optimizing memory: removing global listeners, caching native properties, image memory footprints
 - Working with the Titanium CLI (`ti build`, `ti sdk install`, `ti sdk select`)
+- Checking which JDK, Node.js, Xcode or Android SDK a Titanium SDK version requires
+- Finding out what changed in a Titanium SDK release and whether it affects existing code
 - Writing CommonJS modules (stateful caching, ES6+ patterns, antipatterns)
 - Authoring `AndroidManifest.xml` overrides
 - Following TiDev style and naming conventions
@@ -47,6 +49,8 @@ Do NOT use for:
 | Google Play (APK / AAB), App Store (IPA), certificates, provisioning, deployment | [app-distribution.md](references/app-distribution.md) |
 | Complete `tiapp.xml` and `timodule.xml` reference | [tiapp-config.md](references/tiapp-config.md) |
 | Titanium CLI commands, options, tasks, configuration, build processes | [cli-reference.md](references/cli-reference.md) |
+| JDK, Node.js, Xcode and Android SDK versions each Titanium SDK supports | [compatibility-matrix.md](references/compatibility-matrix.md) |
+| What changed per 13.x release, and which changes affect your code | [sdk-release-notes.md](references/sdk-release-notes.md) |
 | Community support, modules, sample code, Slack, learning materials | [resources.md](references/resources.md) |
 
 ## Core practices

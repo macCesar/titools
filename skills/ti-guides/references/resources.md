@@ -111,7 +111,13 @@ See `hyperloop-native-access.md` for native module development:
 
 ### IDE support
 
-- VS Code: https://code.visualstudio.com/ (with Titanium extensions)
+Titanium has no IDE of its own; the CLI is the common denominator and every editor below drives it.
+
+| Editor | Integration |
+|---|---|
+| Visual Studio Code | Titanium extension — https://code.visualstudio.com/ |
+| JetBrains IDEs | Community plugin — https://github.com/devloopsnet/titanium-jetbrains |
+| Atom | Titanium package (Atom itself is discontinued) |
 
 ### CLI tools
 
