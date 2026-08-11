@@ -6,6 +6,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added — Compatibility matrix and release notes in `ti-guides`
+
+`compatibility-matrix.md` answers which JDK, Node.js, Xcode and Android SDK a given Titanium SDK can build with — a question no reference in the repo could answer before. Titanium SDK 13.3.0 raised the JDK ceiling to 25 and dropped 12.0.0–12.7.0 to unsupported.
+
+`sdk-release-notes.md` condenses 13.x down to what changes app code: ScrollableView moved to ViewPager2 on Android, `keepHardwareMode` on `Ti.UI.View`, `hideKeyboardAccessoryView` on WebView, AttributedString on Android, Xcode 27 / iOS 27, iOS multi-scene apps, and the groundwork for Android target SDK 36.
+
+Both subtrees — plus `Editor_IDE/`, which is where the JetBrains plugin now listed in `resources.md` came from — sat outside every subtree mapped in the auditor's `source-map.md`, so upstream changes to them had been invisible to every audit run so far. The map now covers them, with a note that release notes are commit subjects and need confirming against the API metadata before becoming guidance.
+
+### Added — Facebook Limited Login in `ti-api`
+
+`loginTracking` is supported on Android as well as iOS, and Limited Login now returns an OIDC Authentication Token. Adds the `nonce`, `authenticationToken` and `advertiserTrackingEnabled` properties, the `LimitedLoginAuthenticationToken` struct behind `event.authenticationToken`, and the caveat that the `LoginButton` honors `loginTracking` on iOS only — on Android the flow has to go through `authorize()`.
+
+### Fixed — `ti-api` no longer hides type definitions behind "Plus N more types"
+
+Seven `### Related Types` blocks ended in a marker that dropped 22 types, three of them naming nothing at all. The cost was real: `openPhotoGallery`'s multi-select options and response shape were among the omissions, so the reference showed `allowMultipleSelections` but not `allowMultiple`, `maxImages`, `selectionLimit` or `pathOnly`, and gave no hint that `success` stops delivering `e.media` and starts delivering `{ images, videos, livePhotos }`. Confirming that behavior meant reading the native SDK source — for something the official `api.json` had documented all along.
+
+Every referenced type is now either tabulated or named with a link to where it is tabulated. The blocks also gained a Platform column. Most of these properties are not cross-platform — 58 of the 97 in the `Ti.Media` types alone — which is what made `maxImages` (Android) and `selectionLimit` (iOS) look interchangeable.
+
+### Fixed — wrong ScrollableView event name in `ti-ui`
+
+`scrolling-views.md` listened for `dragEnd` on a ScrollableView. That event does not exist there: the SDK defines `dragend`, Android only. `ScrollView` is the type carrying both spellings. The example now uses the correct name and shows `scrollend` as the cross-platform alternative.
+
+### Fixed — typo carried over from upstream
+
+`ClusterAnnotationParams.memberAnnotations` read "recieved"; upstream corrected it.
+
 ## [4.4.2] - 2026-08-10
 
 ### Added — Sharing content out in `ti-expert`

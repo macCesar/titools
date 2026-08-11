@@ -1,6 +1,24 @@
-# Status — 2026-08-10
+# Status — 2026-08-11
 
-**Phase:** live and maintained. **v4.4.2 shipped on both channels**, working tree clean, nothing in flight.
+**Phase:** live and maintained. v4.4.2 is out on both channels. **An unreleased documentation audit is sitting in the working tree** — see below. Nothing committed yet.
+
+## In flight — audit against titanium-docs@c3832a84 (2026-08-11)
+
+Sixteen upstream commits (`7128ac62..c3832a84`) were audited and applied. Not committed, not released.
+
+**What upstream actually changed:** Facebook Limited Login (the only real `api.json` change), two typo fixes, a whitespace-only `imageview.md`, the JDK compatibility matrix, a JetBrains link, and release notes for 13.2.0 through 13.4.0. Nothing under `Titanium_SDK_Guide`, `Titanium_SDK_How-tos` or `Alloy_Framework`, so `ti-howtos`, `alloy-guides` and `alloy-howtos` were untouched by design, not by omission.
+
+**The structural finding:** all three guide-side changes landed outside every subtree mapped in `source-map.md`. `ti-guides` was anchored only to `Titanium_SDK_Guide`, leaving `Titanium_SDK_Getting_Started/`, `Titanium_SDK_Release_Notes/` and `Editor_IDE/` permanently invisible to the audit. Now mapped.
+
+**One claim was rejected on evidence.** The 13.3.0 release note says "add deprecation note for old events in ScrollableView". Neither the new `api.json` nor the installed SDK 13.4.0.GA `api.jsca` flags `scroll`, `scrollend` or `dragend` as deprecated, and their descriptions are identical between 13.1.1.GA and 13.4.0.GA. It was written up as advance warning, not as a deprecation. `source-map.md` now carries the general rule: release notes are commit subjects, confirm against API metadata first.
+
+**Verification, before believing any of it.** A generator was written to emit type tables from `api.json`, then pointed at the 113 tables already in the repo: 97 reproduced byte-for-byte, and the 16 differences were all explainable (8 empty-`Dictionary` stubs, 7 truncation markers, and one genuine upstream typo fix). Only after that control passed was it used to write anything. After the rebuild: 136 of 149 blocks match `api.json`, the remaining 13 being the same known artifacts. 580 internal links checked, 0 broken. `npm test` → 118 passing, 24 suites. No file over the 800-line limit (largest is `api-media.md` at 787).
+
+Worth recording: the link checker first reported 4 broken anchors in the new `sdk-release-notes.md`. The checker was wrong — its slug rule collapsed runs of whitespace into one hyphen where GitHub and the repo's own `generate-toc.mjs` emit one hyphen per space. Running `generate-toc.mjs` over the file changed nothing, which is what settled it.
+
+**`NOTA-referencias-truncadas.md` is resolved** and can be deleted once this is committed. Its finding was worse than it read: the marker in `api-media.md` claimed 2 omitted types when the section was really missing 10, and everything the note says had to be dug out of the native SDK source was already sitting in the official `api.json`.
+
+## Release state — both channels on 4.4.2
 
 **Sibling:** `~/Developer/openSource/aiskills` (`@maccesar/aiskills`) — shares this repo's `lib/`. See `context.md` § "Sibling project" for the parity contract.
 
