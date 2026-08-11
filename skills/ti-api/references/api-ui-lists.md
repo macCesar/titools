@@ -131,22 +131,54 @@ A `ListView` object is a container for [ListSection](Titanium.UI.ListSection) ob
 #### AnimatedOptions
 > A JavaScript object holding an `animated` property. Used for many UI methods as a means of specifying some transition should be animated.
 
-| Property | Type | Description |
-|----------|------|-------------|
-| animated | Boolean | If `true`, animate a transition for the method/value change. Note that for most… |
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| animated | Boolean | both | If `true`, animate a transition for the method/value change. Note that for most… |
 
 #### AnimatedWithDurationOptions
 > A JavaScript object holding `animated` and `duration` properties. Used on iOS For [TableView](Titanium.UI.TableView) and [ListView](Titanium.UI.ListView) content offset transitions.
 
-| Property | Type | Description |
-|----------|------|-------------|
-| animated | Boolean | If `true`, animate a transition for the method/value change. Note that for most… |
-| duration | Number | The duration in `milliseconds` for animation |
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| animated | Boolean | both | If `true`, animate a transition for the method/value change. Note that for most… |
+| duration | Number | both | The duration in `milliseconds` for animation |
 
-#### Dictionary
-> Plain JavaScript object.
+#### ListItemEventType
+> The arguments for the <Titanium.UI.ListView.prefetch> and <Titanium.UI.ListView.cancelprefetch> events.
 
-*Plus 6 more types: ListViewMarkerProps, Padding, Point, SelectedItem*
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| section | Ti.UI.ListSection | ios | List section if the item is contained in a list section. |
+| sectionIndex | Number | ios | Section index. |
+| itemIndex | Number | ios | Item index. |
+| itemId | String | ios | The item ID bound to the list item that generated the event. |
+
+#### ListViewIndexEntry
+> A simple object that represents an index entry in a `ListView`.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| title | String | ios | Title to display in the index bar. |
+| index | Number | ios | Section index associated with this title. |
+
+#### ListViewMarkerProps
+> The parameter for [setMarker](Titanium.UI.ListView.setMarker) and [addMarker](Titanium.UI.ListView.addMarker) methods.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| sectionIndex | Number | both | The sectionIndex of the reference item. |
+| itemIndex | Number | both | The itemIndex of the reference item. |
+
+#### SelectedItem
+> The arguments for the <Titanium.UI.ListView.itemsselected> event.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| section | Ti.UI.ListSection | both | List section if the item is contained in a list section. |
+| sectionIndex | Number | both | Section index. |
+| itemIndex | Number | both | Item index. |
+
+Also referenced by this API, documented elsewhere: `Dictionary`, [HorizontalInsets](#horizontalinsets), [ListViewAnimationProperties](#listviewanimationproperties), [Padding](api-ui-windows-navigation.md#padding), [Point](api-ui-extras.md#point).
 
 ---
 
@@ -422,27 +454,62 @@ There are few approaches to creating and using `TableView` object.
 #### AnimatedOptions
 > A JavaScript object holding an `animated` property. Used for many UI methods as a means of specifying some transition should be animated.
 
-| Property | Type | Description |
-|----------|------|-------------|
-| animated | Boolean | If `true`, animate a transition for the method/value change. Note that for most… |
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| animated | Boolean | both | If `true`, animate a transition for the method/value change. Note that for most… |
 
 #### AnimatedWithDurationOptions
 > A JavaScript object holding `animated` and `duration` properties. Used on iOS For [TableView](Titanium.UI.TableView) and [ListView](Titanium.UI.ListView) content offset transitions.
 
-| Property | Type | Description |
-|----------|------|-------------|
-| animated | Boolean | If `true`, animate a transition for the method/value change. Note that for most… |
-| duration | Number | The duration in `milliseconds` for animation |
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| animated | Boolean | both | If `true`, animate a transition for the method/value change. Note that for most… |
+| duration | Number | both | The duration in `milliseconds` for animation |
 
 #### HorizontalInsets
 > Dictionary object of parameters for horizontal-only insets applied to [Table](Titanium.UI.TableView) and [List](Titanium.UI.ListView) views. Only `left` and `right` properties are used (see <Padding>).
 
-| Property | Type | Description |
-|----------|------|-------------|
-| left | Number | Left padding/inset |
-| right | Number | Right padding/inset |
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| left | Number | both | Left padding/inset |
+| right | Number | both | Right padding/inset |
 
-*Plus 5 more types: SelectedRowObject, Size, TableViewAnimationProperties*
+#### SelectedRowObject
+> The arguments for the <Titanium.UI.TableView.rowsselected> event.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| index | Number | both | Row index. |
+| row | Ti.UI.TableViewRow | both | Table view row object. |
+| rowData | Dictionary<Titanium.UI.TableViewRow> | both | Properties of the row. Use this property rather than `row` to access any custom… |
+| section | Ti.UI.TableViewSection | both | Table view section object, if the clicked row is contained in a section. |
+
+#### Size
+> A simple object consisting of size measurements.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| height | Number | both | The height measurement. |
+| width | Number | both | The width measurement. |
+
+#### TableViewAnimationProperties
+> A simple object for specifying the animation properties to use when inserting or deleting rows, or scrolling the table.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| animated | Boolean | both | Whether this table change should be animated. Ignored if any `animationStyle` v… |
+| animationStyle | Number | both | Type of animation to use for row insertions and deletions. |
+| position | Number | both | Specifies what position to scroll the selected row to. |
+
+#### TableViewIndexEntry
+> A simple object that represents an index entry in a `TableView`.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| title | String | both | Title to display in the index bar for this item. |
+| index | Number | both | Row index associated with this item. |
+
+Also referenced by this API, documented elsewhere: `Dictionary`, [Padding](api-ui-windows-navigation.md#padding), [Point](api-ui-extras.md#point).
 
 ---
 

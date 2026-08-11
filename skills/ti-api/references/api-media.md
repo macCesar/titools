@@ -160,75 +160,227 @@ The Media module is used to access the device's media-related functionality, suc
 
 ### Related Types
 
+> **Warning:** `success` receives a different shape depending on `allowMultiple`. With a single selection it is a `CameraMediaItemType` and the blob is on `e.media`. With `allowMultiple: true` it is a `CameraMediaMultipleItemsType` and there is no `e.media` at all — the blobs live under `e.images`, `e.videos` and `e.livePhotos`, each entry itself a `CameraMediaItemType`.
+
+#### CameraMediaItemType
+> A media object from the camera or photo gallery.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| success | Boolean | both | Indicates if the operation succeeded. Returns `true`. |
+| error | String | both | Error message, if any returned. |
+| code | Number | both | Error code. Returns 0. |
+| media | Ti.Blob | both | The media object, as a [Blob](Titanium.Blob). |
+| path | String | android | The path of the image when returning data from the gallery. |
+| mediaType | String | both | The type of media, either `MEDIA_TYPE_PHOTO`, `MEDIA_TYPE_LIVEPHOTO` or `MEDIA_… |
+| cropRect | Dimension | both | Simple object defining the user's selected crop rectangle, or `null` if the use… |
+| previewRect | Size | android | Simple object defining the preview image size. This will be undefined when cust… |
+| livePhoto | Ti.UI.iOS.LivePhoto | both | The live photo object, as a <Titanium.UI.iOS.LivePhoto> and `undefined` if no l… |
+
+#### CameraMediaMultipleItemsType
+> A media object from photo gallery when <Titanium.Media.allowMultiple> is `true`.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| success | Boolean | both | Indicates if the operation succeeded. Returns `true`. |
+| error | String | both | Error message, if any returned. |
+| code | Number | both | Error code. Returns 0. |
+| images | Array<CameraMediaItemType> | both | The list of selected images. |
+| livePhotos | Array<Titanium.UI.iOS.LivePhoto> | ios | The list of selected live photo objects. |
+| videos | Array<CameraMediaItemType> | both | The list of selected videos. |
+
+#### CameraOpen
+> Parameters of the open callback
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| width | Number | android | Width of the preview camera image |
+| height | Number | android | Height of the preview camera image |
+
 #### CameraOptionsType
 > Simple object for specifying options to [showCamera](Titanium.Media.showCamera).
 
-| Property | Type | Description |
-|----------|------|-------------|
-| success | Callback<CameraMediaItemType> | Function to call when the camera is closed after a successful capture/selection. |
-| open | Callback<CameraOpen> | Function to call when the camera is shown |
-| error | Callback<FailureResponse> | Function to call upon receiving an error. |
-| cancel | Callback<FailureResponse> | Function to call if the user presses the cancel button. |
-| recording | Callback<CameraRecordingCallback> | Function to call during recording. Returns size and duration. |
-| androidback | Callback<FailureResponse> | Function to call if the user presses the back button. |
-| autohide | Boolean | Specifies if the camera should be hidden automatically after the media capture … |
-| animated | Boolean | Specifies if the dialog should be animated upon showing and hiding. |
-| saveToPhotoGallery | Boolean | Specifies if the media should be saved to the photo gallery upon successful cap… |
-| allowEditing | Boolean | Specifies if the media should be editable after capture/selection. |
-| zoomEnabled | Boolean | Specifies if pinch to zoom is enabled or not. |
-| targetImageWidth | Number | Maximum width of the saved image. Depending on your phone and your value this m… |
-| targetImageHeight | Number | Maximum height of the saved image. Depending on your phone and your value this … |
-| mediaTypes | Array<String> | Array of media type constants to allow. Note: If you want to select live photos… |
-| videoMaximumDuration | Number | Maximum duration (in milliseconds) to allow video capture before completing. |
-| videoQuality | Number | Constant to indicate the video quality during capture. |
-| whichCamera | Number | Opens the camera with the specified camera direction. |
-| showControls | Boolean | Indicates if the built-in camera controls should be displayed. |
-| overlay | Ti.UI.View | View to added as an overlay to the camera UI (on top). |
-| transform | Ti.UI.Matrix2D | Transformation matrix to apply to the camera or photogallery view. |
-| inPopOver | Boolean | Show the camera in a popover. |
-| popoverView | Ti.UI.View | View to position the camera or photo gallery popover on top of. |
-| arrowDirection | Number | Controls the type of arrow and position of the popover. |
-| autorotate | Boolean | Determines if the camera preview should rotate or not. |
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| success | Callback<CameraMediaItemType> | both | Function to call when the camera is closed after a successful capture/selection. |
+| open | Callback<CameraOpen> | android | Function to call when the camera is shown |
+| error | Callback<FailureResponse> | both | Function to call upon receiving an error. |
+| cancel | Callback<FailureResponse> | both | Function to call if the user presses the cancel button. |
+| recording | Callback<CameraRecordingCallback> | android | Function to call during recording. Returns size and duration. |
+| androidback | Callback<FailureResponse> | android | Function to call if the user presses the back button. |
+| autohide | Boolean | both | Specifies if the camera should be hidden automatically after the media capture … |
+| animated | Boolean | ios | Specifies if the dialog should be animated upon showing and hiding. |
+| saveToPhotoGallery | Boolean | both | Specifies if the media should be saved to the photo gallery upon successful cap… |
+| allowEditing | Boolean | ios | Specifies if the media should be editable after capture/selection. |
+| zoomEnabled | Boolean | android | Specifies if pinch to zoom is enabled or not. |
+| targetImageWidth | Number | android | Maximum width of the saved image. Depending on your phone and your value this m… |
+| targetImageHeight | Number | android | Maximum height of the saved image. Depending on your phone and your value this … |
+| mediaTypes | Array<String> | both | Array of media type constants to allow. Note: If you want to select live photos… |
+| videoMaximumDuration | Number | both | Maximum duration (in milliseconds) to allow video capture before completing. |
+| videoQuality | Number | both | Constant to indicate the video quality during capture. |
+| whichCamera | Number | android | Opens the camera with the specified camera direction. |
+| showControls | Boolean | ios | Indicates if the built-in camera controls should be displayed. |
+| overlay | Ti.UI.View | both | View to added as an overlay to the camera UI (on top). |
+| transform | Ti.UI.Matrix2D | ios | Transformation matrix to apply to the camera or photogallery view. |
+| inPopOver | Boolean | ios | Show the camera in a popover. |
+| popoverView | Ti.UI.View | ios | View to position the camera or photo gallery popover on top of. |
+| arrowDirection | Number | ios | Controls the type of arrow and position of the popover. |
+| autorotate | Boolean | ios | Determines if the camera preview should rotate or not. |
+
+#### CameraRecordingCallback
+> Infos about the current video recording
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| duration | Number | both | Length in milliseconds |
+| size | Number | both | Size of the video in bytes |
+
+#### FailureResponse
+> Properties used in any event or callback which needs to report a failure.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| success | Boolean | both | Indicates if the operation succeeded. Returns `false`. |
+| error | String | both | Error message, if any returned. |
+| code | Number | both | Error code. Returns a non-zero value. |
+
+#### MediaAuthorizationResponse
+> Argument passed to the callback when a request finishes successfully or erroneously.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| success | Boolean | both | Indicates if the operation succeeded. |
+| error | String | both | Error message, if any returned. |
+| code | Number | both | Error code. Returns 0 if `success` is `true`. |
+
+#### MediaQueryInfoType
+> A full query descriptor for a filtering predicate.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| value | Number \| String \| Boolean | ios | The value for the given predicate. See the descriptions in <MediaQueryType> for… |
+| exact | Boolean | ios | Whether or not the predicate is for an exact match. The default is `true`. |
 
 #### MediaQueryType
 > A specifier for a media library query. By default, filters perform an exact match.
 
-| Property | Type | Description |
-|----------|------|-------------|
-| grouping | Number | A constant that specifies the ordering of the result array. |
-| mediaType | MediaQueryInfoType \| Number | The media type to filter on. |
-| title | MediaQueryInfoType \| String | The title to filter on. Value should be a String. |
-| albumTitle | MediaQueryInfoType \| String | The album title to filter on. Value should be a String. |
-| artist | MediaQueryInfoType \| String | The artist to filter on. Value should be a String. |
-| albumArtist | MediaQueryInfoType \| String | The album artist to filter on. Value should be a String. |
-| genre | MediaQueryInfoType \| String | The genre to filter on. Value should be a String. |
-| composer | MediaQueryInfoType \| String | The composer to filter on. Value should be a String. |
-| isCompilation | MediaQueryInfoType \| Boolean | Filter by whether or not the item is a compilation. The value should be a Boole… |
-| playCount | MediaQueryInfoType \| Number | The play count to filter on. Value should be a Number. |
-| persistentID | MediaQueryInfoType \| Number | The persistent ID to filter on. Value should be a Number. |
-| albumPersistentID | MediaQueryInfoType \| Number | The album persistent ID to filter on. Value should be a Number. |
-| albumArtistPersistentID | MediaQueryInfoType \| Number | The album artist persistent ID to filter on. Value should be a Number. |
-| genrePersistentID | MediaQueryInfoType \| Number | The genre persistent ID to filter on. Value should be a Number. |
-| composerPersistentID | MediaQueryInfoType \| Number | The composer persistent ID to filter on. Value should be a Number. |
-| isCloudItem | MediaQueryInfoType \| Boolean | Filter by whether or not the item is a cloud item. Value should be a Boolean. |
-| hasProtectedAsset | MediaQueryInfoType \| Boolean | Filter by whether or not the item is a protected asset. Value should be a Boole… |
-| podcastTitle | MediaQueryInfoType \| String | The podcast title to filter on. Value should be a String. |
-| podcastPersistentID | MediaQueryInfoType \| Number | The podcast persistent ID to filter on. Value should be a Number. |
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| grouping | Number | ios | A constant that specifies the ordering of the result array. |
+| mediaType | MediaQueryInfoType \| Number | ios | The media type to filter on. |
+| title | MediaQueryInfoType \| String | ios | The title to filter on. Value should be a String. |
+| albumTitle | MediaQueryInfoType \| String | ios | The album title to filter on. Value should be a String. |
+| artist | MediaQueryInfoType \| String | ios | The artist to filter on. Value should be a String. |
+| albumArtist | MediaQueryInfoType \| String | ios | The album artist to filter on. Value should be a String. |
+| genre | MediaQueryInfoType \| String | ios | The genre to filter on. Value should be a String. |
+| composer | MediaQueryInfoType \| String | ios | The composer to filter on. Value should be a String. |
+| isCompilation | MediaQueryInfoType \| Boolean | ios | Filter by whether or not the item is a compilation. The value should be a Boole… |
+| playCount | MediaQueryInfoType \| Number | ios | The play count to filter on. Value should be a Number. |
+| persistentID | MediaQueryInfoType \| Number | ios | The persistent ID to filter on. Value should be a Number. |
+| albumPersistentID | MediaQueryInfoType \| Number | ios | The album persistent ID to filter on. Value should be a Number. |
+| albumArtistPersistentID | MediaQueryInfoType \| Number | ios | The album artist persistent ID to filter on. Value should be a Number. |
+| genrePersistentID | MediaQueryInfoType \| Number | ios | The genre persistent ID to filter on. Value should be a Number. |
+| composerPersistentID | MediaQueryInfoType \| Number | ios | The composer persistent ID to filter on. Value should be a Number. |
+| isCloudItem | MediaQueryInfoType \| Boolean | ios | Filter by whether or not the item is a cloud item. Value should be a Boolean. |
+| hasProtectedAsset | MediaQueryInfoType \| Boolean | ios | Filter by whether or not the item is a protected asset. Value should be a Boole… |
+| podcastTitle | MediaQueryInfoType \| String | ios | The podcast title to filter on. Value should be a String. |
+| podcastPersistentID | MediaQueryInfoType \| Number | ios | The podcast persistent ID to filter on. Value should be a Number. |
 
 #### MusicLibraryOptionsType
 > Simple object for specifying options to [openMusicLibrary](Titanium.Media.openMusicLibrary).
 
-| Property | Type | Description |
-|----------|------|-------------|
-| success | Callback<MusicLibraryResponseType> | Function to call when the music library selection is made. |
-| error | Callback<FailureResponse> | Function to call upon receiving an error. |
-| cancel | Callback<FailureResponse> | Function to call if the user presses the cancel button. |
-| autohide | Boolean | Specifies that the library should be hidden automatically after media selection… |
-| animated | Boolean | Boolean if the dialog should be animated when showing and hiding. |
-| mediaTypes | Number \| Array<Number> | An array of media type constants defining selectable media. |
-| allowMultipleSelections | Boolean | Set to `true` to allow the user to select multiple items from the library. |
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| success | Callback<MusicLibraryResponseType> | ios | Function to call when the music library selection is made. |
+| error | Callback<FailureResponse> | ios | Function to call upon receiving an error. |
+| cancel | Callback<FailureResponse> | ios | Function to call if the user presses the cancel button. |
+| autohide | Boolean | ios | Specifies that the library should be hidden automatically after media selection… |
+| animated | Boolean | ios | Boolean if the dialog should be animated when showing and hiding. |
+| mediaTypes | Number \| Array<Number> | ios | An array of media type constants defining selectable media. |
+| allowMultipleSelections | Boolean | ios | Set to `true` to allow the user to select multiple items from the library. |
 
-*Plus 2 more types: *
+#### MusicLibraryResponseType
+> Simple object passed to the [openMusicLibrary](Titanium.Media.openMusicLibrary) `success` callback function.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| representative | Ti.Media.Item | both | A single representative of the selected items. |
+| items | Array<Titanium.Media.Item> | both | A list of all the items chosen by the user. |
+| types | Number | both | Media types in this collection, represented as the bitwise OR of the media type… |
+
+#### PhotoGalleryOptionsType
+> Simple object for specifying options to [openPhotoGallery](Titanium.Media.openPhotoGallery).
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| success | Callback<CameraMediaItemType> \| Callback<CameraMediaMultipleItemsType> | both | Function to call when the photo gallery is closed after a successful selection. |
+| error | Callback<FailureResponse> | both | Function to call upon receiving an error. |
+| cancel | Callback<FailureResponse> | both | Function to call if the user presses the cancel button. |
+| autohide | Boolean | ios | Specifies if the photo gallery should be hidden automatically after the media s… |
+| animated | Boolean | ios | Specifies if the dialog should be animated upon showing and hiding. |
+| allowEditing | Boolean | ios | Specifies if the media should be editable after capture/selection. |
+| mediaTypes | Array<String> | both | Array of media type constants to allow. Live photos is only supported on the iO… |
+| popoverView | Ti.UI.View | ios | View to position the photo gallery popover on top of. |
+| arrowDirection | Number | ios | Controls the type of arrow and position of the popover. |
+| allowMultiple | Boolean | both | Specifies if the user should be able to select multiple photos. |
+| maxImages | Boolean | android | Specifies the number of images a user can select at maximum. |
+| pathOnly | Boolean | android | Do not include the blob in the result |
+| selectionLimit | Boolean | ios | Specifies number of media item that can be selected. |
+| allowTranscoding | Boolean | ios | Specifies if the video should be transcoded (using highest quality preset) . If… |
+
+#### PreviewImageError
+> The parameter passed to the `error` callback of <PreviewImageOptions>.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| success | Boolean | android | Indicates if the operation succeeded. Returns `false`. |
+| error | String | android | Error message, if any returned. |
+| code | Number | android | Error code, if applicable. |
+| message | String | android | Description of the error. |
+
+#### PreviewImageOptions
+> Options passed to <Titanium.Media.previewImage>.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| image | Ti.Blob | android | The image to preview. Must be a blob based on a file, such as from <Titanium.Fi… |
+| success | Callback<SuccessResponse> | android | Function to be called back if the preview succeeds. No info is passed. |
+| error | Callback<PreviewImageError> | android | Function called back if the preview fails. Check the `message` property of pass… |
+
+#### RouteDescription
+> An Object describing the current audio route.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| inputs | Array<String> | ios | An Array of current input ports for the session. See the `AUDIO_SESSION_PORT` c… |
+| outputs | Array<String> | ios | An Array of current output ports for the session. See the `AUDIO_SESSION_PORT` … |
+
+#### ScreenshotResult
+> The parameter passed to the <Titanium.Media.takeScreenshot> callback.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| media | Ti.Blob | both | The screenshot image. |
+
+#### SuccessResponse
+> Properties used in any event or callback which needs to report a success.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| success | Boolean | both | Indicates if the operation succeeded. Returns `true`. |
+| error | String | both | Error message, if any returned. |
+| code | Number | both | Error code. Returns 0. |
+
+#### RequestCameraAccessResult
+> Same shape as [MediaAuthorizationResponse](#mediaauthorizationresponse): `success`, `error`, `code`.
+
+#### RequestMusicLibraryAccessResult
+> Same shape as [MediaAuthorizationResponse](#mediaauthorizationresponse): `success`, `error`, `code`.
+
+#### RequestPhotoGalleryAccessResult
+> Same shape as [MediaAuthorizationResponse](#mediaauthorizationresponse): `success`, `error`, `code`.
+
+Also referenced by this API, documented elsewhere: `Dictionary`.
 
 ---
 

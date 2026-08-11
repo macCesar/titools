@@ -280,27 +280,90 @@ JavaScript in the web view executes in its own context.  The web view can intera
 #### BackForwardList
 > The object returned to the <Titanium.UI.WebView.backForwardList> method.
 
-| Property | Type | Description |
-|----------|------|-------------|
-| currentItem | BackForwardListItem | The current item. |
-| backItem | BackForwardListItem | The item immediately preceding the current item. |
-| forwardItem | BackForwardListItem | The item immediately following the current item. |
-| backList | Array<BackForwardListItem> | The portion of the list preceding the current item. |
-| forwardList | Array<BackForwardListItem> | The portion of the list following the current item. |
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| currentItem | BackForwardListItem | ios | The current item. |
+| backItem | BackForwardListItem | ios | The item immediately preceding the current item. |
+| forwardItem | BackForwardListItem | ios | The item immediately following the current item. |
+| backList | Array<BackForwardListItem> | ios | The portion of the list preceding the current item. |
+| forwardList | Array<BackForwardListItem> | ios | The portion of the list following the current item. |
 
-#### Dictionary
-> Plain JavaScript object.
+#### BackForwardListItem
+> The object represents a webpage in the back-forward of a web view.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| url | String | ios | The URL of the webpage represented by this item. |
+| initialUrl | String | ios | The URL of the initial request that created this item. |
+| title | String | ios | The title of the webpage represented by this item. |
+
+#### DataCreationResult
+> The parameter passed to the <Titanium.UI.WebView.createPDF> or <Titanium.UI.WebView.createWebArchive>callback.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| data | Ti.Blob | ios | The created data. |
+| success | Boolean | ios | Indicates if the data creation successful or not. |
+| error | String | ios | Error message, if any returned. |
+
+#### DataCreationResultAndroid
+> Success callback in <Titanium.UI.WebView.createPDF>.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| data | Ti.Blob | android | The created data. |
+
+#### OnLinkURLResponse
+> An object returned when the <Titanium.UI.WebView.onlink> callback is fired.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| url | String | both | The URL of the link that should be navigated to. |
+
+#### SearchResult
+> The parameter passed to the <Titanium.UI.WebView.findString>.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| success | Boolean | ios | Indicates if string found or not. |
+| error | String | ios | Error message, if any returned. |
+
+#### setHtmlOptions
+> Options used by <Titanium.UI.WebView.setHtml>
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| baseURL | String | both | Sets the URL that the web content's paths will be relative to. |
+| mimeType | String | both | Sets the MIME type for the content. Defaults to "text/html" if not specified. |
+
+#### SnapshotResult
+> The parameter passed to the <Titanium.UI.WebView.takeSnapshot> callback.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| snapshot | Ti.Blob | ios | The snapshot image. |
+| success | Boolean | ios | Indicates if the snapshot taken. |
+| error | String | ios | Error message, if any returned. |
 
 #### StringSearchOptions
 > The optional options to pass to the <Titanium.UI.WebView.findString>. Pass a dictionary with one or more of the following string-keys:     * `caseSensitive` (Boolean value)     * `backward` (Boolean value)     * `wraps` (Boolean value)
 
-| Property | Type | Description |
-|----------|------|-------------|
-| caseSensitive | Boolean | Whether or not the search should be case sensitive. |
-| backward | Boolean | The direction to search from the current selection. The search will respect the… |
-| wraps | Boolean | Whether the search should start at the beginning of the document once it reache… |
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| caseSensitive | Boolean | both | Whether or not the search should be case sensitive. |
+| backward | Boolean | both | The direction to search from the current selection. The search will respect the… |
+| wraps | Boolean | both | Whether the search should start at the beginning of the document once it reache… |
 
-*Plus 2 more types: *
+#### UserScriptParams
+> Dictionary of options for the <Titanium.UI.WebView.addUserScript> method.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| source | String | ios | A script that can be injected into a webpage. |
+| injectionTime | Number | ios | The time when the script should be injected into the webpage. |
+| mainFrameOnly | Boolean | ios | A Boolean value indicating whether the script should be injected only into the … |
+
+Also referenced by this API, documented elsewhere: `Dictionary`.
 
 ---
 

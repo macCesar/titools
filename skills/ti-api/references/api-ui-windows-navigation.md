@@ -164,32 +164,60 @@ This applies to Windows inside both standalone NavigationWindow and TabGroup (wh
 #### AnimatedOptions
 > A JavaScript object holding an `animated` property. Used for many UI methods as a means of specifying some transition should be animated.
 
-| Property | Type | Description |
-|----------|------|-------------|
-| animated | Boolean | If `true`, animate a transition for the method/value change. Note that for most… |
-
-#### Padding
-> Dictionary object of parameters for the padding/insets applied to all kinds of views.
-
-| Property | Type | Description |
-|----------|------|-------------|
-| left | Number | Left padding/inset |
-| right | Number | Right padding/inset |
-| top | Number | Top padding/inset |
-| bottom | Number | Bottom padding/inset |
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| animated | Boolean | both | If `true`, animate a transition for the method/value change. Note that for most… |
 
 #### closeWindowParams
 > Dictionary of options for the <Titanium.UI.Window.close> method.
 
-| Property | Type | Description |
-|----------|------|-------------|
-| animated | Boolean | Determines whether to use an animated effect when the window is closed. Default… |
-| animationDuration | Number | duration of the animation in milliseconds |
-| animationStyle | Number | Transition type to use during a transition animation. |
-| activityEnterAnimation | Number | Animation resource to use for the incoming activity. |
-| activityExitAnimation | Number | Animation resource to use for the outgoing activity. |
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| animated | Boolean | both | Determines whether to use an animated effect when the window is closed. Default… |
+| animationDuration | Number | ios | duration of the animation in milliseconds |
+| animationStyle | Number | ios | Transition type to use during a transition animation. |
+| activityEnterAnimation | Number | android | Animation resource to use for the incoming activity. |
+| activityExitAnimation | Number | android | Animation resource to use for the outgoing activity. |
 
-*Plus 3 more types: windowToolbarParam*
+#### Padding
+> Dictionary object of parameters for the padding/insets applied to all kinds of views.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| left | Number | both | Left padding/inset |
+| right | Number | both | Right padding/inset |
+| top | Number | both | Top padding/inset |
+| bottom | Number | both | Bottom padding/inset |
+
+#### shadowDict
+> Dictionary describing the shadow effect for text.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| blurRadius | Number | both | Specifies the blur radius of the shadow. |
+| color | String \| Ti.UI.Color | both | Color name or hex triplet specifying the color of the shadow. |
+| offset | Size | both | <Size> with the properties `width` and `height` used as the horizontal and vert… |
+
+#### titleAttributesParams
+> Dictionary of options for the <Titanium.UI.Window.titleAttributes> property.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| color | String \| Ti.UI.Color | both | Color of the window title, as a color name or hex triplet. |
+| font | Font | ios | Font to use for the window title. |
+| shadow | shadowDict | ios | Shadow color and offset for the window title. |
+
+#### windowToolbarParam
+> Dictionary of options for the <Titanium.UI.Window.setToolbar> method.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| translucent | Boolean | both | Defines if the toolbar is translucent. |
+| animated | Boolean | both | Defines if the toolbar appearance is animated. |
+| barColor | String \| Ti.UI.Color | both | Background color for the toolbar, as a color name or hex triplet. |
+| tintColor | String \| Ti.UI.Color | both | The tintColor to apply to the tool bar. |
+
+Also referenced by this API, documented elsewhere: `Dictionary`, [Font](api-ui-lists.md#font), [openWindowParams](#openwindowparams).
 
 ---
 
@@ -334,45 +362,45 @@ You can add tabs to the group using [addTab](Titanium.UI.TabGroup.addTab), and p
 #### closeWindowParams
 > Dictionary of options for the <Titanium.UI.Window.close> method.
 
-| Property | Type | Description |
-|----------|------|-------------|
-| animated | Boolean | Determines whether to use an animated effect when the window is closed. Default… |
-| animationDuration | Number | duration of the animation in milliseconds |
-| animationStyle | Number | Transition type to use during a transition animation. |
-| activityEnterAnimation | Number | Animation resource to use for the incoming activity. |
-| activityExitAnimation | Number | Animation resource to use for the outgoing activity. |
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| animated | Boolean | both | Determines whether to use an animated effect when the window is closed. Default… |
+| animationDuration | Number | ios | duration of the animation in milliseconds |
+| animationStyle | Number | ios | Transition type to use during a transition animation. |
+| activityEnterAnimation | Number | android | Animation resource to use for the incoming activity. |
+| activityExitAnimation | Number | android | Animation resource to use for the outgoing activity. |
 
 #### disableTabOptions
 > Dictionary of options for the <Titanium.UI.TabGroup.disableTabOptions> method.
 
-| Property | Type | Description |
-|----------|------|-------------|
-| animated | Boolean | Determines whether to use an animated effect to hide/show the navigation bar. |
-| enabled | Boolean | Show or hide the navigation bar. |
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| animated | Boolean | both | Determines whether to use an animated effect to hide/show the navigation bar. |
+| enabled | Boolean | both | Show or hide the navigation bar. |
 
 #### openWindowParams
 > Dictionary of options for the <Titanium.UI.Window.open> method.
 
-| Property | Type | Description |
-|----------|------|-------------|
-| animated | Boolean | Determines whether to use an animated effect when the window is shown. |
-| bottom | Number \| String | Window's bottom position, in platform-specific units. |
-| fullscreen | Boolean | Determines if the window is fullscreen. |
-| height | Number \| String | Window's height, in platform-specific units. |
-| left | Number \| String | Window's left position, in platform-specific units. |
-| modal | Boolean | Determines whether to open the window modal in front of other windows. |
-| forceModal | Boolean | Indicates whether the window enforces modal behaviour. |
-| modalStyle | Number | Presentation style of this modal window. |
-| modalTransitionStyle | Number | Transition style of this modal window. |
-| navBarHidden | Boolean | For modal windows, hides the nav bar (`true`) or shows the nav bar (`false`). |
-| right | Number \| String | Window's right position, in platform-specific units. |
-| top | Number \| String | Window's top position, in platform-specific units. |
-| transition | Number | Transition style of this non-modal window. |
-| width | Number \| String | Window's width, in platform-specific units. |
-| activityEnterAnimation | Number | Animation resource to run on the activity being opened. |
-| activityExitAnimation | Number | Animation resource to run on the activity that is being put in background as a … |
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| animated | Boolean | both | Determines whether to use an animated effect when the window is shown. |
+| bottom | Number \| String | both | Window's bottom position, in platform-specific units. |
+| fullscreen | Boolean | both | Determines if the window is fullscreen. |
+| height | Number \| String | both | Window's height, in platform-specific units. |
+| left | Number \| String | both | Window's left position, in platform-specific units. |
+| modal | Boolean | both | Determines whether to open the window modal in front of other windows. |
+| forceModal | Boolean | ios | Indicates whether the window enforces modal behaviour. |
+| modalStyle | Number | ios | Presentation style of this modal window. |
+| modalTransitionStyle | Number | ios | Transition style of this modal window. |
+| navBarHidden | Boolean | both | For modal windows, hides the nav bar (`true`) or shows the nav bar (`false`). |
+| right | Number \| String | both | Window's right position, in platform-specific units. |
+| top | Number \| String | both | Window's top position, in platform-specific units. |
+| transition | Number | ios | Transition style of this non-modal window. |
+| width | Number \| String | both | Window's width, in platform-specific units. |
+| activityEnterAnimation | Number | android | Animation resource to run on the activity being opened. |
+| activityExitAnimation | Number | android | Animation resource to run on the activity that is being put in background as a … |
 
-*Plus 1 more types: *
+Also referenced by this API, documented elsewhere: `Dictionary`, [Font](api-ui-lists.md#font), [shadowDict](#shadowdict), [titleAttributesParams](#titleattributesparams).
 
 ---
 
