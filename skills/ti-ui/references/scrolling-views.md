@@ -108,8 +108,14 @@ scrollableView.addEventListener('scroll', (e) => {
   Ti.API.info(`Views: ${e.view}`);  // View object reference
 });
 
-scrollableView.addEventListener('dragEnd', (e) => {
+// Android only, and lowercase: ScrollableView has no `dragEnd` event.
+scrollableView.addEventListener('dragend', (e) => {
   Ti.API.info(`Drag ended, settled on page: ${e.currentPage}`);
+});
+
+// Cross-platform equivalent — fires once the view stops moving.
+scrollableView.addEventListener('scrollend', (e) => {
+  Ti.API.info(`Settled on page: ${e.currentPage}`);
 });
 ```
 ...
