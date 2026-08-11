@@ -200,10 +200,17 @@ Expect:
 ```
 "What's the right way to wire up Hyperloop to call a native iOS class from JavaScript?"
 ```
+```
+"Which JDK do I need for Titanium SDK 13.4? I'm on 21 and the Android build fails."
+```
+```
+"We're on 13.1.1 — what would upgrading to 13.4 break?"
+```
 Expect:
 - Activates `ti-guides`
-- References `ti-guides/references/tiapp-config.md` or `hyperloop-native-access.md`
+- References `ti-guides/references/tiapp-config.md`, `hyperloop-native-access.md`, `compatibility-matrix.md` or `sdk-release-notes.md`
 - Concrete XML/JS examples, no hand-waving
+- For the version questions: cites the supported JDK range (18–25 from 13.3.0) and the changes that touch app code (ScrollableView on ViewPager2, TabGroup `focus` split from `selected`), not a raw changelog dump
 
 ---
 
