@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.5.0] - 2026-08-11
+
 ### Added — Compatibility matrix and release notes in `ti-guides`
 
 `compatibility-matrix.md` answers which JDK, Node.js, Xcode and Android SDK a given Titanium SDK can build with — a question no reference in the repo could answer before. Titanium SDK 13.3.0 raised the JDK ceiling to 25 and dropped 12.0.0–12.7.0 to unsupported.

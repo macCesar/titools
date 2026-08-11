@@ -178,7 +178,7 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 | purgetss     | Utility-first styling               | UI styling and animations               |
 | ti-ui        | UI/UX patterns                      | Complex layouts, ListViews, platform UI |
 | ti-api       | Complete Titanium API reference     | Looking up properties, methods, events  |
-| ti-guides    | SDK fundamentals                    | tiapp.xml, Hyperloop, distribution      |
+| ti-guides    | SDK fundamentals                    | tiapp.xml, Hyperloop, distribution, JDK/Xcode compatibility, release notes |
 | ti-howtos    | Native feature integration          | Location, push, media, platform APIs    |
 | alloy-guides | Alloy MVC framework reference       | Controllers, models, views, widgets     |
 | alloy-howtos | Alloy CLI, configuration, debugging | alloy.jmk, config.json, custom XML tags |
