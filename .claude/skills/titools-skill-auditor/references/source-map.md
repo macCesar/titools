@@ -60,6 +60,7 @@ All five doc-based skills source from a single upstream repo: [`tidev/titanium-d
 
 - **Source type:** Narrative
 - **Official doc subtree:** `.titanium-docs/docs/guide/Titanium_SDK/Titanium_SDK_Guide`
+- **Additional subtrees:** `Titanium_SDK/Titanium_SDK_Getting_Started/`, `Titanium_SDK/Titanium_SDK_Release_Notes/`, and `docs/guide/Editor_IDE/` — see the rows below. These sit outside `Titanium_SDK_Guide` and were unmapped until 2026-08-11, so upstream changes to them were invisible to the audit.
 
 | Reference file | Official source |
 |---|---|
@@ -77,6 +78,11 @@ All five doc-based skills source from a single upstream repo: [`tidev/titanium-d
 | `resources.md` | `Contributing_to_Titanium/` or community section |
 | `cli-reference.md` | CLI documentation across guide |
 | `app-distribution.md` | App distribution guides (App Store, Google Play) |
+| `compatibility-matrix.md` | `Titanium_SDK_Getting_Started/Installation_and_Configuration/Titanium_Compatibility_Matrix/README.md` |
+| `sdk-release-notes.md` | `Titanium_SDK_Release_Notes/Titanium_SDK_Release_Notes_13.x/` (all `*_Release_Note.md`) |
+| `resources.md` (IDE section) | `docs/guide/Editor_IDE/README.md` |
+
+> **Reading the release notes.** They are changelogs, not API documentation. A line such as *"add deprecation note for old events in ScrollableView"* is a commit subject — before turning one into guidance, confirm it against `docs/api/api.json` and, when available, the installed SDK's `api.jsca` under `~/Library/Application Support/Titanium/mobilesdk/osx/<version>/`. In the 2026-08-11 audit that exact line turned out to have no corresponding `deprecated` flag in either source.
 
 ---
 
