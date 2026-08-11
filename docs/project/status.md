@@ -1,10 +1,19 @@
 # Status — 2026-08-11
 
-**Phase:** live and maintained. v4.4.2 is out on both channels. **An unreleased documentation audit is sitting in the working tree** — see below. Nothing committed yet.
+**Phase:** live and maintained. **v4.5.0 shipped on both channels**, working tree clean, nothing in flight.
 
-## In flight — audit against titanium-docs@c3832a84 (2026-08-11)
+## Release state — both channels on 4.5.0
 
-Sixteen upstream commits (`7128ac62..c3832a84`) were audited and applied. Not committed, not released.
+| Channel | Version | Verified |
+|---|---|---|
+| npm | 4.5.0 | `npm view @maccesar/titools version` → 4.5.0, 2026-08-11 |
+| Claude Code marketplace | 4.5.0 | `plugin.json` on `origin/main` reads 4.5.0, tag `v4.5.0` pushed, GitHub release created |
+
+**Step 8 was not skipped this time.** It had been in v4.1.0 and again in v4.4.1. The check that catches it is one command — `npm view @maccesar/titools version` against `plugin.json` — and running it is what confirmed this release rather than assuming the tag implied the publish. It is still not automated; the third occurrence is the trigger for that.
+
+## Shipped in 4.5.0 — audit against titanium-docs@c3832a84 (2026-08-11)
+
+Sixteen upstream commits (`7128ac62..c3832a84`) were audited and applied across six semantic commits plus the release commit.
 
 **What upstream actually changed:** Facebook Limited Login (the only real `api.json` change), two typo fixes, a whitespace-only `imageview.md`, the JDK compatibility matrix, a JetBrains link, and release notes for 13.2.0 through 13.4.0. Nothing under `Titanium_SDK_Guide`, `Titanium_SDK_How-tos` or `Alloy_Framework`, so `ti-howtos`, `alloy-guides` and `alloy-howtos` were untouched by design, not by omission.
 
@@ -16,13 +25,11 @@ Sixteen upstream commits (`7128ac62..c3832a84`) were audited and applied. Not co
 
 Worth recording: the link checker first reported 4 broken anchors in the new `sdk-release-notes.md`. The checker was wrong — its slug rule collapsed runs of whitespace into one hyphen where GitHub and the repo's own `generate-toc.mjs` emit one hyphen per space. Running `generate-toc.mjs` over the file changed nothing, which is what settled it.
 
-**`NOTA-referencias-truncadas.md` is resolved** and can be deleted once this is committed. Its finding was worse than it read: the marker in `api-media.md` claimed 2 omitted types when the section was really missing 10, and everything the note says had to be dug out of the native SDK source was already sitting in the official `api.json`.
-
-## Release state — both channels on 4.4.2
+**`NOTA-referencias-truncadas.md` is resolved** and was deleted. Its finding was worse than it read: the marker in `api-media.md` claimed 2 omitted types when the section was really missing 10, and everything the note says had to be dug out of the native SDK source was already sitting in the official `api.json`.
 
 **Sibling:** `~/Developer/openSource/aiskills` (`@maccesar/aiskills`) — shares this repo's `lib/`. See `context.md` § "Sibling project" for the parity contract.
 
-## Release state — both channels on 4.4.2
+## Previous release — 4.4.2
 
 | Channel | Version | Verified |
 |---|---|---|
@@ -54,7 +61,7 @@ Wiring done in the same commit: the skill `description` and both index entries, 
 
 While counting, the README was found two references behind — it said 24 in one place and 25 in another, and `ti-expert` has 26. Both corrected. This is the third release in a row where that count had drifted.
 
-## Verified this session
+## Verified in the 4.4.2 session
 
 - `npm test` → **118 passing, 24 suites, 0 failures.**
 - `sharing.md`: 11 index anchors, all resolving; 2 relative links, both to a file that exists.
