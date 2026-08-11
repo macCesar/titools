@@ -597,32 +597,42 @@ In Alloy, use the **`<Module>`** element with the `module` attribute set to `ti.
 #### CameraAnimationParams
 > Simple object used to control camera animations.
 
-| Property | Type | Description |
-|----------|------|-------------|
-| camera | Modules.Map.Annotation | <Modules.Map.Camera> to be animated to. |
-| duration | Number | The amount of time (in milliseconds) that the animation will last. |
-| curve | Number | Animation curve or easing function to apply to the animation. |
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| camera | Modules.Map.Annotation | both | <Modules.Map.Camera> to be animated to. |
+| duration | Number | both | The amount of time (in milliseconds) that the animation will last. |
+| curve | Number | both | Animation curve or easing function to apply to the animation. |
 
 #### ClusterAnnotationParams
 > Simple object used to create cluster annotation view.
 
-| Property | Type | Description |
-|----------|------|-------------|
-| memberAnnotations | Array<Modules.Map.Annotation> | Array of Modules.Map.Annotation, which is recieved in event 'clusteringstarted'… |
-| annotation | Modules.Map.Annotation | <Modules.Map.Annotation> instance, which you want to show as clustered annotati… |
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| memberAnnotations | Array<Modules.Map.Annotation> | ios | Array of Modules.Map.Annotation, which is received in event 'clusteringstarted'… |
+| annotation | Modules.Map.Annotation | ios | <Modules.Map.Annotation> instance, which you want to show as clustered annotati… |
 
 #### MapLocationTypeV2
 > Simple object used as an argument to [setLocation](Modules.Map.View.setLocation).
 
-| Property | Type | Description |
-|----------|------|-------------|
-| longitude | Number | Longitude value for the center point of the map, in decimal degrees. |
-| latitude | Number | Latitude value for the center point of the map, in decimal degrees. |
-| longitudeDelta | Number | The amount of east-to-west distance displayed on the map, measured in decimal d… |
-| latitudeDelta | Number | The amount of north-to-south distance displayed on the map, measured in decimal… |
-| animate | Boolean | Set to `true` to animate the move to the new location. |
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| longitude | Number | both | Longitude value for the center point of the map, in decimal degrees. |
+| latitude | Number | both | Latitude value for the center point of the map, in decimal degrees. |
+| longitudeDelta | Number | both | The amount of east-to-west distance displayed on the map, measured in decimal d… |
+| latitudeDelta | Number | both | The amount of north-to-south distance displayed on the map, measured in decimal… |
+| animate | Boolean | both | Set to `true` to animate the move to the new location. |
 
-*Plus 3 more types: MapViewPadding*
+#### MapViewPadding
+> The padding applied to the map view using <Modules.Map.View.padding>.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| top | Number | both | Top padding of the map view. |
+| left | Number | both | Left padding of the map view. |
+| bottom | Number | both | Bottom padding of the map view. |
+| right | Number | both | Right padding of the map view. |
+
+Also referenced by this API, documented elsewhere: [MapPointType](#mappointtype), [MapRegionTypev2](#mapregiontypev2).
 
 ---
 
