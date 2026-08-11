@@ -3,6 +3,9 @@
 docs/*
 !docs/project/
 
+# Upstream docs cache used by the titools-skill-auditor skill
+.titanium-docs
+
 # Node.js
 node_modules/
 *.log
