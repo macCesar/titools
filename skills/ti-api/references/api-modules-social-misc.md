@@ -206,17 +206,20 @@
 > Platforms: both
 > Type: module
 
-### Properties (unique: 10/50)
+### Properties (unique: 14/50)
 | Property | Type | Platform | Description |
 |----------|------|----------|-------------|
 | accessToken | String | both | OAuth token set after a successful `authorize`. |
 | accessTokenExpired | Boolean | both | Returns whether the <Modules.Facebook.accessToken… |
 | accessTokenActive | Boolean | both | Returns `true` if the <Modules.Facebook.accessTok… |
+| advertiserTrackingEnabled | Boolean | ios | Gets or sets the SDK's advertiser-tracking flag. |
 | appID | String | both | If not explicitly set, the default will be read f… |
+| authenticationToken | String | android | Returns the raw Authentication Token (JWT) from the most recent Limited Login, … |
 | canPresentOpenGraphActionDialog | Boolean | android | Checks if the device can support the use of the F… |
 | expirationDate | Date | both | Time at which the `accessToken` expires. |
 | loggedIn | Boolean | both | Indicates if the user is logged in. |
-| loginTracking | Number | ios | Gets or sets the desired tracking preference to u… |
+| loginTracking | Number | both | Gets or sets the desired tracking preference to use for login attempts. |
+| nonce | String | android | Optional nonce used by Limited Login (`LOGIN_TRACKING_LIMITED`) to bind the iss… |
 | permissions | Array<String> | both | Array of permissions to request for your app. |
 | uid | String | both | Unique user ID returned from Facebook. |
 
@@ -272,12 +275,29 @@
 ### Events (6)
 | Event | Platform | Description |
 |-------|----------|-------------|
-| login | both | Fired at session login. |
+| login | both | Fired at session login. Payload: `success`, `cancelled`, `error`, `code`, `uid`, `data`, `authenticationToken`. |
 | logout | both | Fired at session logout. |
 | requestDialogCompleted | both | Fired when the Send Request dialog is closed. |
 | shareCompleted | both | Fired when the Share dialog or Web Share dialog is closed. |
 | inviteCompleted | both | Fired when the Invite dialog is closed. |
 | tokenUpdated | both | Fired when [refreshPermissionsFromServer](Modules.Facebook.refreshPermissionsFr… |
+
+### Login Tracking and Limited Login
+
+`loginTracking` and the `LOGIN_TRACKING_ENABLED` (default) / `LOGIN_TRACKING_LIMITED` constants are supported on **both** platforms. With `LOGIN_TRACKING_LIMITED`, `authorize()` (or `requestNewReadPermissions()`) starts Facebook's OIDC-based Limited Login flow: the SDK returns an Authentication Token (a JWT) instead of a classic Graph access token, delivered as `event.authenticationToken.tokenString` on the `login` event. Verify that JWT's signature server-side against Facebook's JWKS.
+
+> **Warning:** `Modules.Facebook.LoginButton` honors `loginTracking` on iOS only. The Android FB SDK's button exposes no Limited Login configuration, so on Android you must trigger Limited Login through `Modules.Facebook.authorize()` rather than through the button.
+
+### Related Types
+
+#### LimitedLoginAuthenticationToken
+> Shape of `event.authenticationToken` on the [login](Modules.Facebook.login) event when Limited Login (`LOGIN_TRACKING_LIMITED`) is used.
+
+| Property | Type | Platform | Description |
+|----------|------|----------|-------------|
+| tokenString | String | both | The signed JWT (header.payload.signature) issued by Facebook. Verify on your ba… |
+| nonce | String | both | The nonce echoed back by Facebook. Matches the [nonce](Modules.Facebook.nonce) … |
+| graphDomain | String | both | Optional graph domain hint returned by the iOS SDK (e.g. `gaming`). `undefined`… |
 
 ---
 
