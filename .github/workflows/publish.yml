@@ -1,0 +1,41 @@
+name: Publish to npm
+
+# Publishes when a vX.Y.Z tag is pushed — which is the last thing /release does.
+# Authentication is trusted publishing (OIDC): no NPM_TOKEN, no secrets, no 2FA prompt.
+# The trusted publisher registered on npmjs.com must point at this exact filename.
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+  id-token: write # required for OIDC — without it npm publish falls back to token auth
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24' # trusted publishing needs Node >= 22.14.0 and npm >= 11.5.1
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Verify the tag matches both version files
+        run: |
+          echo "node $(node --version) / npm $(npm --version)"
+          tag="${GITHUB_REF_NAME#v}"
+          pkg=$(node -p "require('./package.json').version")
+          plugin=$(node -p "require('./.claude-plugin/plugin.json').version")
+          echo "tag=$tag  package.json=$pkg  plugin.json=$plugin"
+          [ "$tag" = "$pkg" ] || { echo "::error::tag $tag does not match package.json $pkg"; exit 1; }
+          [ "$tag" = "$plugin" ] || { echo "::error::tag $tag does not match plugin.json $plugin"; exit 1; }
+
+      - run: npm ci
+
+      - run: npm test
+
+      - run: npm publish
