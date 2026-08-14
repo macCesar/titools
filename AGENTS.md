@@ -86,7 +86,7 @@ Bullet triggers + when NOT to use.
 
 Rules:
 
-- **Frontmatter total ≤ 1024 chars.** See [agentskills.io/specification](https://agentskills.io/specification).
+- **`description` ≤ 1024 chars, `name` ≤ 64.** Those are the two caps the [specification](https://agentskills.io/specification) sets; the frontmatter block as a whole has no limit, so an optional field costs nothing against the description's budget.
 - `description` describes **when to use** the skill — concrete triggers, error messages, file markers — *not* a summary of the workflow. Future agents read the description to decide whether to load the full skill; a workflow summary may cause them to follow the summary instead of the skill.
 - Start the description with `Use when…` (third person).
 - If the description contains `:` characters, wrap it in single or double quotes so YAML strict parsers don't interpret mid-line colons as nested mappings.
@@ -169,7 +169,7 @@ Every assertion there corresponds to a failure one of the two repos has shipped 
 - a skill, command or agent present on disk but absent from `lib/config.js`, so the CLI never installs it (and the reverse — listed but missing);
 - `package.json` → `files` omitting a directory that has to ship, which publishes a tarball the installer cannot use, or including `scripts/` and `.claude/`, which should never ship;
 - `package.json` and `plugin.json` versions drifting apart;
-- frontmatter whose `name` disagrees with its directory or filename, or exceeding the 1024-char spec limit;
+- frontmatter whose `name` disagrees with its directory or filename, breaks the spec's naming rules, or whose `description` exceeds the 1024-char spec limit;
 - `references/*.md` pointers in a SKILL.md that resolve to nothing;
 - the flat hook format in `hooks.json` that caused the v2.4.0 → v2.4.1 hotfix.
 
@@ -244,7 +244,7 @@ Verifying a release means checking what each channel actually serves: `npm view 
 ### Add a new skill
 
 1. Pick a kebab-case `<skill-name>` (verb-led for workflow skills: `ti-module-update`; noun-led for reference skills: `ti-api`).
-2. Create `skills/<skill-name>/SKILL.md` with frontmatter ≤ 1024 chars.
+2. Create `skills/<skill-name>/SKILL.md` with a `description` ≤ 1024 chars.
 3. Add the skill to `lib/config.js:SKILLS`.
 4. Add a row in the README skills table.
 5. Add ≥ 2 example prompts in `EXAMPLE-PROMPTS.md`.
@@ -259,9 +259,9 @@ Verifying a release means checking what each channel actually serves: `npm view 
 
 ### Edit a skill's frontmatter
 
-1. Keep total chars ≤ 1024.
+1. Keep the `description` ≤ 1024 chars and the `name` ≤ 64. The block itself has no cap.
 2. If the `description` semantics change meaningfully, update the README row.
-3. Don't add fields the spec doesn't define (`name`, `description`, optional `metadata.*`, `argument-hint`, `allowed-tools` for Claude Code skills).
+3. Don't add fields the spec doesn't define. The [agentskills.io specification](https://agentskills.io/specification) defines exactly six: `name` and `description` (required), plus optional `license`, `compatibility` (max 500 chars, only when the skill has real environment requirements), `metadata` (string→string map) and `allowed-tools` (experimental). `argument-hint` is **not** one of them — it is Claude Code slash-command frontmatter and belongs in `commands/*.md`, not in a `SKILL.md`.
 
 ### Don't
 

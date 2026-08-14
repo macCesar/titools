@@ -114,11 +114,29 @@ describe('skill frontmatter', () => {
       assert.ok(fm.description && fm.description.length > 0, `skills/${skill}/SKILL.md has an empty description`);
     });
 
-    test(`${skill} frontmatter stays within the 1024-char spec limit`, () => {
+    test(`${skill} description stays within the 1024-char spec limit`, () => {
+      // The cap belongs to the `description` field, not to the block. The spec
+      // sets description at max 1024 characters and puts no limit on the
+      // frontmatter as a whole, so measuring the block was stricter by however
+      // long the other fields happened to be — which would have rejected a
+      // perfectly legal `compatibility` or `license` line as "too long".
       const fm = readFrontmatter(path.join(SKILLS_DIR, skill, 'SKILL.md'));
       assert.ok(
-        fm.block.length <= 1024,
-        `frontmatter is ${fm.block.length} chars; agentskills.io caps it at 1024, past which agents may fail to load the skill`,
+        fm.description.length <= 1024,
+        `description is ${fm.description.length} chars; agentskills.io caps it at 1024, past which agents may fail to load the skill`,
+      );
+    });
+
+    test(`${skill} name follows the spec's naming rules`, () => {
+      // Same source, same section: 1-64 characters, lowercase alphanumerics and
+      // single hyphens, no leading or trailing hyphen. A name the spec rejects
+      // is a skill some agents will not load at all.
+      const fm = readFrontmatter(path.join(SKILLS_DIR, skill, 'SKILL.md'));
+      assert.ok(fm.name.length <= 64, `name is ${fm.name.length} chars; the spec caps it at 64`);
+      assert.match(
+        fm.name,
+        /^[a-z0-9]+(-[a-z0-9]+)*$/,
+        'lowercase letters, numbers and single hyphens only, not starting or ending with one',
       );
     });
   }
