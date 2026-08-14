@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added — Publishing to npm from GitHub Actions via trusted publishing
+
+`.github/workflows/publish.yml` runs on a pushed `v*` tag, which is the last thing `/release` does, and publishes the package itself. There is no `NPM_TOKEN` and no secret of any kind: `permissions: id-token: write` lets the runner mint a short-lived OIDC credential that npm verifies against the publisher registered for this package, and npm attaches provenance to the publish automatically as a result. The stale `NPM_TOKEN` repository secret, left behind by a workflow that no longer exists, was deleted.
+
+`npm login` has issued a two-hour session rather than a long-lived token since December 2025, when classic tokens were removed outright, so every release meant re-authenticating by hand. The remaining alternative — a granular access token with 2FA bypass — caps at 90 days, and loses direct publish capability around January 2027. Trusted publishing is the only option that does not expire.
+
+The job refuses to publish a tag that disagrees with the version files: it compares the tag against `package.json` and `.claude-plugin/plugin.json` and exits before `npm ci` if any of the three differ. That is the check this repo needed when 2.6.0 went to npm while `plugin.json` still read 3.0.0 and the marketplace announced the wrong number.
+
+The trusted publisher itself is registered on npmjs.com, under Settings → Trusted Publisher, and it names this workflow by filename. Renaming this file breaks publishing until the registration is updated to match.
+
 ## [4.5.0] - 2026-08-11
 
 ### Added — Compatibility matrix and release notes in `ti-guides`
