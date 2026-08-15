@@ -56,7 +56,7 @@ describe('auto-update command', () => {
     const cacheDir = join(tempDir, '.titools');
     await mkdir(cacheDir, { recursive: true });
 
-    const result = await runCli(['auto-update', '--silent'], {
+    await runCli(['auto-update', '--silent'], {
       cwd: tempDir,
       env: {
         ...process.env,
