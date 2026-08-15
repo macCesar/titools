@@ -16,7 +16,7 @@ The list printed "No skills installed yet." and stopped, so the one moment you m
 
 Two `list` tests asserted the skill names and the `N/M installed` footer against the real `HOME`, so they only passed on a machine that already had skills installed. That is why 4.6.0 was tagged but never published: the tests passed locally and failed on the runner, which had none. The publish workflow is itself new in 4.6.0, so this was the first time `npm test` had ever run in a clean environment, and it caught a bug that had been latent for as long as the tests existed. Every `list` assertion now runs against a temporary `HOME` and both states are covered explicitly — empty, and seeded with a `SKILL.md`.
 
-Note that `v4.6.0` is tagged but was never published to npm. Install 4.6.1 or later.
+Note that 4.6.0 never reached npm — the failing tests blocked its publish. Its tag has since been deleted, so 4.5.0 is followed directly by 4.6.1. Everything listed under 4.6.0 below shipped inside 4.6.1.
 
 ## [4.6.0] - 2026-08-14
 

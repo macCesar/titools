@@ -13,9 +13,9 @@
 
 **Step 8 is now automated and it did its job — by refusing to run.** See below.
 
-## v4.6.0 is tagged but was never published
+## 4.6.0 never reached npm, and its tag has been deleted
 
-`v4.6.0` exists as a tag and a commit on `main`. It is not on npm and has no GitHub release. The CHANGELOG says so in the 4.6.1 entry. The tag was left in place rather than deleted; deleting it is a one-liner (`git push origin :refs/tags/v4.6.0`) if that is ever preferred.
+The `chore(release): v4.6.0` commit is still on `main` — that history is real and everything in it shipped inside 4.6.1. What is gone is the tag: it was deleted on 2026-08-14 from both the local repo and `origin`, verified with `git ls-remote --tags origin v4.6.0` returning nothing. There was never a GitHub release or an npm publish for it, so nothing downstream pointed at it. The version line now reads 4.5.0 → 4.6.1.
 
 **What happened.** `publish.yml` runs `npm test` before `npm publish`. Two tests in `test/list.test.js` asserted the skill names and the `N/M installed` footer against the real `HOME`, so they only passed on a machine that already had skills installed. They passed here and failed on the runner, which had none.
 
@@ -64,8 +64,7 @@ Both verified under an empty `HOME` before pushing.
 
 ## Open items
 
-1. **`v4.6.0` orphan tag** — tagged, never published. Documented in the CHANGELOG. Delete or leave.
-2. **PurgeTSS help strings** — `bin/purgetss:321,327,328` disagree with `pieces.js`. Upstream fix, not ours.
+1. **PurgeTSS help strings** — in the *PurgeTSS repo*, not this one: `bin/purgetss:321,327,328` print `default: 19` and `default: 20` where `src/core/branding/pieces.js` applies `18`, `26` and `26`. Nothing in TiTools can fix it; the skill documents the correct numbers and flags the discrepancy. Needs a patch release of PurgeTSS itself.
 
 ## Previous release — 4.5.0
 
