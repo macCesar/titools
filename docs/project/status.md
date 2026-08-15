@@ -1,15 +1,80 @@
-# Status — 2026-08-11
+# Status — 2026-08-14
 
-**Phase:** live and maintained. **v4.5.0 shipped on both channels**, working tree clean, nothing in flight.
+**Phase:** live and maintained. **v4.6.1 shipped on both channels**, working tree clean, 0 commits unpushed, nothing in flight.
 
-## Release state — both channels on 4.5.0
+## Release state — both channels on 4.6.1
+
+| Channel | Version | Verified |
+|---|---|---|
+| npm | 4.6.1 | `curl registry.npmjs.org/@maccesar%2Ftitools` → `dist-tags.latest = 4.6.1`, 2026-08-14 |
+| Claude Code marketplace | 4.6.1 | `plugin.json` on `origin/main` reads 4.6.1, tag `v4.6.1` pushed, GitHub release created |
+
+**Do not verify with `npm view`.** It read `4.5.0` for several minutes after the publish had already succeeded — the workflow was green and the registry had 4.6.1. The npm CLI serves that command from a local cache, so it can report a version that is provably stale. Query the registry over HTTP instead. `verification.md` in the sibling repo's `npm-supply-chain` skill documents exactly this.
+
+**Step 8 is now automated and it did its job — by refusing to run.** See below.
+
+## v4.6.0 is tagged but was never published
+
+`v4.6.0` exists as a tag and a commit on `main`. It is not on npm and has no GitHub release. The CHANGELOG says so in the 4.6.1 entry. The tag was left in place rather than deleted; deleting it is a one-liner (`git push origin :refs/tags/v4.6.0`) if that is ever preferred.
+
+**What happened.** `publish.yml` runs `npm test` before `npm publish`. Two tests in `test/list.test.js` asserted the skill names and the `N/M installed` footer against the real `HOME`, so they only passed on a machine that already had skills installed. They passed here and failed on the runner, which had none.
+
+**Why it surfaced now.** `publish.yml` is itself new in this release cycle (`dc4c527`), so this was the **first time `npm test` had ever run in a clean environment**. The tests had been machine-dependent since they were written in v2.6.0 (2026-04-17) — the bug was four months old and invisible. The automation added to stop step 8 from being skipped caught a different bug entirely on its first run, which is the strongest argument for it that could have been asked for.
+
+**Process failure worth recording.** The pre-push verification reported "138/138 passing" from this machine and treated that as evidence the release was safe. It was not evidence of anything about CI. The control that was missing — running the suite under an empty `HOME` — takes one command:
+
+```bash
+FAKEHOME=$(mktemp -d) && HOME="$FAKEHOME" npm test; rm -rf "$FAKEHOME"
+```
+
+That control is now run before every push in both repos. It is the same lesson as the `run_eval.py` incident: a green result from an instrument that cannot fail is not a measurement.
+
+## Shipped in 4.6.1 — `titools list` shows the catalog
+
+`list` printed "No skills installed yet." and returned, so the one moment you most want to see what is on offer was the one moment it showed nothing. It now always prints the eight skills with ✗/✓, pulling descriptions for uninstalled ones from the copy bundled in the package (`skills/` ships in the tarball). The footer drops the directory path when the count is zero.
+
+The suite now runs every `list` assertion against a temporary `HOME` and covers both states explicitly — empty, and seeded with a `SKILL.md`. 140 tests, verified under an empty `HOME`.
+
+## Shipped in 4.6.0 — purgetss audit, ESLint, list wrapping
+
+**`purgetss` skill audited against PurgeTSS 7.13.1.** The skill described 7.11.1. PurgeTSS 7.13.0 restructured `purgetss brand` end to end and kept **no flag aliases**, so five references were not stale but wrong: every flag name, every config key, and three logo filenames had changed meaning underneath them.
+
+`logo-icon` is the trap — the name survived the rename but now feeds `DefaultIcon.png`, while the Android launcher mark moved to `logo-adaptive`. Following the old text put the artwork on the wrong piece and let the launcher icons fall back to the main logo silently.
+
+`app-branding.md` was rewritten against the current guide (14 pieces, per-piece `brand:` block, `--only`, `--optimize`, `LaunchLogo.png`, the 16 iPhone launch images, the 11 `res-*` splashes, `appicon`, the on-disk config migration). Two claims that had become false were removed: that `background.9.png` is out of scope, and that `--legacy-splash` exists. The Android launch-background setup was split into `launch-background.md` — self-contained, reached from three places, and keeping it inline pushed the file past the 800-line cap.
+
+**Padding defaults came from the source, not the CLI.** `purgetss brand --help` prints `default: 19` for `--android-adaptive-padding` and `default: 20` for the two splash paddings; `src/core/branding/pieces.js` applies `18`, `26` and `26`, and the official guide agrees with the source. The help strings are the stale ones. `cli-commands.md` carries that discrepancy as a warning so nobody re-derives the wrong numbers from the CLI. **This is an open bug in the PurgeTSS repo** (`bin/purgetss:321,327,328`), not in this skill.
+
+Audit verification: 0 broken cross-reference anchors across the whole skill, every reference at or under 800 lines, `SKILL.md`'s table in sync with the files on disk.
+
+**Documentation source.** PurgeTSS is **not** in `tidev/titanium-docs`, so the `titools-skill-auditor` does not map it — `source-map.md` marks PurgeTSS content AUDIT-SKIP for that reason. The source is `~/Developer/openSource/purgetss-docs` (the Docusaurus site behind purgetss.com) plus `~/Developer/openSource/purgeTSS` for the code. Both were at 2026-08-14 HEAD; the docs repo also had uncommitted prose polish that the skill is aligned against.
+
+**ESLint existed as a script and nothing else.** `npm run lint` had failed on every run with "couldn't find an eslint.config.js" since ESLint 9 dropped `.eslintrc`. The flat config now covers `bin/`, `lib/` and `test/`; `skills/` is ignored. Its first pass removed seven unused imports, a helper nothing referenced, and three dead assignments.
+
+## Sibling parity — aiskills 1.20.0, released the same day
+
+`list` was the same code in both repos and carried the same early return. Ported, along with the `ls` alias that only titools had, and the integration test layer aiskills never had. `aiskills` `list.js` shipped in March 2026 and went five months with **no tests at all**; the ones added in August covered the two pure functions only, which is a layer that cannot see a command returning before it calls them.
+
+| Repo | npm | Tests | `list` catalog | `ls` alias |
+|---|---|---|---|---|
+| titools | 4.6.1 | 140 | yes | yes |
+| aiskills | 1.20.0 | 111 | yes | yes |
+
+Both verified under an empty `HOME` before pushing.
+
+## Open items
+
+1. **`v4.6.0` orphan tag** — tagged, never published. Documented in the CHANGELOG. Delete or leave.
+2. **PurgeTSS help strings** — `bin/purgetss:321,327,328` disagree with `pieces.js`. Upstream fix, not ours.
+
+## Previous release — 4.5.0
 
 | Channel | Version | Verified |
 |---|---|---|
 | npm | 4.5.0 | `npm view @maccesar/titools version` → 4.5.0, 2026-08-11 |
 | Claude Code marketplace | 4.5.0 | `plugin.json` on `origin/main` reads 4.5.0, tag `v4.5.0` pushed, GitHub release created |
 
-**Step 8 was not skipped this time.** It had been in v4.1.0 and again in v4.4.1. The check that catches it is one command — `npm view @maccesar/titools version` against `plugin.json` — and running it is what confirmed this release rather than assuming the tag implied the publish. It is still not automated; the third occurrence is the trigger for that.
+**Step 8 was not skipped that time.** It had been in v4.1.0 and again in v4.4.1. It has since been automated: `publish.yml` publishes from the pushed tag, so the tag and the publish can no longer diverge by forgetting.
 
 ## Shipped in 4.5.0 — audit against titanium-docs@c3832a84 (2026-08-11)
 
