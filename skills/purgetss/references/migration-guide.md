@@ -1,6 +1,6 @@
 # Migration Guide
 
-This guide mirrors the official PurgeTSS changelog (see the project `README.md` / `docs/index.md`). It walks through the upgrade-relevant changes from v7.2.6 through v7.11.x, flags breaking changes, and links each section to the reference files that cover the new surface area in depth.
+This guide mirrors the official PurgeTSS changelog (see the project `README.md` / `docs/index.md`). It walks through the upgrade-relevant changes from v7.2.6 through v7.13.x, flags breaking changes, and links each section to the reference files that cover the new surface area in depth.
 
 Changelog source of truth: [https://github.com/macCesar/purgeTSS](https://github.com/macCesar/purgeTSS).
 
@@ -9,6 +9,8 @@ Changelog source of truth: [https://github.com/macCesar/purgeTSS](https://github
 <!-- TOC-START -->
 ## Contents
 
+- [Upgrade to v7.13.x](#upgrade-to-v713x)
+- [Upgrade to v7.12.x](#upgrade-to-v712x)
 - [Upgrade to v7.11.x](#upgrade-to-v711x)
 - [Upgrade to v7.10.x](#upgrade-to-v710x)
 - [Upgrade to v7.9.0](#upgrade-to-v790)
@@ -25,6 +27,87 @@ Changelog source of truth: [https://github.com/macCesar/purgeTSS](https://github
 - [Quick Checklist](#quick-checklist)
 
 <!-- TOC-END -->
+
+## Upgrade to v7.13.x
+
+**This is the one release in the 7.x line with breaking changes.** They are confined to `purgetss brand`: its flags, the names of the files in `purgetss/brand/`, and the shape of the `brand:` config block. Nothing outside branding is affected — utility classes, `apply:`, `theme`, `images` and the SVG pipeline are untouched. Full release notes in [`version-history.md`](./version-history.md).
+
+### Breaking — `brand` flags renamed, no aliases kept
+
+| Before v7.13.0 | v7.13.0 |
+| --- | --- |
+| `--splash` | `--splash-icon` |
+| `--notification` | `--notification-icon` |
+| `--splash-logo <path>` | `--splash-icon-logo <path>` |
+| `--feature-logo <path>` | `--feature-graphic-logo <path>` |
+| `--icon-logo <path>` (Android launcher) | `--adaptive-logo <path>` — `--icon-logo` now feeds `DefaultIcon.png` |
+| `--legacy-splash` | removed; the 11 `res-*` splashes are part of `android-splash` and always generated |
+
+The rule is now `--<piece>-logo` with no exceptions, which also filled in six flags that never existed (`--ios-splash-logo`, `--marketplace-logo`, `--legacy-icon-logo`, `--appicon-logo`, `--android-splash-logo`, `--notification-icon-logo`).
+
+### Breaking — logo filenames in `purgetss/brand/`
+
+Basenames follow `logo-<piece>`, again with no exceptions:
+
+| Before v7.13.0 | v7.13.0 |
+| --- | --- |
+| `logo-icon.*` (Android launcher mark) | `logo-adaptive.*` — `logo-icon.*` now feeds `DefaultIcon.png` |
+| `logo-splash.*` | `logo-splash-icon.*` |
+| `logo-feature.*` | `logo-feature-graphic.*` |
+
+`logo-icon.svg` is the trap here: the name survived but changed meaning. A project that used it as the Android launcher mark will now get that artwork on `DefaultIcon.png` instead, and the launcher icons will fall back to the main logo.
+
+### Not breaking — the `brand:` config block rewrites itself
+
+The config moved from purpose-based groups (`logos`, `padding`, `android`, `ios`, `colors`) to **one block per piece**, but you do not migrate it by hand. On the next run PurgeTSS rewrites `config.cjs` in place, carries over every value that had been customized, and prints each one it moved:
+
+```text
+::PurgeTSS:: Updated the brand: structure in ./purgetss/config.cjs.
+  Your values were carried over:
+    • brand.logos.androidLauncher → brand.adaptive.logo
+    • brand.padding.androidAdaptive → brand.adaptive.padding
+    • brand.android.splash → brand.splashIcon.enabled
+    • brand.colors.background → brand.background
+```
+
+Both earlier shapes are recognized — the pre-7.7.0 flat keys and the v7.7.0 groups. This happens on `purgetss brand` and on any command that goes through the config (`build`, `watch`, `purge`, `shades`). One key is dropped rather than moved: `brand.android.legacySplash`.
+
+A **typo** is not treated as an old structure — it aborts the run before a single file is written, listing the valid keys. See [`app-branding.md` → Older configs update themselves](./app-branding.md#older-configs-update-themselves).
+
+### Added in v7.13.0
+
+- **`brand` covers every image the Titanium template ships.** A fresh Alloy project used to keep 28 files wearing the grey Alloy logo: the 16 `assets/iphone/Default*.png`, the 11 `res-*/default.png`, and `assets/android/appicon.png`.
+- **`--only <pieces>`** — narrow a run to pieces or groups (`ios`, `store`, `android`). Honored by `--dry-run`.
+- **`LaunchLogo.png`** — drop `purgetss/brand/logo-launch.{svg,png}` and the iOS launch screen shows your logotype instead of the app icon. Written at exactly 1024×1024.
+- **`brand.optimize` / `--optimize`** — palette-quantize the generated PNGs. Off by default (lossy); ~71% smaller on the reference set.
+- **Padding defaults changed:** adaptive `19%` → `18%`. The 28 splash images now share one configurable rule at `26%`, measured against the canvas's shorter side.
+
+### Fixed in v7.13.0
+
+- `shades` and `semantic` no longer strip every comment from `config.cjs` — they rewrite only the `theme:` section.
+
+### What to review
+
+- **Grep your build scripts, `alloy.jmk`, CI jobs and npm scripts for the old flags.** They fail loudly rather than silently, but they do fail.
+- **Rename any `logo-icon.*` you were using as the Android launcher mark to `logo-adaptive.*`** before the next run, or the launcher icons will silently fall back to the main logo.
+- Let the config rewrite itself, then read the diff — it is the record of what you had customized.
+- If you had pinned `--android-adaptive-padding 19` only to match the old default, you can drop the flag; `18%` is the default now.
+
+---
+
+## Upgrade to v7.12.x
+
+v7.12.0 and v7.12.1 are additive — **no breaking changes**. Both releases improve what `purgetss brand --notes` prints; neither changes a generated asset. Full release notes in [`version-history.md`](./version-history.md).
+
+- **Android launch background snippets in `--notes` (v7.12.0).** The notes covered the iOS launch image and the Android launcher icon but never the color Android draws before Titanium creates the first Window, so a run that set a brand background still flashed the default theme color at launch.
+- **`--notes` targets the launcher Activity (v7.12.1).** Titanium applies `Theme.Titanium` directly to the generated launcher Activity, so splash items added only to the `<application>` theme could still be superseded. The notes now print a complete `splashscreen.xml` and a launcher-only `Theme.SplashScreen`. See [`launch-background.md`](./launch-background.md).
+- **Font Awesome Free updated to 7.3.1 (v7.12.1)** — 23 new icon classes, none removed. Run `purgetss icon-library -v=fa` to refresh the font files in an existing project.
+
+### What to review
+
+- If you followed an earlier `--notes` output and put the splash items on the `<application>` theme, re-run `purgetss brand --notes` and move them to a launcher-only theme.
+
+---
 
 ## Upgrade to v7.11.x
 
@@ -79,12 +162,12 @@ Type mismatches in known config fields now print a formatted `Config Syntax Erro
 
 ## Upgrade to v7.10.x
 
-v7.10.0 through v7.10.2 are additive — **no breaking changes**. The notable shift is internal: configs written before v7.7.0 (the `brand:` regroup) now auto-migrate in memory on every run, so projects that never updated to the grouped `brand:` schema keep working without a `TypeError` crash. Full release notes in [`version-history.md`](./version-history.md).
+v7.10.0 through v7.10.2 are additive — **no breaking changes**. The notable shift is internal: configs written before v7.7.0 (the `brand:` regroup) auto-migrate in memory on every run, so projects that never updated to the grouped `brand:` schema keep working without a `TypeError` crash. (v7.13.0 later replaced this with a one-time rewrite on disk.) Full release notes in [`version-history.md`](./version-history.md).
 
 ### Added in v7.10.0
 
 - **`purgetss images --opacity / --padding / --output`** — three CLI-only flags aimed at placeholder / default ImageView workflows. `--opacity` multiplies alpha; `--padding` shrinks the rendered image inside each density canvas; `--output` retargets the basename and subpath. See [`multi-density-images.md`](./multi-density-images.md).
-- **Google Play Feature Graphic in `brand`** — `purgetss brand` now generates `MarketplaceArtworkFeature.png` (1024×500). Auto-discovers `purgetss/brand/logo-feature.{svg,png}` or reuses the master logo. Tune with `--feature-graphic-padding <n>` (range `0-40`, default `12%`), `brand.padding.featureGraphic`, or `--feature-logo <path>`. See [`app-branding.md`](./app-branding.md).
+- **Google Play Feature Graphic in `brand`** — `purgetss brand` now generates `MarketplaceArtworkFeature.png` (1024×500). Auto-discovers `purgetss/brand/logo-feature.{svg,png}` or reuses the master logo. Tune with `--feature-graphic-padding <n>` (range `0-40`, default `12%`), `brand.padding.featureGraphic`, or `--feature-logo <path>`. **Renamed in v7.13.0** to `--feature-graphic-logo` / `brand.featureGraphic.padding`. See [`app-branding.md`](./app-branding.md).
 - **Arbitrary nesting depth in `theme` objects** — property emission walks nested values recursively instead of stopping at level 2. `theme.extend.colors.brand.primary.500` now flattens to `brand-primary-500` instead of being silently dropped. Default keys (`default`, `global`, `DEFAULT`) collapse without contributing to the suffix. See [`arbitrary-values.md`](./arbitrary-values.md).
 - **`apply:` resolves bundled icon fonts from `dist/`** — `apply: 'fas fa-times-circle wh-12 ...'` now merges the FontAwesome family and glyph automatically. Same lookup runs for `mi-*` (Material Icons), `ms-*` (Material Symbols), and `f7-*` (Framework7). Project-level `purgetss/styles/fontawesome.tss` still wins over the bundled default. See [`apply-directive.md`](./apply-directive.md).
 
@@ -102,7 +185,7 @@ v7.10.0 through v7.10.2 are additive — **no breaking changes**. The notable sh
 
 If your project still uses the **flat** `brand:` config that predates v7.7.0, v7.10.2 normalizes it in memory on every run before defaults are applied. Without this, the build crashed with `TypeError: Cannot create property 'ios' on number '15'` because `brand.padding` was a number, not an object.
 
-Mapping (see [`app-branding.md` → Upgrading from pre-7.7.0 configs](./app-branding.md#upgrading-from-pre-7-7-0-configs)):
+Mapping to the v7.7.0 grouped schema (superseded in v7.13.0 by the per-piece structure — see [`app-branding.md` → Older configs update themselves](./app-branding.md#older-configs-update-themselves)):
 
 | Pre-7.7.0 flat key | Current grouped key |
 | --- | --- |
@@ -113,11 +196,11 @@ Mapping (see [`app-branding.md` → Upgrading from pre-7.7.0 configs](./app-bran
 | `brand.notification` | `brand.android.notification` |
 | `brand.splash` | `brand.android.splash` |
 
-The grouped key always wins when both forms coexist. A one-time deprecation notice per session lists which legacy keys were migrated. Auto-migration is transitional and may be removed in a future major version — update `config.cjs` to the grouped schema to silence the notice and stay future-proof.
+The grouped key always wins when both forms coexist. A one-time deprecation notice per session lists which legacy keys were migrated. This in-memory translation was removed in v7.13.0, which rewrites the block on disk once instead.
 
 ### What to review
 
-- If you maintain a `brand:` block from pre-7.7.0, plan the one-time update to the grouped schema (`logos`, `padding`, `android`, `ios`, `colors`).
+- If you maintain a `brand:` block from pre-7.7.0 and are heading past v7.13.0, there is nothing to plan — the block is rewritten on disk on the next run.
 - If you previously skipped `apply:` with icon fonts because they were silently dropped, that workaround is no longer needed in v7.10.0.
 - Deeply nested color families in `theme.extend.colors.*` that you flattened by hand to stay at depth ≤ 2 can be restructured by domain — the recursive emission now reaches every leaf.
 
@@ -439,8 +522,10 @@ If you previously worked around this by inlining the gradient directly in TSS, r
 - After v7.5.0: diff generated `utilities.tss` to confirm property deduplication produces the expected output.
 - After v7.5.3: consider wiring `Appearance.init()` at app boot if you want runtime Light/Dark switching.
 - After v7.6.0: run `brand`, `images`, and `semantic` once in a scratch project before pointing them at production assets, so you can preview the output layout.
-- After v7.7.0: migrate the `brand:` block in `config.cjs` to the grouped schema (`logos`, `padding`, `android`, `ios`, `colors`). v7.10.2 auto-migrates flat configs in memory, but the one-time update is recommended to silence the deprecation notice.
+- After v7.7.0: migrate the `brand:` block in `config.cjs` to the grouped schema (`logos`, `padding`, `android`, `ios`, `colors`). v7.10.2 auto-migrates flat configs in memory. Moot from v7.13.0, which rewrites the block on disk to the per-piece structure by itself.
 - After v7.8.0: run the build once and address every `Class Syntax Error` it surfaces. Update CI to handle the new hard-fail on malformed class names. Migrate any `top-[10px]` style square brackets to `top-(10px)` parentheses.
 - After v7.9.0: search for any `purgetss/experimental/tailwind-classes/` references in tooling/CI and update to `purgetss/glossary/tailwind-classes/`. If a project used top-level `theme.Window` / `View` / `ImageView` and depended on framework defaults being merged in, decide between moving the config under `theme.extend.*` or adding the previously-implicit utilities to the `apply` string.
 - After v7.10.0: deeply nested color families (`theme.extend.colors.brand.primary.500`) now emit recursively — restructure by domain if it improves readability. `apply:` with bundled icon fonts (`fas`, `mi-*`, `ms-*`, `f7-*`) no longer requires `build-fonts` first. The Google Play Feature Graphic ships automatically with `purgetss brand`.
 - After v7.11.0: reference `.svg` images with numeric `w-*`/`h-*` classes to opt into the compile-time SVG pipeline (add `purgetss/.cache/` to `.gitignore`). Ensure every `theme.fontFamily.*` value is a string, not a Tailwind-style array, or the new config validator hard-fails. Use `images.files` to pin per-file sizes and `images.autoSync: false` to stop the pipeline writing back to `config.cjs`.
+- After v7.12.1: re-run `purgetss brand --notes` if you had copied an earlier Android splash snippet — the theme now belongs on the launcher Activity, not on `<application>`. Run `purgetss icon-library -v=fa` to pick up Font Awesome 7.3.1.
+- After v7.13.0: grep build scripts, `alloy.jmk` and CI for the renamed `brand` flags (`--splash`, `--notification`, `--splash-logo`, `--feature-logo`, `--legacy-splash`) — no aliases were kept. Rename any `logo-icon.*` used as the Android launcher mark to `logo-adaptive.*`, or the launcher icons silently fall back to the main logo. Let `config.cjs` rewrite its own `brand:` block, then read the diff.

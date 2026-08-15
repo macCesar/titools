@@ -50,26 +50,28 @@ module.exports = {
     }
   },
   brand: {
-    logos: {},  // empty = auto-discovers from purgetss/brand/
-    padding: {
-      ios: '4%',              // iOS aesthetic padding. Range 2-8%.
-      androidLegacy: '10%',   // legacy ic_launcher.png padding %
-      androidAdaptive: '19%', // adaptive icon safe-zone %. Spec floor 19.44%.
-      featureGraphic: '12%'   // MarketplaceArtworkFeature.png vertical padding (v7.10.0)
-    },
-    android: {
-      splash: false,         // also generate splash_icon.png × 5
-      notification: false    // also generate ic_stat_notify.png × 5
-    },
-    ios: {
-      dark: true,            // generate DefaultIcon-Dark.png
-      tinted: true,          // generate DefaultIcon-Tinted.png
-      darkBackground: null   // null = transparent per Apple HIG
-    },
-    colors: {
-      background: '#FFFFFF'  // Android adaptive bg + iOS/marketplace flatten
-    },
-    confirmOverwrites: true  // prompt before overwriting files (set false to skip)
+    background: '#FFFFFF',   // inherited by every piece that doesn't set its own
+    confirmOverwrites: true, // prompt before overwriting files (set false to skip)
+    optimize: false,         // true = quantize the generated PNGs to a palette (lossy, ~71% smaller)
+
+    // One block per piece. Artwork comes from purgetss/brand/logo-<piece>.{svg,png};
+    // these keys are for numbers, colors and activation. Padding is never inherited.
+    icon:             { padding: '4%' },    // DefaultIcon.png + DefaultIcon-ios.png
+    dark:             { background: null }, // DefaultIcon-Dark.png
+    tinted:           {},                   // DefaultIcon-Tinted.png
+    iosSplash:        { padding: '26%' },   // assets/iphone/Default*.png × 16
+    launchLogo:       { padding: '12%' },   // LaunchLogo.png (1024×1024)
+    marketplace:      {},                   // iTunesConnect.png + MarketplaceArtwork.png
+    featureGraphic:   { padding: '12%' },   // MarketplaceArtworkFeature.png (1024×500)
+    adaptive:         { padding: '18%' },   // ic_launcher_{foreground,background,monochrome}.png × 5 + ic_launcher.xml
+    legacyIcon:       { padding: '10%' },   // ic_launcher.png × 5
+    appicon:          {},                   // appicon.png (128×128)
+    androidSplash:    { padding: '26%' },   // assets/android/default.png + images/res-*/default.png × 11
+
+    // Opt-in: inert until you edit the Android theme / FCM meta-data by hand.
+    splashIcon:       { enabled: false },   // drawable-*/splash_icon.png × 5
+    notificationIcon: { enabled: false },   // drawable-*/ic_stat_notify.png × 5
+    ninePatch:        { enabled: false }    // background.9.png (not implemented yet)
   },
   images: {
     autoSync: true,          // false = SVG pipeline computes dims but doesn't write to images.files (v7.11.0)
@@ -96,35 +98,33 @@ The config file has four main sections: `purge`, `brand`, `images`, and `theme`.
 
 `brand:` and `images:` configure the matching CLI commands — see [CLI Commands: `brand`](./cli-commands.md#brand-command) and [CLI Commands: `images`](./cli-commands.md#images-command) for the full option lists. The rest of this page covers `purge` and `theme`.
 
-For `brand`, the structure is grouped by purpose (introduced in v7.7.0, refined since):
+For `brand`, the structure is **one block per piece of artwork** (v7.13.0), each accepting the same four keys where they apply:
 
-- `logos`: optional path overrides when you do not want to rely on `purgetss/brand/` auto-discovery — including `featureGraphic` for the Google Play 1024×500 banner (v7.10.0)
-- `padding`: visual sizing for iOS, Android legacy, Android adaptive icons, and the Feature Graphic banner (v7.10.0)
-- `android`: Android-only optional outputs such as `splash_icon.png` and notification icons
-- `ios`: iOS-only variant toggles (`dark`, `tinted`) and the optional `darkBackground` color
-- `colors`: shared color settings such as the adaptive background and iOS flatten color
+- `logo`: path to this piece's artwork, when it lives outside `purgetss/brand/`
+- `padding`: inset per side, as a number or a percentage string like `'19%'` — **never inherited**
+- `background`: hex color, or `null` for transparent — inherited from `brand.background`
+- `enabled`: `false` turns a default piece off, `true` turns an opt-in piece on
 
-> **INFO — Pre-7.7.0 flat configs auto-migrate**
-> Since v7.10.2, projects on the flat `brand:` schema (`brand.padding: <number>`, `brand.iosPadding`, `brand.bgColor`, etc.) auto-migrate in memory on every run. The grouped key always wins when both forms coexist, and a one-time deprecation notice lists the migrated keys. Update `config.cjs` to the grouped schema to silence the notice. See [App Icons & Branding → Upgrading from pre-7.7.0 configs](./app-branding.md#upgrading-from-pre-7-7-0-configs).
+Plus `brand.background`, `brand.confirmOverwrites`, `brand.optimize`, `brand.logo` (the main logo) and `brand.monochromeLogo`.
 
-For the property-by-property reference, see [Configurable Properties](./configurable-properties.md).
+> **INFO — Older `brand:` blocks update themselves**
+> A `brand:` block written for an earlier PurgeTSS is rewritten **on disk** to this structure on the next run, carrying over every value that had been customized and printing each one it moved. Both earlier shapes are recognized: the original flat keys and the v7.7.0 grouped sections (`logos` / `padding` / `android` / `ios` / `colors`). This replaced the in-memory translation used from v7.10.2 to v7.12.1. A key that belongs to no structure at all — a typo — aborts the run with the list of valid ones instead of being ignored. See [App Icons & Branding → Older configs update themselves](./app-branding.md#older-configs-update-themselves).
+
+For the property-by-property reference, see [App Icons & Branding → Brand config reference](./app-branding.md#brand-config-reference) and [Configurable Properties](./configurable-properties.md).
 
 ### Overriding logo paths
 
-By default, PurgeTSS auto-discovers logo files from `purgetss/brand/`. If you want to use custom paths, add them to `brand.logos`:
+By default, PurgeTSS auto-discovers logo files from `purgetss/brand/` — `logo.{svg,png}` for the main artwork and `logo-<piece>.{svg,png}` for a specific piece. If you want to use custom paths, set `logo` on the piece:
 
 ```javascript
 module.exports = {
   brand: {
-    logos: {
-      primary: './my-logos/main.svg',          // overrides auto-discovered logo.svg
-      androidLauncher: './my-logos/icon.svg',  // overrides auto-discovered logo-icon.svg
-      androidSplash: './my-logos/splash.svg',  // overrides auto-discovered logo-splash.svg
-      monochrome: './my-logos/mono.svg',       // overrides auto-discovered logo-mono.svg
-      iosDark: './my-logos/dark.svg',          // overrides auto-discovered logo-dark.svg
-      iosTinted: './my-logos/tinted.svg',      // overrides auto-discovered logo-tinted.svg
-      featureGraphic: './my-logos/feature.svg' // overrides auto-discovered logo-feature.svg (v7.10.0)
-    }
+    logo: './my-logos/main.svg',                       // overrides auto-discovered logo.svg
+    monochromeLogo: './my-logos/mono.svg',             // overrides auto-discovered logo-mono.svg
+    adaptive: { logo: './my-logos/adaptive.svg' },     // Android launcher mark
+    dark: { logo: './my-logos/dark.svg' },             // iOS 18+ dark variant
+    tinted: { logo: './my-logos/tinted.svg' },         // iOS 18+ tinted variant
+    featureGraphic: { logo: './my-logos/feature.svg' } // Google Play 1024×500 banner
   }
 };
 ```
