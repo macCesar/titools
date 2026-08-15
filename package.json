@@ -9,7 +9,7 @@
   },
   "scripts": {
     "test": "node --test test/**/*.test.js",
-    "lint": "eslint lib/**/*.js",
+    "lint": "eslint bin lib test",
     "format": "prettier --write lib/**/*.js"
   },
   "keywords": [
@@ -49,7 +49,9 @@
     "tar": "^7.5.7"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
     "eslint": "^9.39.2",
+    "globals": "^16.5.0",
     "prettier": "^3.8.1"
   },
   "files": [
