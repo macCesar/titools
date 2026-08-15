@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.6.1] - 2026-08-14
+
+### Changed — `titools list` shows the catalog when nothing is installed
+
+The list printed "No skills installed yet." and stopped, so the one moment you most want to see what is on offer — before installing anything — was the one moment it showed nothing. It now always prints the eight skills, marks each ✗ or ✓, and moves the install hint to the footer next to the count. Descriptions for a skill that is not installed come from the copy bundled in this package, so the row says what the skill is for rather than repeating "not installed" eight times.
+
+### Fixed — The test suite no longer depends on the machine that runs it
+
+Two `list` tests asserted the skill names and the `N/M installed` footer against the real `HOME`, so they only passed on a machine that already had skills installed. That is why 4.6.0 was tagged but never published: the tests passed locally and failed on the runner, which had none. The publish workflow is itself new in 4.6.0, so this was the first time `npm test` had ever run in a clean environment, and it caught a bug that had been latent for as long as the tests existed. Every `list` assertion now runs against a temporary `HOME` and both states are covered explicitly — empty, and seeded with a `SKILL.md`.
+
+Note that `v4.6.0` is tagged but was never published to npm. Install 4.6.1 or later.
+
 ## [4.6.0] - 2026-08-14
 
 ### Added — `titools list` wraps descriptions instead of truncating them
