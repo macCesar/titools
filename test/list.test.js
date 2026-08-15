@@ -1,7 +1,9 @@
-import { describe, it } from 'node:test';
+import { describe, it, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert';
 import { execFile } from 'node:child_process';
+import { mkdtemp, rm, mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
+import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 
 import { parseDescription, wrapDescription } from '../lib/commands/list.js';
@@ -10,43 +12,100 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, '..');
 const binPath = join(repoRoot, 'bin', 'titools.js');
 
-function run(args) {
+// Every `list` assertion runs against a temporary HOME. Reading the real one
+// made the result depend on whether the machine happened to have skills
+// installed: the suite passed on a developer box and failed on a clean CI
+// runner, which is exactly what it did the first time it ran in Actions.
+function run(args, home) {
   return new Promise((resolvePromise) => {
-    execFile(process.execPath, [binPath, ...args], { timeout: 15000 }, (error, stdout, stderr) => {
-      resolvePromise({
-        code: error?.code ?? 0,
-        stdout: stdout.toString(),
-        stderr: stderr.toString(),
-      });
-    });
+    execFile(
+      process.execPath,
+      [binPath, ...args],
+      {
+        timeout: 15000,
+        env: { ...process.env, HOME: home, USERPROFILE: home },
+      },
+      (error, stdout, stderr) => {
+        resolvePromise({
+          code: error?.code ?? 0,
+          stdout: stdout.toString(),
+          stderr: stderr.toString(),
+        });
+      },
+    );
   });
 }
 
 describe('list command', () => {
+  let home;
+
+  beforeEach(async () => {
+    home = await mkdtemp(join(tmpdir(), 'titools-list-'));
+  });
+
+  afterEach(async () => {
+    await rm(home, { recursive: true, force: true });
+  });
+
+  // Seed an installed skill by writing the SKILL.md `list` reads.
+  async function install(name, description) {
+    const skillDir = join(home, '.agents', 'skills', name);
+    await mkdir(skillDir, { recursive: true });
+    await writeFile(
+      join(skillDir, 'SKILL.md'),
+      `---\nname: ${name}\ndescription: '${description}'\n---\n\n# ${name}\n`,
+      'utf8',
+    );
+  }
+
   it('prints a skills header', async () => {
-    const result = await run(['list']);
+    const result = await run(['list'], home);
     assert.equal(result.code, 0);
     assert.match(result.stdout, /Titanium skills/i);
   });
 
-  it('lists every skill from the SKILLS array', async () => {
-    const result = await run(['list']);
+  it('lists every skill from the SKILLS array even when none are installed', async () => {
+    const result = await run(['list'], home);
     assert.equal(result.code, 0);
     for (const skill of ['ti-expert', 'purgetss', 'ti-ui']) {
       assert.match(result.stdout, new RegExp(skill), `expected skill "${skill}" in list output`);
     }
   });
 
+  it('describes a skill that is not installed, from the bundled copy', async () => {
+    const result = await run(['list'], home);
+    assert.equal(result.code, 0);
+    // The catalog is only useful before installing if it says what each skill
+    // is for, so an uninstalled row must carry more than its own name.
+    const row = result.stdout.split('\n').find((line) => line.includes('purgetss'));
+    assert.ok(row, 'expected a purgetss row');
+    assert.ok(
+      row.replace('purgetss', '').trim().length > 20,
+      `expected a description next to the skill name, got: ${row}`,
+    );
+  });
+
   it('aliases to "ls"', async () => {
-    const result = await run(['ls']);
+    const result = await run(['ls'], home);
     assert.equal(result.code, 0);
     assert.match(result.stdout, /Titanium skills/i);
   });
 
-  it('shows installation count footer', async () => {
-    const result = await run(['list']);
+  it('reports 0 installed and how to install when nothing is there', async () => {
+    const result = await run(['list'], home);
     assert.equal(result.code, 0);
-    assert.match(result.stdout, /\d+\/\d+ installed/);
+    assert.match(result.stdout, /0\/\d+ installed/);
+    assert.match(result.stdout, /No skills installed yet/i);
+    assert.match(result.stdout, /titools install/);
+  });
+
+  it('counts installed skills and points at the directory holding them', async () => {
+    await install('purgetss', 'Utility-first styling for Titanium.');
+    const result = await run(['list'], home);
+    assert.equal(result.code, 0);
+    assert.match(result.stdout, /1\/\d+ installed/);
+    assert.match(result.stdout, /Utility-first styling for Titanium/);
+    assert.doesNotMatch(result.stdout, /No skills installed yet/i);
   });
 });
 
