@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.6.0] - 2026-08-14
+
+### Added — `titools list` wraps descriptions instead of truncating them
+
+The list cut every description at the first sentence and, failing that, at 80 characters. Skill descriptions are written to trigger the agent, not to fit a terminal row, so most entries ended mid-thought. They now wrap to two lines aligned under the first, with an ellipsis only where the text genuinely runs past that.
+
+### Added — The ESLint flat config the repo never had
+
+`npm run lint` failed on every run with "couldn't find an eslint.config.js". The script had been dead since ESLint 9 dropped `.eslintrc` support, and the flat config that replaced it was never written — so a lint step that was listed, wired into `package.json` and presumably trusted had never once reported anything. It now covers `bin/`, `lib/` and `test/`; `skills/` is Markdown and templates and is ignored. Its first pass removed seven unused imports, a helper nothing referenced, and three assignments whose results were never read.
+
+### Fixed — Skill descriptions that are YAML-quoted or written across two lines
+
+Two bugs in the same regex. The quoted branch only matched double quotes, and every skill here is single-quoted because the descriptions contain colons and apostrophes — so the fallback branch ran instead and printed the wrapping quotes as part of the text. That fallback ended at the first newline, which silently dropped everything after line one of a multi-line description. The value now ends at the next top-level key, and both quote styles are resolved, including the doubled apostrophe that single-quoted YAML uses to escape.
+
+### Changed — The `purgetss` skill now describes PurgeTSS 7.13.1
+
+It described 7.11.1. PurgeTSS 7.13.0 restructured `purgetss brand` end to end and kept no flag aliases, so five references were not merely stale but wrong: every flag name, every config key, and three logo filenames had changed meaning underneath them. `logo-icon` is the trap — the name survived but now feeds `DefaultIcon.png`, while the Android launcher mark moved to `logo-adaptive`, so following the old text put the artwork on the wrong piece and let the launcher icons fall back to the main logo without complaint.
+
+The branding reference is rewritten against the current guide: the 14 pieces, the per-piece `brand:` block, `--only`, `--optimize`, `LaunchLogo.png`, the 16 iPhone launch images, the 11 per-qualifier Android splashes, and the on-disk config migration that replaced the in-memory translation used from 7.10.2 to 7.12.1. Padding defaults come from `src/core/branding/pieces.js`, not from `purgetss brand --help`, whose strings still read 19 and 20 where the pipeline applies 18, 26 and 26 — a discrepancy the CLI reference now carries as a warning.
+
+The Android launch-background setup moved into `launch-background.md`. It is a self-contained topic reached from three places, and keeping it inline pushed the branding reference past the 800-line cap.
+
 ### Added — Publishing to npm from GitHub Actions via trusted publishing
 
 `.github/workflows/publish.yml` runs on a pushed `v*` tag, which is the last thing `/release` does, and publishes the package itself. There is no `NPM_TOKEN` and no secret of any kind: `permissions: id-token: write` lets the runner mint a short-lived OIDC credential that npm verifies against the publisher registered for this package, and npm attaches provenance to the publish automatically as a result. The stale `NPM_TOKEN` repository secret, left behind by a workflow that no longer exists, was deleted.
