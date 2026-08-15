@@ -8,6 +8,35 @@ When in doubt about whether a class, flag, or config key exists in the user's in
 
 ---
 
+## v7.13.1
+- Four vulnerable transitive dependencies patched (`postcss`, `nanoid`, `brace-expansion`, `uuid`). Lockfile only; no API or class changes.
+
+## v7.13.0
+- **Breaking — one name per thing in `brand`.** `--splash` → `--splash-icon`, `--notification` → `--notification-icon`, `--splash-logo` → `--splash-icon-logo`, `--feature-logo` → `--feature-graphic-logo`. `--icon-logo` now feeds the `icon` piece (`DefaultIcon.png`); the Android launcher source is `--adaptive-logo`. `--legacy-splash` is gone — the 11 per-qualifier Android splashes are part of `android-splash` and always generated. Logo basenames follow `logo-<piece>` with no exceptions, so `logo-splash` → `logo-splash-icon` and `logo-feature` → `logo-feature-graphic`. **No aliases kept.** See [app-branding.md](app-branding.md).
+- **`brand:` config reorganized by piece, not by kind of setting.** 14 piece blocks, each accepting `logo` / `padding` / `background` / `enabled`. `background` cascades from `brand.background`; `padding` deliberately does not. Unknown keys abort the run at both levels instead of being ignored.
+- **Config migration moved from memory to disk.** Older `brand:` shapes are rewritten in `config.cjs` once, carrying over customized values and reporting each one moved. Runs on `brand` and on any command that goes through `ensureConfig()`. Replaces `normalizeLegacyBrand()`, which re-translated on every config read.
+- **`brand` now covers every image the Titanium template ships** — the 16 `assets/iphone/Default*.png`, the 11 `res-*/default.png`, and `assets/android/appicon.png` were previously left with the grey Alloy logo.
+- **`--only <pieces>` filter.** Pieces or groups (`ios`, `store`, `android`), honored by `--dry-run`. Naming a piece generates it even when its opt-in flag is absent; an unknown name aborts before writing.
+- **`LaunchLogo.png` (1024×1024) as the iOS launch screen source.** Activated by the presence of `purgetss/brand/logo-launch.{svg,png}`, or `--only launch-logo`. Tune with `--launch-logo` / `--launch-logo-padding`.
+- **`brand.optimize` / `--optimize`** — quantize the generated PNGs to a palette. Off by default (lossy); ~71% smaller on the reference set. `--no-optimize` overrides the config per run.
+- **Padding defaults changed:** adaptive `19%` → `18%`; the 28 splash images now share one configurable rule (`brand.androidSplash.padding` / `brand.iosSplash.padding`, default `26%`, measured against the canvas's shorter side).
+- Intermediate masters are sized to the largest request of the run instead of a fixed 1024 px, so no destination is ever upscaled.
+- `--nine-patch` declared but **not implemented** — selecting it prints a warning and writes nothing.
+- Fix: `shades` and `semantic` no longer strip every comment from `config.cjs`; they rewrite only the `theme:` section.
+
+## v7.12.1
+- `brand --notes` now targets Titanium's **launcher Activity** instead of only the app theme: prints a complete `splashscreen.xml` plus a launcher-only `Theme.SplashScreen` derived from `Theme.Titanium`. See [launch-background.md](launch-background.md).
+- Font Awesome Free updated to **7.3.1** — 23 new icon classes (`.fa-lotus`, `.fa-codeberg`, `.fa-copilot`, `.fa-substack`, `.fa-tesla`, `.fa-storybook`, `.fa-matrix`, `.fa-nextcloud`, `.fa-visual-studio`, …), none removed.
+
+## v7.12.0
+- `brand --notes` gained Android launch-background snippets (`android:windowSplashScreenBackground` + `android:windowBackground`), so a run that sets a brand background no longer flashes the default theme color at launch.
+- `--notes` wording no longer names only `tiapp.xml` — the command edits neither `tiapp.xml` nor the Android theme resources.
+
+## v7.11.2
+- Fix: `images.files` sync silently gave up on **any config containing comments** — including the one `purgetss init` generates. Every run printed `Could not insert <file> into images.files` while `files` stayed `[]`.
+- Fix: `parseTssMap()` dropped every property following an escaped quote, and classes carrying a nested object (`'.text-xs': { font: { fontSize: 12 } }`) never entered the TSS map — both starved the SVG pipeline of dimensions.
+- Fix: **Android `theme` values keep their quotes in custom rules.** `'.welcome-window': { android: { theme: 'Theme.AppDerived.NoTitleBar' } }` used to emit an unquoted value that Alloy cannot compile, because any value containing the substring `Titanium` was treated as a JavaScript expression. Detection is now anchored to the start of the value.
+
 ## v7.11.1
 - Symmetric width/height cascade in the SVG image pipeline: a class can pin width-only, height-only, or both; the unpinned side stays `null` in `images.files` and is re-derived from the SVG viewBox on every run (no stale auto-derived dimensions frozen in config).
 - `syncConfigImages` mirrors the **current** run instead of taking `max()` across past runs — shrinking a class (e.g. `h-52` → `h-16`) now propagates to `config.cjs`. Pin manually with `images.autoSync: false`.

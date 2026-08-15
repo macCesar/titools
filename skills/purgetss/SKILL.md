@@ -427,7 +427,8 @@ Load these only when needed:
 - [iOS Large Titles](references/ios-large-titles.md) - Best practice for iOS Large Title navigation
 
 ### App Assets
-- [App Branding](references/app-branding.md) - `brand` command for launcher icons, adaptive, iOS 18+ Dark/Tinted, marketplace assets (v7.6.0)
+- [App Branding](references/app-branding.md) - `brand` command: the 14 pieces it regenerates (launcher, adaptive, iOS 18+ Dark/Tinted, marketplace, both splash sets), the per-piece `brand:` config, `--only`, `--optimize` (v7.13.0)
+- [Launch Background](references/launch-background.md) - Carrying `brand.background` into the iOS LaunchScreen and a launcher-only Android theme (`--notes` output)
 - [Multi-Density Images](references/multi-density-images.md) - `images` command for Android res-*dpi + iPhone @1x/@2x/@3x UI images (v7.6.0)
 - [SVG Pipeline](references/svg-pipeline.md) - SVG-aware compile-time image pipeline: `.svg` refs + numeric `w-*`/`h-*` classes compile to 8 density PNGs; `images.files`/`images.autoSync` (v7.11.0–v7.11.1)
 
@@ -444,7 +445,7 @@ Load these only when needed:
 - [Animation Advanced](references/animation-advanced.md) - Property inheritance, utility classes, implementation rules, complex UI example
 
 ### Release Notes
-- [Version History](references/version-history.md) - Release-by-release feature additions and behavior changes (v7.4.0 → v7.11.1)
+- [Version History](references/version-history.md) - Release-by-release feature additions and behavior changes (v7.4.0 → v7.13.1)
 
 > **💡 TEXT FONTS (Google Fonts, Roboto, etc.)**
 > For text fonts, see [Custom Fonts](references/custom-fonts.md).
