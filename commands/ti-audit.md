@@ -9,5 +9,6 @@ Audit the current Titanium project by invoking the relevant TiTools skills:
 2. Invoke `ti-ui` — check for UI anti-patterns (Ti.UI.SIZE in ListViews, WebView inside TableView, missing accessibility)
 3. If PurgeTSS project, invoke `purgetss` — check for custom TSS that should be utility classes, unsupported classes, padding on Views
 4. Invoke `alloy-guides` — check for proper Alloy patterns (model usage, widget structure)
+5. If the project declares `ti.game`, invoke `ti-game` — check for sprites moved from timers instead of native properties, levels sized from `Ti.Platform.displayCaps` instead of the `resize` event, sprites added one by one instead of in one array, and timers or sounds left running when the window closes
 
 Report findings grouped by severity: critical, warning, info.
