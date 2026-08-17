@@ -6,7 +6,7 @@
 
 </div>
 
-TiTools is a Titanium SDK toolkit for AI coding assistants. It ships 8 skills — 3 opinionated (`ti-expert`, `purgetss`, `ti-ui`) plus 5 documentation-mirror skills (`ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`) — a research agent, and reference files covering Titanium architecture, API reference, native how-tos, Alloy MVC, PurgeTSS styling, and UI/UX patterns.
+TiTools is a Titanium SDK toolkit for AI coding assistants. It ships 9 skills — 4 opinionated (`ti-expert`, `purgetss`, `ti-ui`, `ti-game`) plus 5 documentation-mirror skills (`ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`) — a research agent, and reference files covering Titanium architecture, API reference, native how-tos, Alloy MVC, PurgeTSS styling, UI/UX patterns, and 2D game development with the `ti.game` module.
 
 The reference files are maintained against official documentation whenever an official source exists, so the assistant can retrieve current framework behavior instead of guessing from generic training data.
 
@@ -36,7 +36,7 @@ The fastest way to get started with Claude Code. One command to add the marketpl
 ```
 
 What you get:
-- All 3 TiTools skills (`ti-expert`, `purgetss`, `ti-ui`)
+- All 9 TiTools skills (`ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`)
 - ti-pro research agent
 - Session hook that auto-detects Titanium projects (`tiapp.xml`, Alloy, PurgeTSS)
 - Slash commands: `/ti-check`, `/ti-new-screen`, `/ti-audit`
@@ -70,7 +70,7 @@ claude   # or gemini, or codex
 ```
 
 What gets installed:
-- The 8 TiTools skills to `~/.agents/skills/`
+- The 9 TiTools skills to `~/.agents/skills/`
 - ti-pro agent for Claude Code
 - Platform symlinks for Claude Code (Gemini CLI and Codex CLI auto-discover from `~/.agents/skills/` — no symlinks needed)
 - Knowledge index in your project's `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`
@@ -177,6 +177,7 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 | ti-expert    | Architecture and implementation     | Starting point for most tasks           |
 | purgetss     | Utility-first styling               | UI styling and animations               |
 | ti-ui        | UI/UX patterns                      | Complex layouts, ListViews, platform UI |
+| ti-game      | 2D games with the `ti.game` module  | Sprites, physics, collisions, particles, camera |
 | ti-api       | Complete Titanium API reference     | Looking up properties, methods, events  |
 | ti-guides    | SDK fundamentals                    | tiapp.xml, Hyperloop, distribution, JDK/Xcode compatibility, release notes |
 | ti-howtos    | Native feature integration          | Location, push, media, platform APIs    |
@@ -184,7 +185,8 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 | alloy-howtos | Alloy CLI, configuration, debugging | alloy.jmk, config.json, custom XML tags |
 
 Notes:
-- The first three (`ti-expert`, `purgetss`, `ti-ui`) are opinionated workflow skills reflecting TiTools' Titanium conventions.
+- The first four (`ti-expert`, `purgetss`, `ti-ui`, `ti-game`) are opinionated workflow skills reflecting TiTools' Titanium conventions.
+- `ti-game` documents the `ti.game` native module (2D sprite engine on OpenGL ES 2.0, Android and iOS). Its API reference was verified against the module source; it applies to Alloy and Classic projects alike and does not depend on PurgeTSS.
 - The latter five are documentation-mirror skills sourced from the official Titanium SDK docs (`tidev/titanium-docs`) and audited against them via the internal `titools-skill-auditor`.
 - `purgetss` reference files are audited against the official PurgeTSS documentation, but its workflow conventions are opinionated.
 
@@ -285,6 +287,7 @@ All skills include automatic project detection to ensure compatibility:
 | purgetss  | PurgeTSS installation | Checks for `purgetss/` folder, `config.cjs`, `utilities.tss`  |
 | ti-expert | Alloy vs Classic      | Checks for `app/` (Alloy) vs `Resources/` (Classic) structure |
 | ti-ui     | Titanium projects     | Checks for `tiapp.xml` (both Alloy and Classic)               |
+| ti-game   | ti.game module        | Checks for `<module>ti.game</module>` in `tiapp.xml` or `require('ti.game')` |
 
 Why this matters:
 - PurgeTSS suggestions are only provided if PurgeTSS is installed
@@ -422,6 +425,37 @@ Key rules:
 
 ---
 
+### ti-game
+
+2D game development with the `ti.game` native module — a sprite engine rendered with OpenGL ES 2.0, same JS API on Android and iOS. Works in Alloy and Classic projects.
+
+When it activates:
+- `tiapp.xml` declares `ti.game`, or any file calls `require('ti.game')`
+- Sprites, sprite sheets, TexturePacker atlases, frame animations, native tweens
+- Physics: gravity and velocity, solid platforms, one-way floors, bouncing, the arcade car model, Newtonian thrust
+- Collision groups, invisible trigger zones, hitbox tuning
+- Particle emitters, Verlet ropes, camera follow/zoom/shake/effects, low-latency sound
+- Drag & drop, pinch, rotate, multitouch controls
+
+Example prompts:
+```
+"Build a flappy-bird style game with ti.game."
+"My sprites won't collide — collisionGroup is set on both."
+"Add a camera that follows the player with a dead zone."
+"How do I make a top-down racer that drifts?"
+"Why does my game stutter when I move sprites from setInterval?"
+```
+
+Key rules:
+- JS describes the scene and reacts to events; the engine runs every frame. Never move a sprite from a timer — use velocity, gravity, a tween, `carMode` or `thrust`
+- Build the level inside a guarded `resize` handler, never from `Ti.Platform.displayCaps`
+- `solidWith` blocks, `collidesWith` reports — they are independent
+- A sprite with size but no sheet is an invisible trigger (scores, goals, walls)
+- Add a whole level with one `gameView.add([...])` call
+- There is no text in the engine: HUDs are `Ti.UI.Label` overlays
+
+---
+
 ## Usage examples and best practices
 
 ### Example prompts
@@ -517,7 +551,7 @@ Behavior depends on where you run it:
 | With `--local` flag        | Installs skills locally to `./.agents/skills/` in the current project |
 
 What it does:
-- Installs the 8 TiTools skills (global or local depending on context)
+- Installs the 9 TiTools skills (global or local depending on context)
 - Installs ti-pro agent for Claude Code
 - Installs the `/ti-check`, `/ti-new-screen` and `/ti-audit` slash commands into `~/.claude/commands/`
 - Detects installed AI platforms and lets you choose which to link (only Claude Code needs platform symlinks; Gemini CLI and Codex CLI auto-discover from `~/.agents/skills/`)
