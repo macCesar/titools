@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.7.0] - 2026-08-17
+
+### Added — `ti-game`, a skill for the ti.game 2D engine
+
+`ti.game` is Michael Gangolf's (m1ga) native sprite engine for Titanium (OpenGL ES 2.0, same JS API on Android and iOS), and nothing in an assistant's training data covers it — which meant every session started by inventing a Phaser-shaped API that does not exist. The new skill carries the module's whole surface: `SKILL.md` with the architectural rule everything follows (JS describes the scene, the engine runs every frame), plus four references — a full API table, recipes for thirteen genres, project setup for Alloy and Classic, and a roadmap file listing what is *not* implemented so the assistant stops reaching for text sprites, tilemap layers or sprite parenting.
+
+The API reference was verified against the module source rather than its README, which turned up two discrepancies worth having: `animate()` also accepts `scaleX`/`scaleY`, and `follow()` resets every option to its default on each call. Recipes are distilled from the eighteen official demos and from a shipped Alloy game, so the code paths in them have run on a device.
+
+This brings TiTools to nine skills. The skill is opinionated rather than a documentation mirror, applies to Alloy and Classic alike, and does not depend on PurgeTSS.
+
+The rest of the toolkit learned about it too: the SessionStart hook already looked for PurgeTSS but had no idea a project might be a game, so it now greps `tiapp.xml` for `ti.game` and appends a line naming the skill; `/ti-audit` audits game code when the module is declared; `/ti-check` reports the module's version and whether it is actually present under `modules/`. The Knowledge Index picks the four reference files up on its own — `buildKnowledgeIndex` scans `skills/*/references/`, so there was no list to maintain.
+
 ## [4.6.1] - 2026-08-14
 
 ### Changed — `titools list` shows the catalog when nothing is installed

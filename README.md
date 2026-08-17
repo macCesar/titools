@@ -38,7 +38,7 @@ The fastest way to get started with Claude Code. One command to add the marketpl
 What you get:
 - All 9 TiTools skills (`ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`)
 - ti-pro research agent
-- Session hook that auto-detects Titanium projects (`tiapp.xml`, Alloy, PurgeTSS)
+- Session hook that auto-detects Titanium projects (`tiapp.xml`, Alloy, PurgeTSS, `ti.game`)
 - Slash commands: `/ti-check`, `/ti-new-screen`, `/ti-audit`
 - Auto-updates via marketplace (opt-in — see note below)
 
@@ -91,7 +91,7 @@ Why NPM?
 | **Knowledge Index** | Not included                               | Included (`titools sync`) |
 | **Auto-updates**    | Marketplace (opt-in, enable in `/plugin`)  | SessionStart hook (daily) |
 | **Slash commands**  | `/ti-check`, `/ti-new-screen`, `/ti-audit` | Same three (`~/.claude/commands/`) |
-| **Session hook**    | Auto-detects Titanium projects             | Auto-update only          |
+| **Session hook**    | Auto-detects Titanium projects (Alloy/Classic, PurgeTSS, `ti.game`) | Auto-update only          |
 
 Having both installed is fine: the CLI detects an enabled marketplace plugin and skips its own skill symlinks and command copies, so nothing shows up twice. `titools doctor` reports which channel is serving Claude Code.
 
@@ -256,8 +256,10 @@ These commands automatically invoke the relevant skills:
 The plugin includes a session start hook that auto-detects Titanium projects. When you open Claude Code in a directory with `tiapp.xml`, it automatically reports:
 
 ```
-Titanium Alloy + PurgeTSS project detected. TiTools skills are available and MUST be used...
+Titanium Alloy + PurgeTSS + ti.game project detected. TiTools skills are available and MUST be used...
 ```
+
+It reports Alloy vs Classic, whether PurgeTSS is configured, and whether the project declares the `ti.game` module — a game project also gets a line pointing at the `ti-game` skill.
 
 This ensures Claude knows it's a Titanium project from the first prompt, preventing it from writing generic code.
 
