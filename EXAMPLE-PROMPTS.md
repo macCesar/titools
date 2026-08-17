@@ -13,7 +13,7 @@ These prompts verify the assistant read the docs index from your project's instr
 ```
 Expect:
 - Titanium SDK docs index
-- All 8 TiTools skills: `ti-expert`, `purgetss`, `ti-ui`, `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`
+- All 9 TiTools skills: `ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`
 - Reference file locations
 
 ---
@@ -179,6 +179,58 @@ Expect:
 
 ---
 
+### ti-game
+```
+"I want to build a little endless runner with ti.game — the guy jumps over obstacles that come from the right. Where do I start?"
+```
+Expect:
+- Activates `ti-game`
+- Player stays at a fixed x; gravity plus an invisible ground solid handle the jump arc
+- Obstacles are pooled sprites scrolling on `velocityX`, spawned from a coarse timer
+- Parallax layers via `wrapX`/`wrapShift`, never a JS loop repositioning copies
+
+```
+"My bullets go straight through the asteroids sometimes. Both have collisionGroup set and I'm listening for collision."
+```
+Expect:
+- `collisionGroup` goes on the target, `collidesWith` on the mover — both are needed
+- Fast small sprites tunnel between frames; widen the hitbox with `hitboxScale` or cap the speed (swept AABB does not exist yet)
+- `visible: false` disables collision, which is how pooled bullets are parked
+
+```
+"How do I move the player sprite smoothly? Right now I have a setInterval at 16ms adding to sprite.x and it stutters."
+```
+Expect:
+- Names the anti-pattern: JS must not move sprites per frame
+- `velocityX` for continuous motion, `animate()` for a move from A to B, `carMode`/`thrust` for vehicles
+- Timers are fine for decisions (AI, spawning, autofire), not for motion
+
+```
+"Score label on top of the game, and the camera should follow the player but not right away — I want a dead zone."
+```
+Expect:
+- HUD is a `Ti.UI.Label` overlaid on the window; the engine renders no text
+- `gameView.follow(sprite, { leftMargin, rightMargin, topMargin, bottomMargin, smoothing })`
+- Warns that horizontal follow stays off unless `leftMargin`/`rightMargin` are passed, and that `maxY` defaults to `0`
+
+```
+"My bottom row of sprites is cut off on my phone but fine on the tablet. I'm positioning them from Ti.Platform.displayCaps."
+```
+Expect:
+- `displayCaps` includes the system bars and reports points on iOS; the scene is in surface pixels
+- Build the level in a guarded `resize` handler using `e.width`/`e.height`
+- Sizes derived as fractions of W/H rather than absolute pixels
+
+```
+"Can I use ti.game in an Alloy project or is it app.js only?"
+```
+Expect:
+- Both. `<Module module="ti.game" method="createGameView" />` in XML, or an empty container plus a GameView created in the controller
+- Game logic belongs in `app/lib/`, leaving the controller for navigation (Alloy Tier 2)
+- `$.cleanup` must stop timers and sounds — `$.destroy()` does not know about them
+
+---
+
 ### ti-api
 ```
 "What events does `Ti.UI.ListView` fire and what data do their callbacks receive?"
@@ -294,6 +346,9 @@ Expect:
 - [ ] ti-expert: splits sharing by platform instead of routing both through a module
 - [ ] purgetss: does not use flexbox, uses correct classes
 - [ ] ti-ui: mentions performance rules
+- [ ] ti-game: refuses to move sprites from a timer and names the native property instead
+- [ ] ti-game: builds the level from the `resize` event, not from `displayCaps`
+- [ ] ti-game: does not invent APIs that do not exist yet (text sprites, tilemap layer, sprite parenting)
 - [ ] ti-api: cites specific properties/methods/events
 - [ ] ti-guides: references tiapp.xml / Hyperloop / distribution docs
 - [ ] ti-howtos: provides working integration code
