@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.8.0] - 2026-08-18
+
+### Changed — `ti-game` catches up with the module's text engine
+
+Upstream landed four features the day after the skill shipped, and two of them contradicted advice the skill gave: text now renders **inside** the scene, so `Game.createText` glyph sprites with `screenFixed: true` replace the `Ti.UI.Label` overlays the HUD recipe recommended, and `swept: true` path-tests a fast sprite's movement, replacing the inflated-hitbox trick for bullets that tunnel through thin targets. `collisionend` completes the trigger lifecycle (enter *and* exit, including when the partner is removed or hidden), and `Game.createFont` loads BMFont/AngelCode or monospace-grid atlases with `tools/genfont.py` to rasterize a TTF.
+
+`SKILL.md`, `api.md`, `recipes.md`, `project-setup.md` and `roadmap.md` were all updated against the module source: new Font and Text sections, `screenFixed` and `swept` in the property tables, a HUD recipe rewritten around text sprites, an enter/exit zone recipe, the batching costs that are invisible on screen (blend switches, 2 extra draw calls per glowing sprite), and the two now-shipped rows moved out of the "does not exist" table.
+
+### Fixed — two wrong facts in the `ti-game` API reference
+
+A regression eval on the updated skill caught the reference asserting that `maxSpeed` (default 500) silently caps any fast sprite, so a bullet on `velocityX = 1400` would crawl at 500. It does not: in both engines the clamp lives inside the `thrust` integration and the car model, and a directly written `velocityX` is never touched. The gotcha is now inverted — `maxSpeed` is the cap a *thrusting* ship hits, and it is the wrong thing to blame when a plain projectile misbehaves.
+
+Also documented that `glowColor` on its own renders nothing: the glow pass only runs when `glowBlur > 0`, and `glowBlur` defaults to `0`.
+
+The version number is no help here: the manifest has read `0.3.0` through all of it, so the skill and the README now date themselves against upstream `main` instead, and `project-setup.md` says plainly that a module zip built before 2026-08-18 will report `undefined` for every call added since.
+
 ## [4.7.0] - 2026-08-17
 
 ### Added — `ti-game`, a skill for the ti.game 2D engine
