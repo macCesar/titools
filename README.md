@@ -177,7 +177,7 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 | ti-expert    | Architecture and implementation     | Starting point for most tasks           |
 | purgetss     | Utility-first styling               | UI styling and animations               |
 | ti-ui        | UI/UX patterns                      | Complex layouts, ListViews, platform UI |
-| ti-game      | 2D games with the `ti.game` module  | Sprites, physics, collisions, particles, camera |
+| ti-game      | 2D games with the `ti.game` module  | Sprites, physics, collisions, text HUDs, particles, camera |
 | ti-api       | Complete Titanium API reference     | Looking up properties, methods, events  |
 | ti-guides    | SDK fundamentals                    | tiapp.xml, Hyperloop, distribution, JDK/Xcode compatibility, release notes |
 | ti-howtos    | Native feature integration          | Location, push, media, platform APIs    |
@@ -186,7 +186,7 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 
 Notes:
 - The first four (`ti-expert`, `purgetss`, `ti-ui`, `ti-game`) are opinionated workflow skills reflecting TiTools' Titanium conventions.
-- `ti-game` documents the `ti.game` native module (2D sprite engine on OpenGL ES 2.0, Android and iOS). Its API reference was verified against the module source; it applies to Alloy and Classic projects alike and does not depend on PurgeTSS.
+- `ti-game` documents the `ti.game` native module (2D sprite engine on OpenGL ES 2.0, Android and iOS). Its API reference was verified against the module source and tracks upstream `main` (the module ships features ahead of its manifest version); it applies to Alloy and Classic projects alike and does not depend on PurgeTSS.
 - The latter five are documentation-mirror skills sourced from the official Titanium SDK docs (`tidev/titanium-docs`) and audited against them via the internal `titools-skill-auditor`.
 - `purgetss` reference files are audited against the official PurgeTSS documentation, but its workflow conventions are opinionated.
 
@@ -435,7 +435,8 @@ When it activates:
 - `tiapp.xml` declares `ti.game`, or any file calls `require('ti.game')`
 - Sprites, sprite sheets, TexturePacker atlases, frame animations, native tweens
 - Physics: gravity and velocity, solid platforms, one-way floors, bouncing, the arcade car model, Newtonian thrust
-- Collision groups, invisible trigger zones, hitbox tuning
+- Collision groups, invisible trigger zones, enter/exit events, swept AABB for fast bullets, hitbox tuning
+- Bitmap-font text sprites and screen-fixed HUDs inside the scene
 - Particle emitters, Verlet ropes, camera follow/zoom/shake/effects, low-latency sound
 - Drag & drop, pinch, rotate, multitouch controls
 
@@ -446,6 +447,7 @@ Example prompts:
 "Add a camera that follows the player with a dead zone."
 "How do I make a top-down racer that drifts?"
 "Why does my game stutter when I move sprites from setInterval?"
+"Add a score HUD that stays put while the camera follows the player."
 ```
 
 Key rules:
@@ -454,7 +456,7 @@ Key rules:
 - `solidWith` blocks, `collidesWith` reports — they are independent
 - A sprite with size but no sheet is an invisible trigger (scores, goals, walls)
 - Add a whole level with one `gameView.add([...])` call
-- There is no text in the engine: HUDs are `Ti.UI.Label` overlays
+- HUDs are `Game.createText` sprites with `screenFixed: true`, not `Ti.UI.Label` overlays
 
 ---
 
