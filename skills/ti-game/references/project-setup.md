@@ -9,6 +9,7 @@ Installing the module, wiring it into Classic and Alloy projects, organizing art
 - [Alloy projects](#alloy-projects)
 - [Where art and sound live](#where-art-and-sound-live)
 - [Sprite sheets and atlases](#sprite-sheets-and-atlases)
+- [Fonts](#fonts)
 - [Lifecycle and cleanup](#lifecycle-and-cleanup)
 - [Debugging and tuning](#debugging-and-tuning)
 - [Platform differences](#platform-differences)
@@ -40,6 +41,8 @@ Then declare it in `tiapp.xml`. The iOS platform key is `iphone`, not `ios`:
 
 Pinning `version` is worth the extra attribute: with two module versions installed side by side, an unpinned entry silently picks the highest one.
 
+The version number lies right now: the manifest has read `0.3.0` through several feature landings. A zip built before 2026-08-18 has no `createText`, no `createFont`, no `screenFixed`, no `swept` and no `collisionend` while still calling itself 0.3.0. If a call that this skill documents is `undefined` at runtime, rebuild the module from upstream `main` rather than hunting for a typo.
+
 Building the module from source:
 
 ```bash
@@ -50,7 +53,7 @@ ti build -p ios --build-only        # macOS only → ios/dist/ti.game-iphone-<ve
 
 ## Classic projects
 
-`require('ti.game')` anywhere and add the GameView to a window. The 18 demos in the module's `example/` folder are Classic, each one a CommonJS module exporting a start function:
+`require('ti.game')` anywhere and add the GameView to a window. The 21 demos in the module's `example/` folder are Classic, each one a CommonJS module exporting a start function:
 
 ```javascript
 // Resources/flappy.js
@@ -85,7 +88,6 @@ The standard Alloy element for a native module view. `method` names the factory 
 <Alloy>
 	<Window id="index" navBarHidden="true" exitOnClose="true" onOpen="onOpen" onClose="onClose">
 		<Module id="gameView" module="ti.game" method="createGameView" backgroundColor="#8ed8f8" />
-		<Label id="scoreLabel" />
 		<Button id="jumpButton" title="JUMP" onTouchstart="jump" />
 	</Window>
 </Alloy>
@@ -111,6 +113,8 @@ function onResize(e) {
 	buildLevel(e.width, e.height);
 }
 ```
+
+Only views that must be native — buttons, menus, dialogs — belong in the XML. The HUD does not: scores and labels are `Game.createText` sprites created in the controller and added to the game view, so they batch with the scene and can tween and flash.
 
 Style the view in TSS like any other component (`'#gameView': { width: Ti.UI.FILL, height: Ti.UI.FILL }`). The `<Module>` element itself is documented Alloy behavior; the pattern below is the one verified in a shipped ti.game app.
 
@@ -218,6 +222,28 @@ Practical rules:
 - **White art plus `tint`** covers every color variant of a particle or effect with one small texture.
 
 `frameCount` is `0` until a grid sheet's texture has loaded, so do not compute animation ranges from it at creation time.
+
+## Fonts
+
+Nothing to ship for the default look: `Game.createText({ text: 'SCORE 0' })` uses a 9×15 pixel font embedded in the module, on both platforms.
+
+A custom face is an asset like any other, created once outside `resize`:
+
+```javascript
+// BMFont / AngelCode descriptor + its page image, side by side in assets/
+const hud = Game.createFont({ font: 'fonts/hud.fnt' });        // hud.png resolved next to it
+
+// or a monospace grid image
+const mono = Game.createFont({ image: 'fonts/mono.png', charWidth: 9, charHeight: 15 });
+```
+
+| File | Referenced as (Alloy) |
+| --- | --- |
+| `app/assets/fonts/hud.fnt` + `app/assets/fonts/hud.png` | `'fonts/hud.fnt'` |
+
+These are **bitmap** fonts — do not put them in `app/assets/fonts/` expecting Titanium's native font handling, and do not use a `.ttf` here. To go from a TTF to either format, the module ships `tools/genfont.py`, which rasterizes it into a grid or BMFont atlas.
+
+The built-in font covers ASCII 32..126 only. Any game whose text includes `ñ`, accents or `¿` needs a generated font — or a `Ti.UI.Label` overlay for that specific string.
 
 ## Lifecycle and cleanup
 

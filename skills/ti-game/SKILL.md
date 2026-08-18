@@ -1,13 +1,13 @@
 ---
 name: ti-game
-description: "Use when building or reviewing 2D games with the ti.game module for Titanium SDK (Android and iOS) — sprites, sprite sheets, frame animations, tweens, physics (gravity, solid platforms, carMode drifting, thrust), collision groups, particles, Verlet ropes, camera follow/zoom/shake, low-latency sound, drag & drop, multitouch. AUTO-DETECT: if tiapp.xml declares ti.game or any file calls require('ti.game'), invoke BEFORE writing ANY game code. Also trigger on: game, juego, sprite, spritesheet, platformer, endless runner, top-down, shooter, racer, flappy, breakout, rhythm game, card game, puzzle, collision, hitbox, parallax, particles, game loop, 60 fps, GameView. ti.game is NOT Phaser, Godot or Box2D: you never write a game loop, never move a sprite from setInterval, and several familiar features (bitmap text, tilemap layer, sprite parenting, raycast) do not exist yet — check references/roadmap.md before inventing an API."
+description: "Use when building or reviewing 2D games with the ti.game module for Titanium SDK (Android and iOS) — sprites, sprite sheets, frame animations, tweens, physics (gravity, solid platforms, carMode drifting, thrust), collision groups, trigger zones, swept AABB, bitmap-font text and HUDs, particles, Verlet ropes, camera follow/zoom/shake, low-latency sound, drag & drop, multitouch. AUTO-DETECT: if tiapp.xml declares ti.game or any file calls require('ti.game'), invoke BEFORE writing ANY game code. Also trigger on: game, juego, sprite, spritesheet, platformer, endless runner, top-down, shooter, racer, flappy, breakout, rhythm game, card game, puzzle, collision, hitbox, parallax, particles, HUD, score, game loop, 60 fps, GameView. ti.game is NOT Phaser, Godot or Box2D: you never write a game loop, never move a sprite from setInterval, and several familiar features (tilemap layer, sprite parenting, raycast, joystick) do not exist yet — check references/roadmap.md before inventing an API."
 argument-hint: "[genre or feature]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(node *)
 ---
 
 # ti.game — 2D game engine for Titanium SDK
 
-`ti.game` is a native OpenGL ES 2.0 sprite engine exposed to JavaScript, written and maintained by **Michael Gangolf (m1ga)** — upstream is https://github.com/m1ga/ti.game. This skill was written against version 0.3.0 as it stands in the `macCesar/ti.game` contribution fork; when upstream and the fork disagree, upstream wins. Same JS API on Android and iOS — the iOS side is a class-per-class Obj-C twin of the Android engine.
+`ti.game` is a native OpenGL ES 2.0 sprite engine exposed to JavaScript, written and maintained by **Michael Gangolf (m1ga)** — upstream is https://github.com/m1ga/ti.game. This skill tracks upstream `main` as of **2026-08-18** — the manifest still reads `0.3.0`, but the text engine, `screenFixed`, `swept` collisions and `collisionend` landed after it, so a version number alone will not tell you what a checkout has. When upstream and any fork disagree, upstream wins. Same JS API on Android and iOS — the iOS side is a class-per-class Obj-C twin of the Android engine.
 
 Works in **both Classic and Alloy** projects. Nothing here depends on PurgeTSS.
 
@@ -31,6 +31,9 @@ The practical consequence, and the single biggest mistake to avoid:
 | Drag a sprite with the finger | `touchmove` handler | `draggable: true` |
 | Scrolling background | timer repositioning copies | `wrapX` / `wrapShift` + `velocityX` |
 | Camera that follows the player | timer writing `cameraX` | `gameView.follow(sprite, options)` |
+| A score, a title, a label | `Ti.UI.Label` overlays | `Game.createText({ text, screenFixed: true })` |
+| A bullet fast enough to skip past a thin wall | shrinking the time step | `swept: true` on the bullet |
+| To know the player *left* a zone | polling on a timer | the `collisionend` event |
 | Smoke, sparks, explosions | pooled sprites in JS | `Game.createEmitter(...)` |
 | A swinging chain or cape | verlet solver in JS | `Game.createRope(...)` |
 | Slow motion or a pause that still draws | pausing your own timers | `gameView.timeScale = 0.5` / `0` |
@@ -117,9 +120,13 @@ Gravity is per sprite, not global — set it on each body that should fall. A sp
 ## Block versus react: `solidWith` and `collidesWith` are independent
 
 - `solidWith: ['ground']` **blocks** movement against sprites tagged `collisionGroup: 'ground'`. The engine pushes the sprite out along the axis of least penetration, sets read-only `onGround` and fires `land`.
-- `collidesWith: ['coin', 'enemy']` **reports** overlap. Fires `collision` once per overlap-enter (payload `group`, `other`, `x`, `y`), re-arming after separation. Nothing is blocked.
+- `collidesWith: ['coin', 'enemy']` **reports** overlap. Fires `collision` once per overlap-enter and `collisionend` once on separation (both carry `group`, `other`, `x`, `y`). Nothing is blocked.
 
 A sprite can use both — a player that stands on platforms (`solidWith`) and dies on spikes (`collidesWith`).
+
+The enter/exit pair is the trigger lifecycle other engines call `OnTriggerEnter`/`Exit`: water that tints the hero while he is in it, a pressure plate holding a door open exactly while something rests on it. Removing or hiding the partner mid-contact also counts as separation, so a despawned object still closes its door. There is deliberately **no** per-frame "stay" event — keep that state in JS.
+
+A fast mover can slip through a thin target between frames: it never overlaps on any single frame, so the discrete test misses. `swept: true` on the *mover* tests its movement as a path — `collision` fires for whatever the path crossed, and `solidWith` walls stop it at the impact point instead of letting it teleport through.
 
 **A sprite with `width`/`height` but no `sheet` renders nothing and works as an invisible trigger.** Score zones, goals, checkpoints, ceilings, kill floors and walls are all built this way in the official demos. This is the idiomatic way to add logic to a scene without art.
 
@@ -128,6 +135,7 @@ Tune fairness with `hitboxScale` (art rarely fills its frame; slightly small hit
 ## Performance rules that actually matter
 
 - **One texture = one draw call.** The batcher accumulates up to 1000 quads and flushes on texture switch. A scene whose sprites all share one sheet renders in a single draw call regardless of sprite count. Pack art into as few sheets as possible; reuse one white particle texture and tint it at runtime.
+- **Know what else breaks the batch**, since none of it is visible on screen: every `'normal'` ↔ `'add'` transition in draw order flushes (group additive sprites into their own `zIndex` band so it happens twice a frame, not constantly); each glowing sprite costs 2 extra draw calls per frame, plus 2 more while a `flash()` runs; ropes, skid marks and debug overlays always draw with normal blending, so interleaving them with additive content flushes too.
 - **Bulk-add a level.** `gameView.add([spriteA, spriteB, emitter, rope])` crosses the bridge once and commits under one scene lock. Collect a level's objects in an array and add them in one call; `add(object)` still works for single objects.
 - **Keep collision group lists targeted.** Cost is O(colliders × candidates) per frame. A bullet checking `['asteroid']` tests 5 sprites, not the whole scene.
 - **Pool, don't create.** Bullets, notes, obstacles and enemies are created once (usually 3–10 of them), then recycled by setting `visible = false` and zeroing velocity. Creating sprites mid-game costs a bridge hop and a scene lock.
@@ -135,9 +143,19 @@ Tune fairness with `hitboxScale` (art rarely fills its frame; slightly small hit
 - **`maxFps: 60`** on the GameView keeps 120 Hz ProMotion displays from doubling render work. `0` (default) follows the display refresh rate.
 - **Judge performance on device.** The iOS Simulator's OpenGL translation layer is disproportionately slow and renders at a 1x drawable; real devices keep native screen scale and run far smoother.
 
-## There is no text in the engine
+## Text is a sprite
 
-The engine draws sprites, particles and ropes — **not text**. HUDs, scores and labels are ordinary `Ti.UI.Label` views overlaid on the window, on top of the GameView. That is how every official demo does it. Consequences worth knowing before designing a HUD: overlaid Titanium views are screen-fixed, so they do not scroll with the camera, do not z-sort against sprites and cannot be tweened by the engine. Bitmap-font text sprites are planned but do not exist — see [roadmap.md](references/roadmap.md).
+Text draws **inside** the scene: `Game.createText({ text: 'SCORE 0' })` returns a sprite made of glyph quads, so it z-sorts, tweens, tints, flashes, glows, wobbles on `idleAnimation` and takes `tap` events like any other sprite — a text button needs no overlay view. With no `font` it uses a pixel font embedded in the module (nothing to ship); `Game.createFont({...})` loads a BMFont/AngelCode atlas or a monospace grid image. There is no font size — scale the sprite, with integer values for crisp pixels.
+
+```javascript
+const score = Game.createText({ text: 'SCORE 0', screenFixed: true, x: W / 2, y: H * 0.08, scale: 3, zIndex: 100 });
+gameView.add(score);
+score.text = 'SCORE 10';   // re-lays out natively
+```
+
+`screenFixed: true` works on **any** sprite: `x`/`y` become surface coordinates and camera position, zoom and shake are ignored, while touch still maps back. That is the HUD pattern — the score stays put while the camera follows the player. Without it, text is world-space and scrolls past like scenery (signposts, floating damage numbers).
+
+Overlaid `Ti.UI.Label` views still work and are still right for anything the engine cannot draw: native inputs, system fonts, accented text the built-in font lacks, scrollable menus. Just do not reach for them for a score any more.
 
 Standard Titanium touch events do not reach the GameView, but ordinary Titanium buttons and views layered on top work normally, and sibling views receive simultaneous pointers — which is how the demos build multitouch d-pads (hold ▶ and press jump at the same time). One caveat from the demos: Android's `touchFeedback` ripple cannot animate over this canvas and spams `RippleDrawable` errors, so on-screen buttons set their own `backgroundColor` on `touchstart`/`touchend`.
 
@@ -175,5 +193,6 @@ Read the one that matches the task instead of guessing — the API surface below
 5. Is `hitboxScale` set on sprites whose art does not fill the frame?
 6. Do triggers (scores, goals, kill zones) use sheet-less sprites instead of visible art?
 7. Is every `createSound`, `setInterval` and `setTimeout` stopped when the window closes?
-8. Is the HUD a `Ti.UI.Label` overlay, not an imagined engine text API?
-9. Are you using an API that actually exists? Anything involving text, tilemaps, sprite parenting, raycasting, joysticks or `blend: 'multiply'` — check [roadmap.md](references/roadmap.md) first.
+8. Is the HUD `Game.createText` with `screenFixed: true`, rather than a stack of overlaid labels?
+9. Does anything travel far enough per frame to tunnel? Give it `swept: true`.
+10. Are you using an API that actually exists? Anything involving tilemaps, sprite parenting, raycasting, joysticks or `blend: 'multiply'` — check [roadmap.md](references/roadmap.md) first.
