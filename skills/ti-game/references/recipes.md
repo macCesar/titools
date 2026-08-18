@@ -1,13 +1,13 @@
 # ti.game recipes by genre
 
-Working patterns distilled from the 18 official demos in `example/` and from a shipped Alloy game (Titanium Lander). Each recipe shows the part that is specific to the genre; the shared scaffolding is in [The scaffolding](#the-scaffolding) and is not repeated.
+Working patterns distilled from the 21 official demos in `example/` and from a shipped Alloy game (Titanium Lander). Each recipe shows the part that is specific to the genre; the shared scaffolding is in [The scaffolding](#the-scaffolding) and is not repeated.
 
-Every snippet uses only API that exists in 0.3.0. Check [roadmap.md](roadmap.md) before reaching for anything not shown here.
+Every snippet uses only API that exists in upstream `main` as of 2026-08-18. Check [roadmap.md](roadmap.md) before reaching for anything not shown here.
 
 ## Contents
 
 - [The scaffolding](#the-scaffolding)
-- [Cross-cutting patterns](#cross-cutting-patterns) — pooling, parallax, multitouch controls, HUD, invisible triggers, hit-stop
+- [Cross-cutting patterns](#cross-cutting-patterns) — pooling, parallax, multitouch controls, HUD text, invisible triggers, enter/exit zones, hit-stop
 - [Tap-to-flap](#tap-to-flap) (`flappy.js`)
 - [Platformer](#platformer) (`platformer.js`)
 - [Top-down / Zelda](#top-down--zelda) (`topdown.js`)
@@ -91,7 +91,7 @@ for (let i = 0; i < 10; i++) {
 		height: 16,
 		visible: false,
 		wrapAround: true,
-		hitboxScale: 1.4,              // generous — bolts are small and fast
+		swept: true,                   // path-tested: a fast bolt cannot skip past a rock
 		collidesWith: ['asteroid']
 	});
 	const state = { sprite: sprite, active: false, generation: 0 };
@@ -134,6 +134,10 @@ function fire(x, y, vx, vy) {
 ```
 
 The `generation` counter matters: without it, a timeout fired for an old shot deactivates the *new* bullet occupying that slot.
+
+`swept: true` (compared side by side in `swept.js`) is what keeps a fast bolt from crossing a rock between two frames without ever overlapping it. The asteroids demo predates it and inflates the hitbox instead (`hitboxScale: 1.4`) — that works, at the price of counting near misses as hits. Prefer `swept`, and reserve `hitboxScale` for fairness tuning.
+
+Recycling a sprite with `visible = false` fires `collisionend` on anything it was touching. Handlers that treat separation as "the player walked away" need to tolerate a despawn.
 
 ### Seamless parallax
 
@@ -220,24 +224,37 @@ bindHold(leftButton, () => {
 
 The guard in the release handler is what keeps two opposite buttons from fighting: releasing left only zeroes steering if left is still the active direction.
 
-### HUD
+### HUD — `text.js`, `flappy.js`
 
-There is no text in the engine. Overlay `Ti.UI.Label` views on the window, above the GameView.
+Text sprites with `screenFixed: true`. They live in the scene — one batch, no overlay views — but ignore the camera, so a score stays in the corner while the world scrolls under it.
 
 ```javascript
-const scoreLabel = Ti.UI.createLabel({
-	text: '0',
-	color: '#fff',
-	font: { fontSize: 28, fontWeight: 'bold' },
-	shadowColor: '#000',
-	shadowOffset: { x: 0, y: 2 },
-	top: 40
-});
-win.add(gameView);
-win.add(scoreLabel);      // added after the game view, so it draws on top
+// Created outside resize (no size known yet), positioned once it is
+const scoreLabel = Game.createText({ text: '0', screenFixed: true, zIndex: 100 });
+const statusLabel = Game.createText({ text: 'Tap to start!', screenFixed: true, zIndex: 100 });
+
+function buildLevel(W, H) {
+	const TEXT_SCALE = Math.max(1, Math.round(W / 240));   // integer: crisp pixels
+	Object.assign(scoreLabel, { scale: TEXT_SCALE, x: W / 2, y: H * 0.08 });
+	Object.assign(statusLabel, { scale: TEXT_SCALE, x: W / 2, y: H * 0.45 });
+	gameView.add([scoreLabel, statusLabel]);
+	// ...
+}
+
+function score() {
+	points += 1;
+	scoreLabel.text = points + ' / ' + GATE_COUNT;
+	scoreLabel.flash('#4dff88', 250);                      // text flashes like any sprite
+}
 ```
 
-The shadow is not decoration — it keeps the label readable over any background the scene happens to scroll underneath.
+Scaling from `W` is what replaces `fontSize`: a bitmap font has one native size, and an integer multiplier is the only way to keep texels square. `Math.max(1, ...)` guards the smallest screens.
+
+Because a label is a sprite, the HUD gets the whole toolbox for free — `animate()` to pop a score on change, `tintColor` per state, `glowColor` on a title, `idleAnimation` for a gentle wobble, and `tap` handlers so a `[ RESET ]` label works as a button with no Titanium view behind it.
+
+Drop `screenFixed` and the same label becomes world furniture: signposts, floating damage numbers, a name over an NPC — it scrolls with everything else.
+
+Overlaid `Ti.UI.Label` views remain the answer for text the engine's font cannot draw (accents, system fonts, right-to-left) and for real UI: menus, dialogs, text inputs.
 
 ### Invisible triggers
 
@@ -268,6 +285,37 @@ car.addEventListener('collision', (e) => {
 	}
 });
 ```
+
+### Zones you can be inside of (enter / exit) — `zones.js`
+
+`collision` and `collisionend` are the two halves of a trigger: entering water, standing on a pressure plate, holding a capture point. Nothing fires while you stay inside — the state lives in JS between the two events, and that is deliberate, since a per-frame "stay" would be bridge traffic every frame.
+
+```javascript
+const pool = Game.createSprite({
+	x: W * 0.32, y: H * 0.3, width: W * 0.44, height: H * 0.18,
+	sheet: waterSheet, tintColor: '#3d6fd4', opacity: 0.35,
+	touchEnabled: false,          // drags pass through to whatever is inside
+	collisionGroup: 'water'
+});
+
+hero.collidesWith = ['water'];
+hero.addEventListener('collision', (e) => {
+	if (e.group === 'water') {
+		hero.tintColor = '#7fb2ff';
+		swimming = true;
+	}
+});
+hero.addEventListener('collisionend', (e) => {
+	if (e.group === 'water') {
+		hero.tintColor = null;
+		swimming = false;
+	}
+});
+```
+
+The listener goes on the sprite that declares `collidesWith`. For a pressure plate holding a door open exactly while a crate rests on it, that is the **plate** (`collidesWith: ['crate']`), not the crate — then `collision` opens the door and `collisionend` closes it, with no polling anywhere.
+
+Removing the partner from the scene, hiding it (`visible = false`) or changing its `collisionGroup` mid-contact all count as separation, so the exit still fires and the door cannot stick open when an object despawns.
 
 ### Hit-stop on impact
 

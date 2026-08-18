@@ -1,6 +1,6 @@
 # What does not exist yet — and what to do instead
 
-The most expensive mistake with `ti.game` is writing code against a feature that sounds like it should be there because Phaser, Godot or Cocos has it. This file is the guard rail: everything below is **absent from 0.3.0**, with the workaround that is idiomatic today.
+The most expensive mistake with `ti.game` is writing code against a feature that sounds like it should be there because Phaser, Godot or Cocos has it. This file is the guard rail: everything below is **absent from upstream `main` as of 2026-08-18**, with the workaround that is idiomatic today.
 
 Planned items come from the module's `TODO.md`. Planned is not shipped — when a game needs one of these, use the workaround and keep the code isolated enough to swap later.
 
@@ -8,14 +8,12 @@ Planned items come from the module's `TODO.md`. Planned is not shipped — when 
 
 | You might reach for | Status | What to do now |
 | --- | --- | --- |
-| `Game.createText()`, bitmap fonts, text sprites | Planned (priority 5) | Overlay `Ti.UI.Label` views on the window, above the GameView. Costs: labels are screen-fixed, so they do not scroll with the camera, do not z-sort against sprites and cannot be tweened by the engine |
 | A tilemap layer, Tiled JSON import, collision layer | Planned (priority 4) | One sprite per tile. Fine at 12×15, dead at 200×200. For large ground planes use a single `tileRepeat` sprite instead of a grid, and add sparse invisible solids for collision |
 | `sprite.parent`, attaching a turret to a tank, a hat to a hero, multi-part bosses | Planned (priority 7), the biggest structural item | Move the parts together from JS on the same coarse tick, or bake the combination into sheet frames. There is no transform inheritance |
 | `gameView.raycast(...)`, line-of-sight, ground probes | Planned (priority 3) | Compare positions in JS on a decision timer, or place an invisible trigger sprite where the probe would land and listen for `collision` |
 | Native virtual joystick or d-pad bound to a sprite | Planned (priority 6) | Overlaid Titanium views, one per button, writing `velocityX`/`steering`/`throttle` on `touchstart`/`touchend`. Sibling views get simultaneous pointers, so multitouch works |
 | Gamepad support | Planned (priority 6) | Nothing native. Touch controls only |
 | `blend: 'multiply'` or `'screen'` | Planned (priority 2) | Only `'normal'` and `'add'` exist. For darkening, use `tintColor` (multiplicative) on the sprite itself |
-| Swept AABB so fast bullets stop tunneling | Planned (priority 3) | Cap bullet speed, or enlarge the hitbox along the travel axis with `hitboxScale` — the asteroids demo uses `hitboxScale: 1.4` on its bolts for exactly this |
 | Slopes in platformer terrain | Planned (priority 3), conditional | Build slopes as stepped rectangles, or keep terrain flat |
 | Per-frame animation events (footstep on frame 3) | Planned (priority 9) | Use `animationcomplete` on a short non-looping animation, or a timer aligned to the animation's fps |
 | `play('attack', { then: 'idle' })` chaining | Planned (priority 9) | Handle `animationcomplete` and call `play()` from it |
@@ -49,7 +47,11 @@ Recent additions that are easy to miss and easy to reimplement badly in JS:
 - `createSound` with separate low-latency effect and streaming music backends.
 - `timeScale`, `maxFps`, `flipX`/`flipY`, `pixelSnap`, `idleAnimation`, `ySort`, `glowColor`/`glowBlur`/`glowOpacity`.
 - `gameView.add([array])` committing a whole level in one bridge crossing.
+- **Text is in the engine now** (2026-08-18): `createText` glyph sprites with an embedded pixel font, `createFont` for BMFont/AngelCode or monospace grid atlases, `align`/`letterSpacing`/`lineSpacing`, and `tools/genfont.py` to rasterize a TTF. Text objects are sprites — they tween, tint, flash, glow, z-sort and take taps. Do **not** fall back to `Ti.UI.Label` overlays for scores.
+- **`screenFixed`** on any sprite: surface coordinates, camera position/zoom/shake ignored, touch mapped back. HUDs no longer need overlay views.
+- **`swept: true`** per sprite: the frame's movement is path-tested (Minkowski + slab) for both collision events and solid blocking. Fast bullets stop tunneling; `hitboxScale` tricks along the travel axis are obsolete.
+- **`collisionend`**: the exit half of the trigger lifecycle, including when the partner is removed, hidden or re-tagged mid-contact.
 
 ## Checking the current state
 
-This file describes 0.3.0. Before relying on any "planned" item being still absent — or on a workaround still being necessary — read `TODO.md` and `README.md` at https://github.com/m1ga/ti.game, the module's upstream repo. `README.md` there is the canonical API documentation; the `documentation/` folder only points at it. The priorities quoted above are the maintainer's, not a roadmap this skill decides.
+This file describes upstream `main` on 2026-08-18 — a moving target: four items on this list shipped within two days of the skill being written, and the manifest version (`0.3.0`) did not change with them. Before relying on any "planned" item being still absent — or on a workaround still being necessary — read `TODO.md` and `README.md` at https://github.com/m1ga/ti.game, the module's upstream repo. `README.md` there is the canonical API documentation; the `documentation/` folder only points at it. The priorities quoted above are the maintainer's, not a roadmap this skill decides.

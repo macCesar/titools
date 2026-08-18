@@ -1,6 +1,6 @@
 # ti.game API reference
 
-Complete JS surface of `ti.game` 0.3.0, verified against the module source (`android/src/ti/game/*.java` and `engine/*.java`, mirrored by `ios/Classes/TG*`). Defaults come from the engine fields, not from prose.
+Complete JS surface of `ti.game` as of upstream `main` on 2026-08-18, verified against the module source (`android/src/ti/game/*.java` and `engine/*.java`, mirrored by `ios/Classes/TG*`). Defaults come from the engine fields, not from prose. The manifest still reads `0.3.0`; the text engine (`createFont`/`createText`), `screenFixed`, `swept` and `collisionend` landed after it and are not in any numbered release yet.
 
 Every property listed is **live**: reading returns the current native value, even mid-drag or mid-tween. Every property can also be passed to its `create*` factory. All durations crossing the JS boundary are **milliseconds** (the engine converts to seconds internally).
 
@@ -10,6 +10,8 @@ Every property listed is **live**: reading returns the current native value, eve
 - [GameView](#gameview)
 - [SpriteSheet](#spritesheet)
 - [Sprite](#sprite)
+- [Font](#font)
+- [Text](#text)
 - [Sound](#sound)
 - [Emitter](#emitter)
 - [Rope](#rope)
@@ -27,6 +29,8 @@ const Game = require('ti.game');
 | `Game.createGameView(options)` | GameView — the canvas, a Titanium view |
 | `Game.createSpriteSheet(options)` | SpriteSheet — a texture cut into frames |
 | `Game.createSprite(options)` | Sprite |
+| `Game.createFont(options)` | Font — a bitmap font for text sprites |
+| `Game.createText(options)` | Text — a sprite that draws a string |
 | `Game.createSound(options)` | Sound |
 | `Game.createEmitter(options)` | Emitter — particle system |
 | `Game.createRope(options)` | Rope — Verlet chain |
@@ -112,6 +116,7 @@ Textures upload to the GPU lazily on first use, from the render thread, and are 
 | `zIndex` | `0` | Draw order |
 | `ySort` | `false` | Within the same `zIndex`, sort by the sprite's **bottom edge** — top-down depth (walk behind a tree, in front of it below) |
 | `flipX`, `flipY` | `false` | Mirror the drawn frame only. Position, anchor, physics and hit testing are untouched |
+| `screenFixed` | `false` | `x`/`y` become **surface** coordinates and the sprite ignores camera position, zoom and shake — HUDs, on-screen buttons, overlays. Touch is mapped back automatically, so `tap` still works. Works on any sprite, not only text |
 | `pixelSnap` | `false` | Rounds only the rendered anchor to a framebuffer pixel after camera position and zoom. Physics and live `x`/`y` stay subpixel floats. Combine with `smoothing: false` when a moving pixel-art sprite must keep a stable texel phase |
 
 ### Sheet and animation
@@ -145,7 +150,7 @@ Hit-testing runs against the transformed shape (rotation and scale included), to
 | --- | --- | --- |
 | `velocityX`, `velocityY` | `0` | px/s |
 | `gravity` | `0` | px/s², added to `velocityY`. Per sprite — there is no global gravity |
-| `maxSpeed` | `500` | px/s cap |
+| `maxSpeed` | `500` | px/s cap applied **only** to `thrust` acceleration and the `carMode` model. Writing `velocityX`/`velocityY` directly is never clamped |
 | `angularVelocity` | `0` | deg/s |
 | `thrust` | `0` | px/s² along the current heading (Newtonian flight) |
 | `wrapAround` | `false` | Re-enter from the opposite screen edge (Asteroids) |
@@ -169,6 +174,7 @@ Hit-testing runs against the transformed shape (rotation and scale included), to
 | `collidesWith` | — | Array of groups this sprite reports overlaps with |
 | `hitboxScale` | `1` | Shrinks the collision box around the anchor |
 | `hitboxShape` | `'rect'` | `'circle'` — radius = half the smaller drawn side × `hitboxScale`. Circles resolve against solids along the contact normal (corner bounces) and get a round touch area |
+| `swept` | `false` | Test this sprite's movement as a **path** (swept AABB), not just at the end position, so a fast mover cannot tunnel between frames. Applies to both `collidesWith` events and `solidWith` blocking (the sprite is clamped to the impact point, then resolved by the normal static pass). Circle hitboxes sweep as their bounding box. Set it on the *mover* — the bullet, not the wall |
 | `debug` | `false` | Draw this sprite's shapes: green = collision AABB, blue = touch bounds, orange dot = anchor |
 
 ### Car (`carMode`)
@@ -206,7 +212,7 @@ Every sprite gets its own phase, and the wobble unwinds exactly when disabled. T
 | --- | --- | --- |
 | `tintColor` | — | Multiplies the frame's colors (team colors, day/night, damage states). `null` or `'#fff'` = unchanged. Multiplicative, so it can only darken |
 | `glowColor` | — | Tinted, blurred silhouette drawn behind the sprite by a shader pass |
-| `glowBlur` | `0` | Blur radius in px; `0` = off |
+| `glowBlur` | `0` | Blur radius in px; `0` = off. An active glow switches to the silhouette shader and back: **2 extra draw calls per glowing sprite per frame** (2 more while a `flash()` runs), even on a shared texture. Fine for a few highlights, not for every coin in the level |
 | `glowOpacity` | `1` | Halo strength 0..1 — tweenable via `animate`, so a glow can fade in without touching the blur |
 | `blend` | `'normal'` | `'add'` brightens the backdrop instead of covering it (glows, fire, lasers). Costs one batch flush per mode change — group additive sprites by `zIndex` |
 
@@ -237,7 +243,68 @@ Every sprite gets its own phase, and the wobble unwinds exactly when disabled. T
 | `animationcomplete` | `animation` | A non-looping sheet animation finished |
 | `complete` | final transform values | A tween finished |
 | `collision` | `group`, `other`, `x`, `y` | Overlap with a `collidesWith` group began |
+| `collisionend` | `group`, `other`, `x`, `y` | That overlap ended: the shapes separated, **or** the partner was removed from the scene, hidden (`visible = false`) or stopped matching the group filter |
 | `land` | `x`, `y`, `other`, `group` | Landed on top of a `solidWith` solid. `other` is the solid — read it to react to what you landed on (trampolines, hazards) |
+
+## Font
+
+A glyph atlas for text sprites. Create it once, outside `resize`, like a SpriteSheet — it holds a GL texture.
+
+```javascript
+// 1. Built-in: nothing to ship. A 9x15 pixel font embedded in the module.
+//    You do not even need a Font object — createText without `font` uses it.
+const builtin = Game.createFont({});
+
+// 2. BMFont / AngelCode: .fnt text format or its JSON export, kerning included.
+//    Produced by BMFont, Hiero, fontbm or the module's tools/genfont.py.
+const hud = Game.createFont({ font: 'assets/hud.fnt' });
+
+// 3. Monospace grid image: cells row-major, ASCII 32..126 by default.
+const mono = Game.createFont({ image: 'assets/mono.png', charWidth: 9, charHeight: 15 });
+```
+
+| Option | Default | Notes |
+| --- | --- | --- |
+| `font` | — | Path to a `.fnt` descriptor (AngelCode text or JSON). The page image is loaded from **next to the descriptor** unless `image` overrides it |
+| `image` | — | Grid mode: the glyph sheet. Also overrides a BMFont page path |
+| `charWidth`, `charHeight` | — | **Required** in grid mode. Missing or ≤ 0 silently falls back to the built-in font |
+| `characters` | ASCII 32..126 | Grid mode: which characters the cells map to, row-major |
+| `smoothing` | `true` | Filters the glyph texture like a sheet. The built-in font is always crisp |
+| `lineHeight` | — | Read-only: the font's natural line height in px |
+
+A descriptor that fails to parse falls back to the built-in font and logs the error — the text still renders, in the wrong face, which is the symptom to recognize.
+
+## Text
+
+`Game.createText(options)` returns a **Sprite**. Everything in the Sprite section applies — `zIndex`, `ySort`, `animate()`, `flash()`, `tintColor`, glow, `idleAnimation`, `screenFixed`, touch events, `collidesWith`. Add it to the view like any sprite: `gameView.add(label)`.
+
+```javascript
+const score = Game.createText({
+	text: 'SCORE 0',
+	x: 16,
+	y: 40,
+	anchorX: 0,          // left-aligned to a margin
+	anchorY: 0,
+	scale: 3,            // bitmap fonts size by scale, not by fontSize
+	screenFixed: true,   // ignore the camera
+	zIndex: 100
+});
+gameView.add(score);
+score.text = 'SCORE 10';   // re-lays out natively on the next frame
+```
+
+| Property | Default | Notes |
+| --- | --- | --- |
+| `text` | `''` | The string. `\n` breaks lines. Writing it re-lays out natively |
+| `font` | built-in | A Font object. Omitted or `null` = the embedded pixel font, which the scene assigns per GameView |
+| `align` | `'left'` | `'center'` / `'right'` — how multiple lines align against each other. Unknown values fall back to `'left'` |
+| `letterSpacing` | `0` | Extra px between glyphs; negative tightens |
+| `lineSpacing` | `1` | Multiplier on the font's line height |
+| `width`, `height` | laid-out size | **Derived, not settable** — the glyph layout drives the size, and with it the anchor, hit test, AABB and `ySort` bottom edge |
+
+There is no font size: scale the sprite. With the built-in pixel font, use **integer** `scale` values (`Math.max(1, Math.round(W / 240))` is the demos' idiom) so texels stay square.
+
+Every glyph is a quad in the same batch, so one label costs one draw call — a screen of labels sharing a font costs one too.
 
 ## Sound
 
@@ -315,12 +382,14 @@ The tether yields at the end no finger owns: with a fixed head anchor the tail s
 Only these events exist. Nothing fires per frame, and events are only fired if a listener is registered.
 
 - **GameView**: `press`, `tap`, `release`, `resize`
-- **Sprite**: `press`, `release`, `tap`, `dragstart`, `drag`, `dragend`, `pinch`, `rotate`, `animationcomplete`, `complete`, `collision`, `land`
-- **SpriteSheet, Sound, Emitter, Rope**: none
+- **Sprite** (and therefore **Text**): `press`, `release`, `tap`, `dragstart`, `drag`, `dragend`, `pinch`, `rotate`, `animationcomplete`, `complete`, `collision`, `collisionend`, `land`
+- **SpriteSheet, Font, Sound, Emitter, Rope**: none
+
+There is `collision` (enter) and `collisionend` (exit), but deliberately **no** per-frame "stay" event — that would be bridge traffic every frame. Hold the in-between state in JS: you heard the enter, you will hear the end.
 
 ## Gotchas the property tables do not show
 
-- **`maxSpeed` defaults to 500 px/s and silently caps anything fast.** A bullet given `velocityX = 1400` travels at 500 unless you raise its own `maxSpeed`. The symptom is a projectile that looks sluggish on a large surface and fine on a small one, with nothing in the code hinting at a cap.
+- **`maxSpeed` caps `thrust` and `carMode` only — not plain velocity.** The clamp runs inside the thrust integration and inside the car model, so a sprite given `velocityX = 3000` travels at 3000 no matter what `maxSpeed` says. A ship accelerating on `thrust`, on the other hand, stops gaining speed at 500 px/s unless you raise its own `maxSpeed`, which is the cap people actually hit.
 - **`sprite.animation` survives `stop()`.** Comparing it to decide whether to restart an animation gives a false negative. The top-down demo tracks a `walking` boolean itself.
 - **`follow()` resets its options.** See the GameView section.
 - **`animate()` ignores unknown keys.** Tweening `width`, `height` or `tintColor` silently does nothing — those are instant writes only.
@@ -328,6 +397,12 @@ Only these events exist. Nothing fires per frame, and events are only fired if a
 - **`scaleX: -1` versus `flipX: true`.** Negative scale flips the physics and hit-test shape with the art; `flipX` mirrors only the drawing. Use `flipX` unless you specifically want the former.
 - **Tween positions are absolute.** A sprite with `idleAnimation` on will land off-target; disable the wobble before the tween and re-enable it on `complete`.
 - **`music` is chosen at creation.** Creating an effect sound and flipping `music` later does not switch backends.
-- **`collision` fires once per overlap-enter**, re-arming only after the shapes separate. A sprite resting inside a trigger does not re-fire.
+- **`collision` fires once per overlap-enter**, re-arming only after the shapes separate. A sprite resting inside a trigger does not re-fire — `collisionend` tells you when it left.
+- **Pooling a sprite with `visible = false` fires `collisionend`** on whoever was touching it. That is usually what you want (a plate whose ball was despawned closes its door), but a handler that assumes separation means "the player walked away" will misfire.
+- **The built-in pixel font only covers ASCII 32..126.** Em dashes, accents and `ñ` render as blanks or garbage — the module's own demos rewrote `—` as `-` for this reason. Ship a BMFont atlas (`tools/genfont.py` rasterizes any TTF) when the game needs accented Spanish text.
+- **`swept` belongs on the fast mover, not on the target.** A stationary thin wall with `swept: true` changes nothing; the bullet is the sprite whose path needs testing.
+- **A swept bullet can enter and leave in consecutive frames.** If it crosses a thin target entirely, you get `collision` and then `collisionend` almost immediately — react on the enter.
+- **Text `width`/`height` are read-only in practice.** They report the laid-out block; to make text bigger use `scale`.
 - **`hitboxShape: 'circle'` also changes the touch area**, not just collisions.
 - **`blend: 'add'` costs a batch flush per mode change.** Group additive sprites on their own `zIndex` band.
+- **`glowColor` alone draws nothing.** The glow pass only runs when `glowBlur > 0` *and* `glowOpacity > 0`; both default in a way that makes `glowColor` on its own a no-op (`glowBlur` is `0`). Always set the blur radius with the color.
