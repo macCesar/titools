@@ -194,7 +194,7 @@ Expect:
 ```
 Expect:
 - `collisionGroup` goes on the target, `collidesWith` on the mover — both are needed
-- Fast small sprites tunnel between frames; widen the hitbox with `hitboxScale` or cap the speed (swept AABB does not exist yet)
+- Fast small sprites tunnel between frames — `swept: true` on the bullet path-tests its movement, which is the fix (widening the hitbox only papers over it)
 - `visible: false` disables collision, which is how pooled bullets are parked
 
 ```
@@ -209,7 +209,7 @@ Expect:
 "Score label on top of the game, and the camera should follow the player but not right away — I want a dead zone."
 ```
 Expect:
-- HUD is a `Ti.UI.Label` overlaid on the window; the engine renders no text
+- HUD is `Game.createText({ screenFixed: true })` — a text sprite inside the scene, sized with an integer `scale`, not a `Ti.UI.Label` overlay
 - `gameView.follow(sprite, { leftMargin, rightMargin, topMargin, bottomMargin, smoothing })`
 - Warns that horizontal follow stays off unless `leftMargin`/`rightMargin` are passed, and that `maxY` defaults to `0`
 
