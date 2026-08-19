@@ -41,7 +41,7 @@ Then declare it in `tiapp.xml`. The iOS platform key is `iphone`, not `ios`:
 
 Pinning `version` is worth the extra attribute: with two module versions installed side by side, an unpinned entry silently picks the highest one.
 
-The version number lies right now: the manifest has read `0.3.0` through several feature landings. A zip built before 2026-08-18 has no `createText`, no `createFont`, no `screenFixed`, no `swept` and no `collisionend` while still calling itself 0.3.0. If a call that this skill documents is `undefined` at runtime, rebuild the module from upstream `main` rather than hunting for a typo.
+The version number lies right now: the manifest has read `0.3.0` through several feature landings. A zip built before 2026-08-18 has no `createText`, no `createFont`, no `screenFixed`, no `swept` and no `collisionend`; one built before 2026-08-19 also lacks `followPath`, `play(name, { then })`, `raycast`, `after`/`every`, `scrollFactor` and the `multiply`/`screen` blend modes — all while still calling itself 0.3.0. A zip built before 2026-08-19 16:00 UTC+2 also bleeds at grid-frame edges on smoothed sheets. If a call that this skill documents is `undefined` at runtime, rebuild the module from upstream `main` rather than hunting for a typo.
 
 Building the module from source:
 
@@ -53,7 +53,7 @@ ti build -p ios --build-only        # macOS only → ios/dist/ti.game-iphone-<ve
 
 ## Classic projects
 
-`require('ti.game')` anywhere and add the GameView to a window. The 21 demos in the module's `example/` folder are Classic, each one a CommonJS module exporting a start function:
+`require('ti.game')` anywhere and add the GameView to a window. The 24 demos in the module's `example/` folder are Classic, each one a CommonJS module exporting a start function:
 
 ```javascript
 // Resources/flappy.js
@@ -218,6 +218,8 @@ Practical rules:
 
 - **One sheet per scene if you can manage it.** Sprites sharing a texture batch into a single draw call. The endless-runner demo even draws its crash burst from the *player's* sheet to keep the whole scene on one texture.
 - **`smoothing: false` for pixel art.** Combine with `pixelSnap: true` on moving sprites when the texel phase must stay stable.
+- **Ship sheets as PNG, not JPG.** JPEG has no alpha channel, so every frame comes back on an opaque block, and its compression smears colour across frame borders — exactly where a sheet can least afford it. The module's own `basic.js` demo was converted from `hero.jpg` to `hero.png` on 2026-08-19 for this reason.
+- **Edge bleeding on a smoothed grid is fixed upstream, on grids only.** Linear filtering samples past a frame's edge when the sprite is magnified, which shows up as 1px ghost lines or the next row's heads peeking in at the bottom. Since 2026-08-19 a grid sheet with `smoothing: true` pulls its *interior* frame edges in by half a texel automatically; outer edges stay at the texture border, so full-texture `tileRepeat` frames still wrap seamlessly, and `smoothing: false` sheets skip the inset entirely (NEAREST cannot bleed, and pixel art at 1:1 needs exact UVs). **Atlas sheets are not covered** — their UVs come straight from the JSON, so prevent bleeding when packing instead: 2px padding and extrude in TexturePacker.
 - **`repeat: true` for tiling.** Required by sprites using `tileRepeat`, and it needs power-of-two texture dimensions on ES 2.0 — a 512×64 street strip tiles, a 500×60 one does not.
 - **White art plus `tint`** covers every color variant of a particle or effect with one small texture.
 

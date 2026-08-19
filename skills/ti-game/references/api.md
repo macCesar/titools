@@ -1,6 +1,6 @@
 # ti.game API reference
 
-Complete JS surface of `ti.game` as of upstream `main` on 2026-08-18, verified against the module source (`android/src/ti/game/*.java` and `engine/*.java`, mirrored by `ios/Classes/TG*`). Defaults come from the engine fields, not from prose. The manifest still reads `0.3.0`; the text engine (`createFont`/`createText`), `screenFixed`, `swept` and `collisionend` landed after it and are not in any numbered release yet.
+Complete JS surface of `ti.game` as of upstream `main` on 2026-08-19, verified against the module source (`android/src/ti/game/*.java` and `engine/*.java`, mirrored by `ios/Classes/TG*`). Defaults come from the engine fields, not from prose. The manifest still reads `0.3.0`; the text engine (`createFont`/`createText`), `screenFixed`, `swept`, `collisionend`, `followPath`, animation chaining, `raycast`, the game-clock timers, `scrollFactor` and the `multiply`/`screen` blend modes all landed after it and are not in any numbered release yet.
 
 Every property listed is **live**: reading returns the current native value, even mid-drag or mid-tween. Every property can also be passed to its `create*` factory. All durations crossing the JS boundary are **milliseconds** (the engine converts to seconds internally).
 
@@ -57,12 +57,18 @@ A normal Titanium view — add it to a window or any container, size it with the
 | `follow(sprite, options)` | method | — | Native dead-zone follow, see below |
 | `stopFollow()` | method | — | Stop following; the camera stays where it is |
 | `shake({ strength, duration })` | method | `12` px, `400` ms | Detuned-sine rumble on the projection only — follow, bounds and touch mapping are unaffected |
+| `raycast(x0, y0, x1, y1, groups)` | method | — | One-shot nearest-hit query along the segment against **visible, non-`screenFixed`** sprites carrying a `collisionGroup` in `groups` (omit for any tagged sprite). Returns `null` for a clear ray, else `{ x, y, distance, group, sprite, normal: { x, y } }`. Rect hitboxes are tested as their AABB, circle hitboxes exactly; a ray starting inside a hitbox reports it at distance 0 |
+| `after(ms, callback)` | method | — | Runs `callback` once after `ms` of **game time** — the delay stretches under `timeScale` slow motion, freezes at `0` and pauses with the render loop, unlike `setTimeout`. Returns an int id. The callback receives `{ id }` |
+| `every(ms, callback)` | method | — | Like `after()`, repeating until cancelled. Fires at most once per frame, and restarts its interval after a stall instead of bursting to catch up |
+| `cancelTimer(id)` | method | — | Cancels a timer from `after()` / `every()` |
 | `cameraEffect` | string | `'none'` | Fullscreen shader pass: `'none'`, `'tint'`, `'glitch'`. With `'none'` the extra pass is skipped entirely |
 | `cameraTint` | string | — | Color for the `'tint'` effect, e.g. `'#4f8'` (night vision, poison, flashback) |
 | `cameraEffectIntensity` | float | `1` | 0..1 — tint mix or glitch amount |
 | `debug` | bool | `false` | Draw collision shapes for every sprite in the scene |
 
 Events: `press`, `tap`, `release` — fired for **every** touch anywhere on the view, with payload `x`, `y` in scene coordinates (tap-anywhere controls, flappy-style). And `resize` with payload `width`, `height` — the real surface size in pixels.
+
+Plus `timer` with payload `id`, fired only for `after()` / `every()` calls made **without** a callback — pass a callback or listen for the event, not both.
 
 ### `follow(sprite, options)`
 
@@ -88,7 +94,7 @@ Create one sheet per texture and share it across every sprite that uses it — s
 | `image` | — | Path to the texture, relative to the resources root (`'assets/hero.png'`) |
 | `frameWidth` / `frameHeight` | — | Grid mode: cell size in source pixels. Frames are numbered left-to-right, top-to-bottom, starting at 0 |
 | `atlas` | — | TexturePacker JSON (hash or array format) instead of a grid |
-| `smoothing` | `true` | `false` = GL_NEAREST, the pixel-art setting |
+| `smoothing` | `true` | `false` = GL_NEAREST, the pixel-art setting. On a **grid** sheet, `true` also insets the interior frame UVs by half a texel so magnified edges cannot sample the neighbouring frame; outer edges keep the exact 0..1 range so `tileRepeat` still wraps. Atlas frames come from the JSON untouched |
 | `repeat` | `false` | GL_REPEAT wrap, required by sprites using `tileRepeat`. Needs power-of-two texture dimensions |
 
 | Member | Notes |
@@ -117,6 +123,7 @@ Textures upload to the GPU lazily on first use, from the render thread, and are 
 | `ySort` | `false` | Within the same `zIndex`, sort by the sprite's **bottom edge** — top-down depth (walk behind a tree, in front of it below) |
 | `flipX`, `flipY` | `false` | Mirror the drawn frame only. Position, anchor, physics and hit testing are untouched |
 | `screenFixed` | `false` | `x`/`y` become **surface** coordinates and the sprite ignores camera position, zoom and shake — HUDs, on-screen buttons, overlays. Touch is mapped back automatically, so `tap` still works. Works on any sprite, not only text |
+| `scrollFactor` | `1` | Parallax: how much camera travel (and shake) moves this sprite. `0.5` = a background layer at half speed, `1.5` = a foreground layer overtaking the camera, `0` = pinned to the view but **still zooming** with `cameraScale` (unlike `screenFixed`). Rendering and touch mapping only — `x`/`y`, physics and collisions stay in plain world coordinates. Ignored when `screenFixed` is true |
 | `pixelSnap` | `false` | Rounds only the rendered anchor to a framebuffer pixel after camera position and zoom. Physics and live `x`/`y` stay subpixel floats. Combine with `smoothing: false` when a moving pixel-art sprite must keep a stable texel phase |
 
 ### Sheet and animation
@@ -214,19 +221,20 @@ Every sprite gets its own phase, and the wobble unwinds exactly when disabled. T
 | `glowColor` | — | Tinted, blurred silhouette drawn behind the sprite by a shader pass |
 | `glowBlur` | `0` | Blur radius in px; `0` = off. An active glow switches to the silhouette shader and back: **2 extra draw calls per glowing sprite per frame** (2 more while a `flash()` runs), even on a shared texture. Fine for a few highlights, not for every coin in the level |
 | `glowOpacity` | `1` | Halo strength 0..1 — tweenable via `animate`, so a glow can fade in without touching the blur |
-| `blend` | `'normal'` | `'add'` brightens the backdrop instead of covering it (glows, fire, lasers). Costs one batch flush per mode change — group additive sprites by `zIndex` |
+| `blend` | `'normal'` | `'add'` brightens the backdrop (glows, fire, lasers), `'multiply'` darkens it (contact shadows, stains, grime), `'screen'` lightens softly without blowing out to white (fog, god rays, soft light). Costs one batch flush per mode change — group same-blend sprites by `zIndex`. Unknown strings fall back to `'normal'` silently, and the names are case-sensitive |
 
 ### Methods
 
 | Method | Notes |
 | --- | --- |
-| `play(name)` | Start a named animation |
-| `stop()` | Stop the animation on the current frame |
+| `play(name, options)` | Start a named animation; returns `false` for an unknown name. `options.then` (a name or an array of names) chains natively — each queued animation starts as the previous non-looping one finishes, and `animationcomplete` still fires per step. A looping animation ends the chain |
+| `stop()` | Stop the animation on the current frame; also drops any queued `then` chain |
+| `followPath(points, options)` | Walk the sprite along `points` — `{ x, y }` objects or `[x, y]` pairs, **at least two**, fewer is ignored with a warning. `options`: `speed` px/s (default `100`), `loop` (closed circuit), `rotate` (face along the path, 0 = up), `smoothing` (corner radius in px, precomputed once). Fires `pathcomplete` at the end of a non-looping run and clears itself. `followPath(null)` stops in place |
 | `animate(options)` | Native tween, fires `complete` |
 | `clearTweens()` | Cancel tweens in progress — call before starting a replacement tween |
 | `flash(color, duration)` | Fills the sprite's silhouette with `color` (default white) and fades it out over `duration` ms (default 150). The classic damage/invincibility flash that a multiplicative `tintColor` cannot do |
 
-`animate()` accepts exactly these keys — anything else is silently ignored: `x`, `y`, `scale`, `scaleX`, `scaleY`, `rotation`, `opacity`, `glowOpacity`, `duration` (ms), `delay` (ms), `easing`, `frame` (the sheet frame to set once the tween finishes). Chain moves by re-calling `animate` from the `complete` handler — that is how patrols and ping-pong motions are built.
+`animate()` accepts exactly these keys — anything else is silently ignored: `x`, `y`, `scale`, `scaleX`, `scaleY`, `rotation`, `opacity`, `glowOpacity`, `duration` (ms), `delay` (ms), `easing`, `frame` (the sheet frame to set once the tween finishes). Re-calling `animate` from the `complete` handler is still how a ping-pong or a blink is built (there is no `repeat`/`yoyo` yet), but a fixed route is now `followPath` instead of a chain of tween legs.
 
 ### Sprite events
 
@@ -240,8 +248,9 @@ Every sprite gets its own phase, and the wobble unwinds exactly when disabled. T
 | `dragend` | `x`, `y` | Finger lifted; the sprite has already moved natively |
 | `pinch` | `scaleX`, `scaleY` | While two-finger scaling |
 | `rotate` | `rotation` | While two-finger rotating |
-| `animationcomplete` | `animation` | A non-looping sheet animation finished |
+| `animationcomplete` | `animation` | A non-looping sheet animation finished — including each finished step of a `then` chain |
 | `complete` | final transform values | A tween finished |
+| `pathcomplete` | `x`, `y` | A non-looping `followPath` run reached the end |
 | `collision` | `group`, `other`, `x`, `y` | Overlap with a `collidesWith` group began |
 | `collisionend` | `group`, `other`, `x`, `y` | That overlap ended: the shapes separated, **or** the partner was removed from the scene, hidden (`visible = false`) or stopped matching the group filter |
 | `land` | `x`, `y`, `other`, `group` | Landed on top of a `solidWith` solid. `other` is the solid — read it to react to what you landed on (trampolines, hazards) |
@@ -349,7 +358,7 @@ Add and remove like a sprite: `gameView.add(emitter)` / `remove(emitter)`. Spawn
 | `startScale` / `endScale` | `1` / `1` | Interpolated over `lifetime` |
 | `startOpacity` / `endOpacity` | `1` / `0` | Interpolated over `lifetime` |
 | `tint` | white | Tint white particle art at runtime — one tiny texture covers every color in the game |
-| `blend` | `'normal'` | `'add'` for fire, sparks and magic |
+| `blend` | `'normal'` | `'add'` for fire, sparks and magic; `'multiply'` for smoke and dust that darken what they cross; `'screen'` for soft haze |
 | `maxParticles` | `200` | Pool size, hard cap 1000 |
 
 Methods: `emit(n)` fires a one-shot burst on top of `rate`; `clear()` kills all live particles.
@@ -381,8 +390,8 @@ The tether yields at the end no finger owns: with a fixed head anchor the tail s
 
 Only these events exist. Nothing fires per frame, and events are only fired if a listener is registered.
 
-- **GameView**: `press`, `tap`, `release`, `resize`
-- **Sprite** (and therefore **Text**): `press`, `release`, `tap`, `dragstart`, `drag`, `dragend`, `pinch`, `rotate`, `animationcomplete`, `complete`, `collision`, `collisionend`, `land`
+- **GameView**: `press`, `tap`, `release`, `resize`, `timer`
+- **Sprite** (and therefore **Text**): `press`, `release`, `tap`, `dragstart`, `drag`, `dragend`, `pinch`, `rotate`, `animationcomplete`, `complete`, `pathcomplete`, `collision`, `collisionend`, `land`
 - **SpriteSheet, Font, Sound, Emitter, Rope**: none
 
 There is `collision` (enter) and `collisionend` (exit), but deliberately **no** per-frame "stay" event — that would be bridge traffic every frame. Hold the in-between state in JS: you heard the enter, you will hear the end.
@@ -392,7 +401,7 @@ There is `collision` (enter) and `collisionend` (exit), but deliberately **no** 
 - **`maxSpeed` caps `thrust` and `carMode` only — not plain velocity.** The clamp runs inside the thrust integration and inside the car model, so a sprite given `velocityX = 3000` travels at 3000 no matter what `maxSpeed` says. A ship accelerating on `thrust`, on the other hand, stops gaining speed at 500 px/s unless you raise its own `maxSpeed`, which is the cap people actually hit.
 - **`sprite.animation` survives `stop()`.** Comparing it to decide whether to restart an animation gives a false negative. The top-down demo tracks a `walking` boolean itself.
 - **`follow()` resets its options.** See the GameView section.
-- **`animate()` ignores unknown keys.** Tweening `width`, `height` or `tintColor` silently does nothing — those are instant writes only.
+- **`animate()` ignores unknown keys.** Tweening `width`, `height` or `tintColor` silently does nothing — those are instant writes only. There is no `repeat` or `yoyo` either; re-launch from `complete`.
 - **`visible: false` removes a sprite from collision too.** That is why pooled bullets and rocks use it instead of removing them from the scene.
 - **`scaleX: -1` versus `flipX: true`.** Negative scale flips the physics and hit-test shape with the art; `flipX` mirrors only the drawing. Use `flipX` unless you specifically want the former.
 - **Tween positions are absolute.** A sprite with `idleAnimation` on will land off-target; disable the wobble before the tween and re-enable it on `complete`.
@@ -404,5 +413,15 @@ There is `collision` (enter) and `collisionend` (exit), but deliberately **no** 
 - **A swept bullet can enter and leave in consecutive frames.** If it crosses a thin target entirely, you get `collision` and then `collisionend` almost immediately — react on the enter.
 - **Text `width`/`height` are read-only in practice.** They report the laid-out block; to make text bigger use `scale`.
 - **`hitboxShape: 'circle'` also changes the touch area**, not just collisions.
-- **`blend: 'add'` costs a batch flush per mode change.** Group additive sprites on their own `zIndex` band.
+- **Every blend-mode change costs a batch flush.** Group same-blend sprites on their own `zIndex` band; alternating modes sprite by sprite degrades toward one draw call each.
 - **`glowColor` alone draws nothing.** The glow pass only runs when `glowBlur > 0` *and* `glowOpacity > 0`; both default in a way that makes `glowColor` on its own a no-op (`glowBlur` is `0`). Always set the blur radius with the color.
+- **`followPath` overrides position absolutely.** The path is applied after velocity and gravity have been integrated and writes `x`/`y` outright, so a path-driven sprite ignores its own physics for placement. Do not expect `velocityX` and a path to add up. A tween on `x`/`y` runs *after* the path in the same frame and wins outright — pick one.
+- **A path needs at least two points.** One point (or a non-array) clears the path and logs a warning instead of parking the sprite there.
+- **Path movement still carries riders.** It feeds the frame delta like a tweened or velocity-driven solid, so a platform on a `followPath` circuit moves whatever stands on it.
+- **`raycast` groups: pass an array, not varargs.** Android accepts both `raycast(x0, y0, x1, y1, ['enemy'])` and loose arguments; iOS reads only the array. Write the array and it works on both.
+- **`raycast` only sees `visible`, non-`screenFixed` sprites carrying a `collisionGroup`.** A hidden pooled sprite is invisible to the ray, which is usually what you want; an untagged wall is invisible too, which usually is not. HUD sprites are skipped by design, so a screen-fixed score never blocks a world-space line of sight.
+- **`raycast` is a discrete query, not a sensor.** Calling it from a game-clock timer or a tap handler is the intended use. Calling it every frame from JS puts exactly the bridge traffic in the loop that the whole engine exists to avoid.
+- **Game-clock timers are not `setTimeout`.** `after`/`every` freeze at `timeScale: 0` and pause with the render loop — which is why spawn waves belong there — but a pause menu that needs a real countdown still needs `setTimeout`.
+- **`screenFixed` beats `scrollFactor`.** Setting both leaves the sprite screen-fixed; the parallax offset is skipped entirely.
+- **Ghost lines along a frame's edge are a filtering artifact, not bad art.** A magnified `smoothing: true` sheet samples past the frame border — 1px seams, or the next row's heads at the bottom. Grid sheets have inset UVs upstream since 2026-08-19; an atlas needs padding and extrude at pack time, and an older module build needs either `smoothing: false` or a rebuild.
+- **`scrollFactor` does not move the sprite.** It shifts where the sprite is *drawn* and maps touch back to match. `x`, `y`, physics and collisions stay in world coordinates, so a `scrollFactor: 0.5` platform still collides where its world `x` says, not where it looks.

@@ -1,13 +1,13 @@
 # ti.game recipes by genre
 
-Working patterns distilled from the 21 official demos in `example/` and from a shipped Alloy game (Titanium Lander). Each recipe shows the part that is specific to the genre; the shared scaffolding is in [The scaffolding](#the-scaffolding) and is not repeated.
+Working patterns distilled from the 24 official demos in `example/` and from a shipped Alloy game (Titanium Lander). Each recipe shows the part that is specific to the genre; the shared scaffolding is in [The scaffolding](#the-scaffolding) and is not repeated.
 
-Every snippet uses only API that exists in upstream `main` as of 2026-08-18. Check [roadmap.md](roadmap.md) before reaching for anything not shown here.
+Every snippet uses only API that exists in upstream `main` as of 2026-08-19. Check [roadmap.md](roadmap.md) before reaching for anything not shown here.
 
 ## Contents
 
 - [The scaffolding](#the-scaffolding)
-- [Cross-cutting patterns](#cross-cutting-patterns) — pooling, parallax, multitouch controls, HUD text, invisible triggers, enter/exit zones, hit-stop
+- [Cross-cutting patterns](#cross-cutting-patterns) — pooling, parallax, multitouch controls, HUD text, invisible triggers, enter/exit zones, patrol routes, line of sight, game-clock timers, hit-stop
 - [Tap-to-flap](#tap-to-flap) (`flappy.js`)
 - [Platformer](#platformer) (`platformer.js`)
 - [Top-down / Zelda](#top-down--zelda) (`topdown.js`)
@@ -22,7 +22,7 @@ Every snippet uses only API that exists in upstream `main` as of 2026-08-18. Che
 - [Particles](#particles) (`particles.js`)
 - [Ropes and chains](#ropes-and-chains) (`rope.js`)
 - [Camera work](#camera-work) (`camera.js`)
-- [Visual effects](#visual-effects) (`blend.js`, `flip.js`, `timescale.js`)
+- [Visual effects](#visual-effects) (`blend.js`, `flip.js`, `timescale.js`, `demoscene.js`)
 
 ## The scaffolding
 
@@ -139,9 +139,21 @@ The `generation` counter matters: without it, a timeout fired for an old shot de
 
 Recycling a sprite with `visible = false` fires `collisionend` on anything it was touching. Handlers that treat separation as "the player walked away" need to tolerate a despawn.
 
-### Seamless parallax
+### Parallax
 
-Two screen-wide copies per layer, scrolled by native velocity. `wrapX`/`wrapShift` teleport a copy that left the screen back behind its sibling. No JS runs in the loop.
+Two ways, and the choice is decided by whether the **camera** moves or the **world** does.
+
+**A camera travelling through a static world** — platformer, top-down, anything using `follow()` — wants `scrollFactor`, one property per layer:
+
+```javascript
+const clouds = Game.createSprite({ sheet: cloudSheet, x: W / 2, y: 120, zIndex: 0, scrollFactor: 0.25 });
+const hills  = Game.createSprite({ sheet: hillSheet,  x: W / 2, y: 260, zIndex: 1, scrollFactor: 0.6 });
+const sun    = Game.createSprite({ sheet: sunSheet,   x: 60,    y: 60,  zIndex: 0, scrollFactor: 0 });
+```
+
+`0` pins the sun to the view while still zooming with `cameraScale` — that is the difference from `screenFixed`, which ignores zoom as well. Values above `1` overtake the camera for foreground grass. The sprite's `x`/`y` never change: `scrollFactor` shifts where it is *drawn* and maps touch back to match, so collisions still happen at the world coordinates you wrote.
+
+**A world scrolling under a fixed camera** — endless runner, flappy — cannot use `scrollFactor`, because the camera never travels. Two screen-wide copies per layer, scrolled by native velocity; `wrapX`/`wrapShift` teleport a copy that left the screen back behind its sibling. No JS runs in the loop.
 
 ```javascript
 function makeLayer(sheet, y, height, speed, z) {
@@ -172,7 +184,7 @@ const skyline = makeLayer(skylineSheet, groundTop - SKY_H / 2, SKY_H, SPEED * 0.
 const street = makeLayer(streetSheet, (groundTop + H) / 2, H - groundTop, SPEED, 8);
 ```
 
-Slower layers read as further away. Three layers (clouds at 0.15×, hills at 0.4×, ground at 1×) is the flappy demo's recipe.
+Slower layers read as further away. Three layers (clouds at 0.15×, hills at 0.4×, ground at 1×) is the flappy demo's recipe. `camera.js` demos the other half: `scrollFactor` cloud shadows at 1.35× and a `scrollFactor: 0` sun.
 
 ### Multitouch on-screen controls
 
@@ -316,6 +328,80 @@ hero.addEventListener('collisionend', (e) => {
 The listener goes on the sprite that declares `collidesWith`. For a pressure plate holding a door open exactly while a crate rests on it, that is the **plate** (`collidesWith: ['crate']`), not the crate — then `collision` opens the door and `collisionend` closes it, with no polling anywhere.
 
 Removing the partner from the scene, hiding it (`visible = false`) or changing its `collisionGroup` mid-contact all count as separation, so the exit still fires and the door cannot stick open when an object despawns.
+
+### Patrol routes and animation chains — `path.js`
+
+A fixed route is `followPath`, not a chain of tween legs. The points are walked natively at `speed` px/s; `rotate: true` turns the sprite to face along the path (heading `0` = up, same convention as `rotation`), and `smoothing` rounds the corners with a radius in px.
+
+```javascript
+guard.followPath([
+	{ x: W * 0.22, y: H * 0.46 },
+	{ x: W * 0.78, y: H * 0.46 },
+	{ x: W * 0.78, y: H * 0.60 },
+	{ x: W * 0.22, y: H * 0.60 }
+], { speed: W * 0.16, loop: true });     // sharp rectangle, walks forever
+
+ship.followPath(diamond, {
+	speed: W * 0.35,
+	loop: true,
+	rotate: true,                          // nose follows the heading
+	smoothing: W * 0.12                    // rounds the diamond into an oval
+});
+```
+
+A non-looping run fires `pathcomplete` and clears itself; `followPath(null)` stops in place. Two points is the minimum — one point is ignored with a warning, not treated as "go there".
+
+The path writes `x`/`y` outright, after velocity and gravity have been integrated, so **a sprite on a path ignores its own physics for placement**. It still feeds the frame delta, though, which means a platform on a looping circuit carries whatever is standing on it — a moving platform is now a path, not a tween ping-pong.
+
+Animation chains are native in the same spirit:
+
+```javascript
+guard.play('hop', { then: 'walk' });        // one call, no animationcomplete handler
+bird.play('flap', { then: ['glide', 'idle'] });
+```
+
+Each queued animation starts as the previous non-looping one finishes, and a looping animation ends the chain. `animationcomplete` still fires per step if you want to hook one. `stop()` drops the queue along with the current animation.
+
+### Line of sight, ledge probes and hitscan — `raycast.js`
+
+`gameView.raycast(x0, y0, x1, y1, groups)` answers "what is the first thing on this line?" with `null` or `{ x, y, distance, group, sprite, normal }`. The targets need nothing but a `collisionGroup` — no `collidesWith` on the asking side.
+
+```javascript
+const hit = gameView.raycast(eyeX, eyeY, dog.x, dog.y, ['blocker']);
+if (hit) {
+	aimBeam(sight, eyeX, eyeY, hit.x, hit.y, hit.distance);
+	sight.tintColor = '#f44';               // view blocked at the impact point
+}
+```
+
+Pass the groups as an **array**. Android also accepts loose arguments, iOS does not, so the array is the portable form. Only `visible`, non-`screenFixed` sprites carrying a `collisionGroup` are candidates — a pooled sprite parked at `visible = false` is correctly invisible to the ray, an untagged wall is invisible too (the usual mistake), and HUD sprites are skipped by design so a screen-fixed score never blocks a world-space sight line.
+
+A ledge probe is the same call pointed straight down, one step ahead of the feet:
+
+```javascript
+const dir = walker.velocityX >= 0 ? 1 : -1;
+const probeX = walker.x + dir * W * 0.07;
+if (!gameView.raycast(probeX, walker.y, probeX, walker.y + W * 0.12, ['ground'])) {
+	walker.velocityX = -walker.velocityX;   // nothing underfoot: turn before falling
+	walker.flipX = walker.velocityX < 0;
+}
+```
+
+Run these from a coarse timer or a tap handler — the demo probes at 150 ms — never once per frame. A per-frame `raycast` from JS is exactly the bridge traffic the engine is built to avoid. Note that `raycast.js` drives its probes with `setInterval`: it was written two commits before game-clock timers existed, and `gameView.every` is the better home for an AI tick today.
+
+### Timers on the game clock
+
+`gameView.after(ms, cb)` and `every(ms, cb)` run on the engine's clock: they stretch under `timeScale` slow motion, freeze at `0`, and pause with the render loop. Spawn waves, AI decision ticks and respawn delays belong here — a paused game that keeps spawning is the bug this fixes.
+
+```javascript
+const wave = gameView.every(2000, () => spawnEnemy());
+gameView.after(500, () => player.play('idle'));
+gameView.cancelTimer(wave);                 // both return an int id
+```
+
+The callback receives `{ id }`. Called without a callback, the view fires a `timer` event carrying the same id instead — pick one, not both. A repeating timer fires at most once per frame and restarts its interval after a stall rather than bursting to catch up.
+
+What still belongs in `setTimeout`: anything that must keep running while the game is frozen. A pause menu counting down in real seconds is not on the game clock.
 
 ### Hit-stop on impact
 
@@ -1229,7 +1315,16 @@ For a big ground plane, one `tileRepeat` sprite covering the whole world beats a
 
 ## Visual effects
 
-**`blend: 'add'`** — identical sprites, different blend: normal overlaps cover each other, additive overlaps sum and bloom toward white. Use it for glows, fire, lasers and light shafts, and group additive sprites on their own `zIndex` band since each blend change costs a batch flush.
+**Blend modes** — four, on sprites and emitters alike. `blend.js` shows all of them side by side over a bright meadow strip:
+
+| Mode | Does | Use for |
+| --- | --- | --- |
+| `'normal'` | Covers what is behind it | Everything else |
+| `'add'` | Sums toward white | Glows, fire, lasers, light shafts, sparks |
+| `'multiply'` | Darkens the backdrop | Contact shadows under sprites, stains, grime, smoke that dims |
+| `'screen'` | Lightens without blowing out | Fog, haze, god rays, soft light |
+
+Group same-blend sprites on their own `zIndex` band: every mode change in draw order costs a batch flush, so alternating them sprite by sprite degrades toward one draw call each. Unknown strings fall back to `'normal'` in silence and the names are case-sensitive — `blend: 'Add'` renders as normal with no warning.
 
 **`flash(color, duration)`** — a solid-color silhouette that fades out natively. This is the damage flash a multiplicative `tintColor` cannot produce (white tint = no change). Retrigger it on a timer for invincibility blinking.
 
@@ -1263,6 +1358,6 @@ gameView.addEventListener('tap', () => {
 });
 ```
 
-**`timeScale`** — one property slows or freezes physics, sheet animations, tweens, particles and the camera together, while rendering and touch keep running. `0.5` for slow motion, `0` for a pause that still draws, short bursts of `0` for hit-stop.
+**`timeScale`** — one property slows or freezes physics, sheet animations, tweens, particles, the camera and the game-clock timers together, while rendering and touch keep running. `0.5` for slow motion, `0` for a pause that still draws, short bursts of `0` for hit-stop. `timescale.js` makes the timer half visible: a clock on `gameView.every(1000, ...)` freezes with the scene while a `setInterval` clock beside it keeps ticking.
 
 **`idleAnimation`** — a per-sprite organic sway that composes with tweens and drags. Cheap life for cards, icons, floating pickups and menu art. Disable it before a tween that must land precisely.
