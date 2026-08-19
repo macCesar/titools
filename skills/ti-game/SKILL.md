@@ -1,13 +1,13 @@
 ---
 name: ti-game
-description: "Use when building or reviewing 2D games with the ti.game module for Titanium SDK (Android and iOS) — sprites, sprite sheets, frame animations, tweens, physics (gravity, solid platforms, carMode drifting, thrust), collision groups, trigger zones, swept AABB, bitmap-font text and HUDs, particles, Verlet ropes, camera follow/zoom/shake, low-latency sound, drag & drop, multitouch. AUTO-DETECT: if tiapp.xml declares ti.game or any file calls require('ti.game'), invoke BEFORE writing ANY game code. Also trigger on: game, juego, sprite, spritesheet, platformer, endless runner, top-down, shooter, racer, flappy, breakout, rhythm game, card game, puzzle, collision, hitbox, parallax, particles, HUD, score, game loop, 60 fps, GameView. ti.game is NOT Phaser, Godot or Box2D: you never write a game loop, never move a sprite from setInterval, and several familiar features (tilemap layer, sprite parenting, raycast, joystick) do not exist yet — check references/roadmap.md before inventing an API."
+description: "Use when building or reviewing 2D games with the ti.game module for Titanium SDK (Android and iOS) — sprites, sprite sheets, animations, tweens, physics (gravity, solid platforms, carMode drifting, thrust), collision groups, trigger zones, swept AABB, raycast, paths, bitmap-font text, particles, Verlet ropes, camera follow/zoom/shake, parallax, sound, drag & drop, multitouch. AUTO-DETECT: if tiapp.xml declares ti.game or any file calls require('ti.game'), invoke BEFORE writing ANY game code. Also trigger on: game, juego, sprite, spritesheet, platformer, endless runner, top-down, shooter, racer, flappy, breakout, rhythm, cards, puzzle, collision, hitbox, raycast, line of sight, patrol, parallax, particles, HUD, score, game loop, 60 fps, GameView. ti.game is NOT Phaser, Godot or Box2D: you never write a game loop, never move a sprite from setInterval, and several familiar features (tilemap layer, sprite parenting, joystick, A* pathfinding) do not exist yet — check references/roadmap.md before inventing an API."
 argument-hint: "[genre or feature]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(node *)
 ---
 
 # ti.game — 2D game engine for Titanium SDK
 
-`ti.game` is a native OpenGL ES 2.0 sprite engine exposed to JavaScript, written and maintained by **Michael Gangolf (m1ga)** — upstream is https://github.com/m1ga/ti.game. This skill tracks upstream `main` as of **2026-08-18** — the manifest still reads `0.3.0`, but the text engine, `screenFixed`, `swept` collisions and `collisionend` landed after it, so a version number alone will not tell you what a checkout has. When upstream and any fork disagree, upstream wins. Same JS API on Android and iOS — the iOS side is a class-per-class Obj-C twin of the Android engine.
+`ti.game` is a native OpenGL ES 2.0 sprite engine exposed to JavaScript, written and maintained by **Michael Gangolf (m1ga)** — upstream is https://github.com/m1ga/ti.game. This skill tracks upstream `main` as of **2026-08-19** — the manifest still reads `0.3.0`, but the text engine, `screenFixed`, `swept` collisions, `collisionend`, `followPath`, animation chaining, `raycast`, game-clock timers, `scrollFactor` parallax and the `multiply`/`screen` blend modes all landed after it, so a version number alone will not tell you what a checkout has. When upstream and any fork disagree, upstream wins. Same JS API on Android and iOS — the iOS side is a class-per-class Obj-C twin of the Android engine.
 
 Works in **both Classic and Alloy** projects. Nothing here depends on PurgeTSS.
 
@@ -29,11 +29,16 @@ The practical consequence, and the single biggest mistake to avoid:
 | A car that drives and drifts | your own physics | `carMode: true` + `throttle`/`steering` |
 | A ship with inertia | vector math per frame | `thrust` + `angularVelocity` |
 | Drag a sprite with the finger | `touchmove` handler | `draggable: true` |
-| Scrolling background | timer repositioning copies | `wrapX` / `wrapShift` + `velocityX` |
+| Scrolling background under a fixed camera | timer repositioning copies | `wrapX` / `wrapShift` + `velocityX` |
+| Parallax layers under a moving camera | hand-scrolled layers | `scrollFactor` on each layer |
 | Camera that follows the player | timer writing `cameraX` | `gameView.follow(sprite, options)` |
 | A score, a title, a label | `Ti.UI.Label` overlays | `Game.createText({ text, screenFixed: true })` |
 | A bullet fast enough to skip past a thin wall | shrinking the time step | `swept: true` on the bullet |
 | To know the player *left* a zone | polling on a timer | the `collisionend` event |
+| An enemy on a fixed patrol route | chained `animate()` legs | `sprite.followPath(points, { loop })` |
+| Play an attack, then go back to idle | an `animationcomplete` handler | `play('attack', { then: 'idle' })` |
+| Line of sight, a ledge probe, a hitscan shot | an invisible probe sprite | `gameView.raycast(x0, y0, x1, y1, ['group'])` |
+| A spawn wave or an AI tick that respects pause | `setInterval` | `gameView.every(ms, cb)` |
 | Smoke, sparks, explosions | pooled sprites in JS | `Game.createEmitter(...)` |
 | A swinging chain or cape | verlet solver in JS | `Game.createRope(...)` |
 | Slow motion or a pause that still draws | pausing your own timers | `gameView.timeScale = 0.5` / `0` |
@@ -128,6 +133,8 @@ The enter/exit pair is the trigger lifecycle other engines call `OnTriggerEnter`
 
 A fast mover can slip through a thin target between frames: it never overlaps on any single frame, so the discrete test misses. `swept: true` on the *mover* tests its movement as a path — `collision` fires for whatever the path crossed, and `solidWith` walls stop it at the impact point instead of letting it teleport through.
 
+When the question is not "did we touch?" but "what is over there?", the answer is `gameView.raycast(x0, y0, x1, y1, ['group'])` — line of sight, a ledge probe ahead of a walker's feet, a hitscan shot. It returns `null` or the nearest hit (`{ x, y, distance, group, sprite, normal }`), needs nothing but a `collisionGroup` on the targets, and replaces the old trick of parking an invisible probe sprite where the ray would land. It is a discrete query: call it from a decision timer or a tap handler, never every frame.
+
 **A sprite with `width`/`height` but no `sheet` renders nothing and works as an invisible trigger.** Score zones, goals, checkpoints, ceilings, kill floors and walls are all built this way in the official demos. This is the idiomatic way to add logic to a scene without art.
 
 Tune fairness with `hitboxScale` (art rarely fills its frame; slightly small hitboxes feel better) and `hitboxShape: 'circle'` for balls and rocks — circles also resolve against solids along the contact normal, so they bounce off corners diagonally instead of like a box. Turn on `debug: true` per sprite, or on the GameView for everything, to see green collision AABBs, blue touch bounds and the orange anchor dot.
@@ -135,7 +142,7 @@ Tune fairness with `hitboxScale` (art rarely fills its frame; slightly small hit
 ## Performance rules that actually matter
 
 - **One texture = one draw call.** The batcher accumulates up to 1000 quads and flushes on texture switch. A scene whose sprites all share one sheet renders in a single draw call regardless of sprite count. Pack art into as few sheets as possible; reuse one white particle texture and tint it at runtime.
-- **Know what else breaks the batch**, since none of it is visible on screen: every `'normal'` ↔ `'add'` transition in draw order flushes (group additive sprites into their own `zIndex` band so it happens twice a frame, not constantly); each glowing sprite costs 2 extra draw calls per frame, plus 2 more while a `flash()` runs; ropes, skid marks and debug overlays always draw with normal blending, so interleaving them with additive content flushes too.
+- **Know what else breaks the batch**, since none of it is visible on screen: every blend-mode transition in draw order flushes — there are four (`'normal'`, `'add'`, `'multiply'`, `'screen'`), so group same-blend sprites into their own `zIndex` band and the frame switches a handful of times instead of constantly; each glowing sprite costs 2 extra draw calls per frame, plus 2 more while a `flash()` runs; ropes, skid marks and debug overlays always draw with normal blending, so interleaving them with non-normal content flushes too.
 - **Bulk-add a level.** `gameView.add([spriteA, spriteB, emitter, rope])` crosses the bridge once and commits under one scene lock. Collect a level's objects in an array and add them in one call; `add(object)` still works for single objects.
 - **Keep collision group lists targeted.** Cost is O(colliders × candidates) per frame. A bullet checking `['asteroid']` tests 5 sprites, not the whole scene.
 - **Pool, don't create.** Bullets, notes, obstacles and enemies are created once (usually 3–10 of them), then recycled by setting `visible = false` and zeroing velocity. Creating sprites mid-game costs a bridge hop and a scene lock.
@@ -161,7 +168,9 @@ Standard Titanium touch events do not reach the GameView, but ordinary Titanium 
 
 ## Clean up what you created
 
-The render loop follows the activity lifecycle automatically, but **your timers and sounds do not**. Every demo that starts an interval or plays looping music stops it on window close. In Alloy, wire this into the controller's `cleanup()`.
+The render loop follows the activity lifecycle automatically, but **your JS timers and sounds do not**. Every demo that starts an interval or plays looping music stops it on window close. In Alloy, wire this into the controller's `cleanup()`.
+
+Game-clock timers (`gameView.after` / `every`) are the exception that proves the rule: they run on the engine's clock, so they freeze at `timeScale: 0` and pause with the render loop instead of firing into a dead scene. That is why spawn waves and AI ticks belong there. A `setInterval` keeps running through a pause, which is right for a real-time countdown and wrong for everything else.
 
 ```javascript
 win.addEventListener('close', () => {
@@ -180,7 +189,7 @@ Read the one that matches the task instead of guessing — the API surface below
 | Need | Reference |
 | --- | --- |
 | Exact properties, methods, events, defaults for every object | [api.md](references/api.md) |
-| Working code per genre: flappy, platformer, top-down, racer, asteroids, endless runner, rhythm, cards, point & click, particles, ropes, camera | [recipes.md](references/recipes.md) |
+| Working code per genre: flappy, platformer, top-down, racer, asteroids, endless runner, rhythm, cards, point & click, particles, ropes, camera — plus patrol paths, raycast probes, parallax and game-clock timers | [recipes.md](references/recipes.md) |
 | Install the module, tiapp.xml, Alloy vs Classic wiring, assets, sprite sheets, atlases, lifecycle, testing | [project-setup.md](references/project-setup.md) |
 | What does NOT exist yet, what is coming, and how to work around it today | [roadmap.md](references/roadmap.md) |
 
@@ -195,4 +204,5 @@ Read the one that matches the task instead of guessing — the API surface below
 7. Is every `createSound`, `setInterval` and `setTimeout` stopped when the window closes?
 8. Is the HUD `Game.createText` with `screenFixed: true`, rather than a stack of overlaid labels?
 9. Does anything travel far enough per frame to tunnel? Give it `swept: true`.
-10. Are you using an API that actually exists? Anything involving tilemaps, sprite parenting, raycasting, joysticks or `blend: 'multiply'` — check [roadmap.md](references/roadmap.md) first.
+10. Does a timer drive game logic (spawn waves, AI ticks, respawns)? Move it to `gameView.every`/`after` so it obeys pause and slow motion.
+11. Are you using an API that actually exists? Anything involving tilemaps, sprite parenting, joysticks, A* pathfinding or word-wrapped text — check [roadmap.md](references/roadmap.md) first.
