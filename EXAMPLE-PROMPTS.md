@@ -222,6 +222,23 @@ Expect:
 - Sizes derived as fractions of W/H rather than absolute pixels
 
 ```
+"I want a guard that patrols back and forth and stops when he sees the player. Right now I'm chaining animate() calls and checking distance every frame."
+```
+Expect:
+- The route is `sprite.followPath(points, { speed, loop })`, not a chain of tween legs re-launched from `complete`
+- Line of sight is `gameView.raycast(x0, y0, x1, y1, ['wall'])` — `null` means a clear view, otherwise the nearest hit with `distance` and `sprite`
+- The sight check runs on a coarse timer (`gameView.every`), never per frame — a per-frame raycast from JS is the bridge traffic the engine exists to avoid
+- Warns that `followPath` overwrites `x`/`y` after physics, so velocity and a path do not add up
+
+```
+"My enemies keep spawning while the game is paused with timeScale = 0."
+```
+Expect:
+- `setInterval` runs on the JS clock and knows nothing about `timeScale`
+- `gameView.every(ms, cb)` runs on the game clock: it stretches under slow motion, freezes at `0` and pauses with the render loop
+- `cancelTimer(id)` with the id returned; a real-time countdown is the one case that stays on `setTimeout`
+
+```
 "Can I use ti.game in an Alloy project or is it app.js only?"
 ```
 Expect:
@@ -348,7 +365,7 @@ Expect:
 - [ ] ti-ui: mentions performance rules
 - [ ] ti-game: refuses to move sprites from a timer and names the native property instead
 - [ ] ti-game: builds the level from the `resize` event, not from `displayCaps`
-- [ ] ti-game: does not invent APIs that do not exist yet (text sprites, tilemap layer, sprite parenting)
+- [ ] ti-game: does not invent APIs that do not exist yet (tilemap layer, sprite parenting, A* pathfinding, word-wrapped text)
 - [ ] ti-api: cites specific properties/methods/events
 - [ ] ti-guides: references tiapp.xml / Hyperloop / distribution docs
 - [ ] ti-howtos: provides working integration code
