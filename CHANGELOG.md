@@ -6,6 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.9.0] - 2026-08-19
+
+### Changed — `ti-game` catches up with paths, raycasts and the game clock
+
+Upstream shipped six more features on 2026-08-19, one day after the last catch-up, and one of them was sitting in the skill's own "does not exist yet" table: `gameView.raycast(x0, y0, x1, y1, groups)` answers line-of-sight, ledge-probe and hitscan questions directly, so the workaround of parking an invisible probe sprite where the ray would land is retired. `sprite.followPath(points, opts)` walks a route natively with optional corner smoothing and `rotate`, replacing tween legs chained from `complete`; `play('attack', { then: 'idle' })` chains animations without an `animationcomplete` handler; `gameView.after`/`every`/`cancelTimer` run timers on the game clock, so spawn waves freeze at `timeScale: 0` instead of filling a paused scene; `scrollFactor` gives per-sprite parallax against camera travel; and `blend` gained `'multiply'` and `'screen'` alongside `'normal'` and `'add'`.
+
+All five references were updated against the module source rather than its README: new GameView rows for `raycast` and the timers, `scrollFactor` in the transform table, `followPath` and the `then` chain in the methods table, `pathcomplete` and `timer` in the event tables, three new recipes (patrol routes, raycast probes, game-clock timers), a parallax section that now splits the moving-camera case from the scrolling-world one, and four entries moved out of the roadmap's "not available today" table into "already shipped" (eight now, in the three days since the skill was written) — along with the newly *planned* items upstream added in the same pass (`panTo`, A* `findPath`, text word wrap, tween `repeat`/`yoyo`).
+
+Details the module's own README does not state, verified in `Scene.java` / `TGScene.m` and mirrored in the gotchas: `raycast` skips `screenFixed` sprites as well as invisible ones, so a HUD never blocks a world-space sight line; `followPath` writes `x`/`y` after physics has been integrated, so a path and a velocity do not add up, and a tween on the same axis wins outright; the groups argument must be an **array** because iOS ignores loose varargs where Android accepts them; and an unknown `blend` string falls back to `'normal'` silently and case-sensitively.
+
+### Added — the sprite-sheet edge-bleeding rules
+
+Upstream also fixed a rendering artifact the same afternoon: a `smoothing: true` **grid** sheet now insets its interior frame UVs by half a texel, so a magnified sprite stops sampling the neighbouring frame — the 1px ghost lines and the next row's heads peeking in at the bottom. Outer edges deliberately keep the exact 0..1 range so full-texture `tileRepeat` frames still wrap seamlessly, and `smoothing: false` sheets skip the inset because NEAREST cannot bleed and pixel art at 1:1 needs exact UVs.
+
+`project-setup.md` and `api.md` now carry the rule and, more usefully, its limit: **atlas sheets are not covered**, because their UVs come straight from the TexturePacker JSON — that case is still prevented at pack time with padding and extrude. Also added: ship sheets as PNG, never JPG (no alpha channel, and the compression smears colour exactly across frame borders), after upstream converted its own `basic.js` demo away from `hero.jpg`.
+
+### Fixed — a stale `ti-game` expectation in `EXAMPLE-PROMPTS.md`
+
+The eval checklist still listed "text sprites" among the APIs the skill must not invent, three weeks after `createText` shipped. It now names what is actually missing: tilemap layers, sprite parenting, A* pathfinding and word-wrapped text.
+
+
 ## [4.8.0] - 2026-08-18
 
 ### Changed — `ti-game` catches up with the module's text engine
