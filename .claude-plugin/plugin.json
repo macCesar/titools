@@ -1,7 +1,7 @@
 {
   "name": "titools",
   "description": "Opinionated Titanium SDK toolkit: API reference, SDK guides, native how-tos, Alloy MVC, PurgeTSS styling, architecture, and UI/UX patterns. Auto-detects Titanium projects.",
-  "version": "4.9.0",
+  "version": "4.10.0",
   "keywords": [
     "titanium",
     "titanium-sdk",
