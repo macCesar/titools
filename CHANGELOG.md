@@ -6,6 +6,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.10.0] - 2026-08-21
+
+### Changed — `ti-game` catches up with A* pathfinding and a real version number
+
+Upstream shipped `gameView.findPath(from, to, options)` on 2026-08-20 — grid A* over the sprites carrying a `collisionGroup`, returning waypoints ready for `followPath` — and then bumped the manifest to `0.4.0`, the first version change in a long run of feature landings. Both were stale in the skill: A* sat in the roadmap's "does not exist yet" table with "hand-author the waypoint arrays" as its workaround, and `project-setup.md` warned that the version number meant nothing.
+
+All five references were updated against the module source (`Pathfinder.java` and `GameViewProxy.java`, mirrored by `TGPathfinder.m`) rather than the module's README, so the defaults come from the engine fields: a GameView row and an options section in `api.md` (`cellSize` 32, `clearance` 0, `diagonals` and `simplify` true, `bounds` defaulting to the surface), a cross-cutting recipe covering tap-to-walk, invisible obstacle boxes, a re-pathing chaser on a game-clock timer and route visualization via `simplify: false`, the Point & click recipe rewritten off its distance-sized tween, and the A* row moved out of the roadmap into "already shipped" (nine items now, in the four days since the skill was written).
+
+Details the module README does not state: the path is a line for the sprite's **center**, so a body wider than a cell needs `clearance` of about half the walker's width; obstacles are read from the hitbox, so `hitboxScale` and `hitboxShape: 'circle'` shape the walkable space too; `null` also means degenerate `bounds`, `cellSize <= 0` or a grid over ~1M cells, not only "no route"; and a two-point path is the straight-line case, which is what the demos' `path.length < 2` guard actually detects.
+
+`project-setup.md` now pins `0.4.0` in the install paths and the `tiapp.xml` snippet, and lists what each older `0.3.0` build is missing instead of warning that the number lies — `0.4.0` is the first version string that carries everything the skill documents.
+
+### Fixed — the release docs claimed a manual `npm publish` that stopped existing a week earlier
+
+Trusted publishing (OIDC) landed on 2026-08-14, and the tag has done the publishing since v4.6.1. `CLAUDE.md`, `AGENTS.md`, `docs/project/context.md` and `docs/project/requirements.md` still listed `npm publish --access public` as step 8 of the release checklist and explained how to pass a 2FA `--otp`. Verified before rewriting: the v4.6.1, v4.7.0, v4.8.0 and v4.9.0 workflow runs all completed successfully and `npm view @maccesar/titools version` returns the tagged version.
+
+All four now describe the workflow, and keep the lesson the old text carried, which is the one that still bites: a green tag is not a green publish — the v4.6.0 run failed on `npm test` and shipped nothing.
+
+### Added — a test that keeps those docs from drifting again
+
+`test/release-docs.test.js` asserts nothing about what the docs say. It reads `.github/workflows/`, derives whether the repo publishes on a tag, and requires the docs to agree: a tag-triggered publish means no checklist step may order `npm publish` and every doc must name the workflow; no publishing workflow means some doc had better order it by hand.
+
+That second branch is the point. A test that only knows today's answer would stay green if `publish.yml` were deleted, while the releases silently stopped reaching npm. The detection helpers are checked against synthetic inputs they must accept and inputs they must reject — including the prose *about* publishing that must not be mistaken for an order — and the suite was run against three controls before landing: stale docs with the workflow present (fails), the workflow removed with docs that assume it (fails), and no CI with docs that order a manual publish (passes).
+
 ## [4.9.0] - 2026-08-19
 
 ### Changed — `ti-game` catches up with paths, raycasts and the game clock
