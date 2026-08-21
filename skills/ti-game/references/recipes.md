@@ -1,13 +1,13 @@
 # ti.game recipes by genre
 
-Working patterns distilled from the 24 official demos in `example/` and from a shipped Alloy game (Titanium Lander). Each recipe shows the part that is specific to the genre; the shared scaffolding is in [The scaffolding](#the-scaffolding) and is not repeated.
+Working patterns distilled from the 25 official demos in `example/` and from a shipped Alloy game (Titanium Lander). Each recipe shows the part that is specific to the genre; the shared scaffolding is in [The scaffolding](#the-scaffolding) and is not repeated.
 
-Every snippet uses only API that exists in upstream `main` as of 2026-08-19. Check [roadmap.md](roadmap.md) before reaching for anything not shown here.
+Every snippet uses only API that exists in upstream `main` as of 2026-08-20 (manifest `0.4.0`). Check [roadmap.md](roadmap.md) before reaching for anything not shown here.
 
 ## Contents
 
 - [The scaffolding](#the-scaffolding)
-- [Cross-cutting patterns](#cross-cutting-patterns) — pooling, parallax, multitouch controls, HUD text, invisible triggers, enter/exit zones, patrol routes, line of sight, game-clock timers, hit-stop
+- [Cross-cutting patterns](#cross-cutting-patterns) — pooling, parallax, multitouch controls, HUD text, invisible triggers, enter/exit zones, patrol routes, line of sight, pathfinding, game-clock timers, hit-stop
 - [Tap-to-flap](#tap-to-flap) (`flappy.js`)
 - [Platformer](#platformer) (`platformer.js`)
 - [Top-down / Zelda](#top-down--zelda) (`topdown.js`)
@@ -18,7 +18,7 @@ Every snippet uses only API that exists in upstream `main` as of 2026-08-19. Che
 - [Rhythm game](#rhythm-game) (`rhythm.js`)
 - [Ball sports / breakout physics](#ball-sports--breakout-physics) (`volley.js`)
 - [Cards and board games](#cards-and-board-games) (`cards.js`, `puzzle.js`)
-- [Point & click adventure](#point--click-adventure) (`pointclick.js`)
+- [Point & click adventure](#point--click-adventure) (`pointclick.js`, `maze.js`)
 - [Particles](#particles) (`particles.js`)
 - [Ropes and chains](#ropes-and-chains) (`rope.js`)
 - [Camera work](#camera-work) (`camera.js`)
@@ -388,6 +388,68 @@ if (!gameView.raycast(probeX, walker.y, probeX, walker.y + W * 0.12, ['ground'])
 ```
 
 Run these from a coarse timer or a tap handler — the demo probes at 150 ms — never once per frame. A per-frame `raycast` from JS is exactly the bridge traffic the engine is built to avoid. Note that `raycast.js` drives its probes with `setInterval`: it was written two commits before game-clock timers existed, and `gameView.every` is the better home for an AI tick today.
+
+### Pathfinding around obstacles — `maze.js`, `pointclick.js`
+
+`gameView.findPath(from, to, options)` is grid A\* over the same sprites `raycast` sees: visible, tagged with a `collisionGroup`, nothing else to set up. It returns `{ x, y }` waypoints — or `null` — and those waypoints go straight into `followPath`, so the walk itself runs natively.
+
+```javascript
+gameView.addEventListener('tap', (e) => {
+	const path = gameView.findPath(
+		{ x: player.x, y: player.y },
+		{ x: e.x, y: e.y },
+		{ cellSize: TILE, groups: ['wall'], bounds: MAZE_BOUNDS });
+	if (!path || path.length < 2) {
+		return;                                   // tapped outside the walkable rect
+	}
+	player.scaleX = path[1].x < player.x ? -1 : 1;   // face the first leg
+	player.play('walk');
+	player.followPath(path, { speed: SPEED });
+});
+```
+
+`cellSize` is the one option that decides everything else. On a tile map, pass the tile size and the grid lines up with the walls exactly; on a free-form scene, something near the walker's width. Too coarse and doorways disappear, too fine and the query gets expensive (over ~1M cells it returns `null` rather than allocating).
+
+**The path is a line for the sprite's *center*.** A body wider than a cell scrapes corners unless you pass `clearance` — about half the walker's width:
+
+```javascript
+const path = gameView.findPath(from, to, {
+	cellSize: Math.round(W * 0.04),
+	groups: ['obstacle'],
+	clearance: PLAYER_W * 0.35,               // keep half a body off the trunk
+	bounds: WALK_BOUNDS                       // the walkable floor, in center coordinates
+});
+```
+
+`bounds` doubles as the walkable area, which is how the point-&-click floor clamp survives: `WALK_BOUNDS` is the old `WALK_TOP`/margin clamp expressed as a rect, in **sprite-center coordinates** (tap points are feet positions, so subtract half the sprite height before searching).
+
+**Obstacles do not have to be the art.** `pointclick.js` blocks only the oak's trunk with an invisible sprite — `opacity: 0`, `touchEnabled: false`, no collision wiring — because `findPath` reads the hitbox, not the pixels. The canopy stays walkable, so the player still passes behind the tree with `ySort` doing the depth:
+
+```javascript
+gameView.add(Game.createSprite({
+	sheet: treeSheet, opacity: 0, touchEnabled: false,
+	x: tree.x, y: groundY, width: TREE_W * 0.35, height: PLAYER_H * 0.8,
+	collisionGroup: 'obstacle'
+}));
+```
+
+A blocked goal snaps to the nearest free cell a few rings out, so tapping a wall walks to its edge instead of doing nothing. Tapping outside `bounds` is the case worth guarding — that is what `path.length < 2` catches.
+
+**Chasing AI is a timer, not a frame loop.** Re-path on a coarse game-clock tick and let `followPath` cover the gap:
+
+```javascript
+const chase = gameView.every(800, () => {
+	const path = gameView.findPath({ x: hound.x, y: hound.y }, { x: player.x, y: player.y }, PATH_OPTIONS);
+	if (path && path.length > 1) {
+		hound.followPath(path, { speed: TILE * 2.6 });
+	}
+});
+win.addEventListener('close', () => gameView.cancelTimer(chase));
+```
+
+`followPath(null)` cancels an in-flight route — `maze.js` uses it to yank the hound back to its den after it catches you.
+
+To *see* what A\* did, ask twice: `simplify: false` returns every grid cell it walked, `simplify: true` (the default) the line-of-sight-reduced corners the sprite actually gets. Dropping a dot on each is the whole route visualization in the maze demo.
 
 ### Timers on the game clock
 
@@ -1135,31 +1197,37 @@ Because every handler is per sprite, this is multi-touch for free: each finger g
 
 ## Point & click adventure
 
-Tap-to-walk with a distance-sized tween gives constant walking speed regardless of distance:
+Tap-to-walk routes around the scenery with `findPath` and walks the waypoints natively:
 
 ```javascript
+const WALK_BOUNDS = {                                     // the floor, in sprite-CENTER coordinates
+	minX: W * 0.06, maxX: W * 0.94,
+	minY: WALK_TOP - PLAYER_H / 2, maxY: H * 0.95 - PLAYER_H / 2
+};
+
 function walkTo(x, y) {
-	const targetX = Math.min(Math.max(x, W * 0.06), W * 0.94);
-	const targetY = Math.min(Math.max(y, WALK_TOP), H * 0.95) - PLAYER_H / 2;
-	const distance = Math.sqrt(Math.pow(targetX - player.x, 2) + Math.pow(targetY - player.y, 2));
-	if (distance < 4) {
-		return;
-	}
-	player.scaleX = targetX < player.x ? -1 : 1;
-	player.clearTweens();                                 // cancel a walk in progress
-	player.play('walk');
-	player.animate({
-		x: targetX,
-		y: targetY,
-		duration: distance / WALK_SPEED * 1000,           // constant px/s
-		easing: Game.EASE_LINEAR                          // no ease on a walk
+	const targetX = Math.min(Math.max(x, WALK_BOUNDS.minX), WALK_BOUNDS.maxX);
+	const targetY = Math.min(Math.max(y - PLAYER_H / 2, WALK_BOUNDS.minY), WALK_BOUNDS.maxY);
+	const path = gameView.findPath({ x: player.x, y: player.y }, { x: targetX, y: targetY }, {
+		cellSize: Math.round(W * 0.04),
+		groups: ['obstacle'],
+		clearance: PLAYER_W * 0.35,                       // keep half a body off the trunk
+		bounds: WALK_BOUNDS
 	});
+	if (!path || path.length < 2) {
+		return;                                           // tapped outside the floor
+	}
+	player.scaleX = path[1].x < player.x ? -1 : 1;        // face the first leg
+	player.play('walk');
+	player.followPath(path, { speed: WALK_SPEED });       // constant px/s, cancels the previous route
 }
 
-player.addEventListener('complete', () => player.play('idle'));
+player.addEventListener('pathcomplete', () => player.play('idle'));
 ```
 
-The walkable floor is a clamp (`WALK_TOP`), not geometry — no collision needed for a classic adventure floor.
+The walkable floor is still a clamp, not geometry — but it is now expressed as the `bounds` rect the search runs in. Obstacles are separate: `pointclick.js` adds an invisible box over the oak's *trunk* only (`opacity: 0`, `touchEnabled: false`, `collisionGroup: 'obstacle'`), so the player circles the trunk and still walks behind the canopy with `ySort`. See [Pathfinding around obstacles](#pathfinding-around-obstacles--mazejs-pointclickjs) for the options.
+
+With nothing in the scene to route around, `findPath` returns `[start, goal]` and `followPath` walks the straight line — the same result as the distance-sized `animate()` tween this demo used before, with one less speed calculation to get wrong.
 
 **Hotspots and the tap conflict.** The GameView fires `tap` for *every* touch, including ones a sprite already handled, so a naive walk handler also walks when you click the bird. Hit-test the interactive sprites in JS and bail out:
 

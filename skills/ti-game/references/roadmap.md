@@ -1,6 +1,6 @@
 # What does not exist yet — and what to do instead
 
-The most expensive mistake with `ti.game` is writing code against a feature that sounds like it should be there because Phaser, Godot or Cocos has it. This file is the guard rail: everything below is **absent from upstream `main` as of 2026-08-19**, with the workaround that is idiomatic today.
+The most expensive mistake with `ti.game` is writing code against a feature that sounds like it should be there because Phaser, Godot or Cocos has it. This file is the guard rail: everything below is **absent from upstream `main` as of 2026-08-20** (manifest `0.4.0`), with the workaround that is idiomatic today.
 
 Planned items come from the module's `TODO.md`. Planned is not shipped — when a game needs one of these, use the workaround and keep the code isolated enough to swap later.
 
@@ -8,10 +8,9 @@ Planned items come from the module's `TODO.md`. Planned is not shipped — when 
 
 | You might reach for | Status | What to do now |
 | --- | --- | --- |
-| A tilemap layer, Tiled JSON import, collision layer | Planned (priority 4) | One sprite per tile. Fine at 12×15, dead at 200×200. For large ground planes use a single `tileRepeat` sprite instead of a grid, and add sparse invisible solids for collision |
+| A tilemap layer, Tiled JSON import, collision layer | Planned (priority 4) | One sprite per tile. Fine at 12×15, dead at 200×200. For large ground planes use a single `tileRepeat` sprite instead of a grid, and add sparse invisible solids for collision. `findPath` already rasterizes those per-tile sprites, so a tile maze pathfinds today — the planned collision layer is meant to feed the same grid |
 | `sprite.parent`, attaching a turret to a tank, a hat to a hero, multi-part bosses | Planned (priority 7), the biggest structural item | Move the parts together from JS on the same coarse tick, or bake the combination into sheet frames. There is no transform inheritance |
 | `gameView.panTo(x, y, { duration, easing })` for a cutscene camera move | Planned (priority 1) | `follow()` an invisible sprite and tween that sprite, then `follow()` the player again |
-| `gameView.findPath(from, to)` A* over a collision grid | Planned (priority 4) | Hand-author the waypoint arrays and hand them to `followPath`. Straight-line walking is what the point-&-click and topdown demos do |
 | `maxWidth` word wrap on text sprites | Planned (priority 5) | Break the lines yourself with `\n`. Measure with the font's `charWidth` on a monospace grid font; a proportional font needs a per-glyph tally |
 | Ping-pong animation playback, a per-sprite animation speed multiplier, a random start offset | Planned (priority 9) | Author the ping-pong into the sheet as a longer animation. Desync a field of torches by giving each one its own `idleAnimation` timing, or start them from staggered timers |
 | Native virtual joystick or d-pad bound to a sprite | Planned (priority 6) | Overlaid Titanium views, one per button, writing `velocityX`/`steering`/`throttle` on `touchstart`/`touchend`. Sibling views get simultaneous pointers, so multitouch works |
@@ -57,7 +56,8 @@ Recent additions that are easy to miss and easy to reimplement badly in JS:
 - **Game-clock timers** (2026-08-19): `gameView.after(ms, cb)` / `every(ms, cb)` / `cancelTimer(id)` obey `timeScale` and pause with the render loop. Spawn waves and AI ticks belong here, not in `setTimeout`.
 - **`scrollFactor`** (2026-08-19): per-sprite parallax against camera travel. A background layer is one property, not a hand-scrolled pair of copies.
 - **`blend: 'multiply'` and `'screen'`** (2026-08-19) join `'normal'` and `'add'`, on sprites and emitters alike.
+- **`gameView.findPath(from, to, options)`** (2026-08-20): grid A* around the sprites carrying a `collisionGroup`, returning waypoints ready for `followPath` — the Godot `AStar2D` / GameMaker `mp_grid` equivalent. Tap-to-walk and chasing AI route around obstacles natively now; hand-authored waypoint arrays and straight-line walking are the old workaround. Discrete like `raycast`: taps and AI timers, not per frame.
 
 ## Checking the current state
 
-This file describes upstream `main` on 2026-08-19 — a moving target: eight items on this list shipped within three days of the skill being written, four of them in a single day, and the manifest version (`0.3.0`) did not change with any of them. Before relying on any "planned" item being still absent — or on a workaround still being necessary — read `TODO.md` and `README.md` at https://github.com/m1ga/ti.game, the module's upstream repo. `README.md` there is the canonical API documentation; the `documentation/` folder only points at it. The priorities quoted above are the maintainer's, not a roadmap this skill decides.
+This file describes upstream `main` on 2026-08-20 — a moving target: nine items on this list shipped within four days of the skill being written, four of them in a single day, and the manifest only caught up at the end (`0.3.0` → `0.4.0` on 2026-08-20, after all of them). Before relying on any "planned" item being still absent — or on a workaround still being necessary — read `TODO.md` and `README.md` at https://github.com/m1ga/ti.game, the module's upstream repo. `README.md` there is the canonical API documentation; the `documentation/` folder only points at it. The priorities quoted above are the maintainer's, not a roadmap this skill decides.

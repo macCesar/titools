@@ -22,8 +22,8 @@ There is no registry and no `ti module install` command — Titanium modules are
 
 ```
 modules/
-├── android/ti.game/0.3.0/
-└── iphone/ti.game/0.3.0/
+├── android/ti.game/0.4.0/
+└── iphone/ti.game/0.4.0/
 ```
 
 Unzipping the module zip at the project root creates exactly that layout.
@@ -34,14 +34,14 @@ Then declare it in `tiapp.xml`. The iOS platform key is `iphone`, not `ios`:
 
 ```xml
 <modules>
-  <module platform="android" version="0.3.0">ti.game</module>
-  <module platform="iphone" version="0.3.0">ti.game</module>
+  <module platform="android" version="0.4.0">ti.game</module>
+  <module platform="iphone" version="0.4.0">ti.game</module>
 </modules>
 ```
 
 Pinning `version` is worth the extra attribute: with two module versions installed side by side, an unpinned entry silently picks the highest one.
 
-The version number lies right now: the manifest has read `0.3.0` through several feature landings. A zip built before 2026-08-18 has no `createText`, no `createFont`, no `screenFixed`, no `swept` and no `collisionend`; one built before 2026-08-19 also lacks `followPath`, `play(name, { then })`, `raycast`, `after`/`every`, `scrollFactor` and the `multiply`/`screen` blend modes — all while still calling itself 0.3.0. A zip built before 2026-08-19 16:00 UTC+2 also bleeds at grid-frame edges on smoothed sheets. If a call that this skill documents is `undefined` at runtime, rebuild the module from upstream `main` rather than hunting for a typo.
+The manifest went `0.3.0` → **`0.4.0`** on 2026-08-20, after months of feature landings under the old number — so `0.4.0` is the first version string that actually means something: it carries everything this skill documents. `0.3.0` does not, and there are several different `0.3.0` builds in the wild. One built before 2026-08-18 has no `createText`, no `createFont`, no `screenFixed`, no `swept` and no `collisionend`; one built before 2026-08-19 also lacks `followPath`, `play(name, { then })`, `raycast`, `after`/`every`, `scrollFactor` and the `multiply`/`screen` blend modes; one built before 2026-08-19 16:00 UTC+2 additionally bleeds at grid-frame edges on smoothed sheets. `findPath` exists only in `0.4.0`. If a call that this skill documents is `undefined` at runtime, check the manifest version first and rebuild from upstream `main` rather than hunting for a typo.
 
 Building the module from source:
 

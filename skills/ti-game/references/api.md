@@ -1,6 +1,6 @@
 # ti.game API reference
 
-Complete JS surface of `ti.game` as of upstream `main` on 2026-08-19, verified against the module source (`android/src/ti/game/*.java` and `engine/*.java`, mirrored by `ios/Classes/TG*`). Defaults come from the engine fields, not from prose. The manifest still reads `0.3.0`; the text engine (`createFont`/`createText`), `screenFixed`, `swept`, `collisionend`, `followPath`, animation chaining, `raycast`, the game-clock timers, `scrollFactor` and the `multiply`/`screen` blend modes all landed after it and are not in any numbered release yet.
+Complete JS surface of `ti.game` as of upstream `main` on 2026-08-20, verified against the module source (`android/src/ti/game/*.java` and `engine/*.java`, mirrored by `ios/Classes/TG*`). Defaults come from the engine fields, not from prose. The manifest reads **`0.4.0`** since 2026-08-20, and that bump matters: the text engine (`createFont`/`createText`), `screenFixed`, `swept`, `collisionend`, `followPath`, animation chaining, `raycast`, `findPath`, the game-clock timers, `scrollFactor` and the `multiply`/`screen` blend modes all landed while the manifest still said `0.3.0`, so a build calling itself 0.3.0 has none of them.
 
 Every property listed is **live**: reading returns the current native value, even mid-drag or mid-tween. Every property can also be passed to its `create*` factory. All durations crossing the JS boundary are **milliseconds** (the engine converts to seconds internally).
 
@@ -58,6 +58,7 @@ A normal Titanium view — add it to a window or any container, size it with the
 | `stopFollow()` | method | — | Stop following; the camera stays where it is |
 | `shake({ strength, duration })` | method | `12` px, `400` ms | Detuned-sine rumble on the projection only — follow, bounds and touch mapping are unaffected |
 | `raycast(x0, y0, x1, y1, groups)` | method | — | One-shot nearest-hit query along the segment against **visible, non-`screenFixed`** sprites carrying a `collisionGroup` in `groups` (omit for any tagged sprite). Returns `null` for a clear ray, else `{ x, y, distance, group, sprite, normal: { x, y } }`. Rect hitboxes are tested as their AABB, circle hitboxes exactly; a ray starting inside a hitbox reports it at distance 0 |
+| `findPath(from, to, options)` | method | — | Grid A\* from `from` to `to` (`{ x, y }` world points) around the same sprites `raycast` sees — **visible, non-`screenFixed`**, carrying a `collisionGroup` in `options.groups` (omit for any tagged sprite). Returns an array of `{ x, y }` waypoints ready for `sprite.followPath()`, or `null` when no route exists. Options below |
 | `after(ms, callback)` | method | — | Runs `callback` once after `ms` of **game time** — the delay stretches under `timeScale` slow motion, freezes at `0` and pauses with the render loop, unlike `setTimeout`. Returns an int id. The callback receives `{ id }` |
 | `every(ms, callback)` | method | — | Like `after()`, repeating until cancelled. Fires at most once per frame, and restarts its interval after a stall instead of bursting to catch up |
 | `cancelTimer(id)` | method | — | Cancels a timer from `after()` / `every()` |
@@ -84,6 +85,31 @@ Plus `timer` with payload `id`, fired only for `after()` / `every()` calls made 
 Vertical follow is always on. **Horizontal follow is off until you pass `leftMargin` or `rightMargin`.**
 
 Each call **resets every option to its default** before applying what you passed. Calling `follow(sprite)` with no options after configuring it wipes the configuration.
+
+### `findPath(from, to, options)`
+
+| Option | Default | Effect |
+| --- | --- | --- |
+| `cellSize` | `32` | Grid resolution in px. Match it to the tile size on a tile map so the grid lines up with the walls; a coarser grid is faster and blockier |
+| `groups` | all tagged sprites | Array of `collisionGroup` names to treat as obstacles |
+| `clearance` | `0` | Extra obstacle inflation in px. About half the walker's width keeps it from scraping corners, since the path is a line for the sprite's **center** |
+| `bounds` | the whole surface | `{ minX, minY, maxX, maxY }` search rect — also the walkable area, so a floor clamp goes here |
+| `diagonals` | `true` | Octile moves. Diagonals never cut a blocked corner |
+| `simplify` | `true` | Line-of-sight string pulling: the cell chain collapses to the few corner waypoints `followPath` needs. `false` returns every grid cell (useful to visualize or debug the route) |
+
+Waypoints come back with the **exact** start and goal as first and last point, so the walk begins under the sprite's feet and ends on the tapped pixel. A blocked start or goal snaps outward to the nearest free cell (up to 4 rings), which is why tapping an obstacle walks to its edge instead of returning `null`. `null` means: no route, degenerate `bounds`, `cellSize <= 0`, or a grid over ~1M cells (a runaway `bounds`/`cellSize` combination fails the query rather than allocating).
+
+Everything is built per call on the calling thread — no persistent grid, no GL work. Like `raycast` it is a **discrete query**: run it on taps and AI timers (`gameView.every`), never per frame.
+
+```javascript
+const path = gameView.findPath(
+	{ x: player.x, y: player.y },
+	{ x: e.x, y: e.y },
+	{ cellSize: TILE, groups: ['wall'], clearance: player.width * 0.35, bounds: WALK_BOUNDS });
+if (path) {
+	player.followPath(path, { speed: 160 });
+}
+```
 
 ## SpriteSheet
 
@@ -421,6 +447,9 @@ There is `collision` (enter) and `collisionend` (exit), but deliberately **no** 
 - **`raycast` groups: pass an array, not varargs.** Android accepts both `raycast(x0, y0, x1, y1, ['enemy'])` and loose arguments; iOS reads only the array. Write the array and it works on both.
 - **`raycast` only sees `visible`, non-`screenFixed` sprites carrying a `collisionGroup`.** A hidden pooled sprite is invisible to the ray, which is usually what you want; an untagged wall is invisible too, which usually is not. HUD sprites are skipped by design, so a screen-fixed score never blocks a world-space line of sight.
 - **`raycast` is a discrete query, not a sensor.** Calling it from a game-clock timer or a tap handler is the intended use. Calling it every frame from JS puts exactly the bridge traffic in the loop that the whole engine exists to avoid.
+- **`findPath` walks the sprite's center, not its silhouette.** The waypoints are a line through free grid cells, so a body wider than a cell clips corners unless you pass `clearance` (roughly half the walker's width) or shrink `cellSize`. Obstacles are read from the **hitbox**, so `hitboxScale` and `hitboxShape: 'circle'` shape the walkable space too.
+- **`findPath` returning `null` is not always "no route".** Degenerate `bounds`, `cellSize <= 0` and a grid over ~1M cells all return `null` as well — a `bounds` rect of the whole world at `cellSize: 4` fails silently that way. Check the numbers before blaming the maze.
+- **A path of one or two points is the straight-line case, not a bug.** With nothing in the way `findPath` returns just `[start, goal]`; `path.length < 2` is the guard the demos use to detect a tap outside `bounds`.
 - **Game-clock timers are not `setTimeout`.** `after`/`every` freeze at `timeScale: 0` and pause with the render loop — which is why spawn waves belong there — but a pause menu that needs a real countdown still needs `setTimeout`.
 - **`screenFixed` beats `scrollFactor`.** Setting both leaves the sprite screen-fixed; the parallax offset is skipped entirely.
 - **Ghost lines along a frame's edge are a filtering artifact, not bad art.** A magnified `smoothing: true` sheet samples past the frame border — 1px seams, or the next row's heads at the bottom. Grid sheets have inset UVs upstream since 2026-08-19; an atlas needs padding and extrude at pack time, and an older module build needs either `smoothing: false` or a rebuild.
