@@ -239,6 +239,15 @@ Expect:
 - `cancelTimer(id)` with the id returned; a real-time countdown is the one case that stays on `setTimeout`
 
 ```
+"Point-and-click game: I tap the floor and the guy walks there with a tween, but he walks straight through the tree. How do I make him go around?"
+```
+Expect:
+- `gameView.findPath(from, to, { cellSize, groups, clearance, bounds })` returns waypoints for `sprite.followPath()` — no hand-authored routes, no A* in JS
+- The obstacle is any sprite with a `collisionGroup`; an invisible box (`opacity: 0`, `touchEnabled: false`) over just the trunk keeps the canopy walkable
+- `clearance` of about half the walker's width, because the path is a line for the sprite's **center**
+- `bounds` is the walkable floor in sprite-center coordinates, and a discrete query: run it on the tap, not per frame
+
+```
 "Can I use ti.game in an Alloy project or is it app.js only?"
 ```
 Expect:
@@ -365,7 +374,7 @@ Expect:
 - [ ] ti-ui: mentions performance rules
 - [ ] ti-game: refuses to move sprites from a timer and names the native property instead
 - [ ] ti-game: builds the level from the `resize` event, not from `displayCaps`
-- [ ] ti-game: does not invent APIs that do not exist yet (tilemap layer, sprite parenting, A* pathfinding, word-wrapped text)
+- [ ] ti-game: does not invent APIs that do not exist yet (tilemap layer, sprite parenting, joysticks, word-wrapped text)
 - [ ] ti-api: cites specific properties/methods/events
 - [ ] ti-guides: references tiapp.xml / Hyperloop / distribution docs
 - [ ] ti-howtos: provides working integration code

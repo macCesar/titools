@@ -177,7 +177,7 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 | ti-expert    | Architecture and implementation     | Starting point for most tasks           |
 | purgetss     | Utility-first styling               | UI styling and animations               |
 | ti-ui        | UI/UX patterns                      | Complex layouts, ListViews, platform UI |
-| ti-game      | 2D games with the `ti.game` module  | Sprites, physics, collisions, raycasts, paths, text HUDs, particles, camera |
+| ti-game      | 2D games with the `ti.game` module  | Sprites, physics, collisions, raycasts, pathfinding, text HUDs, particles, camera |
 | ti-api       | Complete Titanium API reference     | Looking up properties, methods, events  |
 | ti-guides    | SDK fundamentals                    | tiapp.xml, Hyperloop, distribution, JDK/Xcode compatibility, release notes |
 | ti-howtos    | Native feature integration          | Location, push, media, platform APIs    |
@@ -437,7 +437,7 @@ When it activates:
 - Physics: gravity and velocity, solid platforms, one-way floors, bouncing, the arcade car model, Newtonian thrust
 - Collision groups, invisible trigger zones, enter/exit events, swept AABB for fast bullets, hitbox tuning
 - Raycasts for line of sight, ledge probes and hitscan shots
-- Native patrol paths (`followPath`) and animation chaining (`play(name, { then })`)
+- A* pathfinding (`findPath`) around tagged obstacles, feeding native patrol paths (`followPath`) and animation chaining (`play(name, { then })`)
 - Bitmap-font text sprites and screen-fixed HUDs inside the scene
 - Particle emitters, Verlet ropes, camera follow/zoom/shake/effects, `scrollFactor` parallax, low-latency sound
 - Game-clock timers that obey pause and slow motion
@@ -452,6 +452,7 @@ Example prompts:
 "Why does my game stutter when I move sprites from setInterval?"
 "Add a score HUD that stays put while the camera follows the player."
 "Make the guard walk a patrol route and turn around before the ledge."
+"Tap to walk, but the player should go around the tree instead of through it."
 ```
 
 Key rules:
