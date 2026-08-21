@@ -1,13 +1,13 @@
 ---
 name: ti-game
-description: "Use when building or reviewing 2D games with the ti.game module for Titanium SDK (Android and iOS) — sprites, sprite sheets, animations, tweens, physics (gravity, solid platforms, carMode drifting, thrust), collision groups, trigger zones, swept AABB, raycast, paths, bitmap-font text, particles, Verlet ropes, camera follow/zoom/shake, parallax, sound, drag & drop, multitouch. AUTO-DETECT: if tiapp.xml declares ti.game or any file calls require('ti.game'), invoke BEFORE writing ANY game code. Also trigger on: game, juego, sprite, spritesheet, platformer, endless runner, top-down, shooter, racer, flappy, breakout, rhythm, cards, puzzle, collision, hitbox, raycast, line of sight, patrol, parallax, particles, HUD, score, game loop, 60 fps, GameView. ti.game is NOT Phaser, Godot or Box2D: you never write a game loop, never move a sprite from setInterval, and several familiar features (tilemap layer, sprite parenting, joystick, A* pathfinding) do not exist yet — check references/roadmap.md before inventing an API."
+description: "Use when building or reviewing 2D games with the ti.game module for Titanium SDK (Android and iOS) — sprites, sprite sheets, animations, tweens, physics (gravity, solids, carMode drifting, thrust), collision groups, trigger zones, swept AABB, raycast, paths, bitmap text, particles, ropes, camera follow/zoom/shake, parallax, sound, drag & drop, multitouch. AUTO-DETECT: if tiapp.xml declares ti.game or any file calls require('ti.game'), invoke BEFORE writing ANY game code. Also trigger on: game, juego, sprite, spritesheet, platformer, endless runner, top-down, shooter, racer, flappy, breakout, rhythm, cards, puzzle, collision, hitbox, raycast, line of sight, pathfinding, maze, patrol, parallax, particles, HUD, score, game loop, 60 fps, GameView. ti.game is NOT Phaser, Godot or Box2D: you never write a game loop, never move a sprite from setInterval, and several familiar features (tilemap layer, sprite parenting, joystick, word wrap) do not exist yet — check references/roadmap.md before inventing an API."
 argument-hint: "[genre or feature]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(node *)
 ---
 
 # ti.game — 2D game engine for Titanium SDK
 
-`ti.game` is a native OpenGL ES 2.0 sprite engine exposed to JavaScript, written and maintained by **Michael Gangolf (m1ga)** — upstream is https://github.com/m1ga/ti.game. This skill tracks upstream `main` as of **2026-08-19** — the manifest still reads `0.3.0`, but the text engine, `screenFixed`, `swept` collisions, `collisionend`, `followPath`, animation chaining, `raycast`, game-clock timers, `scrollFactor` parallax and the `multiply`/`screen` blend modes all landed after it, so a version number alone will not tell you what a checkout has. When upstream and any fork disagree, upstream wins. Same JS API on Android and iOS — the iOS side is a class-per-class Obj-C twin of the Android engine.
+`ti.game` is a native OpenGL ES 2.0 sprite engine exposed to JavaScript, written and maintained by **Michael Gangolf (m1ga)** — upstream is https://github.com/m1ga/ti.game. This skill tracks upstream `main` as of **2026-08-20**, manifest **`0.4.0`** — that bump is the first in a long run of feature landings (the text engine, `screenFixed`, `swept` collisions, `collisionend`, `followPath`, animation chaining, `raycast`, `findPath`, game-clock timers, `scrollFactor` parallax and the `multiply`/`screen` blend modes all shipped while it still said `0.3.0`), so anything still calling itself 0.3.0 has none of them. When upstream and any fork disagree, upstream wins. Same JS API on Android and iOS — the iOS side is a class-per-class Obj-C twin of the Android engine.
 
 Works in **both Classic and Alloy** projects. Nothing here depends on PurgeTSS.
 
@@ -38,6 +38,7 @@ The practical consequence, and the single biggest mistake to avoid:
 | An enemy on a fixed patrol route | chained `animate()` legs | `sprite.followPath(points, { loop })` |
 | Play an attack, then go back to idle | an `animationcomplete` handler | `play('attack', { then: 'idle' })` |
 | Line of sight, a ledge probe, a hitscan shot | an invisible probe sprite | `gameView.raycast(x0, y0, x1, y1, ['group'])` |
+| Walking around obstacles to a tapped point | your own A* in JS, or a straight line through the wall | `gameView.findPath(from, to, opts)` → `sprite.followPath(path)` |
 | A spawn wave or an AI tick that respects pause | `setInterval` | `gameView.every(ms, cb)` |
 | Smoke, sparks, explosions | pooled sprites in JS | `Game.createEmitter(...)` |
 | A swinging chain or cape | verlet solver in JS | `Game.createRope(...)` |
@@ -135,6 +136,8 @@ A fast mover can slip through a thin target between frames: it never overlaps on
 
 When the question is not "did we touch?" but "what is over there?", the answer is `gameView.raycast(x0, y0, x1, y1, ['group'])` — line of sight, a ledge probe ahead of a walker's feet, a hitscan shot. It returns `null` or the nearest hit (`{ x, y, distance, group, sprite, normal }`), needs nothing but a `collisionGroup` on the targets, and replaces the old trick of parking an invisible probe sprite where the ray would land. It is a discrete query: call it from a decision timer or a tap handler, never every frame.
 
+And when the question is "how do I get over there?", `gameView.findPath(from, to, { cellSize, groups, clearance, bounds })` runs grid A* around the same tagged sprites and hands back waypoints for `followPath` — tap-to-walk that rounds a tree, a hound re-routing to the player on an 800 ms timer. Also discrete: the walk itself runs natively between queries, so pathfind on taps and AI ticks, never per frame. Pass `clearance` of about half the walker's width, since the route is a line for the sprite's **center**.
+
 **A sprite with `width`/`height` but no `sheet` renders nothing and works as an invisible trigger.** Score zones, goals, checkpoints, ceilings, kill floors and walls are all built this way in the official demos. This is the idiomatic way to add logic to a scene without art.
 
 Tune fairness with `hitboxScale` (art rarely fills its frame; slightly small hitboxes feel better) and `hitboxShape: 'circle'` for balls and rocks — circles also resolve against solids along the contact normal, so they bounce off corners diagonally instead of like a box. Turn on `debug: true` per sprite, or on the GameView for everything, to see green collision AABBs, blue touch bounds and the orange anchor dot.
@@ -189,7 +192,7 @@ Read the one that matches the task instead of guessing — the API surface below
 | Need | Reference |
 | --- | --- |
 | Exact properties, methods, events, defaults for every object | [api.md](references/api.md) |
-| Working code per genre: flappy, platformer, top-down, racer, asteroids, endless runner, rhythm, cards, point & click, particles, ropes, camera — plus patrol paths, raycast probes, parallax and game-clock timers | [recipes.md](references/recipes.md) |
+| Working code per genre: flappy, platformer, top-down, racer, asteroids, endless runner, rhythm, cards, point & click, particles, ropes, camera — plus patrol paths, raycast probes, pathfinding, parallax and game-clock timers | [recipes.md](references/recipes.md) |
 | Install the module, tiapp.xml, Alloy vs Classic wiring, assets, sprite sheets, atlases, lifecycle, testing | [project-setup.md](references/project-setup.md) |
 | What does NOT exist yet, what is coming, and how to work around it today | [roadmap.md](references/roadmap.md) |
 
@@ -205,4 +208,4 @@ Read the one that matches the task instead of guessing — the API surface below
 8. Is the HUD `Game.createText` with `screenFixed: true`, rather than a stack of overlaid labels?
 9. Does anything travel far enough per frame to tunnel? Give it `swept: true`.
 10. Does a timer drive game logic (spawn waves, AI ticks, respawns)? Move it to `gameView.every`/`after` so it obeys pause and slow motion.
-11. Are you using an API that actually exists? Anything involving tilemaps, sprite parenting, joysticks, A* pathfinding or word-wrapped text — check [roadmap.md](references/roadmap.md) first.
+11. Are you using an API that actually exists? Anything involving tilemaps, sprite parenting, joysticks, gamepads or word-wrapped text — check [roadmap.md](references/roadmap.md) first.
