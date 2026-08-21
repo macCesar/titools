@@ -46,7 +46,7 @@ Full agent-facing guidance is in `AGENTS.md`; Claude-specific notes in `CLAUDE.m
 - **`docs/` is gitignored except `docs/project/`, and `.claude/` except `.claude/skills/`.** Both use the same pattern — exclude the *contents* (`docs/*`, `.claude/*`) and re-include the subdirectory. A bare `!docs/project/` under a `docs/` rule does nothing: git will not descend into an excluded directory. Everything else under those paths exists on one machine only.
 - **The reference files came from a doc conversion that left broken markdown.** Nine of them had code fences that opened and never closed, swallowing up to 97% of a file into one code block (fixed in 4.3.0 via `scripts/fix-fences.mjs`). When adding converted content, run that script before trusting anything that parses these files.
 - **`titools sync` runs inside a consumer Titanium project**, never from this repo. Editing a skill here does not call for a sync.
-- **npm 2FA issues a single-use OTP.** Each `npm publish` needs a fresh one, even when an earlier publish in the same shell succeeded.
+- **Nobody publishes by hand.** The `v*` tag triggers `.github/workflows/publish.yml`, which publishes with trusted publishing (OIDC) after re-checking the tag against both version files and running `npm test`. A manual `npm publish` is neither needed nor authenticated — but a red run ships nothing, so confirm with `npm view @maccesar/titools version`.
 - **The version in `plugin.json` has drifted before.** v2.6.0 shipped with it frozen at `3.0.0` from an old branch: npm published 2.6.0 while the marketplace announced 3.0.0.
 
 ## Sibling project — `aiskills`

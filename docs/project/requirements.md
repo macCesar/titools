@@ -20,7 +20,7 @@ TiTools distributes Titanium SDK skills to AI coding assistants through two inde
 
 ### R3 — Both channels report the same version
 
-`package.json` and `.claude-plugin/plugin.json` carry the identical version string, and both are published: the tag pushed to GitHub *and* `npm publish` run.
+`package.json` and `.claude-plugin/plugin.json` carry the identical version string, and both channels actually receive it: `main` pushed for the marketplace, and the `vX.Y.Z` tag pushed so the publish workflow ships the npm package.
 
 **Accepted when:** `npm view @maccesar/titools version`, the `version` field in `.claude-plugin/plugin.json` on `main`, and the newest `vX.Y.Z` tag all agree. This is the requirement most often left half-done — see `status.md`.
 

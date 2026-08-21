@@ -221,19 +221,21 @@ Every release that ships code or skill changes must bump **BOTH** version files 
 5. Single commit including both bumps.
 6. Tag `vX.Y.Z` pointing at that commit.
 7. Push `main` + push the tag.
-8. `npm publish --access public`.
+8. Nothing — the tag publishes. `.github/workflows/publish.yml` fires on `v*`, re-checks the tag against **both** version files, runs `npm ci && npm test`, and publishes with trusted publishing (OIDC). Check the run: `gh run list --workflow publish.yml`.
 
 ### Precedent (do not repeat)
 
 v2.6.0 shipped with `plugin.json` frozen at `3.0.0` (a stale value from a prior feature branch). npm published 2.6.0 but the marketplace announced 3.0.0. Had to sync manually and amend the release. **Always sync before the release commit.**
 
-### npm 2FA and publishing
+### Publishing runs in CI, not on the maintainer's machine
 
-With 2FA enabled, each `npm publish` invocation needs a fresh OTP — even if a prior publish in the same session succeeded. Pass it via `--otp=XXXXXX` or respond to the prompt.
+Since 2026-08-14 the release publishes from GitHub Actions with trusted publishing (OIDC): no `NPM_TOKEN`, no stored secret, no 2FA OTP, and provenance for free. Do not run `npm publish` by hand — the registry accepts the OIDC identity only from that workflow file, and a manual publish would need an interactive `npm login` besides.
+
+A green tag is not a green publish: the workflow gates on `npm test`, and the v4.6.0 run failed there and shipped nothing (the tag had to be deleted and re-cut as 4.6.1). Verify with `npm view @maccesar/titools version`.
 
 ### Publishing is not the same as shipping
 
-`npm publish` feeds one of the two channels. The marketplace cache at `~/.claude/plugins/cache/maccesar-titools/` is untouched by it, and third-party marketplaces do **not** auto-update — a release does not reach plugin users on its own. The refresh is `/plugin marketplace update maccesar-titools` followed by `/reload-plugins`; there is no `/plugin update <plugin>` command.
+The npm publish feeds one of the two channels. The marketplace cache at `~/.claude/plugins/cache/maccesar-titools/` is untouched by it, and third-party marketplaces do **not** auto-update — a release does not reach plugin users on its own. The refresh is `/plugin marketplace update maccesar-titools` followed by `/reload-plugins`; there is no `/plugin update <plugin>` command.
 
 Because `marketplace.json` pins no version, that update tracks **default-branch HEAD rather than the tag** — pushing `main` matters as much as pushing the tag.
 

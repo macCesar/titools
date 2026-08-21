@@ -30,7 +30,7 @@ Every release that ships code or skill changes must bump **BOTH** version files 
 5. Single commit including both bumps.
 6. Tag `vX.Y.Z` pointing at that commit.
 7. Push `main` + push the tag.
-8. `npm publish --access public`.
+8. The tag does the publishing: `.github/workflows/publish.yml` fires on `v*`, re-checks the tag against **both** version files, runs `npm ci && npm test`, and publishes with trusted publishing (OIDC — no `NPM_TOKEN`, no OTP). Watch it with `gh run list --workflow publish.yml`; a red run means nothing shipped.
 
 ### Why both bumps matter
 
@@ -42,7 +42,7 @@ Anthropic's exact wording: *"If you change your plugin's code but don't bump the
 
 v2.6.0 shipped with `plugin.json` frozen at `3.0.0` (pre-existing value from the feature branch). npm would publish 2.6.0 but the marketplace would announce 3.0.0. Had to sync manually and amend the release. Always sync before the release commit.
 
-Step 8 has also been skipped outright: v4.1.0 was tagged and pushed on 2026-07-31 and never published, so CLI users sat on 4.0.0 for two days while marketplace users had the release. Finishing the checklist means checking `npm view @maccesar/titools version` afterwards, not assuming the tag implies the publish.
+Step 8 used to be a manual `npm publish --access public`, and it was skipped outright once: v4.1.0 was tagged and pushed on 2026-07-31 and never published, so CLI users sat on 4.0.0 for two days while marketplace users had the release. That is what the workflow (added 2026-08-14) exists to prevent — but the tag still does not *guarantee* the publish: the v4.6.0 run failed on `npm test` and shipped nothing. Confirm with `npm view @maccesar/titools version` afterwards rather than assuming.
 
 ### How a release propagates to each install channel
 
@@ -60,7 +60,7 @@ Marketplace facts (not in Anthropic's docs):
 - `marketplace.json` declares `source` as `{github, repo}` with no pinned version, so the update tracks **default-branch HEAD, not the latest tag**, and ignores the numeric version of a stale cache. This is why pushing `main` matters as much as tagging — and why the `plugin.json` bump still matters for *end users*, whose cache does compare versions.
 - **Duplicate cleanup applies here as of 4.3.0, not before.** While a skill or command exists only on npm, `titools install` creates the `~/.claude/` copy so Claude Code sees it; once the marketplace cache catches up and the user re-runs install, the CLI detects the plugin now provides it and removes that copy. TiTools had no such detection until 4.3.0, so anyone running both channels on an earlier version had every skill listed twice.
 
-**Full post-release sequence on the maintainer's machine:** `/release` → `npm publish` (manual, 2FA) → `/plugin marketplace update maccesar-titools` → `titools install` → `/reload-plugins`.
+**Full post-release sequence on the maintainer's machine:** `/release` (which ends with the tag push, and the tag publishes to npm on its own) → `/plugin marketplace update maccesar-titools` → `titools install` → `/reload-plugins`.
 
 The maintainer's own CLI is `npm link`-ed to this repo, so `titools update` here reads straight from the working tree — `npm publish` refreshes *other people's* installs, never this box. `isDevMode()` in `lib/commands/auto-update.js` detects the repo's `.git` and skips `npm update -g` so the link is never clobbered.
 
