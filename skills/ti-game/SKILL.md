@@ -7,7 +7,7 @@ allowed-tools: Read, Grep, Glob, Edit, Write, Bash(node *)
 
 # ti.game — 2D game engine for Titanium SDK
 
-`ti.game` is a native OpenGL ES 2.0 sprite engine exposed to JavaScript, written and maintained by **Michael Gangolf (m1ga)** — upstream is https://github.com/m1ga/ti.game. This skill tracks upstream `main` as of **2026-08-23**, manifest **`0.4.0`** — that bump is the first in a long run of feature landings (the text engine, `screenFixed`, `swept` collisions, `collisionend`, `followPath`, animation chaining, `raycast`, `findPath`, game-clock timers, `scrollFactor` parallax and the `multiply`/`screen` blend modes all shipped while it still said `0.3.0`), so anything still calling itself 0.3.0 has none of them. The number lags the code in the other direction too: per-axis hitboxes (`hitboxScaleX`/`hitboxScaleY`) and text word wrap (`maxWidth`) landed on 2026-08-23 with the manifest still at `0.4.0`, so date the build rather than trusting the version. When upstream and any fork disagree, upstream wins. Same JS API on Android and iOS — the iOS side is a class-per-class Obj-C twin of the Android engine.
+`ti.game` is a native OpenGL ES 2.0 sprite engine exposed to JavaScript, written and maintained by **Michael Gangolf (m1ga)** — upstream is https://github.com/m1ga/ti.game. This skill tracks upstream `main` as of **2026-08-23**, manifest **`0.4.0`** — that bump is the first in a long run of feature landings (the text engine, `screenFixed`, `swept` collisions, `collisionend`, `followPath`, animation chaining, `raycast`, `findPath`, game-clock timers, `scrollFactor` parallax and the `multiply`/`screen` blend modes all shipped while it still said `0.3.0`), so anything still calling itself 0.3.0 has none of them. The number lags the code in the other direction too: per-axis hitboxes (`hitboxScaleX`/`hitboxScaleY`), text word wrap (`maxWidth`), `unload()` on sheets and fonts, and the LiveView renderer lifecycle all landed on 2026-08-23 with the manifest still at `0.4.0`, so date the build rather than trusting the version. When upstream and any fork disagree, upstream wins. Same JS API on Android and iOS — the iOS side is a class-per-class Obj-C twin of the Android engine.
 
 Works in **both Classic and Alloy** projects. Nothing here depends on PurgeTSS.
 
@@ -176,6 +176,8 @@ Standard Titanium touch events do not reach the GameView, but ordinary Titanium 
 
 The render loop follows the activity lifecycle automatically, but **your JS timers and sounds do not**. Every demo that starts an interval or plays looping music stops it on window close. In Alloy, wire this into the controller's `cleanup()`.
 
+Two things the engine now cleans up on its own, so do not hand-roll them: a **LiveView reload** retires the previous runtime's render loops, `SoundPool`, `MediaPlayer`s and audio proxies, so reloads stop stacking game loops; and releasing a sheet or font frees its GL texture. What you *can* now do explicitly is `spriteSheet.unload()` / `font.unload()` when streaming levels — permanent, so only after nothing draws from them.
+
 Game-clock timers (`gameView.after` / `every`) are the exception that proves the rule: they run on the engine's clock, so they freeze at `timeScale: 0` and pause with the render loop instead of firing into a dead scene. That is why spawn waves and AI ticks belong there. A `setInterval` keeps running through a pause, which is right for a real-time countdown and wrong for everything else.
 
 ```javascript
@@ -198,6 +200,18 @@ Read the one that matches the task instead of guessing — the API surface below
 | Working code per genre: flappy, platformer, top-down, racer, asteroids, endless runner, rhythm, cards, point & click, particles, ropes, camera — plus patrol paths, raycast probes, pathfinding, parallax and game-clock timers | [recipes.md](references/recipes.md) |
 | Install the module, tiapp.xml, Alloy vs Classic wiring, assets, sprite sheets, atlases, lifecycle, testing | [project-setup.md](references/project-setup.md) |
 | What does NOT exist yet, what is coming, and how to work around it today | [roadmap.md](references/roadmap.md) |
+
+When this skill runs out — a brand-new feature, a demo's exact code, a build question — read upstream itself at https://github.com/m1ga/ti.game. Each file there is authoritative for something different:
+
+| Upstream file | What it is authoritative for |
+| --- | --- |
+| `README.md` | The module's own API documentation, and the demo index. Canonical, but it has lagged the code: verify a defaulted value against the source before relying on it |
+| `example/` | 26 runnable demos, one per feature area — the reference implementations this skill's recipes are distilled from |
+| `TODO.md` | What the maintainer has planned, with priorities. The source of [roadmap.md](references/roadmap.md) |
+| `tutorial.md` | A step-by-step first scene (sprite, animation, tap-to-move). For a human learning the module, not for looking things up |
+| `ios/README.md` | The iOS port's threading, coordinates and touch constants. Mostly for module developers; the app-facing facts are already here |
+| `AGENTS.md` | Rules for changing the module itself — irrelevant to building a game with it |
+| `android/src/ti/game/`, `ios/Classes/` | The truth. Defaults, clamping and edge cases in this skill were read here, not from prose |
 
 ## Before writing game code, check these
 

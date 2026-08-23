@@ -1,6 +1,6 @@
 # ti.game API reference
 
-Complete JS surface of `ti.game` as of upstream `main` on 2026-08-23, verified against the module source (`android/src/ti/game/*.java` and `engine/*.java`, mirrored by `ios/Classes/TG*`). Defaults come from the engine fields, not from prose. The manifest reads **`0.4.0`** since 2026-08-20, and that bump matters: the text engine (`createFont`/`createText`), `screenFixed`, `swept`, `collisionend`, `followPath`, animation chaining, `raycast`, `findPath`, the game-clock timers, `scrollFactor` and the `multiply`/`screen` blend modes all landed while the manifest still said `0.3.0`, so a build calling itself 0.3.0 has none of them. The version number is not a feature list either: `hitboxScaleX`/`hitboxScaleY` and text `maxWidth` landed on 2026-08-23 with the manifest still at `0.4.0`, so two builds calling themselves 0.4.0 can differ — check the build date, or feature-detect by reading the property **before** ever writing it (`typeof sprite.hitboxScaleX === 'undefined'` means the build predates it). Writing first proves nothing: an unknown property is stored on the Kroll proxy and reads back exactly as it was set.
+Complete JS surface of `ti.game` as of upstream `main` on 2026-08-23, verified against the module source (`android/src/ti/game/*.java` and `engine/*.java`, mirrored by `ios/Classes/TG*`). Defaults come from the engine fields, not from prose. The manifest reads **`0.4.0`** since 2026-08-20, and that bump matters: the text engine (`createFont`/`createText`), `screenFixed`, `swept`, `collisionend`, `followPath`, animation chaining, `raycast`, `findPath`, the game-clock timers, `scrollFactor` and the `multiply`/`screen` blend modes all landed while the manifest still said `0.3.0`, so a build calling itself 0.3.0 has none of them. The version number is not a feature list either: `hitboxScaleX`/`hitboxScaleY`, text `maxWidth`, `SpriteSheet.unload()`/`Font.unload()` and the LiveView renderer lifecycle all landed on 2026-08-23 with the manifest still at `0.4.0`, so two builds calling themselves 0.4.0 can differ — check the build date, or feature-detect by reading the property **before** ever writing it (`typeof sprite.hitboxScaleX === 'undefined'` means the build predates it). Writing first proves nothing: an unknown property is stored on the Kroll proxy and reads back exactly as it was set.
 
 Every property listed is **live**: reading returns the current native value, even mid-drag or mid-tween. Every property can also be passed to its `create*` factory. All durations crossing the JS boundary are **milliseconds** (the engine converts to seconds internally).
 
@@ -128,8 +128,9 @@ Create one sheet per texture and share it across every sprite that uses it — s
 | `frameCount` | Number of frames. `0` until the texture has loaded, for grid sheets |
 | `frameNames` | Sorted frame names — atlas sheets only |
 | `frameIndex(name)` | Index for an atlas frame name, `-1` if unknown |
+| `unload()` | Frees the GL texture on the next rendered frame, from the render thread. **Permanent** — sprites still using the sheet stop drawing. For level streaming: unload the finished level's atlases instead of accumulating GPU memory. Since 2026-08-23 |
 
-Textures upload to the GPU lazily on first use, from the render thread, and are re-created automatically after an EGL context loss.
+Textures upload to the GPU lazily on first use, from the render thread, and are re-created automatically after an EGL context loss. Releasing the proxy unloads its texture too, so a sheet that goes out of scope does not strand GPU memory.
 
 ## Sprite
 
@@ -307,6 +308,7 @@ const mono = Game.createFont({ image: 'assets/mono.png', charWidth: 9, charHeigh
 | `characters` | ASCII 32..126 | Grid mode: which characters the cells map to, row-major |
 | `smoothing` | `true` | Filters the glyph texture like a sheet. The built-in font is always crisp |
 | `lineHeight` | — | Read-only: the font's natural line height in px |
+| `unload()` | Method, not an option: frees the glyph texture exactly like `SpriteSheet.unload()`, and just as permanently. Since 2026-08-23 |
 
 A descriptor that fails to parse falls back to the built-in font and logs the error — the text still renders, in the wrong face, which is the symptom to recognize.
 
@@ -453,6 +455,8 @@ There is `collision` (enter) and `collisionend` (exit), but deliberately **no** 
 - **`swept` belongs on the fast mover, not on the target.** A stationary thin wall with `swept: true` changes nothing; the bullet is the sprite whose path needs testing.
 - **A swept bullet can enter and leave in consecutive frames.** If it crosses a thin target entirely, you get `collision` and then `collisionend` almost immediately — react on the enter.
 - **Text `width`/`height` are read-only in practice.** They report the laid-out block; to make text bigger use `scale`.
+- **`unload()` is permanent, not a cache eviction.** There is no reload: sprites and text still pointing at an unloaded sheet or font simply stop drawing. Unload a level's atlases after its sprites are gone, never to "free memory" on something still on screen.
+- **A tap is a press released within 300 ms**, inside the touch slop (the platform's scaled slop on Android, 8 pt × screen scale on iOS). Hold a button longer and you get `press` and `release` but no `tap` — which is why the demos drive held controls from `press`/`release` and reserve `tap` for discrete hits.
 - **`hitboxShape: 'circle'` also changes the touch area**, not just collisions.
 - **The hitbox scales do not change the touch area.** `hitTest` runs against the full drawn frame, so a sprite with `hitboxScale: 0.6` still takes taps out to its art's edges. Only the hitbox *shape* reaches touch. Shrink `width`/`height` if a tap target must match the collision box.
 - **`hitboxScaleX`/`hitboxScaleY` multiply `hitboxScale`, they do not replace it.** `hitboxScale: 0.85` with `hitboxScaleX: 0.66` gives an effective 0.561 on X and 0.85 on Y. Both default to `1`, so sprites that never set them are unaffected — and `0` still means zero, as everywhere else in the engine.

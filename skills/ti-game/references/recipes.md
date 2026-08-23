@@ -1,13 +1,14 @@
 # ti.game recipes by genre
 
-Working patterns distilled from the 25 official demos in `example/` and from a shipped Alloy game (Titanium Lander). Each recipe shows the part that is specific to the genre; the shared scaffolding is in [The scaffolding](#the-scaffolding) and is not repeated.
+Working patterns distilled from the 26 official demos in `example/` and from a shipped Alloy game (Titanium Lander). Each recipe shows the part that is specific to the genre; the shared scaffolding is in [The scaffolding](#the-scaffolding) and is not repeated.
 
-Every snippet uses only API that exists in upstream `main` as of 2026-08-23 (manifest `0.4.0`, unchanged since 2026-08-20 — the version number stopped tracking the code). Check [roadmap.md](roadmap.md) before reaching for anything not shown here.
+Every snippet uses only API that exists in upstream `main` at `df66122`, 2026-08-23 (manifest `0.4.0`, unchanged since 2026-08-20 — the version number stopped tracking the code). Check [roadmap.md](roadmap.md) before reaching for anything not shown here.
 
 ## Contents
 
+- [The 26 demos, and what each one is the reference for](#the-26-demos-and-what-each-one-is-the-reference-for)
 - [The scaffolding](#the-scaffolding)
-- [Cross-cutting patterns](#cross-cutting-patterns) — pooling, parallax, multitouch controls, HUD text, wrapped dialog, invisible triggers, enter/exit zones, patrol routes, line of sight, pathfinding, game-clock timers, hit-stop
+- [Cross-cutting patterns](#cross-cutting-patterns) — pooling, freeing textures, parallax, multitouch controls, HUD text, wrapped dialog, invisible triggers, seeing the hitbox, enter/exit zones, patrol routes, line of sight, pathfinding, game-clock timers, hit-stop
 - [Tap-to-flap](#tap-to-flap) (`flappy.js`)
 - [Platformer](#platformer) (`platformer.js`)
 - [Top-down / Zelda](#top-down--zelda) (`topdown.js`)
@@ -23,6 +24,39 @@ Every snippet uses only API that exists in upstream `main` as of 2026-08-23 (man
 - [Ropes and chains](#ropes-and-chains) (`rope.js`)
 - [Camera work](#camera-work) (`camera.js`)
 - [Visual effects](#visual-effects) (`blend.js`, `flip.js`, `timescale.js`, `demoscene.js`)
+
+## The 26 demos, and what each one is the reference for
+
+`example/` is the module's real documentation: every demo is a runnable app, and upstream keeps them current with the engine. When a recipe here is not enough, open the demo — it compiles today.
+
+| Demo | The reference implementation of | Covered here |
+| --- | --- | --- |
+| `basic.js` | Sheets, animations, drag/pinch/rotate, tween chaining | [The scaffolding](#the-scaffolding) |
+| `puzzle.js` | Drag & drop with snapping, press-to-lift, one piece per finger | [Cards and board games](#cards-and-board-games) |
+| `flappy.js` | Gravity + tap impulse, score zones, wrapping parallax | [Tap-to-flap](#tap-to-flap) |
+| `platformer.js` | `solidWith`, `land`, `oneWay` stairs, a moving platform that carries you, d-pad | [Platformer](#platformer) |
+| `volley.js` | `restitution`, JS hit response, an AI timer | [Ball sports / breakout physics](#ball-sports--breakout-physics) |
+| `racing.js` | `carMode` drift, skid marks, lap and checkpoint logic | [Top-down racer](#top-down-racer) |
+| `cards.js` | Deck dealing, fanned hand, selection tweens, idle wobble | [Cards and board games](#cards-and-board-games) |
+| `asteroids.js` | `thrust`/`angularVelocity`, `wrapAround`, bullet pooling, additive bolts | [Asteroids / space shooter](#asteroids--space-shooter) |
+| `topdown.js` | Tile map from a string array, `ySort` depth, follower NPC | [Top-down / Zelda](#top-down--zelda) |
+| `skate.js` | Endless runner: pooled obstacles, jump button, pixel-art parallax | [Endless runner](#endless-runner) |
+| `pointclick.js` | Tap-to-walk with `findPath` + `followPath`, verb coin, hotspots | [Point & click adventure](#point--click-adventure) |
+| `particles.js` | Fountain, tap bursts, a smoke trail following a dragged sprite | [Particles](#particles) |
+| `rhythm.js` | Pooled notes on native velocity, `press` pads, timing windows | [Rhythm game](#rhythm-game) |
+| `camera.js` | Dead-zone follow, `cameraBounds`, zoom, shake, `cameraEffect`, `scrollFactor` | [Camera work](#camera-work) |
+| `rope.js` | Verlet ropes from a dragged head and from a fixed anchor | [Ropes and chains](#ropes-and-chains) |
+| `flip.js` | `flipX`/`flipY` driven by movement; tap inverts gravity | [Visual effects](#visual-effects) |
+| `hitbox.js` | `debug: true` overlays, and why the per-axis hitbox scales exist | [Seeing the hitbox](#seeing-the-hitbox--hitboxjs) |
+| `blend.js` | The four blend modes side by side, `flash()` variants | [Visual effects](#visual-effects) |
+| `text.js` | Screen-fixed HUD, world-space labels, text buttons, wrapped dialog | [HUD](#hud--textjs-flappyjs) |
+| `swept.js` | `swept: true` vs tunneling, same bullets, rising speed | [Object pooling](#object-pooling) |
+| `path.js` | Smoothed circuits, sharp patrols, `play(name, { then })` chains | [Patrol routes and animation chains](#patrol-routes-and-animation-chains--pathjs) |
+| `raycast.js` | Line of sight, ledge probes, tap-fired hitscan | [Line of sight, ledge probes and hitscan](#line-of-sight-ledge-probes-and-hitscan--raycastjs) |
+| `zones.js` | The `collision`/`collisionend` lifecycle, including despawned partners | [Zones you can be inside of](#zones-you-can-be-inside-of-enter--exit--zonesjs) |
+| `demoscene.js` | Sine scrollers and copper bars built from `followPath` circles | [Visual effects](#visual-effects) |
+| `maze.js` | A* over a tile maze, `simplify: false` route visualization, a re-pathing hound | [Pathfinding around obstacles](#pathfinding-around-obstacles--mazejs-pointclickjs) |
+| `timescale.js` | `timeScale` slow motion and freeze; game clock vs `setInterval` | [Timers on the game clock](#timers-on-the-game-clock) |
 
 ## The scaffolding
 
@@ -138,6 +172,19 @@ The `generation` counter matters: without it, a timeout fired for an old shot de
 `swept: true` (compared side by side in `swept.js`) is what keeps a fast bolt from crossing a rock between two frames without ever overlapping it. The asteroids demo predates it and inflates the hitbox instead (`hitboxScale: 1.4`) — that works, at the price of counting near misses as hits. Prefer `swept`, and reserve `hitboxScale` — with `hitboxScaleX`/`hitboxScaleY` when the art's fit differs per axis — for fairness tuning.
 
 Recycling a sprite with `visible = false` fires `collisionend` on anything it was touching. Handlers that treat separation as "the player walked away" need to tolerate a despawn.
+
+### Freeing a level's textures
+
+Pooling recycles sprites; it does not free the **texture** behind them. A game that streams worlds accumulates every atlas it has ever loaded until the GL context dies. `unload()` releases one on the next rendered frame.
+
+```javascript
+function unloadLevel(level) {
+	level.sprites.forEach((s) => gameView.remove(s));
+	level.sheets.forEach((sheet) => sheet.unload());   // only once nothing draws from them
+}
+```
+
+It is permanent — not an eviction that reloads on demand. A sprite still pointing at an unloaded sheet stops drawing, silently. A single-level game should not call it: the textures die with the window.
 
 ### Parallax
 
@@ -319,6 +366,19 @@ car.addEventListener('collision', (e) => {
 	}
 });
 ```
+
+### Seeing the hitbox — `hitbox.js`
+
+`debug: true` on the GameView is the whole tuning workflow, and the demo exists to make the overlays legible: two identical adventurers walk into the same wall, one untuned and one with `hitboxScaleX: 0.62` / `hitboxScaleY: 0.92`. The untuned one stops a body's width short and hovers above the floor on his frame's padding; the tuned one goes flush and lands his feet. Tapping toggles the tuning live, so the green box snaps between frame and drawing.
+
+```javascript
+const gameView = Game.createGameView({ debug: true });   // green = collision AABB, blue = drawn frame, orange = anchor
+
+hero.hitboxScaleX = 0.62;   // both are live: write them and watch the box move
+hero.hitboxScaleY = 0.92;
+```
+
+Read the two boxes as a pair: green is what collides, blue is what draws **and what takes taps**. Green much smaller than blue on one axis only is exactly the case the per-axis scales exist for; green and blue identical on a sprite whose art has padding is the bug the demo dramatizes.
 
 ### Zones you can be inside of (enter / exit) — `zones.js`
 
