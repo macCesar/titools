@@ -1,15 +1,15 @@
 # Status — 2026-08-23
 
-**Phase:** live and maintained. **v4.11.0 shipped on both channels**, working tree clean, 0 commits unpushed, nothing in flight.
+**Phase:** live and maintained. **v4.12.0 shipped on both channels**, working tree clean, 0 commits unpushed, nothing in flight.
 
-## Release state — both channels on 4.11.0
+## Release state — both channels on 4.12.0
 
 | Channel | Version | Verified today |
 |---|---|---|
-| npm | 4.11.0 | `curl registry.npmjs.org/@maccesar%2Ftitools` → `dist-tags.latest = 4.11.0` |
-| Claude Code marketplace | 4.11.0 | `plugin.json` on `origin/main` reads 4.11.0, `git ls-remote --tags origin v4.11.0` resolves, GitHub release created |
+| npm | 4.12.0 | `curl registry.npmjs.org/@maccesar%2Ftitools` → `dist-tags.latest = 4.12.0` |
+| Claude Code marketplace | 4.12.0 | `plugin.json` on `origin/main` reads 4.12.0, `git ls-remote --tags origin v4.12.0` resolves, GitHub release created |
 
-`publish.yml` ran green on the `v4.11.0` tag (`gh run list --workflow=publish.yml`), which is what put the package on npm — nothing was published by hand. **Do not verify with `npm view`**: it served a stale version from its local cache for minutes after a successful publish during the 4.6.1 release. Query the registry over HTTP.
+`publish.yml` ran green on the `v4.12.0` tag (`gh run list --workflow=publish.yml`), which is what put the package on npm — nothing was published by hand. **Do not verify with `npm view`**: it served a stale version from its local cache for minutes after a successful publish during the 4.6.1 release. Query the registry over HTTP.
 
 The suite is **155 tests**, run under an empty `HOME` before the push, not just against this machine's real one:
 
@@ -19,30 +19,40 @@ FAKEHOME=$(mktemp -d) && HOME="$FAKEHOME" npm test; rm -rf "$FAKEHOME"
 
 That control exists because v4.6.0 was tagged, failed `npm test` on the runner and never reached npm — two tests asserted against a `HOME` that already had skills installed.
 
-## Shipped in 4.11.0 — `ti-game` catches up with per-axis hitboxes and word wrap
+## Shipped in 4.12.0 — `unload()`, the LiveView lifecycle, and the demo index
 
-Upstream merged both on 2026-08-23: `hitboxScaleX`/`hitboxScaleY` (PR #11, the maintainer's own) and `maxWidth` word wrap on text sprites (PR #12). Word wrap was sitting in the skill's roadmap under "does not exist yet" with "break the lines yourself" as its workaround, and the skill description warned against inventing it.
+Upstream merged César's PR #13 (stale renderers surviving a LiveView reload) and Michael extended it the same day in `lifecycle clean-ups`: the retiring runtime's `SoundPool`, `MediaPlayer`s and audio proxies go down with the render loops, and Android's `GameViewProxy.releaseViews()` drops the view reference so the `GLSurfaceView` and its Activity can be collected. He also added `unload()` on sheets and fonts, and `example/hitbox.js`.
 
-Everything was verified against the module source (`Sprite.java`, `TextSprite.java`, mirrored by `TGSprite.m` / `TGTextSprite.m`), not the module README. Facts the README does not state and the skill now carries: the per-axis scales multiply `hitboxScale` rather than replace it; circle hitboxes skip them; **neither reaches the touch area**, because `hitTest` runs against the full drawn frame; `maxWidth` is font-space px *before* `scale`; `align` works against the block's own width, not the wrap column.
+Documented from the diff `fa26a0a..df66122`, not from the release notes. The facts that matter to an app author: `unload()` is **permanent**, so a sprite still pointing at an unloaded sheet stops drawing silently — it is level streaming, not a cache; releasing the proxy unloads too; and nothing in app code changes for LiveView, but a scene still stuttering after ten reloads dates the build.
 
-A completeness pass over the whole module found nothing else missing — every `@Kroll` property and method, every creation option and all sixteen event names already appear in `api.md`. The clone at `~/Developer/git-clones/ti.game` is level with `upstream/main` (`fa26a0a`) plus one local commit of VS Code settings.
+The skill also gained the navigation César asked for: `recipes.md` opens with an index of all 26 demos (what each is the reference implementation of, which recipe covers it), and `SKILL.md` closes with what each upstream file is authoritative for. `ios/README.md` yielded two app-facing facts worth keeping — a tap is a press released within 300 ms, inside the touch slop, verified in `TouchController` on both platforms.
 
-**The lesson that keeps recurring here: `ti.game`'s manifest version does not identify a feature set.** `project-setup.md` said 4.10.0-era `0.4.0` "carries everything this skill documents" — it stopped being true three days later, when both new features landed with the manifest untouched. That section is now a table of what each build is missing, and it tells the reader to feature-detect by reading a property **before** writing it: `KrollProxy.setProperty` stores unknown names, so write-then-read always answers yes (checked in the SDK source).
+## Shipped in 4.11.0 — per-axis hitboxes and word wrap
 
-## Release cadence of the skill — five catch-ups in a week
+`hitboxScaleX`/`hitboxScaleY` (PR #11) and `maxWidth` word wrap (PR #12). Verified against the module source: the per-axis scales multiply `hitboxScale` rather than replace it, circle hitboxes skip them, and **neither reaches the touch area**, because `hitTest` runs against the full drawn frame. `maxWidth` is font-space px *before* `scale`.
 
-4.7.0 shipped the skill, then 4.8.0, 4.9.0, 4.10.0 and 4.11.0 each caught it up with upstream. That is the actual maintenance shape of `ti-game`: the module gains features faster than it versions them, so the skill's roadmap table is the thing that goes stale, and `EXAMPLE-PROMPTS.md`'s eval checklist right behind it (it has now twice named an API that had already shipped — `createText`, then word wrap).
+A completeness pass over the whole module found nothing else missing — every `@Kroll` property and method, every creation option and all sixteen event names appear in `api.md`.
+
+## `ti.game`'s version number is not a feature set — this keeps biting
+
+Six features have now landed on top of the `0.4.0` manifest without moving it: the per-axis hitboxes, word wrap, both `unload()`s and the LiveView lifecycle. `project-setup.md` used to claim `0.4.0` "carries everything this skill documents"; it is now a table of what each build is missing, and it tells the reader to feature-detect by reading a property **before** writing it — `KrollProxy.setProperty` stores unknown names, so write-then-read always answers yes (checked in the SDK source).
+
+The clone at `~/Developer/git-clones/ti.game` tracks `upstream/main` at `df66122`.
+
+## Release cadence of the skill — six catch-ups in a week
+
+4.7.0 shipped the skill; 4.8.0 through 4.12.0 each caught it up with upstream. That is the maintenance shape of `ti-game`: the module gains features faster than it versions them, so the roadmap table goes stale first and `EXAMPLE-PROMPTS.md`'s eval checklist right behind it — it has twice named an API that had already shipped (`createText`, then word wrap).
 
 ## Sibling parity — aiskills 1.21.0
 
 | Repo | npm | Tests | Publish workflow | `release-docs` test |
 |---|---|---|---|---|
-| titools | 4.11.0 | 155 | yes | yes |
+| titools | 4.12.0 | 155 | yes | yes |
 | aiskills | 1.21.0 | 111 | yes | **no** |
 
 Both verified today: aiskills' `package.json` and `plugin.json` both read 1.21.0, the registry agrees, its tree is clean with nothing unpushed, and its suite passes 111/111.
 
-Nothing in 4.11.0 touched shared machinery — it is skill content only, so there was nothing to port.
+Neither 4.11.0 nor 4.12.0 touched shared machinery — both are skill content only, so there was nothing to port.
 
 ## Open, not blocked
 
@@ -58,7 +68,7 @@ Nothing in 4.11.0 touched shared machinery — it is skill content only, so ther
 
 ## Local install
 
-This machine runs TiTools via `npm link` — verified today: `/usr/local/bin/titools` symlinks into `lib/node_modules/@maccesar/titools/bin/titools.js` and `titools --version` prints 4.11.0. `npm publish` refreshes *other people's* installs, never this one; `isDevMode()` detects the repo's `.git` and skips `npm update -g` so the link survives.
+This machine runs TiTools via `npm link` — verified today: `/usr/local/bin/titools` symlinks into `lib/node_modules/@maccesar/titools/bin/titools.js` and `titools --version` prints 4.12.0. `npm publish` refreshes *other people's* installs, never this one; `isDevMode()` detects the repo's `.git` and skips `npm update -g` so the link survives.
 
 ## Deployment
 
