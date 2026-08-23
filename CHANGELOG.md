@@ -6,6 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.12.0] - 2026-08-23
+
+### Changed — `ti-game` covers `unload()`, the LiveView lifecycle and the hitbox demo
+
+Upstream merged the LiveView renderer fix (PR #13) and then extended it in `lifecycle clean-ups`, plus shipped `example/hitbox.js`. Read from the diff `fa26a0a..df66122` rather than from the release notes.
+
+`spriteSheet.unload()` and `font.unload()` free a GL texture on the next rendered frame, from the render thread, and releasing the proxy does the same. It is level streaming, not a cache eviction: the unload is permanent, so a sprite still pointing at an unloaded sheet stops drawing, silently. A single-level game should not call it at all.
+
+A LiveView reload now retires the previous runtime's render loops, `SoundPool`, `MediaPlayer`s and audio proxies, and Android's `GameViewProxy.releaseViews()` drops the view reference so the `GLSurfaceView` — and the Activity it holds — can be collected. Nothing in app code changes, and it does not replace ordinary cleanup: a scene that still stutters after ten reloads dates the build.
+
+`example/hitbox.js` makes the tuning workflow visible — two identical adventurers, one untuned and one with the per-axis scales, walking into the same wall — so the demo count is 26, not 25.
+
+All four landed after the `0.4.0` manifest, like the previous two, so `project-setup.md`'s table of what each build is missing names them as well.
+
+### Added — the upstream sources the skill is distilled from, made navigable
+
+`recipes.md` now opens with an index of all 26 demos: what each one is the reference implementation of, and which recipe covers it. `SKILL.md` closes with what each upstream file is authoritative for — `README.md` (canonical but it has lagged the code), `example/`, `TODO.md`, `tutorial.md`, `ios/README.md`, `AGENTS.md`, and the source, which is the truth.
+
+Two facts were harvested from `ios/README.md` and verified in `TouchController` on both platforms: a tap is a press released within 300 ms, inside the touch slop. That is why the demos drive held controls from `press`/`release` and reserve `tap` for discrete hits.
+
 ## [4.11.0] - 2026-08-23
 
 ### Changed — `ti-game` catches up with per-axis hitboxes and text word wrap
