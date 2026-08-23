@@ -2,12 +2,12 @@
 
 Working patterns distilled from the 25 official demos in `example/` and from a shipped Alloy game (Titanium Lander). Each recipe shows the part that is specific to the genre; the shared scaffolding is in [The scaffolding](#the-scaffolding) and is not repeated.
 
-Every snippet uses only API that exists in upstream `main` as of 2026-08-20 (manifest `0.4.0`). Check [roadmap.md](roadmap.md) before reaching for anything not shown here.
+Every snippet uses only API that exists in upstream `main` as of 2026-08-23 (manifest `0.4.0`, unchanged since 2026-08-20 — the version number stopped tracking the code). Check [roadmap.md](roadmap.md) before reaching for anything not shown here.
 
 ## Contents
 
 - [The scaffolding](#the-scaffolding)
-- [Cross-cutting patterns](#cross-cutting-patterns) — pooling, parallax, multitouch controls, HUD text, invisible triggers, enter/exit zones, patrol routes, line of sight, pathfinding, game-clock timers, hit-stop
+- [Cross-cutting patterns](#cross-cutting-patterns) — pooling, parallax, multitouch controls, HUD text, wrapped dialog, invisible triggers, enter/exit zones, patrol routes, line of sight, pathfinding, game-clock timers, hit-stop
 - [Tap-to-flap](#tap-to-flap) (`flappy.js`)
 - [Platformer](#platformer) (`platformer.js`)
 - [Top-down / Zelda](#top-down--zelda) (`topdown.js`)
@@ -135,7 +135,7 @@ function fire(x, y, vx, vy) {
 
 The `generation` counter matters: without it, a timeout fired for an old shot deactivates the *new* bullet occupying that slot.
 
-`swept: true` (compared side by side in `swept.js`) is what keeps a fast bolt from crossing a rock between two frames without ever overlapping it. The asteroids demo predates it and inflates the hitbox instead (`hitboxScale: 1.4`) — that works, at the price of counting near misses as hits. Prefer `swept`, and reserve `hitboxScale` for fairness tuning.
+`swept: true` (compared side by side in `swept.js`) is what keeps a fast bolt from crossing a rock between two frames without ever overlapping it. The asteroids demo predates it and inflates the hitbox instead (`hitboxScale: 1.4`) — that works, at the price of counting near misses as hits. Prefer `swept`, and reserve `hitboxScale` — with `hitboxScaleX`/`hitboxScaleY` when the art's fit differs per axis — for fairness tuning.
 
 Recycling a sprite with `visible = false` fires `collisionend` on anything it was touching. Handlers that treat separation as "the player walked away" need to tolerate a despawn.
 
@@ -265,6 +265,28 @@ Scaling from `W` is what replaces `fontSize`: a bitmap font has one native size,
 Because a label is a sprite, the HUD gets the whole toolbox for free — `animate()` to pop a score on change, `tintColor` per state, `glowColor` on a title, `idleAnimation` for a gentle wobble, and `tap` handlers so a `[ RESET ]` label works as a button with no Titanium view behind it.
 
 Drop `screenFixed` and the same label becomes world furniture: signposts, floating damage numbers, a name over an NPC — it scrolls with everything else.
+
+A dialog box is one long string with `maxWidth`: the engine breaks the lines on word boundaries and re-wraps every time `text` is written, so the source keeps no hand-placed `\n`.
+
+```javascript
+const UNIT = Math.max(1, Math.round(W / 240));
+const dialog = Game.createText({
+	text: 'TAP FOR POND WISDOM',
+	maxWidth: Math.round(W * 0.55 / UNIT),   // font-space px: divide by the scale
+	align: 'center',
+	lineSpacing: 1.3,
+	scale: UNIT,
+	x: W / 2,
+	y: H * 0.78,
+	zIndex: 3
+});
+dialog.addEventListener('tap', () => {
+	dialog.text = lines[i++ % lines.length];   // re-wraps natively
+	dialog.flash('#fff', 150);
+});
+```
+
+`maxWidth` is measured before `scale`, which is the only trap here — pass screen pixels straight in and the block comes out `scale` times too wide. `align` positions the lines against each other (the block's own width), not inside the wrap column, so anchor the sprite where the text should sit. A word longer than `maxWidth` overflows instead of breaking mid-word.
 
 Overlaid `Ti.UI.Label` views remain the answer for text the engine's font cannot draw (accents, system fonts, right-to-left) and for real UI: menus, dialogs, text inputs.
 
@@ -505,6 +527,7 @@ const pig = Game.createSprite({
 	height: PIG_SIZE,
 	zIndex: 10,
 	hitboxScale: 0.7,                 // the art does not fill the frame
+	hitboxScaleY: 0.85,               // ...and the pig is wider than he is tall
 	collidesWith: ['pipe', 'ground', 'score', 'ceiling'],
 	animations: { fly: { frames: [0, 1, 2, 1], fps: 10, loop: true } }
 });
@@ -554,6 +577,7 @@ const player = Game.createSprite({
 	zIndex: 10,
 	gravity: GRAVITY,                        // H * 2.2
 	hitboxScale: 0.85,
+	hitboxScaleX: 0.66,                      // the blob is 38px wide in a 64px frame, but nearly full height
 	solidWith: ['solid', 'trampoline'],
 	animations: {
 		idle: { frames: [0], fps: 1, loop: true },

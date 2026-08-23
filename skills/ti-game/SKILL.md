@@ -1,13 +1,13 @@
 ---
 name: ti-game
-description: "Use when building or reviewing 2D games with the ti.game module for Titanium SDK (Android and iOS) — sprites, sprite sheets, animations, tweens, physics (gravity, solids, carMode drifting, thrust), collision groups, trigger zones, swept AABB, raycast, paths, bitmap text, particles, ropes, camera follow/zoom/shake, parallax, sound, drag & drop, multitouch. AUTO-DETECT: if tiapp.xml declares ti.game or any file calls require('ti.game'), invoke BEFORE writing ANY game code. Also trigger on: game, juego, sprite, spritesheet, platformer, endless runner, top-down, shooter, racer, flappy, breakout, rhythm, cards, puzzle, collision, hitbox, raycast, line of sight, pathfinding, maze, patrol, parallax, particles, HUD, score, game loop, 60 fps, GameView. ti.game is NOT Phaser, Godot or Box2D: you never write a game loop, never move a sprite from setInterval, and several familiar features (tilemap layer, sprite parenting, joystick, word wrap) do not exist yet — check references/roadmap.md before inventing an API."
+description: "Use when building or reviewing 2D games with the ti.game module for Titanium SDK (Android and iOS) — sprites, sprite sheets, animations, tweens, physics (gravity, solids, carMode drifting, thrust), collision groups, trigger zones, swept AABB, raycast, paths, bitmap text, particles, ropes, camera follow/zoom/shake, parallax, sound, drag & drop, multitouch. AUTO-DETECT: if tiapp.xml declares ti.game or any file calls require('ti.game'), invoke BEFORE writing ANY game code. Also trigger on: game, juego, sprite, spritesheet, platformer, endless runner, top-down, shooter, racer, flappy, breakout, rhythm, cards, puzzle, collision, hitbox, raycast, line of sight, pathfinding, maze, patrol, parallax, particles, HUD, score, game loop, 60 fps, GameView. ti.game is NOT Phaser, Godot or Box2D: you never write a game loop, never move a sprite from setInterval, and several familiar features (tilemap layer, sprite parenting, joystick, gamepads) do not exist yet — check references/roadmap.md before inventing an API."
 argument-hint: "[genre or feature]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(node *)
 ---
 
 # ti.game — 2D game engine for Titanium SDK
 
-`ti.game` is a native OpenGL ES 2.0 sprite engine exposed to JavaScript, written and maintained by **Michael Gangolf (m1ga)** — upstream is https://github.com/m1ga/ti.game. This skill tracks upstream `main` as of **2026-08-20**, manifest **`0.4.0`** — that bump is the first in a long run of feature landings (the text engine, `screenFixed`, `swept` collisions, `collisionend`, `followPath`, animation chaining, `raycast`, `findPath`, game-clock timers, `scrollFactor` parallax and the `multiply`/`screen` blend modes all shipped while it still said `0.3.0`), so anything still calling itself 0.3.0 has none of them. When upstream and any fork disagree, upstream wins. Same JS API on Android and iOS — the iOS side is a class-per-class Obj-C twin of the Android engine.
+`ti.game` is a native OpenGL ES 2.0 sprite engine exposed to JavaScript, written and maintained by **Michael Gangolf (m1ga)** — upstream is https://github.com/m1ga/ti.game. This skill tracks upstream `main` as of **2026-08-23**, manifest **`0.4.0`** — that bump is the first in a long run of feature landings (the text engine, `screenFixed`, `swept` collisions, `collisionend`, `followPath`, animation chaining, `raycast`, `findPath`, game-clock timers, `scrollFactor` parallax and the `multiply`/`screen` blend modes all shipped while it still said `0.3.0`), so anything still calling itself 0.3.0 has none of them. The number lags the code in the other direction too: per-axis hitboxes (`hitboxScaleX`/`hitboxScaleY`) and text word wrap (`maxWidth`) landed on 2026-08-23 with the manifest still at `0.4.0`, so date the build rather than trusting the version. When upstream and any fork disagree, upstream wins. Same JS API on Android and iOS — the iOS side is a class-per-class Obj-C twin of the Android engine.
 
 Works in **both Classic and Alloy** projects. Nothing here depends on PurgeTSS.
 
@@ -33,6 +33,7 @@ The practical consequence, and the single biggest mistake to avoid:
 | Parallax layers under a moving camera | hand-scrolled layers | `scrollFactor` on each layer |
 | Camera that follows the player | timer writing `cameraX` | `gameView.follow(sprite, options)` |
 | A score, a title, a label | `Ti.UI.Label` overlays | `Game.createText({ text, screenFixed: true })` |
+| A dialog box that fits the screen | breaking the lines with `\n` after measuring in JS | `maxWidth` on the text sprite |
 | A bullet fast enough to skip past a thin wall | shrinking the time step | `swept: true` on the bullet |
 | To know the player *left* a zone | polling on a timer | the `collisionend` event |
 | An enemy on a fixed patrol route | chained `animate()` legs | `sprite.followPath(points, { loop })` |
@@ -140,7 +141,7 @@ And when the question is "how do I get over there?", `gameView.findPath(from, to
 
 **A sprite with `width`/`height` but no `sheet` renders nothing and works as an invisible trigger.** Score zones, goals, checkpoints, ceilings, kill floors and walls are all built this way in the official demos. This is the idiomatic way to add logic to a scene without art.
 
-Tune fairness with `hitboxScale` (art rarely fills its frame; slightly small hitboxes feel better) and `hitboxShape: 'circle'` for balls and rocks — circles also resolve against solids along the contact normal, so they bounce off corners diagonally instead of like a box. Turn on `debug: true` per sprite, or on the GameView for everything, to see green collision AABBs, blue touch bounds and the orange anchor dot.
+Tune fairness with `hitboxScale` (art rarely fills its frame; slightly small hitboxes feel better), `hitboxScaleX`/`hitboxScaleY` when the drawing fills its frame by a different fraction on each axis (a 20×44 hero in a 32×48 frame wants `0.62` wide and `0.92` tall — the two multiply `hitboxScale` rather than replace it), and `hitboxShape: 'circle'` for balls and rocks — circles also resolve against solids along the contact normal, so they bounce off corners diagonally instead of like a box. Turn on `debug: true` per sprite, or on the GameView for everything, to see green collision AABBs, blue touch bounds and the orange anchor dot.
 
 ## Performance rules that actually matter
 
@@ -162,6 +163,8 @@ const score = Game.createText({ text: 'SCORE 0', screenFixed: true, x: W / 2, y:
 gameView.add(score);
 score.text = 'SCORE 10';   // re-lays out natively
 ```
+
+One long string wraps itself: `maxWidth` breaks lines on word boundaries and re-wraps every time `text` changes, so a dialog box needs no hand-broken `\n`. It is measured in font-space px, *before* `scale` — divide the screen width you want by the scale you are drawing at.
 
 `screenFixed: true` works on **any** sprite: `x`/`y` become surface coordinates and camera position, zoom and shake are ignored, while touch still maps back. That is the HUD pattern — the score stays put while the camera follows the player. Without it, text is world-space and scrolls past like scenery (signposts, floating damage numbers).
 
@@ -202,10 +205,10 @@ Read the one that matches the task instead of guessing — the API surface below
 2. Does any timer move a sprite? Replace it with velocity, gravity, a tween, `carMode` or `thrust`.
 3. Are all the level's objects added in one `gameView.add([...])` call?
 4. Does every moving body have the right model — `solidWith` to be blocked, `collidesWith` to be notified?
-5. Is `hitboxScale` set on sprites whose art does not fill the frame?
+5. Is `hitboxScale` set on sprites whose art does not fill the frame — with `hitboxScaleX`/`hitboxScaleY` when the fit differs per axis?
 6. Do triggers (scores, goals, kill zones) use sheet-less sprites instead of visible art?
 7. Is every `createSound`, `setInterval` and `setTimeout` stopped when the window closes?
 8. Is the HUD `Game.createText` with `screenFixed: true`, rather than a stack of overlaid labels?
 9. Does anything travel far enough per frame to tunnel? Give it `swept: true`.
 10. Does a timer drive game logic (spawn waves, AI ticks, respawns)? Move it to `gameView.every`/`after` so it obeys pause and slow motion.
-11. Are you using an API that actually exists? Anything involving tilemaps, sprite parenting, joysticks, gamepads or word-wrapped text — check [roadmap.md](references/roadmap.md) first.
+11. Are you using an API that actually exists? Anything involving tilemaps, sprite parenting, joysticks, gamepads or slopes — check [roadmap.md](references/roadmap.md) first.
