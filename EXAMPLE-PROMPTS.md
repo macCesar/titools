@@ -264,6 +264,22 @@ Expect:
 - A word longer than `maxWidth` overflows rather than breaking mid-word; `align` positions lines against the block, not inside the wrap column
 
 ```
+"My game loads a new world every level and the memory keeps climbing until it dies. I'm already removing the old sprites."
+```
+Expect:
+- Removing sprites does not free the **texture** — `spriteSheet.unload()` / `font.unload()` release the GL texture on the next rendered frame
+- Permanent, not an eviction: unload only after nothing draws from that sheet, or the sprites still pointing at it go silently blank
+- Releasing the proxy unloads too; a single-level game should not call it at all
+
+```
+"Every time LiveView reloads, the game gets slower — after a few reloads it's crawling."
+```
+Expect:
+- Since 2026-08-23 the module retires the previous runtime's render loops, `SoundPool`, `MediaPlayer`s and audio proxies on its own — app code needs no reload guard
+- A build that still stacks game loops predates that commit; the manifest still says `0.4.0` either way, so date the build
+- Your own JS timers, sounds and listeners are still yours to stop on a normal window close
+
+```
 "Can I use ti.game in an Alloy project or is it app.js only?"
 ```
 Expect:
