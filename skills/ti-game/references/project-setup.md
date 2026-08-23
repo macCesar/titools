@@ -48,7 +48,7 @@ Pinning `version` is worth the extra attribute: with two module versions install
 | `0.3.0` before 2026-08-18 | `createText`, `createFont`, `screenFixed`, `swept`, `collisionend` |
 | `0.3.0` before 2026-08-19 | also `followPath`, `play(name, { then })`, `raycast`, `after`/`every`, `scrollFactor`, `multiply`/`screen` blends |
 | `0.3.0` before 2026-08-19 16:00 UTC+2 | additionally bleeds at grid-frame edges on smoothed sheets |
-| `0.4.0` — including the 2026-08-20 release zip | `hitboxScaleX`/`hitboxScaleY` and text `maxWidth`, both added on 2026-08-23 with the manifest untouched |
+| `0.4.0` — including the 2026-08-20 release zip | `hitboxScaleX`/`hitboxScaleY`, text `maxWidth`, `SpriteSheet.unload()`/`Font.unload()` and the LiveView renderer lifecycle, all added on 2026-08-23 with the manifest untouched |
 
 The published releases are pre-releases and lag `main`: the newest one is `0.4.0` (2026-08-20). If a call that this skill documents is `undefined` at runtime, check the manifest version *and the build date* before hunting for a typo, and rebuild from upstream `main`. More reliable than either is feature-detecting in code: read the property **before** ever writing it (`typeof sprite.hitboxScaleX === 'undefined'` means the build predates it). Write-then-read always says yes, because an unknown property is stored on the Kroll proxy and reads back exactly as it was set.
 
@@ -295,6 +295,29 @@ function listen(target, eventName, handler) {
 ```
 
 For restart-without-teardown (a retry button), `removeAllSprites()` plus rebuilding is simplest, but pooling and repositioning is cheaper: reset positions, zero velocities, `clearTweens()`, and re-`play()` the animations.
+
+### GPU textures: `unload()`
+
+Sheets and fonts hold GL textures, and until 2026-08-23 nothing but losing the context ever freed one. `spriteSheet.unload()` and `font.unload()` release the texture on the next rendered frame, from the render thread. Releasing the proxy does the same, so a sheet that goes out of scope no longer strands its memory.
+
+This is for **level streaming** — a game that loads world 2's atlases while world 1's are still resident. It is not a cache: the unload is permanent, and any sprite still pointing at that sheet stops drawing.
+
+```javascript
+function unloadLevel(level) {
+	level.sprites.forEach(s => gameView.remove(s));
+	level.sheets.forEach(sheet => sheet.unload());   // after the sprites are gone
+}
+```
+
+A single-level game with a handful of sheets should not call it at all: the textures die with the window.
+
+### LiveView reloads
+
+A LiveView reload replaces Titanium's JS runtime while the native side survives, which used to leave the previous `GameView`'s render loop running — every reload added another GL thread, and the audio engine handed the new runtime sample ids the old one still owned.
+
+Since 2026-08-23 the module retires the previous generation itself: stale renderers are shut down (the `GLSurfaceView` is detached, which stops its `GLThread`), the old `SoundPool`, `MediaPlayer`s and audio proxies are released, and on Android `GameViewProxy.releaseViews()` drops the view reference so the `GLSurfaceView` — and the Activity it holds — can be collected after a window close. iOS does the same by hooking the LiveView restart and shutting down the views registered to the retiring runtime context.
+
+**Nothing in your code needs to change**, and this is not a substitute for the cleanup above: your own timers, sounds and listeners still belong to you on a normal window close. It does mean that a reload no longer accumulates game loops, so a stuttering scene after ten reloads is a symptom that dates the build.
 
 ## Debugging and tuning
 
