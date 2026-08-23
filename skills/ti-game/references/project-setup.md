@@ -41,7 +41,16 @@ Then declare it in `tiapp.xml`. The iOS platform key is `iphone`, not `ios`:
 
 Pinning `version` is worth the extra attribute: with two module versions installed side by side, an unpinned entry silently picks the highest one.
 
-The manifest went `0.3.0` → **`0.4.0`** on 2026-08-20, after months of feature landings under the old number — so `0.4.0` is the first version string that actually means something: it carries everything this skill documents. `0.3.0` does not, and there are several different `0.3.0` builds in the wild. One built before 2026-08-18 has no `createText`, no `createFont`, no `screenFixed`, no `swept` and no `collisionend`; one built before 2026-08-19 also lacks `followPath`, `play(name, { then })`, `raycast`, `after`/`every`, `scrollFactor` and the `multiply`/`screen` blend modes; one built before 2026-08-19 16:00 UTC+2 additionally bleeds at grid-frame edges on smoothed sheets. `findPath` exists only in `0.4.0`. If a call that this skill documents is `undefined` at runtime, check the manifest version first and rebuild from upstream `main` rather than hunting for a typo.
+**The version string does not identify a feature set — the build date does.** The manifest went `0.3.0` → **`0.4.0`** on 2026-08-20, after months of feature landings under the old number, and then kept accepting features without moving again. So both numbers cover several incompatible builds:
+
+| A build from | Missing, compared to what this skill documents |
+| --- | --- |
+| `0.3.0` before 2026-08-18 | `createText`, `createFont`, `screenFixed`, `swept`, `collisionend` |
+| `0.3.0` before 2026-08-19 | also `followPath`, `play(name, { then })`, `raycast`, `after`/`every`, `scrollFactor`, `multiply`/`screen` blends |
+| `0.3.0` before 2026-08-19 16:00 UTC+2 | additionally bleeds at grid-frame edges on smoothed sheets |
+| `0.4.0` — including the 2026-08-20 release zip | `hitboxScaleX`/`hitboxScaleY` and text `maxWidth`, both added on 2026-08-23 with the manifest untouched |
+
+The published releases are pre-releases and lag `main`: the newest one is `0.4.0` (2026-08-20). If a call that this skill documents is `undefined` at runtime, check the manifest version *and the build date* before hunting for a typo, and rebuild from upstream `main`. More reliable than either is feature-detecting in code: read the property **before** ever writing it (`typeof sprite.hitboxScaleX === 'undefined'` means the build predates it). Write-then-read always says yes, because an unknown property is stored on the Kroll proxy and reads back exactly as it was set.
 
 Building the module from source:
 
@@ -289,7 +298,7 @@ For restart-without-teardown (a retry button), `removeAllSprites()` plus rebuild
 
 ## Debugging and tuning
 
-- **`debug: true` on the GameView** draws collision shapes for the whole scene; on a single sprite, only that one. Green = collision AABB with `hitboxScale` applied, blue = sprite/touch bounds, orange dot = anchor. This is the fastest way to explain a hit that should not have registered.
+- **`debug: true` on the GameView** draws collision shapes for the whole scene; on a single sprite, only that one. Green = collision AABB with `hitboxScale` and the per-axis `hitboxScaleX`/`hitboxScaleY` applied, blue = sprite/touch bounds (the full drawn frame, which is also the touch area), orange dot = anchor. This is the fastest way to explain a hit that should not have registered.
 - **Physics that feels wrong is usually a units problem.** Speeds are px/s and accelerations px/s², both in surface pixels — which is why the demos express them as fractions of `W` and `H`. A gravity of `20` is imperceptible; `H * 2.2` is a snappy platformer.
 - **Sprite is invisible?** Check in order: was it added to the GameView, does it have a sheet, is `width`/`height` non-zero, is it inside the surface bounds, and is its `zIndex` below a background sprite.
 - **Collision never fires?** `collisionGroup` goes on the *target*, `collidesWith` on the *mover*. Both need to be set, and `visible: false` disables collision entirely.

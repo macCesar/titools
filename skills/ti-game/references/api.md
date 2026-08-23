@@ -1,6 +1,6 @@
 # ti.game API reference
 
-Complete JS surface of `ti.game` as of upstream `main` on 2026-08-20, verified against the module source (`android/src/ti/game/*.java` and `engine/*.java`, mirrored by `ios/Classes/TG*`). Defaults come from the engine fields, not from prose. The manifest reads **`0.4.0`** since 2026-08-20, and that bump matters: the text engine (`createFont`/`createText`), `screenFixed`, `swept`, `collisionend`, `followPath`, animation chaining, `raycast`, `findPath`, the game-clock timers, `scrollFactor` and the `multiply`/`screen` blend modes all landed while the manifest still said `0.3.0`, so a build calling itself 0.3.0 has none of them.
+Complete JS surface of `ti.game` as of upstream `main` on 2026-08-23, verified against the module source (`android/src/ti/game/*.java` and `engine/*.java`, mirrored by `ios/Classes/TG*`). Defaults come from the engine fields, not from prose. The manifest reads **`0.4.0`** since 2026-08-20, and that bump matters: the text engine (`createFont`/`createText`), `screenFixed`, `swept`, `collisionend`, `followPath`, animation chaining, `raycast`, `findPath`, the game-clock timers, `scrollFactor` and the `multiply`/`screen` blend modes all landed while the manifest still said `0.3.0`, so a build calling itself 0.3.0 has none of them. The version number is not a feature list either: `hitboxScaleX`/`hitboxScaleY` and text `maxWidth` landed on 2026-08-23 with the manifest still at `0.4.0`, so two builds calling themselves 0.4.0 can differ — check the build date, or feature-detect by reading the property **before** ever writing it (`typeof sprite.hitboxScaleX === 'undefined'` means the build predates it). Writing first proves nothing: an unknown property is stored on the Kroll proxy and reads back exactly as it was set.
 
 Every property listed is **live**: reading returns the current native value, even mid-drag or mid-tween. Every property can also be passed to its `create*` factory. All durations crossing the JS boundary are **milliseconds** (the engine converts to seconds internally).
 
@@ -206,7 +206,8 @@ Hit-testing runs against the transformed shape (rotation and scale included), to
 | `collisionGroup` | — | The tag *this* sprite carries |
 | `collidesWith` | — | Array of groups this sprite reports overlaps with |
 | `hitboxScale` | `1` | Shrinks the collision box around the anchor |
-| `hitboxShape` | `'rect'` | `'circle'` — radius = half the smaller drawn side × `hitboxScale`. Circles resolve against solids along the contact normal (corner bounces) and get a round touch area |
+| `hitboxScaleX`, `hitboxScaleY` | `1` | Per-axis corrections **multiplied on top of** `hitboxScale`, for art that fills its frame by a different fraction on each axis. A 20×44 drawing in a 32×48 frame needs `0.62` wide and `0.92` tall — no single `hitboxScale` describes it. Ignored by circle hitboxes. Since 2026-08-23 |
+| `hitboxShape` | `'rect'` | `'circle'` — radius = half the smaller drawn side × `hitboxScale` (the per-axis scales are skipped: a circle has no axes). Circles resolve against solids along the contact normal (corner bounces) and get a round touch area |
 | `swept` | `false` | Test this sprite's movement as a **path** (swept AABB), not just at the end position, so a fast mover cannot tunnel between frames. Applies to both `collidesWith` events and `solidWith` blocking (the sprite is clamped to the impact point, then resolved by the normal static pass). Circle hitboxes sweep as their bounding box. Set it on the *mover* — the bullet, not the wall |
 | `debug` | `false` | Draw this sprite's shapes: green = collision AABB, blue = touch bounds, orange dot = anchor |
 
@@ -335,7 +336,21 @@ score.text = 'SCORE 10';   // re-lays out natively on the next frame
 | `align` | `'left'` | `'center'` / `'right'` — how multiple lines align against each other. Unknown values fall back to `'left'` |
 | `letterSpacing` | `0` | Extra px between glyphs; negative tightens |
 | `lineSpacing` | `1` | Multiplier on the font's line height |
+| `maxWidth` | `0` | Wrap width in **font-space px** (`0` = no wrap). Lines break on word boundaries, re-wrapping whenever `text` is written. Since 2026-08-23 |
 | `width`, `height` | laid-out size | **Derived, not settable** — the glyph layout drives the size, and with it the anchor, hit test, AABB and `ySort` bottom edge |
+
+`maxWidth` wraps a single long string so dialog boxes stop needing hand-broken `\n` lines — hard `\n` breaks still apply on top of it. Measurement reuses the layout pen (kerning, `letterSpacing`, the missing-glyph advance), so a wrapped line never renders wider than it measured, and the spaces around a soft break are dropped.
+
+```javascript
+const dialog = Game.createText({
+	text: 'A WISE FROG ONCE SAID: THE POND LOOKS SMALL UNTIL YOU TRY TO HOP ACROSS IT.',
+	maxWidth: Math.round(W * 0.55 / UNIT),   // font-space px, so divide by the scale
+	align: 'center',
+	scale: UNIT,
+	lineSpacing: 1.3
+});
+dialog.text = nextLine;   // re-wraps natively
+```
 
 There is no font size: scale the sprite. With the built-in pixel font, use **integer** `scale` values (`Math.max(1, Math.round(W / 240))` is the demos' idiom) so texels stay square.
 
@@ -439,6 +454,11 @@ There is `collision` (enter) and `collisionend` (exit), but deliberately **no** 
 - **A swept bullet can enter and leave in consecutive frames.** If it crosses a thin target entirely, you get `collision` and then `collisionend` almost immediately — react on the enter.
 - **Text `width`/`height` are read-only in practice.** They report the laid-out block; to make text bigger use `scale`.
 - **`hitboxShape: 'circle'` also changes the touch area**, not just collisions.
+- **The hitbox scales do not change the touch area.** `hitTest` runs against the full drawn frame, so a sprite with `hitboxScale: 0.6` still takes taps out to its art's edges. Only the hitbox *shape* reaches touch. Shrink `width`/`height` if a tap target must match the collision box.
+- **`hitboxScaleX`/`hitboxScaleY` multiply `hitboxScale`, they do not replace it.** `hitboxScale: 0.85` with `hitboxScaleX: 0.66` gives an effective 0.561 on X and 0.85 on Y. Both default to `1`, so sprites that never set them are unaffected — and `0` still means zero, as everywhere else in the engine.
+- **Text `maxWidth` is in font-space px, before `scale`.** The wrap width on screen is `maxWidth * scale`, so a label at `scale: 3` wrapping at 55% of the screen wants `maxWidth: W * 0.55 / 3`. Passing screen pixels straight in produces a block three times too wide.
+- **`align` centers against the widest wrapped line, not against `maxWidth`.** The block's `width` is what the glyphs actually occupied, so a short wrapped line is not centered inside the wrap column — anchor the sprite where the block should sit.
+- **A word longer than `maxWidth` overflows rather than breaking mid-word.** There is no hyphenation and no character-level break; a long unbroken token widens the block past the limit.
 - **Every blend-mode change costs a batch flush.** Group same-blend sprites on their own `zIndex` band; alternating modes sprite by sprite degrades toward one draw call each.
 - **`glowColor` alone draws nothing.** The glow pass only runs when `glowBlur > 0` *and* `glowOpacity > 0`; both default in a way that makes `glowColor` on its own a no-op (`glowBlur` is `0`). Always set the blur radius with the color.
 - **`followPath` overrides position absolutely.** The path is applied after velocity and gravity have been integrated and writes `x`/`y` outright, so a path-driven sprite ignores its own physics for placement. Do not expect `velocityX` and a path to add up. A tween on `x`/`y` runs *after* the path in the same frame and wins outright — pick one.
@@ -447,7 +467,7 @@ There is `collision` (enter) and `collisionend` (exit), but deliberately **no** 
 - **`raycast` groups: pass an array, not varargs.** Android accepts both `raycast(x0, y0, x1, y1, ['enemy'])` and loose arguments; iOS reads only the array. Write the array and it works on both.
 - **`raycast` only sees `visible`, non-`screenFixed` sprites carrying a `collisionGroup`.** A hidden pooled sprite is invisible to the ray, which is usually what you want; an untagged wall is invisible too, which usually is not. HUD sprites are skipped by design, so a screen-fixed score never blocks a world-space line of sight.
 - **`raycast` is a discrete query, not a sensor.** Calling it from a game-clock timer or a tap handler is the intended use. Calling it every frame from JS puts exactly the bridge traffic in the loop that the whole engine exists to avoid.
-- **`findPath` walks the sprite's center, not its silhouette.** The waypoints are a line through free grid cells, so a body wider than a cell clips corners unless you pass `clearance` (roughly half the walker's width) or shrink `cellSize`. Obstacles are read from the **hitbox**, so `hitboxScale` and `hitboxShape: 'circle'` shape the walkable space too.
+- **`findPath` walks the sprite's center, not its silhouette.** The waypoints are a line through free grid cells, so a body wider than a cell clips corners unless you pass `clearance` (roughly half the walker's width) or shrink `cellSize`. Obstacles are read from the **hitbox**, so `hitboxScale`, the per-axis scales and `hitboxShape: 'circle'` shape the walkable space too.
 - **`findPath` returning `null` is not always "no route".** Degenerate `bounds`, `cellSize <= 0` and a grid over ~1M cells all return `null` as well — a `bounds` rect of the whole world at `cellSize: 4` fails silently that way. Check the numbers before blaming the maze.
 - **A path of one or two points is the straight-line case, not a bug.** With nothing in the way `findPath` returns just `[start, goal]`; `path.length < 2` is the guard the demos use to detect a tap outside `bounds`.
 - **Game-clock timers are not `setTimeout`.** `after`/`every` freeze at `timeScale: 0` and pause with the render loop — which is why spawn waves belong there — but a pause menu that needs a real countdown still needs `setTimeout`.
