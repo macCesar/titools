@@ -248,6 +248,22 @@ Expect:
 - `bounds` is the walkable floor in sprite-center coordinates, and a discrete query: run it on the tap, not per frame
 
 ```
+"My hero's hitbox is wrong: 0.62 gets his width right but he floats above the floor, and 0.92 lands him but he clips walls a mile away."
+```
+Expect:
+- No single `hitboxScale` fits art that fills its frame by a different fraction on each axis — `hitboxScaleX: 0.62` with `hitboxScaleY: 0.92`
+- The two **multiply** `hitboxScale`, so it stays the overall adjustment and they are corrections on top of it
+- Circle hitboxes ignore them, and none of them change the touch area — `debug: true` draws the resulting green AABB
+
+```
+"I need a dialog box in my game. Right now I'm counting characters in JS to decide where to put the \n."
+```
+Expect:
+- `maxWidth` on the text sprite wraps on word boundaries natively and re-wraps whenever `text` is written
+- The width is font-space px, *before* `scale` — divide the screen width you want by the scale
+- A word longer than `maxWidth` overflows rather than breaking mid-word; `align` positions lines against the block, not inside the wrap column
+
+```
 "Can I use ti.game in an Alloy project or is it app.js only?"
 ```
 Expect:
@@ -374,7 +390,7 @@ Expect:
 - [ ] ti-ui: mentions performance rules
 - [ ] ti-game: refuses to move sprites from a timer and names the native property instead
 - [ ] ti-game: builds the level from the `resize` event, not from `displayCaps`
-- [ ] ti-game: does not invent APIs that do not exist yet (tilemap layer, sprite parenting, joysticks, word-wrapped text)
+- [ ] ti-game: does not invent APIs that do not exist yet (tilemap layer, sprite parenting, joysticks, gamepads, slopes)
 - [ ] ti-api: cites specific properties/methods/events
 - [ ] ti-guides: references tiapp.xml / Hyperloop / distribution docs
 - [ ] ti-howtos: provides working integration code
