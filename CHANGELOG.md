@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.11.0] - 2026-08-23
+
+### Changed — `ti-game` catches up with per-axis hitboxes and text word wrap
+
+Upstream landed two features on 2026-08-23, both of which the skill described as absent: `hitboxScaleX`/`hitboxScaleY` (PR #11) and `maxWidth` word wrap on text sprites (PR #12). Word wrap sat in the roadmap's "does not exist yet" table telling readers to break the lines themselves, and the skill description warned against inventing it.
+
+Verified against the module source (`Sprite.java`, `TextSprite.java` and their `TGSprite`/`TGTextSprite` twins) rather than the README: the per-axis scales multiply `hitboxScale` instead of replacing it, circle hitboxes skip them, and neither reaches the touch area, since `hitTest` runs against the full drawn frame. Wrap measurement reuses the layout pen (kerning, `letterSpacing`, the missing-glyph advance), so a wrapped line never renders wider than it measured; `maxWidth` is in font-space px, before `scale`; `align` works against the block's own width, not the wrap column; and a word longer than `maxWidth` overflows rather than breaking mid-word.
+
+A completeness pass over the module source found nothing else missing: every `@Kroll` property and method, every creation option and all sixteen event names already appear in `api.md`.
+
+### Fixed — `project-setup.md` claimed 0.4.0 carried everything the skill documents
+
+It does not. Both features landed with the manifest untouched, so the released 0.4.0 zip lacks them and two builds calling themselves 0.4.0 can differ. The version section is now a table of what each build is missing, and the feature-detection advice reads the property *before* writing it — `KrollProxy.setProperty` stores unknown names, so write-then-read always answers yes.
+
+### Changed — the eval checklist stopped naming a shipped API
+
+`EXAMPLE-PROMPTS.md` still listed "word-wrapped text" among the APIs `ti-game` must not invent, the same drift that had it listing text sprites three weeks after `createText` shipped. It now names what is actually missing: tilemap layers, sprite parenting, joysticks, gamepads and slopes. Two prompts added, one per new feature, so both have a trigger case.
+
 ## [4.10.0] - 2026-08-21
 
 ### Changed — `ti-game` catches up with A* pathfinding and a real version number

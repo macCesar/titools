@@ -435,10 +435,10 @@ When it activates:
 - `tiapp.xml` declares `ti.game`, or any file calls `require('ti.game')`
 - Sprites, sprite sheets, TexturePacker atlases, frame animations, native tweens
 - Physics: gravity and velocity, solid platforms, one-way floors, bouncing, the arcade car model, Newtonian thrust
-- Collision groups, invisible trigger zones, enter/exit events, swept AABB for fast bullets, hitbox tuning
+- Collision groups, invisible trigger zones, enter/exit events, swept AABB for fast bullets, per-axis hitbox tuning
 - Raycasts for line of sight, ledge probes and hitscan shots
 - A* pathfinding (`findPath`) around tagged obstacles, feeding native patrol paths (`followPath`) and animation chaining (`play(name, { then })`)
-- Bitmap-font text sprites and screen-fixed HUDs inside the scene
+- Bitmap-font text sprites with native word wrap, and screen-fixed HUDs inside the scene
 - Particle emitters, Verlet ropes, camera follow/zoom/shake/effects, `scrollFactor` parallax, low-latency sound
 - Game-clock timers that obey pause and slow motion
 - Drag & drop, pinch, rotate, multitouch controls
