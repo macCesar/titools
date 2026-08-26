@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.14.0] - 2026-08-26
+
+### Added — `ti-game` covers names, percentages and the `anchor` property
+
+Upstream PR #16 made every ratio the engine exposes accept `'55%'` and both anchors accept names, with a new `anchor` property for the nine presets. `api.md` gains a section listing exactly which properties are ratios — read from the `Values.ratio` call sites rather than from upstream's prose — plus three things that documentation does not mention: `centre`/`middle` are accepted aliases on both axes, `anchor` wins over `anchorX`/`anchorY` in the same `createSprite` call whatever the key order, and `animate()` takes a percentage on `scale` alone, since its other tween targets bypass the parser on both platforms.
+
+The reason the feature exists is now in `recipes.md` and `SKILL.md`, because it is the useful half: the hitbox shrinks around the anchor, so the anchor is part of that tuning — `anchor: 'bottom'` with `hitboxScaleY: '55%'` is the same sprite as `anchorY: 1` with `hitboxScaleY: 0.55`, and says so.
+
+### Fixed — attachments inherit opacity, which 4.13.0 said they did not
+
+Michael extended `attachTo` hours after 4.13.0 shipped: the target's opacity multiplies into attached sprites, so fading an owner fades its tags without touching their own `opacity`. The skill claimed the opposite in five places. Corrected, along with the two consequences read from the engine — the inherited value goes through the hit test, so an owner at `opacity: 0` leaves an attached text button untappable, and the product is never exposed to JS, so nothing can be read back to find out what is actually on screen. A drag now outranks the attachment for position only; opacity keeps cascading with the finger down.
+
+### Changed — the `raycast` gotcha now says what actually happens
+
+Passing loose group arguments does not fail on iOS: the filter stays empty and the ray tests every sprite carrying a `collisionGroup`, so the same call answers a different question per platform. That one and five other feature interactions were sent upstream and merged as m1ga/ti.game#18, so the module's own README now carries them too.
+
 ## [4.13.0] - 2026-08-26
 
 ### Added — `ti-game` covers sprite attachment (`attachTo`)
