@@ -286,7 +286,7 @@ Expect:
 - `tag.attachTo(enemy, { offsetY: -40 })` pins it natively — the interval and the bridge traffic go away
 - Resolved after physics and solid resolution, before collisions, so the tag never trails by a frame, not even on a moving platform
 - Both sprites must be in the scene; removing the enemy removes its tag recursively (`detach()` first to keep it)
-- Only position and rotation are inherited — scale, opacity, visibility and tint are still set per sprite
+- Position, rotation and opacity are inherited — fading the enemy fades its tag — while scale, visibility and tint stay per sprite
 
 ```
 "I want a turret on top of my tank that turns with it, and its own barrel rotation."
@@ -294,7 +294,16 @@ Expect:
 Expect:
 - `rotate: true` (`turret.attachTo(tank, { offsetY: -12, rotate: true })`) copies the tank's rotation *and* swings the offset around it — right for a part welded to the body
 - A turret that aims on its own wants the default `rotate: false`: the position is pinned, `rotation` stays yours to write. `rotate: true` overwrites it every frame, so the two cannot be combined on one sprite
-- Not full parenting: no `parent` property, and scale, opacity, visibility and tint are not inherited — see `references/roadmap.md`
+- Not full parenting: no `parent` property, and scale, visibility and tint are not inherited — see `references/roadmap.md`
+
+```
+"What does anchorY: 1 with hitboxScaleY: 0.55 actually mean? I copied it from an example and I don't get it."
+```
+Expect:
+- The hitbox shrinks **around the anchor**, so `anchorY: 1` (feet) is what lets the box start mid-height without lifting off the floor — neither number says that alone
+- The same sprite written readably: `anchor: 'bottom'` with `hitboxScaleY: '55%'`
+- Percentages work on every ratio the engine exposes and names on both anchors, all additive — but not on coordinates, sizes, degrees, speeds, or the car model's `grip`/`drag`
+- `anchor` reads back as the preset or `'custom'`; `anchorX`/`anchorY` always read back as numbers
 
 ```
 "Can I use ti.game in an Alloy project or is it app.js only?"
@@ -424,6 +433,7 @@ Expect:
 - [ ] ti-game: refuses to move sprites from a timer and names the native property instead
 - [ ] ti-game: builds the level from the `resize` event, not from `displayCaps`
 - [ ] ti-game: pins a label or bar onto a sprite with `attachTo`, not with a timer copying coordinates
+- [ ] ti-game: names the anchor and writes ratios as percentages where a bare number is a riddle
 - [ ] ti-game: does not invent APIs that do not exist yet (tilemap layer, `parent`/inherited transforms, joysticks, gamepads, slopes)
 - [ ] ti-api: cites specific properties/methods/events
 - [ ] ti-guides: references tiapp.xml / Hyperloop / distribution docs
