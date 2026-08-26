@@ -439,7 +439,8 @@ When it activates:
 - Raycasts for line of sight, ledge probes and hitscan shots
 - A* pathfinding (`findPath`) around tagged obstacles, feeding native patrol paths (`followPath`) and animation chaining (`play(name, { then })`)
 - Bitmap-font text sprites with native word wrap, and screen-fixed HUDs inside the scene
-- Sprites pinned to other sprites (`attachTo`) — name tags, health bars, shadows, turrets, tracked natively every frame
+- Sprites pinned to other sprites (`attachTo`) — name tags, health bars, shadows, turrets, tracked natively every frame, inheriting the owner's opacity
+- Named anchors and percentage strings (`anchor: 'bottom'`, `hitboxScaleY: '55%'`) wherever the engine takes a ratio
 - Particle emitters, Verlet ropes, camera follow/zoom/shake/effects, `scrollFactor` parallax, low-latency sound
 - Game-clock timers that obey pause and slow motion, texture `unload()` for level streaming, and what LiveView reloads clean up on their own
 - Drag & drop, pinch, rotate, multitouch controls
