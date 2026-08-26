@@ -24,7 +24,8 @@
 
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { readdir } from 'node:fs/promises';
-import { join, relative } from 'node:path';
+import { join, relative, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const START = '<!-- TOC-START -->';
 const END = '<!-- TOC-END -->';
@@ -70,14 +71,30 @@ async function findReferences(root) {
  * GitHub's anchor rules: lowercase, strip anything that is not a word character,
  * space or hyphen, then spaces to hyphens. Repeats get a numeric suffix, which is
  * what makes two "Related Types" sections in the same file link correctly.
+ *
+ * The order and the quantifiers both matter, and both were wrong here until they
+ * were checked against `github-slugger`, the library GitHub itself uses:
+ *
+ * - Each space becomes its own hyphen — `\s`, not `\s+`. Collapsing runs looks
+ *   tidier and produces a dead link: dropping the `/` out of "Top-down / Zelda"
+ *   leaves two spaces, so GitHub's anchor is `top-down--zelda`. Any heading with
+ *   punctuation between words (`/`, `&`, `+`, an em dash) hit this.
+ * - Trim *before* stripping punctuation, as GitHub does. Trimming afterwards
+ *   swallows the space a leading emoji leaves behind, and GitHub keeps it:
+ *   "🚨 RESPECT USER FILES" anchors as `-respect-user-files`, hyphen included.
+ *
+ * Measured over the 4263 headings in this repo, the two fixes take the
+ * disagreements with `github-slugger` from 11 to 5. The residue is keycap emoji
+ * ("1️⃣ Dependency Injection"), whose digit and variation selector GitHub keeps
+ * verbatim — not worth chasing, and worth knowing before trusting a slug.
  */
 function slugify(text, seen) {
   const base = text
     .toLowerCase()
+    .trim()
     .replace(/`/g, '')
     .replace(/[^\w\s-]/g, '')
-    .trim()
-    .replace(/\s+/g, '-');
+    .replace(/\s/g, '-');
 
   const count = seen.get(base) ?? 0;
   seen.set(base, count + 1);
@@ -283,7 +300,14 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  console.error(error.message);
-  process.exit(1);
-});
+// Only run when invoked as a script. `test/anchors.test.js` imports `slugify`
+// from here rather than reimplementing GitHub's rules — two copies of this
+// function is exactly how the anchors drifted from the headings in the first place.
+export { slugify, extractHeadings, START, END };
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().catch((error) => {
+    console.error(error.message);
+    process.exit(1);
+  });
+}

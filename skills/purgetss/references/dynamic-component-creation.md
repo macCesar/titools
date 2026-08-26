@@ -12,7 +12,7 @@
 - [Community-Discovered Patterns](#community-discovered-patterns)
 - [Overview](#overview)
 - [Method 1: `$.UI.create()` (Recommended)](#method-1-uicreate-recommended)
-- [Method 2: `Alloy.createStyle()` + `applyProperties()`](#method-2-alloycreatestyle-applyproperties)
+- [Method 2: `Alloy.createStyle()` + `applyProperties()`](#method-2-alloycreatestyle--applyproperties)
 - [Comparison: Which Method to Use?](#comparison-which-method-to-use)
 - [Real-World Examples](#real-world-examples)
 - [Important Notes](#important-notes)

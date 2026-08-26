@@ -7,7 +7,7 @@
 - [ES6+ features (Non-Module)](#es6-features-non-module)
 - [No semicolons](#no-semicolons)
 - [Styling with TSS](#styling-with-tss)
-- [Platform & device modifiers](#platform-device-modifiers)
+- [Platform & device modifiers](#platform--device-modifiers)
 - [applyProperties() pattern](#applyproperties-pattern)
 - [ListView templates](#listview-templates)
 - [Memory cleanup](#memory-cleanup)

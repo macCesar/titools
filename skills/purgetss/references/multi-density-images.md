@@ -18,7 +18,7 @@ For the terse flag reference, see the [`images` command reference](./cli-command
 - [Why multi-density?](#why-multi-density)
 - [Quick start](#quick-start)
 - [The `purgetss/images/` convention](#the-purgetssimages-convention)
-- [Source sizes — the 4× master convention](#source-sizes-the-4-master-convention)
+- [Source sizes — the 4× master convention](#source-sizes--the-4-master-convention)
 - [Pinning the output width with `--width`](#pinning-the-output-width-with---width)
 - [The `images:` config section](#the-images-config-section)
 - [Per-file overrides with `images.files`](#per-file-overrides-with-imagesfiles)

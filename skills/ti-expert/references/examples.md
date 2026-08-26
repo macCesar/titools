@@ -8,7 +8,7 @@
 - [Native module wrapper service](#native-module-wrapper-service)
 - [i18n helper](#i18n-helper)
 - [Model with SQL adapter](#model-with-sql-adapter)
-- [Fully styled & accessible view](#fully-styled-accessible-view)
+- [Fully styled & accessible view](#fully-styled--accessible-view)
 - [Cleanup pattern in controller](#cleanup-pattern-in-controller)
 - [Animation usage](#animation-usage)
 - [Complete crud example](#complete-crud-example)

@@ -9,7 +9,7 @@
 <!-- TOC-START -->
 ## Contents
 
-- [Phase 0: Pre-flight + classify source type](#phase-0-pre-flight-classify-source-type)
+- [Phase 0: Pre-flight + classify source type](#phase-0-pre-flight--classify-source-type)
 - [Phase 1: Coverage analysis](#phase-1-coverage-analysis)
 - [Phase 2: Gap identification](#phase-2-gap-identification)
 - [Phase 3: Consolidated report](#phase-3-consolidated-report)
