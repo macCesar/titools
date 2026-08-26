@@ -20,7 +20,7 @@ Complete examples of common patterns with anti-patterns and correct implementati
   - [`rounded-full` Without Size](#rounded-full-without-size)
   - [Square Brackets for Arbitrary Values](#square-brackets-for-arbitrary-values)
   - [Layout Defaults](#layout-defaults)
-  - [ScrollView Without `content-w-screen` / `content-h-auto`](#scrollview-without-content-w-screen-content-h-auto)
+  - [ScrollView Without `content-w-screen` / `content-h-auto`](#scrollview-without-content-w-screen--content-h-auto)
   - [Deprecated `theme.View.DEFAULT` vs `theme.extend.View`](#deprecated-themeviewdefault-vs-themeextendview)
   - [Quick Reference Table](#quick-reference-table)
 
