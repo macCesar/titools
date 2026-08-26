@@ -1,9 +1,10 @@
 # ti.game API reference
 
-Complete JS surface of `ti.game` as of upstream `main` on 2026-08-23, verified against the module source (`android/src/ti/game/*.java` and `engine/*.java`, mirrored by `ios/Classes/TG*`). Defaults come from the engine fields, not from prose. The manifest reads **`0.4.0`** since 2026-08-20, and that bump matters: the text engine (`createFont`/`createText`), `screenFixed`, `swept`, `collisionend`, `followPath`, animation chaining, `raycast`, `findPath`, the game-clock timers, `scrollFactor` and the `multiply`/`screen` blend modes all landed while the manifest still said `0.3.0`, so a build calling itself 0.3.0 has none of them. The version number is not a feature list either: `hitboxScaleX`/`hitboxScaleY`, text `maxWidth`, `SpriteSheet.unload()`/`Font.unload()` and the LiveView renderer lifecycle all landed on 2026-08-23 with the manifest still at `0.4.0`, so two builds calling themselves 0.4.0 can differ — check the build date, or feature-detect by reading the property **before** ever writing it (`typeof sprite.hitboxScaleX === 'undefined'` means the build predates it). Writing first proves nothing: an unknown property is stored on the Kroll proxy and reads back exactly as it was set.
+Complete JS surface of `ti.game` as of upstream `main` on 2026-08-26, verified against the module source (`android/src/ti/game/*.java` and `engine/*.java`, mirrored by `ios/Classes/TG*`). Defaults come from the engine fields, not from prose. The manifest reads **`0.4.0`** since 2026-08-20, and that bump matters: the text engine (`createFont`/`createText`), `screenFixed`, `swept`, `collisionend`, `followPath`, animation chaining, `raycast`, `findPath`, the game-clock timers, `scrollFactor` and the `multiply`/`screen` blend modes all landed while the manifest still said `0.3.0`, so a build calling itself 0.3.0 has none of them. The version number is not a feature list either: `hitboxScaleX`/`hitboxScaleY`, text `maxWidth`, `SpriteSheet.unload()`/`Font.unload()`, the LiveView renderer lifecycle (all 2026-08-23) and `attachTo`/`detach` (2026-08-26) landed with the manifest still at `0.4.0`, so two builds calling themselves 0.4.0 can differ — check the build date, or feature-detect by reading the property **before** ever writing it (`typeof sprite.hitboxScaleX === 'undefined'` means the build predates it). Writing first proves nothing: an unknown property is stored on the Kroll proxy and reads back exactly as it was set. Methods are the reliable probe — `typeof sprite.attachTo === 'function'` cannot be faked by a previous write.
 
 Every property listed is **live**: reading returns the current native value, even mid-drag or mid-tween. Every property can also be passed to its `create*` factory. All durations crossing the JS boundary are **milliseconds** (the engine converts to seconds internally).
 
+<!-- TOC-START -->
 ## Contents
 
 - [Module](#module)
@@ -17,6 +18,8 @@ Every property listed is **live**: reading returns the current native value, eve
 - [Rope](#rope)
 - [Events at a glance](#events-at-a-glance)
 - [Gotchas the property tables do not show](#gotchas-the-property-tables-do-not-show)
+
+<!-- TOC-END -->
 
 ## Module
 
@@ -44,8 +47,8 @@ A normal Titanium view — add it to a window or any container, size it with the
 | Member | Type | Default | Notes |
 | --- | --- | --- | --- |
 | `add(object)` / `add([objects])` | method | — | Accepts Sprite, Emitter or Rope. An array crosses the bridge once and is committed under a single native scene lock — build a level into an array and add it in one call |
-| `remove(object)` | method | — | Remove one object from the scene |
-| `removeAllSprites()` | method | — | Clear the whole scene |
+| `remove(object)` | method | — | Remove one object from the scene — **and, recursively, every sprite attached to it** (see [Attachment](#attachment)) |
+| `removeAllSprites()` | method | — | Clear the whole scene, dropping every attachment with it |
 | `pause()` / `resume()` | method | — | Render loop control. The activity/app lifecycle already pauses and resumes automatically |
 | `backgroundColor` | string | — | GL clear color |
 | `maxFps` | int | `0` | Frame cap. `60` stops 120 Hz ProMotion displays from doubling render work; `0` = display refresh rate |
@@ -86,6 +89,8 @@ Vertical follow is always on. **Horizontal follow is off until you pass `leftMar
 
 Each call **resets every option to its default** before applying what you passed. Calling `follow(sprite)` with no options after configuring it wipes the configuration.
 
+Anything that is not a sprite — `null`, a plain object, a number — clears the follow instead of throwing, which is also what `stopFollow()` does. Since 2026-08-26 that is guaranteed on Android too: the binding takes an untyped argument and checks the type itself, because a typed proxy parameter aborts the whole app on the JNI type check when JS sends a plain object (it crosses as a `HashMap`). Passing an options dict where the sprite goes now silently stops the camera rather than killing the process — a real behaviour difference from older builds.
+
 ### `findPath(from, to, options)`
 
 | Option | Default | Effect |
@@ -120,7 +125,7 @@ Create one sheet per texture and share it across every sprite that uses it — s
 | `image` | — | Path to the texture, relative to the resources root (`'assets/hero.png'`) |
 | `frameWidth` / `frameHeight` | — | Grid mode: cell size in source pixels. Frames are numbered left-to-right, top-to-bottom, starting at 0 |
 | `atlas` | — | TexturePacker JSON (hash or array format) instead of a grid |
-| `smoothing` | `true` | `false` = GL_NEAREST, the pixel-art setting. On a **grid** sheet, `true` also insets the interior frame UVs by half a texel so magnified edges cannot sample the neighbouring frame; outer edges keep the exact 0..1 range so `tileRepeat` still wraps. Atlas frames come from the JSON untouched |
+| `smoothing` | `true` | `false` = GL_NEAREST, the pixel-art setting. On a **grid** sheet, `true` also insets the frame UVs by half a texel so magnified edges cannot sample the neighbouring frame — **both** edges of any axis that has more than one frame, since 2026-08-24. An axis with a single frame keeps the exact 0..1 range, which is what `tileRepeat` needs to wrap. Atlas frames come from the JSON untouched |
 | `repeat` | `false` | GL_REPEAT wrap, required by sprites using `tileRepeat`. Needs power-of-two texture dimensions |
 
 | Member | Notes |
@@ -261,8 +266,38 @@ Every sprite gets its own phase, and the wobble unwinds exactly when disabled. T
 | `animate(options)` | Native tween, fires `complete` |
 | `clearTweens()` | Cancel tweens in progress — call before starting a replacement tween |
 | `flash(color, duration)` | Fills the sprite's silhouette with `color` (default white) and fades it out over `duration` ms (default 150). The classic damage/invincibility flash that a multiplicative `tintColor` cannot do |
+| `attachTo(target, options)` | Pin this sprite to another one natively — see [Attachment](#attachment) below. `options`: `offsetX`, `offsetY` (both `0`), `rotate` (`false`). `attachTo(null)` detaches |
+| `detach()` | Release the sprite where it is; `x`/`y` are writable again |
 
 `animate()` accepts exactly these keys — anything else is silently ignored: `x`, `y`, `scale`, `scaleX`, `scaleY`, `rotation`, `opacity`, `glowOpacity`, `duration` (ms), `delay` (ms), `easing`, `frame` (the sheet frame to set once the tween finishes). Re-calling `animate` from the `complete` handler is still how a ping-pong or a blink is built (there is no `repeat`/`yoyo` yet), but a fixed route is now `followPath` instead of a chain of tween legs.
+
+### Attachment
+
+Added 2026-08-26. `sprite.attachTo(target, { offsetX, offsetY, rotate })` pins a sprite to another sprite natively: every frame the engine writes the sprite's `x`/`y` from the target's **final** position plus the offset, with no per-frame JS. Name tags, health bars, shadows, turrets, a hitbox that must sit on a moving body.
+
+```javascript
+const tag = Game.createText({ text: 'PLAYER 1', zIndex: 6 });
+tag.attachTo(hero, { offsetY: -40 });   // 40 px above the hero's anchor
+gameView.add(tag);                      // still has to be in the scene
+```
+
+| Member | Notes |
+| --- | --- |
+| `attachTo(target, options)` | `options.offsetX` / `offsetY` (default `0`) are in the **attached sprite's** own coordinate space. `options.rotate` (default `false`) copies the target's `rotation` onto the sprite each frame *and* swings the offset around the target — a turret or a hat. Left `false`, the sprite stays upright while the target spins. Every call replaces the previous offset and flag; there is no partial update |
+| `detach()` | Stops the pinning, leaving the sprite where it was. Same as `attachTo(null)` |
+| `attachedTo` | **Read-only** property: the target sprite, or `null`. Setting it does nothing (it is a getter — the write lands on the Kroll proxy and is never read back by the engine) |
+
+Where it runs in the frame, and why it matters: after physics integration and solid resolution, before collision checks. So a tag never trails its owner by a frame — including an owner riding a moving platform — and an attached invisible hitbox is tested at the position it was just moved to, not the previous one.
+
+The rest of the contract, all read from the engine:
+
+- **The attached sprite must be in the scene** (`gameView.add(...)`). The pass iterates the scene's sprite list; a sprite that was never added is never repositioned. So is one whose *target* is not in the scene — it simply freezes where it stands.
+- **While attached, position is not yours.** Direct `x`/`y` writes, `velocityX`/`velocityY`, gravity and position tweens still run, and are then overwritten the same frame. `detach()` first if the sprite has to move on its own.
+- **A drag outranks the attachment.** While a finger holds the sprite (`draggable: true`, past the touch slop) the pinning is skipped, exactly as it is for a rider on a moving platform, and resumes when the finger lifts.
+- **Chains work**: attach a hat to a tag attached to a hero. Parents resolve first through recursion, with a depth cap of 8 that breaks accidental cycles — beyond eight links the far ancestor is not re-resolved that frame and the chain lags instead of hanging. Attaching a sprite to itself is ignored.
+- **Cross-space attach converts automatically.** A `screenFixed` sprite attached to a world sprite (or the reverse) has the target's position mapped through the camera first, so the offset stays in the sprite's own units.
+- **Removing the target removes everything attached to it**, recursively — a tag never outlives its owner, and a chain goes with it. `detach()` first to keep one alive. `removeAllSprites()` clears every attachment as it empties the scene.
+- **A non-sprite target detaches** instead of crashing (Android logs a warning; iOS is silent). Like `follow()`, the binding takes an untyped argument on purpose — a typed proxy parameter aborts the app on the JNI type check when JS sends a plain object.
 
 ### Sprite events
 
@@ -477,4 +512,9 @@ There is `collision` (enter) and `collisionend` (exit), but deliberately **no** 
 - **Game-clock timers are not `setTimeout`.** `after`/`every` freeze at `timeScale: 0` and pause with the render loop — which is why spawn waves belong there — but a pause menu that needs a real countdown still needs `setTimeout`.
 - **`screenFixed` beats `scrollFactor`.** Setting both leaves the sprite screen-fixed; the parallax offset is skipped entirely.
 - **Ghost lines along a frame's edge are a filtering artifact, not bad art.** A magnified `smoothing: true` sheet samples past the frame border — 1px seams, or the next row's heads at the bottom. Grid sheets have inset UVs upstream since 2026-08-19; an atlas needs padding and extrude at pack time, and an older module build needs either `smoothing: false` or a rebuild.
+- **An animation that rocks side to side on a smoothed grid sheet dates the build.** Until 2026-08-24 the inset was applied only to the edge facing a neighbour, so the first and last frame of a strip came out half a texel wider than the rest with their centres a quarter texel to opposite sides — a cycle through them wobbles, most visibly on hard-edged art. Fixed by insetting both edges of any multi-frame axis. Unreachable with `smoothing: false`, which is why it went unnoticed for so long: check the build date before redrawing the art.
+- **An attached sprite matches its target's world `x`/`y`, not where the target is *drawn*.** Give the attachment the same `scrollFactor` as its target, or a tag on a parallax sprite drifts off it as the camera travels — the two are pinned in world space and then drawn at different offsets.
+- **A cross-space attachment is converted with the camera from the previous frame.** Attachments are applied before the camera update, so a `screenFixed` tag on a world sprite (or the reverse) lags by one frame while the camera is moving. Same-space attachments — the normal case — are exact.
+- **Removing a sprite removes everything attached to it.** Pooling the owner with `visible = false` does not, but `gameView.remove(owner)` takes the tag, the health bar and anything chained off them. `detach()` first to keep one.
+- **`attachedTo` is read-only.** Assigning to it stores a value on the proxy that the engine never reads — use `attachTo()` / `detach()`.
 - **`scrollFactor` does not move the sprite.** It shifts where the sprite is *drawn* and maps touch back to match. `x`, `y`, physics and collisions stay in world coordinates, so a `scrollFactor: 0.5` platform still collides where its world `x` says, not where it looks.

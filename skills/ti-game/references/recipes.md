@@ -2,28 +2,31 @@
 
 Working patterns distilled from the 26 official demos in `example/` and from a shipped Alloy game (Titanium Lander). Each recipe shows the part that is specific to the genre; the shared scaffolding is in [The scaffolding](#the-scaffolding) and is not repeated.
 
-Every snippet uses only API that exists in upstream `main` at `df66122`, 2026-08-23 (manifest `0.4.0`, unchanged since 2026-08-20 — the version number stopped tracking the code). Check [roadmap.md](roadmap.md) before reaching for anything not shown here.
+Every snippet uses only API that exists in upstream `main` at `201bcf9`, 2026-08-26 (manifest `0.4.0`, unchanged since 2026-08-20 — the version number stopped tracking the code). Check [roadmap.md](roadmap.md) before reaching for anything not shown here.
 
+<!-- TOC-START -->
 ## Contents
 
 - [The 26 demos, and what each one is the reference for](#the-26-demos-and-what-each-one-is-the-reference-for)
 - [The scaffolding](#the-scaffolding)
-- [Cross-cutting patterns](#cross-cutting-patterns) — pooling, freeing textures, parallax, multitouch controls, HUD text, wrapped dialog, invisible triggers, seeing the hitbox, enter/exit zones, patrol routes, line of sight, pathfinding, game-clock timers, hit-stop
-- [Tap-to-flap](#tap-to-flap) (`flappy.js`)
-- [Platformer](#platformer) (`platformer.js`)
-- [Top-down / Zelda](#top-down--zelda) (`topdown.js`)
-- [Top-down racer](#top-down-racer) (`racing.js`)
-- [Asteroids / space shooter](#asteroids--space-shooter) (`asteroids.js`)
+- [Cross-cutting patterns](#cross-cutting-patterns)
+- [Tap-to-flap](#tap-to-flap)
+- [Platformer](#platformer)
+- [Top-down / Zelda](#top-down--zelda)
+- [Top-down racer](#top-down-racer)
+- [Asteroids / space shooter](#asteroids--space-shooter)
 - [Lunar lander](#lunar-lander)
-- [Endless runner](#endless-runner) (`skate.js`)
-- [Rhythm game](#rhythm-game) (`rhythm.js`)
-- [Ball sports / breakout physics](#ball-sports--breakout-physics) (`volley.js`)
-- [Cards and board games](#cards-and-board-games) (`cards.js`, `puzzle.js`)
-- [Point & click adventure](#point--click-adventure) (`pointclick.js`, `maze.js`)
-- [Particles](#particles) (`particles.js`)
-- [Ropes and chains](#ropes-and-chains) (`rope.js`)
-- [Camera work](#camera-work) (`camera.js`)
-- [Visual effects](#visual-effects) (`blend.js`, `flip.js`, `timescale.js`, `demoscene.js`)
+- [Endless runner](#endless-runner)
+- [Rhythm game](#rhythm-game)
+- [Ball sports / breakout physics](#ball-sports--breakout-physics)
+- [Cards and board games](#cards-and-board-games)
+- [Point & click adventure](#point--click-adventure)
+- [Particles](#particles)
+- [Ropes and chains](#ropes-and-chains)
+- [Camera work](#camera-work)
+- [Visual effects](#visual-effects)
+
+<!-- TOC-END -->
 
 ## The 26 demos, and what each one is the reference for
 
@@ -49,7 +52,7 @@ Every snippet uses only API that exists in upstream `main` at `df66122`, 2026-08
 | `flip.js` | `flipX`/`flipY` driven by movement; tap inverts gravity | [Visual effects](#visual-effects) |
 | `hitbox.js` | `debug: true` overlays, and why the per-axis hitbox scales exist | [Seeing the hitbox](#seeing-the-hitbox--hitboxjs) |
 | `blend.js` | The four blend modes side by side, `flash()` variants | [Visual effects](#visual-effects) |
-| `text.js` | Screen-fixed HUD, world-space labels, text buttons, wrapped dialog | [HUD](#hud--textjs-flappyjs) |
+| `text.js` | Screen-fixed HUD, world-space labels, text buttons, wrapped dialog, a name tag pinned with `attachTo` | [HUD](#hud--textjs-flappyjs), [Labels pinned to a sprite](#labels-bars-and-turrets-pinned-to-a-sprite--attachto-textjs) |
 | `swept.js` | `swept: true` vs tunneling, same bullets, rising speed | [Object pooling](#object-pooling) |
 | `path.js` | Smoothed circuits, sharp patrols, `play(name, { then })` chains | [Patrol routes and animation chains](#patrol-routes-and-animation-chains--pathjs) |
 | `raycast.js` | Line of sight, ledge probes, tap-fired hitscan | [Line of sight, ledge probes and hitscan](#line-of-sight-ledge-probes-and-hitscan--raycastjs) |
@@ -110,6 +113,8 @@ module.exports = function () {
 Sizing everything as a fraction of `W`/`H` is not cosmetic — a jump tuned in absolute pixels becomes unplayable on a different device. The demos consistently express speeds as `W * f`, accelerations as `H * f` and sprite sizes as `Math.min(W, H) * f`.
 
 ## Cross-cutting patterns
+
+The pieces every genre below reuses: pooling, freeing a level's textures, parallax, multitouch controls, HUD text, wrapped dialog, labels and bars attached to a sprite, invisible triggers, seeing the hitbox, enter/exit zones, patrol routes, line of sight, pathfinding, game-clock timers and hit-stop.
 
 ### Object pooling
 
@@ -336,6 +341,46 @@ dialog.addEventListener('tap', () => {
 `maxWidth` is measured before `scale`, which is the only trap here — pass screen pixels straight in and the block comes out `scale` times too wide. `align` positions the lines against each other (the block's own width), not inside the wrap column, so anchor the sprite where the text should sit. A word longer than `maxWidth` overflows instead of breaking mid-word.
 
 Overlaid `Ti.UI.Label` views remain the answer for text the engine's font cannot draw (accents, system fonts, right-to-left) and for real UI: menus, dialogs, text inputs.
+
+### Labels, bars and turrets pinned to a sprite — `attachTo`, `text.js`
+
+A HUD is `screenFixed`; a name tag, a health bar or a shadow is the opposite — it belongs *on* a sprite that moves. `attachTo` is the native version of the JS everyone wrote before it: a timer copying `owner.x` into `tag.x`, one bridge round trip per tag per tick, and always a frame behind.
+
+```javascript
+const tag = Game.createText({ text: 'THE BALL', scale: UNIT, tintColor: '#7fd4ff', zIndex: 6 });
+tag.attachTo(ball, { offsetY: -(W * 0.09) });   // offset in the tag's own units
+gameView.add(tag);                              // the tag is still a scene sprite
+```
+
+The tag now tracks the ball through gravity, tweens, a moving platform and a finger drag, with no JS in the loop, and disappears with it — `gameView.remove(ball)` removes everything attached to the ball, recursively.
+
+A health bar is the same idea with two sprites, and shows what `attachTo` does *not* do:
+
+```javascript
+// blockSheet is any small opaque texture stretched and tinted — a sheet-less
+// sprite draws nothing at all, that is the invisible-trigger idiom below
+const barBack = Game.createSprite({ sheet: blockSheet, width: 40, height: 5, zIndex: 5, tintColor: '#222' });
+const barFill = Game.createSprite({ sheet: blockSheet, width: 40, height: 5, zIndex: 6, anchorX: 0, tintColor: '#3f6' });
+
+barBack.attachTo(hero, { offsetY: -34 });
+barFill.attachTo(hero, { offsetX: -20, offsetY: -34 });   // anchorX 0 → grows to the right
+gameView.add([barBack, barFill]);
+
+// on damage: only the width changes — scale, opacity and visibility are not inherited
+barFill.width = 40 * (hp / hpMax);
+```
+
+`rotate: true` is the other half: the offset swings around the target and the sprite copies its rotation, which is what a turret on a tank or a hat on a tumbling hero needs.
+
+```javascript
+turret.attachTo(tank, { offsetY: -12, rotate: true });
+```
+
+Three things to keep in mind:
+
+- **The attached sprite has to be added to the scene**, and so does its target. Neither pins otherwise — the sprite just sits at whatever `x`/`y` it was created with.
+- **Its position stops being yours.** Velocity, gravity and `animate({ x })` still run and are overwritten the same frame. To fling a tag off a dying enemy, `detach()` first, then give it velocity.
+- **Match `scrollFactor` between the two.** Attachment pins world coordinates; parallax changes only where a sprite is *drawn*. A tag at `scrollFactor: 1` on a background sprite at `0.5` stays pinned in world space and drifts across the screen anyway.
 
 ### Invisible triggers
 

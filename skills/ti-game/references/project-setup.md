@@ -2,6 +2,7 @@
 
 Installing the module, wiring it into Classic and Alloy projects, organizing art and sound, and the lifecycle work the engine does not do for you.
 
+<!-- TOC-START -->
 ## Contents
 
 - [Install the module](#install-the-module)
@@ -13,6 +14,8 @@ Installing the module, wiring it into Classic and Alloy projects, organizing art
 - [Lifecycle and cleanup](#lifecycle-and-cleanup)
 - [Debugging and tuning](#debugging-and-tuning)
 - [Platform differences](#platform-differences)
+
+<!-- TOC-END -->
 
 ## Install the module
 
@@ -49,8 +52,10 @@ Pinning `version` is worth the extra attribute: with two module versions install
 | `0.3.0` before 2026-08-19 | also `followPath`, `play(name, { then })`, `raycast`, `after`/`every`, `scrollFactor`, `multiply`/`screen` blends |
 | `0.3.0` before 2026-08-19 16:00 UTC+2 | additionally bleeds at grid-frame edges on smoothed sheets |
 | `0.4.0` — including the 2026-08-20 release zip | `hitboxScaleX`/`hitboxScaleY`, text `maxWidth`, `SpriteSheet.unload()`/`Font.unload()` and the LiveView renderer lifecycle, all added on 2026-08-23 with the manifest untouched |
+| `0.4.0` built before 2026-08-24 | additionally rocks side to side through a multi-frame animation on a `smoothing: true` grid sheet — the half-texel inset was one-sided, so the end frames came out slightly wider and off-centre |
+| `0.4.0` built before 2026-08-26 | additionally `sprite.attachTo()` / `detach()` / `attachedTo`, and `gameView.follow()` still aborts the app on Android if it is handed anything that is not a sprite |
 
-The published releases are pre-releases and lag `main`: the newest one is `0.4.0` (2026-08-20). If a call that this skill documents is `undefined` at runtime, check the manifest version *and the build date* before hunting for a typo, and rebuild from upstream `main`. More reliable than either is feature-detecting in code: read the property **before** ever writing it (`typeof sprite.hitboxScaleX === 'undefined'` means the build predates it). Write-then-read always says yes, because an unknown property is stored on the Kroll proxy and reads back exactly as it was set.
+The published releases are pre-releases and lag `main`: the newest one is `0.4.0` (2026-08-20). If a call that this skill documents is `undefined` at runtime, check the manifest version *and the build date* before hunting for a typo, and rebuild from upstream `main`. More reliable than either is feature-detecting in code: read the property **before** ever writing it (`typeof sprite.hitboxScaleX === 'undefined'` means the build predates it). Write-then-read always says yes, because an unknown property is stored on the Kroll proxy and reads back exactly as it was set. A method has no such trap — `typeof sprite.attachTo === 'function'` is a clean probe whatever the app did earlier.
 
 Building the module from source:
 
@@ -62,7 +67,7 @@ ti build -p ios --build-only        # macOS only → ios/dist/ti.game-iphone-<ve
 
 ## Classic projects
 
-`require('ti.game')` anywhere and add the GameView to a window. The 24 demos in the module's `example/` folder are Classic, each one a CommonJS module exporting a start function:
+`require('ti.game')` anywhere and add the GameView to a window. The 26 demos in the module's `example/` folder are Classic, each one a CommonJS module exporting a start function (`app.js` is the launcher, not a demo):
 
 ```javascript
 // Resources/flappy.js
@@ -228,7 +233,7 @@ Practical rules:
 - **One sheet per scene if you can manage it.** Sprites sharing a texture batch into a single draw call. The endless-runner demo even draws its crash burst from the *player's* sheet to keep the whole scene on one texture.
 - **`smoothing: false` for pixel art.** Combine with `pixelSnap: true` on moving sprites when the texel phase must stay stable.
 - **Ship sheets as PNG, not JPG.** JPEG has no alpha channel, so every frame comes back on an opaque block, and its compression smears colour across frame borders — exactly where a sheet can least afford it. The module's own `basic.js` demo was converted from `hero.jpg` to `hero.png` on 2026-08-19 for this reason.
-- **Edge bleeding on a smoothed grid is fixed upstream, on grids only.** Linear filtering samples past a frame's edge when the sprite is magnified, which shows up as 1px ghost lines or the next row's heads peeking in at the bottom. Since 2026-08-19 a grid sheet with `smoothing: true` pulls its *interior* frame edges in by half a texel automatically; outer edges stay at the texture border, so full-texture `tileRepeat` frames still wrap seamlessly, and `smoothing: false` sheets skip the inset entirely (NEAREST cannot bleed, and pixel art at 1:1 needs exact UVs). **Atlas sheets are not covered** — their UVs come straight from the JSON, so prevent bleeding when packing instead: 2px padding and extrude in TexturePacker.
+- **Edge bleeding on a smoothed grid is fixed upstream, on grids only.** Linear filtering samples past a frame's edge when the sprite is magnified, which shows up as 1px ghost lines or the next row's heads peeking in at the bottom. Since 2026-08-19 a grid sheet with `smoothing: true` pulls its frame edges in by half a texel automatically, and since 2026-08-24 it does so on **both** edges of any axis that holds more than one frame — the first version inset only the side facing a neighbour, which left the end frames of a strip half a texel wider than the rest and their centres a quarter texel off, so an animation cycling through them visibly rocked. An axis with a single frame keeps the exact texture border, so full-texture `tileRepeat` frames still wrap seamlessly, and `smoothing: false` sheets skip the inset entirely (NEAREST cannot bleed, and pixel art at 1:1 needs exact UVs). **Atlas sheets are not covered** — their UVs come straight from the JSON, so prevent bleeding when packing instead: 2px padding and extrude in TexturePacker.
 - **`repeat: true` for tiling.** Required by sprites using `tileRepeat`, and it needs power-of-two texture dimensions on ES 2.0 — a 512×64 street strip tiles, a 500×60 one does not.
 - **White art plus `tint`** covers every color variant of a particle or effect with one small texture.
 
