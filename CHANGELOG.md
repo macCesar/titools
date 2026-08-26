@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.13.0] - 2026-08-26
+
+### Added — `ti-game` covers sprite attachment (`attachTo`)
+
+Upstream's `attachTo` / `detach` (PR #15 and the follow-up lifecycle fixes) pins a sprite to another natively — name tags, health bars, shadows, turrets — resolved after physics and solid resolution and before collisions, so a tag never trails its owner by a frame and an attached hitbox is tested where it really is. Documented from the diff `df66122..201bcf9` and verified against both engines: chains with a depth cap of 8, `rotate: true` swinging the offset around the target, automatic world ↔ `screenFixed` conversion, a drag outranking the pinning, and recursive removal so a tag never outlives its owner. Only position and rotation are inherited.
+
+Three facts came out of the source rather than upstream's README: an attachment pins world `x`/`y` and not where a sprite is *drawn*, so a mismatched `scrollFactor` drifts; a cross-space attachment is converted with the previous frame's camera, since attachments are applied before the camera update; and `attachedTo` is a read-only getter.
+
+`gameView.follow()` also takes an untyped argument on Android now, so handing it a plain object stops the camera instead of aborting the app on the JNI type check.
+
+### Fixed — the half-texel inset, and a roadmap row that had gone false
+
+`smoothing: true` insets both edges of any multi-frame axis since upstream PR #14, so the reference no longer describes the one-sided behaviour it replaced, and an animation that rocks side to side now dates the build instead of reading as bad art.
+
+`roadmap.md` had `sprite.parent` filed under "does not exist". Position and rotation now do; scale, opacity, visibility, tint and the property itself still do not, and the row says which is which. `project-setup.md` gained two build rows and had its demo count corrected from 24 to 26.
+
+### Fixed — `generate-toc.mjs` produced dead anchors
+
+The generator collapsed runs of whitespace while GitHub turns every space into its own hyphen, so every heading with punctuation between two words — "Top-down / Zelda", "Point & click adventure", "Phase 0: Pre-flight + classify" — got a link that scrolls nowhere. Four skills carried them, invisibly.
+
+Slugs are now checked against `github-slugger`, the library GitHub uses, over all 4263 headings in this repo, and the three long `ti-game` references swap their hand-written index for the generated one so it cannot drift from the headings. `test/anchors.test.js` fails on any in-file link no heading produces.
+
 ## [4.12.0] - 2026-08-23
 
 ### Changed — `ti-game` covers `unload()`, the LiveView lifecycle and the hitbox demo

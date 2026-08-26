@@ -177,7 +177,7 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 | ti-expert    | Architecture and implementation     | Starting point for most tasks           |
 | purgetss     | Utility-first styling               | UI styling and animations               |
 | ti-ui        | UI/UX patterns                      | Complex layouts, ListViews, platform UI |
-| ti-game      | 2D games with the `ti.game` module  | Sprites, physics, collisions, raycasts, pathfinding, text HUDs, particles, camera |
+| ti-game      | 2D games with the `ti.game` module  | Sprites, physics, collisions, raycasts, pathfinding, text HUDs, sprite attachment, particles, camera |
 | ti-api       | Complete Titanium API reference     | Looking up properties, methods, events  |
 | ti-guides    | SDK fundamentals                    | tiapp.xml, Hyperloop, distribution, JDK/Xcode compatibility, release notes |
 | ti-howtos    | Native feature integration          | Location, push, media, platform APIs    |
@@ -439,6 +439,7 @@ When it activates:
 - Raycasts for line of sight, ledge probes and hitscan shots
 - A* pathfinding (`findPath`) around tagged obstacles, feeding native patrol paths (`followPath`) and animation chaining (`play(name, { then })`)
 - Bitmap-font text sprites with native word wrap, and screen-fixed HUDs inside the scene
+- Sprites pinned to other sprites (`attachTo`) — name tags, health bars, shadows, turrets, tracked natively every frame
 - Particle emitters, Verlet ropes, camera follow/zoom/shake/effects, `scrollFactor` parallax, low-latency sound
 - Game-clock timers that obey pause and slow motion, texture `unload()` for level streaming, and what LiveView reloads clean up on their own
 - Drag & drop, pinch, rotate, multitouch controls
