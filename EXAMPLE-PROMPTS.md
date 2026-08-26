@@ -280,6 +280,23 @@ Expect:
 - Your own JS timers, sounds and listeners are still yours to stop on a normal window close
 
 ```
+"Every enemy needs a name tag floating over its head. I'm updating tag.x and tag.y from a 30ms interval and they're always a bit behind."
+```
+Expect:
+- `tag.attachTo(enemy, { offsetY: -40 })` pins it natively — the interval and the bridge traffic go away
+- Resolved after physics and solid resolution, before collisions, so the tag never trails by a frame, not even on a moving platform
+- Both sprites must be in the scene; removing the enemy removes its tag recursively (`detach()` first to keep it)
+- Only position and rotation are inherited — scale, opacity, visibility and tint are still set per sprite
+
+```
+"I want a turret on top of my tank that turns with it, and its own barrel rotation."
+```
+Expect:
+- `rotate: true` (`turret.attachTo(tank, { offsetY: -12, rotate: true })`) copies the tank's rotation *and* swings the offset around it — right for a part welded to the body
+- A turret that aims on its own wants the default `rotate: false`: the position is pinned, `rotation` stays yours to write. `rotate: true` overwrites it every frame, so the two cannot be combined on one sprite
+- Not full parenting: no `parent` property, and scale, opacity, visibility and tint are not inherited — see `references/roadmap.md`
+
+```
 "Can I use ti.game in an Alloy project or is it app.js only?"
 ```
 Expect:
@@ -406,7 +423,8 @@ Expect:
 - [ ] ti-ui: mentions performance rules
 - [ ] ti-game: refuses to move sprites from a timer and names the native property instead
 - [ ] ti-game: builds the level from the `resize` event, not from `displayCaps`
-- [ ] ti-game: does not invent APIs that do not exist yet (tilemap layer, sprite parenting, joysticks, gamepads, slopes)
+- [ ] ti-game: pins a label or bar onto a sprite with `attachTo`, not with a timer copying coordinates
+- [ ] ti-game: does not invent APIs that do not exist yet (tilemap layer, `parent`/inherited transforms, joysticks, gamepads, slopes)
 - [ ] ti-api: cites specific properties/methods/events
 - [ ] ti-guides: references tiapp.xml / Hyperloop / distribution docs
 - [ ] ti-howtos: provides working integration code
