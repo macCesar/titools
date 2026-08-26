@@ -1,6 +1,6 @@
 # ti.game API reference
 
-Complete JS surface of `ti.game` as of upstream `main` on 2026-08-26, verified against the module source (`android/src/ti/game/*.java` and `engine/*.java`, mirrored by `ios/Classes/TG*`). Defaults come from the engine fields, not from prose. The manifest reads **`0.4.0`** since 2026-08-20, and that bump matters: the text engine (`createFont`/`createText`), `screenFixed`, `swept`, `collisionend`, `followPath`, animation chaining, `raycast`, `findPath`, the game-clock timers, `scrollFactor` and the `multiply`/`screen` blend modes all landed while the manifest still said `0.3.0`, so a build calling itself 0.3.0 has none of them. The version number is not a feature list either: `hitboxScaleX`/`hitboxScaleY`, text `maxWidth`, `SpriteSheet.unload()`/`Font.unload()`, the LiveView renderer lifecycle (all 2026-08-23) and `attachTo`/`detach` (2026-08-26) landed with the manifest still at `0.4.0`, so two builds calling themselves 0.4.0 can differ — check the build date, or feature-detect by reading the property **before** ever writing it (`typeof sprite.hitboxScaleX === 'undefined'` means the build predates it). Writing first proves nothing: an unknown property is stored on the Kroll proxy and reads back exactly as it was set. Methods are the reliable probe — `typeof sprite.attachTo === 'function'` cannot be faked by a previous write.
+Complete JS surface of `ti.game` as of upstream `main` at `83b7863`, 2026-08-26, verified against the module source (`android/src/ti/game/*.java` and `engine/*.java`, mirrored by `ios/Classes/TG*`). Defaults come from the engine fields, not from prose. The manifest reads **`0.4.0`** since 2026-08-20, and that bump matters: the text engine (`createFont`/`createText`), `screenFixed`, `swept`, `collisionend`, `followPath`, animation chaining, `raycast`, `findPath`, the game-clock timers, `scrollFactor` and the `multiply`/`screen` blend modes all landed while the manifest still said `0.3.0`, so a build calling itself 0.3.0 has none of them. The version number is not a feature list either: `hitboxScaleX`/`hitboxScaleY`, text `maxWidth`, `SpriteSheet.unload()`/`Font.unload()`, the LiveView renderer lifecycle (all 2026-08-23), `attachTo`/`detach`, inherited opacity on attachments and the named/percentage values (all 2026-08-26) landed with the manifest still at `0.4.0`, so two builds calling themselves 0.4.0 can differ — check the build date, or feature-detect by reading the property **before** ever writing it (`typeof sprite.hitboxScaleX === 'undefined'` means the build predates it). Writing first proves nothing: an unknown property is stored on the Kroll proxy and reads back exactly as it was set. Methods are the reliable probe — `typeof sprite.attachTo === 'function'` cannot be faked by a previous write.
 
 Every property listed is **live**: reading returns the current native value, even mid-drag or mid-tween. Every property can also be passed to its `create*` factory. All durations crossing the JS boundary are **milliseconds** (the engine converts to seconds internally).
 
@@ -8,6 +8,7 @@ Every property listed is **live**: reading returns the current native value, eve
 ## Contents
 
 - [Module](#module)
+- [Names and percentages](#names-and-percentages)
 - [GameView](#gameview)
 - [SpriteSheet](#spritesheet)
 - [Sprite](#sprite)
@@ -39,6 +40,51 @@ const Game = require('ti.game');
 | `Game.createRope(options)` | Rope — Verlet chain |
 
 Easing constants (for `sprite.animate({ easing })`): `Game.EASE_LINEAR`, `Game.EASE_IN`, `Game.EASE_OUT`, `Game.EASE_IN_OUT`, `Game.EASE_BOUNCE`, `Game.EASE_ELASTIC`.
+
+## Names and percentages
+
+Added 2026-08-26, and purely additive: every number that worked before still works. Anything the engine treats as a **ratio** also accepts a percentage string, and the **anchors** also accept names.
+
+```javascript
+// The same sprite, twice.
+Game.createSprite({ anchorX: 0, anchorY: 1, hitboxScaleY: 0.55, opacity: 0.8 });
+Game.createSprite({ anchor: 'bottom-left', hitboxScaleY: '55%', opacity: '80%' });
+```
+
+**Percentages** work on exactly these, and nowhere else:
+
+| Object | Properties |
+| --- | --- |
+| Sprite | `scale`, `scaleX`, `scaleY`, `opacity`, `glowOpacity`, `scrollFactor`, `hitboxScale`, `hitboxScaleX`, `hitboxScaleY`, `restitution`, `throttle`, `steering` |
+| GameView | `cameraScale`, `timeScale`, `cameraEffectIntensity`, and inside `follow()`: `topMargin`, `bottomMargin`, `leftMargin`, `rightMargin`, `smoothing` |
+| Emitter | `startScale`, `endScale`, `startOpacity`, `endOpacity` |
+| Rope | `damping` |
+| Sound | `volume` |
+
+Over 100% is meaningful where the ratio is a multiplier — `scaleX: '200%'` is twice as wide. Text sprites are sprites, so they take all of it (`Game.createText({ anchor: 'top-left', opacity: '60%' })`).
+
+They do **not** apply to coordinates, sizes, degrees, speeds, or the car model's `grip` and `drag` — those last two are 1/s friction coefficients, not fractions.
+
+**Anchor names** (`anchorX`, `anchorY`, and `anchor` for both at once):
+
+| Property | Accepts |
+| --- | --- |
+| `anchorX` | `'left'` (0), `'center'` / `'centre'` / `'middle'` (0.5), `'right'` (1) |
+| `anchorY` | `'top'` (0), `'center'` / `'centre'` / `'middle'` (0.5), `'bottom'` (1) |
+| `anchor` | Any of the nine presets, either order, separated by `-`, `_` or a space: `'bottom-left'`, `'left bottom'`, `'top'`, `'center'`. An axis the name does not mention lands on 0.5, so `'left'` is `(0, 0.5)` |
+
+`anchor` is the only one that reads back as a name: it returns the preset the sprite currently sits on, or `'custom'` when the anchors are somewhere else — so `b.anchor = a.anchor` copies a preset. `anchorX` and `anchorY` read back as numbers, always.
+
+Why it exists, from the case that prompted it: a prop whose hitbox should cover its lower half while still reaching the ground is `anchorY = 1` plus `hitboxScaleY = 0.55`, and neither number says so — `hitboxScale` shrinks **around the anchor**, so moving the anchor is what lets the box start lower without lifting off the floor. `anchor: 'bottom'` with `hitboxScaleY: '55%'` says it out loud.
+
+**A value the engine cannot parse logs a warning and does not throw** — but what it falls back to differs by platform, which upstream's README does not mention:
+
+| | A bad value (`'half'`, `'50 %'`, `'abc'`) leaves the property at |
+| --- | --- |
+| Android | **the value it already held** |
+| iOS | **the property's default** (`opacity` → 1, `restitution` → 0, `hitboxScale` → 1…) |
+
+At creation time the two agree, because the current value *is* the default. They part company when the write lands on a property already set to something else: `sprite.opacity = 0.3` then `sprite.opacity = 'half'` leaves 0.3 on Android and 1 on iOS. Do not lean on either — a typo here is a bug on one platform and a silent no-op on the other.
 
 ## GameView
 
@@ -148,8 +194,9 @@ Textures upload to the GPU lazily on first use, from the render thread, and are 
 | `scale` | `1` | Write-only convenience that sets both axes |
 | `scaleX`, `scaleY` | `1` | Negative values flip *and* affect physics/hit testing — prefer `flipX`/`flipY` for pure mirroring |
 | `rotation` | `0` | Degrees, clockwise |
-| `anchorX`, `anchorY` | `0.5` | `0/0` = top-left, `0.5/0.5` = center, `0.5/1` = bottom-center (useful for feet) |
-| `opacity` | `1` | |
+| `anchorX`, `anchorY` | `0.5` | `0/0` = top-left, `0.5/0.5` = center, `0.5/1` = bottom-center (useful for feet). Also take names — `'left'`/`'center'`/`'right'` and `'top'`/`'middle'`/`'bottom'` — but always read back as numbers. See [Names and percentages](#names-and-percentages) |
+| `anchor` | — | Both anchors from one preset: `'bottom-left'`, `'top'`, `'center'`. Reads back as the preset the sprite is on, or `'custom'`. Applied after `anchorX`/`anchorY`, so passing both to `createSprite` lets `anchor` win |
+| `opacity` | `1` | Also takes `'80%'`. `0` disables touch as well. While attached to another sprite, the target's opacity multiplies into this one — see [Attachment](#attachment) |
 | `visible` | `true` | `false` = no render **and no collision** — the pooling idiom |
 | `zIndex` | `0` | Draw order |
 | `ySort` | `false` | Within the same `zIndex`, sort by the sprite's **bottom edge** — top-down depth (walk behind a tree, in front of it below) |
@@ -211,7 +258,7 @@ Hit-testing runs against the transformed shape (rotation and scale included), to
 | --- | --- | --- |
 | `collisionGroup` | — | The tag *this* sprite carries |
 | `collidesWith` | — | Array of groups this sprite reports overlaps with |
-| `hitboxScale` | `1` | Shrinks the collision box around the anchor |
+| `hitboxScale` | `1` | Shrinks the collision box **around the anchor** — which is what makes `anchor` the other half of the tuning: `anchor: 'bottom'` with `hitboxScaleY: '55%'` covers the lower half without lifting the box off the floor. Also takes `'80%'` |
 | `hitboxScaleX`, `hitboxScaleY` | `1` | Per-axis corrections **multiplied on top of** `hitboxScale`, for art that fills its frame by a different fraction on each axis. A 20×44 drawing in a 32×48 frame needs `0.62` wide and `0.92` tall — no single `hitboxScale` describes it. Ignored by circle hitboxes. Since 2026-08-23 |
 | `hitboxShape` | `'rect'` | `'circle'` — radius = half the smaller drawn side × `hitboxScale` (the per-axis scales are skipped: a circle has no axes). Circles resolve against solids along the contact normal (corner bounces) and get a round touch area |
 | `swept` | `false` | Test this sprite's movement as a **path** (swept AABB), not just at the end position, so a fast mover cannot tunnel between frames. Applies to both `collidesWith` events and `solidWith` blocking (the sprite is clamped to the impact point, then resolved by the normal static pass). Circle hitboxes sweep as their bounding box. Set it on the *mover* — the bullet, not the wall |
@@ -289,11 +336,13 @@ gameView.add(tag);                      // still has to be in the scene
 
 Where it runs in the frame, and why it matters: after physics integration and solid resolution, before collision checks. So a tag never trails its owner by a frame — including an owner riding a moving platform — and an attached invisible hitbox is tested at the position it was just moved to, not the previous one.
 
+**Opacity is inherited** (2026-08-26), and it is the only thing besides position and rotation that is. Each frame the target's *effective* opacity is multiplied into the attached sprite wherever it is drawn or hit-tested, so fading an owner — an `animate({ opacity })` tween included — fades its tags and bars with it, down a whole chain, without ever writing to their own `opacity`. Detaching, being removed, or `removeAllSprites()` resets the inherited factor to 1.
+
 The rest of the contract, all read from the engine:
 
 - **The attached sprite must be in the scene** (`gameView.add(...)`). The pass iterates the scene's sprite list; a sprite that was never added is never repositioned. So is one whose *target* is not in the scene — it simply freezes where it stands.
 - **While attached, position is not yours.** Direct `x`/`y` writes, `velocityX`/`velocityY`, gravity and position tweens still run, and are then overwritten the same frame. `detach()` first if the sprite has to move on its own.
-- **A drag outranks the attachment.** While a finger holds the sprite (`draggable: true`, past the touch slop) the pinning is skipped, exactly as it is for a rider on a moving platform, and resumes when the finger lifts.
+- **A drag outranks the attachment — for position only.** While a finger holds the sprite (`draggable: true`, past the touch slop) the pinning is skipped, exactly as it is for a rider on a moving platform, and resumes when the finger lifts. The inherited opacity keeps applying throughout.
 - **Chains work**: attach a hat to a tag attached to a hero. Parents resolve first through recursion, with a depth cap of 8 that breaks accidental cycles — beyond eight links the far ancestor is not re-resolved that frame and the chain lags instead of hanging. Attaching a sprite to itself is ignored.
 - **Cross-space attach converts automatically.** A `screenFixed` sprite attached to a world sprite (or the reverse) has the target's position mapped through the camera first, so the offset stays in the sprite's own units.
 - **Removing the target removes everything attached to it**, recursively — a tag never outlives its owner, and a chain goes with it. `detach()` first to keep one alive. `removeAllSprites()` clears every attachment as it empties the scene.
@@ -503,7 +552,7 @@ There is `collision` (enter) and `collisionend` (exit), but deliberately **no** 
 - **`followPath` overrides position absolutely.** The path is applied after velocity and gravity have been integrated and writes `x`/`y` outright, so a path-driven sprite ignores its own physics for placement. Do not expect `velocityX` and a path to add up. A tween on `x`/`y` runs *after* the path in the same frame and wins outright — pick one.
 - **A path needs at least two points.** One point (or a non-array) clears the path and logs a warning instead of parking the sprite there.
 - **Path movement still carries riders.** It feeds the frame delta like a tweened or velocity-driven solid, so a platform on a `followPath` circuit moves whatever stands on it.
-- **`raycast` groups: pass an array, not varargs.** Android accepts both `raycast(x0, y0, x1, y1, ['enemy'])` and loose arguments; iOS reads only the array. Write the array and it works on both.
+- **`raycast` groups: pass an array, not varargs.** Android accepts both `raycast(x0, y0, x1, y1, ['enemy'])` and loose arguments; iOS reads the fifth argument **only if it is an array**, and otherwise leaves the filter empty — which does not mean "no hit", it means the ray tests **every** sprite carrying a `collisionGroup`. So `raycast(x0, y0, x1, y1, 'enemy')` works on Android and, on iOS, silently answers a different question: a wall the ray was never meant to see now blocks the line of sight. Write the array and it works on both.
 - **`raycast` only sees `visible`, non-`screenFixed` sprites carrying a `collisionGroup`.** A hidden pooled sprite is invisible to the ray, which is usually what you want; an untagged wall is invisible too, which usually is not. HUD sprites are skipped by design, so a screen-fixed score never blocks a world-space line of sight.
 - **`raycast` is a discrete query, not a sensor.** Calling it from a game-clock timer or a tap handler is the intended use. Calling it every frame from JS puts exactly the bridge traffic in the loop that the whole engine exists to avoid.
 - **`findPath` walks the sprite's center, not its silhouette.** The waypoints are a line through free grid cells, so a body wider than a cell clips corners unless you pass `clearance` (roughly half the walker's width) or shrink `cellSize`. Obstacles are read from the **hitbox**, so `hitboxScale`, the per-axis scales and `hitboxShape: 'circle'` shape the walkable space too.
@@ -517,4 +566,9 @@ There is `collision` (enter) and `collisionend` (exit), but deliberately **no** 
 - **A cross-space attachment is converted with the camera from the previous frame.** Attachments are applied before the camera update, so a `screenFixed` tag on a world sprite (or the reverse) lags by one frame while the camera is moving. Same-space attachments — the normal case — are exact.
 - **Removing a sprite removes everything attached to it.** Pooling the owner with `visible = false` does not, but `gameView.remove(owner)` takes the tag, the health bar and anything chained off them. `detach()` first to keep one.
 - **`attachedTo` is read-only.** Assigning to it stores a value on the proxy that the engine never reads — use `attachTo()` / `detach()`.
+- **Inherited opacity is invisible from JS.** An attached sprite's `opacity` still reads back as its own value, however faded its owner is; the product is computed natively at draw time and is not exposed. There is nothing to read to find out what is actually on screen.
+- **A faded owner stops its tags taking taps.** The inherited opacity goes through the same hit test as a sprite's own, so a tag on an owner at `opacity: 0` is untouchable even though its own `opacity` still says 1 — the pooling idiom of hiding an owner now silently disarms its attached buttons too.
+- **`animate()` takes a percentage only on `scale`.** Inside the tween options `scaleX`, `scaleY` and `opacity` are read as plain numbers on both platforms, so `animate({ opacity: '50%' })` does not do what the property setter would. Percentages are for property writes; keep tween targets numeric.
+- **A bad ratio or anchor name fails differently per platform.** Android keeps the value the property already held; iOS resets it to the property's default. Neither throws, both log a warning, and at creation time they agree — the split only shows on a write to a property already set to something else.
+- **`anchor` beats `anchorX`/`anchorY` in the same `createSprite` call**, whatever the key order in the object, because the engine applies the preset after the two axes. Pass one or the other, not both.
 - **`scrollFactor` does not move the sprite.** It shifts where the sprite is *drawn* and maps touch back to match. `x`, `y`, physics and collisions stay in world coordinates, so a `scrollFactor: 0.5` platform still collides where its world `x` says, not where it looks.

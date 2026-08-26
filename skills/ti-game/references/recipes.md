@@ -2,7 +2,7 @@
 
 Working patterns distilled from the 26 official demos in `example/` and from a shipped Alloy game (Titanium Lander). Each recipe shows the part that is specific to the genre; the shared scaffolding is in [The scaffolding](#the-scaffolding) and is not repeated.
 
-Every snippet uses only API that exists in upstream `main` at `201bcf9`, 2026-08-26 (manifest `0.4.0`, unchanged since 2026-08-20 — the version number stopped tracking the code). Check [roadmap.md](roadmap.md) before reaching for anything not shown here.
+Every snippet uses only API that exists in upstream `main` at `83b7863`, 2026-08-26 (manifest `0.4.0`, unchanged since 2026-08-20 — the version number stopped tracking the code). Check [roadmap.md](roadmap.md) before reaching for anything not shown here.
 
 <!-- TOC-START -->
 ## Contents
@@ -354,20 +354,23 @@ gameView.add(tag);                              // the tag is still a scene spri
 
 The tag now tracks the ball through gravity, tweens, a moving platform and a finger drag, with no JS in the loop, and disappears with it — `gameView.remove(ball)` removes everything attached to the ball, recursively.
 
-A health bar is the same idea with two sprites, and shows what `attachTo` does *not* do:
+A health bar is the same idea with two sprites, and shows where inheritance stops:
 
 ```javascript
 // blockSheet is any small opaque texture stretched and tinted — a sheet-less
 // sprite draws nothing at all, that is the invisible-trigger idiom below
 const barBack = Game.createSprite({ sheet: blockSheet, width: 40, height: 5, zIndex: 5, tintColor: '#222' });
-const barFill = Game.createSprite({ sheet: blockSheet, width: 40, height: 5, zIndex: 6, anchorX: 0, tintColor: '#3f6' });
+const barFill = Game.createSprite({ sheet: blockSheet, width: 40, height: 5, zIndex: 6, anchor: 'left', tintColor: '#3f6' });
 
 barBack.attachTo(hero, { offsetY: -34 });
-barFill.attachTo(hero, { offsetX: -20, offsetY: -34 });   // anchorX 0 → grows to the right
+barFill.attachTo(hero, { offsetX: -20, offsetY: -34 });   // anchored left → grows to the right
 gameView.add([barBack, barFill]);
 
-// on damage: only the width changes — scale, opacity and visibility are not inherited
+// on damage: the width is yours to set — scale, visibility and tint are not inherited
 barFill.width = 40 * (hp / hpMax);
+
+// on death: one tween fades the hero AND both bars, because opacity does cascade
+hero.animate({ opacity: 0, duration: 400 });
 ```
 
 `rotate: true` is the other half: the offset swings around the target and the sprite copies its rotation, which is what a turret on a tank or a hat on a tumbling hero needs.
@@ -376,11 +379,12 @@ barFill.width = 40 * (hp / hpMax);
 turret.attachTo(tank, { offsetY: -12, rotate: true });
 ```
 
-Three things to keep in mind:
+Four things to keep in mind:
 
 - **The attached sprite has to be added to the scene**, and so does its target. Neither pins otherwise — the sprite just sits at whatever `x`/`y` it was created with.
 - **Its position stops being yours.** Velocity, gravity and `animate({ x })` still run and are overwritten the same frame. To fling a tag off a dying enemy, `detach()` first, then give it velocity.
 - **Match `scrollFactor` between the two.** Attachment pins world coordinates; parallax changes only where a sprite is *drawn*. A tag at `scrollFactor: 1` on a background sprite at `0.5` stays pinned in world space and drifts across the screen anyway.
+- **A faded owner also stops its tags taking taps.** The inherited opacity runs through the hit test as well as the draw, so an owner at `opacity: 0` leaves an attached text button untouchable — while that button's own `opacity` still reads 1. Hide an owner with `visible = false` if the tags should keep working, or detach them.
 
 ### Invisible triggers
 
@@ -424,6 +428,16 @@ hero.hitboxScaleY = 0.92;
 ```
 
 Read the two boxes as a pair: green is what collides, blue is what draws **and what takes taps**. Green much smaller than blue on one axis only is exactly the case the per-axis scales exist for; green and blue identical on a sprite whose art has padding is the bug the demo dramatizes.
+
+The orange dot is the third variable, not decoration: the box shrinks **around the anchor**, so where the anchor sits decides which edge stays put. A prop that should collide from mid-height down while still resting on the floor is the anchor and the scale together, and both have a readable form now:
+
+```javascript
+// the same thing, twice — the second one says what it is doing
+Game.createSprite({ sheet, anchorY: 1, hitboxScaleY: 0.55 });
+Game.createSprite({ sheet, anchor: 'bottom', hitboxScaleY: '55%' });
+```
+
+Every ratio takes a percentage this way (`opacity`, `scale`, `scrollFactor`, `restitution`, `volume`, the `follow` margins…) and both anchors take names. Coordinates, sizes, degrees and speeds do not — they were never fractions.
 
 ### Zones you can be inside of (enter / exit) — `zones.js`
 

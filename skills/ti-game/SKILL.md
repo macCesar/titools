@@ -7,7 +7,7 @@ allowed-tools: Read, Grep, Glob, Edit, Write, Bash(node *)
 
 # ti.game — 2D game engine for Titanium SDK
 
-`ti.game` is a native OpenGL ES 2.0 sprite engine exposed to JavaScript, written and maintained by **Michael Gangolf (m1ga)** — upstream is https://github.com/m1ga/ti.game. This skill tracks upstream `main` as of **2026-08-26**, manifest **`0.4.0`** — that bump is the first in a long run of feature landings (the text engine, `screenFixed`, `swept` collisions, `collisionend`, `followPath`, animation chaining, `raycast`, `findPath`, game-clock timers, `scrollFactor` parallax and the `multiply`/`screen` blend modes all shipped while it still said `0.3.0`), so anything still calling itself 0.3.0 has none of them. The number lags the code in the other direction too: per-axis hitboxes (`hitboxScaleX`/`hitboxScaleY`), text word wrap (`maxWidth`), `unload()` on sheets and fonts and the LiveView renderer lifecycle (2026-08-23), then sprite attachment (`attachTo`/`detach`, 2026-08-26), all landed with the manifest still at `0.4.0`, so date the build rather than trusting the version. When upstream and any fork disagree, upstream wins. Same JS API on Android and iOS — the iOS side is a class-per-class Obj-C twin of the Android engine.
+`ti.game` is a native OpenGL ES 2.0 sprite engine exposed to JavaScript, written and maintained by **Michael Gangolf (m1ga)** — upstream is https://github.com/m1ga/ti.game. This skill tracks upstream `main` as of **2026-08-26**, manifest **`0.4.0`** — that bump is the first in a long run of feature landings (the text engine, `screenFixed`, `swept` collisions, `collisionend`, `followPath`, animation chaining, `raycast`, `findPath`, game-clock timers, `scrollFactor` parallax and the `multiply`/`screen` blend modes all shipped while it still said `0.3.0`), so anything still calling itself 0.3.0 has none of them. The number lags the code in the other direction too: per-axis hitboxes (`hitboxScaleX`/`hitboxScaleY`), text word wrap (`maxWidth`), `unload()` on sheets and fonts and the LiveView renderer lifecycle (2026-08-23), then sprite attachment (`attachTo`/`detach`), inherited opacity on attachments and named/percentage values (2026-08-26, `83b7863`), all landed with the manifest still at `0.4.0`, so date the build rather than trusting the version. When upstream and any fork disagree, upstream wins. Same JS API on Android and iOS — the iOS side is a class-per-class Obj-C twin of the Android engine.
 
 Works in **both Classic and Alloy** projects. Nothing here depends on PurgeTSS.
 
@@ -144,6 +144,8 @@ And when the question is "how do I get over there?", `gameView.findPath(from, to
 
 Tune fairness with `hitboxScale` (art rarely fills its frame; slightly small hitboxes feel better), `hitboxScaleX`/`hitboxScaleY` when the drawing fills its frame by a different fraction on each axis (a 20×44 hero in a 32×48 frame wants `0.62` wide and `0.92` tall — the two multiply `hitboxScale` rather than replace it), and `hitboxShape: 'circle'` for balls and rocks — circles also resolve against solids along the contact normal, so they bounce off corners diagonally instead of like a box. Turn on `debug: true` per sprite, or on the GameView for everything, to see green collision AABBs, blue touch bounds and the orange anchor dot.
 
+The hitbox shrinks **around the anchor**, which is why the anchor is half of that tuning and why both now have readable forms: `anchor: 'bottom'` with `hitboxScaleY: '55%'` is the same sprite as `anchorY: 1` with `hitboxScaleY: 0.55`, and says what it is doing. Every ratio the engine exposes takes a percentage string, and the anchors take names (`'left'`, `'bottom-right'`, `'center'`); numbers keep working untouched. [api.md](references/api.md) lists exactly which properties are ratios — coordinates, sizes, degrees and speeds are not, and neither is the car model's `grip`/`drag`.
+
 ## Performance rules that actually matter
 
 - **One texture = one draw call.** The batcher accumulates up to 1000 quads and flushes on texture switch. A scene whose sprites all share one sheet renders in a single draw call regardless of sprite count. Pack art into as few sheets as possible; reuse one white particle texture and tint it at runtime.
@@ -169,7 +171,7 @@ One long string wraps itself: `maxWidth` breaks lines on word boundaries and re-
 
 `screenFixed: true` works on **any** sprite: `x`/`y` become surface coordinates and camera position, zoom and shake are ignored, while touch still maps back. That is the HUD pattern — the score stays put while the camera follows the player. Without it, text is world-space and scrolls past like scenery (signposts, floating damage numbers).
 
-A label that belongs *on* a moving sprite is neither: `tag.attachTo(hero, { offsetY: -40 })` pins it natively, resolved every frame after physics and before collisions, so it never lags by a frame and needs no JS. It works on any sprite, not just text — health bars, shadows, an invisible hitbox on a body, and with `rotate: true` a turret whose offset swings with the tank. Removing the owner removes what is attached to it. What it does *not* inherit is scale, opacity, visibility or tint — position and rotation only.
+A label that belongs *on* a moving sprite is neither: `tag.attachTo(hero, { offsetY: -40 })` pins it natively, resolved every frame after physics and before collisions, so it never lags by a frame and needs no JS. It works on any sprite, not just text — health bars, shadows, an invisible hitbox on a body, and with `rotate: true` a turret whose offset swings with the tank. Removing the owner removes what is attached to it, and fading the owner fades them with it: position, rotation and opacity are inherited. Scale, visibility and tint are not — set those per sprite.
 
 Overlaid `Ti.UI.Label` views still work and are still right for anything the engine cannot draw: native inputs, system fonts, accented text the built-in font lacks, scrollable menus. Just do not reach for them for a score any more.
 
@@ -222,7 +224,7 @@ When this skill runs out — a brand-new feature, a demo's exact code, a build q
 2. Does any timer move a sprite? Replace it with velocity, gravity, a tween, `carMode` or `thrust`.
 3. Are all the level's objects added in one `gameView.add([...])` call?
 4. Does every moving body have the right model — `solidWith` to be blocked, `collidesWith` to be notified?
-5. Is `hitboxScale` set on sprites whose art does not fill the frame — with `hitboxScaleX`/`hitboxScaleY` when the fit differs per axis?
+5. Is `hitboxScale` set on sprites whose art does not fill the frame — with `hitboxScaleX`/`hitboxScaleY` when the fit differs per axis, and the `anchor` the box shrinks around named rather than left as a bare `1`?
 6. Do triggers (scores, goals, kill zones) use sheet-less sprites instead of visible art?
 7. Is every `createSound`, `setInterval` and `setTimeout` stopped when the window closes?
 8. Is the HUD `Game.createText` with `screenFixed: true`, rather than a stack of overlaid labels?
