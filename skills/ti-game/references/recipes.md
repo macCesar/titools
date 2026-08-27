@@ -2,12 +2,12 @@
 
 Working patterns distilled from the 26 official demos in `example/` and from a shipped Alloy game (Titanium Lander). Each recipe shows the part that is specific to the genre; the shared scaffolding is in [The scaffolding](#the-scaffolding) and is not repeated.
 
-Every snippet uses only API that exists in upstream `main` at `83b7863`, 2026-08-26 (manifest `0.4.0`, unchanged since 2026-08-20 — the version number stopped tracking the code). Check [roadmap.md](roadmap.md) before reaching for anything not shown here.
+Every snippet uses only API that exists in upstream `main` at `ee69056`, 2026-08-27 (manifest `0.5.0` — the number moved with this release, but it has sat still through whole feature sets before, so date the build). Check [roadmap.md](roadmap.md) before reaching for anything not shown here.
 
 <!-- TOC-START -->
 ## Contents
 
-- [The 26 demos, and what each one is the reference for](#the-26-demos-and-what-each-one-is-the-reference-for)
+- [The 32 demos, and what each one is the reference for](#the-32-demos-and-what-each-one-is-the-reference-for)
 - [The scaffolding](#the-scaffolding)
 - [Cross-cutting patterns](#cross-cutting-patterns)
 - [Tap-to-flap](#tap-to-flap)
@@ -28,7 +28,7 @@ Every snippet uses only API that exists in upstream `main` at `83b7863`, 2026-08
 
 <!-- TOC-END -->
 
-## The 26 demos, and what each one is the reference for
+## The 32 demos, and what each one is the reference for
 
 `example/` is the module's real documentation: every demo is a runnable app, and upstream keeps them current with the engine. When a recipe here is not enough, open the demo — it compiles today.
 
@@ -60,6 +60,12 @@ Every snippet uses only API that exists in upstream `main` at `83b7863`, 2026-08
 | `demoscene.js` | Sine scrollers and copper bars built from `followPath` circles | [Visual effects](#visual-effects) |
 | `maze.js` | A* over a tile maze, `simplify: false` route visualization, a re-pathing hound | [Pathfinding around obstacles](#pathfinding-around-obstacles--mazejs-pointclickjs) |
 | `timescale.js` | `timeScale` slow motion and freeze; game clock vs `setInterval` | [Timers on the game clock](#timers-on-the-game-clock) |
+| `circles.js` | The three hitbox shapes as **solids**, side by side, plus `'block'` vs `'push'` on the same shot | [Shaped solids](#shaped-solids-ramps-round-posts-and-bodies-that-push-back--slopesjs-circlesjs-pooljs-drumjs) |
+| `slopes.js` | Tilted `'rotatedRect'` ramps with a rect rider and a circle rider, and `restitution` living on the surface | [Shaped solids](#shaped-solids-ramps-round-posts-and-bodies-that-push-back--slopesjs-circlesjs-pooljs-drumjs) |
+| `plinko.js` | 86 circular solids: why a peg has to be a circle and not its bounding box | [Shaped solids](#shaped-solids-ramps-round-posts-and-bodies-that-push-back--slopesjs-circlesjs-pooljs-drumjs) |
+| `pool.js` | `solidMode: 'push'` bodies exchanging momentum, `linearDamping` as felt | [Shaped solids](#shaped-solids-ramps-round-posts-and-bodies-that-push-back--slopesjs-circlesjs-pooljs-drumjs) |
+| `drum.js` | `solidMode: 'contain'`: 25 balls inside one analytic circle, no wall segments | [Shaped solids](#shaped-solids-ramps-round-posts-and-bodies-that-push-back--slopesjs-circlesjs-pooljs-drumjs) |
+| `wind.js` | `gravityX` as wind, and as the lean of a top-down table | [Shaped solids](#shaped-solids-ramps-round-posts-and-bodies-that-push-back--slopesjs-circlesjs-pooljs-drumjs) |
 
 ## The scaffolding
 
@@ -438,6 +444,105 @@ Game.createSprite({ sheet, anchor: 'bottom', hitboxScaleY: '55%' });
 ```
 
 Every ratio takes a percentage this way (`opacity`, `scale`, `scrollFactor`, `restitution`, `volume`, the `follow` margins…) and both anchors take names. Coordinates, sizes, degrees and speeds do not — they were never fractions.
+
+### Shaped solids: ramps, round posts and bodies that push back — `slopes.js`, `circles.js`, `pool.js`, `drum.js`
+
+Until 2026-08-27 a solid was always resolved as an axis-aligned box no matter what it looked like, so a round post showed flat faces and a tilted ramp blocked along a phantom horizontal ledge. Now the **solid's** declared shape takes part, which turns four hand-written workarounds into one property.
+
+**A ramp is one turned rectangle**, not a staircase of small ones:
+
+```javascript
+const ramp = Game.createSprite({
+	sheet: wallSheet, x: W * 0.28, y: H * 0.24,
+	width: W * 0.30, height: 14,
+	rotation: 12,
+	hitboxShape: 'rotatedRect',   // the box turns with the art
+	collisionGroup: 'ramp'
+});
+
+const crate = Game.createSprite({
+	sheet: crateSheet, x: W * 0.2, y: 0,
+	gravity: 1400, swept: true,
+	solidWith: ['ramp']
+});
+```
+
+The rider needs nothing new — `'rect'` against a `'rotatedRect'` goes through separating axes on its own, and a circle rider is taken into the ramp's frame. Both settle on the real face and slide. Keep ramps **short**: a rider that slides a long one arrives at the bottom carrying everything the drop gave it and leaves like a projectile, which reads as the ramp firing it.
+
+**A round obstacle wants a circle on the solid, not just on the ball.** `hitboxShape: 'circle'` on the mover has been there for a while; putting it on the *peg* is what makes the contact normal run centre to centre:
+
+```javascript
+const peg = Game.createSprite({ sheet, x, y, hitboxShape: 'circle', collisionGroup: 'peg' });
+
+const chip = Game.createSprite({
+	sheet, hitboxShape: 'circle', gravity: 1200,
+	restitution: 0.42,
+	swept: true,                  // small pegs, fast chip: no stepping over one
+	collisionGroup: 'chip',
+	solidWith: ['peg', 'chip'],
+	solidMode: 'push'             // …and the chips are bodies to each other
+});
+```
+
+As bounding boxes every peg is a square with a flat top and the chips stack instead of scattering. That is the whole Plinko board.
+
+**Balls that push each other** need agreement on both sides — this is the one setting that fails silently when it is half-configured:
+
+```javascript
+const ball = Game.createSprite({
+	sheet: ballSheet, hitboxShape: 'circle',
+	restitution: 0.96,
+	linearDamping: 0.62,          // the felt: it trickles to a halt
+	swept: true,
+	collisionGroup: 'ball',
+	solidWith: ['ball', 'rail'],  // ← its own group is in there
+	solidMode: 'push'
+});
+```
+
+Every clause matters: both sprites `'push'`, both circles, and **each listing the other's group**. Drop any one and the pair quietly degrades to one ball shoving an immovable one, which looks like broken momentum and is a missing string. There are no masses and no spin — a marble and a boulder trade velocity identically.
+
+**A container is one sprite, not a ring of walls.** `solidMode: 'contain'` keeps matched circles *inside* a circle, analytically, so there are no seams to squeeze through and nothing to place by hand:
+
+```javascript
+// sheetless: it collides and contains, and draws nothing — draw the barrel over it
+gameView.add(Game.createSprite({
+	x: CX, y: CY, width: DRUM * 0.88, height: DRUM * 0.88,
+	touchEnabled: false,
+	hitboxShape: 'circle',
+	solidMode: 'contain',
+	collisionGroup: 'drum',
+	debug: true                    // green circle = exactly where the wall is
+}));
+
+// the balls list the drum; the drum lists nothing — containment is one-directional
+const ball = Game.createSprite({
+	sheet: ballSheet, hitboxShape: 'circle',
+	gravity: 900, restitution: 0.55, linearDamping: 0.35,
+	collisionGroup: 'ball', solidWith: ['drum', 'ball'], solidMode: 'push'
+});
+```
+
+Two things bite here. The sweep **ignores** anything that is not `solidMode: 'block'`, so `swept: true` will not stop a fast enough ball crossing the boundary between frames — keep the speeds inside a container sane. And a `'contain'` solid only holds *circles*: a rect mover runs a resolver that never reads `solidMode` and gets pushed **out** of the boundary instead of held in.
+
+**`linearDamping` is the missing friction, with a caveat.** `drag` only ever worked inside `carMode`; this is the same idea for ordinary sprites, and it is what brings a pool table to rest. But nothing checks contact — it bleeds speed on both axes, in the air as much as on the felt, and along a slope as much as across it. Right for a table, wrong for a hill. Below a combined 4 px/s the engine zeroes the velocity outright, so a deliberate 3 px/s drift dies the moment that sprite also carries damping.
+
+**A bouncy surface is now a property of the surface.** `restitution` is read off both sides and mixed as `max`, so a springy floor rebounds riders that are not themselves bouncy:
+
+```javascript
+addSurface({ color: '#4caf50', restitution: 0.5 });   // the floor and the side walls
+// the ball keeps restitution: 0.1 and still bounces off them at 0.5
+```
+
+The cost of `max` is that it cannot be opted out of — a deliberately dead crate bounces off that floor too — and a rebound over 40 px/s takes the reflecting branch, which never sets `onGround` and never fires `land`. A jump gated on `onGround` stops working on the one platform somebody made bouncy.
+
+**`gravityX` is the sibling of `gravity`, not half of a vector.** `gravity` keeps its exact vertical meaning; this is a second constant acceleration on X, read natively every tick, so a field of leaves answers a wind change at once with no per-frame JS:
+
+```javascript
+leaves.forEach((leaf) => { leaf.gravityX = wind; });   // on a button, not on a timer
+```
+
+The other use has nothing to do with wind: a top-down table with `gravity: 0` and a non-zero `gravityX` is a board seen from above with a lean.
 
 ### Zones you can be inside of (enter / exit) — `zones.js`
 
@@ -1230,7 +1335,7 @@ ball.addEventListener('collision', (e) => {
 
 Note the split: walls and the net are `solidWith` (the engine bounces the ball off them for free), while the players and the floor are `collidesWith` (you decide what happens). For breakout, bricks go in `collidesWith` and are removed with `visible = false` on hit while the paddle and walls stay solid.
 
-A `restitution: 1` ball on an invisible floor bounces forever with no JS at all.
+A `restitution: 1` ball on an invisible floor bounces forever with no JS at all — and since 2026-08-27 the bounce can live on the *floor* instead, which is what makes one springy platform in an otherwise dead level a one-property change. Round obstacles, bumpers that knock each other around and a table that brings everything to rest are all in [Shaped solids](#shaped-solids-ramps-round-posts-and-bodies-that-push-back--slopesjs-circlesjs-pooljs-drumjs).
 
 **Opponent AI** on an 80 ms timer, reading a handful of live properties per tick:
 

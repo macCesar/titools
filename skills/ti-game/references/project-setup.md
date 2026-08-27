@@ -25,8 +25,8 @@ There is no registry and no `ti module install` command — Titanium modules are
 
 ```
 modules/
-├── android/ti.game/0.4.0/
-└── iphone/ti.game/0.4.0/
+├── android/ti.game/0.5.0/
+└── iphone/ti.game/0.5.0/
 ```
 
 Unzipping the module zip at the project root creates exactly that layout.
@@ -37,14 +37,14 @@ Then declare it in `tiapp.xml`. The iOS platform key is `iphone`, not `ios`:
 
 ```xml
 <modules>
-  <module platform="android" version="0.4.0">ti.game</module>
-  <module platform="iphone" version="0.4.0">ti.game</module>
+  <module platform="android" version="0.5.0">ti.game</module>
+  <module platform="iphone" version="0.5.0">ti.game</module>
 </modules>
 ```
 
 Pinning `version` is worth the extra attribute: with two module versions installed side by side, an unpinned entry silently picks the highest one.
 
-**The version string does not identify a feature set — the build date does.** The manifest went `0.3.0` → **`0.4.0`** on 2026-08-20, after months of feature landings under the old number, and then kept accepting features without moving again. So both numbers cover several incompatible builds:
+**The version string does not identify a feature set — the build date does.** The manifest went `0.3.0` → **`0.4.0`** on 2026-08-20 and **`0.5.0`** on 2026-08-27, and in between each number kept accepting features without moving. So every one of them covers several incompatible builds:
 
 | A build from | Missing, compared to what this skill documents |
 | --- | --- |
@@ -55,8 +55,9 @@ Pinning `version` is worth the extra attribute: with two module versions install
 | `0.4.0` built before 2026-08-24 | additionally rocks side to side through a multi-frame animation on a `smoothing: true` grid sheet — the half-texel inset was one-sided, so the end frames came out slightly wider and off-centre |
 | `0.4.0` built before 2026-08-26 | additionally `sprite.attachTo()` / `detach()` / `attachedTo`, and `gameView.follow()` still aborts the app on Android if it is handed anything that is not a sprite |
 | `0.4.0` built on 2026-08-26 but before `83b7863` | additionally the opacity an attachment inherits from its target, the `anchor` property, and percentage strings on every ratio — a build in this window has `attachTo` but treats `'55%'` as a number it cannot read |
+| `0.4.0` at its last commit (`b780051`) | additionally everything the `0.5.0` bump carries: `hitboxShape: 'rotatedRect'`, circular solids resolved as circles, `solidMode`, `gravityX`, `linearDamping`, and `restitution` read off both sides of a contact. It also still pulls a swept sprite back to where its frame started when it begins the frame already touching a solid, so a `swept: true` body parked on a slope creeps and then breaks loose as if launched |
 
-The published releases are pre-releases and lag `main`: the newest one is `0.4.0` (2026-08-20). If a call that this skill documents is `undefined` at runtime, check the manifest version *and the build date* before hunting for a typo, and rebuild from upstream `main`. More reliable than either is feature-detecting in code: read the property **before** ever writing it (`typeof sprite.hitboxScaleX === 'undefined'` means the build predates it). Write-then-read always says yes, because an unknown property is stored on the Kroll proxy and reads back exactly as it was set. A method has no such trap — `typeof sprite.attachTo === 'function'` is a clean probe whatever the app did earlier.
+The published releases are pre-releases and lag `main`: the newest one is still `0.4.0` (2026-08-20), which is now two manifest numbers and a physics release behind. If a call that this skill documents is `undefined` at runtime, check the manifest version *and the build date* before hunting for a typo, and rebuild from upstream `main`. More reliable than either is feature-detecting in code: read the property **before** ever writing it (`typeof sprite.hitboxScaleX === 'undefined'` means the build predates it). Write-then-read always says yes, because an unknown property is stored on the Kroll proxy and reads back exactly as it was set. A method has no such trap — `typeof sprite.attachTo === 'function'` is a clean probe whatever the app did earlier.
 
 Building the module from source:
 
@@ -68,7 +69,7 @@ ti build -p ios --build-only        # macOS only → ios/dist/ti.game-iphone-<ve
 
 ## Classic projects
 
-`require('ti.game')` anywhere and add the GameView to a window. The 26 demos in the module's `example/` folder are Classic, each one a CommonJS module exporting a start function (`app.js` is the launcher, not a demo):
+`require('ti.game')` anywhere and add the GameView to a window. The 32 demos in the module's `example/` folder are Classic, each one a CommonJS module exporting a start function (`app.js` is the launcher, not a demo):
 
 ```javascript
 // Resources/flappy.js
