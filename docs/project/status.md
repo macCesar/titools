@@ -1,75 +1,58 @@
-# Status — 2026-08-23
+# Status — 2026-08-26
 
-**Phase:** live and maintained. **v4.12.0 shipped on both channels**, working tree clean, 0 commits unpushed, nothing in flight.
+**Phase:** live and maintained. **v4.14.0 shipped on both channels**, working tree clean, 0 commits unpushed, nothing in flight.
+**Session by:** Claude Code · Opus 5 (`claude-opus-5`).
 
-## Release state — both channels on 4.12.0
+## Release state — both channels on 4.14.0
 
 | Channel | Version | Verified today |
 |---|---|---|
-| npm | 4.12.0 | `curl registry.npmjs.org/@maccesar%2Ftitools` → `dist-tags.latest = 4.12.0` |
-| Claude Code marketplace | 4.12.0 | `plugin.json` on `origin/main` reads 4.12.0, `git ls-remote --tags origin v4.12.0` resolves, GitHub release created |
+| npm | 4.14.0 | `curl registry.npmjs.org/@maccesar%2Ftitools` → `dist-tags.latest = 4.14.0` |
+| Claude Code marketplace | 4.14.0 | `package.json` and `plugin.json` both read 4.14.0, tag `v4.14.0` pushed, GitHub release created |
 
-`publish.yml` ran green on the `v4.12.0` tag (`gh run list --workflow=publish.yml`), which is what put the package on npm — nothing was published by hand. **Do not verify with `npm view`**: it served a stale version from its local cache for minutes after a successful publish during the 4.6.1 release. Query the registry over HTTP.
+Two releases went out this session, 4.13.0 and 4.14.0, both published by `publish.yml` on the tag — nothing by hand. **Do not verify with `npm view`**: it served a stale version for minutes after a successful publish during 4.6.1. Query the registry over HTTP.
 
-The suite is **155 tests**, run under an empty `HOME` before the push, not just against this machine's real one:
+The suite is **318 tests** (155 + the 163 new anchor checks), run under an empty `HOME` before each push:
 
 ```bash
 FAKEHOME=$(mktemp -d) && HOME="$FAKEHOME" npm test; rm -rf "$FAKEHOME"
 ```
 
-That control exists because v4.6.0 was tagged, failed `npm test` on the runner and never reached npm — two tests asserted against a `HOME` that already had skills installed.
+## Shipped in 4.14.0 — named values, and a correction to 4.13.0
 
-## Shipped in 4.12.0 — `unload()`, the LiveView lifecycle, and the demo index
+Upstream PR #16 (César's) made every ratio the engine exposes accept `'55%'` and both anchors accept names, with a new `anchor` property. `api.md` gained a section listing which properties are ratios, read from the `Values.ratio` call sites rather than from upstream's prose, plus three things no documentation mentions: `centre`/`middle` are accepted aliases, `anchor` beats `anchorX`/`anchorY` in the same `createSprite` call whatever the key order, and `animate()` parses a percentage on `scale` alone.
 
-Upstream merged César's PR #13 (stale renderers surviving a LiveView reload) and Michael extended it the same day in `lifecycle clean-ups`: the retiring runtime's `SoundPool`, `MediaPlayer`s and audio proxies go down with the render loops, and Android's `GameViewProxy.releaseViews()` drops the view reference so the `GLSurfaceView` and its Activity can be collected. He also added `unload()` on sheets and fonts, and `example/hitbox.js`.
+**4.13.0 shipped a claim that was already false.** It said an attachment does not inherit `opacity`; Michael added exactly that in `48beb97`, hours after the tag. The skill asserted the opposite in five places. Fixed in 4.14.0, together with two consequences read from the engine and absent from upstream's README: the inherited value runs through the hit test, so an owner at `opacity: 0` leaves an attached text button untappable while its own `opacity` still reads 1, and the product is never exposed to JS.
 
-Documented from the diff `fa26a0a..df66122`, not from the release notes. The facts that matter to an app author: `unload()` is **permanent**, so a sprite still pointing at an unloaded sheet stops drawing silently — it is level streaming, not a cache; releasing the proxy unloads too; and nothing in app code changes for LiveView, but a scene still stuttering after ten reloads dates the build.
+That is the shape of maintaining this skill now — upstream can invalidate a published claim the same day. The dated build table in `project-setup.md` is what absorbs it.
 
-The skill also gained the navigation César asked for: `recipes.md` opens with an index of all 26 demos (what each is the reference implementation of, which recipe covers it), and `SKILL.md` closes with what each upstream file is authoritative for. `ios/README.md` yielded two app-facing facts worth keeping — a tap is a press released within 300 ms, inside the touch slop, verified in `TouchController` on both platforms.
+## Shipped in 4.13.0 — `attachTo`, and a generator that made dead links
 
-## Shipped in 4.11.0 — per-axis hitboxes and word wrap
+`attachTo`/`detach` (upstream PR #15) documented from the diff, plus the half-texel inset fix from César's PR #14, which had made the reference describe behaviour that no longer existed.
 
-`hitboxScaleX`/`hitboxScaleY` (PR #11) and `maxWidth` word wrap (PR #12). Verified against the module source: the per-axis scales multiply `hitboxScale` rather than replace it, circle hitboxes skip them, and **neither reaches the touch area**, because `hitTest` runs against the full drawn frame. `maxWidth` is font-space px *before* `scale`.
+The bigger find was local: **`scripts/generate-toc.mjs` built anchors by collapsing runs of whitespace while GitHub turns every space into its own hyphen**, so every heading with punctuation between two words — "Top-down / Zelda", "Point & click adventure" — had a generated link that scrolled nowhere. Four skills carried them. The slug rules were then checked against `github-slugger`, the library GitHub itself uses, over all 4263 headings in the repo: the fix takes the disagreements from 11 to 5, the residue being keycap emoji. `test/anchors.test.js` now fails on any in-file link no heading produces, importing `slugify` from the script rather than reimplementing it — and it was validated against a deliberately broken control file before being kept.
 
-A completeness pass over the whole module found nothing else missing — every `@Kroll` property and method, every creation option and all sixteen event names appear in `api.md`.
+The three long `ti-game` references also swapped their hand-written `## Contents` for the generated block, so the index can no longer drift from the headings.
 
-## `ti.game`'s version number is not a feature set — this keeps biting
+## Contributed upstream — m1ga/ti.game#18, merged
 
-Six features have now landed on top of the `0.4.0` manifest without moving it: the per-axis hitboxes, word wrap, both `unload()`s and the LiveView lifecycle. `project-setup.md` used to claim `0.4.0` "carries everything this skill documents"; it is now a table of what each build is missing, and it tells the reader to feature-detect by reading a property **before** writing it — `KrollProxy.setProperty` stores unknown names, so write-then-read always answers yes (checked in the SDK source).
+Six feature interactions were sent to the module's own README and merged the same evening: `hitboxScale` being collision-only while `hitboxShape: 'circle'` does round the touch area, `glowColor` drawing nothing without a blur radius, `follow()` resetting its options on every call, `followPath` needing two points, the inherited opacity going through the hit test, and `raycast` groups having to be an array.
 
-The clone at `~/Developer/git-clones/ti.game` tracks `upstream/main` at `df66122`.
+That last one is the one with teeth: **passing loose group arguments does not fail on iOS**, the filter stays empty and the ray tests every sprite carrying a `collisionGroup`, so the same call answers a different question per platform. Documented in the skill; upstream may prefer to fix it in code.
 
-## Release cadence of the skill — six catch-ups in a week
-
-4.7.0 shipped the skill; 4.8.0 through 4.12.0 each caught it up with upstream. That is the maintenance shape of `ti-game`: the module gains features faster than it versions them, so the roadmap table goes stale first and `EXAMPLE-PROMPTS.md`'s eval checklist right behind it — it has twice named an API that had already shipped (`createText`, then word wrap).
+The measurement behind that PR is worth keeping: upstream's README is good — 1118 lines, 226 table rows — and most of the skill's 47 gotchas are in it or derivable from it. What is missing is never a property, it is what happens where two of them meet. That is the gap this skill fills, and the reason the PR was six clauses rather than a rewrite.
 
 ## Sibling parity — aiskills 1.21.0
 
-| Repo | npm | Tests | Publish workflow | `release-docs` test |
+| Repo | npm | Tests | `scripts/` | `release-docs` test |
 |---|---|---|---|---|
-| titools | 4.12.0 | 155 | yes | yes |
-| aiskills | 1.21.0 | 111 | yes | **no** |
+| titools | 4.14.0 | 318 | yes | yes |
+| aiskills | 1.21.0 | 111 | **no** | **no** |
 
-Both verified today: aiskills' `package.json` and `plugin.json` both read 1.21.0, the registry agrees, its tree is clean with nothing unpushed, and its suite passes 111/111.
-
-Neither 4.11.0 nor 4.12.0 touched shared machinery — both are skill content only, so there was nothing to port.
+Verified today: aiskills reads 1.21.0 in both version files, its tree is clean with nothing unpushed, and it has no `scripts/` directory. **Nothing from this session is portable to it yet** — the TOC fix and `anchors.test.js` both depend on `generate-toc.mjs`, which only exists here. Porting the script is the prerequisite, not the test.
 
 ## Open, not blocked
 
-- **`test/release-docs.test.js` has not been ported to aiskills**, which has the same tag-triggered `publish.yml` and the same docs that can drift away from it. The test derives the publishing flow from the workflow file rather than asserting today's answer, so the port is mostly mechanical.
-- **`scripts/generate-toc.mjs` and `fix-fences.mjs` live only here** — `~/Developer/openSource/aiskills/scripts/` still does not exist. Porting is not a `cp`: `fix-fences.mjs` carries Titanium-specific reasoning.
-- **`manifest.test.js` is broader here** than aiskills' copy (agents, the nested hook format, the `files` allowlist in both directions). Worth sending back.
-- **`docs/PENDING-IMPROVEMENTS.md` items 1 and 3 stand** (document mechanism #3 in the README; "Use when…" descriptions on the four opinionated skills). Item 2 is obsolete — it plans a migration that was reversed.
-- **`docs/actualizar-skill.md` describes a pending correction to `ti-howtos`.** Not checked against the current skill from this session; it may already be fixed.
-
-## Blocked by others
-
-- **PurgeTSS help strings** — in the *PurgeTSS repo*, not this one: `bin/purgetss:321,327,328` print `default: 19` and `default: 20` where `src/core/branding/pieces.js` applies `18`, `26` and `26`. Recorded on 2026-08-14 and **not re-checked from this session**. Nothing in TiTools can fix it; the skill documents the correct numbers and flags the discrepancy.
-
-## Local install
-
-This machine runs TiTools via `npm link` — verified today: `/usr/local/bin/titools` symlinks into `lib/node_modules/@maccesar/titools/bin/titools.js` and `titools --version` prints 4.12.0. `npm publish` refreshes *other people's* installs, never this one; `isDevMode()` detects the repo's `.git` and skips `npm update -g` so the link survives.
-
-## Deployment
-
-Distribution *is* the release. Nothing here deploys by file sync: a change reaches users through the tag (npm, via `publish.yml`) or through a pushed `plugin.json` bump (marketplace). Because those are two separate acts the channels can drift, so check both whenever you need to know what users actually have. The maintainer's own post-release sequence is `/plugin marketplace update maccesar-titools` → `titools install` → `/reload-plugins`.
+- **`scripts/generate-toc.mjs` and `fix-fences.mjs` live only here.** Porting them to aiskills would also carry `test/anchors.test.js`. `fix-fences.mjs` carries Titanium-specific reasoning, so it is not a `cp`.
+- **`test/release-docs.test.js` has not been ported to aiskills**, which has the same tag-triggered `publish.yml` and the same docs that can drift from it.
+- **Two upstream items would change what the skill documents if they land**: the `ratio` parser falling back to the property's default on iOS while Android keeps the current value (a parity gap in PR #16), and `animate()` accepting a percentage on `scale` only. Both are currently documented as divergences.
