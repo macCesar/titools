@@ -306,6 +306,24 @@ Expect:
 - `anchor` reads back as the preset or `'custom'`; `anchorX`/`anchorY` always read back as numbers
 
 ```
+"I made a ramp by rotating a platform sprite 20 degrees, but the crate lands on thin air above it and just sits there."
+```
+Expect:
+- A plain `'rect'` hitbox is re-boxed square to the screen every frame, so a turned platform blocks along a flat top that is not drawn anywhere
+- `hitboxShape: 'rotatedRect'` on the **ramp** keeps its box turned with the art; the rider needs nothing new
+- Keeps the ramp short — a long one hands the rider its whole drop as speed and looks like it fired it
+- Names what is still missing: `linearDamping` bleeds speed in every direction, so it is a pool table's friction, not a hill's
+
+```
+"I have 20 balls in a bowl and they all overlap each other. I'm separating them in a loop on a timer and it jitters."
+```
+Expect:
+- The bowl is one sprite: `hitboxShape: 'circle'` with `solidMode: 'contain'`, analytic, with no ring of wall segments and no seams
+- The balls are `solidMode: 'push'` to each other — and every clause is needed: both circles, both `'push'`, **each listing the other's `collisionGroup`**, or it degrades silently to one ball shoving an immovable one
+- No masses, no spin, no friction, and `restitution` mixes as `max` off both sides
+- Warns that `swept: true` skips anything that is not `solidMode: 'block'`, so a fast enough ball still crosses the boundary
+
+```
 "Can I use ti.game in an Alloy project or is it app.js only?"
 ```
 Expect:
@@ -434,7 +452,8 @@ Expect:
 - [ ] ti-game: builds the level from the `resize` event, not from `displayCaps`
 - [ ] ti-game: pins a label or bar onto a sprite with `attachTo`, not with a timer copying coordinates
 - [ ] ti-game: names the anchor and writes ratios as percentages where a bare number is a riddle
-- [ ] ti-game: does not invent APIs that do not exist yet (tilemap layer, `parent`/inherited transforms, joysticks, gamepads, slopes)
+- [ ] ti-game: puts the shape on the **solid** — a circle peg, a `'rotatedRect'` ramp — instead of correcting a bounding box in JS
+- [ ] ti-game: does not invent APIs that do not exist yet (tilemap layer, `parent`/inherited transforms, joysticks, gamepads, the platformer feel on a slope)
 - [ ] ti-api: cites specific properties/methods/events
 - [ ] ti-guides: references tiapp.xml / Hyperloop / distribution docs
 - [ ] ti-howtos: provides working integration code
