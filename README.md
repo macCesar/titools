@@ -177,7 +177,7 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 | ti-expert    | Architecture and implementation     | Starting point for most tasks           |
 | purgetss     | Utility-first styling               | UI styling and animations               |
 | ti-ui        | UI/UX patterns                      | Complex layouts, ListViews, platform UI |
-| ti-game      | 2D games with the `ti.game` module  | Sprites, physics, collisions, raycasts, pathfinding, text HUDs, sprite attachment, particles, camera |
+| ti-game      | 2D games with the `ti.game` module  | Sprites, physics, shaped solids, collisions, raycasts, pathfinding, text HUDs, sprite attachment, particles, camera |
 | ti-api       | Complete Titanium API reference     | Looking up properties, methods, events  |
 | ti-guides    | SDK fundamentals                    | tiapp.xml, Hyperloop, distribution, JDK/Xcode compatibility, release notes |
 | ti-howtos    | Native feature integration          | Location, push, media, platform APIs    |
