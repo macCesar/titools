@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.15.0] - 2026-08-27
+
+### Added — `ti-game` covers shape-aware solids and circle-body physics
+
+Upstream PR #20 is the first manifest bump (`0.4.0` → `0.5.0`) that carries a feature set of its own: the solid's declared shape now takes part in the resolution. `hitboxShape: 'rotatedRect'` keeps a collision rect turned with its sprite for solids, overlap events, `raycast`, the swept pass and the debug overlay; a circular solid deflects along the centre-to-centre normal; `solidMode: 'contain'` holds matched circles inside a circular boundary analytically, with no ring of wall sprites; `solidMode: 'push'` makes a pair of circles bodies that split the separation and trade momentum; `gravityX` is a second constant acceleration on X; `linearDamping` is the rolling friction ordinary sprites never had, `drag` having only ever worked inside `carMode`; and `restitution` is read off both sides of a contact, so a floor can supply the bounce.
+
+`api.md` gains a resolver matrix — which of the five paths runs for each mover × solid shape pair — read from the dispatch in `Scene.java` rather than from prose. `recipes.md` gains a "Shaped solids" section built from the six new demos, and its demo index goes from 26 to 32. `roadmap.md` moves slopes out of "does not exist" and into partly shipped: the geometry landed, the platformer feel did not.
+
+### Changed — six behaviours the module's README does not state
+
+Read from the engine and verified against both platforms' constants: a floor given `restitution` switches `onGround` off for anything that lands hard on it, because the grounding lives in the branch taken when the bounce is damped away; `solidMode` is only consulted when the mover is a circle, so a rect inside a `'contain'` boundary is pushed out rather than held in; the swept pass skips every solid that is not `'block'`, so `swept: true` does not keep a fast ball inside a drum; `linearDamping` never checks contact, so it brakes in the air as much as on the felt and kills a deliberate drift under 4 px/s; `'push'` degrades silently to one-sided shoving unless both sprites are circles, both are `'push'` and each lists the other's group; and a resting body is allowed to sink half a pixel in the circle, turned-rect and `'push'` paths, but not in plain rect-against-rect.
+
 ## [4.14.0] - 2026-08-26
 
 ### Added — `ti-game` covers names, percentages and the `anchor` property
