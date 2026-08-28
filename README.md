@@ -177,7 +177,7 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 | ti-expert    | Architecture and implementation     | Starting point for most tasks           |
 | purgetss     | Utility-first styling               | UI styling and animations               |
 | ti-ui        | UI/UX patterns                      | Complex layouts, ListViews, platform UI |
-| ti-game      | 2D games with the `ti.game` module  | Sprites, physics, shaped solids, collisions, raycasts, pathfinding, text HUDs, sprite attachment, particles, camera |
+| ti-game      | 2D games with the `ti.game` module  | Sprites, physics, tile layers, collisions, pathfinding, text/performance HUDs, particles, camera |
 | ti-api       | Complete Titanium API reference     | Looking up properties, methods, events  |
 | ti-guides    | SDK fundamentals                    | tiapp.xml, Hyperloop, distribution, JDK/Xcode compatibility, release notes |
 | ti-howtos    | Native feature integration          | Location, push, media, platform APIs    |
@@ -443,6 +443,8 @@ When it activates:
 - Named anchors and percentage strings (`anchor: 'bottom'`, `hitboxScaleY: '55%'`) wherever the engine takes a ratio
 - Particle emitters, Verlet ropes, camera follow/zoom/shake/effects, `scrollFactor` parallax, low-latency sound
 - Game-clock timers that obey pause and slow motion, texture `unload()` for level streaming, and what LiveView reloads clean up on their own
+- Native `TileLayer` maps with visible-cell rendering, Tiled GIDs, solid/one-way cells, live edits and A* integration
+- Collision-shape overlays plus the expandable performance HUD and opt-in `performance` telemetry event
 - Drag & drop, pinch, rotate, multitouch controls
 
 Example prompts:
@@ -455,6 +457,8 @@ Example prompts:
 "Add a score HUD that stays put while the camera follows the player."
 "Make the guard walk a patrol route and turn around before the ledge."
 "Tap to walk, but the player should go around the tree instead of through it."
+"Render a 200x200 Tiled map without creating one sprite per tile."
+"Show FPS, p95 frame time, draw calls and texture switches while I tune this scene."
 ```
 
 Key rules:
@@ -463,7 +467,9 @@ Key rules:
 - `solidWith` blocks, `collidesWith` reports — they are independent
 - A sprite with size but no sheet is an invisible trigger (scores, goals, walls)
 - Add a whole level with one `gameView.add([...])` call
+- Use `Game.createTileLayer()` for large/static grids; keep sprites for interactive cells and actors
 - HUDs are `Game.createText` sprites with `screenFixed: true`, not `Ti.UI.Label` overlays
+- `debug: true` means collision shapes; use `debug: { hud: true }` or `performance` for telemetry
 - Timers that drive game logic belong on the game clock (`gameView.every`), so a paused game stops spawning
 
 ---

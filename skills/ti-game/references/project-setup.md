@@ -1,6 +1,6 @@
 # Setting up a ti.game project
 
-Installing the module, wiring it into Classic and Alloy projects, organizing art and sound, and the lifecycle work the engine does not do for you.
+Installing the module, wiring it into Classic and Alloy projects, organizing art and sound, and the lifecycle work the engine does not do for you. Verified against `ti.game@d587081` (2026-08-28).
 
 <!-- TOC-START -->
 ## Contents
@@ -56,8 +56,10 @@ Pinning `version` is worth the extra attribute: with two module versions install
 | `0.4.0` built before 2026-08-26 | additionally `sprite.attachTo()` / `detach()` / `attachedTo`, and `gameView.follow()` still aborts the app on Android if it is handed anything that is not a sprite |
 | `0.4.0` built on 2026-08-26 but before `83b7863` | additionally the opacity an attachment inherits from its target, the `anchor` property, and percentage strings on every ratio — a build in this window has `attachTo` but treats `'55%'` as a number it cannot read |
 | `0.4.0` at its last commit (`b780051`) | additionally everything the `0.5.0` bump carries: `hitboxShape: 'rotatedRect'`, circular solids resolved as circles, `solidMode`, `gravityX`, `linearDamping`, and `restitution` read off both sides of a contact. It also still pulls a swept sprite back to where its frame started when it begins the frame already touching a solid, so a `swept: true` body parked on a slope creeps and then breaks loose as if launched |
+| `0.5.0` built before `d042060` | the performance HUD object form (`debug: { hud, hitbox, hudFont }`) and the `performance` event |
+| `0.5.0` built before `10a046e` | additionally `Game.createTileLayer()`, native visible-cell tile rendering, tile collision/live edits, and TileLayer participation in `findPath` |
 
-The published releases are pre-releases and lag `main`: the newest one is still `0.4.0` (2026-08-20), which is now two manifest numbers and a physics release behind. If a call that this skill documents is `undefined` at runtime, check the manifest version *and the build date* before hunting for a typo, and rebuild from upstream `main`. More reliable than either is feature-detecting in code: read the property **before** ever writing it (`typeof sprite.hitboxScaleX === 'undefined'` means the build predates it). Write-then-read always says yes, because an unknown property is stored on the Kroll proxy and reads back exactly as it was set. A method has no such trap — `typeof sprite.attachTo === 'function'` is a clean probe whatever the app did earlier.
+The newest local release tag is still `0.4.0` (2026-08-20), so tagged artifacts lag one manifest bump plus the HUD and TileLayer work that landed after `0.5.0` was introduced. If a documented call is `undefined`, check the manifest and build commit before hunting for a typo, and rebuild from upstream `main`. More reliable than either is feature detection: read a property **before** writing it (`typeof sprite.hitboxScaleX === 'undefined'`) or probe a method/factory (`typeof Game.createTileLayer === 'function'`). Write-then-read is not proof because Kroll can retain an unknown property on the proxy.
 
 Building the module from source:
 
@@ -69,7 +71,7 @@ ti build -p ios --build-only        # macOS only → ios/dist/ti.game-iphone-<ve
 
 ## Classic projects
 
-`require('ti.game')` anywhere and add the GameView to a window. The 32 demos in the module's `example/` folder are Classic, each one a CommonJS module exporting a start function (`app.js` is the launcher, not a demo):
+`require('ti.game')` anywhere and add the GameView to a window. The 33 demos in the module's `example/` folder are Classic, each one a CommonJS module exporting a start function (`app.js` is the launcher, not a demo):
 
 ```javascript
 // Resources/flappy.js
@@ -270,6 +272,8 @@ The engine handles what it owns: the render loop pauses and resumes with the act
 A leaked `setInterval` keeps running after the window closes, keeps reading sprite properties from a dead scene and keeps the whole closure alive. A looping `createSound` keeps playing over the next screen.
 
 ```javascript
+const levelObjects = [];              // keep emitters, ropes, and TileLayers here
+
 function cleanup() {
 	clearInterval(aiTimer);
 	clearTimeout(spawnTimer);
@@ -280,7 +284,10 @@ function cleanup() {
 		target.removeEventListener(eventName, handler);
 	});
 	gameView.pause();
-	gameView.removeAllSprites();
+	gameView.removeAllSprites();          // Sprite/Text only
+	levelObjects.forEach((object) => {    // emitters, ropes, tile layers
+		gameView.remove(object);
+	});
 }
 
 // Classic
@@ -301,7 +308,7 @@ function listen(target, eventName, handler) {
 }
 ```
 
-For restart-without-teardown (a retry button), `removeAllSprites()` plus rebuilding is simplest, but pooling and repositioning is cheaper: reset positions, zero velocities, `clearTweens()`, and re-`play()` the animations.
+`removeAllSprites()` is named literally: it clears Sprite/Text objects and their attachment state, but leaves emitters, ropes, and tile layers in the scene. Track non-sprite scene objects in `levelObjects` and remove them explicitly. For restart-without-teardown, pooling and repositioning is cheaper than rebuilding: reset positions, zero velocities, `clearTweens()`, and re-`play()` animations.
 
 ### GPU textures: `unload()`
 
@@ -328,7 +335,7 @@ Since 2026-08-23 the module retires the previous generation itself: stale render
 
 ## Debugging and tuning
 
-- **`debug: true` on the GameView** draws collision shapes for the whole scene; on a single sprite, only that one. Green = collision AABB with `hitboxScale` and the per-axis `hitboxScaleX`/`hitboxScaleY` applied, blue = sprite/touch bounds (the full drawn frame, which is also the touch area), orange dot = anchor. This is the fastest way to explain a hit that should not have registered.
+- **`debug: true` on the GameView** draws collision shapes for the whole scene; object form separates hitboxes from the performance HUD: `debug: { hitbox: true, hud: 'topRight' }`. On a sprite or TileLayer, `debug` remains a boolean. See [debugging-performance.md](debugging-performance.md) for colors, telemetry payloads, platform-only keys, and a tuning workflow.
 - **Physics that feels wrong is usually a units problem.** Speeds are px/s and accelerations px/s², both in surface pixels — which is why the demos express them as fractions of `W` and `H`. A gravity of `20` is imperceptible; `H * 2.2` is a snappy platformer.
 - **Sprite is invisible?** Check in order: was it added to the GameView, does it have a sheet, is `width`/`height` non-zero, is it inside the surface bounds, and is its `zIndex` below a background sprite.
 - **Collision never fires?** `collisionGroup` goes on the *target*, `collidesWith` on the *mover*. Both need to be set, and `visible: false` disables collision entirely.
@@ -344,4 +351,6 @@ The JS API is identical on Android and iOS. What differs is around it:
 - **`logicalDensityFactor` lies in the iOS Simulator** — it reports the device scale while the surface renders at 1x. Derive dp→scene units from the surface instead: `H / Ti.Platform.displayCaps.platformHeight`.
 - **Android's `touchFeedback` ripple** cannot animate over the GL canvas and logs `RippleDrawable` errors; give on-screen buttons manual `backgroundColor` feedback on `touchstart`/`touchend`.
 - **Sound formats**: WAV, MP3 and OGG on Android; WAV, MP3 and M4A on iOS. WAV for effects, MP3 for music covers both.
+- **TileLayer grid configuration**: assign `legend`, `firstGid`, `cols`, and `rows` in `createTileLayer()`. iOS accepts later writes; Android treats them as creation-time inputs.
+- **Performance telemetry**: `averagePresentMs` and `presentFailures` exist only on iOS and are omitted on Android.
 - **`theme: 'Theme.Titanium.DayNight.NoTitleBar'`** on the window is the Android idiom for a fullscreen game surface; on iOS use `navBarHidden`/`statusBarHidden` (or the Alloy XML equivalents).
