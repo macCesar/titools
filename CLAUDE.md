@@ -62,7 +62,7 @@ Marketplace facts (not in Anthropic's docs):
 
 **Full post-release sequence on the maintainer's machine:** `/release` (which ends with the tag push, and the tag publishes to npm on its own) → `/plugin marketplace update maccesar-titools` → `titools install` → `/reload-plugins`.
 
-The maintainer's own CLI is `npm link`-ed to this repo, so `titools update` here reads straight from the working tree — `npm publish` refreshes *other people's* installs, never this box. `isDevMode()` in `lib/commands/auto-update.js` detects the repo's `.git` and skips `npm update -g` so the link is never clobbered.
+The maintainer's own CLI is `npm link`-ed to this repo. On the first `titools install`, every canonical `~/.agents/skills/<name>` becomes a symlink to this checkout's `skills/<name>` directory, so later edits — including new `references/` files — are visible immediately without `npm update` or another install. Published npm packages still install independent copies. `isDevMode()` in `lib/commands/auto-update.js` detects the repo's `.git` and skips `npm update -g` so the link is never clobbered.
 
 ## Code conventions
 

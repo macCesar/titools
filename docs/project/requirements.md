@@ -10,7 +10,7 @@ TiTools distributes Titanium SDK skills to AI coding assistants through two inde
 
 `npm install -g @maccesar/titools && titools install` places the skills under `~/.agents/skills/` and creates Claude Code symlinks at `~/.claude/skills/`.
 
-**Accepted when:** after `titools install`, every name in `lib/config.js:SKILLS` exists under `~/.agents/skills/<name>/SKILL.md`, and `titools status` reports the same count. Gemini CLI and Codex CLI must read the canonical path directly — no symlinks are created for them (see decision 2026-07-15).
+**Accepted when:** after `titools install`, every name in `lib/config.js:SKILLS` exists under `~/.agents/skills/<name>/SKILL.md`, and `titools status` reports the same count. Gemini CLI and Codex CLI must read the canonical path directly — no platform-specific symlinks are created for them (see decision 2026-07-15). When the CLI resolves to a development checkout containing `.git`, each canonical skill directory is itself a symlink to that checkout; a normal npm package installs a copy.
 
 ### R2 — Claude Code plugin marketplace ships the same content
 

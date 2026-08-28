@@ -26,7 +26,9 @@ Skills follow the [agentskills.io spec](https://agentskills.io/specification), s
 
 ### Where skills land at install time
 
-`~/.agents/skills/` is canonical. Claude Code is the **only** platform that gets TiTools-managed symlinks (`~/.claude/skills/`) — Gemini CLI and Codex CLI auto-discover the canonical path, and mirroring it for them produced startup warnings. `lib/config.js:getPlatforms()` therefore lists Claude alone; the comment above it explains why, and it reads like an omission if you skip it.
+`~/.agents/skills/` is canonical. Claude Code is the **only** platform that gets TiTools-managed mirror symlinks (`~/.claude/skills/`) — Gemini CLI and Codex CLI auto-discover the canonical path, and mirroring it for them produced startup warnings. `lib/config.js:getPlatforms()` therefore lists Claude alone; the comment above it explains why, and it reads like an omission if you skip it.
+
+The canonical entries have two installation modes. A published npm package copies each skill into `~/.agents/skills/`; a checkout detected by its `.git` entry symlinks the whole skill directory instead. This makes an `npm link` development setup live after one `titools install`: changes anywhere under `skills/<name>/`, including `references/`, need no refresh command.
 
 ### Two channels, two caches
 
