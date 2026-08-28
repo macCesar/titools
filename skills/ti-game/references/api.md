@@ -1,8 +1,8 @@
 # ti.game API reference
 
-Complete JS surface of `ti.game` as of upstream `main` at `ee69056`, 2026-08-27, verified against the module source (`android/src/ti/game/*.java` and `engine/*.java`, mirrored by `ios/Classes/TG*`). Defaults come from the engine fields, not from prose. The manifest reads **`0.5.0`** since 2026-08-27, and that bump is the shape-aware solids: `hitboxShape: 'rotatedRect'`, circular solids, `solidMode`, `gravityX`, `linearDamping` and two-sided `restitution`. Read the number as a floor, never as a feature list. Under `0.3.0` the engine gained the text engine (`createFont`/`createText`), `screenFixed`, `swept`, `collisionend`, `followPath`, animation chaining, `raycast`, `findPath`, the game-clock timers, `scrollFactor` and the `multiply`/`screen` blend modes; under `0.4.0` it gained `hitboxScaleX`/`hitboxScaleY`, text `maxWidth`, `SpriteSheet.unload()`/`Font.unload()`, the LiveView renderer lifecycle (all 2026-08-23), `attachTo`/`detach`, inherited opacity on attachments and the named/percentage values (all 2026-08-26). Two builds calling themselves 0.4.0 therefore differ by more than two builds calling themselves 0.4.0 and 0.5.0 do — check the build date, or feature-detect by reading the property **before** ever writing it (`typeof sprite.linearDamping === 'undefined'` means the build predates it). Writing first proves nothing: an unknown property is stored on the Kroll proxy and reads back exactly as it was set. Methods are the reliable probe — `typeof sprite.attachTo === 'function'` cannot be faked by a previous write. So is a property the engine **normalizes**: writing `sprite.solidMode = 'nonsense'` reads back `'block'` on a build that implements it and `'nonsense'` on one that only stored it on the proxy, which makes it the one probe that survives having been written to.
+Complete JS surface of `ti.game` as of upstream `main` at `d587081`, 2026-08-28, verified against every Android proxy/engine and its iOS twin. Defaults come from native fields, not prose. The manifests still read **`0.5.0`**, but the performance HUD/telemetry and native `TileLayer` landed afterward without another bump. Read the number as a floor, never as a feature list. Older `0.3.0`/`0.4.0` artifacts also vary by build date; feature-detect when the artifact is unknown. Read a property before writing it, because Kroll can retain an unknown write on the proxy. Methods are safer probes (`typeof Game.createTileLayer === 'function'`), as are normalized properties (`solidMode` reads an unknown name back as `'block'` only when the engine implements it).
 
-Every property listed is **live**: reading returns the current native value, even mid-drag or mid-tween. Every property can also be passed to its `create*` factory. All durations crossing the JS boundary are **milliseconds** (the engine converts to seconds internally).
+Properties are live unless their table says creation-time or read-only. Every writable property can be passed to its `create*` factory. `TileLayer` has four cross-platform creation-time inputs (`legend`, `firstGid`, `cols`, `rows`) because Android does not expose the live setters that iOS has. All durations crossing the JS boundary are **milliseconds**.
 
 <!-- TOC-START -->
 ## Contents
@@ -17,6 +17,7 @@ Every property listed is **live**: reading returns the current native value, eve
 - [Sound](#sound)
 - [Emitter](#emitter)
 - [Rope](#rope)
+- [TileLayer](#tilelayer)
 - [Events at a glance](#events-at-a-glance)
 - [Gotchas the property tables do not show](#gotchas-the-property-tables-do-not-show)
 
@@ -38,6 +39,7 @@ const Game = require('ti.game');
 | `Game.createSound(options)` | Sound |
 | `Game.createEmitter(options)` | Emitter — particle system |
 | `Game.createRope(options)` | Rope — Verlet chain |
+| `Game.createTileLayer(options)` | TileLayer — visible-cell tile renderer and collision grid |
 
 Easing constants (for `sprite.animate({ easing })`): `Game.EASE_LINEAR`, `Game.EASE_IN`, `Game.EASE_OUT`, `Game.EASE_IN_OUT`, `Game.EASE_BOUNCE`, `Game.EASE_ELASTIC`.
 
@@ -60,6 +62,7 @@ Game.createSprite({ anchor: 'bottom-left', hitboxScaleY: '55%', opacity: '80%' }
 | Emitter | `startScale`, `endScale`, `startOpacity`, `endOpacity` |
 | Rope | `damping` |
 | Sound | `volume` |
+| TileLayer | `opacity`, `scrollFactor`, `restitution` |
 
 Over 100% is meaningful where the ratio is a multiplier — `scaleX: '200%'` is twice as wide. Text sprites are sprites, so they take all of it (`Game.createText({ anchor: 'top-left', opacity: '60%' })`).
 
@@ -92,9 +95,9 @@ A normal Titanium view — add it to a window or any container, size it with the
 
 | Member | Type | Default | Notes |
 | --- | --- | --- | --- |
-| `add(object)` / `add([objects])` | method | — | Accepts Sprite, Emitter or Rope. An array crosses the bridge once and is committed under a single native scene lock — build a level into an array and add it in one call |
+| `add(object)` / `add([objects])` | method | — | Accepts Sprite/Text, Emitter, Rope, or TileLayer. An array crosses the bridge once and is committed under native scene locks — build a level into an array and add it in one call |
 | `remove(object)` | method | — | Remove one object from the scene — **and, recursively, every sprite attached to it** (see [Attachment](#attachment)) |
-| `removeAllSprites()` | method | — | Clear the whole scene, dropping every attachment with it |
+| `removeAllSprites()` | method | — | Clears Sprite/Text objects and their attachments. It does **not** remove emitters, ropes, or tile layers; track and remove those separately |
 | `pause()` / `resume()` | method | — | Render loop control. The activity/app lifecycle already pauses and resumes automatically |
 | `backgroundColor` | string | — | GL clear color |
 | `maxFps` | int | `0` | Frame cap. `60` stops 120 Hz ProMotion displays from doubling render work; `0` = display refresh rate |
@@ -107,16 +110,16 @@ A normal Titanium view — add it to a window or any container, size it with the
 | `stopFollow()` | method | — | Stop following; the camera stays where it is |
 | `shake({ strength, duration })` | method | `12` px, `400` ms | Detuned-sine rumble on the projection only — follow, bounds and touch mapping are unaffected |
 | `raycast(x0, y0, x1, y1, groups)` | method | — | One-shot nearest-hit query along the segment against **visible, non-`screenFixed`** sprites carrying a `collisionGroup` in `groups` (omit for any tagged sprite). Returns `null` for a clear ray, else `{ x, y, distance, group, sprite, normal: { x, y } }`. Rect hitboxes are tested as their AABB, circle hitboxes exactly; a ray starting inside a hitbox reports it at distance 0 |
-| `findPath(from, to, options)` | method | — | Grid A\* from `from` to `to` (`{ x, y }` world points) around the same sprites `raycast` sees — **visible, non-`screenFixed`**, carrying a `collisionGroup` in `options.groups` (omit for any tagged sprite). Returns an array of `{ x, y }` waypoints ready for `sprite.followPath()`, or `null` when no route exists. Options below |
+| `findPath(from, to, options)` | method | — | Grid A\* from `from` to `to` (`{ x, y }` world points) around visible, non-`screenFixed` sprites and fully solid TileLayer cells carrying a `collisionGroup` in `options.groups` (omit for any tagged obstacle). Returns `{ x, y }` waypoints ready for `sprite.followPath()`, or `null`. Options below |
 | `after(ms, callback)` | method | — | Runs `callback` once after `ms` of **game time** — the delay stretches under `timeScale` slow motion, freezes at `0` and pauses with the render loop, unlike `setTimeout`. Returns an int id. The callback receives `{ id }` |
 | `every(ms, callback)` | method | — | Like `after()`, repeating until cancelled. Fires at most once per frame, and restarts its interval after a stall instead of bursting to catch up |
 | `cancelTimer(id)` | method | — | Cancels a timer from `after()` / `every()` |
 | `cameraEffect` | string | `'none'` | Fullscreen shader pass: `'none'`, `'tint'`, `'glitch'`. With `'none'` the extra pass is skipped entirely |
 | `cameraTint` | string | — | Color for the `'tint'` effect, e.g. `'#4f8'` (night vision, poison, flashback) |
 | `cameraEffectIntensity` | float | `1` | 0..1 — tint mix or glitch amount |
-| `debug` | bool | `false` | Draw collision shapes for every sprite in the scene |
+| `debug` | bool / dict | `false` | `true` draws all collision shapes. Object form: `{ hitbox, hud, hudFont }`; `hud` is `true` or a corner name. Readback is normalized to `{ hitbox, hud: false | corner }`. See [debugging-performance.md](debugging-performance.md) |
 
-Events: `press`, `tap`, `release` — fired for **every** touch anywhere on the view, with payload `x`, `y` in scene coordinates (tap-anywhere controls, flappy-style). And `resize` with payload `width`, `height` — the real surface size in pixels.
+Events: `press`, `tap`, `release` — fired for **every** touch anywhere on the view, with payload `x`, `y` in scene coordinates (tap-anywhere controls, flappy-style). `resize` carries the real surface `width`, `height` in pixels. `performance` carries a one-second telemetry snapshot only while a listener exists; see [debugging-performance.md](debugging-performance.md).
 
 Plus `timer` with payload `id`, fired only for `after()` / `every()` calls made **without** a callback — pass a callback or listen for the event, not both.
 
@@ -142,7 +145,7 @@ Anything that is not a sprite — `null`, a plain object, a number — clears th
 | Option | Default | Effect |
 | --- | --- | --- |
 | `cellSize` | `32` | Grid resolution in px. Match it to the tile size on a tile map so the grid lines up with the walls; a coarser grid is faster and blockier |
-| `groups` | all tagged sprites | Array of `collisionGroup` names to treat as obstacles |
+| `groups` | all tagged obstacles | Array of sprite or TileLayer `collisionGroup` names to treat as obstacles |
 | `clearance` | `0` | Extra obstacle inflation in px. About half the walker's width keeps it from scraping corners, since the path is a line for the sprite's **center** |
 | `bounds` | the whole surface | `{ minX, minY, maxX, maxY }` search rect — also the walkable area, so a floor clamp goes here |
 | `diagonals` | `true` | Octile moves. Diagonals never cut a blocked corner |
@@ -150,7 +153,7 @@ Anything that is not a sprite — `null`, a plain object, a number — clears th
 
 Waypoints come back with the **exact** start and goal as first and last point, so the walk begins under the sprite's feet and ends on the tapped pixel. A blocked start or goal snaps outward to the nearest free cell (up to 4 rings), which is why tapping an obstacle walks to its edge instead of returning `null`. `null` means: no route, degenerate `bounds`, `cellSize <= 0`, or a grid over ~1M cells (a runaway `bounds`/`cellSize` combination fails the query rather than allocating).
 
-Everything is built per call on the calling thread — no persistent grid, no GL work. Like `raycast` it is a **discrete query**: run it on taps and AI timers (`gameView.every`), never per frame.
+Everything is built per call on the calling thread — no persistent grid, no GL work. Fully solid TileLayer cells are rasterized; one-way cells are intentionally walkable. Like `raycast` it is a **discrete query**: run it on taps and AI timers (`gameView.every`), never per frame.
 
 ```javascript
 const path = gameView.findPath(
@@ -367,7 +370,7 @@ The rest of the contract, all read from the engine:
 - **A drag outranks the attachment — for position only.** While a finger holds the sprite (`draggable: true`, past the touch slop) the pinning is skipped, exactly as it is for a rider on a moving platform, and resumes when the finger lifts. The inherited opacity keeps applying throughout.
 - **Chains work**: attach a hat to a tag attached to a hero. Parents resolve first through recursion, with a depth cap of 8 that breaks accidental cycles — beyond eight links the far ancestor is not re-resolved that frame and the chain lags instead of hanging. Attaching a sprite to itself is ignored.
 - **Cross-space attach converts automatically.** A `screenFixed` sprite attached to a world sprite (or the reverse) has the target's position mapped through the camera first, so the offset stays in the sprite's own units.
-- **Removing the target removes everything attached to it**, recursively — a tag never outlives its owner, and a chain goes with it. `detach()` first to keep one alive. `removeAllSprites()` clears every attachment as it empties the scene.
+- **Removing the target removes everything attached to it**, recursively — a tag never outlives its owner, and a chain goes with it. `detach()` first to keep one alive. `removeAllSprites()` clears every attachment as it empties the Sprite/Text list; emitters, ropes, and tile layers remain.
 - **A non-sprite target detaches** instead of crashing (Android logs a warning; iOS is silent). Like `follow()`, the binding takes an untyped argument on purpose — a typed proxy parameter aborts the app on the JNI type check when JS sends a plain object.
 
 ### Sprite events
@@ -387,7 +390,7 @@ The rest of the contract, all read from the engine:
 | `pathcomplete` | `x`, `y` | A non-looping `followPath` run reached the end |
 | `collision` | `group`, `other`, `x`, `y` | Overlap with a `collidesWith` group began |
 | `collisionend` | `group`, `other`, `x`, `y` | That overlap ended: the shapes separated, **or** the partner was removed from the scene, hidden (`visible = false`) or stopped matching the group filter |
-| `land` | `x`, `y`, `other`, `group` | Landed on top of a `solidWith` solid. `other` is the solid — read it to react to what you landed on (trampolines, hazards) |
+| `land` | `x`, `y`, optional `other`, `group` | Landed on top of a `solidWith` solid. `other` is the solid sprite when one exists; TileLayer cells have no proxy and omit it |
 
 ## Font
 
@@ -535,13 +538,39 @@ A native Verlet chain: integration and distance constraints run in the game loop
 
 The tether yields at the end no finger owns: with a fixed head anchor the tail sprite is simply leashed, but with sprites on both ends you can drag either one and the other is towed once the rope goes taut.
 
+## TileLayer
+
+One native grid replaces a sprite per tile. Only cells inside the camera are drawn, collision checks visit cells under the mover, and fully solid cells can feed `findPath`. Add/remove a layer through the GameView like other scene objects. It draws below sprites at the same `zIndex`.
+
+| Group | Members | Notes |
+| --- | --- | --- |
+| Grid input | `data` | Nested numeric rows, string rows decoded through `legend`, or flat row-major ids sized by `cols`/`rows`. Live on both platforms |
+| Creation-time grid configuration | `legend`, `firstGid`, `cols`, `rows` | Set in `createTileLayer()` for portability. `cols`/`rows` read back from the parsed grid; Android has no live setters for the four configuration inputs |
+| Derived size | `width`, `height` | Read-only world dimensions |
+| Placement | `x`, `y`, `tileWidth`, `tileHeight`, `zIndex`, `scrollFactor` | Tile sizes default to the sheet frame dimensions |
+| Look | `sheet`, `visible`, `opacity`, `tintColor` | `opacity` and `scrollFactor` accept percentage strings |
+| Collision | `collisionGroup`, `solid`, `oneWay`, `restitution`, `debug` | `solid`/`oneWay` accept tile ids or legend characters. `restitution` accepts a percentage |
+
+Tiled data uses `firstGid`: gid 0 becomes empty when an offset is active, and flip bits are stripped before the frame id is calculated. The flip transform itself is not rendered.
+
+| Method | Result |
+| --- | --- |
+| `getTile(col, row)` | Frame id, `-1` when empty or outside |
+| `setTile(col, row, id)` | Replaces art and recalculates its flag from `solid`/`oneWay` |
+| `isBlocked(col, row)` | Fully solid status; one-way cells answer `false` |
+| `setBlocked(col, row, bool)` | Per-cell full-solid override without changing art |
+| `tileAt(x, y)` | World point → `{ col, row, tile, solid, x, y }`, or `null` outside |
+| `cellAt(col, row)` | Cell → the same structure; `x`/`y` are the center |
+
+Movers list the layer's `collisionGroup` in `solidWith`. Rect, circle, swept, restitution, grounding, and `land` are supported, but the tile cell is not a proxy: a tile landing has no `other` sprite. Tile cells do not produce `collidesWith` trigger events and are not included in `raycast()` yet. Full workflow, Tiled input, live edits, and bounded A* are in [tilemaps.md](tilemaps.md).
+
 ## Events at a glance
 
 Only these events exist. Nothing fires per frame, and events are only fired if a listener is registered.
 
-- **GameView**: `press`, `tap`, `release`, `resize`, `timer`
+- **GameView**: `press`, `tap`, `release`, `resize`, `timer`, `performance`
 - **Sprite** (and therefore **Text**): `press`, `release`, `tap`, `dragstart`, `drag`, `dragend`, `pinch`, `rotate`, `animationcomplete`, `complete`, `pathcomplete`, `collision`, `collisionend`, `land`
-- **SpriteSheet, Font, Sound, Emitter, Rope**: none
+- **SpriteSheet, Font, Sound, Emitter, Rope, TileLayer**: none
 
 There is `collision` (enter) and `collisionend` (exit), but deliberately **no** per-frame "stay" event — that would be bridge traffic every frame. Hold the in-between state in JS: you heard the enter, you will hear the end.
 
@@ -589,6 +618,7 @@ There is `collision` (enter) and `collisionend` (exit), but deliberately **no** 
 - **`raycast` only sees `visible`, non-`screenFixed` sprites carrying a `collisionGroup`.** A hidden pooled sprite is invisible to the ray, which is usually what you want; an untagged wall is invisible too, which usually is not. HUD sprites are skipped by design, so a screen-fixed score never blocks a world-space line of sight.
 - **`raycast` is a discrete query, not a sensor.** Calling it from a game-clock timer or a tap handler is the intended use. Calling it every frame from JS puts exactly the bridge traffic in the loop that the whole engine exists to avoid.
 - **`findPath` walks the sprite's center, not its silhouette.** The waypoints are a line through free grid cells, so a body wider than a cell clips corners unless you pass `clearance` (roughly half the walker's width) or shrink `cellSize`. Obstacles are read from the **hitbox**, so `hitboxScale`, the per-axis scales and `hitboxShape: 'circle'` shape the walkable space too.
+- **`findPath` sees fully solid TileLayer cells, not one-way cells.** One-way platforms answer non-solid to the path grid so a top-down route may cross them. If that is not correct for the game's navigation rules, maintain a separate fully solid navigation layer or cell overrides.
 - **`findPath` returning `null` is not always "no route".** Degenerate `bounds`, `cellSize <= 0` and a grid over ~1M cells all return `null` as well — a `bounds` rect of the whole world at `cellSize: 4` fails silently that way. Check the numbers before blaming the maze.
 - **A path of one or two points is the straight-line case, not a bug.** With nothing in the way `findPath` returns just `[start, goal]`; `path.length < 2` is the guard the demos use to detect a tap outside `bounds`.
 - **Game-clock timers are not `setTimeout`.** `after`/`every` freeze at `timeScale: 0` and pause with the render loop — which is why spawn waves belong there — but a pause menu that needs a real countdown still needs `setTimeout`.
@@ -603,5 +633,7 @@ There is `collision` (enter) and `collisionend` (exit), but deliberately **no** 
 - **A faded owner stops its tags taking taps.** The inherited opacity goes through the same hit test as a sprite's own, so a tag on an owner at `opacity: 0` is untouchable even though its own `opacity` still says 1 — the pooling idiom of hiding an owner now silently disarms its attached buttons too.
 - **`animate()` takes a percentage only on `scale`.** Inside the tween options `scaleX`, `scaleY` and `opacity` are read as plain numbers on both platforms, so `animate({ opacity: '50%' })` does not do what the property setter would. Percentages are for property writes; keep tween targets numeric.
 - **A bad ratio or anchor name fails differently per platform.** Android keeps the value the property already held; iOS resets it to the property's default. Neither throws, both log a warning, and at creation time they agree — the split only shows on a write to a property already set to something else.
+- **Four TileLayer inputs are creation-time for portable code.** iOS rebuilds after live writes to `legend`, `firstGid`, `cols`, and `rows`; Android exposes only creation-dict handling (plus `cols`/`rows` getters). Put all four in `createTileLayer()` and replace `data` for a live rebuild.
+- **`removeAllSprites()` does not clear every scene list.** It removes Sprite/Text objects and resets their attachments; emitters, ropes, and TileLayers remain until individually removed.
 - **`anchor` beats `anchorX`/`anchorY` in the same `createSprite` call**, whatever the key order in the object, because the engine applies the preset after the two axes. Pass one or the other, not both.
 - **`scrollFactor` does not move the sprite.** It shifts where the sprite is *drawn* and maps touch back to match. `x`, `y`, physics and collisions stay in world coordinates, so a `scrollFactor: 0.5` platform still collides where its world `x` says, not where it looks.

@@ -1,70 +1,49 @@
-# What does not exist yet — and what to do instead
+# Missing, partial, and out-of-scope features
 
-The most expensive mistake with `ti.game` is writing code against a feature that sounds like it should be there because Phaser, Godot or Cocos has it. This file is the guard rail: everything below is **absent from upstream `main` as of 2026-08-27** (`ee69056`, manifest `0.5.0`), with the workaround that is idiomatic today.
-
-Planned items come from the module's `TODO.md`. Planned is not shipped — when a game needs one of these, use the workaround and keep the code isolated enough to swap later.
+Verified against `ti.game@d587081` (2026-08-28), especially upstream `TODO.md` and both native implementations. Planned is not shipped; partial means the exact boundary below matters.
 
 ## Not available today
 
-| You might reach for | Status | What to do now |
+| Tempting API or capability | Current status | Safe approach |
 | --- | --- | --- |
-| A tilemap layer, Tiled JSON import, collision layer | Planned (priority 4) | One sprite per tile. Fine at 12×15, dead at 200×200. For large ground planes use a single `tileRepeat` sprite instead of a grid, and add sparse invisible solids for collision. `findPath` already rasterizes those per-tile sprites, so a tile maze pathfinds today — the planned collision layer is meant to feed the same grid |
-| `sprite.parent` and full transform inheritance — a child that scales and flips with its parent | Partly shipped, the rest still planned (priority 7) | **Position, rotation and opacity are done**: `attachTo(target, { offsetX, offsetY, rotate })` pins a sprite to another natively, chains included, and a fade on the owner cascades down, so turrets, hats, name tags and health bars need no JS. What is *not* inherited is `scale`, `visible`, `flipX`/`flipY` and `tintColor`, and there is no `parent` property, no hit-test or `ySort` integration. Set those on each part yourself, on the coarse tick that changes them |
-| `gameView.panTo(x, y, { duration, easing })` for a cutscene camera move | Planned (priority 1) | `follow()` an invisible sprite and tween that sprite, then `follow()` the player again |
-| Ping-pong animation playback, a per-sprite animation speed multiplier, a random start offset | Planned (priority 9) | Author the ping-pong into the sheet as a longer animation. Desync a field of torches by giving each one its own `idleAnimation` timing, or start them from staggered timers |
-| Native virtual joystick or d-pad bound to a sprite | Planned (priority 6) | Overlaid Titanium views, one per button, writing `velocityX`/`steering`/`throttle` on `touchstart`/`touchend`. Sibling views get simultaneous pointers, so multitouch works |
-| Gamepad support | Planned (priority 6) | Nothing native. Touch controls only |
-| Slopes in platformer terrain | Partly shipped, the platformer feel still planned (priority 3) | **The geometry is done**: a tilted `hitboxShape: 'rotatedRect'` solid resolves along its real face, carries a rider and lets a crate or a ball slide down it. What is missing is the *feel* on top of it — walking up a slope without the step-up stutter, friction that acts **along the contact only** (`linearDamping` bleeds speed in every direction, right for a pool table and wrong for a hill), and terrain built from more than one flat ramp. Stepped rectangles are no longer the workaround for a single ramp; they still are for a curve |
-| Per-frame animation events (footstep on frame 3) | Planned (priority 9) | Use `animationcomplete` on a short non-looping animation, or a timer aligned to the animation's fps |
-| `playbackRate`, pitch jitter, stereo pan, `fadeTo()` on sounds | Planned (priority 8) | Only `volume`, `loop`, `play`, `pause`, `stop` exist. Ship a few pre-pitched variants of a sample and alternate between them |
-| An fps / draw-call / sprite-count overlay | Planned (developer experience) | `debug: true` draws collision shapes only. There is no stats overlay and no `performance` event — measure with platform tooling |
-| TypeScript definitions (`ti.game.d.ts`) | Planned (developer experience) | None yet |
-| Aseprite JSON import | Planned (developer experience) | TexturePacker JSON (hash or array) is the only atlas format |
-| A `stop()` for the whole scene | Not planned — already covered | `gameView.timeScale = 0` freezes everything the engine ticks while rendering and touch keep running. `gameView.pause()` stops the render loop entirely |
-| Tweening `width`, `height` | Not planned | `animate()` only handles `x`, `y`, `scale`, `scaleX`, `scaleY`, `rotation`, `opacity`, `glowOpacity`, plus `frame` at the end. Everything else is an instant write — scale instead of sizing |
-| Tweening `tintColor`, or `repeat`/`yoyo` on `animate()` | Planned (priority 9) | Re-launch the tween from its `complete` handler for a blink or a ping-pong, and step a tint by writing `tintColor` on a game-clock timer |
-| Standard Titanium touch events on the GameView | By design | The view fires its own `press`, `tap`, `release` with scene coordinates. Sprites fire the richer set. Overlaid Titanium views keep their normal events |
-| A per-frame event to hook your own logic into | By design, never | The whole architecture exists to keep JS out of the frame loop. Use `collision`, `land`, `complete`, `animationcomplete`, or a coarse timer for decisions |
+| `gameView.panTo(x, y, options)` | Planned | Tween an invisible sprite, follow it for the cutscene, then follow the player again |
+| Full `sprite.parent` transform inheritance | Partial | `attachTo()` supplies position, optional rotation, and inherited opacity. Scale, visibility, flips, tint, hit-test hierarchy, y-sort hierarchy, and a `parent` property do not exist |
+| Native joystick/d-pad binding | Planned | Use overlaid Titanium controls that write native motion/input properties on `touchstart`/`touchend`; sibling views support simultaneous touches |
+| Gamepad support | Planned | Touch input only unless the app adds its own native integration |
+| Complete platformer slopes | Partial | `rotatedRect` geometry, normals, rider carrying, and sliding work. Smooth uphill walking, contact-only surface friction, and connected terrain are not implemented |
+| Tile animation | Planned TileLayer follow-up | Change ids deliberately or use sprites for the animated cells; there is no per-id native frame cycle |
+| `raycast()` against TileLayer cells | Planned TileLayer follow-up | Use sprite colliders for ray-visible obstacles or grid/cell queries appropriate to the game |
+| Tile trigger events (`collision`/`collisionend` for water/lava) | Planned TileLayer follow-up | Use sparse invisible trigger sprites or map the mover/world point to cells on a coarse decision/event path |
+| One-call Tiled loader for tilesets and multiple layers | Planned TileLayer follow-up | Parse the exported JSON in app code and create one TileLayer per layer/tileset |
+| Per-frame animation events | Planned | Split an action into short non-looping animations and react to `animationcomplete`, or use an engine timer aligned to a deliberate cadence |
+| Ping-pong, repeat/yoyo, random animation offset, per-sprite animation speed | Planned | Author ping-pong frames or re-launch a tween from `complete`; avoid a JS per-frame loop |
+| `playbackRate`, pitch jitter, stereo pan, `fadeTo()` | Planned | Current sound API is `volume`, `loop`, `play`, `pause`, `stop`; use prepared variants or a game-clock volume cadence when necessary |
+| TypeScript declarations | Planned | No upstream `ti.game.d.ts` exists |
+| Aseprite JSON import | Planned | SpriteSheet atlases support TexturePacker JSON hash/array formats |
+| Tweening `width`, `height`, or `tintColor` | Not implemented | Tween scale/opacity/glowOpacity; other properties are instant writes |
+| A GameView-level `stop()` | Already covered differently | `timeScale = 0` freezes engine ticks while rendering/touch continue; `pause()` stops the render loop |
+| Standard Titanium touch events on GameView | By design | Use GameView `press`/`tap`/`release`, sprite events, or Titanium views over the canvas |
+| A per-frame JS event | Deliberately absent | React to discrete events and use native movement; coarse `every()` calls are for decisions, not motion |
 
-## Deliberately out of scope
+## Already shipped — do not recreate in JS
 
-The module's own `TODO.md` rules these out, each being a project the size of everything built so far:
+- Native `TileLayer`: visible-cell drawing, strings/flat/nested data, Tiled GID offset, solid/one-way cells, live edits, cell lookup, parallax, tint/opacity, and `findPath` participation.
+- Debug object form, screen-space performance HUD, optional bitmap `hudFont`, and the opt-in `performance` event.
+- Camera follow on both axes, bounds, smoothing, zoom, shake, fullscreen tint/glitch, and per-object `scrollFactor`.
+- Text/Font sprites, word wrap, `screenFixed`, attachment, named anchors, percentage ratios, and explicit sheet/font `unload()`.
+- Sprite paths, animation chaining, raycasts, A*, game-clock timers, collision exit, swept movers, and four blend modes.
+- Shape-aware solids: circle and rotated-rect geometry, one-way platforms, carried riders, containment, bilateral circle push, two-sided restitution, `gravityX`, and `linearDamping`.
+- Native particles, ropes, effect/music sound backends, car physics, thrust, drag/pinch/rotate, and multi-touch sprites.
 
-- **2D lighting and shadows.** If it ever comes up: a screen-dim overlay plus additive light sprites (`blend: 'add'`) gets 90% of the look for 1% of the cost, and `blend: 'multiply'` now does contact shadows under sprites.
-- **Skeletal animation (Spine).** Frame animations from sheets only.
-- **Full rigid-body physics (Box2D class).** What exists — velocity, gravity on both axes, solids with penetration resolution, two-sided restitution, circle, rect and turned-rect hitboxes, `linearDamping`, the car model, thrust, and since 2026-08-27 a bilateral circle-on-circle response that splits the separation and exchanges the closing velocity — covers the target genres. What that last one is **not** is a solver: it assumes equal masses, runs one pass per frame with no iteration, and carries no friction or spin, so a tall stack settles rather than balancing. Joints, torque, compound bodies and real stacking still do not exist, and a game that needs them needs a physics engine, not this.
-- **Render-to-texture.** The only offscreen pass is the fullscreen `cameraEffect`.
+## Deliberately out of scope upstream
 
-## Already shipped (do not "work around" these)
+- Full 2D lighting/shadows.
+- Skeletal animation such as Spine.
+- Box2D-class rigid-body physics: masses, joints, torque, compound bodies, frictional contacts, spin, iterative stacking.
+- General render-to-texture. The internal fullscreen camera effect is not a public render-target API.
 
-Recent additions that are easy to miss and easy to reimplement badly in JS:
+## Checking a moving target
 
-- Camera: horizontal and vertical dead-zone `follow`, `cameraBounds`, `smoothing`, `cameraScale` zoom, native `shake`.
-- `tintColor`, `flash(color, duration)`, `blend: 'add'`, `tileRepeat` with `repeat: true` sheets.
-- `hitboxShape: 'circle'` with contact-normal resolution against solids, `oneWay` platforms, moving solids that carry their riders (`carryRiders` to opt out).
-- `createEmitter` particles, `createRope` Verlet ropes with `maxLength` tethers.
-- `createSound` with separate low-latency effect and streaming music backends.
-- `timeScale`, `maxFps`, `flipX`/`flipY`, `pixelSnap`, `idleAnimation`, `ySort`, `glowColor`/`glowBlur`/`glowOpacity`.
-- `gameView.add([array])` committing a whole level in one bridge crossing.
-- **Text is in the engine now** (2026-08-18): `createText` glyph sprites with an embedded pixel font, `createFont` for BMFont/AngelCode or monospace grid atlases, `align`/`letterSpacing`/`lineSpacing`, and `tools/genfont.py` to rasterize a TTF. Text objects are sprites — they tween, tint, flash, glow, z-sort and take taps. Do **not** fall back to `Ti.UI.Label` overlays for scores.
-- **`screenFixed`** on any sprite: surface coordinates, camera position/zoom/shake ignored, touch mapped back. HUDs no longer need overlay views.
-- **`swept: true`** per sprite: the frame's movement is path-tested (Minkowski + slab) for both collision events and solid blocking. Fast bullets stop tunneling; `hitboxScale` tricks along the travel axis are obsolete.
-- **`collisionend`**: the exit half of the trigger lifecycle, including when the partner is removed, hidden or re-tagged mid-contact.
-- **`followPath(points, opts)` and `play(name, { then })`** (2026-08-19): patrol routes, bullet arcs and animation chains run natively. Do not chain `animate()` legs from `complete`, and do not re-`play()` from an `animationcomplete` handler.
-- **`gameView.raycast(x0, y0, x1, y1, groups)`** (2026-08-19): nearest hit as `{ x, y, distance, group, sprite, normal }`, or `null`. Line of sight, ledge probes and hitscan no longer need an invisible probe sprite — but it is a discrete query, not something to poll every frame.
-- **Game-clock timers** (2026-08-19): `gameView.after(ms, cb)` / `every(ms, cb)` / `cancelTimer(id)` obey `timeScale` and pause with the render loop. Spawn waves and AI ticks belong here, not in `setTimeout`.
-- **`scrollFactor`** (2026-08-19): per-sprite parallax against camera travel. A background layer is one property, not a hand-scrolled pair of copies.
-- **`blend: 'multiply'` and `'screen'`** (2026-08-19) join `'normal'` and `'add'`, on sprites and emitters alike.
-- **`gameView.findPath(from, to, options)`** (2026-08-20): grid A* around the sprites carrying a `collisionGroup`, returning waypoints ready for `followPath` — the Godot `AStar2D` / GameMaker `mp_grid` equivalent. Tap-to-walk and chasing AI route around obstacles natively now; hand-authored waypoint arrays and straight-line walking are the old workaround. Discrete like `raycast`: taps and AI timers, not per frame.
-- **Text word wrap** (2026-08-23): `maxWidth` on a text sprite breaks lines on word boundaries and re-wraps whenever `text` changes, so a dialog box is one long string instead of hand-broken `\n` lines. The width is in font-space px, before `scale`. Do not write a JS line-breaker any more.
-- **`hitboxScaleX` / `hitboxScaleY`** (2026-08-23): per-axis corrections multiplied on top of `hitboxScale`, for art that fills its frame by a different fraction on each axis. The old workaround — settling for one compromise scale, or padding the frame so a single number fits — is obsolete.
-- **`spriteSheet.unload()` / `font.unload()`** (2026-08-23): frees a GL texture on the next frame instead of holding it until the context dies. Level streaming no longer needs a fresh window to reclaim GPU memory. Permanent — it is not a cache eviction.
-- **LiveView reloads retire the previous generation** (2026-08-23): stale render loops, the old `SoundPool`, `MediaPlayer`s and audio proxies are shut down by the module itself. Do not write your own reload guard, and do not read a scene stuttering after several reloads as an engine limit — it dates the build.
-- **`sprite.attachTo(target, { offsetX, offsetY, rotate })` / `detach()`** (2026-08-26): a sprite pinned to another sprite, resolved natively after physics and before collisions. Name tags, health bars, shadows, turrets and hitboxes that must sit on a moving body stop needing a per-frame JS copy of `x`/`y` — which is what everyone wrote before, one bridge round trip per tag per tick, always a frame late. Chains, `rotate: true` for an offset that swings with the target, automatic conversion between world and `screenFixed` space, and recursive removal so a tag never outlives its owner. Later the same day the target's opacity started multiplying into attached sprites, so fading an owner fades its tags without touching their own `opacity`. It is not full parenting: position, rotation and opacity are inherited, `scale`, `visible`, the flips and `tintColor` are not.
-- **Names and percentages on the numeric properties** (2026-08-26): every ratio the engine exposes also accepts `'55%'`, and the anchors accept `'left'`, `'bottom-right'`, `'center'`. Purely additive — numbers are untouched — and it retires the habit of a comment explaining what `anchorY: 1` plus `hitboxScaleY: 0.55` was supposed to mean. Only ratios: coordinates, sizes, degrees, speeds and the car model's `grip`/`drag` stay numeric.
-- **Shape-aware solids and circle-body physics** (2026-08-27, the `0.5.0` bump): the solid's own shape finally takes part in the resolution. `hitboxShape: 'rotatedRect'` keeps a rect turned with its sprite for solids, overlap events, `raycast`, the swept pass and the debug overlay; a circular solid deflects along the centre-to-centre normal instead of showing faces and corners it does not have; `solidMode: 'contain'` holds matched circles inside a circular boundary analytically, with no ring of wall sprites to squeeze between; `solidMode: 'push'` makes a pair of circles bodies that split the separation and trade the closing velocity; `gravityX` is a second constant acceleration on X; `linearDamping` is the rolling friction ordinary sprites never had, `drag` having only ever worked inside `carMode`; and `restitution` is read off **both** sides of a contact so a floor can supply the bounce. Every one of them defaults to today's behaviour, so nothing that exists moves differently. The workarounds this retires are the expensive ones: a ring of wall segments around a drum, a JS loop separating balls by hand, `velocityX -= k` on a timer for wind, and stepped rectangles for a single ramp.
+The manifest remains `0.5.0` across shape-aware solids, the HUD, and TileLayer, so the version cannot prove a feature exists. Prefer the build commit/date and safe feature probes such as `typeof Game.createTileLayer === 'function'`. Read a property before writing it; Kroll can preserve unknown writes on a proxy.
 
-
-## Checking the current state
-
-This file describes upstream `main` at `ee69056` on 2026-08-27 — a moving target: the fourteen dated entries in "Already shipped" below all landed between 2026-08-18 and 2026-08-27, and the manifest tracks almost none of it precisely (`0.3.0` → `0.4.0` on 2026-08-20, after nine of them; word wrap, the per-axis hitbox, `unload()` and the LiveView lifecycle landed on 2026-08-23, then `attachTo`, its inherited opacity and the named values all on 2026-08-26, with the number unchanged, before `0.5.0` on 2026-08-27 finally carried a feature set of its own). `attachTo` was the first entry to move *out* of the "not available" table rather than simply appearing in the shipped list — and it moved twice in one day, since opacity inheritance landed hours after the feature. Slopes moved the next day, and moved **partly**: the geometry shipped and the platformer feel did not, which is the shape most of this table will take from here on. A planned item can land partly done and then grow: read what a row does not cover before treating it as solved, and check the date before treating it as final. Before relying on any "planned" item being still absent — or on a workaround still being necessary — read `TODO.md` and `README.md` at https://github.com/m1ga/ti.game, the module's upstream repo. `README.md` there is the canonical API documentation; the `documentation/` folder only points at it. The priorities quoted above are the maintainer's, not a roadmap this skill decides.
+Before claiming an item is still absent, re-check upstream `TODO.md`, `README.md`, both platform proxies, and the examples. Source code wins over prose when they disagree.
