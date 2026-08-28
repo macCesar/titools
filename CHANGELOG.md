@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed — shared downloader API parity
+
+The downloader's default export now includes `fetchLatestNpmVersion`, matching its named export and the sibling AISkills API. Both repos carry the same regression test for their shared configuration and downloader surface so this kind of quiet engine drift fails in CI.
+
 ## [4.16.2] - 2026-08-28
 
 ### Fixed — `npm link` now makes skill development live
