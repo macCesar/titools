@@ -1,6 +1,6 @@
 # Debugging and performance telemetry
 
-Verified against `ti.game@d587081`: both `GameViewProxy` implementations, `DebugHud`, `FrameStats`, both scene renderers, `example/camera.js`, `example/particles.js`, and `example/tilemap.js`.
+Verified against `ti.game@c216e7f`: both `GameViewProxy` implementations, `DebugHud`, `FrameStats`, both scene renderers, `example/camera.js`, `example/particles.js`, and `example/tilemap.js`.
 
 ## The two debug aids
 
@@ -100,4 +100,3 @@ Telemetry is opt-in inside the renderers. With the HUD disabled and no `performa
 4. Inspect HUD counts and draw calls before changing code.
 5. Compare the smallest relevant upstream demo from [examples.md](examples.md).
 6. Disable instrumentation after the issue is understood.
-

@@ -1,6 +1,6 @@
 # Cross-cutting ti.game patterns
 
-Verified against `ti.game@d587081` and the runnable examples under `example/`. These are production-oriented extractions of the API combinations demonstrated upstream; they intentionally omit demo-launcher and back-navigation plumbing.
+Verified against `ti.game@c216e7f` and the runnable examples under `example/`. These are production-oriented extractions of the API combinations demonstrated upstream; they intentionally omit demo-launcher and back-navigation plumbing.
 
 See [examples.md](examples.md) to choose the source demo, [api.md](api.md) for exact members, and the genre recipe files for complete game loops.
 

@@ -1,6 +1,6 @@
 # Missing, partial, and out-of-scope features
 
-Verified against `ti.game@d587081` (2026-08-28), especially upstream `TODO.md` and both native implementations. Planned is not shipped; partial means the exact boundary below matters.
+Verified against `ti.game@c216e7f` (2026-08-28), especially upstream `TODO.md` and both native implementations. Planned is not shipped; partial means the exact boundary below matters.
 
 ## Not available today
 
@@ -33,6 +33,7 @@ Verified against `ti.game@d587081` (2026-08-28), especially upstream `TODO.md` a
 - Text/Font sprites, word wrap, `screenFixed`, attachment, named anchors, percentage ratios, and explicit sheet/font `unload()`.
 - Sprite paths, animation chaining, raycasts, A*, game-clock timers, collision exit, swept movers, and four blend modes.
 - Shape-aware solids: circle and rotated-rect geometry, one-way platforms, carried riders, containment, bilateral circle push, two-sided restitution, `gravityX`, and `linearDamping`.
+- Native wall contacts: `onWallLeft` / `onWallRight`, `wallhit`, TileLayer-wall parity, and `wallSlideSpeed`.
 - Native particles, ropes, effect/music sound backends, car physics, thrust, drag/pinch/rotate, and multi-touch sprites.
 
 ## Deliberately out of scope upstream

@@ -1,6 +1,6 @@
 # Setting up a ti.game project
 
-Installing the module, wiring it into Classic and Alloy projects, organizing art and sound, and the lifecycle work the engine does not do for you. Verified against `ti.game@d587081` (2026-08-28).
+Installing the module, wiring it into Classic and Alloy projects, organizing art and sound, and the lifecycle work the engine does not do for you. Verified against `ti.game@c216e7f` (2026-08-28).
 
 <!-- TOC-START -->
 ## Contents
@@ -58,6 +58,9 @@ Pinning `version` is worth the extra attribute: with two module versions install
 | `0.4.0` at its last commit (`b780051`) | additionally everything the `0.5.0` bump carries: `hitboxShape: 'rotatedRect'`, circular solids resolved as circles, `solidMode`, `gravityX`, `linearDamping`, and `restitution` read off both sides of a contact. It also still pulls a swept sprite back to where its frame started when it begins the frame already touching a solid, so a `swept: true` body parked on a slope creeps and then breaks loose as if launched |
 | `0.5.0` built before `d042060` | the performance HUD object form (`debug: { hud, hitbox, hudFont }`) and the `performance` event |
 | `0.5.0` built before `10a046e` | additionally `Game.createTileLayer()`, native visible-cell tile rendering, tile collision/live edits, and TileLayer participation in `findPath` |
+| `0.5.0` built before `85a723d` | additionally read-only `onWallLeft` / `onWallRight` and the `wallhit` transition event for sprite and TileLayer walls |
+| `0.5.0` built before `05cb60c` | additionally `wallSlideSpeed`, the native downward-speed cap while pressed against a wall |
+| `0.5.0` built before `c216e7f` | on Android only, string-row TileLayers with a nested JS `legend` decode as empty because the proxy rejects the ordinary map object; numeric data is unaffected |
 
 The newest local release tag is still `0.4.0` (2026-08-20), so tagged artifacts lag one manifest bump plus the HUD and TileLayer work that landed after `0.5.0` was introduced. If a documented call is `undefined`, check the manifest and build commit before hunting for a typo, and rebuild from upstream `main`. More reliable than either is feature detection: read a property **before** writing it (`typeof sprite.hitboxScaleX === 'undefined'`) or probe a method/factory (`typeof Game.createTileLayer === 'function'`). Write-then-read is not proof because Kroll can retain an unknown property on the proxy.
 
@@ -352,5 +355,6 @@ The JS API is identical on Android and iOS. What differs is around it:
 - **Android's `touchFeedback` ripple** cannot animate over the GL canvas and logs `RippleDrawable` errors; give on-screen buttons manual `backgroundColor` feedback on `touchstart`/`touchend`.
 - **Sound formats**: WAV, MP3 and OGG on Android; WAV, MP3 and M4A on iOS. WAV for effects, MP3 for music covers both.
 - **TileLayer grid configuration**: assign `legend`, `firstGid`, `cols`, and `rows` in `createTileLayer()`. iOS accepts later writes; Android treats them as creation-time inputs.
+- **Android `legend` compatibility**: string-row maps require build `c216e7f` or newer. Older Android proxies ignore a normal nested JS legend object; use numeric data or update the module.
 - **Performance telemetry**: `averagePresentMs` and `presentFailures` exist only on iOS and are omitted on Android.
 - **`theme: 'Theme.Titanium.DayNight.NoTitleBar'`** on the window is the Android idiom for a fullscreen game surface; on iOS use `navBarHidden`/`statusBarHidden` (or the Alloy XML equivalents).
