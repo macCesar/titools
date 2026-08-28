@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.16.1] - 2026-08-28
+
+### Added — `ti-game` follows wall contacts and native wall slides
+
+Upstream advanced four commits immediately after 4.16.0 was published. The skill is now pinned to `ti.game@c216e7f` and covers the new read-only `onWallLeft` / `onWallRight` state, the `wallhit` entry/side-change event, and `wallSlideSpeed`, which caps downward velocity while a mover is pressed against either a sprite or TileLayer wall. The platformer recipe gates wall jumps on the flags at input time and keeps `wallhit` for one-shot feedback instead of inventing a polling loop or nonexistent `wallend` event.
+
+### Fixed — Android string-row TileLayers
+
+Documented the exact compatibility boundary repaired upstream: Android builds before `c216e7f` reject the ordinary nested JS object supplied as `legend`, causing string rows to decode as empty cells. The current proxy converts that map correctly. Numeric tile data was never affected, and `legend` remains a creation-time input on Android despite the fix.
+
 ## [4.16.0] - 2026-08-28
 
 ### Added — `ti-game` covers native tile maps and render telemetry
