@@ -23,6 +23,8 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -38,6 +40,7 @@ import {
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SKILLS_DIR = path.join(ROOT, 'skills');
 const COMMANDS_DIR = path.join(ROOT, 'commands');
+const run = promisify(execFile);
 const AGENTS_DIR = path.join(ROOT, 'agents');
 
 const readJson = (...segments) => JSON.parse(readFileSync(path.join(ROOT, ...segments), 'utf8'));
@@ -234,6 +237,19 @@ describe('everything that ships is in the npm files allowlist', () => {
         `package.json files includes ${entry}, which is maintainer tooling and should not ship`,
       );
     }
+  });
+
+  test('the actual npm tarball excludes generated Python bytecode', async () => {
+    const { stdout } = await run('npm', ['pack', '--dry-run', '--json'], {
+      cwd: ROOT,
+      maxBuffer: 10 * 1024 * 1024,
+    });
+    const [packed] = Object.values(JSON.parse(stdout));
+    const bytecode = packed.files
+      .map((entry) => entry.path)
+      .filter((entry) => entry.includes('__pycache__') || /\.py[co]$/.test(entry));
+
+    assert.deepEqual(bytecode, [], `npm would publish generated Python bytecode: ${bytecode.join(', ')}`);
   });
 });
 
