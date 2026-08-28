@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.16.2] - 2026-08-28
+
+### Fixed — `npm link` now makes skill development live
+
+When the CLI resolves to a checkout containing `.git`, `titools install` now symlinks each complete skill directory into `~/.agents/skills/` instead of copying it. A maintainer needs one install to establish the links; later changes to `SKILL.md`, existing references, or newly added reference files are visible immediately to every assistant that reads the canonical path. Normal published npm installs keep the existing copy behavior. Two installer tests guard both modes, and the shared fix was ported to the sibling `aiskills` repo in the same session.
+
 ## [4.16.1] - 2026-08-28
 
 ### Added — `ti-game` follows wall contacts and native wall slides
