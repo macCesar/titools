@@ -248,6 +248,25 @@ Expect:
 - `bounds` is the walkable floor in sprite-center coordinates, and a discrete query: run it on the tap, not per frame
 
 ```
+"My Tiled map is 200x200 and one sprite per tile destroys performance. How should this work in ti.game?"
+```
+Expect:
+- Uses `Game.createTileLayer()` with nested/flat/string data instead of 40,000 sprites
+- Explains `firstGid`, gid 0 and stripped Tiled flip bits; does not claim flips are rendered
+- Uses `collisionGroup` plus `solid`/`oneWay`, and notes that fully solid cells feed `findPath`
+- Treats `legend`, `firstGid`, `cols` and `rows` as factory-time options for Android/iOS parity
+- Does not invent tile trigger events, tile raycasts, animated tiles or an automatic multi-layer Tiled loader
+
+```
+"I need to see fps, p95 frame time, draw calls and particle count while I tune this scene. Does debug: true do that?"
+```
+Expect:
+- Keeps `debug: true` as collision-shape shorthand only
+- Uses `debug: { hud: 'topRight' }` for the expandable screen-space HUD
+- Offers the opt-in `performance` event for programmatic snapshots, at most once per second
+- Notes that `averagePresentMs` and `presentFailures` are iOS-only and omitted on Android
+
+```
 "My hero's hitbox is wrong: 0.62 gets his width right but he floats above the floor, and 0.92 lands him but he clips walls a mile away."
 ```
 Expect:
@@ -453,7 +472,9 @@ Expect:
 - [ ] ti-game: pins a label or bar onto a sprite with `attachTo`, not with a timer copying coordinates
 - [ ] ti-game: names the anchor and writes ratios as percentages where a bare number is a riddle
 - [ ] ti-game: puts the shape on the **solid** — a circle peg, a `'rotatedRect'` ramp — instead of correcting a bounding box in JS
-- [ ] ti-game: does not invent APIs that do not exist yet (tilemap layer, `parent`/inherited transforms, joysticks, gamepads, the platformer feel on a slope)
+- [ ] ti-game: uses `createTileLayer` for large grids and does not invent tile triggers/raycast/animation/loader helpers
+- [ ] ti-game: distinguishes collision `debug: true` from the HUD and handles iOS-only telemetry keys
+- [ ] ti-game: does not invent full `parent` transforms, joysticks, gamepads, or finished platformer-slope feel
 - [ ] ti-api: cites specific properties/methods/events
 - [ ] ti-guides: references tiapp.xml / Hyperloop / distribution docs
 - [ ] ti-howtos: provides working integration code
