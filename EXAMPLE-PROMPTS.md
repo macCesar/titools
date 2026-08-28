@@ -255,6 +255,7 @@ Expect:
 - Explains `firstGid`, gid 0 and stripped Tiled flip bits; does not claim flips are rendered
 - Uses `collisionGroup` plus `solid`/`oneWay`, and notes that fully solid cells feed `findPath`
 - Treats `legend`, `firstGid`, `cols` and `rows` as factory-time options for Android/iOS parity
+- Warns that Android string rows need build `c216e7f` or newer; earlier builds ignore a normal nested JS `legend`
 - Does not invent tile trigger events, tile raycasts, animated tiles or an automatic multi-layer Tiled loader
 
 ```
@@ -265,6 +266,15 @@ Expect:
 - Uses `debug: { hud: 'topRight' }` for the expandable screen-space HUD
 - Offers the opt-in `performance` event for programmatic snapshots, at most once per second
 - Notes that `averagePresentMs` and `presentFailures` are iOS-only and omitted on Android
+
+```
+"Add Celeste-style wall jumps and a slow wall slide. I do not want a timer checking collisions."
+```
+Expect:
+- Sets `wallSlideSpeed` on the mover; does not clamp `velocityY` from a JS loop
+- Reads `onWallLeft` / `onWallRight` inside the jump-input handler and kicks `velocityX` away from that side
+- Uses `wallhit` only for one-shot feedback because it fires on entry/side change; does not invent `wallend`
+- Notes that the wall state works against sprite and TileLayer solids, while tile `wallhit` omits `other` and `group`
 
 ```
 "My hero's hitbox is wrong: 0.62 gets his width right but he floats above the floor, and 0.92 lands him but he clips walls a mile away."
@@ -474,6 +484,7 @@ Expect:
 - [ ] ti-game: puts the shape on the **solid** — a circle peg, a `'rotatedRect'` ramp — instead of correcting a bounding box in JS
 - [ ] ti-game: uses `createTileLayer` for large grids and does not invent tile triggers/raycast/animation/loader helpers
 - [ ] ti-game: distinguishes collision `debug: true` from the HUD and handles iOS-only telemetry keys
+- [ ] ti-game: implements wall jumps from the native wall flags and slide cap, not collision polling
 - [ ] ti-game: does not invent full `parent` transforms, joysticks, gamepads, or finished platformer-slope feel
 - [ ] ti-api: cites specific properties/methods/events
 - [ ] ti-guides: references tiapp.xml / Hyperloop / distribution docs
