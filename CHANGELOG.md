@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.16.0] - 2026-08-28
+
+### Added — `ti-game` covers native tile maps and render telemetry
+
+Audited the complete skill against `ti.game@d587081`: both platform implementations, upstream README/TODO/tutorial/iOS notes, and all 33 runnable demos. The skill now documents `Game.createTileLayer()` data shapes, Tiled GID handling, visible-cell rendering, solid/one-way cell collision, live editing, pathfinding participation, and the methods that map between world points and cells. A dedicated tile-map reference records the portability boundary upstream prose misses: Android treats `legend`, `firstGid`, `cols`, and `rows` as creation-time inputs while iOS exposes live setters.
+
+The GameView reference now covers object-form `debug`, the expandable screen-space HUD, optional `hudFont`, and the opt-in one-second `performance` event, including the two presentation metrics that exist only on iOS. New forward prompts guard both feature families.
+
+### Changed — progressive disclosure and demo-backed production patterns
+
+Split the 1,679-line `recipes.md` into focused cross-cutting, action, and adventure/effects references, each below 800 lines. Added a catalog that maps every upstream demo to the behavior it proves and makes the boundary explicit: demos are integration evidence, not copy-ready production architecture. `SKILL.md` now routes tasks to exact references, requires source citations, and has a shorter discriminating description with only Agent Skills-compatible frontmatter.
+
+### Fixed — stale and over-broad claims
+
+Removed every statement that tile maps and performance telemetry were still planned, corrected the example count from 32 to 33, and moved the remaining TileLayer follow-ups to the roadmap. Corrected another source-level mismatch found during the full audit: `removeAllSprites()` clears Sprite/Text objects and their attachment state, but leaves emitters, ropes, and TileLayers; cleanup guidance now tracks and removes those objects explicitly. README and camera-demo corner drift are normalized instead of repeated.
+
 ## [4.15.0] - 2026-08-27
 
 ### Added — `ti-game` covers shape-aware solids and circle-body physics
