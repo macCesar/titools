@@ -1,6 +1,6 @@
 # Native tile maps
 
-Verified against `ti.game@d587081`: upstream `README.md` § Tile maps, `example/tilemap.js`, both `TileLayerProxy` implementations, both native `TileLayer` engines, scene collision, and `Pathfinder`.
+Verified against `ti.game@c216e7f`: upstream `README.md` § Tile maps, `example/tilemap.js`, both `TileLayerProxy` implementations, both native `TileLayer` engines, scene collision, and `Pathfinder`.
 
 Use `Game.createTileLayer()` for a large or mostly static grid. The engine stores the whole map but renders only cells inside the camera, batches the layer through one sheet, checks only collision cells under a mover, and feeds solid cells into `findPath`. A small map whose tiles need independent sprite behavior can still use sprites; `topdown.js` is a 16×12 example of that older pattern.
 
@@ -68,8 +68,11 @@ const player = Game.createSprite({
 - `oneWay` ids catch a mover falling onto the top and do not block sideways or upward movement.
 - Rect, circle, and swept movers are supported.
 - Layer `restitution` mixes with the mover like restitution on a solid sprite.
-- A successful top landing sets `onGround` and fires `land`. A tile cell is not a sprite, so the event has no `other` object.
+- A successful top landing sets `onGround` and fires `land`. A tile cell is not a sprite, so the event has no `other` or `group`.
+- A sideways push sets `onWallLeft` / `onWallRight`, applies `wallSlideSpeed`, and can fire `wallhit`. Tile-wall events likewise omit `other` and `group`.
 - Adjacent solid cells suppress their shared internal faces, avoiding seams while sliding along a floor.
+
+Android builds before `c216e7f` ignore an ordinary nested JS object passed as `legend`, so string rows decode as empty there. Upgrade or use numeric data on those builds. The fix does not make `legend` live on Android; it remains a factory-time portability input.
 
 Tile cells participate in **solid resolution**, not overlap events. `collidesWith` does not produce `collision`/`collisionend` for trigger tiles yet. `raycast()` also does not inspect tile cells. See [roadmap.md](roadmap.md) before designing those behaviors.
 
@@ -122,4 +125,3 @@ Bound the per-query A* search to the useful neighborhood. The layer can be enorm
 - Use `visible: false` to exclude the layer from drawing and collision.
 - Toggle `layer.debug` for one layer or `gameView.debug = { hitbox: true }` for every layer's solid cells.
 - Use the performance HUD while scrolling: map dimensions should not change visible-cell draw cost.
-

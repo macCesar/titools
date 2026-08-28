@@ -1,6 +1,6 @@
 # Action-game recipes
 
-Production-oriented patterns distilled from the upstream action demos at `ti.game@d587081`. Use [examples.md](examples.md) to locate the full runnable demo and [api.md](api.md) for exact defaults and payloads.
+Production-oriented patterns distilled from the upstream action demos at `ti.game@c216e7f`. Use [examples.md](examples.md) to locate the full runnable demo and [api.md](api.md) for exact defaults and payloads. The wall-contact API is source/README-backed because upstream has not added a wall-jump demo yet.
 
 <!-- TOC-START -->
 ## Contents
@@ -71,6 +71,9 @@ Obstacles are pooled gates: three sprites each (top pipe, bottom pipe, invisible
 `solidWith` handles the blocking; you only decide when to jump.
 
 ```javascript
+const WALL_KICK_X = RUN_SPEED * 1.35;
+const WALL_KICK_Y = JUMP * 0.9;
+
 const player = Game.createSprite({
 	sheet: playerSheet,
 	x: W * 0.15,
@@ -82,6 +85,7 @@ const player = Game.createSprite({
 	hitboxScale: 0.85,
 	hitboxScaleX: 0.66,                      // the blob is 38px wide in a 64px frame, but nearly full height
 	solidWith: ['solid', 'trampoline'],
+	wallSlideSpeed: H * 0.18,                // 0 disables the native downward cap
 	animations: {
 		idle: { frames: [0], fps: 1, loop: true },
 		walk: { frames: [1, 2], fps: 8, loop: true }
@@ -107,6 +111,16 @@ function jump() {
 		player.velocityY = -JUMP;            // H * 0.95 ≈ 0.2 * H of height
 		player.stop();
 		player.frame = 3;                    // hold the jump pose
+		return;
+	}
+
+	const away = player.onWallLeft ? 1 : player.onWallRight ? -1 : 0;
+	if (away !== 0) {                        // read state when the jump is requested
+		player.velocityX = away * WALL_KICK_X;
+		player.velocityY = -WALL_KICK_Y;
+		player.scaleX = away;
+		player.stop();
+		player.frame = 3;
 	}
 }
 
@@ -123,9 +137,15 @@ player.addEventListener('land', (e) => {
 	}
 	applyMovement();                         // back from the jump pose
 });
+
+player.addEventListener('wallhit', () => {
+	player.flash('#d7f4ff', 80);             // transition effect, not jump gating
+});
 ```
 
 Jump height is `JUMP² / (2 × GRAVITY)`. Space your platforms comfortably below it — the demo uses steps of `0.14 * H` against a `0.2 * H` jump.
+
+**Wall jumps and slides**: `onWallLeft` / `onWallRight` are read-only contact state and only stay true while the resolver is pushing the player sideways. Read them in `jump()`; do not poll `wallhit` or make it sticky in JS. `wallhit` fires on first contact or a side switch and is ideal for sound/dust. `wallSlideSpeed` caps downward velocity only, so the upward kick remains intact. With touch controls that continuously reapply horizontal movement, let the wall-jump impulse win briefly before writing the held direction again. TileLayer walls set the same flags, but their `wallhit` payload has no `other` or `group`.
 
 **One-way platforms**: `oneWay: true` on the solid lets riders jump up through it and land on top, never blocking sideways or from below. This is what makes a staircase climbable.
 

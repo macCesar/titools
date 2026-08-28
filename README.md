@@ -177,7 +177,7 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 | ti-expert    | Architecture and implementation     | Starting point for most tasks           |
 | purgetss     | Utility-first styling               | UI styling and animations               |
 | ti-ui        | UI/UX patterns                      | Complex layouts, ListViews, platform UI |
-| ti-game      | 2D games with the `ti.game` module  | Sprites, physics, tile layers, collisions, pathfinding, text/performance HUDs, particles, camera |
+| ti-game      | 2D games with the `ti.game` module  | Sprites, physics, tile layers, wall jumps, pathfinding, text/performance HUDs, particles, camera |
 | ti-api       | Complete Titanium API reference     | Looking up properties, methods, events  |
 | ti-guides    | SDK fundamentals                    | tiapp.xml, Hyperloop, distribution, JDK/Xcode compatibility, release notes |
 | ti-howtos    | Native feature integration          | Location, push, media, platform APIs    |
@@ -436,6 +436,7 @@ When it activates:
 - Sprites, sprite sheets, TexturePacker atlases, frame animations, native tweens
 - Physics: gravity and velocity, solid platforms, one-way floors, bouncing, the arcade car model, Newtonian thrust
 - Collision groups, invisible trigger zones, enter/exit events, swept AABB for fast bullets, per-axis hitbox tuning with the `debug` overlays
+- Native side-wall state, `wallhit` transitions and `wallSlideSpeed` for wall jumps/slides without a JS frame loop
 - Raycasts for line of sight, ledge probes and hitscan shots
 - A* pathfinding (`findPath`) around tagged obstacles, feeding native patrol paths (`followPath`) and animation chaining (`play(name, { then })`)
 - Bitmap-font text sprites with native word wrap, and screen-fixed HUDs inside the scene
@@ -459,12 +460,14 @@ Example prompts:
 "Tap to walk, but the player should go around the tree instead of through it."
 "Render a 200x200 Tiled map without creating one sprite per tile."
 "Show FPS, p95 frame time, draw calls and texture switches while I tune this scene."
+"Add wall jumps and a slow wall slide without polling collisions."
 ```
 
 Key rules:
 - JS describes the scene and reacts to events; the engine runs every frame. Never move a sprite from a timer — use velocity, gravity, a tween, `carMode` or `thrust`
 - Build the level inside a guarded `resize` handler, never from `Ti.Platform.displayCaps`
 - `solidWith` blocks, `collidesWith` reports — they are independent
+- Gate wall jumps on `onWallLeft` / `onWallRight`; reserve `wallhit` for transition effects
 - A sprite with size but no sheet is an invisible trigger (scores, goals, walls)
 - Add a whole level with one `gameView.add([...])` call
 - Use `Game.createTileLayer()` for large/static grids; keep sprites for interactive cells and actors

@@ -8,7 +8,7 @@ allowed-tools: Read, Grep, Glob, Edit, Write, Bash(node *)
 
 `ti.game` is Michael Gangolf's OpenGL ES 2.0 sprite engine for Titanium. JavaScript describes the scene and reacts to discrete events; Android and iOS run rendering, animation, physics, collision, gestures, audio, particles, ropes, tile layers, camera work, and telemetry natively.
 
-This skill is verified against upstream `main` at **`d587081` (2026-08-28)**. Both manifests still say **`0.5.0`**, although important features landed after that version was introduced. Treat the commit or build date as the capability marker; feature-detect an installed build when the exact artifact is unknown.
+This skill is verified against upstream `main` at **`c216e7f` (2026-08-28)**. Both manifests still say **`0.5.0`**, although important features landed after that version was introduced. Treat the commit or build date as the capability marker; feature-detect an installed build when the exact artifact is unknown.
 
 The skill applies to **Classic and Alloy** projects. Nothing here requires PurgeTSS.
 
@@ -48,6 +48,7 @@ Do not move sprites from `setInterval`, `requestAnimationFrame`, or a JS loop. P
 | Walk around obstacles | `findPath()` → `followPath()` |
 | Test line of sight or hitscan | `raycast()` |
 | Fast projectile collision | `swept: true` on the mover |
+| Detect a side wall or slide down it | `onWallLeft` / `onWallRight`, `wallhit`, `wallSlideSpeed` |
 | Repeat a large map efficiently | `Game.createTileLayer()` |
 | Attach a label, health bar, or turret | `attachTo()` |
 | Score or in-game label | `Game.createText()`; usually `screenFixed: true` for a HUD |
@@ -107,6 +108,7 @@ win.open();
 - Coordinates use a top-left origin, y increases downward, and `(x, y)` is the sprite anchor. Durations crossing the JS boundary are milliseconds.
 - `solidWith` blocks; `collidesWith` reports `collision`/`collisionend`. They are independent. A sized sprite without a sheet is a valid invisible solid or trigger.
 - Put the hitbox shape on the object whose geometry matters. A round peg needs `hitboxShape: 'circle'`; a ramp needs `'rotatedRect'`.
+- Gate wall jumps on `onWallLeft` / `onWallRight` inside the jump input handler. `wallhit` is the transition event for effects; `wallSlideSpeed` caps the downward speed natively.
 - A `TileLayer` replaces one-sprite-per-tile maps when the map is large. Its visible-cell renderer, cell collision, live edits, and pathfinding integration are native.
 - Collect initial sprites, emitters, ropes, and tile layers and add them in one `gameView.add([...])` call.
 - Use `Game.createText()` for scene text. Use Titanium views only for UI the engine cannot draw, such as native input controls or system-font interfaces.
@@ -122,7 +124,7 @@ When sources disagree, use this order:
 3. Upstream `README.md` and `TUTORIAL.md` for intended public usage.
 4. Upstream `TODO.md` for what remains partial or absent.
 
-Known upstream prose drift at the pinned commit: the README says 26 demos although there are 33; its camera row names the wrong HUD corner; and it says every `TileLayer` property is live although Android treats `legend`, `firstGid`, `cols`, and `rows` as creation-time configuration. The references already normalize those differences.
+Known upstream prose drift at the pinned commit: the README says 26 demos although there are 33; its camera row names the wrong HUD corner; and it says every `TileLayer` property is live although Android treats `legend`, `firstGid`, `cols`, and `rows` as creation-time configuration. The references already normalize those differences. No demo exercises the wall-contact API yet, so its contract comes from the README and both native implementations.
 
 ## Before returning code
 

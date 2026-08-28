@@ -1,6 +1,6 @@
 # Upstream example catalog
 
-Verified against all 33 self-contained demos under `ti.game@d587081:example/` plus the launcher `example/app.js`.
+Verified against all 33 self-contained demos under `ti.game@c216e7f:example/` plus the launcher `example/app.js`. Wall contacts and `wallSlideSpeed` are not represented by a demo at this commit; use [the platformer recipe](recipes-action.md#platformer), which is verified against both native implementations and the README contract.
 
 The demos prove that API combinations run together on the current module. They are **not** production templates: most keep state in one file, repeat launcher/back-button plumbing, and still use pre-ES6 syntax. Start from the closest demo, retain the demonstrated engine calls, then apply the focused structure and cleanup patterns in this skill.
 
@@ -51,4 +51,3 @@ The demos prove that API combinations run together on the current module. They a
 3. Replace `var` and function-expression callbacks with the project's current ES6+ style.
 4. Keep resources outside `resize`; create surface-sized scene objects inside one guarded `resize` path.
 5. Separate reusable state from launcher UI and add explicit cleanup for app-owned listeners, timers, and sounds.
-
