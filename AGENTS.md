@@ -17,12 +17,12 @@ Read `status.md` when resuming work. Do not import it at startup: it changes con
 
 TiTools ships two things from a single source:
 
-1. **An npm CLI** (`@maccesar/titools`) that installs and updates Titanium SDK skills + a SessionStart hook into `~/.agents/skills/` (universal) plus per-agent symlinks for Claude Code, Gemini CLI, and Codex CLI.
+1. **An npm CLI** (`@maccesar/titools`) that installs and updates Titanium SDK skills + a SessionStart hook into `~/.agents/skills/` (universal) plus mirror symlinks for Claude Code. Gemini CLI and Codex CLI read the universal path directly.
 2. **A Claude Code plugin marketplace** (`titools@maccesar-titools`) that exposes the same content as a plugin via `/plugin marketplace add macCesar/titools`.
 
 Skills conform to the [agentskills.io specification](https://agentskills.io/specification) so any compatible agent can load them. The CLI itself is ESM Node.js with Commander.js and `ora` spinners.
 
-Sibling project: **`@maccesar/aiskills`** at `~/Developer/openSource/aiskills` — the same tool shipped twice with different payloads. Same CLI, same install paths, same plugin detection, same release mechanics; what differs is the skills each ships (8 Titanium ones here, 6 general-purpose there) and their slash commands. The `ti-pro` agent, the Knowledge Index (`titools sync`) and the `tiapp.xml` SessionStart hook are TiTools-only.
+Sibling project: **`@maccesar/aiskills`** at `~/Developer/openSource/aiskills` — the same tool shipped twice with different payloads. Same CLI, same install paths, same plugin detection, same release mechanics; what differs is the skills each ships (9 Titanium ones here, 8 general-purpose there) and their slash commands. The `ti-pro` agent, the Knowledge Index (`titools sync`) and the `tiapp.xml` SessionStart hook are TiTools-only.
 
 **When you change shared machinery, port it there in the same session.** The full contract, including the table of what legitimately diverges and a measured per-file comparison, is in [docs/project/context.md](docs/project/context.md) § "Sibling project".
 

@@ -63,11 +63,13 @@ The two repos are the **same tool shipped twice with different payloads.** What 
 
 Port the *behavior*, not the bytes. Names, paths and marketing strings are supposed to differ.
 
+For this contract, the shared CLI CORE includes CLI entry behavior, common `lib/` and `lib/commands/` behavior, installation and symlink handling, marketplace-plugin detection, non-product-specific hooks, shared tests, manifest wiring, and release mechanics. A change originating in either repo must be evaluated and, when shared, ported to the other before that working session closes.
+
 **What legitimately diverges** (verified 2026-08-02, do not "fix" these):
 
 | | TiTools | aiskills |
 |---|---|---|
-| `skills/` | 8 Titanium skills | 6 general-purpose skills |
+| `skills/` | 9 Titanium skills | 8 general-purpose skills |
 | `commands/` | `ti-check`, `ti-new-screen`, `ti-audit` | `release` |
 | `agents/` | `ti-pro` | none |
 | Knowledge Index | yes — `titools sync`, `lib/commands/agents.js`, 9 functions in `utils.js` | **does not apply** — see below |
@@ -82,7 +84,7 @@ It reads like missing work and it is not. The index opens with *"your training d
 
 None of aiskills' skills have that enemy. `refactoring-ui` is principles from a book, `vscode-extension-dev` is a stable documented API, `humaniza` and `session-log` are conventions that exist in no training data at all — there is nothing outdated to correct, so the same 850 tokens buy nothing.
 
-The trigger does not transfer either. `tiapp.xml` identifies a project where **all 8 skills apply**; aiskills has no equivalent marker and its 6 skills cover disjoint domains — `stitch-showcase` and `vscode-extension-dev` are noise in a Laravel repo.
+The trigger does not transfer either. `tiapp.xml` identifies a project where **all 9 skills apply**; aiskills has no equivalent marker and its 8 skills cover disjoint domains — `stitch-showcase` and `vscode-extension-dev` are noise in a Laravel repo.
 
 The *mechanism* is portable (`buildKnowledgeIndex` just scans `skills/*/references/`). The content and the trigger are not. If that benefit is ever wanted there, the shape is a **selective index keyed to a detected domain**, not a copy of `sync`.
 

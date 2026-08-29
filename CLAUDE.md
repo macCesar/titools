@@ -13,7 +13,7 @@ Read `status.md` when resuming work. Do not import it at startup: it changes con
 
 ## What TiTools is
 
-- An npm CLI (`@maccesar/titools`) + Claude Code plugin marketplace that ships 8 Titanium SDK skills, 1 agent (ti-pro), a SessionStart hook, and 3 slash commands.
+- An npm CLI (`@maccesar/titools`) + Claude Code plugin marketplace that ships 9 Titanium SDK skills, 1 agent (ti-pro), a SessionStart hook, and 3 slash commands.
 - Distribution channels:
   - **npm**: `npm install -g @maccesar/titools` then `titools install` (works with Claude Code, Gemini CLI, Codex CLI).
   - **Claude Code plugin marketplace**: `/plugin marketplace add macCesar/titools` then `/plugin install titools@maccesar-titools` (Claude Code only).
@@ -105,7 +105,7 @@ Never `execFileSync` — it blocks the Node.js event loop, freezing the spinner 
 
 ## Parallel project: `aiskills`
 
-`@maccesar/aiskills` lives at `~/Developer/openSource/aiskills`. The two repos are the **same tool shipped twice with different payloads**: same CLI (`install`, `update`, `auto-update`, `status`, `doctor`, `list`, `remove`), same `~/.agents/skills/` layout, same symlink mirrors, same marketplace-plugin detection, same release mechanics. What differs is the content — the skills each ships (here: 8 Titanium skills; aiskills: 6 general-purpose) and the slash commands that drive them (here: `ti-check`, `ti-new-screen`, `ti-audit`; aiskills: `release`).
+`@maccesar/aiskills` lives at `~/Developer/openSource/aiskills`. The two repos are the **same tool shipped twice with different payloads**: same CLI (`install`, `update`, `auto-update`, `status`, `doctor`, `list`, `remove`), same `~/.agents/skills/` layout, same symlink mirrors, same marketplace-plugin detection, same release mechanics. What differs is the content — the skills each ships (here: 9 Titanium skills; aiskills: 8 general-purpose) and the slash commands that drive them (here: `ti-check`, `ti-new-screen`, `ti-audit`; aiskills: `release`).
 
 **A change to shared machinery belongs in both repos, in the same session.** Port the *behavior*, not the bytes — names and paths are supposed to differ.
 

@@ -56,10 +56,10 @@ The five doc-based skills (`ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `
 
 ### R9 — Test suite stays green
 
-**Accepted when:** `npm test` passes. Current baseline: 53 tests, 11 suites.
+**Accepted when:** `npm test` passes. The current test count belongs in `status.md`, not in this stable contract.
 
-### R10 — Feature parity with the sibling project is considered, not assumed
+### R10 — The shared CLI CORE stays synchronized with aiskills
 
-`@maccesar/aiskills` shares the same `lib/` infrastructure. Every change to `lib/` raises the question of whether the equivalent belongs there.
+`@maccesar/aiskills` is the same CLI engine shipped with a different payload. The shared CORE covers CLI entry behavior, common `lib/` and `lib/commands/` behavior, installation and symlink handling, marketplace-plugin detection, non-product-specific hooks, shared tests, manifest wiring, and release mechanics.
 
-**Accepted when:** a `lib/` change is either ported to aiskills or the decision not to port it is recorded. Not every change needs porting — Titanium-specific pieces (the Knowledge Index wording, `tiapp.xml` detection, the `ti-pro` agent) do not belong in a general-purpose toolkit.
+**Accepted when:** every shared-CORE change is ported to aiskills in the same working session, both repos are verified independently, and any intentional difference is already listed in `context.md` § "Sibling project" or recorded as a decision before the session ends. Titanium-specific pieces — the Knowledge Index, `tiapp.xml` detection, the `ti-pro` agent, Titanium skills and TiTools-only commands — remain legitimate product differences.
