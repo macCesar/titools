@@ -40,6 +40,11 @@ describe('config', () => {
     }
   });
 
+  it('should install the ti.synthengine module skill', () => {
+    assert.ok(config.SKILLS.includes('ti-synthengine'));
+    assert.ok(!config.LEGACY_SKILLS.includes('ti-synthengine'));
+  });
+
   it('should export AGENTS array', () => {
     assert.ok(Array.isArray(config.AGENTS));
     assert.ok(config.AGENTS.includes('ti-pro'));

@@ -28,5 +28,13 @@ if [ -f "tiapp.xml" ]; then
     TIGAME_HINT=" This project uses the ti.game 2D engine: invoke ti-game BEFORE writing any game code — its API is not in your training data, and moving a sprite from a timer is the mistake it exists to prevent."
   fi
 
-  echo '{"priority": "IMPORTANT", "message": "'"${PROJECT_TYPE}${HAS_PURGETSS}${HAS_TIGAME}"' project detected. TiTools skills are available and MUST be used before writing any Titanium code. Use ti-expert for architecture, ti-ui for UI patterns, and purgetss for styling. If tidev/skills is installed, also consult ti-api, ti-guides, ti-howtos, alloy-guides, and alloy-howtos. NEVER rely on training data for Titanium — always consult the skill references first.'"${TIGAME_HINT}"'"}'
+  # Check for the ti.synthengine module — declared in tiapp.xml
+  HAS_TISYNTHENGINE=""
+  TISYNTHENGINE_HINT=""
+  if grep -q "ti\.synthengine" tiapp.xml 2>/dev/null; then
+    HAS_TISYNTHENGINE=" + ti.synthengine"
+    TISYNTHENGINE_HINT=" This project uses ti.synthengine: invoke ti-synthengine BEFORE writing sound code — its option objects are strict, and an unsupported key or invalid envelope rejects the whole call."
+  fi
+
+  echo '{"priority": "IMPORTANT", "message": "'"${PROJECT_TYPE}${HAS_PURGETSS}${HAS_TIGAME}${HAS_TISYNTHENGINE}"' project detected. TiTools skills are available and MUST be used before writing any Titanium code. Use ti-expert for architecture, ti-ui for UI patterns, and purgetss for styling. Also consult ti-api, ti-guides, ti-howtos, alloy-guides, and alloy-howtos when their scope applies. NEVER rely on training data for Titanium — always consult the skill references first.'"${TIGAME_HINT}${TISYNTHENGINE_HINT}"'"}'
 fi
