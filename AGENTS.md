@@ -22,7 +22,7 @@ TiTools ships two things from a single source:
 
 Skills conform to the [agentskills.io specification](https://agentskills.io/specification) so any compatible agent can load them. The CLI itself is ESM Node.js with Commander.js and `ora` spinners.
 
-Sibling project: **`@maccesar/aiskills`** at `~/Developer/openSource/aiskills` — the same tool shipped twice with different payloads. Same CLI, same install paths, same plugin detection, same release mechanics; what differs is the skills each ships (9 Titanium ones here, 8 general-purpose there) and their slash commands. The `ti-pro` agent, the Knowledge Index (`titools sync`) and the `tiapp.xml` SessionStart hook are TiTools-only.
+Sibling project: **`@maccesar/aiskills`** at `~/Developer/openSource/aiskills` — the same tool shipped twice with different payloads. Same CLI, same install paths, same plugin detection, same release mechanics; what differs is the skills each ships (10 Titanium ones here, 8 general-purpose there) and their slash commands. The `ti-pro` agent, the Knowledge Index (`titools sync`) and the `tiapp.xml` SessionStart hook are TiTools-only.
 
 **When you change shared machinery, port it there in the same session.** The full contract, including the table of what legitimately diverges and a measured per-file comparison, is in [docs/project/context.md](docs/project/context.md) § "Sibling project".
 
@@ -248,10 +248,11 @@ Verifying a release means checking what each channel actually serves: `npm view 
 1. Pick a kebab-case `<skill-name>` (verb-led for workflow skills: `ti-module-update`; noun-led for reference skills: `ti-api`).
 2. Create `skills/<skill-name>/SKILL.md` with a `description` ≤ 1024 chars.
 3. Add the skill to `lib/config.js:SKILLS`.
-4. Add a row in the README skills table.
-5. Add ≥ 2 example prompts in `EXAMPLE-PROMPTS.md`.
-6. If the skill has scripts, add tests under `test/`.
-7. Bump version per the Release checklist.
+4. Add it to the applicability matrix in `commands/ti-audit.md` and the `skills:` list in `agents/ti-pro.md`; the manifest suite requires both full-catalog surfaces to stay synchronized, even when a skill is conditional at runtime.
+5. Add a row in the README skills table.
+6. Add ≥ 2 example prompts in `EXAMPLE-PROMPTS.md`.
+7. If the skill has scripts, add tests under `test/`.
+8. Bump version per the Release checklist.
 
 ### Deprecate a skill
 
