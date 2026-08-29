@@ -207,6 +207,24 @@ describe('createSkillSymlinks', () => {
     rmSync(base, { recursive: true, force: true });
   });
 
+  test('skips a skill while an older plugin cache still provides a same-name command', async () => {
+    const base = makeHome();
+    writeAgentsSkills(base, ['ti-expert']);
+    writePluginCache(base, { commands: ['ti-expert'] });
+    writeSettings(base, { enabled: true });
+
+    const claudeSkills = path.join(base, '.claude', 'skills');
+    const result = await createSkillSymlinks(claudeSkills, ['ti-expert'], base);
+
+    assert.deepEqual(result.skipped, ['ti-expert']);
+    assert.equal(
+      existsSync(path.join(claudeSkills, 'ti-expert')),
+      false,
+      'a same-name plugin command must suppress the duplicate skill mirror during migration',
+    );
+    rmSync(base, { recursive: true, force: true });
+  });
+
   test('links when there is no plugin cache at all', async () => {
     const base = makeHome();
     writeAgentsSkills(base, ['ti-expert']);
