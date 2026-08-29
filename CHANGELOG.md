@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.17.1] - 2026-08-29
+
+### Fixed — command-migration and zero-command parity
+
+- Ported the shared CLI corrections from AISkills so `doctor` reports a clear no-active-commands state instead of claiming that a marketplace plugin serves “all 0” commands, and a command-to-skill migration does not create duplicate Claude entries while an older enabled marketplace cache still provides the same-name command. TiTools currently ships three unrelated commands, but retaining the behavior and regression test keeps the sibling CORE synchronized if its payload changes later.
+
 ## [4.17.0] - 2026-08-29
 
 ### Added — `ti-synthengine`
