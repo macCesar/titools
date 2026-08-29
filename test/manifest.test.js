@@ -188,6 +188,17 @@ describe('commands are wired into the CLI', () => {
       assert.ok(fm.description && fm.description.length > 0, `commands/${command}.md has an empty description`);
     }
   });
+
+  test('ti-audit routes every current skill', () => {
+    const audit = readFileSync(path.join(COMMANDS_DIR, 'ti-audit.md'), 'utf8');
+
+    for (const skill of SKILLS) {
+      assert.ok(
+        audit.includes(`\`${skill}\``),
+        `commands/ti-audit.md does not mention ${skill} — the audit can silently miss a shipped capability`,
+      );
+    }
+  });
 });
 
 describe('agents are wired into the CLI', () => {
@@ -204,6 +215,17 @@ describe('agents are wired into the CLI', () => {
     for (const file of listMd(AGENTS_DIR)) {
       const name = path.basename(file, '.md');
       assert.ok(AGENTS.includes(name), `agents/${file} exists but is not in lib/config.js AGENTS`);
+    }
+  });
+
+  test('ti-pro exposes every current skill to cross-skill research', () => {
+    const agent = readFileSync(path.join(AGENTS_DIR, 'ti-pro.md'), 'utf8');
+
+    for (const skill of SKILLS) {
+      assert.ok(
+        agent.includes(`  - ${skill}`),
+        `agents/ti-pro.md does not preload ${skill} — cross-skill research can silently miss it`,
+      );
     }
   });
 
