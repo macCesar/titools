@@ -6,7 +6,7 @@
 
 </div>
 
-TiTools is a Titanium SDK toolkit for AI coding assistants. It ships 9 skills — 4 opinionated (`ti-expert`, `purgetss`, `ti-ui`, `ti-game`) plus 5 documentation-mirror skills (`ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`) — a research agent, and reference files covering Titanium architecture, API reference, native how-tos, Alloy MVC, PurgeTSS styling, UI/UX patterns, and 2D game development with the `ti.game` module.
+TiTools is a Titanium SDK toolkit for AI coding assistants. It ships 10 skills — 5 specialist skills (`ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-synthengine`) plus 5 documentation-mirror skills (`ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`) — a research agent, and reference files covering Titanium architecture, API reference, native how-tos, Alloy MVC, PurgeTSS styling, UI/UX patterns, 2D games, and native sound synthesis.
 
 The reference files are maintained against official documentation whenever an official source exists, so the assistant can retrieve current framework behavior instead of guessing from generic training data.
 
@@ -36,9 +36,9 @@ The fastest way to get started with Claude Code. One command to add the marketpl
 ```
 
 What you get:
-- All 9 TiTools skills (`ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`)
+- All 10 TiTools skills (`ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-synthengine`, `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`)
 - ti-pro research agent
-- Session hook that auto-detects Titanium projects (`tiapp.xml`, Alloy, PurgeTSS, `ti.game`)
+- Session hook that auto-detects Titanium projects (`tiapp.xml`, Alloy, PurgeTSS, `ti.game`, `ti.synthengine`)
 - Slash commands: `/ti-check`, `/ti-new-screen`, `/ti-audit`
 - Auto-updates via marketplace (opt-in — see note below)
 
@@ -70,7 +70,7 @@ claude   # or gemini, or codex
 ```
 
 What gets installed:
-- The 9 TiTools skills to `~/.agents/skills/`
+- The 10 TiTools skills to `~/.agents/skills/`
 - ti-pro agent for Claude Code
 - Platform symlinks for Claude Code (Gemini CLI and Codex CLI auto-discover from `~/.agents/skills/` — no symlinks needed)
 - Knowledge index in your project's `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`
@@ -91,7 +91,7 @@ Why NPM?
 | **Knowledge Index** | Not included                               | Included (`titools sync`) |
 | **Auto-updates**    | Marketplace (opt-in, enable in `/plugin`)  | SessionStart hook (daily) |
 | **Slash commands**  | `/ti-check`, `/ti-new-screen`, `/ti-audit` | Same three (`~/.claude/commands/`) |
-| **Session hook**    | Auto-detects Titanium projects (Alloy/Classic, PurgeTSS, `ti.game`) | Auto-update only          |
+| **Session hook**    | Auto-detects Titanium projects (Alloy/Classic, PurgeTSS, `ti.game`, `ti.synthengine`) | Auto-update only          |
 
 Having both installed is fine: the CLI detects an enabled marketplace plugin and skips its own skill symlinks and command copies, so nothing shows up twice. `titools doctor` reports which channel is serving Claude Code.
 
@@ -178,6 +178,7 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 | purgetss     | Utility-first styling               | UI styling and animations               |
 | ti-ui        | UI/UX patterns                      | Complex layouts, ListViews, platform UI |
 | ti-game      | 2D games with the `ti.game` module  | Sprites, physics, tile layers, wall jumps, pathfinding, text/performance HUDs, particles, camera |
+| ti-synthengine | Sound design with `ti.synthengine` | Tones, chords, retro/UI effects, alarms, sweeps, patterns, mixing and troubleshooting |
 | ti-api       | Complete Titanium API reference     | Looking up properties, methods, events  |
 | ti-guides    | SDK fundamentals                    | tiapp.xml, Hyperloop, distribution, JDK/Xcode compatibility, release notes |
 | ti-howtos    | Native feature integration          | Location, push, media, platform APIs    |
@@ -185,8 +186,9 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 | alloy-howtos | Alloy CLI, configuration, debugging | alloy.jmk, config.json, custom XML tags |
 
 Notes:
-- The first four (`ti-expert`, `purgetss`, `ti-ui`, `ti-game`) are opinionated workflow skills reflecting TiTools' Titanium conventions.
+- The first five (`ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-synthengine`) are specialist workflow skills reflecting TiTools' Titanium conventions and native-module contracts.
 - `ti-game` documents the `ti.game` native module (2D sprite engine on OpenGL ES 2.0, Android and iOS). Its API reference was verified against the module source and tracks upstream `main` (the module ships features ahead of its manifest version); it applies to Alloy and Classic projects alike and does not depend on PurgeTSS.
+- `ti-synthengine` translates aesthetic sound requests into strict, production-ready JavaScript for the cross-platform `ti.synthengine` 1.0.0 module. Seven references preserve the official documentation and an eighth adds curated retro, xylophone, memory-pad, polyphony and timer-ownership recipes; the API contract was cross-checked against both native implementations.
 - The latter five are documentation-mirror skills sourced from the official Titanium SDK docs (`tidev/titanium-docs`) and audited against them via the internal `titools-skill-auditor`.
 - `purgetss` reference files are audited against the official PurgeTSS documentation, but its workflow conventions are opinionated.
 
@@ -198,14 +200,14 @@ In addition to skills, this repository includes sub-agents for Claude Code. Sub-
 
 ### ti-pro
 
-Deep-dive research specialist that preloads the 3 TiTools skills.
+Deep-dive research specialist that can combine the complete 10-skill TiTools catalog.
 
 | Aspect           | Details                                          |
 | ---------------- | ------------------------------------------------ |
 | Location         | `~/.claude/agents/ti-pro.md`                     |
 | Model            | Sonnet (comprehensive analysis)                  |
 | Tools            | Read-only (Read, Grep, Glob)                     |
-| Preloaded Skills | `ti-expert`, `purgetss`, `ti-ui`                 |
+| Preloaded Skills | All 10 skills registered in `lib/config.js`      |
 
 When to use the agent vs skills:
 
@@ -245,9 +247,9 @@ TiTools provides slash commands for common tasks. Both channels ship them: the p
 | `/ti-audit`             | Audit project for anti-patterns, memory leaks, and best practice violations         |
 
 These commands automatically invoke the relevant skills:
-- `/ti-check` reads `tiapp.xml` and reports project health
+- `/ti-check` reads `tiapp.xml`, validates declared native modules, and reports project health
 - `/ti-new-screen` uses `ti-expert` + `purgetss` to create properly structured files
-- `/ti-audit` uses `ti-expert` + `ti-ui` + `purgetss` for comprehensive review
+- `/ti-audit` routes all 10 skills: core Titanium checks always, Alloy/PurgeTSS checks when detected, integration how-tos when used, and `ti-game` / `ti-synthengine` checks when those modules are declared
 
 ---
 
@@ -256,10 +258,10 @@ These commands automatically invoke the relevant skills:
 The plugin includes a session start hook that auto-detects Titanium projects. When you open Claude Code in a directory with `tiapp.xml`, it automatically reports:
 
 ```
-Titanium Alloy + PurgeTSS + ti.game project detected. TiTools skills are available and MUST be used...
+Titanium Alloy + PurgeTSS + ti.game + ti.synthengine project detected. TiTools skills are available and MUST be used...
 ```
 
-It reports Alloy vs Classic, whether PurgeTSS is configured, and whether the project declares the `ti.game` module — a game project also gets a line pointing at the `ti-game` skill.
+It reports Alloy vs Classic, whether PurgeTSS is configured, and whether the project declares `ti.game` or `ti.synthengine`. Each detected native module adds a direct reminder to load its dedicated skill before writing module code.
 
 This ensures Claude knows it's a Titanium project from the first prompt, preventing it from writing generic code.
 
@@ -276,7 +278,7 @@ Skills are automatically activated based on your questions. Just ask naturally:
 The AI will automatically use:
 - `ti-expert` -> Architecture and controller structure
 - `purgetss` -> Styling classes and animations (if PurgeTSS detected)
-- `ti-howtos` from [`tidev/skills`](https://github.com/tidev/skills) (if installed) -> Secure token storage
+- `ti-howtos` -> Secure token storage and native integration guidance
 
 You do not need to call skills explicitly. The AI reads skill descriptions and loads the appropriate knowledge when needed.
 
@@ -290,6 +292,7 @@ All skills include automatic project detection to ensure compatibility:
 | ti-expert | Alloy vs Classic      | Checks for `app/` (Alloy) vs `Resources/` (Classic) structure |
 | ti-ui     | Titanium projects     | Checks for `tiapp.xml` (both Alloy and Classic)               |
 | ti-game   | ti.game module        | Checks for `<module>ti.game</module>` in `tiapp.xml` or `require('ti.game')` |
+| ti-synthengine | ti.synthengine module | Checks for `<module>ti.synthengine</module>` in `tiapp.xml` or `require('ti.synthengine')` |
 
 Why this matters:
 - PurgeTSS suggestions are only provided if PurgeTSS is installed
@@ -298,24 +301,16 @@ Why this matters:
 
 ### Skill hierarchy
 
-`ti-expert` acts as the orchestrator, delegating to specialized skills when needed:
+`ti-expert` is the architectural starting point and coordinates with the rest of the bundled catalog:
 
-```
-                    ┌─────────────────┐
-                    │  ti-expert      │
-                    │  (Start Here)   │
-                    └────────┬────────┘
-                             │
-                ┌────────────┴────────────┐
-                │                         │
-                ▼                         ▼
-        ┌───────────────┐         ┌───────────────┐
-        │   purgetss    │         │    ti-ui      │
-        │   (Styling)   │         │   (UI/UX)     │
-        └───────────────┘         └───────────────┘
-```
+| Scope | Skills |
+| --- | --- |
+| Architecture and UI | `ti-expert`, `ti-ui`, `purgetss` when configured |
+| Native modules | `ti-game`, `ti-synthengine` when declared |
+| Exact SDK/API guidance | `ti-api`, `ti-guides`, `ti-howtos` |
+| Alloy MVC and tooling | `alloy-guides`, `alloy-howtos` for Alloy projects |
 
-For pure API / native-feature how-to / MVC / SDK reference docs, install [`tidev/skills`](https://github.com/tidev/skills) alongside TiTools — its `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, and `alloy-howtos` skills layer below this hierarchy without conflict.
+All ten ship with TiTools; no second skill package is required.
 
 ---
 
@@ -477,6 +472,36 @@ Key rules:
 
 ---
 
+### ti-synthengine
+
+Cross-platform sound design and synthesis with the native `ti.synthengine` 1.0.0 module for Android and iOS.
+
+When it activates:
+- `tiapp.xml` declares `ti.synthengine`, or code calls `require('ti.synthengine')`
+- The app needs generated UI feedback, game cues, retro/chiptune effects, alarms, chords, pads, noise percussion, sweeps, panning, or vibrato
+- A synth call returns `false`, the first sound glitches, a pattern stops, a chord pumps, or output changes after a route switch
+
+Example prompts:
+```
+"Create a short sci-fi laser that sweeps left to right with ti.synthengine."
+"Design a clean two-note success cue for a Titanium button."
+"Build a playable xylophone that can glide across bars without retriggering the same note on every touchmove."
+"Create a layered 12-voice chord and stop its repeating pulse cleanly when the window closes."
+"Why does playTone return false when the object looks valid?"
+"Start the engine safely after my Alloy window lays out and clean it up on close."
+```
+
+Key rules:
+- Option objects are closed contracts. Unsupported keys, invalid types, non-finite values, or broken envelopes reject the whole call
+- Read waveform constants from `synth.getDefaults().waveTypes`; never guess numeric values or option names
+- `playTone` accepts `note` or `frequency`, never both; `playChord` accepts `notes` or `frequencies`, never both
+- `duration` includes attack, the full-level middle, and release, so explicit envelope times must intersect correctly
+- Use `frequencyEnd` for sweeps, `panEnd` for stereo movement, and `lfoFreq`/`lfoDepth` for pitch vibrato
+- Curated recipes cover retro effects, playable xylophone gestures, four-pad memory cues, controlled waveform comparisons, layered chords and cancellable repetition
+- Start after the first layout settles, keep one lifecycle owner, check Boolean returns, and call `shutdown()` on cleanup
+
+---
+
 ## Usage examples and best practices
 
 ### Example prompts
@@ -572,7 +597,7 @@ Behavior depends on where you run it:
 | With `--local` flag        | Installs skills locally to `./.agents/skills/` in the current project |
 
 What it does:
-- Installs the 9 TiTools skills (global or local depending on context)
+- Installs the 10 TiTools skills (global or local depending on context)
 - Installs ti-pro agent for Claude Code
 - Installs the `/ti-check`, `/ti-new-screen` and `/ti-audit` slash commands into `~/.claude/commands/`
 - Detects installed AI platforms and lets you choose which to link (only Claude Code needs platform symlinks; Gemini CLI and Codex CLI auto-discover from `~/.agents/skills/`)
@@ -768,7 +793,7 @@ Then only add `large-title-enabled` per-window as needed:
 </Window>
 ```
 
-This pattern is documented across three TiTools skills: `ti-ui`, `ti-expert`, and `purgetss`. The `ti-api` skill in [`tidev/skills`](https://github.com/tidev/skills) also documents the underlying Window properties.
+This pattern is documented across four bundled TiTools skills: `ti-ui`, `ti-expert`, `purgetss`, and `ti-api`, which covers the underlying Window properties.
 
 ---
 
@@ -779,6 +804,8 @@ This pattern is documented across three TiTools skills: `ti-ui`, `ti-expert`, an
 | ti-expert | Architecture + Implementation | 26 files (patterns, feedback surfaces, file type association, sharing, testing, security, etc.) |
 | purgetss  | Setup + Critical Rules        | 33 files (grid, animations, icons, class-index, SVG pipeline, etc.) |
 | ti-ui     | UI Rules + Platform Diffs     | 14 files (layouts, lists, gestures, etc.)             |
+| ti-game   | Native 2D Game Workflow       | 9 files (API, setup, patterns, recipes, tile maps, debugging, roadmap) |
+| ti-synthengine | Native Sound Synthesis   | 8 files (API, sound design, lifecycle, engine, official examples, curated recipes, recommendations, troubleshooting) |
 
 ---
 
