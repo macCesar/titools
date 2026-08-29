@@ -69,7 +69,7 @@ For this contract, the shared CLI CORE includes CLI entry behavior, common `lib/
 
 | | TiTools | aiskills |
 |---|---|---|
-| `skills/` | 9 Titanium skills | 8 general-purpose skills |
+| `skills/` | 10 Titanium skills | 8 general-purpose skills |
 | `commands/` | `ti-check`, `ti-new-screen`, `ti-audit` | `release` |
 | `agents/` | `ti-pro` | none |
 | Knowledge Index | yes — `titools sync`, `lib/commands/agents.js`, 9 functions in `utils.js` | **does not apply** — see below |
@@ -84,7 +84,7 @@ It reads like missing work and it is not. The index opens with *"your training d
 
 None of aiskills' skills have that enemy. `refactoring-ui` is principles from a book, `vscode-extension-dev` is a stable documented API, `humaniza` and `session-log` are conventions that exist in no training data at all — there is nothing outdated to correct, so the same 850 tokens buy nothing.
 
-The trigger does not transfer either. `tiapp.xml` identifies a project where **all 9 skills apply**; aiskills has no equivalent marker and its 8 skills cover disjoint domains — `stitch-showcase` and `vscode-extension-dev` are noise in a Laravel repo.
+The trigger does not transfer either. `tiapp.xml` identifies a project where **all 10 skills apply**; aiskills has no equivalent marker and its 8 skills cover disjoint domains — `stitch-showcase` and `vscode-extension-dev` are noise in a Laravel repo.
 
 The *mechanism* is portable (`buildKnowledgeIndex` just scans `skills/*/references/`). The content and the trigger are not. If that benefit is ever wanted there, the shape is a **selective index keyed to a detected domain**, not a copy of `sync`.
 

@@ -13,7 +13,7 @@ These prompts verify the assistant read the docs index from your project's instr
 ```
 Expect:
 - Titanium SDK docs index
-- All 9 TiTools skills: `ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`
+- All 10 TiTools skills: `ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-synthengine`, `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`
 - Reference file locations
 
 ---
@@ -362,6 +362,54 @@ Expect:
 
 ---
 
+### ti-synthengine
+```
+"Create a short sci-fi laser with ti.synthengine. It should rise in pitch while moving from the left speaker to the right."
+```
+Expect:
+- Activates `ti-synthengine` and reads `references/api.md` plus `references/sound-design.md`
+- Briefly explains why a sawtooth or triangle sweep, fast attack, fitted release, and `pan` → `panEnd` create the effect
+- Uses `frequency` with `frequencyEnd`, never adds `note`, and obtains the waveform from `synth.getDefaults().waveTypes`
+- Shows checked engine startup when no running owner is provided and handles the Boolean returned by `playTone()`
+
+```
+"Design a clean two-note success cue for a Titanium button. I want it pleasant on a small phone speaker, not arcade-like."
+```
+Expect:
+- Activates `ti-synthengine`
+- Chooses sine or triangle with short valid envelopes and an ascending interval
+- Uses `playPattern()` with object steps or two deliberately scheduled independent tones; does not invent a multi-stage `playTone` option
+- Keeps event levels conservative, explains speaker testing, and emits exact production JavaScript
+
+```
+"Build a playable ti.synthengine xylophone from C5 to C6. Taps should ring naturally and dragging across the bars must not retrigger the same bar on every touchmove."
+```
+Expect:
+- Reads `references/recipes.md` as well as the exact API contract
+- Uses `TRIANGLE`, a fast fitted attack, a moderate release and conservative per-strike gain
+- Tracks the currently entered bar, resolves hit rectangles after layout, and resets the gesture on both `touchend` and `touchcancel`
+- Leaves release tails independent and sizes the voice pool for their real overlap
+
+```
+"Give me a clean 12-voice layered chord, then pulse it repeatedly until the Alloy controller closes."
+```
+Expect:
+- Uses one atomic `playChord()` per pulse and builds finite frequencies from musical intervals plus small cent offsets
+- Generates a matching `pans` array, keeps the clean reference distinct from intentional overlap stress, and chooses enough `maxVoices`
+- Owns the JavaScript timer with a cancellation token or handle; cleanup cancels the timer before `stopAll()`/`shutdown()`
+- Does not invent per-voice detune, an indefinite native loop, or unsupported chord LFO/sweep options
+
+Trap test:
+```
+"This returns false. Fix it without changing the sound I intended: synth.playTone({ note: 'A4', frequency: 440, duraton: 100, attack: 80, release: 40 })"
+```
+Expect:
+- Removes the misspelled unsupported key, keeps only one pitch source, and makes `attack + release <= duration`
+- Explains that strict option dictionaries reject the whole call rather than ignoring bad fields
+- Does not clamp or silently reinterpret explicit invalid values
+
+---
+
 ### ti-api
 ```
 "What events does `Ti.UI.ListView` fire and what data do their callbacks receive?"
@@ -486,6 +534,11 @@ Expect:
 - [ ] ti-game: distinguishes collision `debug: true` from the HUD and handles iOS-only telemetry keys
 - [ ] ti-game: implements wall jumps from the native wall flags and slide cap, not collision polling
 - [ ] ti-game: does not invent full `parent` transforms, joysticks, gamepads, or finished platformer-slope feel
+- [ ] ti-synthengine: uses only documented option keys and keeps pitch sources mutually exclusive
+- [ ] ti-synthengine: produces valid envelope intersections and explains waveform/sweep/LFO choices acoustically
+- [ ] ti-synthengine: checks Boolean results and owns `startEngine()` / `shutdown()` at the correct lifecycle level
+- [ ] ti-synthengine: interactive instruments deduplicate `touchmove` entries and repeating effects cancel JavaScript timers before cleanup
+- [ ] ti-synthengine: polyphony uses atomic chords, matched pitch/pan arrays, finite generated frequencies and an intentional overlap budget
 - [ ] ti-api: cites specific properties/methods/events
 - [ ] ti-guides: references tiapp.xml / Hyperloop / distribution docs
 - [ ] ti-howtos: provides working integration code
@@ -506,6 +559,8 @@ Date: ___________ Platform: [ ] Claude Code  [ ] Gemini CLI  [ ] Codex CLI
 | ti-expert    |         |                   |       |
 | purgetss     |         |                   |       |
 | ti-ui        |         |                   |       |
+| ti-game      |         |                   |       |
+| ti-synthengine |       |                   |       |
 | ti-api       |         |                   |       |
 | ti-guides    |         |                   |       |
 | ti-howtos    |         |                   |       |
@@ -633,3 +688,4 @@ After installing AGENTS.md or CLAUDE.md, ask these to verify it works.
 - [ ] "My Android build crashes with an iOS-only property. What's the rule?" should answer correctly
 - [ ] "My ListView is slow with lots of items. Where are the performance docs?" should point to docs
 - [ ] "How do I create views from code instead of XML?" should explain with reference
+- [ ] "Make a clean ti.synthengine success cue" should explain the acoustics and return strict, valid module code

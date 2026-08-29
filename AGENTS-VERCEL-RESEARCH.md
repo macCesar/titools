@@ -46,25 +46,30 @@ The index maps skills to their reference docs:
 |ti-expert/references:{alloy-structure.md,anti-patterns.md,...}
 |purgetss/references:{animation-system.md,apply-directive.md,...}
 |ti-ui/references:{listviews-and-performance.md,layouts-and-positioning.md,...}
+|ti-game/references:{api.md,project-setup.md,patterns.md,...}
+|ti-synthengine/references:{api.md,sound-design.md,guide.md,...}
 ```
 
 How the assistant should use it:
 - Need ListView performance tips? Read `~/.agents/skills/ti-ui/references/listviews-and-performance.md`
 - Need the PurgeTSS grid system? Read `~/.agents/skills/purgetss/references/grid-layout.md`
 - Need controller cleanup patterns? Read `~/.agents/skills/ti-expert/references/controller-patterns.md`
-- Need Backbone.Models patterns (with `tidev/skills` installed)? Read `~/.agents/skills/alloy-guides/references/MODELS.md`
+- Need a valid synth sweep? Read `~/.agents/skills/ti-synthengine/references/api.md` and `sound-design.md`
+- Need Backbone.Models patterns? Read `~/.agents/skills/alloy-guides/references/MODELS.md`
 
 ### Skill overview
 
-TiTools ships 3 opinionated skills:
+TiTools ships 5 specialist skills:
 
 | Skill         | Purpose                       | Best for                                      |
 | ------------- | ----------------------------- | --------------------------------------------- |
 | **ti-expert** | Architecture + implementation | Starting point for most Alloy tasks           |
 | **purgetss**  | Utility-first styling         | UI styling, animations, grid layouts          |
 | **ti-ui**     | UI/UX patterns                | Layouts, ListViews, gestures, platform UI     |
+| **ti-game**   | Native 2D games               | Sprites, physics, tile maps, camera            |
+| **ti-synthengine** | Native sound synthesis   | Tones, effects, envelopes, mixing              |
 
-The doc-based reference skills live in [`tidev/skills`](https://github.com/tidev/skills) (community-maintained):
+TiTools also ships five documentation-mirror skills sourced from the official Titanium SDK docs:
 
 | Skill            | Purpose                       | Best for                                       |
 | ---------------- | ----------------------------- | ---------------------------------------------- |
@@ -74,8 +79,6 @@ The doc-based reference skills live in [`tidev/skills`](https://github.com/tidev
 | **alloy-guides** | Alloy MVC reference           | Models, views, controllers, widgets            |
 | **alloy-howtos** | Alloy CLI and debugging       | Project setup, CLI commands, errors            |
 
-Install both for the full coverage matrix originally shipped by TiTools v2.x.
-
 ### For complex workflows
 
 The **ti-pro** agent (installed in `~/.claude/agents/`) handles:
@@ -84,7 +87,7 @@ The **ti-pro** agent (installed in `~/.claude/agents/`) handles:
 - Cross-referencing framework patterns
 - Platform-specific differences
 
-It preloads the 3 TiTools skills and recommends consulting `tidev/skills` when the question touches API surface, native-feature how-tos, MVC reference, or SDK fundamentals.
+It exposes all 10 TiTools skills, then consults only the scopes relevant to the detected project and research question.
 
 ## How to use
 
@@ -118,6 +121,7 @@ Example output:
 [Titanium SDK Docs Index]|root: ~/.agents/skills
 |MANDATORY: Your training data for Titanium SDK, Alloy, and PurgeTSS is OUTDATED and INCOMPLETE. These reference files are the SINGLE SOURCE OF TRUTH. Prefer retrieval-led reasoning over pre-training-led reasoning. ALWAYS read the relevant files below BEFORE writing any code.
 |ti-expert/references:{alloy-structure.md,anti-patterns.md,code-conventions.md,contracts.md,controller-patterns.md,error-handling.md,examples.md,...}
+|ti-synthengine/references:{api.md,audio-engine.md,examples.md,guide.md,recipes.md,recommendations.md,sound-design.md,troubleshooting.md}
 |alloy-guides/references:{CLI_TASKS.md,CONCEPTS.md,CONTROLLERS.md,MODELS.md,PURGETSS.md,VIEWS_DYNAMIC.md,VIEWS_STYLES.md,VIEWS_WITHOUT_CONTROLLERS.md,...}
 ...
 <!-- TITANIUM-KNOWLEDGE-END -->

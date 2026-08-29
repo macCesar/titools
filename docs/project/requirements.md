@@ -40,9 +40,9 @@ A skill moved from `SKILLS` to `LEGACY_SKILLS` in `lib/config.js` disappears fro
 
 ### R6 — Reference files mirror official Titanium documentation, not training data
 
-The five doc-based skills (`ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`) are mirrors of <https://titaniumsdk.com>; `purgetss` mirrors the PurgeTSS docs. The three opinionated skills (`ti-expert`, `purgetss`, `ti-ui`) carry judgement on top.
+The five doc-based skills (`ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`) are mirrors of <https://titaniumsdk.com>; `purgetss` mirrors the PurgeTSS docs. The native-module skills (`ti-game`, `ti-synthengine`) are verified against their upstream documentation and Android/iOS implementations. The specialist workflow skills carry judgement on top of those sources.
 
-**Accepted when:** each claim in a reference traces to upstream documentation, and the `titools-skill-auditor` skill run against a skill reports no stale content. Sections headed `## Community-Discovered Patterns` are exempt — they have no upstream source by design and must never be deleted by an audit.
+**Accepted when:** each public-contract claim in a reference traces to upstream documentation, and the `titools-skill-auditor` skill run against a skill reports no stale content. Curated recipe libraries may add tested interaction and aesthetic guidance that has no official equivalent, but every API key, type, limit and lifecycle claim in them must still agree with upstream. Sections headed `## Community-Discovered Patterns` are likewise exempt from source mirroring — they have no upstream source by design and must never be deleted by an audit.
 
 ### R7 — Every skill's frontmatter is loadable by any compatible agent
 

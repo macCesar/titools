@@ -9,7 +9,8 @@ Check the current Titanium project and report:
 2. Check if Alloy project (app/views + app/controllers exist)
 3. Check if PurgeTSS is configured (purgetss/config.cjs exists)
 4. Check whether the `ti.game` module is declared in `tiapp.xml` — report its version and whether the module is actually present under `modules/<platform>/ti.game/<version>/` or installed globally
-5. Check for common issues:
+5. Check whether the `ti.synthengine` module is declared in `tiapp.xml` — report its version, verify matching Android/iPhone declarations, and whether the module is present under `modules/<platform>/ti.synthengine/<version>/` or installed globally
+6. Check for common issues:
    - Missing icon files (DefaultIcon.png)
    - Empty modules section in tiapp.xml
    - Outdated SDK version
