@@ -4,7 +4,7 @@
     "name": "César Estrada"
   },
   "metadata": {
-    "description": "Titanium SDK skills and agents for AI coding assistants — complete API reference, Alloy MVC guide, PurgeTSS utility-first styling, architecture patterns, and native feature integration."
+    "description": "Titanium SDK skills and agents for AI coding assistants — API reference, Alloy MVC, PurgeTSS, architecture, native features, 2D games, and sound synthesis."
   },
   "plugins": [
     {
@@ -13,7 +13,7 @@
         "source": "github",
         "repo": "macCesar/titools"
       },
-      "description": "Complete Titanium SDK development toolkit: 8 specialized skills covering API reference, Alloy MVC, PurgeTSS styling, architecture, guides, how-tos, and UI patterns. Auto-detects Titanium projects by tiapp.xml presence.",
+      "description": "Complete Titanium SDK development toolkit: 10 specialized skills covering API reference, Alloy MVC, PurgeTSS, architecture, guides, how-tos, UI patterns, 2D games, and sound synthesis. Auto-detects Titanium projects by tiapp.xml presence.",
       "category": "mobile-development",
       "tags": [
         "titanium",
@@ -22,6 +22,8 @@
         "purgetss",
         "ui",
         "api-reference",
+        "audio",
+        "sound-synthesis",
         "ios",
         "android"
       ]

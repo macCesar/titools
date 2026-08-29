@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.17.0] - 2026-08-29
+
+### Added — `ti-synthengine`
+
+- Added the cross-platform `ti.synthengine` sound-design skill, verified against the official 1.0.0 documentation and both native implementations.
+- Added eight references covering the strict API contract, engine lifecycle, sound design, retro effects, xylophone interaction, memory cues, layered polyphony, mixing and troubleshooting.
+
+### Changed — full TiTools integration
+
+- Registered the tenth skill across installation, update, listing, doctor, marketplace metadata, the Knowledge Index, SessionStart detection and `/ti-check`.
+- Expanded `/ti-audit` and `ti-pro` to cover the complete catalog, with regression tests preventing future drift.
+- Documented the permanent shared CLI CORE parity requirement with AISkills.
+
 ## [4.16.3] - 2026-08-28
 
 ### Fixed — shared downloader API parity

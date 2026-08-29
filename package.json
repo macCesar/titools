@@ -1,7 +1,7 @@
 {
   "name": "@maccesar/titools",
-  "version": "4.16.3",
-  "description": "Titanium SDK skills and agents for AI coding assistants (Claude Code, Gemini CLI, Codex CLI)",
+  "version": "4.17.0",
+  "description": "Titanium SDK skills and agents for AI coding assistants, including native game and sound synthesis modules",
   "main": "lib/index.js",
   "type": "module",
   "bin": {
@@ -25,7 +25,10 @@
     "agents",
     "mobile",
     "ios",
-    "android"
+    "android",
+    "audio",
+    "sound-design",
+    "synthesizer"
   ],
   "author": "César Estrada <maccesar@gmail.com> (https://github.com/macCesar)",
   "license": "MIT",
