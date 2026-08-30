@@ -6,7 +6,7 @@
 
 </div>
 
-TiTools is a Titanium SDK toolkit for AI coding assistants. It ships 10 skills — 5 specialist skills (`ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-synthengine`) plus 5 documentation-mirror skills (`ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`) — a research agent, and reference files covering Titanium architecture, API reference, native how-tos, Alloy MVC, PurgeTSS styling, UI/UX patterns, 2D games, and native sound synthesis.
+TiTools is a Titanium SDK toolkit for AI coding assistants. It ships 10 skills — 5 specialist skills (`ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-synthengine`) plus 5 documentation-mirror skills (`ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`) — a research agent, and reference files covering Titanium architecture, API reference, native how-tos, Alloy MVC, PurgeTSS styling and resource automation, UI/UX patterns, 2D games, and native sound synthesis.
 
 The reference files are maintained against official documentation whenever an official source exists, so the assistant can retrieve current framework behavior instead of guessing from generic training data.
 
@@ -175,7 +175,7 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 | Skill        | Purpose                             | Best For                                |
 | ------------ | ----------------------------------- | --------------------------------------- |
 | ti-expert    | Architecture and implementation     | Starting point for most tasks           |
-| purgetss     | Utility-first styling               | UI styling and animations               |
+| purgetss     | Alloy styling + asset automation    | Utility classes; Alloy/Classic branding, images, colors, fonts and modules |
 | ti-ui        | UI/UX patterns                      | Complex layouts, ListViews, platform UI |
 | ti-game      | 2D games with the `ti.game` module  | Sprites, physics, tile layers, wall jumps, pathfinding, text/performance HUDs, particles, camera |
 | ti-synthengine | Sound design with `ti.synthengine` | Tones, chords, retro/UI effects, alarms, sweeps, patterns, mixing and troubleshooting |
@@ -277,7 +277,7 @@ Skills are automatically activated based on your questions. Just ask naturally:
 
 The AI will automatically use:
 - `ti-expert` -> Architecture and controller structure
-- `purgetss` -> Styling classes and animations (if PurgeTSS detected)
+- `purgetss` -> Alloy styling, or supported asset/CommonJS commands in Alloy and Classic (if PurgeTSS is detected or requested)
 - `ti-howtos` -> Secure token storage and native integration guidance
 
 You do not need to call skills explicitly. The AI reads skill descriptions and loads the appropriate knowledge when needed.
@@ -288,14 +288,14 @@ All skills include automatic project detection to ensure compatibility:
 
 | Skill     | What It Detects       | How It Works                                                  |
 | --------- | --------------------- | ------------------------------------------------------------- |
-| purgetss  | PurgeTSS installation | Checks for `purgetss/` folder, `config.cjs`, `utilities.tss`  |
+| purgetss  | PurgeTSS mode and project type | Checks PurgeTSS markers, then separates Alloy utilities from Classic standalone commands |
 | ti-expert | Alloy vs Classic      | Checks for `app/` (Alloy) vs `Resources/` (Classic) structure |
 | ti-ui     | Titanium projects     | Checks for `tiapp.xml` (both Alloy and Classic)               |
 | ti-game   | ti.game module        | Checks for `<module>ti.game</module>` in `tiapp.xml` or `require('ti.game')` |
 | ti-synthengine | ti.synthengine module | Checks for `<module>ti.synthengine</module>` in `tiapp.xml` or `require('ti.synthengine')` |
 
 Why this matters:
-- PurgeTSS suggestions are only provided if PurgeTSS is installed
+- PurgeTSS suggestions are provided when its project markers are detected or the user explicitly requests a standalone command
 - Alloy-specific patterns are only suggested for Alloy projects
 - Classic Titanium projects will not receive inappropriate Alloy advice
 
@@ -359,7 +359,7 @@ Key features:
 
 ### purgetss
 
-Utility-first styling toolkit for Titanium/Alloy.
+Utility-first styling for Titanium Alloy plus standalone asset and CommonJS commands for Alloy and Classic.
 
 When it activates:
 - Setting up PurgeTSS in a project
@@ -369,6 +369,7 @@ When it activates:
 - Custom color palettes
 - Platform-specific styling
 - config.cjs configuration
+- Classic `Resources/` outputs for branding, density images, semantic colors, fonts, and modules
 
 Example prompts:
 ```
@@ -378,6 +379,8 @@ Example prompts:
 "How do I configure custom colors in config.cjs?"
 "How do I use Font Awesome 7 icons?"
 "Style this button differently on iOS vs Android."
+"Generate image densities for this Classic Titanium app without converting it to Alloy."
+"Install Font Awesome and its CommonJS module under Resources in my Classic app."
 ```
 
 Rules:
@@ -802,7 +805,7 @@ This pattern is documented across four bundled TiTools skills: `ti-ui`, `ti-expe
 | Skill     | SKILL.md                      | References                                            |
 | --------- | ----------------------------- | ----------------------------------------------------- |
 | ti-expert | Architecture + Implementation | 26 files (patterns, feedback surfaces, file type association, sharing, testing, security, etc.) |
-| purgetss  | Setup + Critical Rules        | 33 files (grid, animations, icons, class-index, SVG pipeline, etc.) |
+| purgetss  | Setup + Critical Rules        | 34 files (Classic compatibility, grid, animations, icons, class-index, SVG pipeline, etc.) |
 | ti-ui     | UI Rules + Platform Diffs     | 14 files (layouts, lists, gestures, etc.)             |
 | ti-game   | Native 2D Game Workflow       | 9 files (API, setup, patterns, recipes, tile maps, debugging, roadmap) |
 | ti-synthengine | Native Sound Synthesis   | 8 files (API, sound design, lifecycle, engine, official examples, curated recipes, recommendations, troubleshooting) |
@@ -831,7 +834,8 @@ If the AI suggests patterns you don't use (for example, PurgeTSS when you're not
 If the purgetss skill doesn't activate for your PurgeTSS project:
 1. Verify `purgetss/` folder exists in project root
 2. Check that `purgetss/config.cjs` exists
-3. Mention "PurgeTSS" explicitly in your prompt
+3. In Classic, check for generated `Resources/lib/purgetss.*.js` modules
+4. Mention "PurgeTSS" explicitly in your prompt
 
 ### Wrong advice?
 

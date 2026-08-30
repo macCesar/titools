@@ -8,7 +8,7 @@ For the mode-switching runtime that drives all of this (`Appearance.init()`, `Ap
 
 > **INFO**
 >
-> Semantic color resolution is a **Titanium** feature, not PurgeTSS magic. Titanium natively reads `semantic.colors.json` (at `app/assets/` on Alloy, `Resources/` on Classic) and resolves any color-accepting property whose value matches a key in that file. PurgeTSS only generates the utility classes that point *at* those keys — the switching behavior is 100% native.
+> Semantic color resolution is a **Titanium** feature, not PurgeTSS magic. Titanium natively reads `semantic.colors.json` (at `app/assets/` on Alloy, `Resources/` on Classic) and resolves any color-accepting property whose value matches a key in that file. In Alloy, PurgeTSS also generates utility mappings that point at those keys; Classic uses the keys directly. The switching behavior is native in both layouts.
 
 <!-- TOC-START -->
 ## Contents
@@ -17,7 +17,7 @@ For the mode-switching runtime that drives all of this (`Appearance.init()`, `Ap
 - [Registering in `config.cjs`](#registering-in-configcjs)
 - [Numeric 11-step tonal-inversion palette](#numeric-11-step-tonal-inversion-palette)
 - [The `semantic` CLI command](#the-semantic-cli-command)
-- [Using semantic classes in views](#using-semantic-classes-in-views)
+- [Using semantic classes in Alloy views](#using-semantic-classes-in-alloy-views)
 - [Using semantic colors in controllers](#using-semantic-colors-in-controllers)
 - [Recommended starter palette](#recommended-starter-palette)
 - [Related](#related)
@@ -235,12 +235,14 @@ One base hex plus a family name produces 11 JSON entries with mirror inversion, 
 purgetss semantic '#15803d' amazon
 ```
 
-This:
+In Alloy, this:
 
 1. Generates `amazon50` through `amazon950` using the same algorithm as the `shades` command.
-2. Writes `semantic.colors.json` at the project's canonical location (`app/assets/` on Alloy, `Resources/` on Classic) with mirror-by-index values — 50 ↔ 950, 100 ↔ 900, …, 500 as the identical anchor.
+2. Writes `semantic.colors.json` under `app/assets/` with mirror-by-index values — 50 ↔ 950, 100 ↔ 900, …, 500 as the identical anchor.
 3. Writes the `{ 50: 'amazon50', 100: 'amazon100', ... }` mapping into `config.cjs`.
 4. Strips any prior keys for the `amazon` family before writing — re-runs cleanly replace, never duplicate.
+
+In Classic, the same command writes only the native `Resources/semantic.colors.json` entries. It does not create `purgetss/`, `config.cjs`, utility mappings, TSS, `app/`, or an Alloy hook. Use keys such as `amazon50` directly in Titanium color properties.
 
 Useful flags:
 
@@ -270,7 +272,7 @@ purgetss semantic --single '#000000' overlayColor       --alpha 50
 
 The name is preserved verbatim as the JSON key (camelCase is respected). When `--dark` is omitted, it defaults to the light hex — useful for overlays where alpha is the only variation between modes.
 
-Single mode writes **both files** in one shot. The class name is auto-derived from the semantic key by stripping the conventional `Color` suffix and kebab-casing the rest, so `surfaceHighColor` becomes the `surface-high` class:
+In Alloy, single mode writes **both files** in one shot. The class name is auto-derived from the semantic key by stripping the conventional `Color` suffix and kebab-casing the rest, so `surfaceHighColor` becomes the `surface-high` class. In Classic, it writes only the native JSON entry and code uses the semantic key directly:
 
 `./purgetss/config.cjs` (auto-generated)
 ```js
@@ -301,7 +303,7 @@ After the batch above you can use `bg-surface`, `bg-surface-high`, `text-text`, 
 
 Alpha follows the Titanium spec exactly: range `0.0-100.0`, stored as a **string**, wrapped per-mode as `{ color, alpha }`. Without `--alpha`, values stay as bare hex strings. Out-of-range values are rejected before any file is written.
 
-## Using semantic classes in views
+## Using semantic classes in Alloy views
 
 Once the JSON and the `config.cjs` mapping are in place, you use the semantic classes like any other PurgeTSS utility:
 
@@ -313,6 +315,14 @@ Once the JSON and the `config.cjs` mapping are in place, you use the semantic cl
     <View class="h-px w-screen bg-border" />
   </ScrollView>
 </Window>
+```
+
+Classic has no utility mapping. Use the native semantic key directly:
+
+```javascript
+const window = Ti.UI.createWindow({
+  backgroundColor: 'surfaceColor'
+})
 ```
 
 When the appearance changes — whether from `Appearance.set(...)` or a system-level toggle — Titanium resolves each semantic color name to its `light` or `dark` value automatically. No event listeners, no manual repaint.
@@ -440,5 +450,5 @@ Start with these 6-7 colors and add more only when the design requires it. Fewer
 ## Community-Discovered Patterns
 
 - **The `[object Object]` crash is always a missing `DEFAULT`.** Any time a view renders with a mysterious fallback color and the class was something like `bg-surface`, check `config.cjs` first: if `surface` is a nested object without a `DEFAULT` key, PurgeTSS serializes the whole object and emits `[object Object]` as the color value. The fix is either to add `DEFAULT: 'surfaceColor'` inside the nested object or flatten the structure.
-- **Semantic resolution is Titanium-native, not PurgeTSS.** This matters when debugging: if a semantic name doesn't resolve, the problem is usually the `semantic.colors.json` file (wrong filename, wrong key, malformed JSON, or file in the wrong location — Alloy expects `app/assets/`, Classic expects `Resources/`), not PurgeTSS. PurgeTSS's job ends at generating the class that points at the name.
+- **Semantic resolution is Titanium-native, not PurgeTSS.** This matters when debugging: if a semantic name doesn't resolve, the problem is usually the `semantic.colors.json` file (wrong filename, wrong key, malformed JSON, or wrong location — Alloy expects `app/assets/`, Classic expects `Resources/`). PurgeTSS generates the file in both layouts and an additional utility mapping only in Alloy.
 - **Re-running `purgetss semantic` on the same family is safe.** The CLI strips prior keys for that family from both the JSON and `config.cjs` before writing, so switching between palette and single forms — or changing the base hex — does not leave orphans. Other palettes and manually-defined entries are untouched.

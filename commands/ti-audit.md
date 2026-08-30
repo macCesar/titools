@@ -17,7 +17,7 @@ Project-type audit:
 
 6. If the project is Alloy (`app/views/`, `app/controllers/`, `app/styles/`), invoke `alloy-guides` — check controllers, XML/TSS, models, collections, widgets, sync adapters and cleanup patterns.
 7. If the Alloy project uses `alloy.jmk`, `config.json`, `widget.json`, conditional views, custom XML tags or Alloy CLI workflows, invoke `alloy-howtos` — check configuration precedence, build hooks, generated structures and compilation/debugging conventions.
-8. If the project uses PurgeTSS (`purgetss/` or `purgetss/config.cjs`), invoke `purgetss` before evaluating styling — check unsupported utility classes, padding on Views, unnecessary manual TSS, dynamic components, grids, icons and animations.
+8. If the project uses PurgeTSS (`purgetss/`, `purgetss/config.cjs`, a PurgeTSS-generated `app.tss`, or `purgetss.{ui,colors,fonts}.js`), invoke `purgetss` and detect Alloy vs. Classic before applying findings. In Alloy, audit unsupported utility classes, padding on Views, unnecessary manual TSS, dynamic components, grids, icons and animations. In Classic, audit only the supported standalone asset/CommonJS commands and their `Resources/` outputs; do not require or recommend `alloy.jmk`, generated TSS, utility classes, or `$.UI.create()`.
 
 Native-module audit:
 

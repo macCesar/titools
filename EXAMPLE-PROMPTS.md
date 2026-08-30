@@ -157,6 +157,25 @@ Correct response:
 - Flexbox does not exist in Titanium
 - Use `horizontal` plus margins instead
 
+Classic compatibility:
+```
+"I'm using Classic Titanium. Generate Android and iPhone image densities with PurgeTSS, but do not add Alloy or an alloy.jmk hook."
+```
+Expect:
+- Detect Classic before choosing paths
+- Use `Resources/android/images/res-*/` and `Resources/iphone/images/`
+- Follow `tiapp.xml` deployment targets unless `--android` or `--ios` is explicit
+- Do not suggest utility classes, generated TSS, or `$.UI.create()`
+
+```
+"Use PurgeTSS to install Font Awesome with a JavaScript lookup module in my Classic app."
+```
+Expect:
+- Use `icon-library --module`
+- Fonts go to `Resources/fonts/`; the CommonJS module goes to `Resources/lib/`
+- Use the module's `families.default` or Font Awesome variant aliases
+- Do not generate or require TSS
+
 ---
 
 ### ti-ui

@@ -8,6 +8,22 @@ When in doubt about whether a class, flag, or config key exists in the user's in
 
 ---
 
+## v7.15.0
+- Standalone `images`, `semantic`, `shades`, `color-module`, `module`, `icon-library`, and `build-fonts` now support Classic without installing the Alloy hook or utility-class lifecycle. Outputs route to native `Resources/` paths where appropriate. See [classic-projects.md](classic-projects.md).
+- `images` follows `<deployment-targets>` from `tiapp.xml` by default; explicit `--android` / `--ios` override that selection.
+- Classic `semantic` writes only `Resources/semantic.colors.json`; external Classic `images` runs no longer create unrelated empty `purgetss/` or config artifacts.
+- Official icon-font CommonJS modules expose stable `families.default` plus variant aliases. Existing icon lookup APIs remain intact. See [icon-fonts.md](icon-fonts.md).
+
+## v7.14.0
+- `brand` became self-contained in standalone Classic projects: it creates the canonical config when missing and adopts a positional logo into `purgetss/brand/logo.{png,svg}` after confirmation when no canonical source exists.
+- Normal `brand` runs follow `tiapp.xml` deployment targets; explicit `--only` remains an intentional override.
+- Classic Android now receives the 11 `Resources/android/images/res-*` splash variants Titanium consumes, even when `ti create` did not seed the directories.
+- Square iOS/store artwork defaults to full-bleed `0%` padding. Android adaptive (`18%`), legacy (`10%`), and splash (`26%`) defaults remain platform-specific.
+- Fixes align `DefaultIcon.png` and `DefaultIcon-ios.png` with `brand.icon.padding` and make the documented legacy padding the actual per-side inset.
+
+## v7.13.2
+- `brand --help` padding defaults now come from the same piece table as the pipeline. The help output correctly reports adaptive `18%` and splash `26%`; do not preserve the older “stale help strings” warning.
+
 ## v7.13.1
 - Four vulnerable transitive dependencies patched (`postcss`, `nanoid`, `brace-expansion`, `uuid`). Lockfile only; no API or class changes.
 

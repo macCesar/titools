@@ -5,11 +5,7 @@ This page lists the commands available in PurgeTSS. For release-by-release featu
 <!-- TOC-START -->
 ## Contents
 
-- [Setup Commands](#setup-commands)
-- [Development Commands](#development-commands)
-- [Asset Commands](#asset-commands)
-- [Utility Commands](#utility-commands)
-- [Maintenance Commands](#maintenance-commands)
+- [Alloy and Classic Compatibility](#alloy-and-classic-compatibility)
 - [`init` Command](#init-command)
 - [`create` Command](#create-command)
 - [`brand` Command](#brand-command)
@@ -29,34 +25,21 @@ This page lists the commands available in PurgeTSS. For release-by-release featu
 
 <!-- TOC-END -->
 
-## Setup Commands
+## Alloy and Classic Compatibility
 
-- `init`: Initializes PurgeTSS on an existing Alloy project.
-- `create`: Creates a new Alloy project with PurgeTSS already set up.
-- `brand`: Generates the Titanium branding set from a single logo. See [`brand` Command](#brand-command).
-- `images`: Generates multi-density UI images from sources in `./purgetss/images/`. See [`images` Command](#images-command).
+The utility-class lifecycle remains Alloy-only. Classic projects can use independent asset and CommonJS commands without installing an `alloy.jmk` hook or adding PurgeTSS to their compilation flow.
 
-## Development Commands
+| Command | Alloy | Classic | Classic behavior |
+| --- | :---: | :---: | --- |
+| `brand` | yes | yes | Uses Classic asset paths and follows `tiapp.xml` deployment targets; `--only` is an explicit override. |
+| `images` | yes | yes | Writes under `Resources/` and follows deployment targets unless `--android` or `--ios` is explicit. |
+| `semantic` | yes | yes | Writes only `Resources/semantic.colors.json`; no utility setup is created. |
+| `shades` | yes | yes | Console modes work anywhere; saving creates or updates development-time `purgetss/config.cjs`. |
+| `color-module`, `module` | yes | yes | Writes CommonJS modules to `app/lib/` or `Resources/lib/`. |
+| `icon-library`, `build-fonts` | yes | yes | Writes fonts to `Resources/fonts/` and optional modules to `Resources/lib/`; Classic receives no TSS. |
+| Root `purgetss`, `--all`, `init`, `create`, `install-dependencies`, `build`, `watch` | yes | no | Alloy utility-class lifecycle only. |
 
-- `build`: Generates `utilities.tss` from `config.cjs`.
-- `watch`: Runs `purgetss` automatically on each project compile (defaults to `--on`).
-
-## Asset Commands
-
-- `icon-library`: Copies the official icon fonts into `./app/assets/fonts`.
-- `build-fonts`: Generates `./purgetss/styles/fonts.tss` with class definitions and `fontFamily` selectors for custom fonts.
-
-## Utility Commands
-
-- `shades`: Generates shades and tints for a color and writes the palette to `config.cjs`.
-- `semantic`: Generates Titanium semantic colors (Light/Dark) into `app/assets/semantic.colors.json`. See [`semantic` Command](#semantic-command).
-- `color-module`: Creates `./app/lib/purgetss.colors.js` with the colors defined in `config.cjs`.
-- `module`: Installs `purgetss.ui.js` in the `lib` folder.
-
-## Maintenance Commands
-
-- `update`: Updates PurgeTSS to the latest version.
-- `sudo-update`: Updates PurgeTSS using `sudo` to install npm modules if needed.
+See [Classic Project Support](./classic-projects.md) for the complete boundary and audit checklist.
 
 ## `init` Command
 
@@ -92,7 +75,7 @@ module.exports = {
     optimize: false,         // true = quantize the generated PNGs to a palette (lossy)
 
     // One block per piece — see the `brand` Command section for the full list.
-    icon: { padding: '4%' }, dark: { background: null }, tinted: {},
+    icon: { padding: '0%' }, dark: { background: null }, tinted: {},
     iosSplash: { padding: '26%' }, launchLogo: { padding: '12%' },
     marketplace: {}, featureGraphic: { padding: '12%' },
     adaptive: { padding: '18%' }, legacyIcon: { padding: '10%' },
@@ -191,7 +174,7 @@ Recommended VSCode extensions:
 
 ## `brand` Command
 
-Introduced in v7.6.0, grouped config in v7.7.0, restructured into per-piece blocks in v7.13.0. Regenerates **every image the Titanium template ships**, from one main logo: launcher icons, adaptive icons, iOS 18+ Dark/Tinted variants, marketplace artwork, and both the iOS and Android splash sets. The rule is *if the template ships the file, `brand` updates it*. Each piece can take its own artwork, and `--only` narrows a run to the pieces you name. Alloy and Classic projects are auto-detected.
+Introduced in v7.6.0 and fully standalone in Classic since v7.14.0. Generates the complete Titanium branding set from one main logo: launcher icons, adaptive icons, iOS 18+ Dark/Tinted variants, marketplace artwork, and both splash sets. Alloy and Classic projects are auto-detected. A normal run follows `<deployment-targets>` in `tiapp.xml`; explicit `--only` intentionally overrides that filter.
 
 > **Tip**
 > This is a quick reference. See [app-branding.md](./app-branding.md) for the complete guide — workflow, padding guidance, Android dark mode, iOS 18+ variants, the launch-background setup, and troubleshooting. It also carries the full `brand:` config reference.
@@ -228,7 +211,7 @@ The 14 pieces, their config keys and what each one writes are tabulated in [app-
 | `--padding <n>` | Shortcut: sets both Android launcher paddings to the same value for one run. |
 | `--android-adaptive-padding <n>` | Adaptive icon safe-zone % (default `18`). |
 | `--android-legacy-padding <n>` | Legacy `ic_launcher.png` padding % (default `10`). |
-| `--ios-padding <n>` | Padding % for the four square iOS/marketplace pieces — `icon`, `dark`, `tinted`, `marketplace` (range `2-8`, default `4`). |
+| `--ios-padding <n>` | Padding % for the four square iOS/marketplace pieces — `icon`, `dark`, `tinted`, `marketplace` (default `0`, full-bleed). |
 | `--feature-graphic-padding <n>` | Vertical padding % for `MarketplaceArtworkFeature.png` (range `0-40`, default `12`). |
 | `--launch-logo-padding <n>` | Padding % for `LaunchLogo.png` (default `12`). |
 | `--splash-padding <n>` | Shortcut: sets both splash paddings to the same value for one run. |
@@ -284,16 +267,14 @@ Every piece has a `--<piece>-logo <path>` flag — with no exceptions since v7.1
 
 > **Warning**
 > Breaking renames in v7.13.0: `--splash` → `--splash-icon`, `--notification` → `--notification-icon`, `--splash-logo` → `--splash-icon-logo`, `--feature-logo` → `--feature-graphic-logo`. `--icon-logo` now feeds the `icon` piece; the Android launcher source is `--adaptive-logo`. `--legacy-splash` is gone. **No aliases were kept.**
->
-> Also note `purgetss brand --help` still prints `default: 19` for `--android-adaptive-padding` and `default: 20` for the two splash paddings. Those help strings are stale — the pipeline applies `18`, `26` and `26`.
 
 ### Positional argument
 
-- `[logo-path]` (optional) — overrides auto-discovery of `purgetss/brand/logo.{svg,png}`. It is the main logo, source for every piece that has no override.
+- `[logo-path]` (optional) — main source for every piece without an override. In a standalone Classic first run, when no canonical logo exists, PurgeTSS moves this source to `purgetss/brand/logo.{svg,png}` after confirmation and reports the destination.
 
 ### Config block (v7.13.0 per-piece structure)
 
-Defaults live under `brand:` in `purgetss/config.cjs` and are injected automatically. The block has **one entry per piece**; each accepts the same four keys where they apply: `logo`, `padding` (never inherited), `background` (inherited from `brand.background`), `enabled`. Top-level: `background`, `confirmOverwrites`, `optimize`, `logo`, `monochromeLogo`.
+Defaults live under `brand:` in `purgetss/config.cjs`. Since v7.14.0, a standalone Classic run creates the canonical config when it is missing. The block has **one entry per piece**; each accepts the same four keys where they apply: `logo`, `padding` (never inherited), `background` (inherited from `brand.background`), `enabled`. Top-level: `background`, `confirmOverwrites`, `optimize`, `logo`, `monochromeLogo`.
 
 An unknown key aborts the run before a single file is written. A `brand:` block written for an older PurgeTSS is **rewritten on disk** on the next run, carrying over every customized value.
 
@@ -328,7 +309,7 @@ purgetss brand --cleanup-legacy --dry-run                 # preview legacy clean
 
 ## `images` Command
 
-Introduced in v7.6.0. Generates multi-density variants of your UI images (buttons, illustrations, logos, screen graphics) from a single high-resolution source per image. Alloy and Classic projects are auto-detected.
+Introduced in v7.6.0 and standalone in Classic since v7.15.0. Generates multi-density variants of UI images from one high-resolution source. Alloy and Classic projects are auto-detected. With neither platform flag, the command follows `<deployment-targets>` in `tiapp.xml`; `--android` and `--ios` are explicit overrides.
 
 > **Tip**
 > This is a quick reference. See [multi-density-images.md](./multi-density-images.md) for the complete guide — 4× source convention, re-processing single files, format conversion, subdirectory preservation, and troubleshooting.
@@ -359,6 +340,8 @@ purgetss images background/                           # re-process one subfolder
 ### Positional argument
 
 - `[source]` (optional) — path to override auto-discovery. Resolves first against `purgetss/images/` (short paths like `buttons/btn.png`), then against cwd.
+
+Alloy outputs go under `app/assets/{android,iphone}/images/`; Classic outputs go under `Resources/{android,iphone}/images/`. Passing an existing external source in Classic does not bootstrap an empty `purgetss/images/` folder or config file.
 
 ### When to use `--width`
 
@@ -409,14 +392,14 @@ purgetss images --dry-run                              # preview
 
 ## `semantic` Command
 
-Introduced in v7.6.0. Generates Titanium semantic colors (Light/Dark mode aware) into `app/assets/semantic.colors.json`. The command dispatches between two distinct modes based on whether `--single` is passed.
+Introduced in v7.6.0. Generates Titanium semantic colors with Light/Dark support. Alloy writes `app/assets/semantic.colors.json` and utility mappings; Classic writes only `Resources/semantic.colors.json` and does not create `purgetss/`, `config.cjs`, TSS, `app/`, or a hook. The command dispatches between two modes based on `--single`.
 
 > **Tip**
 > This is a quick reference. See [semantic-colors.md](./semantic-colors.md) for the complete guide — mirror inversion math, Titanium semantic color spec, class mapping conventions, and strategies for purpose-based design systems.
 
 ### Palette mode (no `--single`)
 
-One base hex, 11-shade tonal palette with mirror-by-index Light/Dark inversion anchored at shade `500`. Writes both files in one step: the JSON gets 11 entries, and `config.cjs` gets the family mapped to those semantic keys.
+One base hex, 11-shade tonal palette with mirror-by-index Light/Dark inversion anchored at shade `500`. Alloy writes the JSON plus the utility mapping in `config.cjs`; Classic writes only the native JSON entries.
 
 ```bash
 purgetss semantic <hex> <name>
@@ -427,7 +410,7 @@ Usage produces classes like `bg-amazon-50`, `text-amazon-500`, `border-amazon-95
 
 ### Single mode (`--single`)
 
-Explicit per-mode hex values for purpose-based semantic colors (`surfaceColor`, `textColor`, `borderColor`, `overlayColor`, etc.). Writes the JSON entry AND auto-maps it to a class in `config.cjs` by stripping the conventional `Color` suffix (e.g. `surfaceColor` → class `surface`).
+Explicit per-mode hex values for purpose-based semantic colors (`surfaceColor`, `textColor`, `borderColor`, `overlayColor`, etc.). Alloy writes the JSON entry and maps it to a utility class in `config.cjs`; Classic writes only the native JSON entry and uses its key directly in Titanium color properties.
 
 ```bash
 purgetss semantic --single <hex> <name> [--dark <hex>] [--alpha <0-100>]
@@ -479,13 +462,13 @@ Re-running on the same palette family fully replaces it: PurgeTSS strips prior k
 | `-a, --alpha <0-100>` | With `--single`, wraps both modes in `{ color, alpha }` per the Titanium spec. |
 | `-n, --name <name>` | Specify the name (alternative to the positional argument). |
 | `-r, --random` | Palette mode — use a random base color. |
-| `-o, --override` | Place the mapping in `theme.colors` instead of `theme.extend.colors`. |
-| `-q, --quotes` | Keep double quotes in `config.cjs`. |
+| `-o, --override` | Alloy only: place the mapping in `theme.colors` instead of `theme.extend.colors`. Ignored in Classic. |
+| `-q, --quotes` | Alloy only: keep double quotes in `config.cjs`. Ignored in Classic. |
 | `-l, --log` | Preview the JSON without writing any files. |
 
 ## `install-dependencies` Command
 
-This command installs dev dependencies and configuration files in existing PurgeTSS projects, and sets up Visual Studio Code support.
+This Alloy-only command installs dev dependencies and configuration files for the utility-class workflow and sets up Visual Studio Code support. Do not run it in Classic.
 
 ```bash
 purgetss install-dependencies
@@ -499,7 +482,7 @@ purgetss id
 
 ## `icon-library` Command
 
-Copies the bundled free font files (Font Awesome 7, Material Icons, Material Symbols, Framework7 Icons) into `./app/assets/fonts/`. Once the fonts are in place, every official icon class (`fa-home`, `ms-home`, `mi-home`, `f7-house`, etc.) works out of the box — PurgeTSS resolves them at compile time from its own bundled `dist/` files.
+Copies the bundled free font files (Font Awesome 7, Material Icons, Material Symbols, Framework7 Icons) to `app/assets/fonts/` in Alloy or `Resources/fonts/` in Classic. Alloy resolves the official utility classes at compile time; Classic uses the installed `fontFamily` plus Unicode directly or through the optional CommonJS module.
 
 ```bash
 purgetss icon-library [--vendor=fa,mi,ms,f7] [--module] [--styles]
@@ -513,17 +496,19 @@ purgetss il [-v=fa,mi,ms,f7] [-m] [-s]
 | Flag | Purpose |
 | --- | --- |
 | `-v, --vendor [fa,mi,ms,f7]` | Copy specific font vendors only (default copies all four). |
-| `-m, --module` | Copy the matching CommonJS module into `./app/lib/` so you can reference icons by name from controllers (`icons.fa.home`). |
-| `-s, --styles` | Copy the official `.tss` source files into `./purgetss/styles/` for reference only — not needed for the classes to work. |
+| `-m, --module` | Copy the matching CommonJS module into `app/lib/` (Alloy) or `Resources/lib/` (Classic). |
+| `-s, --styles` | Alloy only: copy official `.tss` sources into `purgetss/styles/` for reference. Classic skips this output. |
 
 Vendor aliases: `fa`/`fontawesome`, `mi`/`materialicons`, `ms`/`materialsymbol`, `f7`/`framework7`.
+
+Every installed module exposes `families.default`. Direct variant aliases are `solid`/`regular`/`brands` for Font Awesome; `regular`/`outlined`/`round`/`sharp`/`twoTone` for Material Icons; `outlined`/`rounded`/`sharp` for Material Symbols; and `fontFamily` for Framework7.
 
 > **Tip**
 > This is a quick reference. See [Icon Fonts](./icon-fonts.md) for the complete guide — variant tables (`.ms`/`.mso`/`.msr`/`.mss`, `.fa`/`.fas`/`.far`/`.fab`), XML usage patterns, the side-by-side four-family example, Font Awesome Pro / Beta workflow, and instructions for recreating removed libraries.
 
 ## `build-fonts` Command
 
-Generates `./purgetss/styles/fonts.tss` with class definitions and `fontFamily` selectors for any user-defined fonts dropped into `./purgetss/fonts/` (Google Fonts, brand typefaces, community icon libraries with `.ttf` + `.css` pairs).
+Installs user-defined fonts dropped into `purgetss/fonts/`. Alloy also generates `purgetss/styles/fonts.tss`; Classic copies only native fonts to `Resources/fonts/` and generates no TSS or utility definitions.
 
 ```bash
 purgetss build-fonts [-m] [-f]
@@ -536,13 +521,13 @@ purgetss bf [-m] [-f]
 
 | Flag | Purpose |
 | --- | --- |
-| `-m, --module` | Also generates a CommonJS module in `./app/lib/purgetss.fonts.js` exposing `exports.icons` and `exports.families` for use from controllers. |
+| `-m, --module` | Also generates `app/lib/purgetss.fonts.js` (Alloy) or `Resources/lib/purgetss.fonts.js` (Classic), exposing `exports.icons` and `exports.families`. |
 | `-f, --font-class-from-filename` | Uses the font filename as the class name and icon prefix instead of the font family. Replaces the old `-p` flag. |
 
 ### What it does
 
-1. Creates `./purgetss/styles/fonts.tss` with one `fontFamily` class per file.
-2. Copies the font files into `./app/assets/fonts/`, renamed to their PostScript names so they work on both iOS and Android.
+1. Copies font files to `app/assets/fonts/` (Alloy) or `Resources/fonts/` (Classic), renamed to their PostScript names.
+2. In Alloy only, creates `purgetss/styles/fonts.tss` with the TSS class definitions.
 
 > **Tip**
 > This is a quick reference. See [Custom Fonts](./custom-fonts.md) for the complete guide — folder organization, class renaming, adding icon libraries, the `--module` output structure, and `--font-class-from-filename` workflow.
@@ -553,6 +538,8 @@ purgetss bf [-m] [-f]
 ## `shades` Command
 
 The `shades` command generates shades and tints for a given color and writes the palette to `config.cjs`.
+
+Saving works in Alloy and Classic. In Classic, `config.cjs` is only a development-time color source for commands such as `color-module`; it does not install the PurgeTSS utility lifecycle. `--log`, `--json`, and `--tailwind` write nothing and work outside a project.
 
 ```bash
 purgetss shades [hexcode] [name]
@@ -654,7 +641,7 @@ purgetss s '#65e92c' -j
 
 ## `color-module` Command
 
-This command creates `purgetss.colors.js` in the `lib` folder with all colors defined in `config.cjs`.
+This command creates `purgetss.colors.js` with all colors defined in `config.cjs`: `app/lib/` in Alloy or `Resources/lib/` in Classic. A missing config is created as the color source, but Classic receives no Alloy hook or TSS.
 
 ```bash
 purgetss color-module
@@ -687,7 +674,7 @@ This is handy for using colors in code without hardcoding values in multiple pla
 
 ## `build` Command
 
-The `build` command generates `utilities.tss` from `config.cjs`. Run it after you change `config.cjs`.
+The Alloy-only `build` command generates `utilities.tss` from `config.cjs`. It is not part of a Classic standalone workflow.
 
 ```bash
 purgetss build
@@ -704,7 +691,7 @@ When `purgetss` runs (manually or via `watch`), it checks for changes in `config
 
 ## `watch` Command
 
-The `watch` command runs PurgeTSS on each project compile. You do not need to run `build` manually after each change.
+The Alloy-only `watch` command runs PurgeTSS on each Alloy project compile. Classic projects do not install this hook.
 
 ```bash
 purgetss watch
@@ -746,7 +733,7 @@ purgetss w -d
 
 ## `module` Command
 
-The `module` command installs `purgetss.ui.js` in the `lib` folder.
+The `module` command installs the self-contained `purgetss.ui.js` in `app/lib/` (Alloy) or `Resources/lib/` (Classic). A Classic app does not need PurgeTSS during compilation or at runtime.
 
 ```bash
 purgetss module
@@ -757,7 +744,7 @@ purgetss m
 
 The PurgeTSS module includes:
 
-- Animation: Methods for playing or applying basic animations and transformations to Alloy objects.
+- Animation: methods for playing or applying basic animations and transformations to Titanium views.
 
 See [Animation System](./animation-system.md) for details.
 
