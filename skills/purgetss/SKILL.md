@@ -1,22 +1,29 @@
 ---
 name: purgetss
-description: "Use when working with PurgeTSS, Titanium's utility-first styling toolkit — styling, reviewing, analyzing, or examining Titanium UI with utility classes, configuring config.cjs, creating dynamic components with $.UI.create(), building animations, grid layouts, icon fonts, or TSS styles. AUTO-DETECT: If purgetss/ folder or purgetss/config.cjs exists, invoke BEFORE writing ANY styling code. PurgeTSS classes look like Tailwind but are NOT Tailwind — verify every class exists. Never use padding on Views (use margins on children), never use flexbox classes, never write manual TSS when a utility class exists."
-argument-hint: "[class-name]"
+description: "Use when a Titanium project uses PurgeTSS utility classes, purgetss/config.cjs, $.UI.create(), generated app.tss, or PurgeTSS asset, color, font, branding, and CommonJS commands. Detect Alloy vs. Classic first: the utility-class workflow is Alloy-only, while selected standalone commands write native Resources/ files in Classic. PurgeTSS resembles Tailwind but has a different class contract, so verify every suggested class."
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(purgetss *), Bash(node *)
 ---
 
 # PurgeTSS Expert
 
-Utility-first styling toolkit for Titanium/Alloy mobile apps.
+PurgeTSS is a utility-first styling toolkit for Titanium Alloy and a standalone asset/CommonJS generator for Alloy and Classic projects. The project layout determines which half of the toolkit is valid.
 
 ## Required workflow (read before responding)
 
 The SKILL.md alone is an **index** of references. The detail you need to give accurate answers lives in the reference files. **Reading this SKILL.md is not enough.**
 
-### Step 1 — Open the relevant reference files
+### Step 1 — Detect the project type
+
+Before recommending a command, class, output path, `$.UI.create()`, TSS file, or build hook, determine whether the project is Alloy (`app/views/`, `app/controllers/`, `app/styles/`) or Classic (`Resources/` without the Alloy tree).
+
+- **Alloy:** utility classes and every standalone command are available.
+- **Classic:** only the supported standalone commands are available. Do not introduce `app/`, `alloy.jmk`, generated TSS, utility classes, or `$.UI.create()`.
+
+### Step 2 — Open the relevant reference files
 
 | Task involves | Required reading |
 |---|---|
+| Alloy vs. Classic support or output paths | [references/classic-projects.md](references/classic-projects.md), [references/cli-commands.md](references/cli-commands.md) |
 | Choosing utility classes | [references/class-index.md](references/class-index.md) |
 | Layout (horizontal/vertical/composite, grid) | [references/grid-layout.md](references/grid-layout.md), [references/ui-ux-design.md](references/ui-ux-design.md) |
 | Dynamic components in controllers | [references/dynamic-component-creation.md](references/dynamic-component-creation.md) |
@@ -27,7 +34,7 @@ The SKILL.md alone is an **index** of references. The detail you need to give ac
 | Apply directive / class extraction | [references/apply-directive.md](references/apply-directive.md) |
 | Animations | [references/animation-system.md](references/animation-system.md) |
 
-### Step 2 — Output contract
+### Step 3 — Output contract
 
 Every utility class you suggest and every styling pattern you describe MUST be backed by a citation in the form:
 
@@ -35,7 +42,7 @@ Every utility class you suggest and every styling pattern you describe MUST be b
 
 Example: *"Use `wh-12` to set width and height to 48px [source: references/class-index.md]"*
 
-### Step 3 — If you must answer from memory
+### Step 4 — If you must answer from memory
 
 If you write a claim without having read the reference that backs it, prepend `FROM_MEMORY (unverified):` to that claim. Do not hide it.
 
@@ -45,31 +52,42 @@ If you write a claim without having read the reference that backs it, prepend `F
 - ❌ Confusing PurgeTSS classes with Tailwind — they share naming but differ
 - ❌ Marking the answer complete without listing which reference files you read
 - ❌ Suggesting a class without first verifying it exists in `class-index.md`
+- ❌ Applying Alloy utility classes, generated TSS, `alloy.jmk`, or `$.UI.create()` to a Classic project
 
-## Project Detection
+## Project Detection and Mode Selection
 
 > **️ℹ️ AUTO-DETECTS PURGETSS PROJECTS**
 > This skill automatically detects PurgeTSS usage when invoked and provides utility-first styling guidance.
 >
 > **Detection occurs automatically** - no manual command needed.
 >
-> **PurgeTSS project indicators:**
+> **PurgeTSS indicators:**
 > - `purgetss/` folder
 > - `purgetss/config.cjs` configuration file
 > - `purgetss/styles/utilities.tss` utility classes
-> - `app/styles/app.tss` (auto-generated)
+> - A generated `app/styles/app.tss` whose header names PurgeTSS
+> - `app/lib/purgetss.{ui,colors,fonts}.js` or `Resources/lib/purgetss.{ui,colors,fonts}.js`
 >
-> **Behavior based on detection:**
-> - **PurgeTSS detected** → Provides PurgeTSS-specific guidance, recommends utility classes, suggests `$.UI.create()` for dynamic components
+> `app/styles/app.tss` by itself is not proof: ordinary Alloy projects can have that file.
+>
+> **Behavior based on detection and layout:**
+> - **Alloy + PurgeTSS utility lifecycle detected** → Provides utility-class guidance and may suggest `$.UI.create()` for dynamic components
+> - **Classic + PurgeTSS standalone command detected/requested** → Provides only asset, color, font, branding, or CommonJS command guidance with `Resources/` destinations
 > - **Not detected** → Does NOT suggest PurgeTSS utility classes, does NOT recommend `$.UI.create()`, does NOT reference PurgeTSS-specific patterns
 
-## Core Workflow
+## Core Workflows
 
-1. **Setup**: `purgetss create 'name'` or `purgetss init` for existing projects
-2. **Build**: Write XML with utility classes → PurgeTSS auto-generates `app.tss`
-3. **Configure**: Customize via `purgetss/config.cjs`
+### Alloy utility-class workflow
 
-## Project Structure
+1. **Setup**: `purgetss create 'name'` or `purgetss init` for an existing Alloy project.
+2. **Build**: Write Alloy XML/controller classes; PurgeTSS generates `app/styles/app.tss`.
+3. **Configure**: Customize utilities through `purgetss/config.cjs`.
+
+### Classic standalone workflow
+
+Run only a command marked Classic-compatible in [Classic Project Support](references/classic-projects.md). Generated files are ordinary Titanium resources under `Resources/`; the app does not need a PurgeTSS hook or runtime dependency.
+
+## Alloy Utility Project Structure
 
 ```bash
 ./purgetss/
@@ -141,7 +159,7 @@ If you write a claim without having read the reference that backs it, prepend `F
 >
 > If a class appears in "Unused or unsupported classes" in `app.tss`, it means it's truly not defined anywhere - not even in your `config.cjs` customizations.
 
-## Quick Start
+## Alloy Quick Start
 
 ```bash
 purgetss create 'MyApp' -d -v fa
@@ -158,7 +176,7 @@ purgetss create 'MyApp' -d -v fa
 
 ## Critical Rules (Low Freedom)
 
-### ⭐ PREFER `$.UI.create()` for Dynamic Components
+### ⭐ ALLOY ONLY: Prefer `$.UI.create()` for Dynamic Components
 
 > **💡 RECOMMENDED FOR DYNAMIC COMPONENTS**
 > When creating components dynamically in Controllers, **use `$.UI.create()` instead of `Ti.UI.create()`** to get full PurgeTSS utility class support:

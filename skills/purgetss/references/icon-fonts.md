@@ -1,6 +1,6 @@
 # Icon Font Libraries
 
-PurgeTSS ships with four official icon font families, each preconfigured with the TSS classes and `fontFamily` mappings you need to drop icons into Buttons, Labels, and TextFields.
+PurgeTSS ships with four official icon font families. Alloy projects can use their preconfigured TSS classes; Classic projects can install the same fonts and use `fontFamily` plus Unicode directly or through the optional CommonJS modules.
 
 For user-defined fonts (Google Fonts, brand typefaces, community icon libraries like map-icons or microns), see [Custom Fonts](./custom-fonts.md) — those use `build-fonts`, not `icon-library`.
 
@@ -43,7 +43,7 @@ The complete class definitions live in the PurgeTSS `dist/` folder:
 
 ## Installing the icon fonts
 
-Run `icon-library` to copy the `.ttf` files into `./app/assets/fonts/`. That is the only step you need. Once the fonts are in place, the icon classes from the table above work out of the box.
+Run `icon-library` to copy the font files to `app/assets/fonts/` (Alloy) or `Resources/fonts/` (Classic). Alloy can then use the icon classes from the table; Classic does not run class resolution.
 
 ```bash
 # All four families
@@ -56,14 +56,14 @@ $ purgetss il -v=fa,mi,ms,f7
 > ℹ️ **INFO — You do not need the `.tss` files in `./purgetss/styles/`**
 > PurgeTSS already knows every official icon class and resolves them at compile time from its own bundled `dist/` files. You do not need `fontawesome.tss`, `materialsymbols.tss`, `materialicons.tss`, or `framework7icons.tss` inside `./purgetss/styles/` for `class="fas fa-home"` (or any other icon class) to work in your XML and controllers. Install the `.ttf` files with `icon-library` and the classes are ready.
 >
-> The resolved classes are written to the generated `app/styles/app.tss`, not to `purgetss/styles/utilities.tss`. If you go looking for a class like `.ms-home`, check `app.tss`.
+> The resolved Alloy classes are written to generated `app/styles/app.tss`, not `purgetss/styles/utilities.tss`. Classic receives only native fonts and any requested JavaScript module.
 
 ### Optional flags
 
 Two optional flags adjust what `icon-library` copies into your project:
 
-- `-s, --styles`: copies the official `.tss` source files into `./purgetss/styles/` for reference only. Useful if you want to grep the full class list, see how a class is defined, or override a specific class in your own project.
-- `-m, --module`: copies the matching CommonJS module into `./app/lib/`, which exposes each icon's Unicode string to JavaScript. Handy when you set `label.text` from a controller and prefer a friendly name like `icons.fa.home` over a raw ``.
+- `-s, --styles`: Alloy only. Copies the official `.tss` sources into `purgetss/styles/` for reference. Classic skips this output.
+- `-m, --module`: copies the matching CommonJS module into `app/lib/` (Alloy) or `Resources/lib/` (Classic), exposing Unicode strings and stable font-family aliases.
 
 ```bash
 # Add either flag when you want them
@@ -81,7 +81,32 @@ $ purgetss il -m -s
 - `ms`, `materialsymbol` = Material Symbols
 - `f7`, `framework7` = Framework7 Icons
 
-## Using icons in XML
+### CommonJS modules in Classic
+
+Each module exposes its existing icon lookup API plus a `families` object with `families.default`. Direct aliases are also available:
+
+| Module | Direct aliases |
+| --- | --- |
+| `fontawesome` | `solid`, `regular`, `brands` |
+| `materialicons` | `regular`, `outlined`, `round`, `sharp`, `twoTone` |
+| `materialsymbols` | `outlined`, `rounded`, `sharp` |
+| `framework7icons` | `fontFamily` |
+
+```javascript
+const fontAwesome = require('fontawesome')
+
+const home = Ti.UI.createLabel({
+  text: fontAwesome.icons.home,
+  font: {
+    fontFamily: fontAwesome.solid,
+    fontSize: 24
+  }
+})
+```
+
+The direct alias and `families` values agree, for example `fontAwesome.solid === fontAwesome.families.solid`; `families.default` provides the library's default variant.
+
+## Using icons in Alloy XML
 
 The variant class sets the `fontFamily`. The icon class sets the glyph (`text` / `title`). Apply both together:
 

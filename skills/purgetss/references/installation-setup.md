@@ -12,6 +12,12 @@ Install PurgeTSS globally on your machine using [NPM](https://www.npmjs.com/).
 > Node.js 20+ required.
 > PurgeTSS requires Node 20.0.0 or higher.
 
+## Alloy vs. Classic Setup
+
+The root `purgetss` command, `init`, `create`, `install-dependencies`, `build`, and `watch` belong to the Alloy utility-class lifecycle described below. Do not run them to “set up PurgeTSS” in a Classic project.
+
+Classic projects can run compatible standalone commands directly: `brand`, `images`, `semantic`, `shades`, `color-module`, `module`, `icon-library`, and `build-fonts`. Their native outputs go under `Resources/`, and the application does not need an `alloy.jmk` hook or PurgeTSS at compile/runtime. See [Classic Project Support](./classic-projects.md).
+
 ## XML Validation
 
 Before purging, PurgeTSS pre-checks every XML file in your project. One case worth calling out: double dashes (`--`) are not allowed inside XML comments. That restriction comes from the XML spec itself, not from PurgeTSS, but many people only run into it once a tool actually parses the file.
@@ -44,7 +50,7 @@ Pick whichever of these reads best:
 
 Any of those approaches keeps the comment readable and produces a document that every XML parser will accept.
 
-## Run PurgeTSS the First Time
+## Run PurgeTSS the First Time (Alloy Only)
 
 > **INFO**
 > Run `purgetss` once in your project to generate the required files and folders.

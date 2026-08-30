@@ -56,7 +56,7 @@ module.exports = {
 
     // One block per piece. Artwork comes from purgetss/brand/logo-<piece>.{svg,png};
     // these keys are for numbers, colors and activation. Padding is never inherited.
-    icon:             { padding: '4%' },    // DefaultIcon.png + DefaultIcon-ios.png
+    icon:             { padding: '0%' },    // DefaultIcon.png + DefaultIcon-ios.png
     dark:             { background: null }, // DefaultIcon-Dark.png
     tinted:           {},                   // DefaultIcon-Tinted.png
     iosSplash:        { padding: '26%' },   // assets/iphone/Default*.png × 16

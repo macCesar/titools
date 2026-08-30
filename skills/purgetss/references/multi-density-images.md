@@ -1,6 +1,6 @@
 # Multi-Density Images
 
-The `purgetss images` command (shipped in PurgeTSS v7.6.0) generates every Titanium density variant of your UI images — buttons, illustrations, screen graphics, inline icons, logos — from a single high-resolution source per image. Alloy and Classic layouts are auto-detected.
+The `purgetss images` command generates every Titanium density variant of your UI images from one high-resolution source. Alloy and Classic layouts are auto-detected. Since v7.15.0, a normal run follows the enabled platforms in `tiapp.xml`; `--android` and `--ios` are explicit overrides.
 
 - **Android**: `res-mdpi`, `res-hdpi`, `res-xhdpi`, `res-xxhdpi`, `res-xxxhdpi` (5 densities)
 - **iPhone**: `@1x`, `@2x`, `@3x` (3 scales via filename suffix)
@@ -10,7 +10,7 @@ For the terse flag reference, see the [`images` command reference](./cli-command
 > **INFO**
 >
 > The `images` command at a glance
-> One source per image in `purgetss/images/`, run `purgetss images`, and every density lands in the right place under `app/assets/android/images/res-*/` and `app/assets/iphone/images/`. Works on both Alloy and Classic projects.
+> One source per image in `purgetss/images/`, run `purgetss images`, and every density lands under `app/assets/` (Alloy) or `Resources/` (Classic).
 
 <!-- TOC-START -->
 ## Contents
@@ -80,11 +80,11 @@ app/assets/
         └── primary@3x.svg
 ```
 
-Classic projects output to `assets/android/images/res-*/` and `assets/iphone/images/` under the project root instead of under `app/assets/` — the command auto-detects the layout.
+Classic projects output to `Resources/android/images/res-*/` and `Resources/iphone/images/` — the command auto-detects the layout.
 
 ## The `purgetss/images/` convention
 
-`init` creates `purgetss/images/` (alongside `fonts/` and `brand/`), so the folder is already there the first time you look for it, even before you've dropped any sources.
+Alloy `init` creates `purgetss/images/` alongside `fonts/` and `brand/`. In standalone Classic, running `purgetss images` without a positional source establishes the convention folder. Passing an existing external source does not create an empty `purgetss/images/` folder or config file.
 
 ```text
 purgetss/images/
@@ -99,7 +99,7 @@ purgetss/images/
 
 Supported input formats: `.svg`, `.png`, `.jpg`, `.jpeg`, `.webp`, `.gif`.
 
-**Subdirectories are preserved in the output.** A file at `purgetss/images/buttons/primary.png` ends up at `app/assets/android/images/res-*/buttons/primary.png` and `app/assets/iphone/images/buttons/primary.png`. Organize however makes sense for your project.
+**Subdirectories are preserved in the output.** A file at `purgetss/images/buttons/primary.png` ends up under the matching `app/assets/` or `Resources/` platform roots. Organize however makes sense for your project.
 
 > **INFO**
 >
@@ -264,7 +264,7 @@ Raster entries you add by hand survive subsequent runs untouched. For SVGs detec
 
 ```text
 <project>/
-└── assets/
+└── Resources/
     ├── android/images/res-*/
     └── iphone/images/
 ```
@@ -329,11 +329,11 @@ purgetss images ./docs/screenshots/home-hero.png
 purgetss images /Users/cesar/Design/banner.svg
 ```
 
-When the source is outside `purgetss/images/`, subdirectory preservation uses the directory of the source file as the root instead.
+When the source is outside `purgetss/images/`, subdirectory preservation uses the directory of the source file as the root instead. Processing that external source in Classic does not bootstrap unrelated PurgeTSS folders or config.
 
 ## Platform filter
 
-By default, every run generates both Android densities and iPhone scales. Scope to one platform for targeted runs:
+By default, the command follows `<deployment-targets>` in `tiapp.xml`. Pass a platform flag to override that selection for a targeted run:
 
 ```bash
 purgetss images --android                # Android only (skip iPhone)
@@ -345,7 +345,7 @@ Useful when:
 - You're iterating on an iOS-only screen and don't need to regenerate Android assets every time.
 - You want to tune JPEG quality differently for the two platforms (run the command twice with different flags).
 
-The two flags are mutually exclusive. Pass neither to get both.
+The two flags are mutually exclusive. Passing neither means “use the project's enabled targets,” not “always generate both.”
 
 ## Format conversion
 
@@ -462,7 +462,7 @@ If you only tweaked CSS classes (no image changes), you don't need to re-run `pu
 
 ## Cleaning up
 
-`purgetss images` never deletes files. It only creates them. If you remove an image from `purgetss/images/`, the previously-generated copies in `app/assets/android/images/res-*/` and `app/assets/iphone/images/` stay in place. Remove them manually (or via git) when you clean up.
+`purgetss images` never deletes files. It only creates them. If you remove a source, generated copies under `app/assets/` (Alloy) or `Resources/` (Classic) stay in place. Remove them manually or with git when you clean up.
 
 ## Full flag reference
 
