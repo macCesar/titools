@@ -87,3 +87,13 @@ The asymmetry is what sets the default: a wrong `false` costs a duplicate entry 
 **Why:** They had lived in `.claude/commands/` since April, which is the first line of `.gitignore`. Marketplace users never got them (the plugin serves `commands/` from the repo) and npm users never got them (the tarball carries only what `files` lists), while the README documented all three under a "Plugin only" heading. They appeared to work because Claude Code reads `.claude/commands/` as project-local commands — but only for someone sitting inside this repo, which is not a Titanium project and cannot meaningfully run any of them.
 
 **Consequences:** `test/manifest.test.js` fails on any drift between `COMMANDS` and the directory, on a frontmatter `name` that stops matching its filename, and on `commands/` falling out of `files`. (Originally `test/commands.test.js`; folded into the broader manifest suite when that was ported from aiskills on the same day.)
+
+---
+
+## 2026-08-30 — PurgeTSS audits use documentation and released source
+
+**Decision:** The maintainer-only `titools-skill-auditor` treats `purgetss` as a mixed narrative-and-implementation source. It audits concepts and examples against `purgetss-docs`, then checks exact command availability, aliases, defaults, output paths and project-type behavior against the released `purgeTSS` changelog, implementation and tests.
+
+**Why:** PurgeTSS v7.15.0 introduced selected standalone commands for Titanium Classic while leaving the utility-class workflow Alloy-only. The documentation describes that boundary, but exact behavioral contracts such as output paths, default padding, qualifier lists and module aliases live most reliably in the release source and tests.
+
+**Consequences:** The auditor caches both upstream repositories as `.purgetss-docs` and `.purgetss-source`, records both commit hashes in the audit report, and requires disagreements to be resolved according to the kind of claim instead of treating either source as universally authoritative.
