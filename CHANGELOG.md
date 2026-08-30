@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.18.0] - 2026-08-30
+
+### Changed — PurgeTSS 7.15 Alloy/Classic boundary
+
+- Audited the PurgeTSS skill against the official v7.15.0 documentation, changelog, implementation and tests. The skill now detects Alloy vs. Classic before recommending commands and makes the hard boundary explicit: utility classes, generated TSS, `alloy.jmk` and `$.UI.create()` remain Alloy-only, while supported standalone commands write native `Resources/` outputs in Classic.
+- Added a dedicated Classic compatibility reference covering `brand`, `images`, `semantic`, `shades`, `color-module`, `module`, `icon-library` and `build-fonts`, including deployment-target filtering, first-run behavior, CommonJS destinations and icon-font family aliases.
+- Expanded the maintainer-only skill auditor to audit `purgetss` against both `macCesar/purgetss-docs` and the released `macCesar/purgeTSS` source instead of excluding it from the titanium-docs-only workflow.
+
+### Fixed — stale PurgeTSS command guidance
+
+- Corrected Classic image paths to `Resources/`, documented the 11 generated Classic Android splash qualifiers, changed square iOS/store padding defaults from `4%` to `0%`, removed the obsolete stale-`--help` warning, and made Classic semantic generation explicitly output-only.
+- Updated `/ti-audit`, README discovery guidance and forward prompts so Classic PurgeTSS projects are audited as standalone resource consumers rather than being told to adopt Alloy styling infrastructure.
+
 ## [4.17.1] - 2026-08-29
 
 ### Fixed — command-migration and zero-command parity
