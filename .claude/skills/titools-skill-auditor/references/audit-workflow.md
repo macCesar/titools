@@ -23,9 +23,9 @@
 
 Before starting an audit, do two things.
 
-### 0a. Verify the docs cache
+### 0a. Verify the upstream cache
 
-Check that `.titanium-docs/` exists at the repo root. If missing, stop and prompt the user with:
+For the five Titanium/Alloy skills, check that `.titanium-docs/` exists at the repo root. If missing, stop and prompt the user with:
 
 ```bash
 git clone --depth 1 https://github.com/tidev/titanium-docs.git .titanium-docs
@@ -39,17 +39,21 @@ cd .titanium-docs && git pull --ff-only && cd ..
 
 Note the latest commit hash (e.g. `git -C .titanium-docs rev-parse --short HEAD`) so the audit report can record which upstream version it was compared against.
 
+For `purgetss`, require both `.purgetss-docs/` and `.purgetss-source/`. Clone or refresh them with the commands in `SKILL.md`, then record both commit hashes. The docs establish user-facing workflows; the package changelog, CLI, implementation, generated `dist/` files, and tests resolve release-specific behavior and exact class/module contracts.
+
 ### 0b. Classify the skill's source type
 
 | Source type | Skills | Audit approach |
 |---|---|---|
 | **Narrative** | `alloy-guides`, `alloy-howtos`, `ti-guides`, `ti-howtos` | Compare reference files against official guide subdirectories |
 | **API** | `ti-api` | Compare against generated `.md` files in `.titanium-docs/docs/api/` |
+| **Mixed narrative + implementation** | `purgetss` | Compare workflows against `.purgetss-docs`, then verify commands, classes, paths, aliases, and defaults against `.purgetss-source` |
 
 The source type determines audit strategy:
 
 - **Narrative**: Direct section-by-section comparison.
 - **API**: Compare per-namespace; expect some references to map to many small upstream files.
+- **Mixed**: Documentation prose is not enough when it lags a same-day release. Prefer observable CLI/source/test behavior for exact contracts and use the docs for explanations.
 
 ---
 
@@ -72,7 +76,7 @@ If you propose any change to an AUDIT-SKIP file, that is a bug in the audit. Sto
 
 1. **Identify the source subtree** for the skill from `source-map.md`.
 2. **List all files in both locations:**
-   - Official docs: `Glob` the source subtree
+   - Official docs/source: `Glob` the mapped upstream roots
    - Skill references: `Glob` the skill's `references/` directory
    - **Filter out AUDIT-SKIP files** (see above) — exclude them from all later phases.
 3. **Read the skill's `SKILL.md`** to understand its quick reference table and overall structure.
@@ -146,7 +150,7 @@ Aggregate all per-reference findings into a single report.
 ```markdown
 ## Audit report: <skill-name>
 
-**Compared against:** `tidev/titanium-docs@<commit-hash>`
+**Compared against:** `<upstream repo(s)>@<commit-hash(es)>`
 
 ### Overall health
 - **References audited:** X of Y

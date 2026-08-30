@@ -1,25 +1,26 @@
 ---
 name: titools-skill-auditor
-description: Use when reference files for the doc-based skills in this repo need re-aligning with upstream Titanium SDK documentation — after a `tidev/titanium-docs` release, when an audit reveals stale or training-data content, or before tagging a skills version. Covers `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, and `alloy-howtos`. Maintenance-only — not intended for end-user Titanium projects.
+description: Use when reference files for the doc-based skills in this repo need re-aligning with their upstream sources — after a Titanium SDK, Alloy, or PurgeTSS release; when an audit reveals stale or training-data content; or before tagging a TiTools version. Covers the five titanium-docs skills plus `purgetss`. Maintenance-only — not intended for end-user Titanium projects.
 metadata:
   internal: true
 ---
 
 # titools-skill-auditor
 
-Maintenance-only skill for auditing and updating the doc-based skills in this repo against their upstream documentation source ([`tidev/titanium-docs`](https://github.com/tidev/titanium-docs)).
+Maintenance-only skill for auditing and updating the doc-based skills in this repo against their official upstream documentation and source repositories.
 
 For *creating* a new skill from scratch, use a generic skill-creator workflow instead.
 
 ## Scope
 
-This skill audits the five reference skills:
+This skill audits six reference skills:
 
 - `ti-api`
 - `ti-guides`
 - `ti-howtos`
 - `alloy-guides`
 - `alloy-howtos`
+- `purgetss`
 
 It does **not** audit:
 
@@ -28,7 +29,7 @@ It does **not** audit:
 
 ## Setup
 
-Audits compare reference files against a local clone of `tidev/titanium-docs` at `.titanium-docs/` in the repo root. The folder is gitignored.
+Titanium/Alloy audits compare against `.titanium-docs/`. PurgeTSS audits compare against `.purgetss-docs/` plus `.purgetss-source/`, because the public docs describe workflows while the package changelog and implementation establish release-specific behavior. All three caches are gitignored.
 
 If `.titanium-docs/` is missing, fetch it before auditing:
 
@@ -42,6 +43,16 @@ To refresh before an audit:
 cd .titanium-docs && git pull --ff-only && cd ..
 ```
 
+For `purgetss`, fetch or refresh both official repositories:
+
+```bash
+git clone --depth 1 https://github.com/macCesar/purgetss-docs.git .purgetss-docs
+git clone --depth 1 https://github.com/macCesar/purgeTSS.git .purgetss-source
+
+git -C .purgetss-docs pull --ff-only
+git -C .purgetss-source pull --ff-only
+```
+
 ## Invocation
 
 Parse `$ARGUMENTS` to determine which skill to audit:
@@ -51,12 +62,12 @@ Parse `$ARGUMENTS` to determine which skill to audit:
 | `<skill-name>` | Audit the named skill against its mapped doc subtree |
 | *(empty)* | Ask the user which skill to audit |
 
-Valid skill names: `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`.
+Valid skill names: `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`, `purgetss`.
 
 ## Audit workflow
 
 1. Load [quality-standards.md](references/quality-standards.md) and [source-map.md](references/source-map.md).
-2. Verify `.titanium-docs/` exists. If not, prompt the user with the clone command above.
+2. Verify the cache(s) required by the selected skill exist. If not, prompt the user with the matching clone command above.
 3. Execute Phases 0–3 of [audit-workflow.md](references/audit-workflow.md) (classify, analyze, identify gaps, report).
 4. **Phase 4 is a hard STOP** — present the consolidated report and wait for explicit user approval.
 5. After approval, execute Phases 5–6 (apply updates, verify).

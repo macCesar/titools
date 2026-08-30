@@ -4,20 +4,58 @@ Mapping of doc-based skills in this repo to their upstream documentation source.
 
 ---
 
-## Documentation root
+## Documentation roots
 
-All five doc-based skills source from a single upstream repo: [`tidev/titanium-docs`](https://github.com/tidev/titanium-docs).
+Five skills source from [`tidev/titanium-docs`](https://github.com/tidev/titanium-docs). `purgetss` uses the official documentation repo plus the released CLI source.
 
 | Local path | Upstream |
 |---|---|
 | `.titanium-docs/docs/guide/` | `tidev/titanium-docs:docs/guide/` |
 | `.titanium-docs/docs/api/` | `tidev/titanium-docs:docs/api/` |
+| `.purgetss-docs/docs/` | `macCesar/purgetss-docs:docs/` |
+| `.purgetss-source/` | `macCesar/purgeTSS` package source, `CHANGELOG.md`, `README.md`, `bin/`, `src/`, and `dist/` |
 
-`.titanium-docs/` is gitignored. See `SKILL.md` § "Setup" for clone/refresh commands.
+All cache roots are gitignored. See `SKILL.md` § "Setup" for clone/refresh commands.
 
 ---
 
 ## Per-skill mapping
+
+### `purgetss`
+
+- **Source type:** Mixed narrative + released implementation
+- **Official docs root:** `.purgetss-docs/docs/`
+- **Release/implementation root:** `.purgetss-source/`
+
+The docs are primary for workflows and user-facing paths. Use the package `CHANGELOG.md`, current CLI help in `bin/purgetss`, and implementation/tests when a release changes behavior before or beyond the prose docs. Record both commit hashes in the audit report.
+
+| Reference file(s) | Official source |
+|---|---|
+| `installation-setup.md` | `.purgetss-docs/docs/installation.md` + `commands.md` compatibility table |
+| `cli-commands.md`, `classic-projects.md` | `.purgetss-docs/docs/commands.md` + `.purgetss-source/CHANGELOG.md` |
+| `app-branding.md`, `launch-background.md` | `.purgetss-docs/docs/app-assets/1-app-icons-and-branding.md` + branding CLI/source/tests |
+| `multi-density-images.md` | `.purgetss-docs/docs/app-assets/2-multi-density-images.md` + images CLI/source/tests |
+| `svg-pipeline.md` | `.purgetss-docs/docs/app-assets/3-svg-pipeline.md` |
+| `appearance-module.md` | `.purgetss-docs/docs/best-practices/1-appearance-setup.md` + `docs/purgetss-ui/10-appearance.md` |
+| `semantic-colors.md` | `.purgetss-docs/docs/best-practices/2-semantic-colors.md` + semantic CLI/source/tests |
+| `ios-large-titles.md` | `.purgetss-docs/docs/best-practices/3-large-titles-on-ios.md` |
+| `values-and-units.md` | `.purgetss-docs/docs/best-practices/4-values-and-units.md` |
+| `customization-deep-dive.md`, `configurable-properties.md`, `titanium-resets.md` | `.purgetss-docs/docs/customization/1-configuring-guide.md` + config templates/builders in `.purgetss-source/` |
+| `custom-rules.md` | `.purgetss-docs/docs/customization/2-custom-rules.md` |
+| `apply-directive.md` | `.purgetss-docs/docs/customization/3-the-apply-directive.md` |
+| `opacity-modifier.md` | `.purgetss-docs/docs/customization/4-opacity.md` |
+| `arbitrary-values.md` | `.purgetss-docs/docs/customization/5-arbitrary-values.md` |
+| `platform-modifiers.md` | `.purgetss-docs/docs/customization/6-platform-and-device-modifiers.md` |
+| `custom-fonts.md` | `.purgetss-docs/docs/customization/7-custom-fonts.md` + font builder tests |
+| `icon-fonts.md` | `.purgetss-docs/docs/customization/8-icon-fonts-libraries.md` + generated modules in `.purgetss-source/dist/` |
+| `grid-layout.md` | `.purgetss-docs/docs/grid-system.md` |
+| `animation-system.md`, `animation-advanced.md` | `.purgetss-docs/docs/purgetss-ui/` + UI module template/source |
+| `class-index.md`, `class-index-properties.md`, `class-categories.md` | Generated utilities, builders, config template, and `dist/*.tss` in `.purgetss-source/`; verify class existence from source/output, not from Tailwind memory |
+| `dynamic-component-creation.md` | Official configuration/custom-rule docs plus Alloy integration code in `.purgetss-source/`; mark any production convention beyond those sources as community-discovered |
+| `smart-mappings.md`, `performance-tips.md`, `ui-ux-design.md`, `tikit-components.md`, `EXAMPLES.md` | Curated cross-topic references. Verify every PurgeTSS class/API against the mapped official docs/source; preserve valid `Community-Discovered Patterns` and flag unsupported prose |
+| `version-history.md` | `.purgetss-source/CHANGELOG.md` (agent-facing summary, not a copy of the full changelog) |
+
+Do not treat the similarly named `alloy-guides/references/PURGETSS.md` as the source for this skill. That file is separately marked `AUDIT-SKIP` in the titanium-docs audit because `skills/purgetss/` is the maintained PurgeTSS authority in this repository.
 
 ### `alloy-guides`
 
