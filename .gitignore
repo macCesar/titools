@@ -5,6 +5,8 @@ docs/*
 
 # Upstream docs cache used by the titools-skill-auditor skill
 .titanium-docs
+.purgetss-docs
+.purgetss-source
 
 # Node.js
 node_modules/
