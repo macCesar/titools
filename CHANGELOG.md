@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.19.0] - 2026-09-03
+
+### Added — PurgeTSS 7.16 runtime and artwork contracts
+
+- Added a dedicated Titanium Classic guide for `purgetss.ui`, covering its generated `Resources/lib/` path, public exports, native animation-object shape, all 15 methods, callbacks, drag/drop lifecycle, runtime utilities and platform-specific behavior.
+- Documented the v7.16.0 branding geometry contract: shared and per-piece corner radii for non-icon artwork, the six matching CLI flags, `--appicon-padding`, precedence, validation and the outputs that must remain unmasked for platform processing.
+
+### Changed — audit against current official sources
+
+- Re-audited the PurgeTSS skill against `purgetss-docs@7085cfe` and `purgeTSS@502334a` (v7.16.2), including the corrected UI runtime documentation, released implementation and integration tests.
+- Expanded Classic CommonJS guidance with exact `require('lib/...')` paths and updated Alloy auto-purge documentation for visible diagnostics and automatic hook migration.
+
+### Fixed — complete custom-font modules
+
+- Updated the PurgeTSS references for the corrected `build-fonts --module` contract: every processed TTF/OTF is exported through `families`, including text-only collections, while CSS icon maps additionally populate `icons`. Filename-derived keys such as `poppinsSemiBold` map to the exact PostScript name Titanium expects.
+- Removed stale `purgetss.ui` guidance about invented timing fallbacks, filtered drag/drop properties, complete `_wasDragged` cleanup, `snap-magnet`, original `zIndex` preservation and Android `top`/`left` consolidation.
+
 ## [4.18.0] - 2026-08-30
 
 ### Changed — PurgeTSS 7.15 Alloy/Classic boundary
