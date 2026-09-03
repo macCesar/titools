@@ -61,7 +61,11 @@ When you run `purgetss` for the first time in your project, it does the followin
 
 ### 1. Auto-run Hook
 
-PurgeTSS adds a task in `alloy.jmk` to run `purgetss` every time you compile your app. Works well with `liveview`.
+PurgeTSS adds a task in `alloy.jmk` to run `purgetss` every time you compile your app. This works well with `liveview`.
+
+With the default synchronous method, the hook inherits PurgeTSS output so XML validation and other diagnostics appear before Alloy's generic compiler failure. It then prints a final hint to run `purgetss` from the project root and rethrows the error.
+
+Current `init` runs update an older active or disabled hook without changing its enabled state. Invoking `watch` normally enables a disabled hook.
 
 ### 2. `purgetss` Folder
 

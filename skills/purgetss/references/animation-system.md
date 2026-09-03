@@ -27,6 +27,8 @@
 
 PurgeTSS includes an Animation module for 2D Matrix animations and transformations. It works on single elements, arrays of elements, or individual children of an element.
 
+The XML and `$.*` examples in this file are for Alloy. Titanium Classic uses the same generated runtime through JavaScript objects; see [purgetss-ui-classic.md](./purgetss-ui-classic.md) for the Classic installation path, factory API, method contracts, and lifecycle rules.
+
 The Animation object describes an animation in a few ways:
 - A single-phase animation with an end state
 - A multi-phase animation using the `open`, `close`, and `complete` modifiers
@@ -62,13 +64,13 @@ You can use any position, size, color, transformation, and opacity classes from 
 | `open` | `open(views, cb)` | Explicitly run the opening animation (no toggle) |
 | `close` | `close(views, cb)` | Explicitly run the closing animation (no toggle) |
 | `draggable` | `draggable(views)` | Make views draggable via touch events |
-| `undraggable` | `undraggable(views)` | Remove draggable behavior and clean up all listeners |
+| `undraggable` | `undraggable(views)` | Remove the module-owned drag listeners and most private drag state |
 | `detectCollisions` | `detectCollisions(views, dragCB, dropCB)` | Enable collision detection with hover/drop callbacks |
 | `sequence` | `sequence(views, cb)` | Animate views one after another (sequential, not parallel) |
 | `swap` | `swap(view1, view2)` | Animate two views exchanging positions |
 | `pulse` | `pulse(view, count)` | Scale-up-and-back animation (default count=1) |
 | `shake` | `shake(view, intensity)` | Horizontal shake for feedback (default intensity=10) |
-| `snapTo` | `snapTo(view, targets)` | Snap view to nearest target by center distance; returns matched target or null |
+| `snapTo` | `snapTo(view, targets)` | Snap to the nearest target; returns it immediately, `null` if none qualifies, or `undefined` for a missing source |
 | `reorder` | `reorder(views, newOrder)` | Animate views to new positions by index mapping |
 | `transition` | `transition(views, layouts)` | Multi-view layout transitions using Matrix2D (translate, rotate, scale) |
 
@@ -82,7 +84,7 @@ The `play`, `toggle`, `open`, `close`, `apply`, and `sequence` methods accept an
 | --- | --- |
 | `open:` | Properties applied during open state |
 | `close:` | Properties applied during close state |
-| `complete:` | Additional properties applied after an open animation finishes |
+| `complete:` | Additional properties applied after the active `play`/`toggle`/`open`/`close` state, or immediately after `apply` |
 | `children:` | Global properties for all children of a View |
 | `child:` | Individual properties for specific children |
 | `bounds:` | Drag boundaries within parent |
@@ -127,7 +129,7 @@ First call applies `open:` properties; next call applies `close:` properties; co
 
 ### `complete` Modifier
 
-Applies additional properties after an `open` animation finishes:
+Applies additional properties after the active state finishes. With `play`, `toggle`, `open`, or `close`, it starts a second native animation; with `apply`, it is applied immediately:
 
 ```xml
 <Animation module="purgetss.ui" id="myAnimationOpen"
@@ -146,6 +148,8 @@ $.myAnimation.play([$.view1, $.view2, $.view3])
 ```
 
 The callback fires once per view. Use `e.index` and `e.total` to track progress.
+
+Array playback starts all views without waiting for the previous completion. The configured base delay is increased cumulatively for each successive view. Use `sequence()` when each view must finish before the next begins.
 
 ---
 
@@ -278,7 +282,7 @@ A blank or existing Animation object can be reused. When used with an array, zIn
 
 - **Global modifiers** on the Animation object apply to all views
 - **Local modifiers** on individual views override globals
-- While dragging, `size`, `scale`, and `anchorPoint` transformations are **not** applied
+- All properties in the resolved `drag` or `drop` object are forwarded to Titanium, including size, transform, and anchor-point properties
 
 ```xml
 <Animation id="draggableAnimation" module="purgetss.ui" class="drag:duration-100 drag:opacity-50 drop:opacity-100" />
@@ -312,14 +316,16 @@ Limits movement within the parent. Local on the view or global on the Animation 
 
 ## The `undraggable` Method
 
-Removes draggable behavior and cleans up all listeners from one or more views.
+Removes the current module-owned draggable behavior from one or more views.
 
 ```javascript
 $.draggableAnimation.undraggable($.card)
 $.draggableAnimation.undraggable([$.card1, $.card2, $.card3])
 ```
 
-Removes: `touchstart`/`touchend`/`touchmove` listeners, `Ti.Gesture.orientationchange` listener, collision detection registry entries, and internal properties (`_originTop`, `_originLeft`, `_visualTop`, `_visualLeft`, `_collisionEnabled`, `_dragListeners`, `_wasDragged`, `_bouncingBack`).
+It removes the stored `touchstart`/`touchend`/`touchmove` listeners, the stored `Ti.Gesture.orientationchange` listener, the first matching draggable/collision registry entries, and most private position/collision fields. The current runtime does **not** delete `_wasDragged`.
+
+Register each view only once. `draggable()` does not deduplicate registrations: repeated calls add listeners and registry entries, while one `undraggable()` call removes only the latest stored listener set and the first matching entries. `detectCollisions()` also retains the last non-null callbacks on the Animation object; passing `null` later does not clear them.
 
 **Use cases:** Lock a piece after correct placement, toggle edit/presentation mode, cleanup on window close (prevents memory leaks from global `orientationchange` listener).
 
@@ -418,6 +424,7 @@ $.myAnimation.sequence(views, callback)
 - The `open`/`close` state is toggled once for the entire sequence
 - Each view fully completes before the next starts
 - The callback fires once after the last view finishes
+- An empty array starts nothing and does not invoke the callback
 
 ### Onboarding Reveal Example
 
@@ -448,9 +455,9 @@ $.myAnimation.swap(view1, view2)
 ```
 
 **Behavior:**
-- Inherits `duration`, `delay`, `curve` from Animation object. Fallback: **200ms**, **0ms**, **EASE_IN_OUT**
-- Handles iOS transform reset automatically
-- Temporarily elevates z-index; restores after completion
+- Forwards the Animation object's native properties; there is no shared duration, delay, or curve fallback
+- Resets the source transform while persisting the exchanged positions
+- Temporarily elevates z-index; then assigns z-index from the current draggable-registry order rather than restoring arbitrary original values
 - Updates `_originLeft`/`_originTop` for subsequent drag operations
 - **Automatic position normalization**: no explicit `top`/`left` needed -- resolved via `view.rect`
 - **Bounce-back safe**: completes any in-progress bounce-back before swapping
@@ -514,7 +521,7 @@ $.myAnimation.shake(view, intensity)
 | `view` | `View` | -- | The view to shake |
 | `intensity` | `Number` | `10` | Horizontal displacement in pixels |
 
-- `duration`: inherited, divided by 6 for each shake cycle. Fallback: 400ms
+- `duration`: inherited, or `400ms` when absent, then divided by 6 for each shake phase
 - `delay`: inherited, applied before shake starts
 - `curve`: always `EASE_IN_OUT` (fixed)
 - `autoreverse` and `repeat`: always `true` and `3` (fixed)
@@ -528,14 +535,14 @@ $.emailField.applyProperties({ borderColor: '#ef4444' })
 
 ## The `snapTo` Method
 
-Snaps a view to the nearest target by center-to-center Euclidean distance. Returns the matched target or `null`.
+Snaps a view to the nearest target by center-to-center Euclidean distance. It returns the matched target immediately, `null` when no target can be selected, or `undefined` for a missing source; the return does not mean the animation has completed.
 
 ```javascript
 const matched = $.myAnimation.snapTo(view, targets)
 ```
 
-- Inherits `duration`, `delay`, `curve`. Fallback: **200ms**, **0ms**, **EASE_IN_OUT**
-- Handles iOS transform reset; updates `_originLeft`/`_originTop`
+- Forwards the Animation object's native properties; there is no shared duration, delay, or curve fallback
+- Resets the moved view's transform and updates `_originLeft`/`_originTop`
 - Automatic position normalization
 
 ### Puzzle Game with Collision Detection
@@ -567,7 +574,7 @@ $.myAnimation.reorder(views, newOrder)
 
 - `newOrder` maps current index to new position: `[2, 1, 0]` reverses, `[1, 2, 0]` rotates
 - Length must match `views` length
-- Inherits `duration`, `delay`, `curve`. Fallback: **200ms**, **0ms**, **EASE_IN_OUT**
+- Forwards the Animation object's native properties; there is no shared duration, delay, or curve fallback
 - Automatic position normalization
 
 ```javascript
@@ -604,7 +611,9 @@ $.myAnimation.transition(views, layouts)
 - Each view gets a single `Ti.UI.createAnimation()` with combined `Matrix2D` transform
 - All animations launch simultaneously
 - `zIndex` applied synchronously before animation starts
-- **Mismatched lengths**: extra views fade out; extra layouts ignored; faded views fade back in when given a layout entry
+- **Mismatched lengths**: extra views fade to opacity `0`, receive `zIndex: 0`, and have touch disabled; extra layouts are ignored; hidden views fade back in and regain touch when later given a layout entry
+- iOS preserves the last transform of a hidden view. Android resets its transform, translation, rotation, and scale
+- A matched layout's completion handler forces `touchEnabled: true`; reapply `false` afterward for a view that must remain non-interactive
 
 ### Reusable Presets
 
@@ -639,7 +648,7 @@ function doStack() { $.galleryAnim.transition(photos, stack) }
 $.galleryAnim.draggable(photos)  // photos keep rotation/scale while dragging
 ```
 
-`keep-z-index` preserves the layout order during drag.
+`keep-z-index` prevents touch-start promotion during drag. It does not prevent `draggable(array)` from first assigning each view `zIndex` from its array index.
 
 ### Mac Catalyst Note
 

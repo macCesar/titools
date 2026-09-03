@@ -30,6 +30,7 @@ For the terse flag reference, see the [`brand` command reference](./cli-commands
 - [iOS 18+ Dark and Tinted variants](#ios-18-dark-and-tinted-variants)
 - [Brand color](#brand-color)
 - [Padding guidance](#padding-guidance)
+- [Rounded non-icon artwork](#rounded-non-icon-artwork)
 - [Cleanup legacy branding artifacts](#cleanup-legacy-branding-artifacts)
 - [Troubleshooting](#troubleshooting)
 - [Flag reference](#flag-reference)
@@ -143,12 +144,14 @@ On the first run, `purgetss brand` adds a `brand:` block to your existing `purge
 
 ```javascript
 brand: {
-  background: '#FFFFFF',   // inherited by every piece that doesn't set its own
-  confirmOverwrites: true, // prompt before overwriting files (set false to skip)
-  optimize: false,         // true = quantize the generated PNGs to a palette (lossy, ~71% smaller)
+  background: '#FFFFFF',      // inherited by every piece that doesn't set its own
+  artworkCornerRadius: '0%',  // rounded non-icon artwork: splashes, Feature Graphic and LaunchLogo
+  confirmOverwrites: true,    // prompt before overwriting files (set false to skip)
+  optimize: false,            // true = quantize the generated PNGs to a palette (lossy, ~71% smaller)
 
   // One block per piece. Artwork comes from purgetss/brand/logo-<piece>.{svg,png};
   // these keys are for numbers, colors and activation. Padding is never inherited.
+  // Only iosSplash, androidSplash, featureGraphic and launchLogo accept cornerRadius.
   icon:             { padding: '0%' },    // DefaultIcon.png + DefaultIcon-ios.png
   dark:             { background: null }, // DefaultIcon-Dark.png
   tinted:           {},                   // DefaultIcon-Tinted.png
@@ -158,7 +161,7 @@ brand: {
   featureGraphic:   { padding: '12%' },   // MarketplaceArtworkFeature.png (1024×500)
   adaptive:         { padding: '18%' },   // ic_launcher_{foreground,background,monochrome}.png × 5 + ic_launcher.xml
   legacyIcon:       { padding: '10%' },   // ic_launcher.png × 5
-  appicon:          {},                   // appicon.png (128×128)
+  appicon:          { padding: '10%' },   // appicon.png (128×128)
   androidSplash:    { padding: '26%' },   // assets/android/default.png + images/res-*/default.png × 11
 
   // Opt-in: inert until you edit the Android theme / FCM meta-data by hand.
@@ -169,6 +172,8 @@ brand: {
 ```
 
 Change only what you want to keep as a project default. CLI flags still win for one-off runs.
+
+Use flags for temporary artwork, geometry, the shared background, selection, activation, and optimization. Keep persistent choices such as `confirmOverwrites`, permanent `enabled` values, and exceptional per-piece backgrounds in `config.cjs`.
 
 ### Older configs update themselves
 
@@ -201,11 +206,12 @@ A key `brand:` does not define stops the run before a single file is written, at
 Unknown key(s) in the brand: section of purgetss/config.cjs:
   • brand.adaptive.paddig
 
-  Top-level keys: background, confirmOverwrites, logo, monochromeLogo
+  Top-level keys: background, artworkCornerRadius, splashCornerRadius, confirmOverwrites,
+                  optimize, logo, monochromeLogo
   Piece blocks:   icon, dark, tinted, iosSplash, launchLogo, marketplace, featureGraphic,
                   adaptive, legacyIcon, appicon, androidSplash, splashIcon,
                   notificationIcon, ninePatch
-  Inside a piece: logo, padding, background, enabled
+  Inside a piece: logo, padding, cornerRadius, background, enabled
 
   Check the spelling. Nothing was written.
 ```
@@ -214,12 +220,13 @@ A typo is deliberately **not** treated as an old structure: rewriting the block 
 
 ## Brand config reference
 
-Every piece accepts the same four keys, where they apply:
+Every piece accepts the same five keys, where they apply:
 
 | Key | What it does |
 | --- | --- |
 | `logo` | Path to this piece's artwork, when it lives outside `purgetss/brand/`. |
 | `padding` | Inset per side, as a number or a percentage string like `'19%'`. **Never inherited.** |
+| `cornerRadius` | Rounded artwork corners, only for `iosSplash`, `androidSplash`, `featureGraphic`, and `launchLogo`; integer or percentage string from `0` through `50`. |
 | `background` | Hex color, or `null` for transparent. Inherited from `brand.background`. |
 | `enabled` | `false` turns a default piece off; `true` turns an opt-in piece on. |
 
@@ -228,6 +235,8 @@ And these live at the top level:
 | Key | Default | Purpose |
 | --- | --- | --- |
 | `background` | `'#FFFFFF'` | The background every piece inherits unless it declares its own: the Android adaptive background layer, the `DefaultIcon-ios.png` flatten, the splash canvases, and the marketplace flatten when a background is explicitly configured. |
+| `artworkCornerRadius` | `'0%'` | Shared radius for the four supported non-icon artwork pieces. It never changes store or launcher icons. |
+| `splashCornerRadius` | — | Optional splash-only override for `iosSplash` and `androidSplash`. |
 | `confirmOverwrites` | `true` | Whether `brand` asks before overwriting project files in place. |
 | `optimize` | `false` | Quantize the generated PNGs to a palette. Lossy — see [Shrinking the generated files](#shrinking-the-generated-files). |
 | `logo` | — | Path override for the main logo. |
@@ -576,6 +585,7 @@ Padding belongs to the piece, not to the project. Each piece has its own key and
 | --- | --- | --- | --- |
 | `adaptive` | `brand.adaptive.padding` | `--android-adaptive-padding` | `18%` |
 | `legacy-icon` | `brand.legacyIcon.padding` | `--android-legacy-padding` | `10%` |
+| `appicon` | `brand.appicon.padding` | `--appicon-padding` | `10%` |
 | `icon` | `brand.icon.padding` | `--ios-padding` | `0%` |
 | `feature-graphic` | `brand.featureGraphic.padding` | `--feature-graphic-padding` | `12%` |
 | `launch-logo` | `brand.launchLogo.padding` | `--launch-logo-padding` | `12%` |
@@ -618,6 +628,19 @@ Measuring against the shorter side is what lets a single number work across canv
 The `26%` default is calibrated against the Titanium template itself: the Alloy logo in the stock `default.png` measures 665×488 px on a 1440×2560 canvas, so `26%` lands within 4% of the size Titanium ships.
 
 Before v7.13.0 none of this was configurable: `default.png` used a hardcoded box of 72% × 26% of its own canvas, and the `res-*` set a separate hardcoded 60%. Two rules for the same piece, neither adjustable.
+
+## Rounded non-icon artwork
+
+`brand.artworkCornerRadius` rounds artwork only in the 16 iPhone launch images, Android `default.png` plus its 11 qualifier variants, `MarketplaceArtworkFeature.png`, and `LaunchLogo.png`. A piece may override it with `cornerRadius`; `brand.splashCornerRadius` is an optional shared override for the two legacy splash pieces.
+
+Values are integer numbers or percentage strings from `0` through `50`, measured against the shorter side of the resized artwork. `0%` preserves the previous output byte for byte; `50%` makes square artwork circular and a wordmark capsule-shaped. Normal and `--dry-run` summaries report the effective padding and radius.
+
+Precedence is:
+
+- Feature Graphic / LaunchLogo: piece-specific flag → `--artwork-corner-radius` → piece config → `brand.artworkCornerRadius` → `0%`.
+- Legacy splashes: platform flag → `--splash-corner-radius` → `--artwork-corner-radius` → piece config → `brand.splashCornerRadius` → `brand.artworkCornerRadius` → `0%`.
+
+Store and launcher icons remain unmasked for platform processing. `cornerRadius` is rejected in `DefaultIcon*`, `iTunesConnect.png`, `MarketplaceArtwork.png`, adaptive, legacy, and app icons, Android 12+ `splash_icon.png`, notification icons, and any other unsupported piece; invalid, fractional, negative, non-numeric, or greater-than-50 values also abort before files are written.
 
 ### Adaptive icon padding
 
@@ -753,7 +776,7 @@ All 5 Android densities, marketplace artwork, splash canvases, and iOS variants 
 
 ## Flag reference
 
-Every flag lives in the terse reference: [`brand` command](./cli-commands.md#brand-command) — project & output, `--only`, padding, optional asset types, the `--<piece>-logo` overrides, `--optimize`, appearance, legacy cleanup and diagnostics, with examples.
+Every flag lives in the terse reference: [`brand` command](./cli-commands.md#brand-command) — project & output, `--only`, padding and corner radius, optional asset types, the `--<piece>-logo` overrides, `--optimize`, appearance, legacy cleanup and diagnostics, with examples.
 
 ## Community-Discovered Patterns
 

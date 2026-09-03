@@ -178,7 +178,7 @@ After `purgetss build-fonts`, the generated `fonts.tss` includes the family clas
 
 Two optional flags adjust what `build-fonts` generates:
 
-- `-m, --module`: generates a CommonJS module in `app/lib/purgetss.fonts.js` (Alloy) or `Resources/lib/purgetss.fonts.js` (Classic) that exposes each icon's Unicode string to JavaScript.
+- `-m, --module`: generates a CommonJS module in `app/lib/purgetss.fonts.js` (Alloy) or `Resources/lib/purgetss.fonts.js` (Classic). Its `families` object exposes the PostScript name of every processed TTF/OTF; icon CSS additionally populates `icons` with Unicode strings.
 - `-f, --font-class-from-filename`: uses the font's filename as the font class name and icon prefix instead of the font family name. Useful when you want shorter prefixes. Replaces the old `-p` flag.
 
 ### Using `--module`
@@ -190,7 +190,7 @@ $ purgetss build-fonts --module
 $ purgetss bf -m
 ```
 
-To avoid prefix conflicts between libraries, each icon keeps its prefix as a nested object. Both `icons` and `families` are exported:
+The module is generated for text-only font collections too. By default, every TTF/OTF contributes a camel-cased PostScript-name key to `families`; with `--font-class-from-filename`, that key comes from the filename instead. Icon CSS can add a shorter family alias and a nested `icons` map. Both singular and plural export names remain available.
 
 `app/lib/purgetss.fonts.js` (Alloy) or `Resources/lib/purgetss.fonts.js` (Classic)
 ```javascript
@@ -212,16 +212,39 @@ const icons = {
     // ...
   }
 };
+exports.icon = icons;
 exports.icons = icons;
 
 const families = {
+  'bevanItalic': 'Bevan-Italic',
+  'bevanRegular': 'Bevan-Regular',
+  'dancingScriptBold': 'DancingScript-Bold',
+  'dancingScriptMedium': 'DancingScript-Medium',
+  'dancingScriptRegular': 'DancingScript-Regular',
+  'dancingScriptSemiBold': 'DancingScript-SemiBold',
+  'mapIcons': 'map-icons',
+  'microns': 'microns',
   // map-icons/map-icons.css
   'mapIcon': 'map-icons',
   // microns/microns.css
   'mu': 'microns'
 };
+exports.family = families;
 exports.families = families;
 ```
+
+In Classic, load the generated file relative to `Resources/`:
+
+```javascript
+const customFonts = require('lib/purgetss.fonts')
+
+const heading = Ti.UI.createLabel({
+  text: 'Custom typography',
+  font: { fontFamily: customFonts.families.dancingScriptSemiBold, fontSize: 28 }
+})
+```
+
+See the complete [Classic module path table](./classic-projects.md#loading-generated-modules-in-classic).
 
 ### Using `--font-class-from-filename`
 
@@ -282,14 +305,18 @@ const icons = {
     // ...
   }
 };
+exports.icon = icons;
 exports.icons = icons;
 
 const families = {
+  'map': 'map-icons',
+  'mic': 'microns',
   // map-icons/mp.css
   'mp': 'map-icons',
   // microns/mc.css
   'mc': 'microns'
 };
+exports.family = families;
 exports.families = families;
 ```
 

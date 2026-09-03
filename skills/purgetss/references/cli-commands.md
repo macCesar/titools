@@ -70,16 +70,17 @@ module.exports = {
     }
   },
   brand: {
-    background: '#FFFFFF',   // inherited by every piece that doesn't set its own
-    confirmOverwrites: true, // prompt before overwriting files (set false to skip)
-    optimize: false,         // true = quantize the generated PNGs to a palette (lossy)
+    background: '#FFFFFF',      // inherited by every piece that doesn't set its own
+    artworkCornerRadius: '0%',  // splashes, Feature Graphic and LaunchLogo
+    confirmOverwrites: true,    // prompt before overwriting files (set false to skip)
+    optimize: false,            // true = quantize the generated PNGs to a palette (lossy)
 
     // One block per piece — see the `brand` Command section for the full list.
     icon: { padding: '0%' }, dark: { background: null }, tinted: {},
     iosSplash: { padding: '26%' }, launchLogo: { padding: '12%' },
     marketplace: {}, featureGraphic: { padding: '12%' },
     adaptive: { padding: '18%' }, legacyIcon: { padding: '10%' },
-    appicon: {}, androidSplash: { padding: '26%' },
+    appicon: { padding: '10%' }, androidSplash: { padding: '26%' },
 
     // Opt-in: inert until you edit the Android theme / FCM meta-data by hand.
     splashIcon: { enabled: false }, notificationIcon: { enabled: false },
@@ -211,15 +212,20 @@ The 14 pieces, their config keys and what each one writes are tabulated in [app-
 | `--padding <n>` | Shortcut: sets both Android launcher paddings to the same value for one run. |
 | `--android-adaptive-padding <n>` | Adaptive icon safe-zone % (default `18`). |
 | `--android-legacy-padding <n>` | Legacy `ic_launcher.png` padding % (default `10`). |
+| `--appicon-padding <n>` | `appicon.png` padding % (default `10`). |
 | `--ios-padding <n>` | Padding % for the four square iOS/marketplace pieces — `icon`, `dark`, `tinted`, `marketplace` (default `0`, full-bleed). |
 | `--feature-graphic-padding <n>` | Vertical padding % for `MarketplaceArtworkFeature.png` (range `0-40`, default `12`). |
 | `--launch-logo-padding <n>` | Padding % for `LaunchLogo.png` (default `12`). |
 | `--splash-padding <n>` | Shortcut: sets both splash paddings to the same value for one run. |
 | `--android-splash-padding <n>` | Padding % for `default.png` and the 11 `res-*` splashes (default `26`). |
 | `--ios-splash-padding <n>` | Padding % for the 16 iPhone launch images (default `26`). |
+| `--artwork-corner-radius <n>` / `--splash-corner-radius <n>` | Shared non-icon radius, or a splash-only one-run override (range `0-50`, default `0`). |
+| `--ios-splash-corner-radius <n>` / `--android-splash-corner-radius <n>` | Per-platform legacy splash artwork radius (range `0-50`). |
+| `--feature-graphic-corner-radius <n>` / `--launch-logo-corner-radius <n>` | Per-piece Feature Graphic or LaunchLogo artwork radius (range `0-50`). |
 
 Splash padding is a share of the canvas's **shorter** side, so one number keeps the logo at the same visual weight in portrait and in landscape: the `26%` default leaves it at 48% of the shorter side.
 
+Radius precedence and the outputs intentionally left unmasked are documented in [Rounded non-icon artwork](./app-branding.md#rounded-non-icon-artwork). Normal and `--dry-run` summaries report effective padding and radius.
 **Optional asset types**
 
 | Flag | Purpose |
@@ -227,7 +233,6 @@ Splash padding is a share of the canvas's **shorter** side, so one number keeps 
 | `--notification-icon` | Also emit `ic_stat_notify.png × 5`. |
 | `--splash-icon` | Also emit `splash_icon.png × 5`. |
 | `--nine-patch` | Declared but not implemented yet; prints a warning and writes nothing. |
-
 **Logo variants & overrides**
 
 Every piece has a `--<piece>-logo <path>` flag — with no exceptions since v7.13.0 — each overriding the matching `purgetss/brand/logo-<piece>.{svg,png}`:
@@ -235,7 +240,6 @@ Every piece has a `--<piece>-logo <path>` flag — with no exceptions since v7.1
 `--icon-logo`, `--dark-logo`, `--tinted-logo`, `--ios-splash-logo`, `--launch-logo`, `--marketplace-logo`, `--feature-graphic-logo`, `--adaptive-logo`, `--legacy-icon-logo`, `--appicon-logo`, `--android-splash-logo`, `--splash-icon-logo`, `--notification-icon-logo`.
 
 `--launch-logo` is the one that also **activates** its piece. Two more sources are not pieces: `--monochrome-logo <path>` (the silhouette shared by the adaptive monochrome layer and the notification icons, `logo-mono.{svg,png}`) and the positional `<logo>` argument (the main logo).
-
 **Output size**
 
 | Flag | Purpose |
@@ -274,11 +278,11 @@ Every piece has a `--<piece>-logo <path>` flag — with no exceptions since v7.1
 
 ### Config block (v7.13.0 per-piece structure)
 
-Defaults live under `brand:` in `purgetss/config.cjs`. Since v7.14.0, a standalone Classic run creates the canonical config when it is missing. The block has **one entry per piece**; each accepts the same four keys where they apply: `logo`, `padding` (never inherited), `background` (inherited from `brand.background`), `enabled`. Top-level: `background`, `confirmOverwrites`, `optimize`, `logo`, `monochromeLogo`.
+Defaults live under `brand:` in `purgetss/config.cjs`. Since v7.14.0, a standalone Classic run creates it when missing. Each piece accepts `logo`, `padding`, `cornerRadius`, `background`, and `enabled` where applicable; radius is valid only for the two legacy splashes, Feature Graphic, and LaunchLogo. Top-level settings include shared `artworkCornerRadius`, optional `splashCornerRadius`, background, persistence, optimization, and logo values.
 
 An unknown key aborts the run before a single file is written. A `brand:` block written for an older PurgeTSS is **rewritten on disk** on the next run, carrying over every customized value.
 
-Full annotated block and per-key reference: [app-branding.md → The `brand:` config section](./app-branding.md#the-brand-config-section) and [Older configs update themselves](./app-branding.md#older-configs-update-themselves). The recommended workflow is convention-first: drop files in `purgetss/brand/`, let auto-discovery pick them up, and use `config.cjs` only for a persistent override.
+Full annotated block and per-key reference: [app-branding.md → The `brand:` config section](./app-branding.md#the-brand-config-section). Use flags for one-run sources, geometry, selection, activation, background, or optimization; keep persistent preferences in `config.cjs`.
 
 ### Confirmation prompt
 
@@ -295,12 +299,12 @@ purgetss brand --adaptive-logo ./docs/app-icon.svg        # dedicated square And
 purgetss brand --splash-icon --splash-icon-logo ./docs/splash.svg  # custom Android 12+ splash artwork
 purgetss brand --launch-logo ./docs/wordmark.svg          # iOS launch screen logotype
 purgetss brand --feature-graphic-logo ./docs/feature.svg  # custom Google Play Feature Graphic
-purgetss brand --feature-graphic-padding 8                # tighter Feature Graphic padding
+purgetss brand --artwork-corner-radius 22                 # round supported non-icon artwork
+purgetss brand --splash-corner-radius 18                  # override both legacy splash sets
+purgetss brand --appicon-padding 14                       # temporary appicon.png inset
 purgetss brand --notification-icon --splash-icon          # add notification + splash icons
-purgetss brand --no-tinted                                # skip iOS 18+ tinted variant
 purgetss brand --optimize                                 # quantize the generated PNGs
 purgetss brand --dry-run                                  # preview without writing
-purgetss brand --cleanup-legacy --dry-run                 # preview legacy cleanup
 ```
 
 ### Android output groups
@@ -521,13 +525,14 @@ purgetss bf [-m] [-f]
 
 | Flag | Purpose |
 | --- | --- |
-| `-m, --module` | Also generates `app/lib/purgetss.fonts.js` (Alloy) or `Resources/lib/purgetss.fonts.js` (Classic), exposing `exports.icons` and `exports.families`. |
+| `-m, --module` | Also generates `app/lib/purgetss.fonts.js` (Alloy) or `Resources/lib/purgetss.fonts.js` (Classic). `exports.families` contains every processed TTF/OTF PostScript name; icon CSS additionally populates `exports.icons`. |
 | `-f, --font-class-from-filename` | Uses the font filename as the class name and icon prefix instead of the font family. Replaces the old `-p` flag. |
 
 ### What it does
 
 1. Copies font files to `app/assets/fonts/` (Alloy) or `Resources/fonts/` (Classic), renamed to their PostScript names.
 2. In Alloy only, creates `purgetss/styles/fonts.tss` with the TSS class definitions.
+3. With `--module`, creates the CommonJS module even for text-only font collections. Classic loads it with `require('lib/purgetss.fonts')`; see the [Classic module path table](./classic-projects.md#loading-generated-modules-in-classic).
 
 > **Tip**
 > This is a quick reference. See [Custom Fonts](./custom-fonts.md) for the complete guide — folder organization, class renaming, adding icon libraries, the `--module` output structure, and `--font-class-from-filename` workflow.
@@ -539,7 +544,7 @@ purgetss bf [-m] [-f]
 
 The `shades` command generates shades and tints for a given color and writes the palette to `config.cjs`.
 
-Saving works in Alloy and Classic. In Classic, `config.cjs` is only a development-time color source for commands such as `color-module`; it does not install the PurgeTSS utility lifecycle. `--log`, `--json`, and `--tailwind` write nothing and work outside a project.
+Saving works in Alloy and Classic. In Classic, `config.cjs` is only a development-time color source for commands such as `color-module`; it does not install the PurgeTSS utility lifecycle or create empty brand, font, or image source folders. If `Resources/lib/purgetss.colors.js` already exists, saving refreshes it. `--log`, `--json`, and `--tailwind` write nothing and work outside a project.
 
 ```bash
 purgetss shades [hexcode] [name]
@@ -641,7 +646,9 @@ purgetss s '#65e92c' -j
 
 ## `color-module` Command
 
-This command creates `purgetss.colors.js` with all colors defined in `config.cjs`: `app/lib/` in Alloy or `Resources/lib/` in Classic. A missing config is created as the color source, but Classic receives no Alloy hook or TSS.
+This command creates `purgetss.colors.js` with all colors defined in `config.cjs`: `app/lib/` in Alloy or `Resources/lib/` in Classic. A missing config is created as the color source, but Classic receives no empty `purgetss/brand/`, `purgetss/fonts/`, or `purgetss/images/` folders, Alloy hook, or TSS.
+
+Classic loads the result with `require('lib/purgetss.colors')`; see [Classic module paths](./classic-projects.md#loading-generated-modules-in-classic).
 
 ```bash
 purgetss color-module
@@ -706,12 +713,17 @@ The command installs a task in `alloy.jmk`:
 
 ```javascript
 task('pre:compile', (event, logger) => {
-  require('child_process').execSync('purgetss', logger.warn('::PurgeTSS:: Auto-Purging ' + event.dir.project));
-});
+  logger.warn(`::PurgeTSS:: Auto-Purging ${event.dir.project}`)
+  try {
+    require('child_process').execSync('purgetss', { stdio: 'inherit' })
+  } catch (error) {
+    logger.error('::PurgeTSS:: Auto-Purge failed. Run `purgetss` from the project root to see the cause.')
+    throw error
+  }
+})
 ```
 
-> **Info**
-> This feature works with standard Alloy projects compiled using `ti build`. It has not been tested with project types built using Webpack or Vue.
+The default synchronous hook inherits CLI output so validation details appear before Alloy's generic failure. Async mode forwards `stdout` and `stderr` and prints the same final hint. `init` refreshes old active or disabled hooks without changing their state; invoking `watch` normally enables a disabled hook.
 
 To deactivate it, use `--off`.
 
@@ -733,7 +745,9 @@ purgetss w -d
 
 ## `module` Command
 
-The `module` command installs the self-contained `purgetss.ui.js` in `app/lib/` (Alloy) or `Resources/lib/` (Classic). A Classic app does not need PurgeTSS during compilation or at runtime.
+The `module` command installs the self-contained `purgetss.ui.js` in `app/lib/` (Alloy) or `Resources/lib/` (Classic). Classic executes that generated file but needs no PurgeTSS CLI/package at build time or as an app dependency.
+
+Classic loads it with `require('lib/purgetss.ui')`; see [Classic module paths](./classic-projects.md#loading-generated-modules-in-classic).
 
 ```bash
 purgetss module
@@ -742,11 +756,7 @@ purgetss module
 purgetss m
 ```
 
-The PurgeTSS module includes:
-
-- Animation: methods for playing or applying basic animations and transformations to Titanium views.
-
-See [Animation System](./animation-system.md) for details.
+The module exports `AnimationProperties`, `createAnimation(args)`, `Appearance`, `deviceInfo()`, and `saveComponent()`. Its animation object exposes 15 state, drag, collision, position, feedback, and layout methods. See [Animation System](./animation-system.md) for Alloy or [`purgetss.ui` in Classic](./purgetss-ui-classic.md) for native JavaScript.
 
 ## `update` Command
 

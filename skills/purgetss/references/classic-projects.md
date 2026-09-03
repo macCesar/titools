@@ -1,6 +1,6 @@
 # Classic Project Support
 
-PurgeTSS 7.15 keeps its utility-class lifecycle Alloy-only while allowing independent asset and CommonJS commands to run in Titanium Classic projects. Detect the project layout before choosing a command or output path.
+Since PurgeTSS 7.15, the utility-class lifecycle remains Alloy-only while independent asset and CommonJS commands can run in Titanium Classic projects. Detect the project layout before choosing a command or output path.
 
 Official source: <https://purgetss.com/docs/commands#alloy-and-classic-compatibility>
 
@@ -11,8 +11,8 @@ Official source: <https://purgetss.com/docs/commands#alloy-and-classic-compatibi
 | `brand` | yes | yes | Writes branding assets to Classic paths and follows enabled `tiapp.xml` deployment targets; explicit `--only` overrides that filter. |
 | `images` | yes | yes | Writes density variants under `Resources/android/images/res-*/` and `Resources/iphone/images/`; follows deployment targets unless `--android` or `--ios` is explicit. |
 | `semantic` | yes | yes | Writes only `Resources/semantic.colors.json`; it does not create `purgetss/`, `config.cjs`, TSS, `app/`, or a hook. |
-| `shades` | yes | yes | Output-only modes work anywhere. Saving creates or updates `purgetss/config.cjs` as a development-time color source. |
-| `color-module` | yes | yes | Writes `app/lib/purgetss.colors.js` or `Resources/lib/purgetss.colors.js`. |
+| `shades` | yes | yes | Output-only modes work anywhere. On a fresh Classic project, saving creates only `purgetss/config.cjs`; if the color module already exists, it is regenerated. |
+| `color-module` | yes | yes | Writes `app/lib/purgetss.colors.js` or `Resources/lib/purgetss.colors.js`; Classic creates no unrelated empty source folders. |
 | `module` | yes | yes | Writes `app/lib/purgetss.ui.js` or `Resources/lib/purgetss.ui.js`. |
 | `icon-library` | yes | yes | Copies fonts to `Resources/fonts/` and optional modules to `Resources/lib/`; `--styles` is skipped in Classic. |
 | `build-fonts` | yes | yes | Copies fonts to `Resources/fonts/` and optionally writes `Resources/lib/purgetss.fonts.js`; it does not generate TSS in Classic. |
@@ -30,11 +30,13 @@ A Classic project does not receive or need:
 - `alloy.jmk`
 - utility classes in views or controllers
 - `$.UI.create()`
-- PurgeTSS during application compilation or at runtime
+- the PurgeTSS CLI/package during application compilation or as an app dependency (generated CommonJS modules execute normally)
 
 Files generated under `Resources/` are native Titanium resources. Compile the Classic app normally with `ti build`.
 
 Do not interpret the presence of `purgetss/config.cjs` in a Classic project as permission to use utilities. Commands such as `brand`, `images`, `shades`, and `color-module` may use that file as development-time input without installing the Alloy lifecycle.
+
+Classic `shades` and `color-module` do not scaffold the empty `purgetss/brand/`, `purgetss/fonts/`, or `purgetss/images/` conventions created by Alloy initialization. On a fresh project, `shades` creates only its config; `color-module` creates that config when missing plus its module. If the module already exists, saving a palette refreshes it automatically.
 
 ## Layout and Output Routing
 
@@ -45,8 +47,24 @@ Do not interpret the presence of `purgetss/config.cjs` in a Classic project as p
 | iPhone UI scales | `app/assets/iphone/images/` | `Resources/iphone/images/` |
 | Font files | `app/assets/fonts/` | `Resources/fonts/` |
 | Color module | `app/lib/purgetss.colors.js` | `Resources/lib/purgetss.colors.js` |
-| UI module | `app/lib/purgetss.ui.js` | `Resources/lib/purgetss.ui.js` |
+| UI module | `app/lib/purgetss.ui.js` | `Resources/lib/purgetss.ui.js` (see [`purgetss.ui` in Classic](./purgetss-ui-classic.md)) |
 | Custom-font module | `app/lib/purgetss.fonts.js` | `Resources/lib/purgetss.fonts.js` |
+
+## Loading Generated Modules in Classic
+
+Titanium resolves local CommonJS paths from `Resources/`. Omit both the `Resources/` prefix and the `.js` extension from `require()`.
+
+| Generated file | Classic `require()` path |
+| --- | --- |
+| `Resources/lib/purgetss.colors.js` | `require('lib/purgetss.colors')` |
+| `Resources/lib/purgetss.ui.js` | `require('lib/purgetss.ui')` |
+| `Resources/lib/purgetss.fonts.js` | `require('lib/purgetss.fonts')` |
+| `Resources/lib/fontawesome.js` | `require('lib/fontawesome')` |
+| `Resources/lib/materialicons.js` | `require('lib/materialicons')` |
+| `Resources/lib/materialsymbols.js` | `require('lib/materialsymbols')` |
+| `Resources/lib/framework7icons.js` | `require('lib/framework7icons')` |
+
+This follows Titanium's [CommonJS module path resolution](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_Guide/Best_Practices_and_Recommendations/CommonJS_Modules_in_Titanium.html#javascript-module-path-resolution).
 
 ## Deployment Targets
 
@@ -94,3 +112,4 @@ When auditing a Classic project that uses PurgeTSS:
 - [Semantic Colors](./semantic-colors.md)
 - [Icon Font Libraries](./icon-fonts.md)
 - [Custom Fonts](./custom-fonts.md)
+- [`purgetss.ui` in Titanium Classic](./purgetss-ui-classic.md)
