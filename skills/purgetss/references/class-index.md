@@ -196,7 +196,7 @@ The rest of this document collects conventions, prohibitions, and insights surfa
 
 ## All 364 Unique Prefixes (Alphabetical)
 
-> **NOTE**: Recent additions — v7.4.0 introduced `snap-back`, `snap-back-false`, `snap-center`, `snap-center-false`, `snap-magnet`, `snap-magnet-false`, `keep-z-index`, and `keep-z-index-false` for the Animation module drop/drag system. v7.5.3 introduced font-family classes `font-sans`, `font-serif`, `font-mono` alongside the existing weight classes.
+> **NOTE**: v7.4.0 introduced `snap-back`, `snap-back-false`, `snap-center`, `snap-center-false`, `snap-magnet`, `snap-magnet-false`, `keep-z-index`, and `keep-z-index-false`. The current runtime implements back, center, and touch-start z-index preservation but does not read `snap.magnet`; do not suggest the generated magnet classes as working behavior. v7.5.3 added `font-sans`, `font-serif`, and `font-mono`.
 
 
 ```

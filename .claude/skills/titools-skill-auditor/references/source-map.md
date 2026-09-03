@@ -49,7 +49,7 @@ The docs are primary for workflows and user-facing paths. Use the package `CHANG
 | `custom-fonts.md` | `.purgetss-docs/docs/customization/7-custom-fonts.md` + font builder tests |
 | `icon-fonts.md` | `.purgetss-docs/docs/customization/8-icon-fonts-libraries.md` + generated modules in `.purgetss-source/dist/` |
 | `grid-layout.md` | `.purgetss-docs/docs/grid-system.md` |
-| `animation-system.md`, `animation-advanced.md` | `.purgetss-docs/docs/purgetss-ui/` + UI module template/source |
+| `animation-system.md`, `animation-advanced.md`, `purgetss-ui-classic.md` | `.purgetss-docs/docs/purgetss-ui/` + UI module template/source |
 | `class-index.md`, `class-index-properties.md`, `class-categories.md` | Generated utilities, builders, config template, and `dist/*.tss` in `.purgetss-source/`; verify class existence from source/output, not from Tailwind memory |
 | `dynamic-component-creation.md` | Official configuration/custom-rule docs plus Alloy integration code in `.purgetss-source/`; mark any production convention beyond those sources as community-discovered |
 | `smart-mappings.md`, `performance-tips.md`, `ui-ux-design.md`, `tikit-components.md`, `EXAMPLES.md` | Curated cross-topic references. Verify every PurgeTSS class/API against the mapped official docs/source; preserve valid `Community-Discovered Patterns` and flag unsupported prose |

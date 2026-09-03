@@ -8,6 +8,18 @@ When in doubt about whether a class, flag, or config key exists in the user's in
 
 ---
 
+## v7.16.2
+- `build-fonts --module` now exports every processed TTF/OTF PostScript name through `families`, including text-only collections; icon CSS additionally populates `icons`. Filename-derived keys such as `poppinsSemiBold` are supported. See [custom-fonts.md](custom-fonts.md).
+- In clean Classic projects, saved `shades` palettes and `color-module` no longer scaffold empty brand, font, or image source folders. `shades` still refreshes an existing generated color module. See [classic-projects.md](classic-projects.md).
+
+## v7.16.1
+- Alloy auto-purge hooks now expose PurgeTSS output before Alloy's generic failure, print a command-line diagnostic hint, and migrate older active or disabled hooks without losing their state. See [installation-setup.md](installation-setup.md).
+
+## v7.16.0
+- `brand.artworkCornerRadius` and optional `brand.splashCornerRadius` add shared rounding for non-icon artwork; the iOS/Android splash, Feature Graphic, and LaunchLogo pieces also accept `cornerRadius`. Values are 0–50, and unsupported pieces reject the key before writing. Platform-masked and store icon outputs remain unrounded. See [app-branding.md](app-branding.md).
+- Six CLI radius flags provide shared, splash-only, and per-piece one-run overrides. `--appicon-padding` completes the existing `brand.appicon.padding` contract, whose canonical default is `10%`.
+- Branding summaries and `--dry-run` now report effective padding and corner radius for rounded pieces.
+
 ## v7.15.0
 - Standalone `images`, `semantic`, `shades`, `color-module`, `module`, `icon-library`, and `build-fonts` now support Classic without installing the Alloy hook or utility-class lifecycle. Outputs route to native `Resources/` paths where appropriate. See [classic-projects.md](classic-projects.md).
 - `images` follows `<deployment-targets>` from `tiapp.xml` by default; explicit `--android` / `--ios` override that selection.

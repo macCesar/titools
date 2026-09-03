@@ -50,12 +50,14 @@ module.exports = {
     }
   },
   brand: {
-    background: '#FFFFFF',   // inherited by every piece that doesn't set its own
-    confirmOverwrites: true, // prompt before overwriting files (set false to skip)
-    optimize: false,         // true = quantize the generated PNGs to a palette (lossy, ~71% smaller)
+    background: '#FFFFFF',      // inherited by every piece that doesn't set its own
+    artworkCornerRadius: '0%',  // rounded non-icon artwork: splashes, Feature Graphic and LaunchLogo
+    confirmOverwrites: true,    // prompt before overwriting files (set false to skip)
+    optimize: false,            // true = quantize the generated PNGs to a palette (lossy, ~71% smaller)
 
     // One block per piece. Artwork comes from purgetss/brand/logo-<piece>.{svg,png};
     // these keys are for numbers, colors and activation. Padding is never inherited.
+    // Only iosSplash, androidSplash, featureGraphic and launchLogo accept cornerRadius.
     icon:             { padding: '0%' },    // DefaultIcon.png + DefaultIcon-ios.png
     dark:             { background: null }, // DefaultIcon-Dark.png
     tinted:           {},                   // DefaultIcon-Tinted.png
@@ -65,7 +67,7 @@ module.exports = {
     featureGraphic:   { padding: '12%' },   // MarketplaceArtworkFeature.png (1024×500)
     adaptive:         { padding: '18%' },   // ic_launcher_{foreground,background,monochrome}.png × 5 + ic_launcher.xml
     legacyIcon:       { padding: '10%' },   // ic_launcher.png × 5
-    appicon:          {},                   // appicon.png (128×128)
+    appicon:          { padding: '10%' },   // appicon.png (128×128)
     androidSplash:    { padding: '26%' },   // assets/android/default.png + images/res-*/default.png × 11
 
     // Opt-in: inert until you edit the Android theme / FCM meta-data by hand.
@@ -98,14 +100,17 @@ The config file has four main sections: `purge`, `brand`, `images`, and `theme`.
 
 `brand:` and `images:` configure the matching CLI commands — see [CLI Commands: `brand`](./cli-commands.md#brand-command) and [CLI Commands: `images`](./cli-commands.md#images-command) for the full option lists. The rest of this page covers `purge` and `theme`.
 
-For `brand`, the structure is **one block per piece of artwork** (v7.13.0), each accepting the same four keys where they apply:
+For `brand`, the structure is **one block per piece of artwork** (v7.13.0), each accepting the same five keys where they apply:
 
 - `logo`: path to this piece's artwork, when it lives outside `purgetss/brand/`
 - `padding`: inset per side, as a number or a percentage string like `'19%'` — **never inherited**
+- `cornerRadius`: integer or percentage string from `0` through `50`, valid only in `iosSplash`, `androidSplash`, `featureGraphic`, and `launchLogo`
 - `background`: hex color, or `null` for transparent — inherited from `brand.background`
 - `enabled`: `false` turns a default piece off, `true` turns an opt-in piece on
 
-Plus `brand.background`, `brand.confirmOverwrites`, `brand.optimize`, `brand.logo` (the main logo) and `brand.monochromeLogo`.
+Plus `brand.background`, shared `brand.artworkCornerRadius` (default `'0%'`), optional splash-only `brand.splashCornerRadius`, `brand.confirmOverwrites`, `brand.optimize`, `brand.logo` (the main logo) and `brand.monochromeLogo`.
+
+Use flags for temporary artwork, geometry, the shared background, selection, activation, and optimization. Keep `confirmOverwrites`, permanent `enabled` values, and exceptional per-piece backgrounds in config. For radius, a piece-specific flag wins over the splash shortcut when applicable, then `--artwork-corner-radius`, piece config, `brand.splashCornerRadius` for splashes, `brand.artworkCornerRadius`, and `0%`.
 
 > **INFO — Older `brand:` blocks update themselves**
 > A `brand:` block written for an earlier PurgeTSS is rewritten **on disk** to this structure on the next run, carrying over every value that had been customized and printing each one it moved. Both earlier shapes are recognized: the original flat keys and the v7.7.0 grouped sections (`logos` / `padding` / `android` / `ios` / `colors`). This replaced the in-memory translation used from v7.10.2 to v7.12.1. A key that belongs to no structure at all — a typo — aborts the run with the list of valid ones instead of being ignored. See [App Icons & Branding → Older configs update themselves](./app-branding.md#older-configs-update-themselves).

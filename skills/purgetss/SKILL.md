@@ -24,15 +24,19 @@ Before recommending a command, class, output path, `$.UI.create()`, TSS file, or
 | Task involves | Required reading |
 |---|---|
 | Alloy vs. Classic support or output paths | [references/classic-projects.md](references/classic-projects.md), [references/cli-commands.md](references/cli-commands.md) |
+| Setup, auto-purge, or `watch` diagnostics | [references/installation-setup.md](references/installation-setup.md), [references/cli-commands.md](references/cli-commands.md) |
 | Choosing utility classes | [references/class-index.md](references/class-index.md) |
 | Layout (horizontal/vertical/composite, grid) | [references/grid-layout.md](references/grid-layout.md), [references/ui-ux-design.md](references/ui-ux-design.md) |
 | Dynamic components in controllers | [references/dynamic-component-creation.md](references/dynamic-component-creation.md) |
+| App branding or artwork geometry | [references/app-branding.md](references/app-branding.md), [references/cli-commands.md](references/cli-commands.md) |
 | SVG / multi-density image assets | [references/svg-pipeline.md](references/svg-pipeline.md), [references/multi-density-images.md](references/multi-density-images.md) |
 | Custom values / arbitrary syntax | [references/arbitrary-values.md](references/arbitrary-values.md) |
 | Platform-specific styles (`ios:`, `android:`) | [references/platform-modifiers.md](references/platform-modifiers.md) |
 | Dark/Light mode | [references/semantic-colors.md](references/semantic-colors.md), [references/appearance-module.md](references/appearance-module.md) |
 | Apply directive / class extraction | [references/apply-directive.md](references/apply-directive.md) |
-| Animations | [references/animation-system.md](references/animation-system.md) |
+| Custom or icon fonts | [references/custom-fonts.md](references/custom-fonts.md), [references/icon-fonts.md](references/icon-fonts.md) |
+| Animations in Alloy | [references/animation-system.md](references/animation-system.md), [references/animation-advanced.md](references/animation-advanced.md) |
+| `purgetss.ui` in Classic | [references/purgetss-ui-classic.md](references/purgetss-ui-classic.md), [references/classic-projects.md](references/classic-projects.md) |
 
 ### Step 3 — Output contract
 
@@ -445,7 +449,7 @@ Load these only when needed:
 - [iOS Large Titles](references/ios-large-titles.md) - Best practice for iOS Large Title navigation
 
 ### App Assets
-- [App Branding](references/app-branding.md) - `brand` command: the 14 pieces it regenerates (launcher, adaptive, iOS 18+ Dark/Tinted, marketplace, both splash sets), the per-piece `brand:` config, `--only`, `--optimize` (v7.13.0)
+- [App Branding](references/app-branding.md) - `brand` command: 14 pieces, per-piece config, selection, optimization, appicon padding, and rounded non-icon artwork (v7.16.0)
 - [Launch Background](references/launch-background.md) - Carrying `brand.background` into the iOS LaunchScreen and a launcher-only Android theme (`--notes` output)
 - [Multi-Density Images](references/multi-density-images.md) - `images` command for Android res-*dpi + iPhone @1x/@2x/@3x UI images (v7.6.0)
 - [SVG Pipeline](references/svg-pipeline.md) - SVG-aware compile-time image pipeline: `.svg` refs + numeric `w-*`/`h-*` classes compile to 8 density PNGs; `images.files`/`images.autoSync` (v7.11.0–v7.11.1)
@@ -460,10 +464,11 @@ Load these only when needed:
 - [Custom Fonts](references/custom-fonts.md) - `build-fonts` command for Google Fonts, brand typefaces, and community icon fonts (.ttf + .css)
 - [Icon Fonts](references/icon-fonts.md) - The 4 official families (Font Awesome 7, Material Icons, Material Symbols, Framework7) — variant tables + `icon-library` install flow + recreating removed libraries
 - [Animation System](references/animation-system.md) - 15 methods including collision detection, transitions, and sequential animations
-- [Animation Advanced](references/animation-advanced.md) - Property inheritance, utility classes, implementation rules, complex UI example
+- [Animation Advanced](references/animation-advanced.md) - Property forwarding, runtime rules, utility classes, and platform behavior
+- [PurgeTSS UI in Classic](references/purgetss-ui-classic.md) - Native JavaScript setup, public exports, animation objects, cleanup, and platform notes
 
 ### Release Notes
-- [Version History](references/version-history.md) - Release-by-release feature additions and behavior changes (v7.4.0 → v7.13.1)
+- [Version History](references/version-history.md) - Release-by-release feature additions and behavior changes (v7.4.0 → v7.16.2)
 
 > **💡 TEXT FONTS (Google Fonts, Roboto, etc.)**
 > For text fonts, see [Custom Fonts](references/custom-fonts.md).

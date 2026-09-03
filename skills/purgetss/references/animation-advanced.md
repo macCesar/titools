@@ -1,6 +1,6 @@
 # PurgeTSS Animation -- Advanced Reference
 
-Property inheritance, timing/utility classes, utility functions, implementation rules, and complex UI examples.
+Runtime property forwarding, timing/utility classes, utility functions, implementation rules, and complex UI examples.
 
 For core animation methods (play, toggle, apply, open, close, draggable, undraggable, detectCollisions, sequence, swap, pulse, shake, snapTo, reorder, transition), see [animation-system.md](./animation-system.md).
 
@@ -9,18 +9,42 @@ For core animation methods (play, toggle, apply, open, close, draggable, undragg
 <!-- TOC-START -->
 ## Contents
 
-- [Property Inheritance from the Animation Object](#property-inheritance-from-the-animation-object)
+- [Runtime Property Forwarding](#runtime-property-forwarding)
+  - [Forwarding and Overrides](#forwarding-and-overrides)
 - [Timing and Utility Classes](#timing-and-utility-classes)
+  - [anchorPoint / origin-* Classes](#anchorpoint--origin--classes)
+  - [autoreverse](#autoreverse)
+  - [Curve Classes](#curve-classes)
+  - [delay-*](#delay-)
+  - [duration-*](#duration-)
+  - [repeat-*](#repeat-)
+  - [rotate-* and -rotate-*](#rotate--and--rotate-)
+  - [scale-*](#scale-)
+  - [Snap Classes](#snap-classes)
+  - [keep-z-index](#keep-z-index)
+  - [Drag Type](#drag-type)
+  - [Opacity and Visibility Utilities](#opacity-and-visibility-utilities)
+  - [zoom-in-* / zoom-out-*](#zoom-in---zoom-out-)
 - [Utility Functions](#utility-functions)
-- [Implementation Rules](#implementation-rules)
-- [Method Implementation Template](#method-implementation-template)
+  - [deviceInfo()](#deviceinfo)
+  - [saveComponent({ source, directory })](#savecomponent-source-directory-)
+- [Runtime Implementation Rules](#runtime-implementation-rules)
+  - [Transform conversion](#transform-conversion)
+  - [State and children](#state-and-children)
+  - [Arrays and callbacks](#arrays-and-callbacks)
+  - [Position and drag state](#position-and-drag-state)
+  - [Android position consolidation](#android-position-consolidation)
+  - [Transition state](#transition-state)
+  - [Cleanup limitations](#cleanup-limitations)
 - [Complex UI Example](#complex-ui-example)
+  - [XML](#xml)
+  - [Controller](#controller)
 
 <!-- TOC-END -->
 
-## Property Inheritance from the Animation Object
+## Runtime Property Forwarding
 
-All methods in the Animation module inherit properties from the `<Animation>` object's classes. You configure animation behavior in XML and it applies to every method call.
+The constructor keeps the resolved `<Animation>` properties as its base object. Most helpers spread that object into `Ti.UI.createAnimation()` before adding their own fields. This forwards native values such as `duration`, `delay`, `curve`, `opacity`, or `backgroundColor`, but it does not guarantee that every Titanium property is meaningful for every helper.
 
 When you declare an Animation object with utility classes:
 
@@ -28,38 +52,22 @@ When you declare an Animation object with utility classes:
 <Animation id="myAnim" module="purgetss.ui" class="duration-150 delay-100 curve-animation-ease-out" />
 ```
 
-The parsed properties (`duration: 150`, `delay: 100`, `curve: EASE_OUT`) are stored in the internal `args` object. Each method reads from `args` as its default values.
+In Classic, the equivalent values are passed directly to `createAnimation()`; see [purgetss-ui-classic.md](./purgetss-ui-classic.md).
 
-### Inheritance Matrix
+### Forwarding and Overrides
 
-| Property | play/toggle | open/close | apply | sequence | swap | reorder | snapTo | shake | pulse | transition |
-| --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| `duration` | Y | Y | -- | Y | Y | Y | Y | Y (div6) | Y | Y |
-| `delay` | Y | Y | -- | Y | Y | Y | Y | Y | Y | Y |
-| `curve` | Y | Y | -- | Y | Y | Y | Y | fixed | fixed | Y |
-| `autoreverse` | Y | Y | -- | Y | -- | -- | -- | fixed | fixed | -- |
-| `repeat` | Y | Y | -- | Y | -- | -- | -- | fixed | param | -- |
+| Method | Forwarded base values | Forced or computed values |
+| --- | --- | --- |
+| `play` / `toggle` / `open` / `close` | Base object plus active state | Active-state transform |
+| `apply` | Base object plus active state | Applies immediately rather than creating native motion |
+| `sequence` | Same state values as `play` | Serial start order |
+| `swap` | Base object | Destination position; source identity transform |
+| `pulse` | Base object | Transform fallback, `autoreverse`, `repeat`, and curve |
+| `shake` | Non-overridden base values | Transform, divided duration, `autoreverse`, `repeat`, and curve |
+| `snapTo` / `reorder` | Base object | Destination position and identity transform |
+| `transition` | Base object | Combined layout transform and optional size/opacity |
 
-**Legend:**
-- **Y** = inherited from Animation object
-- **--** = not applicable to this method
-- **fixed** = uses internal fixed values (`shake`: `autoreverse: true`, `repeat: 3`, `curve: EASE_IN_OUT`; `pulse`: `autoreverse: true`, `curve: EASE_IN_OUT`)
-- **param** = controlled by method parameter (`pulse` `count` sets the repeat value)
-- **(div6)** = `shake` divides the inherited duration by 6 for each oscillation cycle
-
-### Fallback Defaults
-
-When a property is not set on the Animation object and no explicit parameter is passed:
-
-| Property | `swap` / `reorder` / `snapTo` | `shake` |
-| --- | :---: | :---: |
-| `duration` | 200ms | 400ms |
-| `delay` | 0ms | 0ms |
-| `curve` | `EASE_IN_OUT` | `EASE_IN_OUT` (fixed) |
-
-### Explicit Parameters Take Precedence
-
-An explicit value passed as a method parameter always overrides the inherited value:
+Method-specific assignments are appended after the spread and therefore win on duplicate keys. The method parameters are feature-specific rather than alternative timing values:
 
 ```javascript
 // All timing controlled by the Animation object's classes
@@ -69,6 +77,8 @@ $.myAnim.shake($.errorField, 20)
 $.myAnim.snapTo($.card, targets)
 $.myAnim.transition(views, fanOutLayout)
 ```
+
+There is no shared `200ms`/`0ms`/`EASE_IN_OUT` fallback for `swap`, `snapTo`, `reorder`, or `transition`. Configure timing on the Animation object when predictable visible motion matters. Only `shake` computes `(duration ?? 400) / 6`; `pulse` supplies a default scale of `1.2`. Both helpers force ease-in-out.
 
 ---
 
@@ -182,12 +192,12 @@ Control how draggable views behave when dropped. All are **off by default**.
 | `snap-back-false` | `{ animationProperties: { snap: { back: false } } }` | Disables snap-back |
 | `snap-center` | `{ animationProperties: { snap: { center: true } } }` | Auto-centers on target |
 | `snap-center-false` | `{ animationProperties: { snap: { center: false } } }` | Disables snap-center |
-| `snap-magnet` | `{ animationProperties: { snap: { magnet: true } } }` | (Planned) Magnetic attraction |
-| `snap-magnet-false` | `{ animationProperties: { snap: { magnet: false } } }` | Disables snap-magnet |
+
+Generated utility inventories may still contain `snap-magnet` names, but the current `purgetss.ui` runtime never reads `animationProperties.snap.magnet`. Do not use or recommend those classes as working drag behavior.
 
 ### keep-z-index
 
-Prevents the drag system from auto-promoting the dragged view's z-index. Useful when using `transition` presets where z-order is part of the layout.
+Prevents the drag system from promoting the active view on touch start. It does not prevent `draggable(array)` from first assigning each view `zIndex` from its array position, and `swap()` restores z-order from the current draggable registry rather than arbitrary original values.
 
 ```css
 '.keep-z-index': { animationProperties: { keepZIndex: true } }
@@ -234,236 +244,93 @@ The module exports helper functions alongside the Animation component:
 
 ### deviceInfo()
 
-Logs detailed platform and display information to the console. Works in both Alloy and Classic Titanium projects.
+Logs platform and display information and returns `undefined`. It includes `xdpi` and `ydpi` only on Android. Its tablet flag currently recognizes iPad only, so Android tablets are reported as handheld.
 
 ```javascript
 const { deviceInfo } = require('purgetss.ui')
 deviceInfo()
 ```
 
+Classic loads the generated file with `require('lib/purgetss.ui')`.
+
 ### saveComponent({ source, directory })
 
-Saves a snapshot of a view as a PNG to the photo gallery.
+Calls `source.toImage()`, creates an MD5-based PNG filename, writes it to `directory` (default: `Ti.Filesystem.tempDirectory`), and then invokes `Ti.Media.saveToPhotoGallery()`. It returns `undefined` and has no completion or error callback.
 
 ```javascript
 const { saveComponent } = require('purgetss.ui')
-saveComponent({ source: $.myView, directory: 'screenshots' })
+saveComponent({ source: $.myView, directory: Ti.Filesystem.applicationDataDirectory })
 ```
+
+Check or request photo-gallery permission before calling it. On iOS, declare the photo-library add usage description required by Titanium. Classic uses `require('lib/purgetss.ui')`; see [purgetss-ui-classic.md#runtime-utilities](./purgetss-ui-classic.md#runtime-utilities).
 
 ---
 
-## Implementation Rules
+## Runtime Implementation Rules
 
-Rules that every method in the Animation module must follow. They keep behavior consistent with the declarative model of PurgeTSS.
+These are observable rules of the generated module. Use them to diagnose surprising output; they are not a template or promise for future extension methods.
 
-### Rule 1: Inherit from the `<Animation />` object via `...args`
+### Transform conversion
 
-Every method MUST inherit all properties from the Animation object by spreading `args`. Never cherry-pick individual properties.
+At construction time, top-level `scale`, `rotate`, and `anchorPoint` are converted into one `Ti.UI.Matrix2D` and removed from the base object. Separate matrices are prepared for `animationProperties.open` and `.close`. `pulse`, `shake`, `swap`, `snapTo`, `reorder`, and `transition` may replace or reset that transform, so a position helper does not promise to preserve it.
 
-The `<Animation />` object is the single source of truth for animation behavior. When a developer declares:
+### State and children
 
-```xml
-<Animation id="myAnim" module="purgetss.ui" class="curve-animation-ease-out opacity-50 delay-100 duration-300" />
-```
+`play()`, `toggle()`, `apply()`, and `sequence()` toggle internal open/close state. `open()` and `close()` set it explicitly. The active state is merged into the current base object when `animationProperties` exists.
 
-Every property -- timing AND visual -- is available in `args` and MUST be inherited by all methods.
+After a top-level `play`, `toggle`, `open`, or `close`, `animationProperties.complete` starts as a second animation. `apply()` applies `complete` immediately. The public callback belongs to the base play/apply operation; it does not wait for the second top-level `complete` animation.
 
-```javascript
-// CORRECT -- inherits everything, method-specific props override
-view.animate({ ...args, left: destLeft, top: destTop, transform: Ti.UI.createMatrix2D() })
+For each direct child with an active state, merge precedence is:
 
-// WRONG -- cherry-picks individual properties, breaks if new ones are added
-view.animate({ duration: args.duration, delay: args.delay, left: destLeft, top: destTop })
-```
+1. Parent `animationProperties.children`.
+2. Child `animationProperties.child`.
+3. Child `animationProperties.open`, `.close`, or `.complete`.
 
-This is the same pattern used by the core `playView` function:
+Later objects win. Only direct children of the target are considered.
 
-```javascript
-const animation = Ti.UI.createAnimation(args)
-view.animate(animation)
-```
+### Arrays and callbacks
 
-If a developer adds `opacity-50` to their `<Animation>`, they expect ALL methods to animate opacity, not just `play`.
+`play()`, `open()`, `close()`, and `apply()` accept one view or an array. Array callbacks run once per view and include `index`, `total`, and `getTarget()`. The configured base delay accumulates for successive views. `sequence()` waits for each native completion and invokes its callback once after the final view; an empty array never invokes it.
 
-### Rule 2: Override by position, not by exclusion
+The callback is a new object containing selected native primitives plus PurgeTSS metadata. It is not the original Titanium event.
 
-If a method needs fixed values for specific properties, they go AFTER `...args` to override. Never filter or exclude properties from args.
+### Position and drag state
 
-```javascript
-// CORRECT -- shake: inherits everything, then overrides what it needs
-view.animate({
-  ...args,
-  transform: Ti.UI.createMatrix2D().translate(intensity, 0),
-  duration: Math.round((args.duration ?? 400) / 6),
-  autoreverse: true,
-  repeat: 3,
-  curve: Ti.UI.ANIMATION_CURVE_EASE_IN_OUT
-})
+`swap()`, `snapTo()`, and `reorder()` persist destinations with `applyProperties()` and update private origin fields. They fall back to rendered `rect` coordinates, so call them only after layout.
 
-// WRONG -- filters args, only picks what it thinks it needs
-view.animate({
-  duration: args.duration,
-  transform: Ti.UI.createMatrix2D().translate(intensity, 0),
-  autoreverse: true,
-  repeat: 3
-})
-```
+Drag precedence is precise:
 
-Properties declared later in the object literal override earlier ones:
+- Constructor bounds are the base; `view.bounds` overrides individual edges.
+- Axis restriction comes only from `view.constraint`.
+- `view.draggingType` overrides constructor `draggingType`.
+- Constructor `draggable.drag/drop` is merged with `view.draggable.drag/drop`; view properties win.
+- Every resolved drag/drop property is forwarded to Titanium.
+- `snap.center` invokes `snapTo()` after a valid drop; `snap.back` returns a missed drop to its captured origin.
+- No `snap.magnet` behavior exists.
 
-```javascript
-// If args = { duration: 300, opacity: 0.5, curve: EASE_OUT }
-view.animate({
-  ...args,        // duration: 300, opacity: 0.5, curve: EASE_OUT
-  duration: 50,   // overrides to 50
-  curve: EASE_IN  // overrides to EASE_IN
-})
-// Result: { duration: 50, opacity: 0.5, curve: EASE_IN }
-// opacity 0.5 is preserved from args -- not lost by filtering
-```
+Collision detection uses the dragged view's center. On release, the last non-null hover target is a fallback when the final hit test returns `null`.
 
-### Rule 3: No timing parameters in method signatures
+`draggable(array)` immediately assigns each view `zIndex` from its array index. `keepZIndex` only disables later touch-start promotion. `swap()` restores z-order by the current draggable-registry order, not by arbitrary values present before registration.
 
-The existing core methods (`play`, `open`, `close`, `apply`, `sequence`) do NOT accept `duration`, `delay`, or `curve` as parameters. New methods MUST follow the same pattern. Only parameters specific to the method's unique functionality are allowed.
+### Android position consolidation
 
-```javascript
-// CORRECT -- only method-specific parameters
-animationView.swap = (view1, view2) => {
-animationView.reorder = (views, newOrder) => {
-animationView.shake = (view, intensity = 10) => {
-animationView.snapTo = (view, targets) => {
-animationView.pulse = (view, count = 1) => {
+Android drag uses zero-duration native animations. At touch end, when translation state exists, the runtime consolidates `translation`, `rotate`, `scale`, and an equivalent `Matrix2D` before collision, snap, or drop callbacks. It does not consolidate only `top` and `left`. iOS uses synchronous property application for standard dragging and a separate transformed-view path.
 
-// WRONG -- timing parameters belong in the <Animation /> object
-animationView.swap = (view1, view2, duration) => {
-animationView.shake = (view, intensity, duration) => {
-```
+### Transition state
 
-Users control timing declaratively:
+`transition()` builds one matrix per view from translation, rotation, and scale, applies a supplied `zIndex` before animation, and can animate width, height, and opacity.
 
-```xml
-<!-- Fast swap -->
-<Animation id="fastSwap" module="purgetss.ui" class="duration-75" />
+Without a matching layout, a view fades out, receives `zIndex: 0`, and has touch disabled. iOS preserves its last transform; Android resets transform, translation, rotation, and scale. A later layout fades the view back in. Completion forces `touchEnabled: true` for every matched view, so reapply `false` for intentionally non-interactive views.
 
-<!-- Slow swap with delay -->
-<Animation id="slowSwap" module="purgetss.ui" class="delay-200 duration-500" />
-```
+### Cleanup limitations
 
-```javascript
-// Same method call, different behavior -- controlled by XML
-$.fastSwap.swap($.card1, $.card2)
-$.slowSwap.swap($.card1, $.card2)
-```
+`undraggable()` removes the latest stored touch/orientation listeners, the first matching draggable and collision registrations, and most private drag state. Current limitations require application discipline:
 
-### Rule 4: Consolidate state with `applyProperties` post-animation
+- `draggable()` does not deduplicate. Repeated registration creates extra listeners and entries that one cleanup call cannot fully remove.
+- `_wasDragged` remains on the view after `undraggable()`.
+- `detectCollisions()` retains non-null callbacks on the animation object; passing `null` later does not clear them.
 
-After animating position (`left`/`top`), ALWAYS consolidate with `applyProperties` in the callback so the final state is real (not just visual via transform).
-
-```javascript
-// CORRECT -- consolidates after animation
-view.animate({
-  ...args, left: destLeft, top: destTop, transform: Ti.UI.createMatrix2D()
-}, () => {
-  view.applyProperties({ left: destLeft, top: destTop, transform: Ti.UI.createMatrix2D() })
-})
-
-// WRONG -- animation ends but view's actual properties are stale
-view.animate({
-  ...args, left: destLeft, top: destTop, transform: Ti.UI.createMatrix2D()
-})
-```
-
-On iOS, dragging uses `transform.translate()` -- the view's `left`/`top` properties don't change. `applyProperties` ensures the view's actual properties match the visual position and the transform is reset to identity.
-
-### Rule 5: Track position with `_origin*` properties
-
-Methods that move position (`swap`, `reorder`, `snapTo`, and future methods like `slideTo`) MUST update `_originTop`/`_originLeft` after the animation so that subsequent drag/swap operations work correctly.
-
-```javascript
-// CORRECT -- updates origin tracking
-view.animate({
-  ...args, left: destLeft, top: destTop, transform: Ti.UI.createMatrix2D()
-}, () => {
-  view.applyProperties({ left: destLeft, top: destTop, transform: Ti.UI.createMatrix2D() })
-})
-
-view._originTop = destTop
-view._originLeft = destLeft
-```
-
-How `_origin*` works:
-- `_originTop`/`_originLeft` represent the view's "logical grid position"
-- `swap` reads from `view._originTop ?? view.top` -- falls back to the actual `top` if no origin is set
-- `onTouchStart` in the drag handler saves the current `top`/`left` as `_origin*` for bounce-back
-- `undraggable` cleans up all `_origin*` properties
-
-### Rule 6: Consolidate Android drag position before drop animations
-
-On Android, drag uses `animate({ duration: 0 })` which is asynchronous -- the last frame may still be in-flight when `touchend` fires. Before starting any drop animation on Android, consolidate the view's position with `applyProperties`:
-
-```javascript
-if (!params.isIOS) {
-  draggableView.applyProperties({
-    top: draggableView._visualTop ?? draggableView.top,
-    left: draggableView._visualLeft ?? draggableView.left
-  })
-}
-```
-
-This applies to both the snap path and the bounce-back path in `onTouchEnd`. iOS does not need this because drag uses synchronous `transform.translate()`.
-
-**Collision fallback on drop:** During drag, `checkCollision` runs on every `touchmove`. When the user releases while still in motion, the drag center may exit the target between the last `touchmove` and `touchend`. The module tracks `lastKnownTarget` and uses it as fallback when `checkCollision` returns null on drop.
-
-### Rule 7: Clean up in `undraggable`
-
-Every internal property added to views MUST be cleaned up in `undraggable`:
-
-| Property | Set by | Purpose |
-| --- | --- | --- |
-| `_originTop` / `_originLeft` | `swap`, `reorder`, `snapTo`, `onTouchStart` | Logical position tracking |
-| `_visualTop` / `_visualLeft` | `handleTouchMove` | Visual position during drag |
-| `_dragListeners` | `makeViewsDraggable` | Touch event listener references |
-| `_collisionEnabled` | `detectCollisions` | Collision detection flag |
-| `_wasDragged` | `onTouchStart` / `handleTouchMove` | Drag detection flag |
-| `_bouncingBack` | `onTouchEnd` (bounce-back) | Prevents origin capture during mid-animation; `swap` cancels it before animating |
-
-When adding a new method that stores internal state on views, add the cleanup to `undraggable`:
-
-```javascript
-animationView.undraggable = (_views) => {
-  const arr = Array.isArray(_views) ? _views : [_views]
-  arr.forEach(view => {
-    // ... existing cleanup ...
-    delete view._newProperty  // ADD cleanup for any new internal property
-  })
-}
-```
-
----
-
-## Method Implementation Template
-
-When creating a new method, follow this template:
-
-```javascript
-animationView.newMethod = (view, specificParam = defaultValue) => {
-  if (params.debug) { console.log('') }
-  logger('`newMethod` method called on: ' + params.id)
-  if (!view) { return notFound() }
-
-  view.animate({
-    ...args,                          // Rule 1: inherit all from <Animation />
-    specificProp: computedValue,      // Rule 2: override AFTER ...args
-  }, () => {
-    view.applyProperties({ ... })    // Rule 4: consolidate state
-  })
-
-  view._originTop = newTop           // Rule 5: track position (if applicable)
-  view._originLeft = newLeft
-}
-// Rule 3: no timing params in signature
-// Rule 7: add cleanup to undraggable (if new internal state)
-```
+Register each view once. On window close, call `undraggable()` for draggable views and registered collision targets, remove application-owned listeners, and release callbacks and animation references that are no longer needed. Do not make application code depend on private underscore fields.
 
 ---
 

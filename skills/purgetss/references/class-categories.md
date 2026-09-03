@@ -193,8 +193,8 @@ Complete inventory of all class prefixes organized by functional category. For n
 | `duration-*` | 22 | `duration-0`, `duration-50` to `duration-5000` |
 | `delay-*` | 22 | `delay-0`, `delay-50` to `delay-5000` |
 | `repeat-*` | ~31 | `repeat-*` variants |
-| `snap-*` (v7.4.0+) | 6 | `snap-back`, `snap-back-false`, `snap-center`, `snap-center-false`, `snap-magnet`, `snap-magnet-false` — drop behaviors for draggable views |
-| `keep-z-index` (v7.4.0+) | 2 | `keep-z-index`, `keep-z-index-false` — preserves z-order during drag when using `transition` layouts |
+| `snap-*` runtime behavior (v7.4.0+) | 4 | `snap-back`, `snap-back-false`, `snap-center`, `snap-center-false` — implemented drop behaviors. Generated inventories may still contain `snap-magnet*`, but the runtime does not consume them |
+| `keep-z-index` (v7.4.0+) | 2 | `keep-z-index`, `keep-z-index-false` — prevents touch-start promotion; it does not stop `draggable(array)` from assigning index-based z-order |
 
 ### Shadows & Elevation
 

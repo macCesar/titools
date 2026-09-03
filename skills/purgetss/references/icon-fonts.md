@@ -93,7 +93,7 @@ Each module exposes its existing icon lookup API plus a `families` object with `
 | `framework7icons` | `fontFamily` |
 
 ```javascript
-const fontAwesome = require('fontawesome')
+const fontAwesome = require('lib/fontawesome')
 
 const home = Ti.UI.createLabel({
   text: fontAwesome.icons.home,
@@ -103,6 +103,8 @@ const home = Ti.UI.createLabel({
   }
 })
 ```
+
+All generated modules live under `Resources/lib/`, so use the pattern shown above: include `lib/` in the path and omit both `Resources/` and `.js`. See the centralized [Classic module path table](./classic-projects.md#loading-generated-modules-in-classic) for all four filenames.
 
 The direct alias and `families` values agree, for example `fontAwesome.solid === fontAwesome.families.solid`; `families.default` provides the library's default variant.
 

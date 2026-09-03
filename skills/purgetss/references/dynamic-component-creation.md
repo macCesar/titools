@@ -2,7 +2,7 @@
 
 > **SCOPE NOTE**
 >
-> This reference covers dynamic component creation using **Alloy's `$.UI.create()` helper** and **`Alloy.createStyle()` + `applyProperties()`**, both combined with PurgeTSS utility classes. It is an Alloy + PurgeTSS integration guide, **not** documentation for the `purgetss.ui` native module (see [animation-system.md](./animation-system.md) and [animation-advanced.md](./animation-advanced.md) for that module).
+> This reference covers dynamic component creation using **Alloy's `$.UI.create()` helper** and **`Alloy.createStyle()` + `applyProperties()`**, both combined with PurgeTSS utility classes. It is an Alloy + PurgeTSS integration guide, **not** documentation for the `purgetss.ui` native module (see [animation-system.md](./animation-system.md) and [animation-advanced.md](./animation-advanced.md) for Alloy animation usage, or [purgetss-ui-classic.md](./purgetss-ui-classic.md) for the generated Classic runtime).
 >
 > For general Alloy controller and view patterns, refer to the `alloy-guides` and `alloy-howtos` skills.
 
