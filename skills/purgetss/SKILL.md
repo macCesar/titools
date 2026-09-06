@@ -468,7 +468,7 @@ Load these only when needed:
 - [PurgeTSS UI in Classic](references/purgetss-ui-classic.md) - Native JavaScript setup, public exports, animation objects, cleanup, and platform notes
 
 ### Release Notes
-- [Version History](references/version-history.md) - Release-by-release feature additions and behavior changes (v7.4.0 → v7.16.2)
+- [Version History](references/version-history.md) - Release-by-release feature additions and behavior changes (v7.4.0 → v7.17.0)
 
 > **💡 TEXT FONTS (Google Fonts, Roboto, etc.)**
 > For text fonts, see [Custom Fonts](references/custom-fonts.md).

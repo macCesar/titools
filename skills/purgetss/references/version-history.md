@@ -8,6 +8,11 @@ When in doubt about whether a class, flag, or config key exists in the user's in
 
 ---
 
+## v7.17.0
+- The `images:` section rejects unknown keys instead of ignoring them, at both levels: the five top-level keys (`quality`, `format`, `autoSync`, `confirmOverwrites`, `files`) and the three inside each `files[]` entry (`filename`, `width`, `height`, with `filename` required). Nothing is generated when validation fails. Never suggest `width`, `opacity`, `padding` or `output` as config keys — they are CLI flags and now abort the run. See [multi-density-images.md](multi-density-images.md).
+- The generated `images:` block gained four comment lines explaining the 4× master convention, and the `quality` comment now names the formats it reaches: `webp`, `jpeg`, `avif`, `tiff`. PNG uses `compressionLevel: 9` and GIF takes no quality parameter, so neither is affected. Both copies changed — the one patched into an existing config and the one `init` seeds.
+- `install-dependencies` and `create --dependencies` now install only `eslint` and `@eslint/js` and copy a flat `eslint.config.mjs`. `eslint-config-axway` and `eslint-plugin-alloy` are gone: the old `.eslintrc.js` could not run under ESLint 9. See [cli-commands.md](cli-commands.md#install-dependencies-command).
+
 ## v7.16.2
 - `build-fonts --module` now exports every processed TTF/OTF PostScript name through `families`, including text-only collections; icon CSS additionally populates `icons`. Filename-derived keys such as `poppinsSemiBold` are supported. See [custom-fonts.md](custom-fonts.md).
 - In clean Classic projects, saved `shades` palettes and `color-module` no longer scaffold empty brand, font, or image source folders. `shades` still refreshes an existing generated color module. See [classic-projects.md](classic-projects.md).
