@@ -1,6 +1,6 @@
 # Native tile maps
 
-Verified against `ti.game@c216e7f`: upstream `README.md` § Tile maps, `example/tilemap.js`, both `TileLayerProxy` implementations, both native `TileLayer` engines, scene collision, and `Pathfinder`.
+Verified against `ti.game@3bea2f4`: upstream `README.md` § Tile maps, `example/tilemap.js`, both `TileLayerProxy` implementations, both native `TileLayer` engines, scene collision, and `Pathfinder`.
 
 Use `Game.createTileLayer()` for a large or mostly static grid. The engine stores the whole map but renders only cells inside the camera, batches the layer through one sheet, checks only collision cells under a mover, and feeds solid cells into `findPath`. A small map whose tiles need independent sprite behavior can still use sprites; `topdown.js` is a 16×12 example of that older pattern.
 

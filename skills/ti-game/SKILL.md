@@ -8,7 +8,7 @@ allowed-tools: Read, Grep, Glob, Edit, Write, Bash(node *)
 
 `ti.game` is Michael Gangolf's OpenGL ES 2.0 sprite engine for Titanium. JavaScript describes the scene and reacts to discrete events; Android and iOS run rendering, animation, physics, collision, gestures, audio, particles, ropes, tile layers, camera work, and telemetry natively.
 
-This skill is verified against upstream `main` at **`c216e7f` (2026-08-28)**. Both manifests still say **`0.5.0`**, although important features landed after that version was introduced. Treat the commit or build date as the capability marker; feature-detect an installed build when the exact artifact is unknown.
+This skill is verified against upstream `main` at **`3bea2f4` (2026-09-02)**. Both manifests say **`0.6.0`**, which is unreleased; the published **`0.5.0`** release carries the same engine code, because its tag sits on the commit immediately before the version bump. Treat the commit or build date as the capability marker, never the version string — a locally built artifact stamped `0.5.0` can predate that release by weeks. Feature-detect an installed build when the exact artifact is unknown.
 
 The skill applies to **Classic and Alloy** projects. Nothing here requires PurgeTSS.
 
@@ -56,6 +56,9 @@ Do not move sprites from `setInterval`, `requestAnimationFrame`, or a JS loop. P
 | Chain, tether, cape | `Game.createRope()` |
 | Pause or slow the scene while still drawing | `gameView.timeScale` |
 | Measure FPS, frame time, and draw calls | `debug: { hud: true }` or the `performance` event |
+| Read a game controller | GameView `buttondown`/`buttonup`, `stick`, `trigger` (names normalized across pads) |
+| Wrap the world around horizontally | `gameView.worldWrapX` + per-sprite `wrapWorldX` |
+| React to the force of a hit | `solidimpact` with a per-sprite `impactThreshold` |
 
 ## Minimal scene
 
@@ -124,7 +127,7 @@ When sources disagree, use this order:
 3. Upstream `README.md` and `TUTORIAL.md` for intended public usage.
 4. Upstream `TODO.md` for what remains partial or absent.
 
-Known upstream prose drift at the pinned commit: the README says 26 demos although there are 33; its camera row names the wrong HUD corner; and it says every `TileLayer` property is live although Android treats `legend`, `firstGid`, `cols`, and `rows` as creation-time configuration. The references already normalize those differences. No demo exercises the wall-contact API yet, so its contract comes from the README and both native implementations.
+The prose drift recorded at the previous pin is gone: upstream now states 34 demos (correct), names the HUD corners correctly, and documents `legend`, `firstGid`, `cols` and `rows` as creation-time on Android. What remains uncovered by any demo is `wallSlideSpeed` and the `onWallLeft`/`onWallRight` flags — `wallhit` itself is now exercised by `worldwrap.js` — so that part of the contract still comes from the README and both native implementations.
 
 ## Before returning code
 

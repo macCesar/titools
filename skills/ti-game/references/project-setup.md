@@ -1,6 +1,6 @@
 # Setting up a ti.game project
 
-Installing the module, wiring it into Classic and Alloy projects, organizing art and sound, and the lifecycle work the engine does not do for you. Verified against `ti.game@c216e7f` (2026-08-28).
+Installing the module, wiring it into Classic and Alloy projects, organizing art and sound, and the lifecycle work the engine does not do for you. Verified against `ti.game@3bea2f4` (2026-09-02).
 
 <!-- TOC-START -->
 ## Contents
@@ -44,7 +44,7 @@ Then declare it in `tiapp.xml`. The iOS platform key is `iphone`, not `ios`:
 
 Pinning `version` is worth the extra attribute: with two module versions installed side by side, an unpinned entry silently picks the highest one.
 
-**The version string does not identify a feature set — the build date does.** The manifest went `0.3.0` → **`0.4.0`** on 2026-08-20 and **`0.5.0`** on 2026-08-27, and in between each number kept accepting features without moving. So every one of them covers several incompatible builds:
+**The version string does not identify a feature set — the build date does.** The manifest went `0.3.0` → **`0.4.0`** on 2026-08-20, **`0.5.0`** on 2026-08-27 and **`0.6.0`** on 2026-09-02, and in between each number kept accepting features without moving. So every one of them covers several incompatible builds:
 
 | A build from | Missing, compared to what this skill documents |
 | --- | --- |
@@ -61,8 +61,12 @@ Pinning `version` is worth the extra attribute: with two module versions install
 | `0.5.0` built before `85a723d` | additionally read-only `onWallLeft` / `onWallRight` and the `wallhit` transition event for sprite and TileLayer walls |
 | `0.5.0` built before `05cb60c` | additionally `wallSlideSpeed`, the native downward-speed cap while pressed against a wall |
 | `0.5.0` built before `c216e7f` | on Android only, string-row TileLayers with a nested JS `legend` decode as empty because the proxy rejects the ordinary map object; numeric data is unaffected |
+| `0.5.0` built before `d7d471e` (2026-08-28) | additionally the whole gamepad surface: `buttondown`/`buttonup`, `stick`, `trigger`, `gamepadconnected`/`gamepaddisconnected`, and the `gamepads`/`gamepad`/dead-zone properties |
+| `0.5.0` built before `af2e544` (2026-08-29) | additionally circular horizontal worlds: `gameView.worldWrapX` and per-sprite `wrapWorldX` |
+| `0.5.0` built before `80d8f2b` (2026-08-30) | additionally the `solidimpact` event and `impactThreshold` |
+| `0.5.0` built before `9c45cf6` (2026-09-02) — **this includes the artifacts most people have** | no crash fixes: writing `y`/`zIndex` from JS can abort the GL thread with *Comparison method violates its general contract*; a sound whose load failed throws `IllegalStateException` on the next `play()`; passing a mistyped value to `sheet`/`target`/`head`/`tail`/`font` aborts the process in JNI instead of raising a JS error. Also `pinch`/`rotate` fire per motion event instead of ~10 Hz, two-finger rotation can add a whole turn at the ±180° flip, the tap/drag slop ignores `cameraScale`, `cameraX`/`cameraY`/`cameraScale`/`cameraBounds`/`throttle`/`steering` are dropped when passed to a `create*` call, a removed sprite stays retained as the camera's follow target, `collidesWith`/`solidWith` reject a bare string, and the iOS glitch shader goes NaN after roughly 27 minutes |
 
-The newest local release tag is still `0.4.0` (2026-08-20), so tagged artifacts lag one manifest bump plus the HUD and TileLayer work that landed after `0.5.0` was introduced. If a documented call is `undefined`, check the manifest and build commit before hunting for a typo, and rebuild from upstream `main`. More reliable than either is feature detection: read a property **before** writing it (`typeof sprite.hitboxScaleX === 'undefined'`) or probe a method/factory (`typeof Game.createTileLayer === 'function'`). Write-then-read is not proof because Kroll can retain an unknown property on the proxy.
+The newest upstream release is `0.5.0` (2026-09-02), and for once the tag is ahead of the local habit rather than behind it: it sits on `9c45cf6`, so the published zip carries every fix in the row above, while a module built locally from source any time in the previous two weeks reports the same `0.5.0` and does not. Same number, different engine — prefer the release artifact, or rebuild from upstream `main` and let the manifest read `0.6.0`. If a documented call is `undefined`, check the manifest and build commit before hunting for a typo, and rebuild from upstream `main`. More reliable than either is feature detection: read a property **before** writing it (`typeof sprite.hitboxScaleX === 'undefined'`) or probe a method/factory (`typeof Game.createTileLayer === 'function'`). Write-then-read is not proof because Kroll can retain an unknown property on the proxy.
 
 Building the module from source:
 
