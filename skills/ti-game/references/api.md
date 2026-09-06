@@ -1,6 +1,6 @@
 # ti.game API reference
 
-Complete JS surface of `ti.game` as of upstream `main` at `c216e7f`, 2026-08-28, verified against every Android proxy/engine and its iOS twin. Defaults come from native fields, not prose. The manifests still read **`0.5.0`**, but the performance HUD/telemetry, native `TileLayer`, and wall-contact API landed afterward without another lasting bump. Read the number as a floor, never as a feature list. Older `0.3.0`/`0.4.0` artifacts also vary by build date; feature-detect when the artifact is unknown. Read a property before writing it, because Kroll can retain an unknown write on the proxy. Methods are safer probes (`typeof Game.createTileLayer === 'function'`), as are normalized properties (`solidMode` reads an unknown name back as `'block'` only when the engine implements it).
+Complete JS surface of `ti.game` as of upstream `main` at `3bea2f4`, 2026-09-02, verified against every Android proxy/engine and its iOS twin. Defaults come from native fields, not prose. The manifests read **`0.6.0`**, which is unreleased: the published **`0.5.0`** release carries the same engine code, because its tag sits on the commit right before the version bump. Read the number as a floor, never as a feature list — a locally built artifact stamped `0.5.0` may predate that release by weeks. Older `0.3.0`/`0.4.0` artifacts also vary by build date; feature-detect when the artifact is unknown. Read a property before writing it, because Kroll can retain an unknown write on the proxy. Methods are safer probes (`typeof Game.createTileLayer === 'function'`), as are normalized properties (`solidMode` reads an unknown name back as `'block'` only when the engine implements it).
 
 Properties are live unless their table says creation-time or read-only. Every writable property can be passed to its `create*` factory. `TileLayer` has four cross-platform creation-time inputs (`legend`, `firstGid`, `cols`, `rows`) because Android does not expose the live setters that iOS has. All durations crossing the JS boundary are **milliseconds**.
 
@@ -10,6 +10,7 @@ Properties are live unless their table says creation-time or read-only. Every wr
 - [Module](#module)
 - [Names and percentages](#names-and-percentages)
 - [GameView](#gameview)
+- [Gamepads](#gamepads)
 - [SpriteSheet](#spritesheet)
 - [Sprite](#sprite)
 - [Font](#font)
@@ -106,6 +107,7 @@ A normal Titanium view — add it to a window or any container, size it with the
 | `cameraX` / `cameraY` | float | `0` | World-space offset of the view |
 | `cameraScale` | float | `1` | Zoom, anchored on the view center |
 | `cameraBounds` | dict / null | `null` | `{ minX, minY, maxX, maxY }` world rect the visible area is clamped into |
+| `worldWrapX` | dict / null | `null` | `{ minX, maxX }` turns on a finite circular horizontal world; sprites opt in with `wrapWorldX`. Invalid or non-positive intervals disable it. **Horizontal `cameraBounds` are ignored while it is active**; the vertical limits still apply |
 | `follow(sprite, options)` | method | — | Native dead-zone follow, see below |
 | `stopFollow()` | method | — | Stop following; the camera stays where it is |
 | `shake({ strength, duration })` | method | `12` px, `400` ms | Detuned-sine rumble on the projection only — follow, bounds and touch mapping are unaffected |
@@ -117,11 +119,17 @@ A normal Titanium view — add it to a window or any container, size it with the
 | `cameraEffect` | string | `'none'` | Fullscreen shader pass: `'none'`, `'tint'`, `'glitch'`. With `'none'` the extra pass is skipped entirely |
 | `cameraTint` | string | — | Color for the `'tint'` effect, e.g. `'#4f8'` (night vision, poison, flashback) |
 | `cameraEffectIntensity` | float | `1` | 0..1 — tint mix or glitch amount |
+| `gamepads` | array | `[]` | Read-only. Connected controllers as `[{ id, name }]` |
+| `gamepad` | dict / null | `null` | Read-only snapshot of the most recently used pad: `{ id, name, leftX, leftY, rightX, rightY, l2, r2, buttons }` |
+| `gamepadDeadzone` | float | `0.2` | Radial stick dead zone with rescaling, clamped to 0..0.9, so small values start at 0 instead of jumping |
+| `gamepadStickPress` / `gamepadStickRelease` | float | `0.5` / `0.4` | Left-stick thresholds for reporting a direction as a button. Press clamps to 0.1..0.95; release stays between 0.05 and press. The gap is hysteresis against flicker |
 | `debug` | bool / dict | `false` | `true` draws all collision shapes. Object form: `{ hitbox, hud, hudFont }`; `hud` is `true` or a corner name. Readback is normalized to `{ hitbox, hud: false | corner }`. See [debugging-performance.md](debugging-performance.md) |
 
 Events: `press`, `tap`, `release` — fired for **every** touch anywhere on the view, with payload `x`, `y` in scene coordinates (tap-anywhere controls, flappy-style). `resize` carries the real surface `width`, `height` in pixels. `performance` carries a one-second telemetry snapshot only while a listener exists; see [debugging-performance.md](debugging-performance.md).
 
 Plus `timer` with payload `id`, fired only for `after()` / `every()` calls made **without** a callback — pass a callback or listen for the event, not both.
+
+Kroll never runs a `@Kroll.setProperty` setter for a key passed to `createGameView()`: each one needs its own branch in the native creation handler. `cameraX`, `cameraY`, `cameraScale` and `cameraBounds` were silently dropped at creation before `3bea2f4` and are honored from it on. Assigning them after creation always worked and still does — prefer that when the installed artifact is unknown.
 
 ### `follow(sprite, options)`
 
@@ -164,6 +172,25 @@ if (path) {
 	player.followPath(path, { speed: 160 });
 }
 ```
+
+## Gamepads
+
+A Bluetooth or USB controller (Xbox, PlayStation, Stadia, any MFi pad) reaches JS as discrete GameView events. There is no polling and no per-frame traffic; `gameView.gamepad` exists for the rare case where reading from a `gameView.every()` timer fits better than reacting to events.
+
+| Event | Payload | Notes |
+| --- | --- | --- |
+| `buttondown` / `buttonup` | `button`, `input`, `gamepad`, `keyCode` | `button` is normalized across pads: `a` `b` `x` `y` `l1` `r1` `l2` `r2` `l3` `r3` `start` `select` `home` `up` `down` `left` `right`. iOS reports `keyCode: 0` |
+| `stick` | `stick` (`'left'`/`'right'`), `x`, `y`, `gamepad` | Analog, throttled to ~20 Hz per channel while the value changes |
+| `trigger` | `trigger` (`'l2'`/`'r2'`), `value`, `gamepad` | Analog travel, same ~20 Hz throttle |
+| `gamepadconnected` / `gamepaddisconnected` | `gamepad`, `name` | A pad already paired when the view was created announces itself on its first input, so a connected event always precedes that pad's buttons |
+
+The four directions arrive **both** from the d-pad (however the pad reports it, keys or hat) and from the left stick once it crosses `gamepadStickPress`, releasing below `gamepadStickRelease`. Each name is reported down once, however many physical controls map to it, so one `buttondown` table covers both without asking which the player used; `input` (`'dpad'`, `'leftstick'`, `'button'`, `'trigger'`) tells them apart when that matters. Analog triggers count as `l2`/`r2` buttons past half travel *and* fire `trigger` events.
+
+Transitions skip the throttle: leaving rest, returning to rest and crossing zero are reported the moment they happen, and a channel always ends on its rest value — a released stick reports `0, 0` rather than leaving the hero drifting. `y` follows the engine's y-down convention, so `-1` is up. Everything held is released (a `buttonup`, plus a final rest-value `stick`/`trigger`) when the app backgrounds or the pad disconnects, so a direction never sticks.
+
+On Android the buttons are captured at the activity window: the game view needs no focus, and mapped buttons are consumed so `b` does not act as Back and the d-pad does not move focus between overlay buttons. Unmapped keys (Back, volume) pass through. On Android 11+ the module opts the window out of joystick motion batching, so stick changes arrive as the pad reports them instead of once per display frame.
+
+`platformer.js` runs on either the on-screen buttons or a pad.
 
 ## SpriteSheet
 
@@ -231,6 +258,10 @@ Methods: `play(name)` starts an animation, `stop()` halts it on the current fram
 | `rotatable` | `false` | Two-finger rotate |
 | `touchEnabled` | `true` | `false` = touches pass through to sprites underneath |
 
+`drag`, `pinch` and `rotate` all cross the bridge at ~10 Hz, and each one always delivers its final value when the gesture ends, so the value a handler last saw is the value the sprite kept. Before `9c45cf6` only `drag` was throttled and the other two fired per motion event. The two-finger rotation delta also takes the short way round the +/-180 degree flip from that commit on; earlier builds could add a whole turn in one move.
+
+The touch slop that separates a tap from a drag is a screen-pixel distance divided by `cameraScale`, so a tap stays a tap at any zoom. `screenFixed` sprites keep the raw pixel slop, since they already live in screen space. Earlier builds compared a pixel constant against world units, which made taps too forgiving when zoomed out and too strict when zoomed in.
+
 Hit-testing runs against the transformed shape (rotation and scale included), topmost first, and is multi-touch: each finger runs its own gesture and a sprite belongs to at most one finger. A second finger landing on empty space — or on the sprite already held — pinches/rotates that sprite instead, per its flags.
 
 ### Physics
@@ -245,6 +276,7 @@ Hit-testing runs against the transformed shape (rotation and scale included), to
 | `angularVelocity` | `0` | deg/s |
 | `thrust` | `0` | px/s² along the current heading (Newtonian flight) |
 | `wrapAround` | `false` | Re-enter from the opposite screen edge (Asteroids) |
+| `wrapWorldX` | `false` | Opt this sprite into the GameView's circular `worldWrapX` interval. Native movement normalizes `x` inside it; rendering, touch, sprite overlap, solid resolution and swept movement all choose the nearest periodic image when **both** sprites participate. Takes precedence over `wrapAround`, `wrapX` and `wrapShift`; `screenFixed` sprites are excluded. A `TileLayer` repeats across the seam only when its `x` equals `minX` and its width equals `maxX - minX`. `raycast()`, `findPath()`, particles, ropes and skid trails do **not** repeat periodically |
 | `wrapX`, `wrapShift` | `0` | Scroll looping: at `x < wrapX`, add `wrapShift`. Two screen-wide copies with `{ wrapX: -W/2, wrapShift: 2*W }` and a negative `velocityX` make a seamless parallax layer with no JS in the loop |
 
 ### Solids
@@ -257,6 +289,7 @@ Hit-testing runs against the transformed shape (rotation and scale included), to
 | `wallSlideSpeed` | `0` | Maximum downward velocity in px/s while either wall flag is true. `0` disables the cap. Upward velocity and slower falls are unchanged |
 | `restitution` | `0` | 0..1 bounce factor. Read off **both** sides of the contact and mixed as `max(mover, solid)`, the way Box2D does it — so a springy floor bounces riders that are not themselves bouncy. Solids default to 0, so a scene that never sets it on a surface behaves exactly as it did before this existed. A bounce whose closing speed would come out under **40 px/s** is damped to a dead stop instead, so a settling body grounds rather than buzzing |
 | `solidMode` | `'block'` | On the **solid**. `'block'` is an immovable wall (what every solid was). `'contain'` is an inward circular boundary — matched circles are kept *inside* its circumference (drums, bowls, lottery cages). `'push'` makes it a body in its own right: a matched circle and this one split the separation and exchange the closing velocity at equal mass. `'contain'` and `'push'` are **circle-on-circle only**; anything else, and any unknown string, falls back to `'block'`. Since 2026-08-27 |
+| `impactThreshold` | `40` | Minimum compensated relative normal speed in px/s before this receiver fires `solidimpact`. Minimum 0. Each participant applies its own threshold and owns its own gate, which rearms only after more than 100 ms of confirmed separation in game time |
 | `oneWay` | `false` | On the **solid**: pass-through except for landings on its top edge — classic platformer floors. Honoured by `'block'` solids only |
 | `carryRiders` | `true` | On the **solid**: a moving solid carries whoever stands on it (velocity, tweens, idle wobble — wrap teleports excluded). Set `false` for world-scroll terrain that moves while the player is meant to stay put |
 
@@ -284,7 +317,7 @@ Two consequences that cost an afternoon each if you meet them by surprise:
 | Property | Default | Notes |
 | --- | --- | --- |
 | `collisionGroup` | — | The tag *this* sprite carries |
-| `collidesWith` | — | Array of groups this sprite reports overlaps with |
+| `collidesWith` | — | Array of groups this sprite reports overlaps with. Since `9c45cf6` a single group name is accepted as shorthand for a one-element array, on this property and on `solidWith`; `null` clears either. Earlier builds required the array and threw on a bare string |
 | `hitboxScale` | `1` | Shrinks the collision box **around the anchor** — which is what makes `anchor` the other half of the tuning: `anchor: 'bottom'` with `hitboxScaleY: '55%'` covers the lower half without lifting the box off the floor. Also takes `'80%'` |
 | `hitboxScaleX`, `hitboxScaleY` | `1` | Per-axis corrections **multiplied on top of** `hitboxScale`, for art that fills its frame by a different fraction on each axis. A 20×44 drawing in a 32×48 frame needs `0.62` wide and `0.92` tall — no single `hitboxScale` describes it. Ignored by circle hitboxes. Since 2026-08-23 |
 | `hitboxShape` | `'rect'` | `'circle'` — radius = half the smaller drawn side × `hitboxScale` (the per-axis scales are skipped: a circle has no axes). Circles resolve against solids along the contact normal (corner bounces) and get a round touch area. `'rotatedRect'` keeps the collision rect **turned with the sprite** (an OBB) instead of re-boxing it square to the screen: a plain `'rect'` at 45° is re-boxed around its turned corners and comes out 41% wider with a flat top that is not there. Only matters once `rotation` is non-zero, and it does honour `hitboxScaleX`/`hitboxScaleY`, unlike a circle. Covers solids, `collidesWith` overlap, `raycast`, the swept pass and the debug overlay. Since 2026-08-27 |
@@ -393,6 +426,7 @@ The rest of the contract, all read from the engine:
 | `collision` | `group`, `other`, `x`, `y` | Overlap with a `collidesWith` group began |
 | `collisionend` | `group`, `other`, `x`, `y` | That overlap ended: the shapes separated, **or** the partner was removed from the scene, hidden (`visible = false`) or stopped matching the group filter |
 | `land` | `x`, `y`, optional `other`, optional `group` | Landed on top of a `solidWith` solid. `other` and `group` identify the solid sprite when one exists; TileLayer cells have no proxy and omit both |
+| `solidimpact` | `group`, `other`, `x`, `y`, `contactX`, `contactY`, `normalX`, `normalY`, `speed`, `restitution` | A sprite-to-sprite `solidWith` response met this receiver's `impactThreshold`. Both sprites in the pair get the event, sharing the contact point and `speed` and carrying **opposite** normals; `x`/`y` is the receiver's own position. `speed` is the relative closing normal speed *before* restitution, compensated for the gravity, thrust, car model and damping applied that frame, and `restitution` is the effective mixed value. `other` can be `null` if its proxy was released before delivery. **TileLayer cells never emit it.** Contact points are exact for circles and face contacts; an OBB corner is a support-point approximation. Spin, surface velocity, tweens and `followPath` add no physical normal velocity, so they never generate it on their own. With no listener on either sprite the resolver returns before computing any of this, so an unused event costs nothing |
 | `wallhit` | `side`, `x`, `y`, optional `other`, optional `group` | Began pressing a matching wall or switched sides. `side` is `'left'` or `'right'`. TileLayer cells omit both `other` and `group`; there is no `wallend` event, so read the flags in the jump handler |
 
 ## Font
@@ -571,8 +605,8 @@ Movers list the layer's `collisionGroup` in `solidWith`. Rect, circle, swept, re
 
 Only these events exist. Nothing fires per frame, and events are only fired if a listener is registered.
 
-- **GameView**: `press`, `tap`, `release`, `resize`, `timer`, `performance`
-- **Sprite** (and therefore **Text**): `press`, `release`, `tap`, `dragstart`, `drag`, `dragend`, `pinch`, `rotate`, `animationcomplete`, `complete`, `pathcomplete`, `collision`, `collisionend`, `land`, `wallhit`
+- **GameView**: `press`, `tap`, `release`, `resize`, `timer`, `performance`, `buttondown`, `buttonup`, `stick`, `trigger`, `gamepadconnected`, `gamepaddisconnected`
+- **Sprite** (and therefore **Text**): `press`, `release`, `tap`, `dragstart`, `drag`, `dragend`, `pinch`, `rotate`, `animationcomplete`, `complete`, `pathcomplete`, `collision`, `collisionend`, `land`, `wallhit`, `solidimpact`
 - **SpriteSheet, Font, Sound, Emitter, Rope, TileLayer**: none
 
 There is `collision` (enter) and `collisionend` (exit), but deliberately **no** per-frame "stay" event — that would be bridge traffic every frame. Hold the in-between state in JS: you heard the enter, you will hear the end.

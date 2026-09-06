@@ -1,6 +1,6 @@
 # Action-game recipes
 
-Production-oriented patterns distilled from the upstream action demos at `ti.game@c216e7f`. Use [examples.md](examples.md) to locate the full runnable demo and [api.md](api.md) for exact defaults and payloads. The wall-contact API is source/README-backed because upstream has not added a wall-jump demo yet.
+Production-oriented patterns distilled from the upstream action demos at `ti.game@3bea2f4`. Use [examples.md](examples.md) to locate the full runnable demo and [api.md](api.md) for exact defaults and payloads. The wall-contact API is source/README-backed because upstream has not added a wall-jump demo yet.
 
 <!-- TOC-START -->
 ## Contents

@@ -1,6 +1,6 @@
 # Adventure, presentation, and effects recipes
 
-Production-oriented patterns distilled from the upstream non-action demos at `ti.game@c216e7f`. Use [examples.md](examples.md) to locate the full runnable demo and [api.md](api.md) for exact defaults and payloads.
+Production-oriented patterns distilled from the upstream non-action demos at `ti.game@3bea2f4`. Use [examples.md](examples.md) to locate the full runnable demo and [api.md](api.md) for exact defaults and payloads.
 
 <!-- TOC-START -->
 ## Contents

@@ -1,6 +1,6 @@
 # Debugging and performance telemetry
 
-Verified against `ti.game@c216e7f`: both `GameViewProxy` implementations, `DebugHud`, `FrameStats`, both scene renderers, `example/camera.js`, `example/particles.js`, and `example/tilemap.js`.
+Verified against `ti.game@3bea2f4`: both `GameViewProxy` implementations, `DebugHud`, `FrameStats`, both scene renderers, `example/camera.js`, `example/particles.js`, and `example/tilemap.js`.
 
 ## The two debug aids
 
