@@ -189,24 +189,54 @@ This is a hint, **not an error**. The legacy 4×-from-viewBox behavior still run
 On the first run, `purgetss images` injects an `images:` block into your existing `purgetss/config.cjs` (between `brand:` and `theme:`) with these defaults:
 
 ```javascript
+// Sources in purgetss/images/ are 4x masters: a 1024px file yields
+// 256 (mdpi/@1x), 384 (hdpi), 512 (xhdpi/@2x), 768 (xxhdpi/@3x), 1024 (xxxhdpi).
+// There is no width to configure here — the source's own pixels decide.
+// SVGs have no natural pixels; pin theirs in files: [] below.
 images: {
-  autoSync: true,          // false = SVG pipeline computes dims but doesn't write to images.files
-  quality: 85,             // JPEG/WebP/AVIF quality (0-100)
+  quality: 85,             // webp/jpeg/avif/tiff quality (0-100); PNG and GIF ignore it
   format: null,            // null = keep original; 'webp' | 'jpeg' | 'png' to convert every image
+  autoSync: true,          // false = SVG pipeline computes dims but doesn't write to images.files
   confirmOverwrites: true, // prompt before overwriting files (set false to skip)
   files: []                // per-file overrides: [{ filename: 'images/<sub>/<name>.<ext>', width, height? }]
 }
 ```
 
+Since v7.17.0 the four comment lines above the section ship with the block itself, and the same text seeds through `init`. Reproduce the key order above when writing a config by hand — it is the order both generated copies use.
+
 | Key | Default | Purpose |
 | --- | --- | --- |
-| `autoSync` | `true` | When `false`, the SVG pipeline still computes dimensions and generates PNGs but never writes back to `images.files`. See [SVG-aware compile-time pipeline](./svg-pipeline.md). |
-| `quality` | `85` | Quality for lossy formats (JPEG, WebP, AVIF). Range `0–100`. |
+| `quality` | `85` | Range `0–100`. Reaches `webp`, `jpeg`, `avif` and `tiff` only. PNG is written with `compressionLevel: 9` and GIF takes no quality parameter, so the value never applies to either. |
 | `format` | `null` | `null` keeps each source's original format. Set `'webp'`, `'jpeg'`, or `'png'` to convert every output. |
+| `autoSync` | `true` | When `false`, the SVG pipeline still computes dimensions and generates PNGs but never writes back to `images.files`. See [SVG-aware compile-time pipeline](./svg-pipeline.md). |
 | `confirmOverwrites` | `true` | When `false`, the `[y/N/a]` prompt is skipped. |
 | `files` | `[]` | Per-file dimension overrides. See [Per-file overrides](#per-file-overrides-with-imagesfiles). |
 
 Change whatever you want to override globally; CLI flags still win for one-off runs. `autoSync` and `files` arrived in v7.11.0 to support the [SVG-aware compile-time pipeline](./svg-pipeline.md).
+
+### Unknown keys are an error (v7.17.0)
+
+Those five keys are the entire section. Since v7.17.0 anything else aborts the run before a single file is written, the same validation `brand:` has had since v7.13.0:
+
+```text
+> purgetss images
+Error running images: Unknown key(s) in the images: section of purgetss/config.cjs:
+  • images.qualty
+  • images.files[0].widht
+
+  Top-level keys: quality, format, autoSync, confirmOverwrites, files
+  Inside files[]: filename, width, height
+
+  Check the spelling. No images were generated.
+```
+
+A `qualty: 95` that gets ignored is indistinguishable from the default, so before v7.17.0 the typo produced the wrong output silently. The check runs at both levels and reports every problem in one pass:
+
+- **Top level** — only `quality`, `format`, `autoSync`, `confirmOverwrites`, `files`.
+- **Inside each `files[]` entry** — only `filename`, `width`, `height`. `filename` is **required** and must be a string; an entry without one matches no file and used to be skipped in the same silence.
+- `files` itself must be an array, and each entry an object.
+
+Do not suggest `width`, `opacity`, `padding` or `output` as `images:` keys. They are CLI flags and were never part of the section — the validator now names them as errors instead of ignoring them. When one file needs a fixed width, pin it in `files`; the other three describe a single run.
 
 ## Per-file overrides with `images.files`
 
@@ -484,7 +514,7 @@ If you only tweaked CSS classes (no image changes), you don't need to re-run `pu
 | Flag | Purpose |
 | --- | --- |
 | `--format <ext>` | Convert all outputs to: `webp`, `jpeg`, `png`, `avif`, `gif`, `tiff`. Default: keep source format. |
-| `--quality <n>` | Quality `0–100` for lossy formats. Default `85`. |
+| `--quality <n>` | Quality `0–100` for `webp`, `jpeg`, `avif` and `tiff`. PNG and GIF ignore it. Default `85`. |
 | `--width <n>` | (v7.8.0) Pin `mdpi` / `@1x` output width to `n` pixels; `[1, 8192]`. Other densities derive from this base (×1.5 / ×2 / ×3 / ×4). Most useful for SVG sources with non-standard viewBoxes. CLI-only — no `config.cjs` equivalent because width is per-asset. |
 | `--opacity <n>` | (v7.10.0) Multiply the alpha channel of every generated density by `n/100`. Range `[0, 100]`. Combine with `--format jpeg` and the alpha is flattened on white instead of producing a transparent JPEG. CLI-only. |
 | `--padding <n>` | (v7.10.0) Shrink the rendered image inside each density canvas by `n%` symmetric borders. Range `[0, 40]`. CLI-only. |

@@ -86,10 +86,16 @@ module.exports = {
     splashIcon: { enabled: false }, notificationIcon: { enabled: false },
     ninePatch: { enabled: false }
   },
+  // Sources in purgetss/images/ are 4x masters: a 1024px file yields
+  // 256 (mdpi/@1x), 384 (hdpi), 512 (xhdpi/@2x), 768 (xxhdpi/@3x), 1024 (xxxhdpi).
+  // There is no width to configure here — the source's own pixels decide.
+  // SVGs have no natural pixels; pin theirs in files: [] below.
   images: {
-    quality: 85,             // JPEG/WebP/AVIF quality (0-100)
+    quality: 85,             // webp/jpeg/avif/tiff quality (0-100); PNG and GIF ignore it
     format: null,            // null = keep original; 'webp' | 'jpeg' | 'png' to convert every image
-    confirmOverwrites: true  // prompt before overwriting files (set false to skip)
+    autoSync: true,          // false = SVG pipeline computes dims but doesn't write to images.files
+    confirmOverwrites: true, // prompt before overwriting files (set false to skip)
+    files: []                // per-file overrides: [{ filename: 'images/<sub>/<name>.<ext>', width, height? }]
   },
   theme: {
     extend: {}
@@ -171,7 +177,7 @@ Recommended VSCode extensions:
 
 ### Commands Executed Internally
 
-`purgetss create "Name of the Project" [--dependencies --vendor=fa,mi,ms,f7]` runs: `ti config` (reads idprefix/workspace), `ti create -t app -p all -n "Name"`, `alloy new`, `purgetss w`, `purgetss b`, optional `--vendor` (copies fonts + CommonJS module), optional `--dependencies` (installs Tailwind CSS, ESLint with Titanium plugins, and config files), then opens the project in VS Code, Sublime Text, or Finder.
+`purgetss create "Name of the Project" [--dependencies --vendor=fa,mi,ms,f7]` runs: `ti config` (reads idprefix/workspace), `ti create -t app -p all -n "Name"`, `alloy new`, `purgetss w`, `purgetss b`, optional `--vendor` (copies fonts + CommonJS module), optional `--dependencies` (installs Tailwind CSS and ESLint, and copies the config files — see [`install-dependencies`](#install-dependencies-command)), then opens the project in VS Code, Sublime Text, or Finder.
 
 ## `brand` Command
 
@@ -331,7 +337,7 @@ purgetss images background/                           # re-process one subfolder
 | `--android` | Only emit Android density variants. Mutually exclusive with `--ios`. |
 | `--ios` | Only emit iPhone scale variants. Mutually exclusive with `--android`. |
 | `--format <ext>` | Convert all outputs to `webp`, `jpeg`, `png`, `avif`, `gif`, or `tiff`. Default: keep source format. |
-| `--quality <n>` | Quality `0-100` for lossy formats. Default `85`. |
+| `--quality <n>` | Quality `0-100` for `webp`, `jpeg`, `avif` and `tiff`. PNG and GIF ignore it. Default `85`. |
 | `--width <n>` | (v7.8.0) Pin Android `mdpi` (= iPhone `@1x`) to `<n>` pixels wide. Larger scales derive as ×1.5, ×2, ×3, ×4 from that base; height stays proportional to the source's aspect ratio. Integer in `[1, 8192]`. |
 | `--opacity <n>` | (v7.10.0) Multiply alpha of every density by `n/100`. Integer in `[0, 100]`. With `--format jpeg`, alpha flattens on white. |
 | `--padding <n>` | (v7.10.0) Shrink the rendered image inside each density canvas by `n%` symmetric borders. Integer in `[0, 40]`. |
@@ -369,11 +375,15 @@ Defaults live under `images:` in `purgetss/config.cjs`:
 
 ```javascript
 images: {
-  quality: 85,             // JPEG/WebP/AVIF quality (0-100)
+  quality: 85,             // webp/jpeg/avif/tiff quality (0-100); PNG and GIF ignore it
   format: null,            // null = keep original; 'webp' | 'jpeg' | 'png' | 'avif' | 'gif' | 'tiff'
-  confirmOverwrites: true  // prompt before overwriting files
+  autoSync: true,          // false = SVG pipeline computes dims but doesn't write to images.files
+  confirmOverwrites: true, // prompt before overwriting files
+  files: []                // per-file overrides: [{ filename, width, height? }]
 }
 ```
+
+Those five keys are the whole section. Since v7.17.0 any other key — including `width`, `opacity`, `padding` and `output`, which are CLI flags — aborts the run before writing anything, and so does a `files[]` entry with an unknown key or no `filename`. See [Unknown keys are an error](./multi-density-images.md#unknown-keys-are-an-error-v7170).
 
 Like `brand`, `images` writes in place and asks `Continue? [y/N/a]` before overwriting. Selecting `a` flips `confirmOverwrites: false` in `config.cjs`. Skipped automatically when `stdin` is not a TTY, when `-y`/`--yes` is passed, or when `PURGETSS_YES=1` is set.
 
@@ -480,6 +490,15 @@ purgetss install-dependencies
 # alias:
 purgetss id
 ```
+
+### What it installs (v7.17.0)
+
+`npm i -D eslint @eslint/js` plus a flat `eslint.config.mjs` in the project root, `.editorconfig`, `.vscode/{extensions,settings}.json` when the `code` command exists, and `tailwindcss@3` for IntelliSense. `create --dependencies` runs the same ESLint and Tailwind steps. `eslint-config-axway` and `eslint-plugin-alloy` are no longer installed.
+
+The shipped config declares the Titanium and Alloy globals itself (`Ti`, `Titanium`, `Alloy`, `Backbone`, `$`, `$model`, `_`, `L`, `Widget`, `OS_*`, `ENV_*`, `DIST_*`, `console`, `alert`, the timer functions, and `task` for `alloy.jmk`). It lints `app/**/*.js` and ignores `Resources/`, `build/`, `node_modules/`, `purgetss/`, plus the six libraries PurgeTSS copies into `app/lib/`, listed by name so the developer's own files there keep being linted. `no-unused-vars` is a **warning**: Alloy wires handlers from the XML view, so a controller function with no caller in the JS may still be in use.
+
+> **Warning**
+> Before v7.17.0 this command shipped an `.eslintrc.js` extending `eslint-config-axway/env-alloy` and installed `eslint-plugin-alloy`. That setup cannot run under ESLint 9 — it stopped reading `.eslintrc.*`, axway removed `env-alloy` in `eslint-config-axway@10.0.0`, and the unmaintained plugin throws `This method cannot be used with flat config`. Projects scaffolded between December 2025 and v7.17.0 have a lint that never ran; re-run `purgetss install-dependencies` to replace it.
 
 > **Caution**
 > This command overwrites any existing `extensions.json` and `settings.json` files. Back them up if you want to keep your current versions.
