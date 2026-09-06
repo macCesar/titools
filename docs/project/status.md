@@ -1,37 +1,42 @@
-# Status — 2026-08-30
+# Status — 2026-09-05
 
-**Phase:** v4.18.0 shipped; live and maintained
-**Session by:** Codex · GPT-5
-**Deployed:** `@maccesar/titools@4.18.0`, tag `v4.18.0`, GitHub Release, marketplace version on `main`, successful OIDC workflow, and npm registry version were verified during the release.
-**Branch:** `main`, aligned with `origin/main`; tag `v4.18.0` points to release commit `e8d797e`.
-**Sibling:** `../AISkills` — no shared CLI CORE changed in this release, so no port was required.
+**Phase:** v4.20.0 shipped; live and maintained
+**Session by:** Claude Code · Opus 5 (PurgeTSS audit and release) — the ti.game re-pin landed in a separate session
+**Deployed:** `@maccesar/titools@4.20.0` on npm (registry `dist-tags.latest`, published 2026-09-06T02:54:36Z), tag `v4.20.0`, GitHub Release, and `plugin.json` at `4.20.0` on `main`.
+**Branch:** `main`, aligned with `origin/main`, nothing unpushed; tag `v4.20.0` points at release commit `a2f1c9c`.
+**Sibling:** `../aiskills` — no shared CLI machinery changed (`git diff v4.19.0..v4.20.0 -- lib/ bin/` is empty), so no port was required.
 
 ## Where things stand
 
-The `purgetss` skill now reflects PurgeTSS v7.15.0. It detects Alloy versus Classic projects before prescribing a workflow, keeps the utility-class lifecycle Alloy-only, and documents the eight standalone commands that support Classic projects with native output paths under `Resources/`. The maintainer-only skill auditor can now audit PurgeTSS against both its official documentation and released implementation.
+The `purgetss` skill reflects PurgeTSS **v7.17.0**. The `images:` section is documented as exactly five keys — `quality`, `format`, `autoSync`, `confirmOverwrites`, `files` — in the order the CLI actually writes them, with the unknown-key validation that aborts a run before writing anything, at both the top level and inside each `files[]` entry. `quality` is scoped to `webp`/`jpeg`/`avif`/`tiff`; PNG is written with `compressionLevel: 9` and GIF takes no quality parameter. `install-dependencies` and `create --dependencies` document the flat `eslint.config.mjs` template installed with only `eslint` and `@eslint/js`, plus the state of projects scaffolded between December 2025 and v7.17.0, whose lint could never run.
+
+The `ti-game` skill is re-pinned from `c216e7f` to upstream `3bea2f4` (2026-09-02), covering gamepads, circular horizontal worlds, `solidimpact`, the 34-demo catalog, and the `0.5.0`/`0.6.0` manifest split.
 
 ## In flight
 
-- Nothing. The PurgeTSS audit, Classic compatibility update, auditor expansion, and release are complete.
+- Nothing shipping. One open decision below.
 
 ## Requirements
 
-- R3 is satisfied: npm, the `v4.18.0` tag, and the marketplace version on `main` agree.
-- R6 is satisfied for `purgetss`: its public contracts were checked against the official docs plus the v7.15.0 changelog, implementation, and tests.
-- R7–R9 remain satisfied: frontmatter validates, examples cover the new triggers, and the full suite is green.
-- R10 is not implicated because this release did not change shared CLI CORE machinery.
+- R3 is satisfied: npm `4.20.0`, tag `v4.20.0`, and `plugin.json` on `main` agree.
+- R6 is satisfied for `purgetss`: every contract was checked against the released v7.17.0 source, not only the prose docs — `gen-scales.js` for the per-format `quality` behavior, `images-config.js` for the key whitelist, `images.js` for where the validation runs, and `dependencies.js` / `create.js` for the ESLint packages.
+- R7–R9 remain satisfied: frontmatter validates, and the full suite is green.
+- R10 is not implicated: this release changed no shared CLI machinery.
 
 ## Next step
 
-Use `.claude/skills/titools-skill-auditor` for the next PurgeTSS audit; it now records both upstream commit hashes and separates narrative documentation from exact implementation contracts.
+Decide whether to split `references/cli-commands.md`. It is at **815 lines against the auditor's 800-line cap**, and it was already at 796 before this release, so it is not a new overflow. The measured split point: of the 21 anchor links pointing into that file from 11 other files, 20 target asset commands (`#brand-command` ×7, `#semantic-command` ×6, `#images-command` ×5, plus `shades` and `build-fonts`), so a `cli-commands-assets.md` carrying those would leave the utility-class lifecycle behind and require repointing ~20 anchors.
 
 ## Verified vs. assumed
 
-- Verified: the full suite passes 347/347 across 31 suites; lint and `git diff --check` are clean.
-- Verified: the PurgeTSS skill passes the skill validator, all 34 reference files resolve, and the generated-reference TOC is current.
-- Verified against upstream: `purgeTSS` source commit `1cddb1f` and `purgetss-docs` commit `e2f52a1`.
-- Verified during release: workflow run `33336228777` succeeded; tag `v4.18.0`, the GitHub Release, marketplace manifest on `main`, and npm `4.18.0` are published.
+- Verified now: 348/348 tests pass across 31 suites.
+- Verified now: `main` matches `origin/main` with zero unpushed commits; `v4.20.0` resolves to `a2f1c9c`.
+- Verified now: publish workflow run `34007659679` concluded `success`, including its own tag-versus-version-files guard.
+- Verified now: the npm registry reports `4.20.0` as latest. Note that `npm view` returned the previous version for several minutes after the publish — CDN caching, not a failed release.
+- Verified against upstream: `purgeTSS@bb2eb8e` (v7.17.0) and `purgetss-docs@f7018ea` (v1.1.13).
+- **Assumed, not verified:** the ti.game re-pin to `3bea2f4` was produced by a separate session. Its full diff was read before it was committed and shipped, but its claims were **not** re-checked against the ti.game repository from this session — the upstream commit hash, the gamepad surface, and `worldWrapX` / `solidimpact` semantics are taken on that session's word.
 
 ## Known pending
 
-- A local Claude Code marketplace installation may still need `/plugin marketplace update maccesar-titools` followed by `/reload-plugins`; this does not block either published channel.
+- A local Claude Code marketplace installation still needs `/plugin marketplace update maccesar-titools` followed by `/reload-plugins`; neither published channel is blocked by it.
+- Upstream docs gap, on the PurgeTSS side rather than this repo: `docs/commands.md` at purgetss.com still lists `npm i -D eslint eslint-config-axway eslint-plugin-alloy` and an `eslint.config.js`. v7.17.0 installs only `eslint` and `@eslint/js` and ships `eslint.config.mjs`. The skill follows the released code.
