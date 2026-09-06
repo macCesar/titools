@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.20.0] - 2026-09-05
+
+### Added
+
+- Documented the ti.game gamepad surface: `buttondown`/`buttonup`, `stick` and `trigger` events, button names normalized across pads, dead-zone and stick-press thresholds, and the read-only `gamepads`/`gamepad` properties.
+- Documented circular horizontal worlds (`gameView.worldWrapX`, per-sprite `wrapWorldX`) and the `solidimpact` event with its per-sprite `impactThreshold`.
+- Documented the PurgeTSS `images:` key validation: the five valid top-level keys, the three inside `files[]`, `filename` now required, and the run aborting before it writes anything.
+
+### Changed
+
+- Re-pinned the ti-game skill to upstream `3bea2f4` (2026-09-02), refreshed the 34-demo catalog with `worldwrap.js`, and recorded the `0.5.0`/`0.6.0` manifest split so the build date is preferred over the version string.
+- Re-audited the PurgeTSS skill against `purgetss-docs@f7018ea` and `purgeTSS@bb2eb8e` (v7.17.0).
+- Corrected the `images:` block across the skill to the five keys in the order the CLI writes them, and scoped `quality` to `webp`/`jpeg`/`avif`/`tiff` — PNG is written with `compressionLevel: 9` and GIF takes no quality parameter.
+- Updated `install-dependencies` and `create --dependencies` to the flat `eslint.config.mjs` template installed with only `eslint` and `@eslint/js`; `eslint-config-axway` and `eslint-plugin-alloy` are no longer installed.
+
 ## [4.19.0] - 2026-09-03
 
 ### Added — PurgeTSS 7.16 runtime and artwork contracts
