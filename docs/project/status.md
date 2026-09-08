@@ -1,42 +1,47 @@
-# Status — 2026-09-05
+# Status — 2026-09-08
 
-**Phase:** v4.20.0 shipped; live and maintained
-**Session by:** Claude Code · Opus 5 (PurgeTSS audit and release) — the ti.game re-pin landed in a separate session
-**Deployed:** `@maccesar/titools@4.20.0` on npm (registry `dist-tags.latest`, published 2026-09-06T02:54:36Z), tag `v4.20.0`, GitHub Release, and `plugin.json` at `4.20.0` on `main`.
-**Branch:** `main`, aligned with `origin/main`, nothing unpushed; tag `v4.20.0` points at release commit `a2f1c9c`.
-**Sibling:** `../aiskills` — no shared CLI machinery changed (`git diff v4.19.0..v4.20.0 -- lib/ bin/` is empty), so no port was required.
+**Phase:** v4.21.0 shipped; live and maintained
+**Session by:** Claude Code · Opus 5 (`claude-opus-5[1m]`) — added `ti-reuse-first`, then measured and raised its reachability
+**Deployed:** `@maccesar/titools@4.21.0` on npm (verified with `npm view @maccesar/titools version` after the run), tag `v4.21.0` → `a8b25d8`, GitHub Release created, and `plugin.json` at `4.21.0` on `main`.
+**Branch:** `main`, aligned with `origin/main`, nothing unpushed.
+**Sibling:** `../aiskills` — `git diff --stat v4.20.0..v4.21.0 -- lib/ bin/` is one line in `lib/config.js`, the `SKILLS` entry for the new skill. That is payload, not shared machinery, so no port is required.
 
 ## Where things stand
 
-The `purgetss` skill reflects PurgeTSS **v7.17.0**. The `images:` section is documented as exactly five keys — `quality`, `format`, `autoSync`, `confirmOverwrites`, `files` — in the order the CLI actually writes them, with the unknown-key validation that aborts a run before writing anything, at both the top level and inside each `files[]` entry. `quality` is scoped to `webp`/`jpeg`/`avif`/`tiff`; PNG is written with `compressionLevel: 9` and GIF takes no quality parameter. `install-dependencies` and `create --dependencies` document the flat `eslint.config.mjs` template installed with only `eslint` and `@eslint/js`, plus the state of projects scaffolded between December 2025 and v7.17.0, whose lint could never run.
+`ti-reuse-first` ships as the eleventh skill and the first one in `SKILLS`. It applies a search order with early exit before anything new exists in a project — does this need to exist, is it already in `app/`, does a `Ti.*` API or the platform cover it, does an installed module do it, can it be one line, and only then the smallest thing that works. Five references carry the detail, each with its counter-case, and `/ti-audit` runs it as step 1.
 
-The `ti-game` skill is re-pinned from `c216e7f` to upstream `3bea2f4` (2026-09-02), covering gamepads, circular horizontal worlds, `solidimpact`, the 34-demo catalog, and the `0.5.0`/`0.6.0` manifest split.
+Its reachability was the actual work of this session, and it was measured rather than argued. See `decisions.md` 2026-09-08 for the numbers and the method. Three of the five suspected causes in the plan turned out to be wrong; only the measurement separated them.
+
+`references/alloy-reuse.md` carries a third worked example, taken from a real failure in a sibling project the same day: the correct template was chosen and then "improved" with a `touchEnabled` toggle and an `animating` lock nobody asked for, which deadlocked when the open callback never fired. The rule it states — reuse means copying the behavior, not copying it and defending it against a failure nobody has observed — is the one the other two worked examples did not cover, because this failure appears *after* the search has already succeeded.
 
 ## In flight
 
-- Nothing shipping. One open decision below.
+- Nothing shipping.
 
 ## Requirements
 
-- R3 is satisfied: npm `4.20.0`, tag `v4.20.0`, and `plugin.json` on `main` agree.
-- R6 is satisfied for `purgetss`: every contract was checked against the released v7.17.0 source, not only the prose docs — `gen-scales.js` for the per-format `quality` behavior, `images-config.js` for the key whitelist, `images.js` for where the validation runs, and `dependencies.js` / `create.js` for the ESLint packages.
-- R7–R9 remain satisfied: frontmatter validates, and the full suite is green.
-- R10 is not implicated: this release changed no shared CLI machinery.
+- R3 is satisfied: npm `4.21.0`, tag `v4.21.0`, and `plugin.json` on `main` agree, and `publish.yml` re-checked that agreement itself before publishing.
+- R7–R9 remain satisfied: frontmatter validates and the suite is green. The 1024-character description cap in `test/manifest.test.js` did real work this session — it rejected a rewritten description of 1403 characters before it could ship.
+- R10 is not implicated: no shared CLI machinery changed.
 
 ## Next step
 
-Decide whether to split `references/cli-commands.md`. It is at **815 lines against the auditor's 800-line cap**, and it was already at 796 before this release, so it is not a new overflow. The measured split point: of the 21 anchor links pointing into that file from 11 other files, 20 target asset commands (`#brand-command` ×7, `#semantic-command` ×6, `#images-command` ×5, plus `shades` and `build-fonts`), so a `cli-commands-assets.md` carrying those would leave the utility-class lifecycle behind and require repointing ~20 anchors.
+Two open items, in order of how much they cost to leave alone:
+
+1. **The SessionStart hook does not reach npm-only installs.** `hooks/hooks.json` declares it with `${CLAUDE_PLUGIN_ROOT}`, so the marketplace plugin registers it and `titools install` does not — it writes only the `titools auto-update --silent` hook. Measured on the maintainer's machine: `~/.claude/settings.json` has no `session-start.sh` entry and `~/.claude/plugins/cache/` has no `maccesar-titools`, so the Titanium project-detection message has never run there. Deciding whether the CLI should register it is a design question, not a bug fix: it means the CLI writing into the user's global settings, which it has deliberately never done except for auto-update. Until it is decided, anything that must reach both channels belongs in a skill description or body, not in the hook. Recorded as a trap in `context.md`.
+
+2. **`skills/purgetss/references/cli-commands.md` is still at 815 lines** against the auditor's 800-line cap, unchanged from the previous session. The measured split point is unchanged too: of the 21 anchor links pointing into it from 11 other files, 20 target asset commands, so a `cli-commands-assets.md` would leave the utility-class lifecycle behind and require repointing ~20 anchors.
 
 ## Verified vs. assumed
 
-- Verified now: 348/348 tests pass across 31 suites.
-- Verified now: `main` matches `origin/main` with zero unpushed commits; `v4.20.0` resolves to `a2f1c9c`.
-- Verified now: publish workflow run `34007659679` concluded `success`, including its own tag-versus-version-files guard.
-- Verified now: the npm registry reports `4.20.0` as latest. Note that `npm view` returned the previous version for several minutes after the publish — CDN caching, not a failed release.
-- Verified against upstream: `purgeTSS@bb2eb8e` (v7.17.0) and `purgetss-docs@f7018ea` (v1.1.13).
-- **Assumed, not verified:** the ti.game re-pin to `3bea2f4` was produced by a separate session. Its full diff was read before it was committed and shipped, but its claims were **not** re-checked against the ti.game repository from this session — the upstream commit hash, the gamepad surface, and `worldWrapX` / `solidimpact` semantics are taken on that session's word.
+- Verified now: 358/358 tests pass across 31 suites.
+- Verified now: `main` matches `origin/main` with zero unpushed commits; `v4.21.0` resolves to `a8b25d8`.
+- Verified now: publish workflow run `34275730808` concluded `success`, including its own tag-versus-version-files guard, and `npm view` reports `4.21.0`.
+- Verified now: the dev-mode symlinks exist and resolve into this checkout — `~/.agents/skills/ti-reuse-first` → `skills/ti-reuse-first`, mirrored at `~/.claude/skills/`. They did not exist before this session, which is why the skill was unreachable from any other project even though its files had been written the day before.
+- Verified during the measurement: a positive control ran before any conclusion and fired the correct skill 2/2. Without it no reading would have been trustworthy.
+- **Assumed, not verified:** that the fixture's behavior predicts a real project. The field test — asking for the work in a real Titanium project, without naming the skill — has not been run. Nothing in this release rests on it, but nothing confirms it either.
+- **Assumed, not verified:** the marketplace-channel mechanics described in `context.md` were established in the sibling repo and have still not been re-confirmed against `maccesar-titools` on this machine, since no marketplace cache for it exists here.
 
 ## Known pending
 
-- A local Claude Code marketplace installation still needs `/plugin marketplace update maccesar-titools` followed by `/reload-plugins`; neither published channel is blocked by it.
-- Upstream docs gap, on the PurgeTSS side rather than this repo: `docs/commands.md` at purgetss.com still lists `npm i -D eslint eslint-config-axway eslint-plugin-alloy` and an `eslint.config.js`. v7.17.0 installs only `eslint` and `@eslint/js` and ships `eslint.config.mjs`. The skill follows the released code.
+- A local Claude Code marketplace installation would need `/plugin marketplace update maccesar-titools` followed by `/reload-plugins`. Neither published channel is blocked by it, and on this machine there is no such installation to update.
