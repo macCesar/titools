@@ -6,6 +6,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.21.0] - 2026-09-08
+
+### Added — `ti-reuse-first`, the question the catalog was missing
+
+- New skill `ti-reuse-first`: a search order with early exit, applied before writing anything in a Titanium or Alloy project. Seven rungs, cheapest first — does this need to exist, is it already in `app/` or `app/lib/`, does a `Ti.*` API or Alloy builtin cover it, does the platform own the workflow, does a module already in `tiapp.xml` cover it, can it be one line, and only then the smallest thing that works.
+- Five references: `the-ladder.md` (the rungs, each translated into Titanium decisions), `alloy-reuse.md` (parameterize vs `<Require>` vs Widget vs a new trio, and creating a controller on demand instead of one instance per window), `indirection.md` (events vs direct calls, wrappers, service layers, layout computed in JavaScript), `purgetss-reuse.md` (`apply` rules in `config.cjs` instead of repeated class strings), and `diagnostics.md` (the sweep over an existing `app/`, with commands verified against a real project on macOS `bash` 3.2).
+- Every rung and every sweep carries its counter-case. `the-ladder.md` § "When adding structure is the right answer" and the closing section of `indirection.md` name the situations where a module, a Widget, a wrapper or an event bus is correct, so the skill does not simply invert the bias it was written to correct. `EXAMPLE-PROMPTS.md` includes a negative control for exactly that.
+- `/ti-audit` now runs `ti-reuse-first` as step 1: whether something should exist is prior to whether it is built well.
+- `references/alloy-reuse.md` gains a third worked example: the right template chosen, then "improved". A panel modelled on one that already worked arrived with a `touchEnabled` toggle and an `animating` lock nobody asked for; the lock deadlocked when the open callback never fired, and each attempt to fix the symptom added another guard. The fix was to delete the additions, not repair them. `references/the-ladder.md` rung 1 now names three failure modes instead of two, because this one appears *after* the search has already succeeded.
+
+### Changed — making the skill reachable at the moment it matters
+
+- The SessionStart hook now names `ti-reuse-first` with an explicit order: before creating any controller, view, Widget or `app/lib/` module — or copying an existing one as a template — invoke it first, then `ti-expert` for the architecture of whatever survives. This is the only deterministic mechanism in the catalog; the skill was absent from it.
+- Three pointers were added to bodies that always load once their skill is entered: a note and a `Required workflow` row in `ti-expert`, a step 0 with an explicit stop in `/ti-new-screen`, and a line in `ti-ui`. Winning the first turn is one route into the skill; being called by whoever wins it is the other.
+- The description was rewritten to open on the user's moment and the user's words, in Spanish as well as English — `'hazme un panel de avisos'`, `'necesito otra pantalla'`, `'hazlo igual que el de Index'`, `'voy a copiar paneles/derechos como base'` — with an AUTO-DETECT ordering clause, `DRY`/`KISS` demoted to secondary triggers, and the two-sided closing clause kept.
+
+Measured in a disposable Alloy fixture with 8 positive and 4 negative queries, 2 repetitions each, counting `Skill` invocations in `claude -p --output-format stream-json`. A positive control ran first and fired the correct skill 2/2. Before the change the skill fired on 16/16 positives but went **first** on only 12/16 — `superpowers:brainstorming` took the first turn on both "another screen" queries, in all four runs. After: **16/16 first, 0/8 false positives**. A name A/B against `ti-before-you-build`, identical description, scored 15/16 — one run apart, a tie; the name was kept.
+
+### Changed — two absolutes in `ti-expert` gain their condition
+
+- The decision matrix answered "`Ti.App.fireEvent` or EventBus?" with "always EventBus" and "Controller > 100 lines?" with "extract to Tier 2". Both are sound comparisons and neither asks the prior question. They now read "EventBus — once `ti-reuse-first` says it needs an event" and "A smell, not a threshold". Nothing else in `ti-expert` changed.
+- `references/patterns.md` opens with a note that each of its nine patterns adds a layer, and that a layer pays for itself at a boundary but costs on every read when it is a detour around a single call site.
+
+
 ## [4.20.0] - 2026-09-05
 
 ### Added
