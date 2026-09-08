@@ -15,6 +15,8 @@
 
 <!-- TOC-END -->
 
+> **Before introducing any of these:** each pattern below adds a layer, and a layer only pays for itself where there is a boundary — a place the implementation could plausibly change, or where the two sides genuinely should not know each other. Around a single call site with one caller, the same pattern is a detour that costs on every read. The `ti-reuse-first` skill runs that check; use it first, and treat the patterns here as the answer to *how* once it has established *whether*.
+
 ## 1. Native module abstraction (Wrapper)
 
 **Use when:** Using native modules like Maps, Biometrics, or specialized Media players.

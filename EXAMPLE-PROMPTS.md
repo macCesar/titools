@@ -75,6 +75,55 @@ Expect:
 
 ## Activation tests
 
+### ti-reuse-first
+```
+"I need a little notice that pops up over whatever screen is open when a push arrives — title, one line of text, an OK button. I was going to copy paneles/derechos since it's already a panel. Sound right?"
+```
+Expect:
+- Activates `ti-reuse-first` before any code is written
+- Runs rung 1: lists `app/controllers/paneles/` instead of accepting the proposed template
+- Points out that `derechos` is a full-screen scrolling modal and the task is a small overlay — same folder, different shape
+- Names a panel in the project whose shape actually matches, and says how it checked
+
+```
+"This aviso has to be reachable from four different windows. I'm thinking a <Require> in each of the four XMLs plus an Alloy.Events listener in each controller, and a destruir() they each call on close. Does that hold up?"
+```
+Expect:
+- Activates `ti-reuse-first`
+- Pushes back on four resident instances for something used one at a time
+- Proposes `Alloy.createController('paneles/avisoPush', opciones).mostrar()` on the visible window, with `$.destroy()` on close
+- States the trade honestly: on-demand construction is wrong for list rows, right for an occasional alert
+
+```
+"My PushManager fires Alloy.Events.trigger('abrirTienda') and index.js listens for it and opens the store. It works. Is there anything wrong with it?"
+```
+Expect:
+- Activates `ti-reuse-first`
+- Counts the listeners: one trigger, one listener, both visible to each other
+- Proposes passing the function directly (`opciones.alAceptar = abrirTienda`) and deleting the event name, the listener and its cleanup
+- Notes the layering win: a push module stops needing to know that opening a store is a thing
+
+```
+"El panel de la tómbola tiene que comportarse igual que el de index. Ya lo hice, pero le agregué un flag animating para que no se pueda cerrar mientras abre, y toggleo touchEnabled durante la animación. Ahora a veces se queda trabado."
+```
+Expect:
+- Activates `ti-reuse-first`
+- Opens the panels it was told to copy and reports that none of them carries the flag or the toggle
+- Says to delete the addition rather than guard it, and names the deadlock: the lock waits for a callback that may never arrive
+- Frames the guard as rung 0 work — a requirement that does not exist yet, so neither should the code defending against it
+
+Negative control — the answer here is to build it:
+```
+"I've got the same fetch-with-timeout-and-retry logic copy-pasted in five controllers that hit our themes API, and each one handles errors slightly differently. Two of them already drifted. What should I do?"
+```
+Expect:
+- Activates `ti-reuse-first` and does **not** argue against adding a module
+- Treats the five measured call sites as the argument for extraction, not against it
+- Proposes one module in `app/lib/api/`, one level deep
+- Explicitly cites this as the case where climbing the ladder lands on "build it"
+
+---
+
 ### ti-expert
 ```
 "I'm starting a new app that needs login, signup, and a protected dashboard. How should I organize the project?"
