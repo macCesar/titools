@@ -9,6 +9,8 @@ allowed-tools: Read, Grep, Glob, Edit, Write, Bash(node *)
 
 A practical guide to Titanium SDK UI. Covers layouts, event handling, animations, performance, and platform-specific components for iOS and Android.
 
+> **When "new UI" means new files, run the `ti-reuse-first` skill first.** A new window, panel or dialog is often an existing one that needs a parameter, and a layout computed in JavaScript is often a TSS condition. This guide covers how to build whatever survives that question.
+
 ## Project detection
 
 > **️ℹ️ auto-detects titanium projects**
