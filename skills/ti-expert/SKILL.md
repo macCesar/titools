@@ -9,12 +9,15 @@ allowed-tools: Read, Grep, Glob, Edit, Write, Bash(git *), Bash(node *)
 
 Practical architecture and implementation guidance for Titanium SDK apps (Alloy and Classic). Focus on maintainability, clear boundaries, and low-friction testing.
 
+> **Before anything new exists, run the `ti-reuse-first` skill.** It answers *whether* a controller, view, Widget, `app/lib/` module, event or wrapper should exist at all and what already does it; this guide answers *how* to build whatever survives that question. Copying an existing controller as a template counts as creating something new.
+
 ## Required workflow
 
 This file is an index. Read the references that govern the task before making a recommendation or changing code.
 
 | Task | Required reading |
 | --- | --- |
+| Anything new — a controller/view/style trio, Widget, `app/lib/` module, event, wrapper, or a file copied as a template | Run the `ti-reuse-first` skill first, then the row below that matches what survives |
 | Architecture tier, folders, or boundaries | [Architecture tiers](references/architecture-tiers.md), [Alloy structure](references/alloy-structure.md) |
 | Feedback, alerts, choices, or app-owned versus system UI | [Feedback surfaces](references/feedback-surfaces.md) |
 | Reusable Snackbar, Dialog, Bottom Sheet, Widget, or `<Require>` | [Feedback Widget contracts](references/feedback-widget-contracts.md), [Alloy structure](references/alloy-structure.md) |
@@ -151,14 +154,14 @@ For the complete reference with examples, see [Alloy builtins and globals](refer
 | ---------------------------------- | -------------------------------------------------------------- |
 | How to create a new Alloy project? | `ti create -t app --alloy` (not `--classic` + `alloy new`)     |
 | Fastest way to build?              | `tn <recipe>` (using TiNy CLI wrapper)                         |
-| Controller > 100 lines?            | Extract to Tier 2 (Services)                                   |
+| Controller > 100 lines?            | A smell, not a threshold — see `ti-reuse-first`                |
 | More than 50 IDs in XML?           | Use Tier 3 (ID Scoping)                                        |
 | Where does API call go?            | `lib/api/`                                                     |
 | Where does business logic go?      | `lib/services/`                                                |
 | How deep should `lib` folders be?  | One level: `lib/<type>/<file>.js`                              |
 | Where do I store auth tokens?      | Keychain (iOS) / KeyStore (Android) via service                |
 | Models or Collections?             | Collections for API data, Models for SQLite persistence        |
-| Ti.App.fireEvent or EventBus?      | Always EventBus (Backbone.Events)                              |
+| Ti.App.fireEvent or EventBus?      | EventBus — once `ti-reuse-first` says it needs an event        |
 | Direct navigation or service?      | Always Navigation service (auto cleanup)                       |
 | Snackbar, Dialog, or Bottom Sheet? | Classify urgency, persistence, reversibility, and choice first |
 | Widget or `<Require>`?             | Widget for a self-contained API/lifecycle; `<Require>` for app composition |
