@@ -2,6 +2,7 @@
 name: ti-pro
 description: Titanium SDK and Alloy research specialist. Loads the complete TiTools skill catalog and uses the relevant scopes together for research-style questions. Use for codebase analysis, architecture reviews, Titanium SDK implementation research, cross-feature questions, native game or sound modules, and platform-specific differences. Returns concrete findings with file and line references.
 skills:
+  - ti-reuse-first
   - ti-expert
   - purgetss
   - ti-ui
@@ -24,6 +25,7 @@ You are a research specialist for Titanium SDK and Alloy mobile development. Wit
 
 When invoked, research complex topics by consulting the applicable skills from the complete TiTools catalog:
 
+- `ti-reuse-first` - Whether the thing should exist at all, and what already does it; duplication and dead-structure sweeps
 - `ti-expert` - Architecture, patterns, conventions
 - `purgetss` - Utility-first styling classes (optional add-on; use when the project already has it or the user asks about it)
 - `ti-ui` - UI/UX patterns, layouts, gestures
@@ -56,6 +58,7 @@ Do not force conditional skills onto an unrelated project. State which scopes we
 
 | Use Instead                                  | Reason                                 |
 | -------------------------------------------- | -------------------------------------- |
+| `/ti-reuse-first` before writing new code    | Inline reuse check during development  |
 | `/ti-expert` for architecture guidance       | Inline consultation during development |
 | `/purgetss` to verify a class                | Quick inline reference                 |
 | `/ti-ui` for UI/UX patterns and layouts      | Task-oriented guidance                 |

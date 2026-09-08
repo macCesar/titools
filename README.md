@@ -6,7 +6,7 @@
 
 </div>
 
-TiTools is a Titanium SDK toolkit for AI coding assistants. It ships 10 skills — 5 specialist skills (`ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-synthengine`) plus 5 documentation-mirror skills (`ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`) — a research agent, and reference files covering Titanium architecture, API reference, native how-tos, Alloy MVC, PurgeTSS styling and resource automation, UI/UX patterns, 2D games, and native sound synthesis.
+TiTools is a Titanium SDK toolkit for AI coding assistants. It ships 11 skills — 6 specialist skills (`ti-reuse-first`, `ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-synthengine`) plus 5 documentation-mirror skills (`ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`) — a research agent, and reference files covering reuse and simplification, Titanium architecture, API reference, native how-tos, Alloy MVC, PurgeTSS styling and resource automation, UI/UX patterns, 2D games, and native sound synthesis.
 
 The reference files are maintained against official documentation whenever an official source exists, so the assistant can retrieve current framework behavior instead of guessing from generic training data.
 
@@ -36,7 +36,7 @@ The fastest way to get started with Claude Code. One command to add the marketpl
 ```
 
 What you get:
-- All 10 TiTools skills (`ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-synthengine`, `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`)
+- All 11 TiTools skills (`ti-reuse-first`, `ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-synthengine`, `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`)
 - ti-pro research agent
 - Session hook that auto-detects Titanium projects (`tiapp.xml`, Alloy, PurgeTSS, `ti.game`, `ti.synthengine`)
 - Slash commands: `/ti-check`, `/ti-new-screen`, `/ti-audit`
@@ -174,6 +174,7 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 
 | Skill        | Purpose                             | Best For                                |
 | ------------ | ----------------------------------- | --------------------------------------- |
+| ti-reuse-first | Reuse before writing new code     | Whether it should exist and what already does it; duplication sweeps |
 | ti-expert    | Architecture and implementation     | Starting point for most tasks           |
 | purgetss     | Alloy styling + asset automation    | Utility classes; Alloy/Classic branding, images, colors, fonts and modules |
 | ti-ui        | UI/UX patterns                      | Complex layouts, ListViews, platform UI |
@@ -186,7 +187,8 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 | alloy-howtos | Alloy CLI, configuration, debugging | alloy.jmk, config.json, custom XML tags |
 
 Notes:
-- The first five (`ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-synthengine`) are specialist workflow skills reflecting TiTools' Titanium conventions and native-module contracts.
+- The first six (`ti-reuse-first`, `ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-synthengine`) are specialist workflow skills reflecting TiTools' Titanium conventions and native-module contracts.
+- `ti-reuse-first` runs before the others. It asks whether a thing needs to exist and what already does it — a search order that stops at the first rung that holds — and sweeps an existing `app/` for near-identical controllers, single-listener events, wrappers around one call, and layout recomputed in JavaScript. It is deliberately two-sided: it says when adding a module or a Widget is the right answer, so the bias does not simply invert.
 - `ti-game` documents the `ti.game` native module (2D sprite engine on OpenGL ES 2.0, Android and iOS). Its API reference was verified against the module source and tracks upstream `main` (the module ships features ahead of its manifest version); it applies to Alloy and Classic projects alike and does not depend on PurgeTSS.
 - `ti-synthengine` translates aesthetic sound requests into strict, production-ready JavaScript for the cross-platform `ti.synthengine` 1.0.0 module. Seven references preserve the official documentation and an eighth adds curated retro, xylophone, memory-pad, polyphony and timer-ownership recipes; the API contract was cross-checked against both native implementations.
 - The latter five are documentation-mirror skills sourced from the official Titanium SDK docs (`tidev/titanium-docs`) and audited against them via the internal `titools-skill-auditor`.
@@ -249,7 +251,7 @@ TiTools provides slash commands for common tasks. Both channels ship them: the p
 These commands automatically invoke the relevant skills:
 - `/ti-check` reads `tiapp.xml`, validates declared native modules, and reports project health
 - `/ti-new-screen` uses `ti-expert` + `purgetss` to create properly structured files
-- `/ti-audit` routes all 10 skills: core Titanium checks always, Alloy/PurgeTSS checks when detected, integration how-tos when used, and `ti-game` / `ti-synthengine` checks when those modules are declared
+- `/ti-audit` routes all 11 skills: the reuse sweep first, core Titanium checks always, Alloy/PurgeTSS checks when detected, integration how-tos when used, and `ti-game` / `ti-synthengine` checks when those modules are declared
 
 ---
 
@@ -289,6 +291,7 @@ All skills include automatic project detection to ensure compatibility:
 | Skill     | What It Detects       | How It Works                                                  |
 | --------- | --------------------- | ------------------------------------------------------------- |
 | purgetss  | PurgeTSS mode and project type | Checks PurgeTSS markers, then separates Alloy utilities from Classic standalone commands |
+| ti-reuse-first | Existing app structure | Searches `app/lib/`, `app/controllers/`, `app/widgets/`, `purgetss/config.cjs` before proposing anything new |
 | ti-expert | Alloy vs Classic      | Checks for `app/` (Alloy) vs `Resources/` (Classic) structure |
 | ti-ui     | Titanium projects     | Checks for `tiapp.xml` (both Alloy and Classic)               |
 | ti-game   | ti.game module        | Checks for `<module>ti.game</module>` in `tiapp.xml` or `require('ti.game')` |
@@ -301,16 +304,17 @@ Why this matters:
 
 ### Skill hierarchy
 
-`ti-expert` is the architectural starting point and coordinates with the rest of the bundled catalog:
+`ti-reuse-first` runs first — it decides whether there is anything to build — and `ti-expert` is the architectural starting point for what survives that question. Together they coordinate the rest of the bundled catalog:
 
 | Scope | Skills |
 | --- | --- |
+| Whether to build it at all | `ti-reuse-first`, first |
 | Architecture and UI | `ti-expert`, `ti-ui`, `purgetss` when configured |
 | Native modules | `ti-game`, `ti-synthengine` when declared |
 | Exact SDK/API guidance | `ti-api`, `ti-guides`, `ti-howtos` |
 | Alloy MVC and tooling | `alloy-guides`, `alloy-howtos` for Alloy projects |
 
-All ten ship with TiTools; no second skill package is required.
+All eleven ship with TiTools; no second skill package is required.
 
 ---
 
@@ -804,6 +808,7 @@ This pattern is documented across four bundled TiTools skills: `ti-ui`, `ti-expe
 
 | Skill     | SKILL.md                      | References                                            |
 | --------- | ----------------------------- | ----------------------------------------------------- |
+| ti-reuse-first | Reuse Before You Write   | 5 files (the ladder, Alloy reuse, indirection, PurgeTSS reuse, diagnostics) |
 | ti-expert | Architecture + Implementation | 26 files (patterns, feedback surfaces, file type association, sharing, testing, security, etc.) |
 | purgetss  | Setup + Critical Rules        | 34 files (Classic compatibility, grid, animations, icons, class-index, SVG pipeline, etc.) |
 | ti-ui     | UI Rules + Platform Diffs     | 14 files (layouts, lists, gestures, etc.)             |
