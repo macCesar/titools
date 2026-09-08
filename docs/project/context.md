@@ -50,6 +50,7 @@ Full agent-facing guidance is in `AGENTS.md`; Claude-specific notes in `CLAUDE.m
 - **`titools sync` runs inside a consumer Titanium project**, never from this repo. Editing a skill here does not call for a sync.
 - **Nobody publishes by hand.** The `v*` tag triggers `.github/workflows/publish.yml`, which publishes with trusted publishing (OIDC) after re-checking the tag against both version files and running `npm test`. A manual `npm publish` is neither needed nor authenticated — but a red run ships nothing, so confirm with `npm view @maccesar/titools version`.
 - **The version in `plugin.json` has drifted before.** v2.6.0 shipped with it frozen at `3.0.0` from an old branch: npm published 2.6.0 while the marketplace announced 3.0.0.
+- **The SessionStart hook reaches marketplace users only.** `hooks/hooks.json` declares it as `bash ${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh`, so the plugin registers it and the npm CLI does not — `titools install` writes the `titools auto-update --silent` hook and nothing else. Measured on the maintainer's machine on 2026-09-08: `~/.claude/settings.json` carries the two auto-update hooks and no `session-start.sh` entry, and `~/.claude/plugins/cache/` has no `maccesar-titools`. So on an npm-only install the Titanium project-detection message has never run, and any steering that depends on it — the skill ordering added in 4.21.0 included — is inert there. Anything that must reach both channels belongs in a skill description or a skill body, not in the hook.
 
 ## Sibling project — `aiskills`
 

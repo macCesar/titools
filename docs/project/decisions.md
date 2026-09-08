@@ -97,3 +97,15 @@ The asymmetry is what sets the default: a wrong `false` costs a duplicate entry 
 **Why:** PurgeTSS v7.15.0 introduced selected standalone commands for Titanium Classic while leaving the utility-class workflow Alloy-only. The documentation describes that boundary, but exact behavioral contracts such as output paths, default padding, qualifier lists and module aliases live most reliably in the release source and tests.
 
 **Consequences:** The auditor caches both upstream repositories as `.purgetss-docs` and `.purgetss-source`, records both commit hashes in the audit report, and requires disagreements to be resolved according to the kind of claim instead of treating either source as universally authoritative.
+
+---
+
+## 2026-09-08 — `ti-reuse-first` keeps its name, and reachability is measured rather than argued
+
+**Decision:** The skill added in 4.21.0 stays named `ti-reuse-first`. Its reachability was raised by naming it in the SessionStart hook, by three pointers in bodies that always load (`ti-expert`, `ti-ui`, `/ti-new-screen`), and by a description rewritten to open on the user's own words in Spanish and English. The name was A/B-tested against `ti-before-you-build` and the two tied.
+
+**Why:** The skill was reachable in practice only through a note buried in `ti-expert/references/patterns.md`, a file read after the decision to build has already been made. Three of the five suspected causes turned out to be wrong, and only measurement separated them. A disposable Alloy fixture, 8 positive and 4 negative queries, 2 repetitions, counting `Skill` invocations in `claude -p --output-format stream-json`. A positive control ran first and fired the correct skill 2/2 — without it no reading would have been trustworthy, which is the failure this project's sibling already paid for once.
+
+The baseline fired on **16/16** positives with **0/8** false positives, so "does it trigger" had no headroom and could not have distinguished anything; the metric moved to "does it go **first**", which sat at **12/16**. `ti-expert` never competed for that turn — the diagnosis had predicted it would. The actual competitor was `superpowers:brainstorming`, which took the first turn on both "another screen" queries in all four runs. After the change: **16/16 first, 0/8 false positives**. The name variant scored 15/16, one run apart.
+
+**Consequences:** A tie means the name carries no measurable signal here, so it is settled by convention — `ti-<domain>` — and by the ordering that `first` encodes in an alphabetical skill list. No `LEGACY_SKILLS` entry is needed, since 4.21.0 had not shipped when the test ran. `test/manifest.test.js` caught a description of 1403 characters against the spec's 1024-character cap during this work, which is the guardrail that keeps the rewritten description honest. The fixture and the runner are disposable and were not committed; the numbers above are the record.
