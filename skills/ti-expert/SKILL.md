@@ -1,6 +1,6 @@
 ---
 name: ti-expert
-description: "Use when designing, reviewing, auditing, or analyzing Titanium SDK architecture and implementation (Alloy or Classic) — creating controllers/views/services, choosing models vs collections, deciding between app-owned and system UI, designing reusable Widgets or feedback/modality patterns, hunting memory leaks and cleanup gaps, testing, migrating legacy apps, building adaptive layouts for tablets, foldables and large screens, or moving documents in and out of the app: custom file types, UTIs, CFBundleDocumentTypes, Android intent filters, AirDrop/Quick Share, document icons, sharing a link or file via the iOS share sheet or Android intent chooser. AUTO-DETECT: If tiapp.xml exists, invoke BEFORE architectural decisions, new controllers/views, feedback components, or restructuring. Titanium navigation, memory, event, and modal patterns differ from web frameworks."
+description: "Use when designing, reviewing, auditing, or analyzing Titanium SDK architecture and implementation (Alloy or Classic) — creating controllers/views/services, choosing models vs collections, deciding between app-owned and system UI, designing reusable Widgets or feedback/modality patterns, hunting memory leaks and cleanup gaps, testing, migrating legacy apps, building adaptive layouts for tablets, foldables and large screens, or moving documents in and out of the app: custom file types, UTIs, CFBundleDocumentTypes, Android intent filters, AirDrop/Quick Share, document icons, sharing a link or file via the iOS share sheet or Android intent chooser, or push notifications: FCM, a tap that opens nothing, an app that restarts when tapped. AUTO-DETECT: If tiapp.xml exists, invoke BEFORE architectural decisions, new controllers/views, feedback components, or restructuring. Titanium navigation, memory, event, and modal patterns differ from web frameworks."
 argument-hint: "[architecture-topic]"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(git *), Bash(node *)
 ---
@@ -26,6 +26,7 @@ This file is an index. Read the references that govern the task before making a 
 | Tablet, foldable, large screen, or responsive behavior | [Adaptive layouts](references/adaptive-layouts.md) |
 | Opening or receiving files: custom extensions, UTIs, intent filters, AirDrop, Quick Share, document icons | [File type association](references/file-type-association.md) |
 | Sending content out: share sheet, intent chooser, sharing a link or a file, `dk.napp.social`, `com.alcoapps.socialshare` | [Sharing content out](references/sharing.md) |
+| Push notifications: FCM, `firebase.cloudmessaging`, a tap that opens nothing, an app that restarts on tap, the payload to send | [Push notifications](references/push-notifications.md) |
 | Security architecture | [Security fundamentals](references/security-fundamentals.md), [Device security](references/security-device.md) |
 | Testing or performance | Load the matching guide under Quality & Performance below |
 
@@ -185,6 +186,7 @@ For the complete reference with examples, see [Alloy builtins and globals](refer
 - [Controller Patterns](references/controller-patterns.md)
 - [File Type Association](references/file-type-association.md) (custom extensions and UTIs, `CFBundleDocumentTypes`, Android intent filters, receiving files from AirDrop/Quick Share, document icons)
 - [Sharing Content Out](references/sharing.md) (share sheet and intent chooser, why iOS still needs `dk.napp.social` and Android does not, text versus file, iPad popovers)
+- [Push Notifications](references/push-notifications.md) (the four doors a push arrives through on Android, why a tap does not fire `didReceiveMessage`, `singleTop` and `newintent`, data-only versus `notification` block, the HTTP v1 payload)
 - [Feedback Surfaces & App-Owned UI](references/feedback-surfaces.md)
 - [Feedback Widget Contracts](references/feedback-widget-contracts.md)
 - [Feedback Migration](references/feedback-migration.md)
