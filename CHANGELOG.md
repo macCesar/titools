@@ -6,6 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [5.0.0] - 2026-09-12
+
+### Changed
+
+- Documentation sources moved. `ti-api` is maintained against `tidev/titanium-sdk:apidoc/` at the newest GA tag, cross-checked with the compiled registry in `tidev/titaniumsdk.com`. The four guide skills follow `tidev/titaniumsdk.com:content/docs/` where a page exists. The frozen `tidev/titanium-docs` corpus stays as an archive layer, additive only: it never overrides a live source, and nothing is dropped from a reference for being absent from the rewritten site.
+- `titools-skill-auditor` audits against those three roots, with a precedence section stating which wins and per-skill live/archive mappings.
+
+### Added
+
+- `ti-howtos` documents Swift Package Manager dependencies for iOS modules: `spm.json`, dependency and product fields, `embedded` versus `host` linkage, and migrating off the deprecated `ti.spm.js` hook.
+- `ti-guides` covers the 13.4.1 release.
+- `ti-api` gains `Titanium.Calendar.Attendee.relationship` and the `touchmove` event on `Titanium.UI.TableViewRow`, completing its coverage of apidoc 13_4_1_GA at 2682/2682 members.
+- Two auditor scripts: `apidoc-coverage.mjs` reports apidoc members a reference never names, `api-map.mjs` derives type-to-reference from the reference files themselves.
+
+### Fixed
+
+- The 27 `titaniumsdk.com/guide/` and `/api/` links across 13 references point at the pages that replaced them, in the site's canonical unversioned form.
+- Four `Titanium.Calendar.Attendee` properties were marked iOS-only; the apidoc declares them on both platforms.
+
 ## [4.23.1] - 2026-09-11
 
 ### Changed — `ti-expert` ships the push code instead of a fragment
