@@ -112,9 +112,9 @@ The baseline fired on **16/16** positives with **0/8** false positives, so "does
 
 ---
 
-## 2026-09-11 — The API comes from the SDK's apidoc; the guides come from the new site; `titanium-docs` becomes an archive
+## 2026-09-12 — The API comes from the SDK's apidoc; the guides come from the new site; `titanium-docs` becomes an archive
 
-**Decision:** The doc-based skills read three upstream roots instead of one. `ti-api` audits against `tidev/titanium-sdk:apidoc/*.yml` at the newest GA tag, cross-checked with `tidev/titaniumsdk.com:registry/sdk/<version>/`. The four guide skills audit against `tidev/titaniumsdk.com:content/docs/` where a page exists, and keep `tidev/titanium-docs` as an additive archive. The archive never overrides a live source and nothing is deleted from a reference for being absent from the new site.
+**Decision:** The doc-based skills read three upstream roots instead of one. Shipped in v5.0.0. The major is editorial rather than structural: no command, flag or skill name changed and nothing breaks on update, but the sources the skills are maintained against did. `ti-api` audits against `tidev/titanium-sdk:apidoc/*.yml` at the newest GA tag, cross-checked with `tidev/titaniumsdk.com:registry/sdk/<version>/`. The four guide skills audit against `tidev/titaniumsdk.com:content/docs/` where a page exists, and keep `tidev/titanium-docs` as an additive archive. The archive never overrides a live source and nothing is deleted from a reference for being absent from the new site.
 
 **Why:** `tidev/titanium-docs` is frozen and being archived under TI-52. The SDK's `regen-docs.yml` now dispatches to `titaniumsdk.com` and labels the job that still notifies the old repo `Notify titanium-docs (legacy)`. It is not merely deprecated, it is already behind: `Ti.UI.Toolbar.hideSharedBackground` (apidoc 2026-07-12) and `Ti.UI.ListView.snapping` (apidoc 2026-07-20) are in the SDK and in the site's `registry/sdk/main/`, and never reached it. An audit run against it reports green against a corpus that stopped moving.
 
