@@ -3,7 +3,7 @@
 **Phase:** v4.22.0 shipped; live and maintained.
 **Session by:** Claude Code · Opus 5 (`claude-opus-5[1m]`). This note was written after the release, which is the only point at which its facts exist.
 **Deployed:** `@maccesar/titools@4.22.0` on npm — published by `publish.yml` run [34665563869](https://github.com/macCesar/titools/actions/runs/34665563869), which concluded `success` after re-checking the tag against both version files, running `npm ci && npm test`, and publishing over OIDC. `npm view` reports `4.22.0`. Tag `v4.22.0` → `0ecedaa`, GitHub release created at <https://github.com/macCesar/titools/releases/tag/v4.22.0>. `package.json` and `.claude-plugin/plugin.json` both read `4.22.0`.
-**Branch:** `main`, aligned with `origin/main`, working tree clean.
+**Branch:** `main`, one commit ahead of `origin/main` — a correction to the reference shipped in 4.22.0, found by re-reading it against the device run rather than by testing. Working tree clean.
 **Sibling:** `../aiskills` is aligned with its own `origin/main` at `2b8058f docs(project): session close for v1.24.0`. No shared machinery moved here — `git diff f1308a3..HEAD -- lib/ bin/ hooks/` is empty — so no port is owed in either direction.
 
 ## Where things stand
