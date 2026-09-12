@@ -291,7 +291,7 @@ In Alloy, collection data can be synchronized to a view object, or a single mode
 
 #### Collection-View Binding
 
-To enable collection-view binding, create a global singleton or controller-specific collection using the [Collection tag](https://titaniumsdk.com/guide/Alloy_Framework/Alloy_Guide/Alloy_Views/Alloy_XML_Markup.html#collection-element) in the XML markup of the main view, then add the view object you want to bind data to. The following Titanium view objects support binding to a Collection:
+To enable collection-view binding, create a global singleton or controller-specific collection using the [Collection tag](https://titaniumsdk.com/docs/alloy/views) in the XML markup of the main view, then add the view object you want to bind data to. The following Titanium view objects support binding to a Collection:
 
 | View Object    | Since Alloy version | Add data binding attributes to...              | Repeater Object to map model attributes to view properties                     |
 | -------------- | ------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------ |
@@ -416,7 +416,7 @@ The application is now setup for basic collection-view binding. When any new dat
 
 #### Model-View Binding
 
-To bind a single model to a component, create a global singleton or controller-specific model using the [Model tag](https://titaniumsdk.com/guide/Alloy_Framework/Alloy_Guide/Alloy_Views/Alloy_XML_Markup.html#model-element) in the XML markup of the main view and map the model attribute to the view component. To map the attribute to the view component, prefix the model name or id to the attribute, then enclose it with curly brackets or braces ('{' and '}').
+To bind a single model to a component, create a global singleton or controller-specific model using the [Model tag](https://titaniumsdk.com/docs/alloy/views) in the XML markup of the main view and map the model attribute to the view component. To map the attribute to the view component, prefix the model name or id to the attribute, then enclose it with curly brackets or braces ('{' and '}').
 
 To do complex transformations on the model attributes, extend the model prototype with a `transform()` function. It should return the modified model as a JSON object.
 

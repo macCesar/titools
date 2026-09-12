@@ -64,7 +64,7 @@ Titanium resolves local CommonJS paths from `Resources/`. Omit both the `Resourc
 | `Resources/lib/materialsymbols.js` | `require('lib/materialsymbols')` |
 | `Resources/lib/framework7icons.js` | `require('lib/framework7icons')` |
 
-This follows Titanium's [CommonJS module path resolution](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_Guide/Best_Practices_and_Recommendations/CommonJS_Modules_in_Titanium.html#javascript-module-path-resolution).
+This follows Titanium's [CommonJS module path resolution](https://titaniumsdk.com/docs/build/modules).
 
 ## Deployment Targets
 

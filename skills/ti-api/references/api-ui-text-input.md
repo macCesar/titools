@@ -337,7 +337,7 @@ The AttributedString proxy is created with the <Titanium.UI.createAttributedStri
 
 The `text` property must be set initially in the constructor when creating an attributed string. The [attributes](Titanium.UI.AttributedString.attributes) can either be set in the constructor or after it has been created.
 
-For examples of Attributed Strings, see the [Attributed Strings guide](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_How-tos/User_Interface_Deep_Dives/Attributed_Strings.html).
+For examples of Attributed Strings, see the [Attributed Strings guide](https://titaniumsdk.com/docs/build/ui).
 
 ### Properties (unique: 2/5)
 | Property | Type | Default | Platform | Description |

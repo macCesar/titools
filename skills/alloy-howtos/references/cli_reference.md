@@ -123,7 +123,7 @@ Compiler options reference the `event.alloyConfig` object in [Build Configuratio
 
 ### run
 
-Use `titanium build` command to run Alloy projects. See [Titanium Command-Line Interface Reference](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_Guide/Titanium_Command-Line_Interface_Reference/).
+Use `titanium build` command to run Alloy projects. See [Titanium Command-Line Interface Reference](https://titaniumsdk.com/docs/reference/cli).
 
 > **💡 Common ti build pitfalls**
 >

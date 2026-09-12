@@ -107,7 +107,7 @@ On the iOS platform, closing the database also closes the result set, that is, y
 > Platforms: both
 > Type: module
 
-For examples of using the Filesystem APIs, refer to the [Filesystem Access and Storage guide](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_How-tos/Working_with_Local_Data_Sources/Filesystem_Access_and_Storage.html) as well as the other Filesystem submodule API documentation.
+For examples of using the Filesystem APIs, refer to the [Filesystem Access and Storage guide](https://titaniumsdk.com/docs/build/data) as well as the other Filesystem submodule API documentation.
 
 ### Properties (unique: 11/21)
 | Property | Type | Default | Platform | Description |

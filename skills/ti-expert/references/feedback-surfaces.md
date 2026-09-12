@@ -102,7 +102,7 @@ Standardize buttons, cards, badges, chips, skeletons, and coach marks only when 
 
 ## References
 
-- [Titanium Alloy Widgets](https://titaniumsdk.com/guide/Alloy_Framework/Alloy_Guide/Alloy_Widgets.html)
+- [Titanium Alloy Widgets](https://titaniumsdk.com/docs/alloy/widgets)
 - [Apple Human Interface Guidelines: Alerts](https://developer.apple.com/design/human-interface-guidelines/alerts)
 - [Apple Human Interface Guidelines: Modality](https://developer.apple.com/design/human-interface-guidelines/modality)
 - [Material Design 3: Snackbar](https://m3.material.io/components/snackbar/overview)

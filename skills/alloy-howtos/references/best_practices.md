@@ -1,6 +1,6 @@
 # Alloy best practices and recommendations
 
-Recommendations for writing Alloy apps. This supplements the Titanium SDK [Best Practices and Recommendations](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_Guide/Best_Practices_and_Recommendations/) guide and focuses on coding style and conventions.
+Recommendations for writing Alloy apps. This supplements the Titanium SDK [Best Practices and Recommendations](https://titaniumsdk.com/docs/build) guide and focuses on coding style and conventions.
 
 ## Titanium-to-Alloy Guidance
 
@@ -29,7 +29,7 @@ Decide whether to adapt Alloy to your existing structure, or to adopt Alloy's st
 ### Naming Conventions
 
 - **Do not use double underscore prefixes** on variables, properties, or function names (e.g., `__foo`). They are reserved for Alloy and may cause conflicts and unexpected behavior.
-- **Do not use JavaScript reserved words as IDs.** See [Titanium SDK Reserved Words](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_Guide/Best_Practices_and_Recommendations/Reserved_Words/) for the complete list.
+- **Do not use JavaScript reserved words as IDs.** See [Titanium SDK Reserved Words](https://titaniumsdk.com/docs/buildReserved_Words/) for the complete list.
 
 ### Global Variables
 

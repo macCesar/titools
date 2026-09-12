@@ -19,7 +19,7 @@ Community resources, support channels, tools, and learning materials for Titaniu
 ### Documentation
 
 - Titanium SDK Docs: https://titaniumsdk.com/
-- Alloy Framework Docs: https://titaniumsdk.com/guide/Alloy_Framework/
+- Alloy Framework Docs: https://titaniumsdk.com/docs/alloy
 - This skill (`ti-guides`): `../SKILL.md`
 
 ---
