@@ -109,3 +109,19 @@ The asymmetry is what sets the default: a wrong `false` costs a duplicate entry 
 The baseline fired on **16/16** positives with **0/8** false positives, so "does it trigger" had no headroom and could not have distinguished anything; the metric moved to "does it go **first**", which sat at **12/16**. `ti-expert` never competed for that turn — the diagnosis had predicted it would. The actual competitor was `superpowers:brainstorming`, which took the first turn on both "another screen" queries in all four runs. After the change: **16/16 first, 0/8 false positives**. The name variant scored 15/16, one run apart.
 
 **Consequences:** A tie means the name carries no measurable signal here, so it is settled by convention — `ti-<domain>` — and by the ordering that `first` encodes in an alphabetical skill list. No `LEGACY_SKILLS` entry is needed, since 4.21.0 had not shipped when the test ran. `test/manifest.test.js` caught a description of 1403 characters against the spec's 1024-character cap during this work, which is the guardrail that keeps the rewritten description honest. The fixture and the runner are disposable and were not committed; the numbers above are the record.
+
+---
+
+## 2026-09-11 — The API comes from the SDK's apidoc; the guides come from the new site; `titanium-docs` becomes an archive
+
+**Decision:** The doc-based skills read three upstream roots instead of one. `ti-api` audits against `tidev/titanium-sdk:apidoc/*.yml` at the newest GA tag, cross-checked with `tidev/titaniumsdk.com:registry/sdk/<version>/`. The four guide skills audit against `tidev/titaniumsdk.com:content/docs/` where a page exists, and keep `tidev/titanium-docs` as an additive archive. The archive never overrides a live source and nothing is deleted from a reference for being absent from the new site.
+
+**Why:** `tidev/titanium-docs` is frozen and being archived under TI-52. The SDK's `regen-docs.yml` now dispatches to `titaniumsdk.com` and labels the job that still notifies the old repo `Notify titanium-docs (legacy)`. It is not merely deprecated, it is already behind: `Ti.UI.Toolbar.hideSharedBackground` (apidoc 2026-07-12) and `Ti.UI.ListView.snapping` (apidoc 2026-07-20) are in the SDK and in the site's `registry/sdk/main/`, and never reached it. An audit run against it reports green against a corpus that stopped moving.
+
+The new site is not a smaller replacement to fear. TiDev's own `docs/legacy-guide-audit.md` classifies the 336 legacy pages as 121 rewrite, 121 merge, 2 keep and 92 archive — and 91 of the 92 are release notes, the 92nd the discontinued Atom package. No guide topic is dropped. What changes is density: 1390 KB of legacy prose becomes 219 KB. TiTools keeps the full corpus, so this repo now carries material the official docs no longer do.
+
+**Consequences:** Two new gitignored cache symlinks, `.titanium-sdk` and `.titaniumsdk-site`. `titools-skill-auditor` gained a precedence section, per-skill live/archive mappings, and two scripts: `apidoc-coverage.mjs` (which apidoc members a reference never names) and `api-map.mjs` (derives type → reference from the files rather than a hand-written table that drifts). Measured on the day: `ti-api` names 2682/2682 members against `13_4_1_GA` after closing two gaps, and 6 against `main`, all of them unreleased APIs bound for 14.0.0.
+
+Two traps are written into the auditor because both were hit while establishing this. `registry/sdk/_pool/` is content-addressed and shared across every version, so grepping it says some version has an API, not which — that is how `hideSharedBackground` was first misreported as shipped in 13.4.1. And a hand-written type-to-reference map sends an audit at the wrong file and reports every member of a type as missing.
+
+The auditor travels with the repo: `.gitignore` blocks `.claude/*` but re-admits `!.claude/skills/`, so `titools-skill-auditor` and its new `scripts/` are versioned like anything else.
