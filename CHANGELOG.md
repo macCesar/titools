@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.23.0] - 2026-09-11
+
+### Changed — `purgetss` aligns with PurgeTSS 7.17.1
+
+- The `notification-icon` piece writes `notificationicon.png`, not `ic_stat_notify.png`. Corrected in six places: the piece table and the three copies of the generated `brand:` block (`app-branding.md`, `cli-commands.md`, `customization-deep-dive.md`), the `--notification-icon` flag row, and the opt-in paragraph. The comment above the opt-in pieces now matches the CLI template byte for byte.
+- That opt-in paragraph had the reason backwards: it said the icon was inert without the FCM `meta-data`. `firebase.cloudmessaging` resolves the drawable by name through `getResource("notificationicon")`, which is the only path a data message has; the `default_notification_icon` meta-data covers notification messages alone.
+- New section `FCM notification icon` in `app-branding.md`, placed where the official docs place it — between the pre-12 splash and the iOS launch screen. It carries the output paths for Alloy and Classic, why the artwork is white on transparent (Android tints status-bar icons at runtime, so the color in the artwork is discarded), both `meta-data` entries including `default_notification_color`, and the `colors.xml` resource the second one needs.
+- New troubleshooting entry for a notification showing a white square or the launcher icon, with the three causes in order of likelihood.
+- `version-history.md` gains a v7.17.1 entry and `SKILL.md` announces the range `v7.4.0 → v7.17.1`.
+
+### Added — the two skills meet at the notification icon
+
+- `ti-expert/references/push-notifications.md` documented how a message arrives and not how it looks on arrival. Section 2 now explains that both routes need a drawable named `notificationicon`, that the module's fallback to the opaque `appicon` is what the status bar tints into a white square, and that a notification message takes the `default_notification_icon` meta-data instead — which is why one project can show a correct icon on one route and a blob on the other. It points at PurgeTSS for generating the five densities.
+- Its symptom-to-cause table gains the white square, the one visible symptom the table did not explain.
+
 ### Fixed
 
 - `ti-expert/references/push-notifications.md` claimed `didOpenNotification` replaces rows two to four of the four-doors table, and that one listener covers every tap. It replaces rows three and four: a cold start still arrives in the Intent, because the module does not exist yet when the notification is opened. Device testing on Android 15 produced the corrected table, and a note on why `adb shell am kill` and `am force-stop` both fail to reproduce a cold start.
