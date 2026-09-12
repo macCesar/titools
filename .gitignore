@@ -5,6 +5,8 @@ docs/*
 
 # Upstream docs cache used by the titools-skill-auditor skill
 .titanium-docs
+.titanium-sdk
+.titaniumsdk-site
 .purgetss-docs
 .purgetss-source
 
@@ -39,3 +41,10 @@ Thumbs.db
 !assets/**/*.png
 !assets/**/*.jpg
 !assets/**/*.jpeg
+
+# Screenshots dropped at the repo root are conversation material, not project files
+/*.png
+/*.jpg
+/*.jpeg
+/screen-capture*
+/Captura*
