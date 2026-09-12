@@ -79,6 +79,26 @@ if (OS_ANDROID) {
 
 **Wrap the listeners.** `Ti.App.addEventListener('resumed', mostrarAviso)` passes the event object as the first argument, and if the function's first parameter is an Intent, the code blows up inside `getStringExtra`. The same trap catches `Alloy.Events.on('algo', unaFuncionConParametros)`.
 
+### Registering on Android: two calls that go quiet
+
+The channel has to exist and be handed to the module **before** asking for the token, and its id has to match the `default_notification_channel_id` meta-data in `tiapp.xml`. Mismatch them and the notification is posted against a channel nobody declared.
+
+```javascript
+modulo.notificationChannel = Ti.Android.NotificationManager.createNotificationChannel({
+  id: 'default_channel',        // the same id tiapp.xml declares
+  name: L('push_channel_name'),
+  importance: Ti.Android.IMPORTANCE_DEFAULT
+})
+
+modulo.registerForPushNotifications()
+
+// Firebase does not announce a token it already had, so didRefreshRegistrationToken
+// may never fire on a device that registered before. Ask for it once, a moment later.
+setTimeout(() => guardarToken(modulo.fcmToken), 4000)
+```
+
+That last line is the one that bites. On a fresh install the event fires and everything looks fine; on a device that already had a token from an earlier run it never fires, the app never sends the token to the server, and every push to that device is addressed to nobody. Make `guardarToken` idempotent — it will be called more than once with the same value.
+
 ## 2. The payload decides how much of the module runs
 
 Android distinguishes a *notification message* from a *data message*, and the difference is not cosmetic.
@@ -151,10 +171,33 @@ Everything above is what the published module needs. A module that fires `didOpe
 Verified on a physical Android 15 phone and an API 35 emulator, each row confirmed by a log line naming the route. The first three ran back to back on one process id with a game in progress, which survived; only the fourth starts a new process.
 
 ```javascript
-modulo.addEventListener('didOpenNotification', (e) => {
-  abrirPanel((e.message && e.message.data) || {})
-})
+if (OS_ANDROID) {
+  // With the runtime alive the launcher Intent is not delivered a second time,
+  // so this event is the only way in.
+  modulo.addEventListener('didOpenNotification', (e) => {
+    abrirPanel((e.message && e.message.data) || {})
+  })
+
+  // On a cold start the module does not exist yet when the notification is
+  // opened, so the payload travels in the Intent. This is that route.
+  const desdeElIntent = (origen) => {
+    const contenido = Ti.Android.rootActivity.intent.getStringExtra('fcm_data')
+
+    if (!contenido) {
+      log.debug(`Nothing in the Intent (${origen})`)
+      return
+    }
+
+    modulo.clearLastData()
+    abrirPanel(JSON.parse(contenido))
+  }
+
+  Ti.App.addEventListener('resumed', () => desdeElIntent('resumed'))
+  desdeElIntent('arranque')
+}
 ```
+
+`resumed` stays even though the event covers the warm tap: it is what catches an Intent the module left behind on a version that still writes one. When the event delivered the payload the Intent is empty and the handler returns without opening anything, which is the exclusivity the section below describes.
 
 The payload sits under `message.data`, the same place `didReceiveMessage` puts it on both its live and its cold-start path, so one accessor covers a tap and an arrival. The first version of the event wrapped it directly in `message`; if the module you have predates 3.6.0, read `e.message` instead, or log the event once and look.
 
@@ -274,6 +317,16 @@ if (OS_IOS) {
 }
 ```
 
+**The token comes from `fetchToken`, not from the property.** Right after APNs answers, `modulo.fcmToken` is empty: Firebase still has to exchange the APNs token for its own, and that exchange has no fixed duration. Waiting does not fix it — four seconds was still empty on a device. `fetchToken` calls back when the token exists, which is the only way to know.
+
+```javascript
+// The apnsToken is never assigned by hand. Firebase's swizzling does it, and
+// setting it yourself produces BadDeviceToken when you send.
+modulo.fetchToken((e) => {
+  if (e && e.token) { guardarToken(e.token) }
+})
+```
+
 **A data-only message shows nothing on iOS.** Android reads the text from `data`; iOS reads it from the APNs alert. Send both, they do not interfere:
 
 ```php
@@ -323,3 +376,6 @@ Do not test with the app added to the battery whitelist. That measures a phone y
 | iOS registers but never gets a token | Firebase loaded after APNs answered | Section 8 |
 | iOS receives the push and does nothing when tapped | Empty `callback` | Section 8 |
 | Nothing arrives for twenty minutes, then five at once | OEM battery management | Section 9 |
+| Push works on a fresh install and never on a reinstall | `didRefreshRegistrationToken` does not fire for a token Firebase already had | Section 1 |
+| iOS: `fcmToken` is empty right after the permission is granted | It is; the APNs-for-FCM exchange has no fixed duration. Use `fetchToken` | Section 8 |
+| iOS: `BadDeviceToken` when sending | `apnsToken` was assigned by hand instead of leaving it to the swizzling | Section 8 |
