@@ -11,7 +11,6 @@ This file is about the community module [`firebase.cloudmessaging`](https://gith
 <!-- TOC-START -->
 ## Contents
 
-- [Contents](#contents)
 - [1. The four doors](#1-the-four-doors)
 - [2. The payload decides how much of the module runs](#2-the-payload-decides-how-much-of-the-module-runs)
 - [3. A tap does not fire `didReceiveMessage`](#3-a-tap-does-not-fire-didreceivemessage)
@@ -34,7 +33,7 @@ This file is about the community module [`firebase.cloudmessaging`](https://gith
 | Backgrounded, person taps the notification | `Ti.App` `resumed`, then read the Intent | nothing |
 | **Already in front**, person taps a notification sitting in the tray | `newintent` on the root activity | `launchMode="singleTop"` |
 
-A module that fires `didOpenNotification` replaces rows two to four with one listener. See [If your module fires `didOpenNotification`](#if-your-module-fires-didopennotification).
+A module that fires `didOpenNotification` replaces rows three and four with one listener. Row two still arrives in the Intent, because the module does not exist yet when the notification is opened. See [If your module fires `didOpenNotification`](#if-your-module-fires-didopennotification).
 
 Verified case by case on a physical Android phone, reading a log line that named which door each message came through rather than watching the screen.
 
@@ -134,7 +133,16 @@ Take the activity name from the built manifest rather than guessing it: `build/a
 
 ### If your module fires `didOpenNotification`
 
-Everything above is what the published module needs. A module that fires `didOpenNotification` from `setNotificationData()` makes all of it unnecessary: no `singleTop`, no `newintent`, no reading the Intent on resume. One listener covers every tap, whatever the app was doing.
+Everything above is what the published module needs. A module that fires `didOpenNotification` from `setNotificationData()` drops the `singleTop`, the `newintent` listener and the Intent read on resume. Two routes remain instead of four, and they are exclusive:
+
+| What the app was doing | Where the payload arrives |
+| --- | --- |
+| Open, in front, message arrives | `didReceiveMessage` |
+| Backgrounded, person taps | `didOpenNotification` |
+| Already in front, person taps a notification in the tray | `didOpenNotification` |
+| Killed, person taps | `fcm_data` extra on the launch Intent |
+
+Verified on a physical Android 15 phone and an API 35 emulator, each row confirmed by a log line naming the route. The first three ran back to back on one process id with a game in progress, which survived; only the fourth starts a new process.
 
 ```javascript
 modulo.addEventListener('didOpenNotification', (e) => {
@@ -147,6 +155,8 @@ The payload sits under `message.data`, the same place `didReceiveMessage` puts i
 The Intent is still how a cold start arrives, so keep that path. Check `timodule.xml` in your installed module for the event, or just add the listener and watch whether it fires: a module without it ignores the registration silently.
 
 Do not run both. Where the module also puts the payload on the Intent, `resumed` finds it again on Titanium's second pass and the panel opens twice. That is a real symptom, not a hypothetical: it shows up on Android 10 and not on Android 15, because the two versions differ in whether the launcher Intent gets delivered to a task that already exists.
+
+To test the fourth row, swipe the app out of Recents. `adb shell am kill` looks like the same thing and is not: it kills the process but Android keeps the activity's saved state, and on restore Titanium puts `tiLaunchIntentExtras` from the previous launch back over the new Intent, taking `fcm_data` with it. The `TiRootActivity` checkpoint tells you which one you got — `savedInstanceState: null` is a real cold start, anything else is a restore. `adb shell am force-stop` is worse: it leaves the app in the stopped state, where Android stops delivering FCM messages until someone launches it by hand.
 
 ## 5. Why two splash screens flash by
 

@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- `ti-expert/references/push-notifications.md` claimed `didOpenNotification` replaces rows two to four of the four-doors table, and that one listener covers every tap. It replaces rows three and four: a cold start still arrives in the Intent, because the module does not exist yet when the notification is opened. Device testing on Android 15 produced the corrected table, and a note on why `adb shell am kill` and `am force-stop` both fail to reproduce a cold start.
+
 ## [4.22.0] - 2026-09-11
 
 ### Added — `ti-expert` covers FCM push notifications end to end
