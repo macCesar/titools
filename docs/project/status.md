@@ -1,47 +1,51 @@
-# Status — 2026-09-08
+# Status — 2026-09-11
 
-**Phase:** v4.21.0 shipped; live and maintained
-**Session by:** Claude Code · Opus 5 (`claude-opus-5[1m]`) — added `ti-reuse-first`, then measured and raised its reachability
-**Deployed:** `@maccesar/titools@4.21.0` on npm (verified with `npm view @maccesar/titools version` after the run), tag `v4.21.0` → `a8b25d8`, GitHub Release created, and `plugin.json` at `4.21.0` on `main`.
-**Branch:** `main`, aligned with `origin/main`, nothing unpushed.
-**Sibling:** `../aiskills` — `git diff --stat v4.20.0..v4.21.0 -- lib/ bin/` is one line in `lib/config.js`, the `SKILLS` entry for the new skill. That is payload, not shared machinery, so no port is required.
+**Phase:** v4.21.0 is live; **three** finished commits sit on `main`, unreleased and unpushed.
+**Session by:** Claude Code · Opus 5 (`claude-opus-5[1m]`). This note replaces an uncommitted draft dated 2026-09-10 that described only `1e4f7f0`; two more commits landed today, so that draft was already stale and never entered git history. Everything below was re-measured today rather than carried over — where a figure is inherited and was not re-run, it says so.
+**Deployed:** `@maccesar/titools@4.21.0` on npm (`npm view` confirms `4.21.0` today). `package.json` and `.claude-plugin/plugin.json` both read `4.21.0`. **None of the three commits is in any of that** — they are newer than the tag and unpushed, so they reach no user through either channel.
+**Branch:** `main`, **ahead of `origin/main` by 3** (`1e4f7f0`, `cc1fd3c`, `f19a014`), working tree otherwise clean.
+**Sibling:** `../aiskills` is aligned with `origin/main` at `2b8058f docs(project): session close for v1.24.0`. No shared machinery moved here — `git diff f1308a3..HEAD -- lib/ bin/ hooks/` is empty — so no port is owed in either direction.
 
 ## Where things stand
 
-`ti-reuse-first` ships as the eleventh skill and the first one in `SKILLS`. It applies a search order with early exit before anything new exists in a project — does this need to exist, is it already in `app/`, does a `Ti.*` API or the platform cover it, does an installed module do it, can it be one line, and only then the smallest thing that works. Five references carry the detail, each with its counter-case, and `/ti-audit` runs it as step 1.
+The three unpushed commits are all skill content, and the two newest are corrections to the first, both driven by field findings rather than by reading.
 
-Its reachability was the actual work of this session, and it was measured rather than argued. See `decisions.md` 2026-09-08 for the numbers and the method. Three of the five suspected causes in the plan turned out to be wrong; only the measurement separated them.
+`1e4f7f0` added `skills/ti-expert/references/push-notifications.md` — 306 lines mapping the four doors an FCM push can arrive through on Android against the one door the module's own example documents: the cost of a top-level `notification` block, why a tap does not fire `didReceiveMessage`, the `singleTop` + `newintent` case that appears in no documentation, the two splash screens, the HTTP v1 payload with its PHP, and why every value inside `data` must be a string. It closes with a symptom-to-cause table, and iOS gets its own section because it has one door that works in every state — the asymmetry that makes "it works on my iPhone" a useless bug report. `SKILL.md` wires it in twice (routing table row plus reference list) and its `description` names push notifications so the skill is reachable from a prompt that never says `ti-expert`.
 
-`references/alloy-reuse.md` carries a third worked example, taken from a real failure in a sibling project the same day: the correct template was chosen and then "improved" with a `touchEnabled` toggle and an `animating` lock nobody asked for, which deadlocked when the open callback never fired. The rule it states — reuse means copying the behavior, not copying it and defending it against a failure nobody has observed — is the one the other two worked examples did not cover, because this failure appears *after* the search has already succeeded.
+`f19a014` fixes the `didOpenNotification` example in that file: the module has nested the payload under `data` since 3.6.0, same as `didReceiveMessage`, so one accessor now covers both a tap and an arrival. How to read it on a pre-3.6.0 module is noted in place.
+
+`cc1fd3c` adds 35 lines to `skills/ti-ui/references/icons-and-splash-screens.md` on the Android 12+ splash: `Theme.Titanium` → `Base.Theme.Titanium.Splash` → `Theme.AppDerived` → the app's own theme, which makes an `<application>` theme an *ancestor* and therefore unable to set `windowBackground` or `windowSplashScreenBackground`. It names the three attributes one color has to reach, the 160 dp white circle a flat `windowBackground` destroys, and corrects the section's troubleshooting claim that background color is the only customizable part. It lives under `## Community-Discovered Patterns` rather than in the body because that skill is audited against official documentation and R6 protects those sections from deletion — the body would have been overwritten on the next audit.
 
 ## In flight
 
-- Nothing shipping.
+- Nothing half-done. Three complete commits that have not left this machine.
 
 ## Requirements
 
-- R3 is satisfied: npm `4.21.0`, tag `v4.21.0`, and `plugin.json` on `main` agree, and `publish.yml` re-checked that agreement itself before publishing.
-- R7–R9 remain satisfied: frontmatter validates and the suite is green. The 1024-character description cap in `test/manifest.test.js` did real work this session — it rejected a rewritten description of 1403 characters before it could ship.
+- R3 (version files agree) holds at `4.21.0` across npm, `package.json` and `plugin.json` — but that agreement now describes a release three commits behind `main`. Publishing means a fresh bump of both files.
+- R6 (protected sections survive audits) was exercised deliberately by `cc1fd3c`, which is the first time the rule decided *where* content went rather than merely preserving it.
+- R7–R9 remain satisfied: frontmatter validates, anchors resolve, the suite is green.
 - R10 is not implicated: no shared CLI machinery changed.
 
 ## Next step
 
-Two open items, in order of how much they cost to leave alone:
-
-1. **The SessionStart hook does not reach npm-only installs.** `hooks/hooks.json` declares it with `${CLAUDE_PLUGIN_ROOT}`, so the marketplace plugin registers it and `titools install` does not — it writes only the `titools auto-update --silent` hook. Measured on the maintainer's machine: `~/.claude/settings.json` has no `session-start.sh` entry and `~/.claude/plugins/cache/` has no `maccesar-titools`, so the Titanium project-detection message has never run there. Deciding whether the CLI should register it is a design question, not a bug fix: it means the CLI writing into the user's global settings, which it has deliberately never done except for auto-update. Until it is decided, anything that must reach both channels belongs in a skill description or body, not in the hook. Recorded as a trap in `context.md`.
-
-2. **`skills/purgetss/references/cli-commands.md` is still at 815 lines** against the auditor's 800-line cap, unchanged from the previous session. The measured split point is unchanged too: of the 21 anchor links pointing into it from 11 other files, 20 target asset commands, so a `cli-commands-assets.md` would leave the utility-class lifecycle behind and require repointing ~20 anchors.
+1. **Decide whether the three commits ship.** Right now they reach nobody: npm serves `4.21.0`, which is older, and the marketplace tracks default-branch HEAD, which is `origin/main`, which lacks all three. Pushing alone would reach marketplace installs and leave npm users behind — the channels only converge through a tagged release. `/release` is the path and it is César's call to invoke. What it now entails: `0f054cc` in the sibling gave `release` a Step 1.11 that detects `docs/project/status.md` (this repo has one), an announcement line in the Step 4 confirmation, and a Phase 6 that rewrites this file with the release facts and commits `docs(project): …` under the permission Step 4 already collected. So this note is expected to be replaced by that run, not carried through it.
+2. **`EXAMPLE-PROMPTS.md` still has no prompt routed at the push-notification reference.** Line 535 carries "How do I add Android push notifications using Firebase in a Titanium app?", written before this work and for a different skill. Where it routes now that `ti-expert`'s description claims the topic has never been checked, and the repo's own convention says a new skill surface needs at least two example prompts.
+3. **The SessionStart hook still does not reach npm-only installs.** Re-measured today: `~/.claude/settings.json` has no `session-start.sh` entry, and `~/.claude/plugins/cache/` holds four plugins, none of them `maccesar-titools`, so the Titanium project-detection message has still never run on this machine. The trap is written up in `context.md` § Traps. It remains a design question — whether the CLI should write into the user's global settings, which it has deliberately never done except for auto-update — not a bug fix.
+4. **`skills/purgetss/references/cli-commands.md` is still 815 lines** against the auditor's 800-line cap. Re-measured today. The anchor counts behind the proposed `cli-commands-assets.md` split (21 links, 15 with anchors, 13 of those targeting asset commands) come from yesterday's draft and were **not** re-run today.
 
 ## Verified vs. assumed
 
-- Verified now: 358/358 tests pass across 31 suites.
-- Verified now: `main` matches `origin/main` with zero unpushed commits; `v4.21.0` resolves to `a8b25d8`.
-- Verified now: publish workflow run `34275730808` concluded `success`, including its own tag-versus-version-files guard, and `npm view` reports `4.21.0`.
-- Verified now: the dev-mode symlinks exist and resolve into this checkout — `~/.agents/skills/ti-reuse-first` → `skills/ti-reuse-first`, mirrored at `~/.claude/skills/`. They did not exist before this session, which is why the skill was unreachable from any other project even though its files had been written the day before.
-- Verified during the measurement: a positive control ran before any conclusion and fired the correct skill 2/2. Without it no reading would have been trustworthy.
-- **Assumed, not verified:** that the fixture's behavior predicts a real project. The field test — asking for the work in a real Titanium project, without naming the skill — has not been run. Nothing in this release rests on it, but nothing confirms it either.
-- **Assumed, not verified:** the marketplace-channel mechanics described in `context.md` were established in the sibling repo and have still not been re-confirmed against `maccesar-titools` on this machine, since no marketplace cache for it exists here.
+- **Verified now:** 359/359 tests pass across 31 suites. Unchanged from the previous count because `cc1fd3c` edited an existing file rather than adding one — `test/anchors.test.js` emits one test per `.md` file, so only a new file moves that number.
+- **Verified now:** `main` is ahead of `origin/main` by exactly three commits; HEAD is `f19a014`.
+- **Verified now:** `npm view @maccesar/titools version` → `4.21.0`; both version files read `4.21.0`.
+- **Verified now:** the cross-skill link `cc1fd3c` adds resolves — `skills/purgetss/references/launch-background.md` exists, and the anchors suite is green.
+- **Verified now:** `skills/purgetss/references/cli-commands.md` is 815 lines.
+- **Verified now:** no shared machinery moved since `f1308a3`, which makes the no-port conclusion for `aiskills` a measurement rather than a guess.
+- **Verified now:** `ti-expert`'s description is 961 characters, under the 1024-character cap `test/manifest.test.js` enforces, and neither of today's two commits touched `SKILL.md`. Yesterday's draft recorded 959 for the same unchanged text; the gap is how the string was counted, not an edit.
+- **Assumed, not verified:** the technical claims inside both references. `cc1fd3c` states its own evidence — the generated `values*/ti_styles.xml` and `res/values-v31/` inside `titanium-13.4.1.aar` — and `push-notifications.md` documents device-by-device testing on an OPPO CPH2639, an Android 10 emulator and an iPad. None of that testimony was re-run from here.
+- **Assumed, not verified:** the marketplace-channel mechanics in `context.md` were established in the sibling repo and still have not been re-confirmed against `maccesar-titools`; there is no cache for it on this machine to inspect.
 
 ## Known pending
 
-- A local Claude Code marketplace installation would need `/plugin marketplace update maccesar-titools` followed by `/reload-plugins`. Neither published channel is blocked by it, and on this machine there is no such installation to update.
+- A local Claude Code marketplace installation would need `/plugin marketplace update maccesar-titools` then `/reload-plugins`. There is still no such installation here, and neither published channel is blocked by it.
