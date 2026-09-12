@@ -138,9 +138,11 @@ Everything above is what the published module needs. A module that fires `didOpe
 
 ```javascript
 modulo.addEventListener('didOpenNotification', (e) => {
-  abrirPanel(e.message || {})
+  abrirPanel((e.message && e.message.data) || {})
 })
 ```
+
+The payload sits under `message.data`, the same place `didReceiveMessage` puts it on both its live and its cold-start path, so one accessor covers a tap and an arrival. The first version of the event wrapped it directly in `message`; if the module you have predates 3.6.0, read `e.message` instead, or log the event once and look.
 
 The Intent is still how a cold start arrives, so keep that path. Check `timodule.xml` in your installed module for the event, or just add the listener and watch whether it fires: a module without it ignores the registration silently.
 
