@@ -8,6 +8,10 @@ When in doubt about whether a class, flag, or config key exists in the user's in
 
 ---
 
+## v7.17.1
+- **The `notification-icon` piece writes `notificationicon.png`, not `ic_stat_notify.png`.** `firebase.cloudmessaging` hardcodes that name — `TiFirebaseMessagingService.showNotification()` calls `getResource("notificationicon")` — and it is the only path a **data** message has. The `default_notification_icon` meta-data is the configurable one and covers **notification** messages alone, so under the old name no manifest entry could rescue a data message: the module fell back to the opaque `appicon`, which the status bar renders as a white blob. The filename is fixed rather than a config key, for the same reason `appicon.png` and `DefaultIcon.png` are. Projects that wired `@drawable/ic_stat_notify` by hand need to update that one meta-data line and delete the five stale files. See [app-branding.md](app-branding.md).
+- The comment above the opt-in pieces in the generated config now names each consumer instead of claiming both are inert without hand-edited XML. Only `splash_icon` is.
+
 ## v7.17.0
 - The `images:` section rejects unknown keys instead of ignoring them, at both levels: the five top-level keys (`quality`, `format`, `autoSync`, `confirmOverwrites`, `files`) and the three inside each `files[]` entry (`filename`, `width`, `height`, with `filename` required). Nothing is generated when validation fails. Never suggest `width`, `opacity`, `padding` or `output` as config keys — they are CLI flags and now abort the run. See [multi-density-images.md](multi-density-images.md).
 - The generated `images:` block gained four comment lines explaining the 4× master convention, and the `quality` comment now names the formats it reaches: `webp`, `jpeg`, `avif`, `tiff`. PNG uses `compressionLevel: 9` and GIF takes no quality parameter, so neither is affected. Both copies changed — the one patched into an existing config and the one `init` seeds.

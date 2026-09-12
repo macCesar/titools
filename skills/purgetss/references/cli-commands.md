@@ -82,7 +82,8 @@ module.exports = {
     adaptive: { padding: '18%' }, legacyIcon: { padding: '10%' },
     appicon: { padding: '10%' }, androidSplash: { padding: '26%' },
 
-    // Opt-in: inert until you edit the Android theme / FCM meta-data by hand.
+    // Opt-in: splash_icon stays inert until the Android theme points at it.
+    // notificationicon is read by firebase.cloudmessaging, by that exact name.
     splashIcon: { enabled: false }, notificationIcon: { enabled: false },
     ninePatch: { enabled: false }
   },
@@ -236,7 +237,7 @@ Radius precedence and the outputs intentionally left unmasked are documented in 
 
 | Flag | Purpose |
 | --- | --- |
-| `--notification-icon` | Also emit `ic_stat_notify.png × 5`. |
+| `--notification-icon` | Also emit `notificationicon.png × 5`. |
 | `--splash-icon` | Also emit `splash_icon.png × 5`. |
 | `--nine-patch` | Declared but not implemented yet; prints a warning and writes nothing. |
 **Logo variants & overrides**
