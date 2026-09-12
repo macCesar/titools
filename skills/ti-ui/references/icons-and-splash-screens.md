@@ -14,6 +14,7 @@
 - [9. Common issues](#9-common-issues)
 - [11. iOS launch files (storyboards)](#11-ios-launch-files-storyboards)
 - [Best practices](#best-practices)
+- [Community-Discovered Patterns](#community-discovered-patterns)
 
 <!-- TOC-END -->
 
@@ -401,3 +402,37 @@ iOS caches launch screen snapshots. If changes do not appear:
 6. Square icons only.
 7. Clean the project after icon changes.
 8. Use adaptive icons for Android 8.0+.
+
+## Community-Discovered Patterns
+
+### Android 12+ splash: the theme's parent decides whether any of it applies
+
+Verified against SDK 13.4.1.GA, reading the generated `build/android/app/src/main/res/values*/ti_styles.xml` and `res/values-v31/` inside `titanium-13.4.1.aar`.
+
+Titanium writes `android:theme="@style/Theme.Titanium"` onto the launcher Activity it generates, and builds this chain, where the last link is whatever theme the app declared on `<application>`:
+
+```text
+Theme.Titanium
+└── Base.Theme.Titanium.Splash
+    └── Theme.AppDerived
+        └── the app's <application> theme
+```
+
+An `<application>` theme therefore ends up an *ancestor* of `Theme.Titanium`, and loses every attribute the two links below it already set. On API 31+ those are `android:windowBackground` and `android:windowSplashScreenBackground`, so a splash color declared on `<application>` silently does nothing. A custom theme must inherit from `@style/Theme.Titanium` and be assigned to the launcher Activity, which is what section 6's `tiapp.xml` snippet does — but its companion style inherits from `Theme.MaterialComponents.NoActionBar`, which detaches from the chain and drops the app's own theme with it.
+
+Three attributes, one color:
+
+| Attribute | Consumer |
+|---|---|
+| `android:windowSplashScreenBackground` | The API 31+ system splash. |
+| `android:windowBackground` | The native window between the system splash and Titanium's first Window. |
+| `android:colorBackground` | `Base.Theme.Titanium.Splash` points `windowSplashScreenBackground` at `?android:attr/colorBackground` on API 31+, and the launch status and navigation bars read it. |
+
+Two consequences worth knowing before choosing a value:
+
+- **Setting only the first two leaves the inherited color showing.** `colorBackground` is the one that is easy to miss.
+- **A flat color for `windowBackground` replaces `@drawable/titanium_splash_icon_background`**, the layer-list Titanium uses on API 31+. That drawable paints a 160 dp white circle behind the icon, which is invisible on a white background and obvious on any other. Replacing it with a plain color removes the circle and the icon along with it.
+
+Section 6's troubleshooting entry says the background color is the only customizable part. `android:windowSplashScreenAnimatedIcon` replaces the icon too — it is an icon slot, not a full-screen image, so the color around it still comes from the attributes above.
+
+The `purgetss` skill's [launch-background.md](../../purgetss/references/launch-background.md) carries the full version of this, including the interaction with the legacy `res-*/default.png` artwork, and `purgetss brand --notes` prints the setup with the project's own brand color already substituted.
