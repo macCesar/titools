@@ -336,7 +336,7 @@ A `TableView` object is a container for [TableViewSection](Titanium.UI.TableView
 
 Use the <Titanium.UI.createTableView> method or **`<TableView>`** Alloy element to create a `TableView`.
 
-Also see the [TableViews guide](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_How-tos/User_Interface_Deep_Dives/TableViews.html).
+Also see the [TableViews guide](https://titaniumsdk.com/docs/build/ui/lists).
 
 ### Creating Tables
 
@@ -564,12 +564,13 @@ Rows may be created using the properties directly available on the `TableViewRow
 
 
 
-### Events (4)
+### Events (5)
 | Event | Platform | Description |
 |-------|----------|-------------|
 | click | both | Fired when a table row is clicked by the user. |
 | touchcancel | ios | Fired when a touch gesture is interrupted by the device. |
 | touchend | ios | Fired when a touch gesture is complete. |
+| touchmove | ios | Fired as soon as the device detects movement of a touch. A row touch event and a table `scroll` event cannot occur concurrently: if the table begins to scroll during a touch, `touchcancel` fires before `scroll` begins. |
 | touchstart | ios | Fired as soon as the device detects a touch gesture against this view. |
 
 ### Related Types

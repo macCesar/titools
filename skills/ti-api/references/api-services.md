@@ -108,15 +108,18 @@ to request runtime permissions.
 
 The API supports retrieving information about the attendee of an event.
 
-### Properties (unique: 6/8)
+The type declares `platforms: [iphone, ipad, macos]`, but four of its properties declare Android as well. Read the per-property column, not the type header.
+
+### Properties (unique: 7/9)
 | Property | Type | Default | Platform | Description |
 |----------|------|---------|----------|-------------|
 | isOrganizer | Boolean | — | ios | Indicates whether this attendee is the event organizer. |
-| name | String | — | ios | The attendee name. |
-| email | String | — | ios | The attendee email. |
+| name | String | — | both | The attendee name. |
+| email | String | — | both | The attendee email. |
+| relationship | Number | — | android | The relationship of the attendee to the user. Read-only. Values come from the `Ti.Calendar.RELATIONSHIP_*` constants. Since 6.2.0. |
 | role | Number | — | ios | The role of the attendee. |
-| type | Number | — | ios | The type of the attendee. |
-| status | Number | — | ios | The status of the attendee. |
+| type | Number | — | both | The type of the attendee. |
+| status | Number | — | both | The status of the attendee. |
 
 
 
