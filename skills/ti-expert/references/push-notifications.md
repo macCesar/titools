@@ -292,7 +292,15 @@ Verified case by case on an iPad. The third row is the one that does not work on
 
 ```javascript
 Ti.Network.registerForPushNotifications({
-  success: (e) => { enviarTokenAlServidor(e.deviceToken) },
+  success: (e) => {
+    // e.deviceToken is the APNs one. It is not what you send to a server that
+    // pushes through FCM, and Firebase picks it up on its own — see below.
+    log.info(`APNs token: ${e.deviceToken ? 'received' : 'EMPTY'}`)
+
+    modulo.fetchToken((r) => {
+      if (r && r.token) { guardarToken(r.token) }
+    })
+  },
   error: (e) => { log.error(e.error) },
   callback: (e) => {
     // Foreground, background and closed all arrive here.
