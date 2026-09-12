@@ -8,7 +8,7 @@
 
 TiTools is a Titanium SDK toolkit for AI coding assistants. It ships 11 skills — 6 specialist skills (`ti-reuse-first`, `ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-synthengine`) plus 5 documentation-mirror skills (`ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`) — a research agent, and reference files covering reuse and simplification, Titanium architecture, API reference, native how-tos, Alloy MVC, PurgeTSS styling and resource automation, UI/UX patterns, 2D games, and native sound synthesis.
 
-The reference files are maintained against official documentation whenever an official source exists, so the assistant can retrieve current framework behavior instead of guessing from generic training data.
+The reference files are maintained against official documentation whenever an official source exists, so the assistant can retrieve current framework behavior instead of guessing from generic training data. As of v5.0.0 those sources are the Titanium SDK's own API definitions and the rewritten guides at [titaniumsdk.com](https://titaniumsdk.com). [Where the references come from](#where-the-references-come-from) has the detail.
 
 Without TiTools, assistants rely on general training data. That data can be outdated or too generic for Titanium work. With TiTools, the assistant can look up Alloy architecture, memory cleanup patterns, PurgeTSS utility classes, and platform-specific APIs.
 
@@ -191,8 +191,31 @@ Notes:
 - `ti-reuse-first` runs before the others. It asks whether a thing needs to exist and what already does it — a search order that stops at the first rung that holds — and sweeps an existing `app/` for near-identical controllers, single-listener events, wrappers around one call, and layout recomputed in JavaScript. It is deliberately two-sided: it says when adding a module or a Widget is the right answer, so the bias does not simply invert.
 - `ti-game` documents the `ti.game` native module (2D sprite engine on OpenGL ES 2.0, Android and iOS). Its API reference was verified against the module source and tracks upstream `main` (the module ships features ahead of its manifest version); it applies to Alloy and Classic projects alike and does not depend on PurgeTSS.
 - `ti-synthengine` translates aesthetic sound requests into strict, production-ready JavaScript for the cross-platform `ti.synthengine` 1.0.0 module. Seven references preserve the official documentation and an eighth adds curated retro, xylophone, memory-pad, polyphony and timer-ownership recipes; the API contract was cross-checked against both native implementations.
-- The latter five are documentation-mirror skills, audited via the internal `titools-skill-auditor` against three sources: `ti-api` against the API definitions in `tidev/titanium-sdk` (`apidoc/`, anchored to the newest GA tag), the guide skills against the rewritten guides in `tidev/titaniumsdk.com` (`content/docs/`), and both against the frozen `tidev/titanium-docs` corpus as an archive. The archive is additive: TiDev condensed 336 legacy pages into 62, and the material it left behind is kept here rather than deleted.
+- The latter five are documentation-mirror skills, audited against official sources via the internal `titools-skill-auditor`. See [Where the references come from](#where-the-references-come-from).
 - `purgetss` reference files are audited against the official PurgeTSS documentation, but its workflow conventions are opinionated.
+
+---
+
+## Where the references come from
+
+The Titanium documentation was rewritten during 2026, and v5.0.0 moved TiTools onto the new sources. No skill, command or flag was renamed and the references answer the same questions. What changed is what they are checked against.
+
+| Source | Feeds | Why it is the one |
+|---|---|---|
+| [`tidev/titanium-sdk`](https://github.com/tidev/titanium-sdk) → `apidoc/*.yml` | `ti-api` | The API definitions the SDK team edits. Every other copy of the API is compiled from these. |
+| [`tidev/titaniumsdk.com`](https://github.com/tidev/titaniumsdk.com) → `content/docs/` | `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos` | The rewritten guides, and what [titaniumsdk.com](https://titaniumsdk.com) serves. |
+| `tidev/titaniumsdk.com` → `registry/sdk/<version>/` | `ti-api`, as a cross-check | The API compiled per published release. It answers which version actually shipped an API, which the YAML alone cannot. |
+| [`tidev/titanium-docs`](https://github.com/tidev/titanium-docs) | all five, as an archive | The previous corpus, now frozen. Kept for what the rewrite left out. |
+
+### Why the API comes from the SDK
+
+The website does not write API documentation. It compiles it from `apidoc/*.yml` and commits the result, so it trails the SDK by construction. `ti-api` reads the YAML for what exists and the compiled registry for which release shipped it, and documents the newest GA rather than `main`. An API merged into the SDK today reaches these references when the release carrying it ships, because until then you cannot call it.
+
+### The archive is additive
+
+`tidev/titanium-docs` is frozen and being archived upstream. TiDev's own migration audit classifies its 336 guide pages as 121 rewritten, 121 merged, 2 kept and 92 archived. Of those 92, 91 are release notes and the last is the discontinued Atom package, so no guide topic was dropped. The difference is density: 1390 KB of legacy prose became 219 KB.
+
+TiTools keeps the full corpus. The archive never overrides a live source on a question of fact, and nothing is deleted from a reference merely because the rewritten site no longer covers it. These skills still answer questions the official guides have not been rewritten to cover yet, such as the conditional `if=` attribute in Alloy XML and TSS, custom XML tags via `app/lib/`, and `alloy compile`.
 
 ---
 
