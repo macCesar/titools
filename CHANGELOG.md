@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.23.1] - 2026-09-11
+
+### Changed — `ti-expert` ships the push code instead of a fragment
+
+- `push-notifications.md` carried the four-doors handler in full but reduced the module's `didOpenNotification` route to three lines, so anyone starting a new app had to assemble it. Both exclusive routes are now written out, including why `resumed` stays: it catches an Intent a module version still leaves behind, and returns quietly when the event already delivered the payload.
+
+### Added
+
+- Android registration: the channel is assigned to `modulo.notificationChannel` before the token is requested, and its id must match the `default_notification_channel_id` meta-data in `tiapp.xml`.
+- Firebase does not re-announce a token it already had, so `didRefreshRegistrationToken` can fail to fire on a device that registered before — every push to it is then addressed to nobody. The token has to be read once by hand, and `guardarToken` made idempotent.
+- On iOS the token comes from `fetchToken`; `fcmToken` is empty right after APNs answers and waiting does not fix it. `apnsToken` is never assigned by hand — Firebase's swizzling does it, and setting it produces `BadDeviceToken` when sending.
+- Three rows in the symptom-to-cause table: push that works on a fresh install and never on a reinstall, the empty `fcmToken`, and `BadDeviceToken`.
+
 ## [4.23.0] - 2026-09-11
 
 ### Changed — `purgetss` aligns with PurgeTSS 7.17.1
