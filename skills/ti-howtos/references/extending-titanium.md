@@ -8,6 +8,7 @@
 - [3. Upgrading to SDK 9.0.0+ (Android)](#3-upgrading-to-sdk-900-android)
 - [4. Hyperloop](#4-hyperloop)
 - [3. Native module development](#3-native-module-development)
+  - [Swift Package Manager dependencies (iOS)](#swift-package-manager-dependencies-ios)
 - [4. Choosing between Hyperloop and native modules](#4-choosing-between-hyperloop-and-native-modules)
 - [5. Finding and using third-party modules](#5-finding-and-using-third-party-modules)
 - [Best practices summary](#best-practices-summary)
@@ -600,6 +601,82 @@ View proxies (custom UI components):
 
 @end
 ```
+
+### Swift Package Manager dependencies (iOS)
+
+Since Titanium SDK 13.1.0, an iOS module declares Swift package dependencies in an `spm.json` file and the CLI wires them into the consuming app. This replaces vendoring pre-built `.xcframework` files in `ios/platform` and replaces the legacy `hooks/ti.spm.js` hook.
+
+Add the package to your module's Xcode project as usual so the module compiles against it, then declare the same package in `spm.json`, next to the module `manifest`:
+
+```
+mymodule/
+└── ios/
+    ├── manifest
+    ├── spm.json
+    ├── MyModule.xcodeproj
+    └── Classes/
+```
+
+```json
+{
+  "dependencies": [
+    {
+      "remotePackageReference": "Parse-SDK-iOS-OSX",
+      "repositoryURL": "https://github.com/parse-community/Parse-SDK-iOS-OSX",
+      "requirementKind": "upToNextMajorVersion",
+      "requirementMinimumVersion": "5.1.1",
+      "products": [
+        { "productName": "ParseObjC", "frameworkName": "ParseObjC", "linkage": "host" },
+        { "productName": "ParseLiveQuery", "frameworkName": "ParseLiveQuery", "linkage": "embedded" }
+      ]
+    }
+  ]
+}
+```
+
+#### Dependency fields
+
+| Field | Required | Default | Description |
+|---|---|---|---|
+| `repositoryURL` | yes | — | Git URL of the Swift package. A dependency without it is skipped with a warning. |
+| `remotePackageReference` | no | last path segment of `repositoryURL` | Reference name in the generated Xcode project. |
+| `requirementKind` | no | `upToNextMajorVersion` | Version resolution rule, e.g. `upToNextMajorVersion`, `upToNextMinorVersion`. |
+| `requirementMinimumVersion` | no | `1.0.0` | Minimum package version to resolve. |
+| `linkage` | no | `embedded` | Default linkage for every product of this dependency. |
+| `products` | yes | — | Non-empty array of products to link. A dependency with no valid product is skipped with a warning. |
+
+#### Product fields
+
+| Field | Required | Default | Description |
+|---|---|---|---|
+| `productName` | yes | — | Product name as the Swift package declares it. |
+| `frameworkName` | no | `productName` | Framework name in the Frameworks build phase, when it differs. |
+| `linkage` | no | the dependency's `linkage` | Per-product override: `embedded` or `host`. |
+
+#### embedded vs host
+
+`embedded` bakes the product into the module binary. The module stays self-contained and the app's Xcode project is untouched. Use it for small, module-private dependencies.
+
+`host` makes the CLI add the package to the app's Xcode project at build time, so the dependency exists once in the app. Use it when several modules share the same package, or when the package ships resources or dynamic frameworks the app must embed.
+
+If two modules request the same package, it is added once. If they request conflicting version requirements, the CLI warns and uses the first requirement it sees.
+
+#### Building
+
+```bash
+cd mymodule/ios
+ti build -p ios --build-only
+```
+
+The zip in `dist/` now carries the package information in its `metadata.json`. App developers install the module normally; nothing extra is required of them. During an app build, lines prefixed with `[SPM]` say what was added:
+
+```
+[INFO]  [SPM] Will add 1 Swift package(s) to the app project
+```
+
+#### Migrating off ti.spm.js
+
+A module that ships both `spm.json` and `hooks/ti.spm.js` has the hook excluded from its packaged zip automatically. A module that still ships only the hook makes the app build log a warning. To migrate, translate the hook's package information into `spm.json`, delete `hooks/ti.spm.js`, and rebuild.
 
 ### Module distribution
 
