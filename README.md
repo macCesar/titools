@@ -160,7 +160,7 @@ Together they work like this:
 | ------------------------------- | ------------------------------- | ----------------------------- |
 | "Create a login screen"         | Context about project structure | `ti-expert`, `ti-ui`          |
 | "Optimize ListView performance" | Points to docs location         | `ti-ui` reads specific files  |
-| "Implement push notifications"  | API reference paths             | `ti-howtos`                   |
+| "Implement push notifications"  | API reference paths             | `ti-expert`, `ti-howtos`      |
 
 You do not need to explicitly invoke skills. The AI detects when to use them based on your question.
 
