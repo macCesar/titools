@@ -108,6 +108,17 @@ Each repo keeps its own `docs/project/` — two repos, two branches, two release
 
 Long-term intent is to merge them into one CLI with skill categories (`titools install --only ti`, `--only ui`). Maintaining two near-duplicate codebases is a known and accepted tax until then.
 
+## Which assistant did the work
+
+One row per stretch of work, not per session. The transcript of a stretch lives only in the tool that produced it, so this says which one has the shortcut back into it. The reasoning itself belongs in `decisions.md`, which is what makes that shortcut a convenience rather than the only way in.
+
+The record starts where it was first written down; work before 2026-09-11 is not attributed here because nothing recorded it at the time.
+
+| When | Assistant · model | What it produced |
+| --- | --- | --- |
+| 2026-09-11 | Claude Code · Opus 5 (`claude-opus-5[1m]`) | The `ti-expert` push-notification reference, v4.22.0 through v4.23.1 |
+| 2026-09-12 | Claude Code · Opus 5 (`claude-opus-5[1m]`) | Repointing the doc skills at the SDK apidoc and the new docs site; the auditor's three roots and its two coverage scripts |
+
 ## Documentation map
 
 Everything below except the tracked files is **local-only** — `docs/` is gitignored, so a fresh clone gets none of it.
