@@ -33,7 +33,7 @@ In Alloy, a sync adapter allows you to store and load your models to a persisten
 
 #### Backbone Sync
 
-Backbone syncs your models to persistent storage devices based on the implementation of the [Backbone.sync method](https://titaniumsdk.com/guide/Alloy_Framework/Alloy_Guide/Alloy_Models/Alloy_Sync_Adapters_and_Migrations.html). Since Backbone's primary use is for web applications, by default, the Backbone.sync method executes RESTful JSON requests to a URL specified by the Model.urlRoot or Collection.url attribute, when these classes are created.
+Backbone syncs your models to persistent storage devices based on the implementation of the [Backbone.sync method](https://titaniumsdk.com/docs/alloy/models). Since Backbone's primary use is for web applications, by default, the Backbone.sync method executes RESTful JSON requests to a URL specified by the Model.urlRoot or Collection.url attribute, when these classes are created.
 
 Models are accessed from persistent storage based on the `id` attribute. To override this, set the `idAttribute` property of the model. The `cid` (client ID) is a special property of models that is automatically assigned when they are first created. Client IDs are useful when the model has not yet been saved to the server and does not have its real `id` yet.
 

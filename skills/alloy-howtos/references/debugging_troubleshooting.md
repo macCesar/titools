@@ -75,4 +75,4 @@ Search [existing issues](https://github.com/tidev/alloy/issues) first to avoid d
 - Include Alloy version (`alloy --version`)
 - Include environment information
 
-For detailed instructions, see [How to Report a Bug or Make a Feature Request](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_Guide/Contributing_to_Titanium/How_to_Report_a_Bug_or_Make_a_Feature_Request/).
+For detailed instructions, see [How to Report a Bug or Make a Feature Request](https://titaniumsdk.com/contribute).
