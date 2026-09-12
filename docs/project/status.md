@@ -1,52 +1,51 @@
 # Status — 2026-09-11
 
-**Phase:** v4.22.0 shipped; live and maintained.
-**Session by:** Claude Code · Opus 5 (`claude-opus-5[1m]`). This note was written after the release, which is the only point at which its facts exist.
-**Deployed:** `@maccesar/titools@4.22.0` on npm — published by `publish.yml` run [34665563869](https://github.com/macCesar/titools/actions/runs/34665563869), which concluded `success` after re-checking the tag against both version files, running `npm ci && npm test`, and publishing over OIDC. `npm view` reports `4.22.0`. Tag `v4.22.0` → `0ecedaa`, GitHub release created at <https://github.com/macCesar/titools/releases/tag/v4.22.0>. `package.json` and `.claude-plugin/plugin.json` both read `4.22.0`.
-**Branch:** `main`, one commit ahead of `origin/main` — a correction to the reference shipped in 4.22.0, found by re-reading it against the device run rather than by testing. Working tree clean.
-**Sibling:** `../aiskills` is aligned with its own `origin/main` at `2b8058f docs(project): session close for v1.24.0`. No shared machinery moved here — `git diff f1308a3..HEAD -- lib/ bin/ hooks/` is empty — so no port is owed in either direction.
+**Phase:** v4.23.0 shipped; live and maintained.
+**Session by:** Claude Code · Opus 5 (`claude-opus-5[1m]`). Written after the release, which is the only point at which its facts exist. Two releases landed today — v4.22.0 and v4.23.0 — and the `didOpenNotification` correction in between came from a session whose transcript this note does not have; it was read from the commit.
+**Deployed:** `@maccesar/titools@4.23.0` on npm — published by `publish.yml` run [34666530349](https://github.com/macCesar/titools/actions/runs/34666530349), `success`, after its own tag-versus-version-files guard plus `npm ci && npm test`. The registry serves `4.23.0` (read from `registry.npmjs.org` directly, because a cached `npm view` still answered `4.22.0` a minute after the run went green). Tag `v4.23.0` → `d958bf0`, GitHub release at <https://github.com/macCesar/titools/releases/tag/v4.23.0>. `package.json` and `.claude-plugin/plugin.json` both read `4.23.0`.
+**Branch:** `main`, aligned with `origin/main`, working tree clean.
+**Sibling:** `../aiskills` is aligned with its own `origin/main` at `2b8058f`. No shared machinery moved in either release — `git diff v4.21.0..HEAD -- lib/ bin/ hooks/` is empty — so no port is owed.
 
 ## Where things stand
 
-v4.22.0 ships one new reference and two corrections to it, all three driven by field findings rather than by reading.
+v4.23.0 aligns the `purgetss` skill with **PurgeTSS 7.17.1** and closes the seam between that skill and the push-notification reference v4.22.0 shipped.
 
-`skills/ti-expert/references/push-notifications.md` maps the four paths an FCM message can reach an Android app through, against the one the module's own example documents: `didReceiveMessage` while live, the same callback on a cold start, the launcher Intent's extras, and `didOpenNotification` where the module fires it. It covers what a top-level `notification` block costs, why a tap does not fire `didReceiveMessage`, the `singleTop` + `newintent` case that appears in no documentation and opens a panel twice on Android 10 but not on Android 15, the two splash screens a cold start goes through, the HTTP v1 payload with its PHP sender, and why every value inside `data` must be a string. It closes with a symptom-to-cause table, and iOS gets its own section because it has a single path that works in every state — the asymmetry behind "it works on my iPhone". `SKILL.md` routes to it twice and its `description` names push notifications, so the skill is reachable from a prompt that never says `ti-expert`.
+PurgeTSS renamed the `notification-icon` piece's output from `ic_stat_notify.png` to `notificationicon.png`, because `firebase.cloudmessaging` resolves the drawable by that exact name inside `TiFirebaseMessagingService.showNotification()` and that lookup is the only path a **data** message has. The skill carried the old name in six places and, worse, had the reason inverted — it said the icon was inert without the FCM `meta-data`, when the `meta-data` covers **notification** messages alone. `app-branding.md` gained a `FCM notification icon` section in the same position the official docs give it, with the Alloy and Classic output paths, the runtime tinting that forces white-on-transparent artwork, both `meta-data` entries including `default_notification_color`, and the `colors.xml` resource the second one needs. A troubleshooting entry covers the white square.
 
-`f19a014` then fixed that file's own `didOpenNotification` example: the payload sits under `message.data`, where the module has nested it since 3.6.0 and where `didReceiveMessage` already put it, so one accessor now covers both a tap and an arrival.
+`ti-expert/references/push-notifications.md` documented how a message arrives and not how it looks on arrival, so a tap that produced a white blob had no entry in its symptom-to-cause table. Section 2 now names the drawable both routes need and points at PurgeTSS to generate it.
 
-`cc1fd3c` corrected the Android 12+ splash section of `ti-ui/references/icons-and-splash-screens.md`. Its companion style inherited from `Theme.MaterialComponents.NoActionBar`, which detaches from the chain Titanium generates — `Theme.Titanium` → `Base.Theme.Titanium.Splash` → `Theme.AppDerived` → the app's own theme — and drops the application theme with it. The correction names the three attributes one color has to reach, including the easily missed `colorBackground`, and the 160 dp white circle a flat `windowBackground` removes along with the icon. It lives under `## Community-Discovered Patterns` because `ti-ui` is audited against official documentation and R6 makes those sections the only ones an audit does not overwrite.
-
-The release commit also repointed the README's skill-routing example for "Implement push notifications" at `ti-expert` alongside `ti-howtos`, since that is where the mechanics reference now lives.
+Earlier the same day, v4.22.0 shipped that reference in the first place, plus the Android 12+ splash theme-chain correction in `ti-ui` under `## Community-Discovered Patterns`, and `1c0d42a` corrected the reference's own four-doors table: `didOpenNotification` replaces rows three and four, not two to four, because a cold start still arrives in the Intent — the module does not exist yet when the notification is opened.
 
 ## In flight
 
-- Nothing. The release is complete through both channels that a release can reach on its own.
+- Nothing. Both releases are complete through the channels a release reaches on its own.
 
 ## Requirements
 
-- R3 (version files agree) is satisfied at `4.22.0` across npm, `package.json` and `plugin.json`, and `publish.yml` re-checked that agreement itself before publishing.
-- R6 (protected sections survive audits) was exercised deliberately by `cc1fd3c` — the first time the rule decided *where* new content went rather than merely preserving what was already there.
-- R7–R9 remain satisfied: frontmatter validates, anchors resolve, the suite is green.
+- R3 (version files agree) is satisfied at `4.23.0` across the registry, `package.json` and `plugin.json`; `publish.yml` re-checked it before publishing.
+- R6 was exercised twice today: `cc1fd3c` chose `## Community-Discovered Patterns` over the audited body in `ti-ui`, and this release's `purgetss` edits went into the body deliberately, because that content mirrors official docs and an audit should keep it current rather than preserve it.
+- R7–R9 remain satisfied: frontmatter validates, anchors resolve, 359/359 green.
 - R10 is not implicated: no shared CLI machinery changed.
 
 ## Next step
 
-1. **`EXAMPLE-PROMPTS.md` still has no prompt routed at the new reference.** Line 535 carries "How do I add Android push notifications using Firebase in a Titanium app?", written before this work and for a different skill. Where it routes now that `ti-expert`'s description claims the topic has never been checked, and the repo's own convention asks for at least two example prompts per new surface. This was deliberately left out of the release as content rather than release documentation.
-2. **The SessionStart hook still does not reach npm-only installs.** Re-measured today: `~/.claude/settings.json` has no `session-start.sh` entry, and `~/.claude/plugins/cache/` holds four plugins, none of them `maccesar-titools`, so the Titanium project-detection message has still never run on this machine. The trap is written up in `context.md` § Traps. It remains a design question — whether the CLI should write into the user's global settings, which it has deliberately never done except for auto-update — not a bug fix.
-3. **`skills/purgetss/references/cli-commands.md` is still 815 lines** against the auditor's 800-line cap. Re-measured today. The anchor counts behind the proposed `cli-commands-assets.md` split (21 links, 15 with anchors, 13 of those targeting asset commands) come from an earlier draft and were not re-run today.
+1. **Two `purgetss` references are over the auditor's size guidance.** `references/app-branding.md` is now **826 lines** and `references/cli-commands.md` **816**, against the `~200–800 lines each` the auditor's `SKILL.md` states. Worth knowing before acting on it: that is prose guidance, not a cap any test enforces, so nothing is failing. `app-branding.md` crossed it in this release by design — the FCM section was the point. The measured split for `cli-commands.md` (a `cli-commands-assets.md`, with anchor counts from an earlier draft and not re-run) is in the previous revisions of this file via `git log`.
+2. **`EXAMPLE-PROMPTS.md` still has no prompt routed at the push-notification reference.** Line 535 carries "How do I add Android push notifications using Firebase in a Titanium app?", written before this work and for a different skill. Where it routes now that `ti-expert`'s description claims the topic has never been checked, and the repo's convention asks for at least two example prompts per new surface.
+3. **The SessionStart hook still does not reach npm-only installs.** Re-measured today: no `session-start.sh` entry in `~/.claude/settings.json`, and `~/.claude/plugins/cache/` holds four plugins, none of them `maccesar-titools`. Written up in `context.md` § Traps. A design question — whether the CLI should write into the user's global settings — not a bug.
 
 ## Verified vs. assumed
 
-- **Verified now:** `npm view @maccesar/titools version` → `4.22.0`; both version files read `4.22.0`; tag `v4.22.0` resolves to `0ecedaa`.
-- **Verified now:** publish workflow run `34665563869` concluded `success`, including its own tag-versus-version-files guard, `npm ci`, `npm test` and the OIDC publish.
-- **Verified now:** 359/359 tests pass across 31 suites, run locally before the release commit and again inside the workflow.
-- **Verified now:** `main` is aligned with `origin/main` and the working tree is clean.
-- **Verified now:** `package.json` → `files` is `bin/ lib/ skills/ agents/ commands/ AGENTS-VERCEL-RESEARCH.md` and excludes `docs/`, so this note lands outside the published tarball — checked rather than assumed, since the note necessarily commits after the tag.
-- **Verified now:** no shared machinery moved since `f1308a3`, which makes the no-port conclusion for `aiskills` a measurement rather than a guess.
-- **Assumed, not verified:** the technical claims inside both references. `cc1fd3c` states its own evidence — the generated `values*/ti_styles.xml` and `res/values-v31/` inside `titanium-13.4.1.aar` — and `push-notifications.md` documents device-by-device testing on an OPPO CPH2639, an Android 10 emulator and an iPad. None of that testimony was re-run from here.
-- **Assumed, not verified:** the marketplace-channel mechanics in `context.md` were established in the sibling repo and still have not been re-confirmed against `maccesar-titools`; there is no cache for it on this machine to inspect.
+- **Verified now:** the registry serves `4.23.0` (queried at `registry.npmjs.org`, then confirmed with `npm view --no-cache`); both version files read `4.23.0`; tag `v4.23.0` → `d958bf0`.
+- **Verified now:** publish run `34666530349` concluded `success`, including the guard, `npm ci`, `npm test` and the OIDC publish. The earlier v4.22.0 run, `34665563869`, also `success`.
+- **Verified now:** 359/359 tests across 31 suites, run after each content change and again in CI. The count did not move, because `test/anchors.test.js` emits one test per `.md` file and this release added no file.
+- **Verified now:** the comments above the opt-in pieces in all three copies of the `brand:` block are byte-identical to `lib/templates/purgetss.config.js.cjs:39-40` in the PurgeTSS repo, compared with grep side by side.
+- **Verified now:** the two remaining occurrences of `ic_stat_notify` under `skills/` are deliberate — both describe the old name for someone migrating.
+- **Verified now:** all 29 pages under `docs/` in `../purgetss-docs` have a corresponding reference in the skill, and that repo is clean and aligned with its `origin/main` at `1ed1a90`. So the skill is level with the **published** docs, not merely with the CLI.
+- **Verified now:** `main` is aligned with `origin/main`, working tree clean.
+- **Assumed, not verified:** the technical claims themselves. The PurgeTSS side is traceable to that repo's CHANGELOG, its config template and the official docs, all read today; nothing was run against a device from here, and `firebase.cloudmessaging`'s `getResource("notificationicon")` is quoted from those sources rather than from the module's own source.
+- **Assumed, not verified:** the marketplace-channel mechanics in `context.md`, still established only in the sibling repo. No cache for `maccesar-titools` exists on this machine to inspect.
 
 ## Known pending
 
-- **The maintainer's own post-release steps are not done by the release.** npm is served; a local Claude Code marketplace installation would still need `/plugin marketplace update maccesar-titools` then `/reload-plugins`, and there is no such installation on this machine. The CLI here is `npm link`-ed to this checkout, so its skills are already current.
-- Users on the marketplace channel with auto-update off reach `4.22.0` only when they refresh the marketplace by hand; third-party marketplaces do not auto-update by default.
+- **The maintainer's post-release steps are not done by the release.** npm is served; a marketplace installation would need `/plugin marketplace update maccesar-titools` then `/reload-plugins`, and there is none on this machine. The CLI here is `npm link`-ed to this checkout, so its skills are already current.
+- Marketplace users with auto-update off reach `4.23.0` only by refreshing by hand; third-party marketplaces do not auto-update by default.
