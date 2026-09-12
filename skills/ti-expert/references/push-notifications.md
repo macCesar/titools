@@ -92,6 +92,12 @@ That last symptom is worth naming because it sends people down the wrong road. I
 
 Firebase's own server documentation teaches the `notification` block, which is why this is such a common shape to arrive at.
 
+### The icon, whichever route posts it
+
+Both routes need a drawable named `notificationicon`, because the module resolves it by that exact name: `TiFirebaseMessagingService.showNotification()` calls `getResource("notificationicon")`, and that lookup is the only path a data message has. When it is missing the module falls back to `appicon` — the opaque launcher icon, which the status bar tints into a white square, since only the alpha channel survives. A notification message takes the configurable path instead, the `com.google.firebase.messaging.default_notification_icon` meta-data, which is why the same project can show a correct icon on one route and a blob on the other.
+
+PurgeTSS generates the five densities, white on transparent and under the right name, with `purgetss brand --only notification-icon` — off by default. Its `app-branding.md` § "FCM notification icon" carries both meta-data entries and the `colors.xml` resource that `default_notification_color` needs.
+
 ## 3. A tap does not fire `didReceiveMessage`
 
 When the module posts the notification and the person taps it, `PushHandlerActivity` puts the payload on the launcher Intent as the `fcm_data` extra and starts the activity. It does not fire `didReceiveMessage`.
@@ -307,6 +313,7 @@ Do not test with the app added to the battery whitelist. That measures a phone y
 | --- | --- | --- |
 | Tapping restarts the app from zero and loses state | Top-level `notification` block; the system owns the intent | Section 2 |
 | `image`, `big_text`, `channelId`, `sound`, `vibrate` ignored | Same | Section 2 |
+| A white square or the launcher icon in the status bar | No `notificationicon` drawable; the module fell back to `appicon` | Section 2 |
 | Foreground and cold start work, backgrounded tap does nothing | Nobody reads the Intent on resume | Section 3 |
 | Nothing at all happens when tapping a stored notification while using the app | No `resumed`, no `newintent` listener, or no `singleTop` | Section 4 |
 | Blank pages slide past before the app appears | `PushHandlerActivity` has no theme; Titanium spawns a duplicate root activity | Section 5 |
