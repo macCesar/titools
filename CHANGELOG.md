@@ -6,6 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.22.0] - 2026-09-11
+
+### Added — `ti-expert` covers FCM push notifications end to end
+
+- New reference `ti-expert/references/push-notifications.md`: the four paths an FCM message can reach an Android app through, against the one the module's own example documents — `didReceiveMessage` while live, the same callback on a cold start, the launcher Intent's extras, and `didOpenNotification` where the module fires it. Each path is named with the state it covers and the state it silently skips.
+- What a top-level `notification` block costs: the system posts the tray entry itself, the app is never called while backgrounded, and the tap delivers the payload through the Intent instead. Why a tap does not fire `didReceiveMessage`, and the `singleTop` + `newintent` case — a resumed task that receives the launcher Intent a second time, which appears in no documentation and opens the panel twice on Android 10 but not on Android 15.
+- The HTTP v1 payload with its PHP sender, why every value inside `data` must be a string, the two splash screens a cold start goes through, and a closing symptom-to-cause table. iOS gets its own section because it has a single path that works in every state — the asymmetry behind "it works on my iPhone".
+- `SKILL.md` routes to it twice (decision-table row and reference list) and its `description` names push notifications, so the skill is reachable from a prompt that never mentions `ti-expert`.
+
+The scenario matrix was confirmed case by case on a physical OPPO CPH2639 and an Android 10 emulator, and on an iPad for iOS, each path identified by a log line naming the callback that delivered it. Claims read from source rather than run are labelled as such in the file.
+
+### Fixed
+
+- `didOpenNotification`'s payload sits under `message.data`, not `message`. The module has nested it there since 3.6.0, the same place `didReceiveMessage` puts it, so one accessor covers both a tap and an arrival; how to read it on a pre-3.6.0 module is noted in place.
+- `ti-ui/references/icons-and-splash-screens.md`: the Android 12+ splash example's companion style inherited from `Theme.MaterialComponents.NoActionBar`, which detaches from the chain Titanium generates (`Theme.Titanium` → `Base.Theme.Titanium.Splash` → `Theme.AppDerived` → the app's own theme) and drops the application theme with it. An `<application>` theme is an *ancestor* of `Theme.Titanium` and therefore cannot set `windowBackground` or `windowSplashScreenBackground`. The correction names the three attributes one color has to reach — including the easily missed `colorBackground` — and the 160 dp white circle a flat `windowBackground` removes along with the icon. Its troubleshooting entry also claimed background color was the only customizable part; `windowSplashScreenAnimatedIcon` replaces the icon. Verified against the generated `values*/ti_styles.xml` and `res/values-v31/` inside `titanium-13.4.1.aar`.
+- That correction ships under `## Community-Discovered Patterns` rather than in the body: `ti-ui` is audited against official documentation, and per R6 those sections are the only ones an audit does not overwrite.
+
+### Changed
+
+- The README's skill-routing example for "Implement push notifications" now names `ti-expert` alongside `ti-howtos`, since the mechanics reference lives in `ti-expert`.
+
 ## [4.21.0] - 2026-09-08
 
 ### Added — `ti-reuse-first`, the question the catalog was missing
