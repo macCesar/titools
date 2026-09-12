@@ -1,6 +1,6 @@
 ---
 name: titools-skill-auditor
-description: Use when reference files for the doc-based skills in this repo need re-aligning with their upstream sources — after a Titanium SDK, Alloy, or PurgeTSS release; when an audit reveals stale or training-data content; or before tagging a TiTools version. Covers the five titanium-docs skills plus `purgetss`. Maintenance-only — not intended for end-user Titanium projects.
+description: Use when reference files for the doc-based skills in this repo need re-aligning with their upstream sources — after a Titanium SDK, Alloy, or PurgeTSS release; when an audit reveals stale or training-data content; or before tagging a TiTools version. Covers the five Titanium documentation skills plus `purgetss`. Maintenance-only — not intended for end-user Titanium projects.
 metadata:
   internal: true
 ---
@@ -29,29 +29,43 @@ It does **not** audit:
 
 ## Setup
 
-Titanium/Alloy audits compare against `.titanium-docs/`. PurgeTSS audits compare against `.purgetss-docs/` plus `.purgetss-source/`, because the public docs describe workflows while the package changelog and implementation establish release-specific behavior. All three caches are gitignored.
+Four caches, all gitignored, all symlinks or clones at the repo root.
 
-If `.titanium-docs/` is missing, fetch it before auditing:
+| Cache | Repo | Serves |
+|---|---|---|
+| `.titanium-sdk` | `tidev/titanium-sdk` | `ti-api` — `apidoc/` is the canonical API source |
+| `.titaniumsdk-site` | `tidev/titaniumsdk.com` | the four guide skills (`content/docs/`) and the release cross-check (`registry/sdk/`) |
+| `.titanium-docs` | `tidev/titanium-docs` | the frozen archive, additive only |
+| `.purgetss-docs` + `.purgetss-source` | `macCesar/purgetss-docs`, `macCesar/purgeTSS` | `purgetss` |
+
+Read `references/source-map.md` § "Precedence" before any audit. Which root wins is not a preference; an audit that reads the archive first reports green against a corpus that stopped moving.
+
+If a cache is missing, clone it. Full clones for the two live Titanium repos: the API audit needs release tags, and the site's history explains why a page says what it says.
 
 ```bash
+git clone https://github.com/tidev/titanium-sdk.git .titanium-sdk
+git clone https://github.com/tidev/titaniumsdk.com.git .titaniumsdk-site
 git clone --depth 1 https://github.com/tidev/titanium-docs.git .titanium-docs
+
+git clone --depth 1 https://github.com/macCesar/purgetss-docs.git .purgetss-docs
+git clone --depth 1 https://github.com/macCesar/purgeTSS.git .purgetss-source
+```
+
+On the maintainer's machine these are symlinks to existing checkouts, `.titaniumsdk-site` among them pointing at the `macCesar/titaniumsdk.com` fork. A fork is fine to read from, but confirm it is not behind before trusting it as a source:
+
+```bash
+git -C .titaniumsdk-site fetch upstream && git -C .titaniumsdk-site log --oneline HEAD..upstream/main
 ```
 
 To refresh before an audit:
 
 ```bash
-cd .titanium-docs && git pull --ff-only && cd ..
+for c in .titanium-sdk .titaniumsdk-site .titanium-docs .purgetss-docs .purgetss-source; do
+  git -C "$c" pull --ff-only
+done
 ```
 
-For `purgetss`, fetch or refresh both official repositories:
-
-```bash
-git clone --depth 1 https://github.com/macCesar/purgetss-docs.git .purgetss-docs
-git clone --depth 1 https://github.com/macCesar/purgeTSS.git .purgetss-source
-
-git -C .purgetss-docs pull --ff-only
-git -C .purgetss-source pull --ff-only
-```
+Record in the audit report which commit of each cache the audit read, and for `ti-api` the SDK **tag** it was anchored to. `main` currently declares `14.0.0` and carries unreleased APIs.
 
 ## Invocation
 
@@ -140,5 +154,5 @@ After completing an audit:
 
 1. **Spot-check** — open 2–3 updated references and verify content quality.
 2. **Test invocation** — verify the updated skill loads correctly in Claude Code (or the agent of choice).
-3. **Commit per skill** — one focused commit per audited skill, e.g. `audit(<skill>): align refs with titanium-docs <date or commit>`.
+3. **Commit per skill** — one focused commit per audited skill, naming the source: `audit(ti-api): align refs with apidoc 13_4_1_GA`.
 4. **Mention in the PR description** if changes are substantial, so reviewers see the diff context.

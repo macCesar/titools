@@ -21,7 +21,7 @@ Every fact in a skill's reference must be traceable to an official source.
 Signs that content came from training data rather than official docs:
 
 - **Overly generic advice** — "Always handle errors properly" without specific Titanium context
-- **Methods that don't match SDK** — Check against `.titanium-docs/docs/api/` if unsure
+- **Methods that don't match SDK** — Check against `.titanium-sdk/apidoc/` if unsure; that YAML is what the SDK team edits
 - **Perfect-sounding examples** — Too clean, too simple, or using patterns not in official docs
 - **Advice about features that don't exist** — e.g. built-in dependency injection, official plugin system
 - **Mixing frameworks** — React Native patterns, Cordova patterns, or web patterns applied to Titanium
@@ -71,8 +71,8 @@ All code examples must use modern ES6+ JavaScript.
 
 | Domain | Status | Replacement |
 |---|---|---|
-| `docs.appcelerator.com` | Dead | Use relative refs or `.titanium-docs` paths |
-| `wiki.appcelerator.com` | Dead | Use relative refs or `.titanium-docs` paths |
+| `docs.appcelerator.com` | Dead | Use relative refs or cache paths |
+| `wiki.appcelerator.com` | Dead | Use relative refs or cache paths |
 | `jira.appcelerator.com` | Dead | Reference ticket numbers only (e.g. `TIMOB-12345`) |
 | `developer.appcelerator.com` | Dead | Use relative refs |
 
@@ -141,7 +141,7 @@ Useful background to avoid errors in skill content.
 - **Appcelerator Inc.** developed Titanium SDK and Alloy framework
 - **Axway** acquired Appcelerator in 2016
 - **TiDev** (community organization) maintains Titanium SDK since Axway discontinued commercial support in 2022
-- **Documentation** at `docs.appcelerator.com` is dead. The canonical reference is the `tidev/titanium-docs` repo, which renders to https://titaniumsdk.com.
+- **Documentation** at `docs.appcelerator.com` is dead. The canonical sources are `tidev/titanium-sdk:apidoc/` for the API and `tidev/titaniumsdk.com:content/docs/` for the guides. `tidev/titanium-docs` is the frozen predecessor, kept as an archive.
 - **Alloy** remains actively maintained as the MVC framework for Titanium
 
 ### Skill dual purpose

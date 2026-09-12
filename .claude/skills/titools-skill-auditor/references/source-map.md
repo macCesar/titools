@@ -6,16 +6,37 @@ Mapping of doc-based skills in this repo to their upstream documentation source.
 
 ## Documentation roots
 
-Five skills source from [`tidev/titanium-docs`](https://github.com/tidev/titanium-docs). `purgetss` uses the official documentation repo plus the released CLI source.
+The Titanium documentation moved during 2026. `tidev/titanium-docs` (VuePress) is frozen and being archived under TI-52; `tidev/titaniumsdk.com` (Next.js) replaces it, and the Titanium SDK now dispatches its API regeneration there. The job that still notifies `titanium-docs` is labelled `Notify titanium-docs (legacy)` in the SDK's own `regen-docs.yml`, with a comment saying to delete it once the move completes.
 
-| Local path | Upstream |
-|---|---|
-| `.titanium-docs/docs/guide/` | `tidev/titanium-docs:docs/guide/` |
-| `.titanium-docs/docs/api/` | `tidev/titanium-docs:docs/api/` |
-| `.purgetss-docs/docs/` | `macCesar/purgetss-docs:docs/` |
-| `.purgetss-source/` | `macCesar/purgeTSS` package source, `CHANGELOG.md`, `README.md`, `bin/`, `src/`, and `dist/` |
+That leaves three roots with different standing, and the difference is the whole point of this file. Two are live sources. One is an archive.
+
+| Local path | Upstream | Standing |
+|---|---|---|
+| `.titanium-sdk/apidoc/` | `tidev/titanium-sdk:apidoc/` | **Live, canonical for the API.** Every other API copy is compiled from it. |
+| `.titaniumsdk-site/content/docs/` | `tidev/titaniumsdk.com:content/docs/` | **Live, canonical for the guides.** Being written; ~20 of 41 approved pages still unwritten. |
+| `.titaniumsdk-site/registry/sdk/<version>/` | compiled from `apidoc/` by `scripts/docgen/` | Live cross-check: says which release actually shipped an API. Resolve through that version's `contents.json`, never by grepping `_pool/`. |
+| `.titanium-docs/docs/guide/` | `tidev/titanium-docs:docs/guide/` | **Archive.** 336 pages TiDev condensed into 62. Preserved here, never a source of a *new* claim. |
+| `.titanium-docs/docs/api/` | `tidev/titanium-docs:docs/api/` | **Archive, and already behind.** Verified 2026-09-11: `Ti.UI.Toolbar.hideSharedBackground` (apidoc 2026-07-12) and `Ti.UI.ListView.snapping` (apidoc 2026-07-20) never reached it, though both are in the site's `registry/sdk/main/`. |
+| `.purgetss-docs/docs/` | `macCesar/purgetss-docs:docs/` | Live. |
+| `.purgetss-source/` | `macCesar/purgeTSS` package source, `CHANGELOG.md`, `README.md`, `bin/`, `src/`, and `dist/` | Live. |
 
 All cache roots are gitignored. See `SKILL.md` § "Setup" for clone/refresh commands.
+
+---
+
+## Precedence: which root wins
+
+An audit that reads the wrong root reports green against a corpus that stopped moving. These rules decide what beats what.
+
+**1. For anything factual about the API — a property, a method, a signature, a constant, a platform flag — `.titanium-sdk/apidoc/` wins, always.** It is the file the SDK team edits. The site's registry and the archived markdown are both downstream of it.
+
+**2. For anything factual about a guide topic — a command, a path, a version number, a required tool — the new site wins when it has a page on that topic.** The archive was written across a decade of "the latest version" and points at hosts that no longer resolve. Where the new page says something different, the new page is right.
+
+**3. The archive is additive only.** It supplies topics the new site has not written yet, and detail the new site deliberately dropped. It never overrides a live source, and nothing in it is deleted for being absent from the new site. TiTools keeps the full corpus on purpose: at 1390 KB against the new site's 219 KB, this repo holds material the official docs no longer carry.
+
+**4. Anchor the API audit to a release, not to `main`.** `main` currently declares `14.0.0` and carries APIs no published SDK has (`Ti.UI.TableView.searchText`, `Ti.UI.ListView.snapping`). Audit against the newest GA tag — `git -C .titanium-sdk show 13_4_1_GA:apidoc/...` — and cross-check with `registry/sdk/13.4.1/`. An API present in `main` but absent from both is a future release, not a gap in the skill.
+
+**5. Report which root produced each change.** A finding that says "apidoc 13_4_1_GA, Titanium/UI/Toolbar.yml" can be checked. One that says "the docs say" cannot.
 
 ---
 
@@ -59,8 +80,22 @@ Do not treat the similarly named `alloy-guides/references/PURGETSS.md` as the so
 
 ### `alloy-guides`
 
-- **Source type:** Narrative
-- **Official doc subtree:** `.titanium-docs/docs/guide/Alloy_Framework/Alloy_Guide`
+- **Source type:** Narrative, two layers
+- **Live layer:** `.titaniumsdk-site/content/docs/alloy/` — 7 pages, the rewritten Alloy guide
+- **Archive layer:** `.titanium-docs/docs/guide/Alloy_Framework/Alloy_Guide` — 17 pages, the corpus it was condensed from
+
+The live layer wins on anything factual. The archive supplies what the rewrite dropped: `Views_without_Controllers`, `Dynamic_Styles`, the Backbone migration notes, and most of the sync-adapter detail.
+
+| Live page | Covers the archive's |
+|---|---|
+| `alloy/index.md` | `Alloy_Concepts.md` |
+| `alloy/controllers.md` | `Alloy_Controllers.md` |
+| `alloy/views.md` | `Alloy_Views/Alloy_XML_Markup.md` |
+| `alloy/styles.md` | `Alloy_Views/Alloy_Styles_and_Themes.md` |
+| `alloy/models.md` | all of `Alloy_Models/`, migrations included |
+| `alloy/widgets.md` | `Alloy_Widgets.md` |
+| `alloy/config.md` | `config.json` and `alloy.jmk` |
+| *(none)* | `Alloy_Views/Views_without_Controllers.md`, `Alloy_Views/Dynamic_Styles.md`, `Alloy_Tasks_with_the_CLI.md` — archive only, keep |
 
 | Reference file | Official source |
 |---|---|
@@ -80,8 +115,11 @@ Do not treat the similarly named `alloy-guides/references/PURGETSS.md` as the so
 
 ### `alloy-howtos`
 
-- **Source type:** Narrative
-- **Official doc subtree:** `.titanium-docs/docs/guide/Alloy_Framework/Alloy_How-tos`
+- **Source type:** Narrative, two layers
+- **Live layer:** `.titaniumsdk-site/content/docs/alloy/config.md` and `alloy/widgets.md` — the only new pages touching this skill's ground
+- **Archive layer:** `.titanium-docs/docs/guide/Alloy_Framework/Alloy_How-tos` — 11 pages
+
+The new site wrote no how-to silo, on purpose. Most of this skill has no live counterpart and stays archive-only: `alloy compile`, the conditional `if=` attribute in XML and TSS, custom XML tags via `app/lib/`, and the compiler troubleshooting. Those are real gaps in the official docs and good candidates for a PR.
 
 | Reference file | Official source |
 |---|---|
@@ -96,8 +134,22 @@ Do not treat the similarly named `alloy-guides/references/PURGETSS.md` as the so
 
 ### `ti-guides`
 
-- **Source type:** Narrative
-- **Official doc subtree:** `.titanium-docs/docs/guide/Titanium_SDK/Titanium_SDK_Guide`
+- **Source type:** Narrative, two layers
+- **Live layer:** `.titaniumsdk-site/content/docs/{setup,reference,distribute}/` + `build/project-structure.md`
+- **Archive layer:** `.titanium-docs/docs/guide/Titanium_SDK/Titanium_SDK_Guide`
+
+| Reference file | Live page (wins) |
+|---|---|
+| `compatibility-matrix.md` | `reference/compatibility.md` — generated from the SDK each build, so it beats any hand-kept table |
+| `tiapp-config.md` | `reference/tiapp-xml.md` — 14 KB, the largest page on the new site |
+| `cli-reference.md` | `reference/cli.md` + `reference/config.md` |
+| `app-distribution.md` | `distribute/{signing,ios,android,encryption}.md` |
+| `hello-world.md` | `build/first-app.md` + `setup/` |
+| `application-frameworks.md` | `build/project-structure.md` |
+| `hyperloop-native-access.md` | `extend/hyperloop.md` |
+| `javascript-primer.md`, `reserved-words.md`, `style-and-conventions.md`, `coding-best-practices.md`, `commonjs-advanced.md`, `advanced-data-and-images.md`, `android-manifest.md` | *(no live page)* — archive only |
+| `sdk-release-notes.md` | `.titaniumsdk-site/registry/sdk/<version>/release-notes.md`, one per release |
+| `resources.md` | `/contribute` on the new site |
 - **Additional subtrees:** `Titanium_SDK/Titanium_SDK_Getting_Started/`, `Titanium_SDK/Titanium_SDK_Release_Notes/`, and `docs/guide/Editor_IDE/` — see the rows below. These sit outside `Titanium_SDK_Guide` and were unmapped until 2026-08-11, so upstream changes to them were invisible to the audit.
 
 | Reference file | Official source |
@@ -126,8 +178,25 @@ Do not treat the similarly named `alloy-guides/references/PURGETSS.md` as the so
 
 ### `ti-howtos`
 
-- **Source type:** Narrative
-- **Official doc subtree:** `.titanium-docs/docs/guide/Titanium_SDK/Titanium_SDK_How-tos`
+- **Source type:** Narrative, two layers
+- **Live layer:** `.titaniumsdk-site/content/docs/build/` + `content/docs/extend/`
+- **Archive layer:** `.titanium-docs/docs/guide/Titanium_SDK/Titanium_SDK_How-tos` — 116 pages, the largest archive tree
+
+| Reference file | Live page (wins) |
+|---|---|
+| `location-and-maps.md`, `google-maps-v2.md`, `ios-map-kit.md` | `build/location.md` |
+| `notification-services.md` | `build/notifications.md` |
+| `remote-data-sources.md` | `build/data/networking.md` |
+| `local-data-sources.md`, `buffer-codec-streams.md` | `build/data/index.md` |
+| `media-apis.md` | `build/media.md` |
+| `extending-titanium.md` | `extend/modules.md` + `build/modules.md`, **plus the archive's new `iOS_Module_Swift_Package_Manager.md`** |
+| `debugging-profiling.md` | `build/debugging.md` |
+| `using-modules.md` | `build/modules.md` |
+| `cross-platform-development.md` | `build/ui/platform-conventions.md` |
+| `web-content-integration.md`, `webpack-build-pipeline.md`, `android-platform-deep-dives.md`, `ios-platform-deep-dives.md`, `tutorials.md` | *(no live page)* — archive only |
+| `automation-fastlane-appium.md` | **No upstream source** in either layer — community tooling. Preserve as-is. |
+
+The archive is still moving even while frozen: `iOS_Module_Swift_Package_Manager.md` was added 2026-08-23, 117 lines on `spm.json` and `linkage: host` vs `embedded`, and this skill has no coverage of it.
 
 | Reference file | Official source |
 |---|---|
@@ -155,32 +224,67 @@ Do not treat the similarly named `alloy-guides/references/PURGETSS.md` as the so
 ### `ti-api`
 
 - **Source type:** API
-- **Official doc subtree:** `.titanium-docs/docs/api/`
+- **Canonical source:** `.titanium-sdk/apidoc/` — 238 YAML files, the ones the SDK team edits
+- **Release cross-check:** `.titaniumsdk-site/registry/sdk/<version>/` (`contents.json` maps a type to its document in `_pool/`)
+- **Archive:** `.titanium-docs/docs/api/` — the ~580 generated markdown files these references were converted from, kept for provenance only
 
-> **Notes for `ti-api`:**
-> - Source is ~580 generated `.md` files from YAML definitions in `tidev/titanium-sdk:apidoc/`.
-> - Generated files may contain broken cross-doc URLs (known upstream issue) — flag but do not try to fix upstream.
-> - References are grouped by namespace (Ti.UI, Ti.App, Ti.Network, etc.) into ~20 reference files.
+> **Audit against a tag, not the working tree.** `git -C .titanium-sdk show 13_4_1_GA:apidoc/Titanium/UI/Toolbar.yml`. The checkout tracks `main`, which declares `14.0.0` and already carries APIs no released SDK has. Record the tag in the audit report.
+>
+> **Three questions, three sources.** *Does this API exist?* → apidoc. *Did it ship?* → the registry for the GA release. *Where did our current text come from?* → the archive. Answering the first from the archive is what let `hideSharedBackground` and `snapping` stay missing from this skill for two months.
+>
+> **YAML reads differently from the generated markdown.** A property is a `- name:` entry under `properties:`, with `type`, `platforms`, `since`, `default` and `availability` as siblings. `since` is often absent — its absence means "since the type existed", not "new". `excludes:` at the type level removes inherited members, and `deprecated:` carries `since` and `notes`. Read the YAML, do not infer the shape from the old markdown table.
 
-| Reference file | Namespace coverage |
+| Reference file | apidoc source |
 |---|---|
-| `api-ui-views.md` | `Ti.UI` core views (View, Label, Button, ImageView, …) |
-| `api-ui-windows-navigation.md` | `Ti.UI.Window`, `NavigationWindow`, `TabGroup`, `Tab` |
-| `api-ui-text-input.md` | `Ti.UI.TextField`, `TextArea`, `SearchBar`, `AttributedString` |
-| `api-ui-lists.md` | `Ti.UI.ListView`, `TableView`, related |
-| `api-ui-extras.md` | `Ti.UI.Animation`, `Matrix2D`, `Matrix3D`, `WebView`, … |
-| `api-ui-ios.md` | `Ti.UI.iOS` |
-| `api-ui-ios-animator.md` | `Ti.UI.iOS` Animator & Physics |
-| `api-ui-android.md` | `Ti.UI.Android`, `Ti.UI.iPad` |
-| `api-android.md` | `Ti.Android`, `ActionBar`, `Activity`, … |
-| `api-app-platform.md` | `Ti.App`, `Ti.App.Properties`, `Ti.Platform` |
-| `api-media.md` | `Ti.Media` (audio/video, camera, gallery) |
-| `api-data-network.md` | `Ti.Network`, `Ti.Database`, `Ti.Filesystem` |
-| `api-services.md` | `Ti.Geolocation`, `Ti.Contacts`, `Ti.Calendar`, `Ti.WatchSession` |
-| `api-core.md` | `Titanium`, `Ti.UI` root, `Ti.API`, `Ti.Accelerometer`, … |
-| `api-xml-global.md` | `Ti.XML`, Global APIs |
-| `api-modules-map.md` | `Modules.Map` |
-| `api-modules-social-misc.md` | `Modules.Applesignin`, `Barcode`, `Crypto`, `Facebook`, `Identity` |
-| `api-modules-ble-bluetooth.md` | `Modules.BLE`, Bluetooth |
-| `api-modules-nfc.md` | `Modules.Nfc` |
-| `api-modules-coremotion-urlsession.md` | `Modules.CoreMotion`, `Modules.URLSession` |
+| `api-ui-views.md` | `Titanium/UI/{View,Label,Button,ImageView,MaskedImage,ScrollView,ScrollableView,Slider,Switch,ProgressBar,ActivityIndicator,RefreshControl}.yml` |
+| `api-ui-windows-navigation.md` | `Titanium/UI/{Window,NavigationWindow,TabGroup,Tab,Toolbar,OptionDialog,AlertDialog,EmailDialog}.yml` |
+| `api-ui-text-input.md` | `Titanium/UI/{TextField,TextArea,SearchBar,AttributedString,Attribute}.yml` |
+| `api-ui-lists.md` | `Titanium/UI/{ListView,ListItem,ListSection,ListViewScrollPosition,TableView,TableViewRow,TableViewSection,TableViewScrollPosition}.yml` |
+| `api-ui-extras.md` | `Titanium/UI/{Animation,AnimatedOptions,Matrix2D,Matrix3D,WebView,Picker,PickerColumn,PickerRow,ButtonBar,TabbedBar,OptionBar,DashboardView,DashboardItem,ShortcutItem,Notification}.yml` |
+| `api-ui-ios.md` | `Titanium/UI/iOS/` |
+| `api-ui-ios-animator.md` | `Titanium/UI/iOS/` animator and physics types |
+| `api-ui-android.md` | `Titanium/UI/Android/` + `Titanium/UI/iPad/` |
+| `api-android.md` | `Titanium/Android/` |
+| `api-app-platform.md` | `Titanium/App/` + `Titanium/Platform/` + `Titanium/Locale/` |
+| `api-media.md` | `Titanium/Media/` |
+| `api-data-network.md` | `Titanium/Network/` + `Titanium/Database/` + `Titanium/Filesystem/` + `Titanium/Stream/` + `Titanium/Codec/` |
+| `api-services.md` | `Titanium/Geolocation/` + `Titanium/Contacts/` + `Titanium/Calendar/` + `Titanium/WatchSession/` |
+| `api-core.md` | `Titanium/Titanium.yml` + `Titanium/UI/UI.yml` + `Titanium/API/` + `Titanium/Accelerometer/` + `Titanium/Gesture/` + `Titanium/Utils/` + shared types in `Titanium/UI/{Color,Font,Dimension,Size,Padding}.yml` |
+| `api-xml-global.md` | `Titanium/XML/` + `Global/` + `NodeJS/` |
+| `api-modules-map.md` | `Modules/Map/` |
+| `api-modules-social-misc.md` | `Modules/{Applesignin,Barcode,Crypto,Facebook,Identity}/` |
+| `api-modules-ble-bluetooth.md` | `Modules/{BLE,Bluetooth}/` |
+| `api-modules-nfc.md` | `Modules/Nfc/` |
+| `api-modules-coremotion-urlsession.md` | `Modules/{CoreMotion,URLSession}/` |
+
+Modules ship their apidoc in their own repos; `.titaniumsdk-site/scripts/docgen/sources.json` is the authoritative list of the 17 source repos the site compiles. When a module's types are missing from `.titanium-sdk/apidoc/Modules/`, read them from the registry instead and note it.
+
+#### Reading the registry without fooling yourself
+
+`registry/sdk/_pool/` is content-addressed and **shared across every version**, 8.0.0 through `main`. A grep for a property name there tells you some version has it, not which. It is an easy way to report an unreleased API as shipped, and it happened on 2026-09-11: three pool files carrying `hideSharedBackground` all belonged to `registry/sdk/main/`, while 13.4.0 and 13.4.1 both hold a 14-property `Titanium.UI.Toolbar` without it.
+
+Resolve through the version instead: read `registry/sdk/<version>/contents.json`, take the hash it gives for the type, then open that one pool file.
+
+#### Coverage as of 2026-09-11, apidoc @ 13_4_1_GA
+
+Measured with `scripts/apidoc-coverage.mjs`. Three APIs sit in `apidoc` on `main` and in no published release, so they are **not** gaps in the skill — adding them would document a version nobody can install:
+
+| API | In apidoc since | In 13.4.1 | Verdict |
+|---|---|---|---|
+| `Ti.UI.Toolbar.hideSharedBackground` | 2026-07-12 | no | wait for the GA |
+| `Ti.UI.ListView.snapping` (+ `TableView`) | 2026-07-20 | no | wait for the GA |
+| `Ti.UI.TableView.searchText` | 2026-09-02 | no | wait for the GA |
+| `QuickSettingsServiceShowParams` | 2026-08-26 | no | pseudo-type split out of the shared `showParams`; cosmetic for this skill |
+
+`main` declares `14.0.0`. When it ships, re-run the coverage script against the new tag and these become real work.
+
+#### Reference map
+
+Do not hand-write which reference holds which type; it drifts and then an audit reports every member of a type as missing because it read the wrong file. `scripts/api-map.mjs` derives it from the `## Ti.X` headings in the files themselves:
+
+```bash
+node .claude/skills/titools-skill-auditor/scripts/api-map.mjs --find Toolbar
+node .claude/skills/titools-skill-auditor/scripts/api-map.mjs --by-file
+```
+
+As of 2026-09-11 the 20 reference files carry 305 types with no type documented in two places.

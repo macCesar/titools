@@ -23,36 +23,49 @@
 
 Before starting an audit, do two things.
 
-### 0a. Verify the upstream cache
+### 0a. Verify the upstream caches
 
-For the five Titanium/Alloy skills, check that `.titanium-docs/` exists at the repo root. If missing, stop and prompt the user with:
+Which caches an audit needs depends on the skill, and getting this wrong is the failure mode this phase exists to prevent: `.titanium-docs` is frozen, so an audit that reads it as a live source passes everything and finds nothing.
+
+| Skill | Required caches |
+|---|---|
+| `ti-api` | `.titanium-sdk` (canonical) + `.titaniumsdk-site` (release cross-check) + `.titanium-docs` (provenance only) |
+| `alloy-guides`, `alloy-howtos`, `ti-guides`, `ti-howtos` | `.titaniumsdk-site` (live) + `.titanium-docs` (archive) |
+| `purgetss` | `.purgetss-docs` + `.purgetss-source` |
+
+If one is missing, stop and prompt the user with the matching clone command from `SKILL.md` § Setup.
+
+Record what each audit read, because a finding is only checkable if its source is:
 
 ```bash
-git clone --depth 1 https://github.com/tidev/titanium-docs.git .titanium-docs
+git -C .titanium-sdk rev-parse --short HEAD
+git -C .titanium-sdk describe --tags --abbrev=0   # the GA the API audit is anchored to
+git -C .titaniumsdk-site rev-parse --short HEAD
+git -C .titanium-docs rev-parse --short HEAD
 ```
 
-If present, optionally refresh:
+For `ti-api`, anchor to the tag, not to the checkout. `main` declares `14.0.0` and carries APIs no released SDK has:
 
 ```bash
-cd .titanium-docs && git pull --ff-only && cd ..
+git -C .titanium-sdk show 13_4_1_GA:apidoc/Titanium/UI/Toolbar.yml
 ```
 
-Note the latest commit hash (e.g. `git -C .titanium-docs rev-parse --short HEAD`) so the audit report can record which upstream version it was compared against.
+An API that is in `main` but in neither the GA tag nor `registry/sdk/<version>/` is a future release, not a gap in the skill. Say so in the report rather than proposing it as a fix.
 
-For `purgetss`, require both `.purgetss-docs/` and `.purgetss-source/`. Clone or refresh them with the commands in `SKILL.md`, then record both commit hashes. The docs establish user-facing workflows; the package changelog, CLI, implementation, generated `dist/` files, and tests resolve release-specific behavior and exact class/module contracts.
+For `purgetss`, require both `.purgetss-docs/` and `.purgetss-source/`, then record both commit hashes. The docs establish user-facing workflows; the package changelog, CLI, implementation, generated `dist/` files, and tests resolve release-specific behavior and exact class/module contracts.
 
 ### 0b. Classify the skill's source type
 
 | Source type | Skills | Audit approach |
 |---|---|---|
-| **Narrative** | `alloy-guides`, `alloy-howtos`, `ti-guides`, `ti-howtos` | Compare reference files against official guide subdirectories |
-| **API** | `ti-api` | Compare against generated `.md` files in `.titanium-docs/docs/api/` |
+| **Narrative, two layers** | `alloy-guides`, `alloy-howtos`, `ti-guides`, `ti-howtos` | Compare against the live page in `.titaniumsdk-site/content/docs/` first; fall back to `.titanium-docs` only for topics the new site has not written |
+| **API** | `ti-api` | Compare against `.titanium-sdk/apidoc/*.yml` at the newest GA tag, cross-checked with `.titaniumsdk-site/registry/sdk/<version>/` |
 | **Mixed narrative + implementation** | `purgetss` | Compare workflows against `.purgetss-docs`, then verify commands, classes, paths, aliases, and defaults against `.purgetss-source` |
 
 The source type determines audit strategy:
 
-- **Narrative**: Direct section-by-section comparison.
-- **API**: Compare per-namespace; expect some references to map to many small upstream files.
+- **Narrative, two layers**: Section-by-section against the live page. Where the live page and the archive disagree on a fact, the live page is right. Where the archive covers a topic the live page does not, keep it and mark it archive-sourced. Never delete a reference for being absent from the new site: the new site condensed 336 pages into 62, and this repo deliberately keeps the rest.
+- **API**: Compare per-namespace against YAML, not markdown. A property is a `- name:` entry under `properties:`; `platforms`, `since`, `default` and `deprecated` are its siblings. Expect one reference file to map to many `.yml` files.
 - **Mixed**: Documentation prose is not enough when it lags a same-day release. Prefer observable CLI/source/test behavior for exact contracts and use the docs for explanations.
 
 ---
@@ -65,7 +78,7 @@ Map the current state of the skill against its upstream documentation.
 
 Before doing coverage analysis, scan all reference files in the skill for an `<!-- AUDIT-SKIP -->` HTML comment near the top. Files marked with this comment are manually maintained against a different upstream source (e.g. a third-party toolkit's own docs) and must be **excluded from the audit entirely**:
 
-- Do NOT read or compare the file against any upstream `tidev/titanium-docs` source.
+- Do NOT read or compare the file against any upstream Titanium documentation source.
 - Do NOT include the file in the coverage table.
 - List skipped files in a separate "Skipped (manually maintained)" section of the report.
 - Source-map.md should also flag these files; cross-check both signals.
@@ -329,7 +342,7 @@ A clean output is `0 broken anchors, 0 duplicates, table in sync`. Anything else
 
 ### Remind the user
 
-- One commit per audited skill: `audit(<skill>): align refs with titanium-docs <date or commit>`.
+- One commit per audited skill, naming the source it was aligned to: `audit(ti-api): align refs with apidoc 13_4_1_GA`, `audit(ti-howtos): align refs with titaniumsdk.com <commit>`.
 - Mention the upstream commit hash from Phase 0a in the commit body or PR description.
 - If changes are substantial, surface them in the PR description so reviewers see the diff context.
 - If the cross-reference step fixed any broken anchors, call them out in the commit body so a reviewer can sanity-check the new link targets.
