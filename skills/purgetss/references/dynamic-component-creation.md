@@ -123,7 +123,7 @@ classes: [
 // Arbitrary values use parentheses notation
 classes: [
   'w-(160)',          // Custom width
-  'h-(12.5rem)',      // Custom height with a unit (not px: a px suffix stops the build)
+  'h-(12.5rem)',      // Custom height with a unit
   'bg-(#3b82f6)',     // Custom hex color
   'm-(10dp)',         // Custom margin with unit
   'border-(2)'        // Custom border width
@@ -265,7 +265,7 @@ function createFormField(fieldType, options) {
 >
 > - `$` is the controller instance, so `$.UI.create()` is not available in a plain `app/lib/` CommonJS module, and PurgeTSS does not scan `app/lib/` for classes.
 > - Each class list is written out in full under `classes:`. A shared `baseClasses` array spread into `classes: [...baseClasses, ...]` is invisible to the scanner: spread elements are skipped and the array itself is not under a `classes:` key, so those classes would be purged from `app.tss`.
-> - `px-4` sets `padding`, which exists only on `Ti.UI.TextField`, `Ti.UI.TextArea` (Android and iOS) and `Ti.UI.Android.CardView` (apidoc 13_4_1_GA). The `// padding - Android Only` comment in `utilities.tss` is inaccurate for the two text inputs.
+> - `px-4` sets `padding`, which exists only on `Ti.UI.TextField`, `Ti.UI.TextArea` (Android and iOS) and `Ti.UI.Android.CardView` (apidoc 13_4_1_GA).
 
 ### Example 2: Dynamic List Items
 

@@ -156,20 +156,20 @@ The pinned width drives the scale for every density:
 
 ### Validation
 
-`--width` accepts integers in `[1, 8192]`. Out-of-range values are rejected immediately and the command exits without writing anything:
+`--width` accepts integers in `[1, 1024]` (v7.18.0; earlier versions accepted up to 8192 and then failed on the 4096 px cap). Out-of-range values are rejected immediately and the command exits without writing anything:
 
 ```bash
 purgetss images logo.svg --width 0
-# Invalid --width '0'. Must be an integer between 1 and 8192.
+# Invalid --width '0'. Must be an integer between 1 and 1024.
 
 purgetss images logo.svg --width 9000
-# Invalid --width '9000'. Must be an integer between 1 and 8192.
+# Invalid --width '9000'. Must be an integer between 1 and 1024.
 
 purgetss images logo.svg --width abc
-# Invalid --width 'NaN'. Must be an integer between 1 and 8192.
+# Invalid --width 'NaN'. Must be an integer between 1 and 1024.
 ```
 
-Passing validation does not guarantee a run: every output is capped at 4096 px per side, and `xxxhdpi` is 4× the pinned width, so any `--width` above `1024` aborts with `… exceeds the 4096px cap`.
+Passing validation does not guarantee a run: every output is capped at 4096 px per side, width and height, and the height follows the source's aspect ratio. A source taller than it is wide can still abort at `xxxhdpi` with `… exceeds the 4096px cap`.
 
 ### The hint message for unflagged SVGs
 
@@ -531,7 +531,7 @@ Classic projects have no PurgeTSS build step: generate the images, then run `ti 
 | --- | --- |
 | `--format <ext>` | Convert all outputs to: `webp`, `jpeg`, `png`, `avif`, `gif`, `tiff`. Default: keep source format. |
 | `--quality <n>` | Quality `0–100` for `webp`, `jpeg`, `avif` and `tiff`. PNG and GIF ignore it. Default `85`. |
-| `--width <n>` | (v7.8.0) Pin `mdpi` / `@1x` output width to `n` pixels; validated to `[1, 8192]`, but outputs are capped at 4096 px so values above `1024` abort. Other densities derive from this base (×1.5 / ×2 / ×3 / ×4). Most useful for SVG sources with non-standard viewBoxes. CLI-only — no `config.cjs` equivalent because width is per-asset. |
+| `--width <n>` | (v7.8.0) Pin `mdpi` / `@1x` output width to `n` pixels; validated to `[1, 1024]`, because `xxxhdpi` renders at 4× and outputs are capped at 4096 px. Other densities derive from this base (×1.5 / ×2 / ×3 / ×4). Most useful for SVG sources with non-standard viewBoxes. CLI-only — no `config.cjs` equivalent because width is per-asset. |
 | `--opacity <n>` | (v7.10.0) Multiply the alpha channel of every generated density by `n/100`. Range `[0, 100]`. Combine with `--format jpeg` and the alpha is flattened on white instead of producing a transparent JPEG. CLI-only. |
 | `--padding <n>` | (v7.10.0) Shrink the rendered image inside each density canvas by `n%` symmetric borders. Range `[0, 40]`. CLI-only. |
 | `--output <relpath>` | (v7.10.0) Override the basename and subpath relative to each platform's `images/` root. Lets a source from outside `purgetss/images/` (e.g. `purgetss/brand/`) write into a custom output folder like `images/logos/`. CLI-only. |

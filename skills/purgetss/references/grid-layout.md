@@ -83,7 +83,7 @@ The official source organizes the grid utilities into these categories. The stru
 
 ### Row Placement Utilities
 
-The official docs list these as `start`, `end`, and `center`, but no classes with those names exist in `utilities.tss`. The grid alignment classes PurgeTSS generates are:
+The grid alignment classes PurgeTSS generates are:
 
 | Class          | Generated rule                                  |
 | -------------- | ----------------------------------------------- |

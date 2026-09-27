@@ -169,7 +169,7 @@ The catalog below collects real-world UI patterns verified against Titanium's co
 ```
 
 > **⚠️ Input Padding**
-> Padding utilities (`p-`, `px-`, `py-`) set the `padding` property, which the Titanium API defines only on `TextField` and `TextArea` (Android and iOS; `TextArea` honors left and right only) and `Ti.UI.Android.CardView` (apidoc 13_4_1_GA). `utilities.tss` labels the block "Android Only", which is inaccurate for the two text inputs. They are NOT for `Button` (especially iOS/Mac) and NOT on container views (`View`, `Window`, `ScrollView`, `TableView`). Use margins on children to simulate internal spacing on containers.
+> Padding utilities (`p-`, `px-`, `py-`) set the `padding` property, which the Titanium API defines only on `TextField` and `TextArea` (Android and iOS; `TextArea` honors left and right only) and `Ti.UI.Android.CardView` (apidoc 13_4_1_GA). They are NOT for `Button` (especially iOS/Mac) and NOT on container views (`View`, `Window`, `ScrollView`, `TableView`). Use margins on children to simulate internal spacing on containers.
 
 ## Buttons
 

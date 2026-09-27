@@ -43,6 +43,27 @@ You can set different background colors and font sizes per platform and device, 
 '.tablet:bg-green-500[formFactor=tablet]': { backgroundColor: '#22c55e' }
 ```
 
+## Combining a platform and a device
+
+Since v7.18.0, stack one platform modifier and one device modifier, in either order. Both conditions go in a single bracket, because Alloy's styler keeps only the last `[...]` of a selector.
+
+```xml
+<View class="ios:tablet:bg-red-500 tablet:ios:mt-4" />
+```
+
+```tss
+'.ios:tablet:bg-red-500[platform=ios formFactor=tablet]': { backgroundColor: '#ef4444' }
+'.tablet:ios:mt-4[formFactor=tablet platform=ios]': { top: 16 }
+```
+
+A platform modifier that contradicts a platform-scoped class generates nothing and leaves a comment in `app.tss`:
+
+```tss
+// Conflicting modifiers, class not generated: '.android:status-bar-dark' (platform is already ios)
+```
+
+Before v7.18.0, a stacked class was not generated, and `tablet:` on an iOS-only class produced `[platform=ios][formFactor=tablet]`, which Alloy read as tablet-only on both platforms.
+
 ## Community-Discovered Patterns
 
 The following guidance comes from community experience combining platform modifiers with platform-specific Titanium constants.
