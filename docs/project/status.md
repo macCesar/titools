@@ -22,7 +22,7 @@ The audit also found defects in the PurgeTSS CLI and errors in its official docs
 Unreleased on `main`:
 
 - **`4e94537` (committed, unreleased):** `SKILL.md:332` and `arbitrary-values.md:60` no longer say unitless arbitrary values are pixels.
-- **The `purgetss` skill aligned with PurgeTSS 7.18.0 and purgetss-docs 1.1.14** (not committed). The purgeTSS session fixed the CLI and docs defects from the handoff and released both; its `HANDOFF.md` to TiTools listed the passages here. `.purgetss-source` is at `d46f95b` (package `7.18.0`) and `.purgetss-docs` at `f596432`.
+- **The `purgetss` skill aligned with PurgeTSS 7.18.0 and purgetss-docs 1.1.14** (`067c852` indexes, `2ed041c` passages, pushed). The purgeTSS session fixed the CLI and docs defects from the handoff and released both; its `HANDOFF.md` to TiTools listed the passages here. `.purgetss-source` is at `d46f95b` (package `7.18.0`) and `.purgetss-docs` at `f596432`.
   - Indexes regenerated: 23,343 → 23,332 classes, the 9 `*-keyboard-type-appearance*` plus `snap-magnet` / `snap-magnet-false`.
   - `(Npx)` is version-dependent everywhere it appeared: valid and explicit pixels since 7.18.0, a build stop from 7.8.0 through 7.17.1. The pre-validator lists 4 patterns.
   - New section `platform-modifiers.md` § "Combining a platform and a device"; new "Upgrade to v7.18.0" in `migration-guide.md` and "v7.18.0" in `version-history.md` (which replaces its "Unreleased (after v7.17.1)" block). Older history entries are annotated, not rewritten.
@@ -44,7 +44,7 @@ Unreleased on `main`:
 
 ## Next step
 
-1. **Commit and release** the 7.18.0 alignment together with `4e94537`, when the maintainer says so.
+1. **Release** the 7.18.0 alignment together with `4e94537`, when the maintainer says so.
 2. **Re-audit `purgetss` against `.purgetss-docs` 1.1.14**, now that the docs were corrected at the source. The alignment above followed the handoff's list and the 7.18.0 changelog; it was not a page-by-page pass over the docs.
 3. **The contribution to the new Titanium site, once PR #170 merges.** The plan in the previous status still stands: `content/docs/build/notifications.md` against `skills/ti-expert/references/push-notifications.md`, after reading the site's `docs/writing-guides.md` and adding an `upstream` remote.
 4. **When Titanium 14.0.0 ships**, run `apidoc-coverage.mjs` against the new tag.
