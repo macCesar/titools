@@ -5,7 +5,7 @@ When you need a one-off value that is not in the defaults, use arbitrary values 
 > **INFO**
 > To generate an arbitrary style, use parentheses notation with almost any default utility class.
 >
-> Square bracket notation (`[10px]`) is **not supported** because Titanium handles platform and conditional statements in `.tss` files differently. Use parentheses (`(10px)`) instead.
+> Square bracket notation (`[10]`) is **not supported** because Titanium already uses square brackets for platform and conditional statements in `.tss` files. Use parentheses (`(10)`) instead.
 
 <!-- TOC-START -->
 ## Contents
@@ -26,19 +26,25 @@ Starting with PurgeTSS v7.8.0, the build runs a pre-validation pass over class n
 
 Each error block includes:
 
-- The file path where the offending class lives
-- The line number inside that file
-- The offending class name (as authored)
-- A `Fix:` suggestion with the corrected class name
+- `Class:` the offending class name (as authored)
+- `File:` the first file where it appears (plus a count of other locations, if any)
+- `Line:` the line number inside that file
+- `Content:` the full content of that line
+- `Issue:` what is wrong
+- `Fix:` a suggestion with the corrected class name
 
-Example shape:
+Example output:
 
 ```
-Class Syntax Error
-  File: app/views/index.xml
-  Line: 12
-  Found: top-(-10)
-  Fix:   -top-(10)
+::PurgeTSS:: Class Syntax Error
+   Class: "top-(-10)"
+   File: "app/views/index.xml"
+   Line: 12
+   Content: <View class="top-(-10)" />
+
+   Issue: Negative sign is inside the parentheses
+   Fix: Use "-top-(10)" — PurgeTSS expects the "-" prefix BEFORE the rule, not inside the value
+::PurgeTSS:: Found 1 class syntax error — fix the class above and re-run purgetss
 ```
 
 ### Detected patterns
@@ -48,7 +54,7 @@ The validator catches five narrow, actionable mistakes:
 | Pattern                       | Offending input | Suggested fix | Notes                                                            |
 | ----------------------------- | --------------- | ------------- | ---------------------------------------------------------------- |
 | Inverted negative sign        | `top-(-10)`     | `-top-(10)`   | The `-` prefix goes before the rule, not inside the value        |
-| Square-bracket notation       | `top-[10px]`    | `top-(10px)`  | PurgeTSS uses parentheses, not square brackets, for arbitrary values (v7.10.1 reworded the error from `Tailwind-style brackets "[ ]"` to `Square brackets "[ ]" are not supported`) |
+| Square-bracket notation       | `top-[10]`      | `top-(10)`    | PurgeTSS uses parentheses, not square brackets, for arbitrary values (v7.10.1 reworded the error from `Tailwind-style brackets "[ ]"` to `Square brackets "[ ]" are not supported`) |
 | Empty parentheses             | `wh-()`         | (flagged, no auto-fix) | Add a value such as `wh-(10)`                           |
 | Whitespace inside parentheses | `wh-( 200 )`    | `wh-(200)`    | No spaces allowed between `(`, the value, and `)`                |
 | Redundant `px` unit           | `top-(10px)`    | `top-(10)`    | PurgeTSS treats unit-less arbitrary values as pixels             |
@@ -57,9 +63,11 @@ The validator catches five narrow, actionable mistakes:
 
 The pre-validator only fires on the five patterns above. Any other unknown class — typos, custom utilities not yet declared, vendor classes that are not enabled in `config.cjs` — is **not** reported as a `Class Syntax Error`. Those classes continue to flow into the `// Unused or unsupported classes` comment block in `app.tss`, exactly like before. This keeps the validator focused on actionable mistakes and avoids noise while you sketch out class names.
 
+> **Units: write arbitrary values unitless.** Because of the redundant-`px` rule, any class like `m-(50px)`, `w-(2300px)` or `text-(48px)` halts the purge. Write `m-(50)`, `w-(2300)`, `text-(48)` instead; other units such as `rem`, `in` or `%` are not flagged.
+
 ### v7.8.0 parser fix for negatives inside parentheses
 
-Before v7.8.0, an inverted negative such as `top-(-10)` could be silently misparsed by the arbitrary-value pipeline (the `-` inside the parentheses confused the token matcher, producing wrong or missing TSS output without any warning). v7.8.0 hardens that path: the parser now correctly recognizes `top-(-10)` as authored, classifies it as an inverted-negative-sign error, and surfaces the `Class Syntax Error` block with the `-top-(10)` fix instead of producing silent garbage.
+Before v7.8.0, a hyphen inside the value (e.g. `top-(-10)`, `mt-(-5)`, `rotate-(-45)`, `origin-(-10,-20)`) crashed the arbitrary-value parser with an unhandled `Cannot read properties of null (reading 'pop')` exception. v7.8.0 rewrote the parser to extract the `(...)` part first, so the value can contain any characters, and classes with empty values (`wh-()`) or unbalanced parentheses (`wh-(`) now produce a "not yet supported" comment instead of invalid TSS. `top-(-10)` itself is now caught by the pre-validator as an inverted negative sign, with the `-top-(10)` fix.
 
 ## Arbitrary nesting depth in `theme` objects (v7.10.0)
 
@@ -168,23 +176,32 @@ You can set an arbitrary value for any of the following color properties:
 - `active-tint-` (*hex-rgb-or-rgba-value*)
 - `active-title-` (*hex-rgb-or-rgba-value*)
 - `badge-` (*hex-rgb-or-rgba-value*)
+- `badge-bg-` (*hex-rgb-or-rgba-value*)
+- `badge-text-` (*hex-rgb-or-rgba-value*)
 - `bar-` (*hex-rgb-or-rgba-value*)
 - `bg-` (*hex-rgb-or-rgba-value*)
+- `bg-disabled-` (*hex-rgb-or-rgba-value*)
 - `bg-focused-` (*hex-rgb-or-rgba-value*)
 - `bg-selected-` (*hex-rgb-or-rgba-value*)
 - `bg-selected-from-` (*hex-rgb-or-rgba-value*)
 - `bg-selected-to-` (*hex-rgb-or-rgba-value*)
 - `border-` (*hex-rgb-or-rgba-value*)
+- `colors-` (*hex-rgb-or-rgba-value*)
+- `content-scrim-` (*hex-rgb-or-rgba-value*)
 - `current-page-indicator-` (*hex-rgb-or-rgba-value*)
 - `date-time-` (*hex-rgb-or-rgba-value*)
 - `disabled-` (*hex-rgb-or-rgba-value*)
 - `drop-shadow-` (*hex-rgb-or-rgba-value*)
 - `from-` (*hex-rgb-or-rgba-value*)
 - `highlighted-` (*hex-rgb-or-rgba-value*)
+- `hint-text-` (*hex-rgb-or-rgba-value*)
+- `icon-` (*hex-rgb-or-rgba-value*)
 - `image-touch-feedback-` (*hex-rgb-or-rgba-value*)
 - `indicator-` (*hex-rgb-or-rgba-value*)
 - `keyboard-toolbar-` (*hex-rgb-or-rgba-value*)
+- `light-` (*hex-rgb-or-rgba-value*)
 - `nav-tint-` (*hex-rgb-or-rgba-value*)
+- `navigation-icon-` (*hex-rgb-or-rgba-value*)
 - `on-tint-` (*hex-rgb-or-rgba-value*)
 - `page-indicator-` (*hex-rgb-or-rgba-value*)
 - `paging-control-` (*hex-rgb-or-rgba-value*)
@@ -193,17 +210,21 @@ You can set an arbitrary value for any of the following color properties:
 - `results-bg-` (*hex-rgb-or-rgba-value*)
 - `results-separator-` (*hex-rgb-or-rgba-value*)
 - `selected-` (*hex-rgb-or-rgba-value*)
+- `selected-bg-` (*hex-rgb-or-rgba-value*)
 - `selected-button-` (*hex-rgb-or-rgba-value*)
 - `selected-subtitle-` (*hex-rgb-or-rgba-value*)
 - `selected-text-` (*hex-rgb-or-rgba-value*)
 - `separator-` (*hex-rgb-or-rgba-value*)
 - `shadow-` (*hex-rgb-or-rgba-value*)
+- `status-bar-bg-` (*hex-rgb-or-rgba-value*)
 - `subtitle-` (*hex-rgb-or-rgba-value*)
+- `subtitle-text-` (*hex-rgb-or-rgba-value*)
 - `tabs-bg-` (*hex-rgb-or-rgba-value*)
 - `tabs-bg-selected-` (*hex-rgb-or-rgba-value*)
 - `text-` (*hex-rgb-or-rgba-value*)
 - `thumb-tint-` (*hex-rgb-or-rgba-value*)
 - `tint-` (*hex-rgb-or-rgba-value*)
+- `tint-color-` (*hex-rgb-or-rgba-value*)
 - `title-` (*hex-rgb-or-rgba-value*)
 - `title-attributes-` (*hex-rgb-or-rgba-value*)
 - `title-attributes-shadow-` (*hex-rgb-or-rgba-value*)
@@ -211,10 +232,11 @@ You can set an arbitrary value for any of the following color properties:
 - `to-` (*hex-rgb-or-rgba-value*)
 - `touch-feedback-` (*hex-rgb-or-rgba-value*)
 - `track-tint-` (*hex-rgb-or-rgba-value*)
+- `view-shadow-` (*hex-rgb-or-rgba-value*)
 
 ## Spacing Properties
 
-You can set arbitrary values for most size and dimension properties using `rem`, `px`, or `pt` values, directly in XML files or in `config.cjs`.
+You can set arbitrary values for most size and dimension properties using unitless numbers or units such as `rem`, `in`, or `%`, directly in XML files or in `config.cjs`. A `px` suffix is rejected by the pre-validator (see above).
 
 ```xml
 <Alloy>
@@ -274,6 +296,7 @@ You can set arbitrary values for most size and dimension properties using `rem`,
 - Width and height
   - `h-` (*any-size-value-and-unit*)
   - `w-` (*any-size-value-and-unit*)
+  - `wh-` (*any-size-value-and-unit*)
 - `indentation-level-` (*any-size-value-and-unit*)
 - `keyboard-toolbar-h-` (*any-size-value-and-unit*)
 - Left and right button padding
@@ -327,10 +350,15 @@ You can set arbitrary values for most size and dimension properties using `rem`,
   - `rounded-t-` (*any-size-value-and-unit*)
   - `rounded-tl-` (*any-size-value-and-unit*)
   - `rounded-tr-` (*any-size-value-and-unit*)
+  - `rounded-corners-` (*four-comma-separated-values*), e.g. `rounded-corners-(1,2,3,4)` → `borderRadius: [1, 2, 3, 4]`
+  - `rounded-full-` (*any-size-value-and-unit*), e.g. `rounded-full-(40)` → `width: 40, height: 40, borderRadius: 20`
 - `row-h-` (*any-size-value-and-unit*)
 - `section-header-top-padding-` (*any-size-value-and-unit*)
 - `separator-h-` (*any-size-value-and-unit*)
 - `shadow-radius-` (*any-size-value-and-unit*)
+- Target image height and width
+  - `target-image-h-` (*any-size-value-and-unit*)
+  - `target-image-w-` (*any-size-value-and-unit*)
 - xOffset and yOffset
   - `x-offset-` (*any-size-value-and-unit*)
   - `y-offset-` (*any-size-value-and-unit*)
@@ -344,36 +372,44 @@ You can set arbitrary values for the following properties, like border radius an
 - `active-tab-` (*number-value*)
 - `border-width-` (*number-value*)
 - `cache-size-` (*number-value*)
+- `cancel-` (*number-value*)
 - `count-down-` (*in-milliseconds*)
 - `delay-` (*in-milliseconds*)
+- `destructive-` (*number-value*)
 - `duration-` (*in-milliseconds*)
 - `elevation-` (*number-value*)
 - `font-` (*valid-font-weight-value*)
 - `horizontal-margin-` (*decimal-value*)
+- `index-` (*number-value*)
 - `lines-` (*number-value*)
+- `max-` (*number-value*)
 - `max-length-` (*number-value*)
 - `max-lines-` (*number-value*)
 - `max-zoom-scale-` (*decimal-value*)
+- `maximum-` (*number-value*)
 - `min-zoom-scale-` (*decimal-value*)
 - `min-` (*number-value*)
+- `minimum-` (*number-value*)
 - `minimum-text-` (*number-value*)
 - `opacity-` (*decimal-value-from-0-to-1*)
 - `origin-` (*x-and-y-coordinates*)
 - `paging-control-alpha-` (*decimal-value-from-0-to-1*)
 - `paging-control-timeout-` (*in-milliseconds*)
+- `preferred-` (*number-value*)
 - `repeat-count-` (*number-value*)
 - `repeat-` (*number-value*)
 - `rotate-` (*number-value*)
 - `scale-` (*decimal-value*)
 - `text-size-` (*number-value*)
 - `timeout-` (*in-milliseconds*)
+- `value-` (*number-value*)
 - `vertical-margin-` (*decimal-value*)
 - `z-` (*number-value*)
 - `zoom-scale-` (*decimal-value*)
 
 ## Examples
 
-You can use any supported units depending on the property you are generating. Use `hex` or `rgba` values for any color property, or `rem` or `px` for position and sizing properties.
+You can use any supported units depending on the property you are generating. Use `hex` or `rgba` values for any color property, or unitless numbers or `rem` for position and sizing properties.
 
 ### Credit Card
 
@@ -381,7 +417,7 @@ You can use any supported units depending on the property you are generating. Us
 <Alloy>
   <Window class="bg-(#53606b)">
     <View class="w-(2in) h-(3.5in) bg-(#4C61E4) rounded-(20)">
-      <View class="m-(50px) h-screen w-screen">
+      <View class="m-(50) h-screen w-screen">
         <View class="horizontal ml-0 mt-0">
           <View class="w-(3rem) h-(3rem) rounded-(1.5rem) opacity-(0.35) bg-white" />
           <View class="-ml-(20) w-(3rem) h-(3rem) rounded-(1.5rem) opacity-(0.25) bg-white" />
@@ -407,10 +443,10 @@ Try this example on an iPad or tablet.
 ```xml
 <Alloy>
   <Window class="bg-white">
-    <View class="bg-(#1B6F3F) w-(2300px) h-(1600px) ml-0 mt-0">
-      <View class="mt-(100px) h-(200px) left-(150px) horizontal">
-        <Label class="fas fa-cloud text-(48px) text-white" />
-        <Label class="ml-(30px) text-(48px) h-(200px) font-bold text-white">ZULTYS</Label>
+    <View class="bg-(#1B6F3F) w-(2300) h-(1600) ml-0 mt-0">
+      <View class="mt-(100) h-(200) left-(150) horizontal">
+        <Label class="fas fa-cloud text-(48) text-white" />
+        <Label class="ml-(30) text-(48) h-(200) font-bold text-white">ZULTYS</Label>
       </View>
     </View>
   </Window>
@@ -422,9 +458,9 @@ Try this example on an iPad or tablet.
 ```xml
 <Alloy>
   <Window class="bg-(#53606b)" backgroundImage="https://i.pinimg.com/originals/ab/70/a1/ab70a19f087cc9ba2b03e3bee71acc3e.jpg">
-    <View class="h-(150px) bg-(#53A500) horizontal mt-0 w-screen">
-      <Label class="w-(4.5rem) text-(16px) h-(150px) text-(#12681E) text-center font-bold" text="Home" />
-      <Label class="w-(4.5rem) text-(16px) h-(150px) text-(#12681E) bg-(#6DB400) text-center font-bold" text="News" />
+    <View class="h-(150) bg-(#53A500) horizontal mt-0 w-screen">
+      <Label class="w-(4.5rem) text-(16) h-(150) text-(#12681E) text-center font-bold" text="Home" />
+      <Label class="w-(4.5rem) text-(16) h-(150) text-(#12681E) bg-(#6DB400) text-center font-bold" text="News" />
     </View>
   </Window>
 </Alloy>

@@ -16,7 +16,7 @@ In PurgeTSS, `gap` is mapped to **external margins** on the element itself (`top
   - `.gap-x-{size}` — emits `right` and `left` only (horizontal margins).
   - `.gap-y-{size}` — emits `top` and `bottom` only (vertical margins).
   - `.gap-{t|r|b|l}-{size}` — single-side gap (e.g. `.gap-t-4`).
-- **Evidence**: Official [`purgetss-docs-context7/docs/grid-system.md`](https://github.com/macCesar/purgeTSS) § "Gutter utilities".
+- **Evidence**: Official [`docs/grid-system.md`](https://github.com/macCesar/purgetss-docs/blob/main/docs/grid-system.md) § "Gutter utilities".
 
 ### 2. Hybrid Shadows (iOS vs. Android in One Class)
 
@@ -32,16 +32,17 @@ Shadow utilities (`.shadow-xs`, `.shadow-sm`, `.shadow`, `.shadow-md`, `.shadow-
 The `.grid` and `.grid-flow-col` classes emit **both** `layout: 'horizontal'` **and** `width: '100%'` (`.grid-flow-row` emits `layout: 'vertical', height: '100%'`).
 
 - **Why the width is baked in**: PurgeTSS resets `View` defaults to `SIZE`. A grid container needs an explicit dimension so that percentage-based children (e.g. `.col-span-6` emitting `width: '50%'`) have a parent measurement to resolve against.
-- **Official docs** ([`grid-system.md`](https://github.com/macCesar/purgeTSS)) only document the `layout: 'horizontal'` half. The `width: '100%'` behavior is **verified against `lib/templates/` → `dist/utilities.tss`** (lines emit `'.grid': { layout: 'horizontal', width: '100%' }`).
+- **Official docs** ([`grid-system.md`](https://github.com/macCesar/purgetss-docs/blob/main/docs/grid-system.md)) only document the `layout: 'horizontal'` half. The `width: '100%'` behavior is **verified against `lib/templates/` → `dist/utilities.tss`** (lines emit `'.grid': { layout: 'horizontal', width: '100%' }`).
 - **Manual override**: If you need a grid sized to its content only, pair it with `.wh-auto` or an explicit sizing utility.
 
-### 4. Native Rotations via `rotate` (Not CSS Transform)
+### 4. Rotations via `rotate` Are Matrix2D Properties (Not CSS Transform)
 
-The `.rotate-{n}` utilities (`rotate-0`, `rotate-1`, `rotate-2`, `rotate-3`, `rotate-6`, `rotate-12`, `rotate-45`, `rotate-90`, `rotate-135`, `rotate-180`, `rotate-225`, `rotate-270`, `rotate-315`, `rotate-360`) map **directly** to Titanium's `rotate` property — a plain numeric degree value on the view.
+The `.rotate-{n}` utilities (`rotate-0`, `rotate-1`, `rotate-2`, `rotate-3`, `rotate-6`, `rotate-12`, `rotate-45`, `rotate-90`, `rotate-135`, `rotate-180`, `rotate-225`, `rotate-270`, `rotate-315`, `rotate-360`) emit `rotate: <degrees>`, which is a `Matrix2DCreationDict` key, not a `Ti.UI.View` property. They take effect through the `purgetss.ui` Animation module (`<Animation module="purgetss.ui" class="rotate-90" />`).
 
-- **Default anchor**: Titanium rotates around the view's **center**. To change this, use an `.origin-*` utility (`.origin-top`, `.origin-top-left`, `.origin-center`, `.origin-bottom-right`, etc.) which emits `anchorPoint: { x, y }`.
-- **No chained transforms**: Unlike CSS (`transform: rotate(45deg) scale(1.5)`), Titanium treats each transformation as an independent view property. For combined transforms you must build a `Ti.UI.2DMatrix`/`Ti.UI.Matrix2D` and assign it to `transform`.
-- **Evidence**: `dist/utilities.tss` lines `'.rotate-45': { rotate: 45 }` and `'.origin-center': { anchorPoint: { x: 0.5, y: 0.5 } }`.
+- **How it is applied**: at construction time the Animation module converts top-level `scale`, `rotate`, and `anchorPoint` into one `Ti.UI.Matrix2D` (via `Ti.UI.createMatrix2D()`) and removes them from the base object; `animationProperties.open` / `.close` get their own matrices the same way. So `rotate-*`, `scale-*`, and `origin-*` combine without building the matrix by hand.
+- **Anchor**: an `.origin-*` utility (`.origin-top`, `.origin-top-left`, `.origin-center`, `.origin-bottom-right`, etc.) emits `anchorPoint: { x, y }`, which feeds the same matrix.
+- **Outside the Animation module**: to rotate a view yourself, assign a `Ti.UI.createMatrix2D({ rotate: 45 })` to its `transform`.
+- **Evidence**: `dist/utilities.tss` (`// Property: rotate` … `// Component(s): Matrix2DCreationDict`, `'.rotate-45': { rotate: 45 }`, `'.origin-center': { anchorPoint: { x: 0.5, y: 0.5 } }`), `dist/purgetss.ui.js` `handleTransformations()`, and official [`purgetss-ui/9-implementation-rules.md`](https://github.com/macCesar/purgetss-docs/blob/main/docs/purgetss-ui/9-implementation-rules.md).
 
 ### 5. Z-Index Uses the Full `z-index-*` Prefix
 

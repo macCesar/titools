@@ -40,7 +40,7 @@ const {
 } = require('lib/purgetss.ui')
 ```
 
-Use `createAnimation(args)` for ordinary Classic code. It returns a zero-size, touch-disabled `Ti.UI.View` decorated with animation methods. Treat this view as a behavior object; do not add it to the window.
+Use `createAnimation(args)` for ordinary Classic code. It returns a zero-size, touch-disabled `Ti.UI.View` decorated with animation methods. Treat this view as a behavior object; it does not need to be added to the window.
 
 ## Public exports
 
@@ -125,7 +125,9 @@ window.open()
 
 This is a newly constructed object, not the original Titanium event. For array playback, the configured base delay accumulates for successive views. `sequence()` instead waits for each native completion and invokes its callback once after the last view. Passing an empty array to `sequence()` produces no callback.
 
-`animationProperties.complete` starts after the active `play`, `toggle`, `open`, or `close` base phase, and is applied immediately after `apply`. The public play callback does not wait for the second top-level `complete` animation.
+`animationProperties.complete` starts after the active `play`, `toggle`, `open`, or `close` base phase and after each view of a `sequence()`, and is applied immediately after `apply`. The public play callback does not wait for the second top-level `complete` animation.
+
+`play` and `toggle` do nothing while the object's internal `playing` flag is set. The flag turns on when a native animation starts and off at the first completion event, so with an array it clears when the first view finishes. `open`, `close`, `apply`, and `sequence` do not check it.
 
 ## Native animation configuration
 
@@ -148,11 +150,22 @@ const motion = createAnimation({
 })
 ```
 
-The constructor removes `id` from the native animation object. It converts top-level `scale`, `rotate`, and `anchorPoint` into one `Ti.UI.Matrix2D`; it performs the same conversion separately for `animationProperties.open` and `.close`. Helpers such as `pulse`, `shake`, `swap`, `snapTo`, `reorder`, and `transition` can replace or reset that transform.
+The constructor removes `id` from the native animation object. Add `debug: true` to log every method call and internal step with `console.warn('::ti.animation:: …')`. It converts top-level `scale`, `rotate`, and `anchorPoint` into one `Ti.UI.Matrix2D`; it performs the same conversion separately for `animationProperties.open` and `.close`. Helpers such as `pulse`, `shake`, `swap`, `snapTo`, `reorder`, and `transition` can replace or reset that transform.
 
 Most helpers spread the base object before their method-specific assignments, so later helper fields win. There is no shared `200ms` timing fallback for position/layout helpers. Only `shake()` computes `(duration ?? 400) / 6`, rounded to the nearest millisecond; `pulse()` supplies a default scale of `1.2`. Both force `ANIMATION_CURVE_EASE_IN_OUT`.
 
 Titanium exposes `anchorPoint` differently across platforms. Test pivot-dependent animation on both platforms; in Classic, set the view's iOS anchor point before animation and pass an Android animation anchor point only inside a platform guard.
+
+```javascript
+const pivot = { x: 0, y: 0.5 }
+const properties = { duration: 220, rotate: 12 }
+const isIOS = ['iphone', 'ipad'].includes(Ti.Platform.osname)
+
+if (isIOS) card.anchorPoint = pivot
+if (Ti.Platform.osname === 'android') properties.anchorPoint = pivot
+
+const pivotMotion = createAnimation(properties)
+```
 
 ## States and direct children
 
@@ -237,9 +250,10 @@ Runtime precedence and behavior:
 - Every resolved drag/drop property is forwarded, including size, transform, and anchor-point fields.
 - `snap.center` calls `snapTo()` after a valid drop; `snap.back` returns a missed drop to its origin.
 - There is no `snap.magnet` behavior.
-- Collision detection tests the dragged view's center against registered targets. The last non-null hover target is a fallback at release.
+- Collision detection tests the dragged view's center against registered targets, and only for views registered with `detectCollisions()`: include the dragged view in that list, or drop callbacks and snapping never run.
+- Hit testing during movement runs only when a hover callback was supplied; then the last non-null hover target is a fallback at release. The hover callback also receives `(source, null)` whenever a registered view is released.
 
-Call drag/collision setup after the views are attached and laid out. `draggable(array)` assigns each view `zIndex` from its array index before registration. `keepZIndex` only prevents later touch-start promotion; register views individually if their existing z-index values must not be overwritten.
+Call drag/collision setup after the views are attached and laid out, for example from the window's `open` or `postlayout` event. `draggable(array)` assigns each view `zIndex` from its array index before registration. `keepZIndex` only prevents later touch-start promotion; register views individually if their existing z-index values must not be overwritten.
 
 ## Drag lifecycle and cleanup
 
@@ -300,6 +314,8 @@ layoutMotion.transition([cardA, cardB, cardC], fan)
 A view without a matching layout fades to opacity `0`, receives `zIndex: 0`, and has touch disabled. Extra layouts are ignored. A later matching layout fades a hidden view in and reenables touch. iOS preserves the last transform while hidden; Android resets transform, translation, rotation, and scale. Completion forces `touchEnabled: true` for every matched view, so reapply `false` afterward when a view must remain non-interactive.
 
 On Mac Catalyst, use a fixed-size parent rather than `Ti.UI.FILL` for rotated layouts; a resizable parent can distort the matrix.
+
+Animated `zIndex` is documented differently across Titanium platforms. Use a composite layout where stacking order matters and verify the result on both targets.
 
 ## Appearance in Classic
 

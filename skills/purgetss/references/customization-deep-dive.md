@@ -36,10 +36,11 @@ purgetss init
 This creates a `./purgetss/config.cjs` file with the default sections:
 
 ```javascript
+// ./purgetss/config.cjs
 module.exports = {
   purge: {
     mode: 'all',
-    method: 'sync', // How to execute the auto-purging task: sync or async
+    method: 'sync', // set how to execute auto-purging: sync or async
 
     // These options are passed directly to PurgeTSS
     options: {
@@ -50,14 +51,17 @@ module.exports = {
     }
   },
   brand: {
-    background: '#FFFFFF',      // inherited by every piece that doesn't set its own
-    artworkCornerRadius: '0%',  // rounded non-icon artwork: splashes, Feature Graphic and LaunchLogo
-    confirmOverwrites: true,    // prompt before overwriting files (set false to skip)
-    optimize: false,            // true = quantize the generated PNGs to a palette (lossy, ~71% smaller)
+    // Opaque fallback fill; configurable, not required to be white by either platform.
+    background: '#FFFFFF',     // inherited by pieces that use an opaque background canvas
+    artworkCornerRadius: '0%', // rounded non-icon artwork: splashes, Feature Graphic and LaunchLogo (0-50)
+    confirmOverwrites: true,   // prompt before overwriting files (set false to skip)
+    optimize: false,           // true = quantize the generated PNGs to a palette (lossy, ~71% smaller)
 
     // One block per piece. Artwork comes from purgetss/brand/logo-<piece>.{svg,png};
     // these keys are for numbers, colors and activation. Padding is never inherited.
-    // Only iosSplash, androidSplash, featureGraphic and launchLogo accept cornerRadius.
+    // iosSplash, androidSplash, featureGraphic and launchLogo accept cornerRadius.
+    // Store and launcher icons stay square for platform masking.
+    // iOS/store icons are full-bleed by default; increase padding only for logo artwork.
     icon:             { padding: '0%' },    // DefaultIcon.png + DefaultIcon-ios.png
     dark:             { background: null }, // DefaultIcon-Dark.png
     tinted:           {},                   // DefaultIcon-Tinted.png
@@ -86,17 +90,16 @@ module.exports = {
     autoSync: true,          // false = SVG pipeline computes dims but doesn't write to images.files
     confirmOverwrites: true, // prompt before overwriting files (set false to skip)
     files: []                // per-file overrides: [{ filename: 'images/<sub>/<name>.<ext>', width, height? }]
-    // Note: --width (v7.8.0) and --opacity / --padding / --output (v7.10.0) are CLI-only
-    //       by design — those decisions are per-asset, not project-wide. Since v7.17.0
-    //       writing any of them here aborts the run instead of being ignored.
   },
   theme: {
     extend: {}
   }
-};
+}
 ```
 
 `init` also creates empty `purgetss/fonts/`, `purgetss/brand/`, and `purgetss/images/` folders on first run, so you can see where each kind of asset goes.
+
+`--width` (v7.8.0) and `--opacity` / `--padding` / `--output` (v7.10.0) are CLI-only flags of `purgetss images`, by design: those decisions are per-asset, not project-wide. Since v7.17.0 the `images:` section rejects unknown keys, so writing any of them in `config.cjs` aborts the run instead of being ignored.
 
 Every section is optional. Only add what you want to change. Anything missing falls back to the defaults.
 
@@ -533,7 +536,7 @@ module.exports = {
 This generates classes like `bg-regal-blue` in addition to all of Tailwind's default colors.
 
 > **ℹ️ INFO**
-> You can use the `shades` command to generate a range of shades for a color and add them to `config.cjs`. See [CLI Commands](./cli-commands.md#shades-command).
+> You can use the `shades` command to generate a range of shades for a color and add them to `config.cjs`. See [Color Commands](./color-commands.md#shades-command).
 
 ## Customize Spacing
 

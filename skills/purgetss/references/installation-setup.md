@@ -210,7 +210,7 @@ To use the example files:
 '.fas': { font: { fontFamily: 'FontAwesome7Free-Solid' } }
 ```
 
-More examples in the [Tailwind TSS Sample App](https://github.com/macCesar/utilities.tss-sample-app).
+More examples in the [Utilities TSS Sample App](https://github.com/macCesar/tailwind.tss-sample-app).
 
 > **WARNING: `Label`, `Button`, and `Switch` with opposite margins**
 > In Titanium, `Label`, `Button`, and `Switch` can stretch when opposite margins pin both sides of the same axis and the dimension is still implicit.

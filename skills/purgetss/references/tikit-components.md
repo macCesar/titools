@@ -46,7 +46,7 @@ npm install -g purgetss
 
 ## Setting Up Your Project
 
-1. Create a PurgeTSS project. If you haven't already, create a new Alloy project using PurgeTSS. Make sure you've configured the `app.idprefix` and `app.theme` settings as required by PurgeTSS:
+1. Create a PurgeTSS project. If you haven't already, create a new Alloy project using PurgeTSS. Make sure you've configured the `app.idprefix` and `app.workspace` settings in Titanium's `config.json`, as `purgetss create` requires:
 
    ```bash
    purgetss create myApp
@@ -488,7 +488,7 @@ To add popular free icon sets, run:
 purgetss icon-library --vendor=fa,mi,ms,f7
 ```
 
-This copies the font files and CSS into your project, ready to use.
+This copies the font files into `app/assets/fonts/` (Alloy) or `Resources/fonts/` (Classic). Add `--module` for the CommonJS modules or `--styles` (Alloy only) for the `.tss` files.
 
 ### Adding Your Own Custom Icon Fonts
 

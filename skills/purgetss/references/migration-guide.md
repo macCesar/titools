@@ -1,14 +1,18 @@
 # Migration Guide
 
-This guide mirrors the official PurgeTSS changelog (see the project `README.md` / `docs/index.md`). It walks through the upgrade-relevant changes from v7.2.6 through v7.13.x, flags breaking changes, and links each section to the reference files that cover the new surface area in depth.
+This guide summarizes the official PurgeTSS changelog: `CHANGELOG.md` in the package repository and the docs changelog page (`src/pages/changelog.md`, published at <https://purgetss.com/changelog>). It walks through the upgrade-relevant changes from v7.2.6 through v7.17.1, flags breaking changes, and links each section to the reference files that cover the new surface area in depth.
 
-Changelog source of truth: [https://github.com/macCesar/purgeTSS](https://github.com/macCesar/purgeTSS).
+Changelog source of truth: [CHANGELOG.md](https://github.com/macCesar/purgetss/blob/main/CHANGELOG.md).
 
 ---
 
 <!-- TOC-START -->
 ## Contents
 
+- [Upgrade to v7.17.x](#upgrade-to-v717x)
+- [Upgrade to v7.16.x](#upgrade-to-v716x)
+- [Upgrade to v7.15.0](#upgrade-to-v7150)
+- [Upgrade to v7.14.0](#upgrade-to-v7140)
 - [Upgrade to v7.13.x](#upgrade-to-v713x)
 - [Upgrade to v7.12.x](#upgrade-to-v712x)
 - [Upgrade to v7.11.x](#upgrade-to-v711x)
@@ -16,6 +20,7 @@ Changelog source of truth: [https://github.com/macCesar/purgeTSS](https://github
 - [Upgrade to v7.9.0](#upgrade-to-v790)
 - [Upgrade to v7.8.0](#upgrade-to-v780)
 - [Upgrade to v7.7.0](#upgrade-to-v770)
+- [Upgrade to v7.6.1 and v7.6.2](#upgrade-to-v761-and-v762)
 - [Upgrade to v7.6.0](#upgrade-to-v760)
 - [Upgrade to v7.5.3](#upgrade-to-v753)
 - [Upgrade to v7.5.0](#upgrade-to-v750)
@@ -28,9 +33,76 @@ Changelog source of truth: [https://github.com/macCesar/purgeTSS](https://github
 
 <!-- TOC-END -->
 
+## Upgrade to v7.17.x
+
+v7.17.0 and v7.17.1 change two things an existing project can trip over: unknown keys in `images:` now abort the run, and the notification icon has a new filename. Full release notes in [`version-history.md`](./version-history.md).
+
+### Changed in v7.17.1 — `notificationicon.png` replaces `ic_stat_notify.png`
+
+The `notification-icon` piece now writes `notificationicon.png`. `firebase.cloudmessaging` hardcodes that name (`getResource("notificationicon")`) and falls back to the opaque `appicon` when it is missing, which the status bar renders as a white blob. The meta-data snippet printed after a run now points at `@drawable/notificationicon`. See [`app-branding.md` → FCM notification icon](./app-branding.md#fcm-notification-icon).
+
+### Added in v7.17.0 — `images:` rejects unknown keys
+
+The section accepts exactly five top-level keys (`quality`, `format`, `autoSync`, `confirmOverwrites`, `files`) and three keys inside each `files[]` entry (`filename`, `width`, `height`, with `filename` required). Any other key, including `width`, `opacity`, `padding` or `output` (which are CLI flags), aborts the run before anything is generated. See [`multi-density-images.md` → Unknown keys are an error](./multi-density-images.md#unknown-keys-are-an-error-v7170).
+
+### Fixed in v7.17.0 — ESLint scaffolding
+
+`install-dependencies` and `create --dependencies` now install only `eslint` and `@eslint/js` and copy a flat `eslint.config.mjs`. The previous `.eslintrc.js` extending `eslint-config-axway/env-alloy` could not run under ESLint 9, so projects scaffolded since December 2025 had a lint that never ran. See [`cli-commands.md` → install-dependencies](./cli-commands.md#install-dependencies-command).
+
+### What to review
+
+- If you wired `@drawable/ic_stat_notify` into `tiapp.xml` by hand, change that meta-data line to `@drawable/notificationicon` and delete the five stale `ic_stat_notify.png` files.
+- Remove any misspelled or unsupported key from `images:` in `config.cjs`; the next `purgetss images` run lists every problem in one pass.
+- In Alloy projects with the old `.eslintrc.js`, re-run `purgetss install-dependencies` to replace it.
+
+---
+
+## Upgrade to v7.16.x
+
+v7.16.0 through v7.16.2 are additive — **no breaking changes**. Full release notes in [`version-history.md`](./version-history.md).
+
+- **Rounded non-icon artwork (v7.16.0).** `brand.artworkCornerRadius` (default `'0%'`, which keeps previous output unchanged) rounds the iPhone launch images, Android legacy splashes, Feature Graphic and LaunchLogo; those four pieces also accept `cornerRadius`, and `brand.splashCornerRadius` is a splash-only shared override. Six matching CLI flags exist. `cornerRadius` on any other piece, or outside `0–50`, stops the run before writing. See [`cli-commands.md` → brand](./cli-commands.md#brand-command).
+- **`--appicon-padding <n>` (v7.16.0)** — one-run override for `brand.appicon.padding` (default `10%`).
+- **Alloy hook diagnostics (v7.16.1).** The synchronous `alloy.jmk` hook inherits PurgeTSS output, so validation details appear before Alloy's generic `Command failed: purgetss`, followed by a hint to run `purgetss` from the project root. Existing active or disabled hooks are updated automatically without changing their enabled state.
+- **`build-fonts --module` (v7.16.2)** exports every processed TTF/OTF PostScript name through `families`, including text-only collections. See [`custom-fonts.md` → Using `--module`](./custom-fonts.md#using---module).
+- **Classic color commands (v7.16.2)** — `shades` and `color-module` no longer create empty `purgetss/brand/`, `purgetss/fonts/`, or `purgetss/images/` folders in Classic.
+
+---
+
+## Upgrade to v7.15.0
+
+v7.15.0 opens the standalone commands to Titanium Classic and changes one default for `images`. Full release notes in [`version-history.md`](./version-history.md).
+
+- **Classic support** — `images`, `semantic`, `shades`, `color-module`, `module`, `icon-library`, and `build-fonts` detect the project layout and write to native `Resources/` paths without installing the Alloy hook. See [`classic-projects.md`](./classic-projects.md).
+- **Behavior change — `images` follows `<deployment-targets>` in `tiapp.xml`.** A normal run skips disabled platforms; `--android` and `--ios` remain explicit overrides.
+- **Icon-font modules expose font-family aliases** — every module exports `families.default` plus variant aliases; existing `icons`, `getIcon`, `setText` APIs are unchanged. See [`icon-fonts.md`](./icon-fonts.md).
+
+### What to review
+
+- If a project disables one platform in `tiapp.xml` but relied on `purgetss images` generating both, pass `--android` or `--ios` explicitly.
+
+---
+
+## Upgrade to v7.14.0
+
+v7.14.0 changes generated icon output on upgrade. Full release notes in [`version-history.md`](./version-history.md).
+
+- **Behavior change — square iOS/store artwork is full-bleed by default.** `icon`, `dark`, `tinted` and `marketplace` now default to `0%` padding instead of `4%`. `--ios-padding` still adjusts all four.
+- **Fix that changes output — `brand.legacyIcon.padding` is the real per-side inset.** The generator used to multiply the value by 60%, so the documented `10%` rendered as `6%`.
+- **Fix that changes output — `DefaultIcon.png` uses `brand.icon.padding`** instead of inheriting the adaptive `18%`; both root icon files are flattened to opaque output.
+- **Behavior change — `brand` follows `<deployment-targets>` in `tiapp.xml`.** iOS pieces are skipped when both `iphone` and `ipad` are disabled, Android pieces when `android` is disabled; `--only` remains an explicit override.
+- **Standalone Classic `brand`** creates `purgetss/config.cjs` when missing, and Classic Android keeps the 11 `Resources/android/images/res-*` splash variants.
+- **Visible-frame warning** when a padded icon piece would expose a background that contrasts with the artwork's edge.
+
+### What to review
+
+- Compare regenerated `DefaultIcon*.png`, `iTunesConnect.png`, `MarketplaceArtwork.png` and `ic_launcher.png` against the previous set. If your iOS source is a logo that needs breathing room, raise `brand.icon.padding` or pass `--ios-padding`.
+
+---
+
 ## Upgrade to v7.13.x
 
-**This is the one release in the 7.x line with breaking changes.** They are confined to `purgetss brand`: its flags, the names of the files in `purgetss/brand/`, and the shape of the `brand:` config block. Nothing outside branding is affected — utility classes, `apply:`, `theme`, `images` and the SVG pipeline are untouched. Full release notes in [`version-history.md`](./version-history.md).
+**Breaking changes, confined to `purgetss brand`:** its flags, the names of the files in `purgetss/brand/`, and the shape of the `brand:` config block. Nothing outside branding is affected — utility classes, `apply:`, `theme`, `images` and the SVG pipeline are untouched. Full release notes in [`version-history.md`](./version-history.md).
 
 ### Breaking — `brand` flags renamed, no aliases kept
 
@@ -317,6 +389,21 @@ brand: {
 
 ---
 
+## Upgrade to v7.6.1 and v7.6.2
+
+Both releases are additive — **no breaking changes**.
+
+- **Confirmation prompt (v7.6.1).** `brand` and `images` ask `Continue? [y/N/a]` before overwriting project files. `a` persists `confirmOverwrites: false` in the matching config section; the prompt is skipped when `stdin` is not a TTY, with `-y` / `--yes`, or with `PURGETSS_YES=1`.
+- **Disproportionate-viewBox warning (v7.6.1)** for SVGs above 4096 pt on any side, with adaptive rasterization density so Affinity/Illustrator exports no longer exceed Sharp's pixel limit.
+- **`init` creates `purgetss/{fonts,brand,images}/` (v7.6.1)** from the first run.
+- **`semantic` works in Classic (v7.6.2)** — writes `Resources/semantic.colors.json`; Alloy keeps `app/assets/semantic.colors.json`. Unrelated existing entries are preserved.
+
+### What to review
+
+- CI jobs or scripts that run `brand` or `images` in a TTY need `-y` or `PURGETSS_YES=1` to avoid waiting on the prompt.
+
+---
+
 ## Upgrade to v7.6.0
 
 v7.6.0 introduces three new CLI commands for app-asset generation plus two new `config.cjs` sections. None of the additions are breaking — existing projects continue to work untouched, and the new config sections are auto-injected on first run.
@@ -331,8 +418,8 @@ v7.6.0 introduces three new CLI commands for app-asset generation plus two new `
 
 ### New `config.cjs` sections
 
-- **`brand:` section** — configures padding percentages, background colors, and platform targets for the `brand` command.
-- **`images:` section** — configures scale factors and output density mapping for the `images` command.
+- **`brand:` section** — configures padding percentages, background colors, the dark-icon background, and the opt-in splash and notification icons for the `brand` command.
+- **`images:` section** — configures output `quality` and `format` for the `images` command.
 
 Percentages can be written as self-documenting strings (e.g. `'15%'`) or plain numbers. Both are accepted. These sections are auto-injected into older `config.cjs` files on the first run of v7.6.0.
 
@@ -348,7 +435,7 @@ Percentages can be written as self-documenting strings (e.g. `'15%'`) or plain n
 - [`semantic-colors.md`](./semantic-colors.md) — palette vs single-color modes, alpha handling, and config mapping.
 - [`cli-commands.md#brand-command`](./cli-commands.md#brand-command)
 - [`cli-commands.md#images-command`](./cli-commands.md#images-command)
-- [`cli-commands.md#semantic-command`](./cli-commands.md#semantic-command)
+- [`color-commands.md#semantic-command`](./color-commands.md#semantic-command)
 
 ---
 
@@ -359,7 +446,7 @@ v7.5.3 is a feature-and-polish release. No breaking changes.
 ### Added
 
 - **Appearance module** — a new `Appearance` export for Light/Dark/System mode switching with persistence. Exposed methods: `init()`, `set(mode)`, `get()`, `toggle()`.
-- **Default font family classes** — `font-sans`, `font-serif`, and `font-mono` are generated automatically with platform-appropriate values (system sans, serif, and monospace stacks for iOS and Android).
+- **Default font family classes** — `font-sans`, `font-serif`, and `font-mono` are generated automatically with platform-appropriate values (`Helvetica Neue` / `sans-serif`, `Georgia` / `serif`, and `monospace` on iOS / Android).
 - **XML validation** — the pre-validation pass now detects illegal `--` sequences inside XML comments, which previously produced cryptic downstream errors.
 
 ### What to review
@@ -379,7 +466,7 @@ v7.5.0 adds `extend` support for component defaults and improves how `apply` dir
 
 ### Added
 
-- **`extend` support for Window, View, and ImageView** — customize component defaults from `theme.extend` in `config.cjs`. Previously only a subset of components supported `extend`.
+- **`extend` support for Window, View, and ImageView** — customize component defaults from `theme.extend` in `config.cjs`. Previously `theme.extend.Window` (and `View`, `ImageView`) was silently ignored; only `theme.Window` worked.
 - **Shorthand `apply`** — `{ apply: '...' }` is automatically normalized, so the `default:` wrapper is now optional.
 - **Property deduplication** — values pulled in via `apply` now win over static defaults instead of producing duplicate property entries in the generated TSS.
 - **Automatic platform resolution** — classes referenced inside `ios:` / `android:` blocks automatically find their platform-specific version instead of requiring explicit disambiguation.
@@ -516,16 +603,20 @@ If you previously worked around this by inlining the gradient directly in TSS, r
 ## Quick Checklist
 
 - Replace every legacy `tailwind.tss` reference with `utilities.tss`.
-- Verify Node.js 20+ before upgrading past v7.3.0.
+- Verify Node.js 20+ before upgrading to v7.2.7 or later.
 - Rebuild after updating `config.cjs` or custom gradient rules.
 - Re-test any Classic Titanium code that depends on `deviceInfo()`.
 - After v7.5.0: diff generated `utilities.tss` to confirm property deduplication produces the expected output.
 - After v7.5.3: consider wiring `Appearance.init()` at app boot if you want runtime Light/Dark switching.
 - After v7.6.0: run `brand`, `images`, and `semantic` once in a scratch project before pointing them at production assets, so you can preview the output layout.
 - After v7.7.0: migrate the `brand:` block in `config.cjs` to the grouped schema (`logos`, `padding`, `android`, `ios`, `colors`). v7.10.2 auto-migrates flat configs in memory. Moot from v7.13.0, which rewrites the block on disk to the per-piece structure by itself.
-- After v7.8.0: run the build once and address every `Class Syntax Error` it surfaces. Update CI to handle the new hard-fail on malformed class names. Migrate any `top-[10px]` style square brackets to `top-(10px)` parentheses.
+- After v7.8.0: run the build once and address every `Class Syntax Error` it surfaces. Update CI to handle the new hard-fail on malformed class names. Migrate any `top-[10px]` style square brackets to unitless parentheses, `top-(10)`.
 - After v7.9.0: search for any `purgetss/experimental/tailwind-classes/` references in tooling/CI and update to `purgetss/glossary/tailwind-classes/`. If a project used top-level `theme.Window` / `View` / `ImageView` and depended on framework defaults being merged in, decide between moving the config under `theme.extend.*` or adding the previously-implicit utilities to the `apply` string.
 - After v7.10.0: deeply nested color families (`theme.extend.colors.brand.primary.500`) now emit recursively — restructure by domain if it improves readability. `apply:` with bundled icon fonts (`fas`, `mi-*`, `ms-*`, `f7-*`) no longer requires `build-fonts` first. The Google Play Feature Graphic ships automatically with `purgetss brand`.
 - After v7.11.0: reference `.svg` images with numeric `w-*`/`h-*` classes to opt into the compile-time SVG pipeline (add `purgetss/.cache/` to `.gitignore`). Ensure every `theme.fontFamily.*` value is a string, not a Tailwind-style array, or the new config validator hard-fails. Use `images.files` to pin per-file sizes and `images.autoSync: false` to stop the pipeline writing back to `config.cjs`.
 - After v7.12.1: re-run `purgetss brand --notes` if you had copied an earlier Android splash snippet — the theme now belongs on the launcher Activity, not on `<application>`. Run `purgetss icon-library -v=fa` to pick up Font Awesome 7.3.1.
 - After v7.13.0: grep build scripts, `alloy.jmk` and CI for the renamed `brand` flags (`--splash`, `--notification`, `--splash-logo`, `--feature-logo`, `--legacy-splash`) — no aliases were kept. Rename any `logo-icon.*` used as the Android launcher mark to `logo-adaptive.*`, or the launcher icons silently fall back to the main logo. Let `config.cjs` rewrite its own `brand:` block, then read the diff.
+- After v7.14.0: compare the regenerated iOS/store icons (now full-bleed `0%`) and `ic_launcher.png` (real `10%` inset) against the previous set.
+- After v7.15.0: if one platform is disabled in `tiapp.xml`, pass `--android` or `--ios` to `purgetss images` when you still need that platform's densities.
+- After v7.17.0: remove unknown keys from `images:` and re-run `purgetss install-dependencies` in Alloy projects that still have `.eslintrc.js`.
+- After v7.17.1: point the FCM meta-data at `@drawable/notificationicon` and delete the old `ic_stat_notify.png` files.

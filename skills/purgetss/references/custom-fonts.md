@@ -84,7 +84,7 @@ After running `purgetss build-fonts` with the Bevan and Dancing Script example a
 `./purgetss/styles/fonts.tss`
 ```css
 // Fonts TSS file generated with PurgeTSS
-// https://purgetss.com/docs/customization/custom-fonts
+// https://purgetss.com/docs/commands#build-fonts-command
 
 '.bevan-italic': { font: { fontFamily: 'Bevan-Italic' } }
 '.bevan-regular': { font: { fontFamily: 'Bevan-Regular' } }
@@ -95,11 +95,13 @@ After running `purgetss build-fonts` with the Bevan and Dancing Script example a
 '.dancingscript-semibold': { font: { fontFamily: 'DancingScript-SemiBold' } }
 ```
 
+The generated file also places a `/** … */` metadata comment (full name, version, vendor, license) before each font class; it is omitted from these excerpts.
+
 You can now use these classes on any Titanium component with a `font` property: Labels, Buttons, TextFields, TextAreas, ListItems, TableViewRows, and ActivityIndicators.
 
 ### Renaming the class
 
-To use a shorter or different class name, rename the font file. For example:
+By default the class name is the lowercased PostScript name, so renaming the font file alone changes nothing. The file name drives the class only with `-f, --font-class-from-filename`. For example, rename the files:
 
 `./purgetss/fonts/`
 ```bash
@@ -112,7 +114,7 @@ purgetss
       └─ Script-SemiBold.ttf
 ```
 
-Running `build-fonts` produces:
+Running `purgetss build-fonts -f` produces:
 
 `./purgetss/styles/fonts.tss`
 ```css
@@ -149,29 +151,29 @@ After `purgetss build-fonts`, the generated `fonts.tss` includes the family clas
 `./purgetss/styles/fonts.tss`
 ```css
 // Fonts TSS file generated with PurgeTSS
-// https://purgetss.com/docs/customization/custom-fonts
+// https://purgetss.com/docs/commands#build-fonts-command
 
 '.map-icons': { font: { fontFamily: 'map-icons' } }
 '.microns': { font: { fontFamily: 'microns' } }
 
-/* Unicode Characters */
-/* To use your Icon Fonts in Buttons AND Labels each class sets 'text' and 'title' properties */
+// Unicode Characters
+// To use your Icon Fonts in Buttons AND Labels each class sets 'text' and 'title' properties
 
-/* map-icons/map-icons.css */
+// map-icons/map-icons.css
 '.map-icon-abseiling': { text: '\ue800', title: '\ue800' }
 '.map-icon-accounting': { text: '\ue801', title: '\ue801' }
 '.map-icon-airport': { text: '\ue802', title: '\ue802' }
 '.map-icon-amusement-park': { text: '\ue803', title: '\ue803' }
 '.map-icon-aquarium': { text: '\ue804', title: '\ue804' }
-/* ... */
+// ...
 
-/* microns/microns.css */
+// microns/microns.css
 '.mu-arrow-left': { text: '\ue700', title: '\ue700' }
 '.mu-arrow-right': { text: '\ue701', title: '\ue701' }
 '.mu-arrow-up': { text: '\ue702', title: '\ue702' }
 '.mu-arrow-down': { text: '\ue703', title: '\ue703' }
 '.mu-left': { text: '\ue704', title: '\ue704' }
-/* ... */
+// ...
 ```
 
 ## Options
@@ -191,6 +193,10 @@ $ purgetss bf -m
 ```
 
 The module is generated for text-only font collections too. By default, every TTF/OTF contributes a camel-cased PostScript-name key to `families`; with `--font-class-from-filename`, that key comes from the filename instead. Icon CSS can add a shorter family alias and a nested `icons` map. Both singular and plural export names remain available.
+
+Once `purgetss.fonts.js` exists, later `build-fonts` runs regenerate it even without `--module`; if no font or icon data remains, the file is deleted.
+
+The module also appends the `getIcon`, `setText`, `setTitle`, `getRandomKey`, and `getRandomValue` helpers. They look up top-level `icons` keys, which in this module are library prefixes, so read a glyph directly as `icons.<prefix>.<name>`.
 
 `app/lib/purgetss.fonts.js` (Alloy) or `Resources/lib/purgetss.fonts.js` (Classic)
 ```javascript
@@ -264,25 +270,24 @@ purgetss
 
 `./purgetss/styles/fonts.tss`
 ```css
-/* "fontFamily" classes use the font's filename */
 '.map': { font: { fontFamily: 'map-icons' } }
 '.mic': { font: { fontFamily: 'microns' } }
 
-/* map-icons/mp.css */
+// map-icons/mp.css
 '.mp-abseiling': { text: '\ue800', title: '\ue800' }
 '.mp-accounting': { text: '\ue801', title: '\ue801' }
 '.mp-airport': { text: '\ue802', title: '\ue802' }
 '.mp-amusement-park': { text: '\ue803', title: '\ue803' }
 '.mp-aquarium': { text: '\ue804', title: '\ue804' }
-/* ... */
+// ...
 
-/* microns/mc.css */
+// microns/mc.css
 '.mc-arrow-left': { text: '\ue700', title: '\ue700' }
 '.mc-arrow-right': { text: '\ue701', title: '\ue701' }
 '.mc-arrow-up': { text: '\ue702', title: '\ue702' }
 '.mc-arrow-down': { text: '\ue703', title: '\ue703' }
 '.mc-left': { text: '\ue704', title: '\ue704' }
-/* ... */
+// ...
 ```
 
 `app/lib/purgetss.fonts.js` (Alloy) or `Resources/lib/purgetss.fonts.js` (Classic)
@@ -338,4 +343,4 @@ The following notes reflect community experience with `build-fonts` against real
 > Titanium cannot render Font Awesome duotone icons because each icon uses two glyphs. If you work with Font Awesome Pro, avoid documenting duotone as supported.
 
 > **💡 Use `--module` to set `text`/`title` from JavaScript**
-> Hardcoding `` in a controller is brittle. The `-m` flag generates a `purgetss.fonts.js` you can `require()` and reference by friendly name: `label.text = icons.fa.home`. Combine with `families` to set `font.fontFamily` programmatically.
+> Hardcoding `'\uf015'` in a controller is brittle. The `-m` flag generates a `purgetss.fonts.js` you can `require()` and reference by friendly name: `label.text = icons.fa.home`. Combine with `families` to set `font.fontFamily` programmatically.

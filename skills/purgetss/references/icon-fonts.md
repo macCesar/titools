@@ -27,10 +27,25 @@ Each family ships one or more variant classes, each pointing to a specific font 
 | Font Awesome | Regular | `.far` | `FontAwesome7Free-Regular` |
 | Font Awesome | Brands | `.fab` | `FontAwesome7Brands-Regular` |
 | **Material Icons** | Regular | `.mi` | `MaterialIcons-Regular` |
+| Material Icons | Round | `.mir` | `MaterialIconsRound-Regular` |
+| Material Icons | Sharp | `.mis` | `MaterialIconsSharp-Regular` |
+| Material Icons | Two Tone | `.mit` | `MaterialIconsTwoTone-Regular` |
+| Material Icons | Outlined | `.mio` | `MaterialIconsOutlined-Regular` |
 | **Framework 7** | Regular | `.f7` | `Framework7-Icons` |
 
 > 💡 **TIP — Icon class names**
 > Across a family, the icon class is shared by every variant. For Material Symbols, there is one `ms-home` class; pair it with `.ms`, `.mso`, `.msr`, or `.mss` to pick the shape (outlined, rounded, or sharp). FontAwesome works the same way: `fa-home` pairs with `.fa`/`.fas` (Solid) or `.far` (Regular), while brand icons like `fa-github` need `.fab`. **The variant class chooses the font file. The icon class chooses the glyph.**
+>
+> Long-form aliases set the same `fontFamily`: `.fa-solid`, `.fa-regular`, `.fa-brands`, `.fontawesome`, `.fontawesome-solid`, `.fontawesome-regular`, `.fontawesome-brands`; `.material-icons`, `.material-icons-round`, `.material-icons-sharp`, `.material-icons-two-tone`, `.material-icons-outlined`; `.materialsymbol`, `.materialsymbol-rounded`, `.materialsymbol-sharp`, `.materialsymbol-outlined` (and the same names spelled `.material-symbol*`); `.f7i` and `.framework7`.
+
+### Size and color helpers
+
+| Family | Classes |
+|---|---|
+| Font Awesome | `.fa-xs` (12), `.fa-sm` (14), `.fa-1x` (16), `.fa-lg` (21), `.fa-2x` … `.fa-10x` (32 … 160, in steps of 16) |
+| Material Icons | `.mi-18`, `.mi-24`, `.mi-36`, `.mi-48`; `.mi-dark`, `.mi-dark-inactive`, `.mi-light`, `.mi-light-inactive` |
+| Material Symbols | `.ms-18`, `.ms-24`, `.ms-36`, `.ms-48`; `.ms-dark`, `.ms-dark-inactive`, `.ms-light`, `.ms-light-inactive` |
+| Framework 7 | `.size-14`, `.size-20`, `.size-24`, `.size-28`, `.size-32`, `.size-56`, `.size-112` |
 
 ### Full class lists
 
@@ -83,7 +98,7 @@ $ purgetss il -m -s
 
 ### CommonJS modules in Classic
 
-Each module exposes its existing icon lookup API plus a `families` object with `families.default`. Direct aliases are also available:
+Each module exposes an `icons` map with camel-cased keys (`icons.home`, `icons.arrowLeft`), the helpers `getIcon(name)`, `setText(name, view)`, `setTitle(name, view)`, `getRandomKey()`, and `getRandomValue()`, plus a `families` object with `families.default`. `getIcon`, `setText`, and `setTitle` fall back to `'N/A'` for an unknown name. Direct aliases are also available:
 
 | Module | Direct aliases |
 | --- | --- |
@@ -188,27 +203,27 @@ To use this file:
 
 Generated `app.tss` excerpt:
 ```css
-// PurgeTSS v7.10.2
+// PurgeTSS v7.17.1
 // Created by César Estrada
 // https://purgetss.com
 
-/* Ti Elements */
+// Ti Elements
 'View': { width: Ti.UI.SIZE, height: Ti.UI.SIZE }
 'Window': { backgroundColor: '#FFFFFF' }
 
-/* Default Font Awesome */
+// Default Font Awesome
 '.fa': { font: { fontFamily: 'FontAwesome7Free-Solid' } }
-'.fa-home': { text: '', title: '' }
+'.fa-home': { text: '\uf015', title: '\uf015' }
 
-/* Material Icons */
+// Material Icons
 '.mi': { font: { fontFamily: 'MaterialIcons-Regular' } }
-'.mi-home': { text: '', title: '' }
+'.mi-home': { text: '\ue88a', title: '\ue88a' }
 
-/* Material Symbols */
+// Material Symbols
 '.ms': { font: { fontFamily: 'MaterialSymbolsOutlined-Regular' } }
-'.ms-home': { text: '', title: '' }
+'.ms-home': { text: '\ue88a', title: '\ue88a' }
 
-/* Framework7 */
+// Framework7
 '.f7': { font: { fontFamily: 'Framework7-Icons' } }
 '.f7-house': { text: 'house', title: 'house' }
 ```
@@ -268,19 +283,21 @@ For the underlying mechanics (how `build-fonts` reads the `.css`, options like `
 '.boxicons': { font: { fontFamily: 'boxicons' } }
 '.lineicons': { font: { fontFamily: 'LineIcons' } }
 
-/* Unicode Characters */
-/* To use your Icon Fonts in Buttons AND Labels each class sets 'text' and 'title' properties */
+// Unicode Characters
+// To use your Icon Fonts in Buttons AND Labels each class sets 'text' and 'title' properties
 
-/* boxicons.css */
-'.bxl-meta': { text: '', title: '' }
-'.bx-lemon': { text: '', title: '' }
-/* ... */
+// boxicons.css
+'.bxl-meta': { text: '\uef27', title: '\uef27' }
+'.bx-lemon': { text: '\uef28', title: '\uef28' }
+// ...
 
-/* lineicons.css */
-'.lni-500px': { text: '', title: '' }
-'.lni-add-files': { text: '', title: '' }
-/* ... */
+// lineicons.css
+'.lni-500px': { text: '\uea03', title: '\uea03' }
+'.lni-add-files': { text: '\uea01', title: '\uea01' }
+// ...
 ```
+
+The codepoints come from whatever `.css` you place in the folder; the values above are from Boxicons 2.1.4 and LineIcons 3.0.
 
 ## Community-Discovered Patterns
 

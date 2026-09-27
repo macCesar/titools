@@ -1,8 +1,8 @@
 # App Icons & Branding
 
-The `purgetss brand` command generates the complete Titanium branding set from one main SVG or PNG logo: launcher icons, adaptive icons, iOS 18+ Dark/Tinted variants, marketplace artwork, and both splash sets. Per-piece overrides are available when needed. Alloy and Classic layouts are auto-detected, and since v7.14.0 a normal run follows the platforms enabled in `tiapp.xml`.
+The `purgetss brand` command generates the complete Titanium branding set from one main SVG or PNG logo: launcher icons, adaptive icons, iOS 18+ Dark/Tinted variants, marketplace artwork, and both splash sets. Per-piece overrides are available when needed. Alloy and Classic layouts are auto-detected, and since v7.14.0 a normal run follows the platforms enabled in `tiapp.xml`. The rule: if an enabled platform can consume the file, `brand` generates or updates it.
 
-The command also creates Titanium-consumed Classic paths that a fresh Classic template does not seed, including the 11 Android `Resources/android/images/res-*` splash variants. An explicit `--only` is an intentional override that can prepare assets for a disabled deployment target.
+The command also creates Titanium-consumed Classic paths that a fresh Classic template does not seed, including the 11 Android `Resources/android/images/res-*` splash variants. An explicit `--only` is an intentional override that can prepare assets for a disabled deployment target. A normal run names the pieces it left out (`Skipped for disabled deployment target(s): …`), and stops with a warning when no selected piece matches an enabled target.
 
 For the terse flag reference, see the [`brand` command reference](./cli-commands.md#brand-command). For sibling UI assets, see [Multi-Density Images](./multi-density-images.md).
 
@@ -30,8 +30,7 @@ For the terse flag reference, see the [`brand` command reference](./cli-commands
 - [iPhone launch images](#iphone-launch-images)
 - [iOS 18+ Dark and Tinted variants](#ios-18-dark-and-tinted-variants)
 - [Brand color](#brand-color)
-- [Padding guidance](#padding-guidance)
-- [Rounded non-icon artwork](#rounded-non-icon-artwork)
+- [Padding and geometry](#padding-and-geometry)
 - [Cleanup legacy branding artifacts](#cleanup-legacy-branding-artifacts)
 - [Troubleshooting](#troubleshooting)
 - [Flag reference](#flag-reference)
@@ -64,7 +63,7 @@ Pass `--dry-run` to preview without writing any files:
 purgetss brand --dry-run
 ```
 
-You may also pass a source directly. When a standalone Classic project has no canonical `purgetss/brand/logo.{svg,png}`, the confirmed run moves that positional source into the convention and reports the destination. An existing canonical logo is never replaced silently.
+You may also pass a source directly. When the project (Alloy or Classic) has no canonical `purgetss/brand/logo.{svg,png}`, the confirmed in-place run **moves** that positional `.svg`/`.png` to `purgetss/brand/logo.<ext>` and reports the destination; `--dry-run` only reports where it would go. An existing canonical logo is never replaced, and the positional source is then used from where it is.
 
 ## The `purgetss/brand/` convention
 
@@ -120,6 +119,8 @@ You can also pass a path directly or point to a logo from the config. Useful whe
 ```bash
 purgetss brand ./docs/snap-logo.svg
 ```
+
+A positional logo is moved into `purgetss/brand/logo.<ext>` when no canonical logo exists yet (see [Quick start](#quick-start)). To keep a master in `docs/`, point to it from the config instead, or use a `--<piece>-logo` flag.
 
 Or in `purgetss/config.cjs`, where each piece takes its own `logo`:
 
@@ -236,7 +237,7 @@ And these live at the top level:
 
 | Key | Default | Purpose |
 | --- | --- | --- |
-| `background` | `'#FFFFFF'` | The background every piece inherits unless it declares its own: the Android adaptive background layer, the `DefaultIcon-ios.png` flatten, the splash canvases, and the marketplace flatten when a background is explicitly configured. |
+| `background` | `'#FFFFFF'` | The background every piece inherits unless it declares its own: the Android adaptive background layer, the `DefaultIcon-ios.png` flatten, the splash canvases, and the marketplace flatten. |
 | `artworkCornerRadius` | `'0%'` | Shared radius for the four supported non-icon artwork pieces. It never changes store or launcher icons. |
 | `splashCornerRadius` | — | Optional splash-only override for `iosSplash` and `androidSplash`. |
 | `confirmOverwrites` | `true` | Whether `brand` asks before overwriting project files in place. |
@@ -304,7 +305,7 @@ The output is automatically routed to the right directory for your project layou
 
 ```text
 <project>/
-├── DefaultIcon.png                 ← 1024×1024, universal fallback (brand.icon.padding)
+├── DefaultIcon.png                 ← 1024×1024, universal fallback, opaque (brand.icon.padding)
 ├── DefaultIcon-ios.png             ← 1024×1024, iOS flattened on brand.background
 ├── DefaultIcon-Dark.png            ← 1024×1024, iOS 18+ dark (transparent per Apple HIG)
 ├── DefaultIcon-Tinted.png          ← 1024×1024, iOS 18+ tinted (grayscale on black)
@@ -531,7 +532,7 @@ The second one colors the notification's accent, not the icon. Create or merge `
 
 Titanium builds `LaunchLogo.imageset` itself on every iOS build, resizing one source into the five sizes it needs. It looks for `LaunchLogo.png` first and falls back to `DefaultIcon.png`.
 
-So there is nothing for PurgeTSS to generate there, but there is something to choose. With only `DefaultIcon.png` around, the launch screen shows your app icon, safe-zone padding and all. Dropping a `logo-launch.svg` (or `.png`) into `purgetss/brand/` makes `brand` write a `LaunchLogo.png`, and the launch screen shows the full logotype instead:
+So there is nothing for PurgeTSS to generate there, but there is something to choose. With only `DefaultIcon.png` around, the launch screen shows your app icon with its configured icon inset (`0%` by default). Dropping a `logo-launch.svg` (or `.png`) into `purgetss/brand/` makes `brand` write a `LaunchLogo.png`, and the launch screen shows the full logotype instead:
 
 ```bash
 cp docs/my-wordmark.svg purgetss/brand/logo-launch.svg
@@ -580,7 +581,7 @@ purgetss brand --no-dark --no-tinted
 > Upstream work in progress
 > As of April 2026, Titanium SDK picks up `DefaultIcon-ios.png` automatically but does **not** yet wire `DefaultIcon-Dark.png` / `DefaultIcon-Tinted.png` into the generated iOS appiconset. Upstream tracking: [tidev/titanium-sdk#14122](https://github.com/tidev/titanium-sdk/issues/14122).
 >
-> Until that PR lands, after your first iOS build you may need to add the two PNGs manually into `build/iphone/Assets.xcassets/AppIcon.appiconset/` in Xcode (via the "Appearance" column in the asset catalog editor). Once #14122 merges, the command becomes fully end-to-end.
+> Until that issue is resolved, after your first iOS build you may need to add the two PNGs manually into `build/iphone/Assets.xcassets/AppIcon.appiconset/` in Xcode (via the "Appearance" column in the asset catalog editor). Once #14122 is resolved, the command becomes fully end-to-end.
 
 ## Brand color
 
@@ -598,7 +599,7 @@ purgetss brand --bg-color "#0B1326"
 
 Any piece can opt out with its own `background`. That is what `dark: { background: null }` does in the default config, which keeps `DefaultIcon-Dark.png` transparent per Apple HIG.
 
-If you never pass the flag, background stays `#FFFFFF`. `iTunesConnect.png` and `MarketplaceArtwork.png` keep their alpha channel to match Titanium's default; `MarketplaceArtworkFeature.png` is always flattened for Google Play.
+If you never pass the flag, background stays `#FFFFFF`. `iTunesConnect.png`, `MarketplaceArtwork.png` and `MarketplaceArtworkFeature.png` are always flattened to opaque output on the resolved background.
 
 ### Matching the launch background
 
@@ -606,93 +607,9 @@ If you never pass the flag, background stays `#FFFFFF`. `iTunesConnect.png` and 
 
 `purgetss brand --notes` prints that setup with the project's current `brand.background` already filled in.
 
+## Padding and geometry
 
-## Padding guidance
-
-Padding belongs to the piece, not to the project. Each piece has its own key and its own flag:
-
-| Piece | Config | Flag | Default |
-| --- | --- | --- | --- |
-| `adaptive` | `brand.adaptive.padding` | `--android-adaptive-padding` | `18%` |
-| `legacy-icon` | `brand.legacyIcon.padding` | `--android-legacy-padding` | `10%` |
-| `appicon` | `brand.appicon.padding` | `--appicon-padding` | `10%` |
-| `icon` | `brand.icon.padding` | `--ios-padding` | `0%` |
-| `feature-graphic` | `brand.featureGraphic.padding` | `--feature-graphic-padding` | `12%` |
-| `launch-logo` | `brand.launchLogo.padding` | `--launch-logo-padding` | `12%` |
-| `android-splash` | `brand.androidSplash.padding` | `--android-splash-padding` | `26%` |
-| `ios-splash` | `brand.iosSplash.padding` | `--ios-splash-padding` | `26%` |
-
-`--padding` is a shortcut for the two Android launcher paddings in a single run, and `--splash-padding` for the two splash paddings. `--ios-padding` moves the four square iOS/marketplace pieces together (`icon`, `dark`, `tinted`, `marketplace`); in config each of them has its own key.
-
-There is deliberately **no global padding value that cascades down**. The defaults answer to different constraints: `18%` answers to the Android launcher mask, while finished square iOS/store artwork stays full-bleed at `0%`. One inherited number could silently break the launcher mask or add an unwanted frame to finished artwork. `background`, which has no such trap, is inherited from `brand.background`.
-
-### How the source is read, and how sharp the output is
-
-Two things are worth knowing about what happens to your `logo.svg` or `logo.png` before any padding is applied.
-
-**The container is what counts, not the artwork's bounding box.** An SVG is read at its `viewBox`, a raster at its full canvas, and neither is trimmed to where the pixels actually are. So whatever margin a designer baked into the file **adds** to the padding configured per piece. A round logo exported inside a 2048×2048 PNG with 25% of its own air, generated at `adaptive: { padding: '18%' }`, ends up covering about 32% of the icon canvas, not 64%. If a mark comes out smaller than the numbers suggest, that is almost always why: crop the source or lower the padding.
-
-**The masters are sized to the run.** The source is rasterized once into two intermediate masters, and every piece scales down from them, so their resolution is the ceiling on output sharpness. Rather than a fixed size, `brand` measures the largest number of pixels any selected piece will ask for and builds the masters at exactly that. A default run reports it:
-
-```text
-  • Masters at 942 px — the largest any selected piece asks for
-```
-
-Lower a padding and the figure rises with it (`--splash-padding 4` needs 1413 px), so output never goes soft against a fixed ceiling. Every destination is a reduction, never an upscale.
-
-The one case this cannot fix is a raster source that is simply too small: a 512-px PNG cannot produce a sharp 942-px icon. Prefer SVG, or a PNG of at least 1024×1024.
-
-### Splash padding
-
-The 28 splash images (`default.png`, the 11 `res-*`, and the 16 iPhone launch images) share one rule: the logo is fitted into a square whose side is a share of the canvas's **shorter** side.
-
-Measuring against the shorter side is what lets a single number work across canvases as different as 1440×2560 and 800×480: at 800×480 the limit comes from the height, at 240×400 from the width, and the logo keeps the same visual weight in portrait and in landscape.
-
-| `androidSplash.padding` / `iosSplash.padding` | Logo | `default.png` (1440×2560) | `res-notlong-port-mdpi` (320×480) |
-| --- | --- | --- | --- |
-| `20%` | 60% of the shorter side | 864 px | 192 px |
-| `26%` (default) | 48% | 691 px | 153 px |
-| `30%` | 40% | 576 px | 128 px |
-| `35%` | 30% | 432 px | 96 px |
-
-The `26%` default is calibrated against the Titanium template itself: the Alloy logo in the stock `default.png` measures 665×488 px on a 1440×2560 canvas, so `26%` lands within 4% of the size Titanium ships.
-
-Before v7.13.0 none of this was configurable: `default.png` used a hardcoded box of 72% × 26% of its own canvas, and the `res-*` set a separate hardcoded 60%. Two rules for the same piece, neither adjustable.
-
-## Rounded non-icon artwork
-
-`brand.artworkCornerRadius` rounds artwork only in the 16 iPhone launch images, Android `default.png` plus its 11 qualifier variants, `MarketplaceArtworkFeature.png`, and `LaunchLogo.png`. A piece may override it with `cornerRadius`; `brand.splashCornerRadius` is an optional shared override for the two legacy splash pieces.
-
-Values are integer numbers or percentage strings from `0` through `50`, measured against the shorter side of the resized artwork. `0%` preserves the previous output byte for byte; `50%` makes square artwork circular and a wordmark capsule-shaped. Normal and `--dry-run` summaries report the effective padding and radius.
-
-Precedence is:
-
-- Feature Graphic / LaunchLogo: piece-specific flag → `--artwork-corner-radius` → piece config → `brand.artworkCornerRadius` → `0%`.
-- Legacy splashes: platform flag → `--splash-corner-radius` → `--artwork-corner-radius` → piece config → `brand.splashCornerRadius` → `brand.artworkCornerRadius` → `0%`.
-
-Store and launcher icons remain unmasked for platform processing. `cornerRadius` is rejected in `DefaultIcon*`, `iTunesConnect.png`, `MarketplaceArtwork.png`, adaptive, legacy, and app icons, Android 12+ `splash_icon.png`, notification icons, and any other unsupported piece; invalid, fractional, negative, non-numeric, or greater-than-50 values also abort before files are written.
-
-### Adaptive icon padding
-
-Android's adaptive canvas is 108 dp. The mask leaves roughly 72 dp visible, and the **guaranteed** safe area is a 66 dp circle inscribed in it. What each padding means in those terms:
-
-| Padding | Logo | vs. the 66 dp safe circle | vs. the ~72 dp the mask shows |
-| --- | --- | --- | --- |
-| `15%` | 75.6 dp | outside | **outside** — clipped on any launcher |
-| `16%` | 73.4 dp | outside | **outside** |
-| `18%` | 69.1 dp | corners outside | inside — **the default** |
-| `19.44%` | 66.0 dp | exactly on it | inside |
-| `20%` | 64.8 dp | inside | inside — most conservative |
-
-`18%` sits between the guaranteed circle and the mask edge: a logo that carries its own margin never reaches those corners, which is why it is a safe default in practice. Drop to `20%` if your mark runs edge to edge and you see clipping on a circular launcher.
-
-A useful visual check is the "corners" heuristic: imagine a circle inscribed in your 1024×1024 canvas with the given padding. If your logo's outermost corners fit inside that circle, you're safe on circular launchers (Pixel default, Oppo Android 15). If they poke out, they'll be clipped.
-
-The official Android spec floor is `19.44%` (108dp canvas, 66dp inscribed safe-zone circle). That is the theoretical worst-case for aggressive adaptive masks, which is why the adaptive default sits close to it.
-
-### Legacy icon padding
-
-Legacy `ic_launcher.png` does not go through the same adaptive mask, so it can usually run tighter. That is why the default for `brand.legacyIcon.padding` is `10%`.
+Per-piece padding, how the source is read, the shared splash sizing rule, rounded non-icon artwork and the adaptive-mask math are in [Brand Padding & Geometry](./brand-padding-geometry.md).
 
 ## Cleanup legacy branding artifacts
 
@@ -765,6 +682,28 @@ Adaptive padding is probably too generous. Lower it:
 purgetss brand --android-adaptive-padding 17
 ```
 
+### A white frame appears around a dark icon
+
+PurgeTSS does not require a white frame. Square iOS/store pieces (`icon`, `dark`, `tinted`, `marketplace`) default to `0%` since v7.14.0, so finished edge-to-edge artwork stays full-bleed. If an older or customized config still has `brand.icon.padding: '4%'`, change it to `0%` and regenerate.
+
+Android launcher pieces keep safe-zone padding on purpose (`18%` adaptive, `10%` legacy and appicon). If the source is already a finished opaque icon, that inset exposes `brand.background`. Set the inherited background once to a color matching the artwork's perimeter, or give the Android pieces a transparent mark instead of the finished icon canvas:
+
+```javascript
+brand: {
+  background: '#020109',
+  icon: { padding: '0%' },
+  adaptive: { logo: './purgetss/brand/logo-adaptive.png', padding: '18%' },
+  legacyIcon: { padding: '10%' },
+  appicon: { padding: '10%' }
+}
+```
+
+When the main logo is opaque to its edges and a padded piece sits on a contrasting background, `brand` warns before generating the pieces (it checks `icon`, `marketplace`, `adaptive`, `legacy-icon` and `appicon`): `The source is opaque to its edges (edge color ≈ #…)` followed by `A contrasting frame will be visible in: …`, naming each affected piece with its padding and background. Pieces with their own `logo` are not checked.
+
+### "The source logo is not close to square"
+
+`brand` prints this warning when the main logo's aspect ratio is wider than 1.25:1 or taller than 1:1.25. Launcher icons and the Android 12+ system splash center the mark inside a mask, so a wordmark comes out cramped. Drop a square `logo-adaptive.svg` (and `logo-splash-icon.svg` if you use `--splash-icon`) as described in [Community-Discovered Patterns](#community-discovered-patterns).
+
 ### The monochrome version looks like a white blob
 
 Your colored logo likely has multi-color detail that does not survive automatic whitening. Provide a dedicated silhouette:
@@ -784,7 +723,7 @@ Apple requires App Store icons to have no alpha channel. `DefaultIcon-ios.png` i
 
 ### The dark variant doesn't show on my iPhone
 
-Dark variants require iOS 18+ and Titanium SDK automatic wiring (tracked upstream in [titanium-sdk#14122](https://github.com/tidev/titanium-sdk/issues/14122)). Until that PR merges, you may need to add `DefaultIcon-Dark.png` and `DefaultIcon-Tinted.png` manually into the Xcode appiconset after the first iOS build.
+Dark variants require iOS 18+ and Titanium SDK automatic wiring (tracked upstream in [titanium-sdk#14122](https://github.com/tidev/titanium-sdk/issues/14122)). Until that issue is resolved, you may need to add `DefaultIcon-Dark.png` and `DefaultIcon-Tinted.png` manually into the Xcode appiconset after the first iOS build.
 
 ### I get "Input image exceeds pixel limit" on an SVG from Affinity / Illustrator
 

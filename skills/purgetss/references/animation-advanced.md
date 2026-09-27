@@ -138,7 +138,7 @@ Values: `repeat-0` through `repeat-12`.
 
 ### rotate-* and -rotate-*
 
-Rotation in degrees. Range: **0** to **180**, positive and negative.
+Rotation in degrees. Range: **0** to **360**, positive and negative.
 
 ```css
 '.rotate-0': { rotate: 0 }
@@ -149,7 +149,12 @@ Rotation in degrees. Range: **0** to **180**, positive and negative.
 '.rotate-12': { rotate: 12 }
 '.rotate-45': { rotate: 45 }
 '.rotate-90': { rotate: 90 }
+'.rotate-135': { rotate: 135 }
 '.rotate-180': { rotate: 180 }
+'.rotate-225': { rotate: 225 }
+'.rotate-270': { rotate: 270 }
+'.rotate-315': { rotate: 315 }
+'.rotate-360': { rotate: 360 }
 '.-rotate-0': { rotate: 0 }
 '.-rotate-1': { rotate: -1 }
 '.-rotate-2': { rotate: -2 }
@@ -158,7 +163,12 @@ Rotation in degrees. Range: **0** to **180**, positive and negative.
 '.-rotate-12': { rotate: -12 }
 '.-rotate-45': { rotate: -45 }
 '.-rotate-90': { rotate: -90 }
+'.-rotate-135': { rotate: -135 }
 '.-rotate-180': { rotate: -180 }
+'.-rotate-225': { rotate: -225 }
+'.-rotate-270': { rotate: -270 }
+'.-rotate-315': { rotate: -315 }
+'.-rotate-360': { rotate: -360 }
 ```
 
 ### scale-*
@@ -180,6 +190,7 @@ Scales the matrix by the specified factor. Same value for horizontal and vertica
 '.scale-110': { scale: 1.1 }
 '.scale-125': { scale: 1.25 }
 '.scale-150': { scale: 1.5 }
+'.scale-200': { scale: 2 }
 ```
 
 ### Snap Classes
@@ -221,7 +232,7 @@ Prevents the drag system from promoting the active view on touch start. It does 
 
 ### zoom-in-* / zoom-out-*
 
-Animates zoom in and zoom out. Sets the View's scale to the specified value, then animates it back to 1. Range: **0** to **150**.
+Animates zoom in and zoom out. Sets the View's scale to the specified value, then animates it back to 1. Range: **0** to **200**.
 
 ```css
 '.zoom-in-0': { animationProperties: { open: { scale: 0 }, complete: { scale: 1 } } }
@@ -234,7 +245,7 @@ Animates zoom in and zoom out. Sets the View's scale to the specified value, the
 '.zoom-out-110': { animationProperties: { close: { scale: 1.1 }, complete: { scale: 1 } } }
 ```
 
-Full range: `zoom-in-0`, `zoom-in-1`, `zoom-in-5`, `zoom-in-10`, `zoom-in-25`, `zoom-in-50`, `zoom-in-75`, `zoom-in-90`, `zoom-in-95`, `zoom-in-100`, `zoom-in-105`, `zoom-in-110`, `zoom-in-125`, `zoom-in-150` (and same for `zoom-out-*`).
+Full range: `zoom-in-0`, `zoom-in-1`, `zoom-in-5`, `zoom-in-10`, `zoom-in-25`, `zoom-in-50`, `zoom-in-75`, `zoom-in-90`, `zoom-in-95`, `zoom-in-100`, `zoom-in-105`, `zoom-in-110`, `zoom-in-125`, `zoom-in-150`, `zoom-in-200` (and same for `zoom-out-*`).
 
 ---
 
@@ -278,7 +289,7 @@ At construction time, top-level `scale`, `rotate`, and `anchorPoint` are convert
 
 `play()`, `toggle()`, `apply()`, and `sequence()` toggle internal open/close state. `open()` and `close()` set it explicitly. The active state is merged into the current base object when `animationProperties` exists.
 
-After a top-level `play`, `toggle`, `open`, or `close`, `animationProperties.complete` starts as a second animation. `apply()` applies `complete` immediately. The public callback belongs to the base play/apply operation; it does not wait for the second top-level `complete` animation.
+After a top-level `play`, `toggle`, `open`, or `close`, and after each view of a `sequence()`, `animationProperties.complete` starts as a second animation. `apply()` applies `complete` immediately. The public callback belongs to the base play/apply operation; it does not wait for the second top-level `complete` animation.
 
 For each direct child with an active state, merge precedence is:
 
@@ -308,7 +319,7 @@ Drag precedence is precise:
 - `snap.center` invokes `snapTo()` after a valid drop; `snap.back` returns a missed drop to its captured origin.
 - No `snap.magnet` behavior exists.
 
-Collision detection uses the dragged view's center. On release, the last non-null hover target is a fallback when the final hit test returns `null`.
+Collision detection uses the dragged view's center and runs only for views registered with `detectCollisions()`, so register the dragged views as well as the targets. Hit testing during movement runs only when a `dragCB` was supplied; in that case the last non-null hover target is a fallback when the final hit test at release returns `null`. `dragCB(source, null)` is also called whenever a registered view is released.
 
 `draggable(array)` immediately assigns each view `zIndex` from its array index. `keepZIndex` only disables later touch-start promotion. `swap()` restores z-order by the current draggable-registry order, not by arbitrary values present before registration.
 
@@ -423,3 +434,5 @@ function doAction(event) {
 ```
 
 This demonstrates: `play` for sidebar/card toggle, `open:`/`close:` modifiers for different states, `draggable` with `bounds:` modifier, and multiple Animation objects controlling different UI elements.
+
+If this window can close, add an `onClose` handler that calls `$.draggableAnimation.undraggable($.myCard)` so the global `orientationchange` listener is removed.

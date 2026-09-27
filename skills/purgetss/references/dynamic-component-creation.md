@@ -2,7 +2,7 @@
 
 > **SCOPE NOTE**
 >
-> This reference covers dynamic component creation using **Alloy's `$.UI.create()` helper** and **`Alloy.createStyle()` + `applyProperties()`**, both combined with PurgeTSS utility classes. It is an Alloy + PurgeTSS integration guide, **not** documentation for the `purgetss.ui` native module (see [animation-system.md](./animation-system.md) and [animation-advanced.md](./animation-advanced.md) for Alloy animation usage, or [purgetss-ui-classic.md](./purgetss-ui-classic.md) for the generated Classic runtime).
+> This reference covers dynamic component creation using **Alloy's `$.UI.create()` helper** and **`$.createStyle()` + `applyProperties()`**, both combined with PurgeTSS utility classes. It is an Alloy + PurgeTSS integration guide, **not** documentation for the `purgetss.ui` native module (see [animation-system.md](./animation-system.md) and [animation-advanced.md](./animation-advanced.md) for Alloy animation usage, or [purgetss-ui-classic.md](./purgetss-ui-classic.md) for the generated Classic runtime).
 >
 > For general Alloy controller and view patterns, refer to the `alloy-guides` and `alloy-howtos` skills.
 
@@ -12,11 +12,11 @@
 - [Community-Discovered Patterns](#community-discovered-patterns)
 - [Overview](#overview)
 - [Method 1: `$.UI.create()` (Recommended)](#method-1-uicreate-recommended)
-- [Method 2: `Alloy.createStyle()` + `applyProperties()`](#method-2-alloycreatestyle--applyproperties)
+- [Method 2: `$.createStyle()` + `applyProperties()`](#method-2-createstyle--applyproperties)
 - [Comparison: Which Method to Use?](#comparison-which-method-to-use)
 - [Real-World Examples](#real-world-examples)
 - [Important Notes](#important-notes)
-- [Dynamic Styling with `classes` Property](#dynamic-styling-with-classes-property)
+- [Changing Classes at Runtime](#changing-classes-at-runtime)
 - [Anti-Patterns to Avoid](#anti-patterns-to-avoid)
 - [Summary](#summary)
 
@@ -31,11 +31,11 @@ The guidance in this file reflects patterns that PurgeTSS users have converged o
 When creating components dynamically in Controllers (not declaratively in XML), PurgeTSS provides two methods to apply utility classes:
 
 1. **`$.UI.create()`** - Create components with PurgeTSS classes (Recommended)
-2. **`Alloy.createStyle()` + `applyProperties()`** - Apply PurgeTSS styles to existing components
+2. **`$.createStyle()` + `applyProperties()`** - Apply PurgeTSS styles to existing components
 
 > **BEST PRACTICE**
 >
-> Always prefer `$.UI.create()` for dynamic components — it's cleaner, more readable, and PurgeTSS will process the classes automatically during build.
+> Always prefer `$.UI.create()` for dynamic components — it's cleaner, more readable, and PurgeTSS picks up the classes during build as long as they are written as literals under a `classes:` key in a controller (see [What the Class Scanner Collects](#what-the-class-scanner-collects)).
 
 ---
 
@@ -62,7 +62,7 @@ $.UI.create('ComponentType', {
 function createThemeCard(themeName, themeTitle, imagePath) {
   return $.UI.create('View', {
     // View properties
-    title: themeTitle, // Add title for TTS support
+    accessibilityLabel: themeTitle, // Read by VoiceOver/TalkBack (Ti.UI.View has no `title` property)
 
     // PurgeTSS utility classes
     classes: [
@@ -102,7 +102,7 @@ classes: ['w-screen', 'h-auto', 'bg-white', 'rounded-lg']
 classes: 'w-screen h-auto bg-white rounded-lg'
 
 // Option 3: Mix arbitrary values with predefined classes
-classes: ['w-(100px)', 'h-auto', 'bg-(#ff0000)', 'rounded-lg']
+classes: ['w-(100)', 'h-auto', 'bg-(#ff0000)', 'rounded-lg']
 ```
 
 ### Platform Modifiers in Dynamic Components
@@ -123,7 +123,7 @@ classes: [
 // Arbitrary values use parentheses notation
 classes: [
   'w-(160)',          // Custom width
-  'h-(200px)',        // Custom height with unit
+  'h-(12.5rem)',      // Custom height with a unit (not px: a px suffix stops the build)
   'bg-(#3b82f6)',     // Custom hex color
   'm-(10dp)',         // Custom margin with unit
   'border-(2)'        // Custom border width
@@ -157,21 +157,21 @@ function createListItem(text, icon) {
 
 ---
 
-## Method 2: `Alloy.createStyle()` + `applyProperties()`
+## Method 2: `$.createStyle()` + `applyProperties()`
 
 ### When to Use This Method
 
-Use `Alloy.createStyle()` when you need to:
+Use the controller's `createStyle()` method when you need to:
 - Apply PurgeTSS styles to an **existing component** (created without `$.UI.create()`)
-- Modify styles dynamically after component creation
-- Apply styles from a different view/controller
+- Build a style dictionary once and apply it to several components
+- Style a view of another controller (`Alloy.createController('dialog').createStyle(...)`, as in the Alloy dynamic styles guide)
 
 ### Basic Syntax
 
 ```javascript
 // Create style object
-const style = Alloy.createStyle('viewName', {
-  apiName: 'Ti.UI.View',
+const style = $.createStyle({
+  apiName: 'View',
   classes: 'bg-white rounded-lg'
 })
 
@@ -185,8 +185,8 @@ $.myView.applyProperties(style)
 // controllers/form/validation.js
 function showError(inputField, errorMessage) {
   // Create error style
-  const errorStyle = Alloy.createStyle('index', {
-    apiName: 'Ti.UI.TextField',
+  const errorStyle = $.createStyle({
+    apiName: 'TextField',
     classes: ['border-2', 'border-red-500', 'bg-red-50']
   })
 
@@ -196,8 +196,8 @@ function showError(inputField, errorMessage) {
 
 function clearError(inputField) {
   // Create normal style
-  const normalStyle = Alloy.createStyle('index', {
-    apiName: 'Ti.UI.TextField',
+  const normalStyle = $.createStyle({
+    apiName: 'TextField',
     classes: ['border-1', 'border-gray-300', 'bg-white']
   })
 
@@ -210,10 +210,11 @@ function clearError(inputField) {
 
 ```javascript
 // String format
-Alloy.createStyle('index', { classes: 'bg-white rounded-lg' })
+$.createStyle({ apiName: 'View', classes: 'bg-white rounded-lg' })
 
 // Array format
-Alloy.createStyle('index', {
+$.createStyle({
+  apiName: 'Label',
   classes: ['bg-white', 'rounded-lg', 'text-center']
 })
 ```
@@ -225,8 +226,8 @@ Alloy.createStyle('index', {
 | Scenario                        | Recommended Method                          | Example                                          |
 | ------------------------------- | ------------------------------------------- | ------------------------------------------------ |
 | **Creating new components**     | `$.UI.create()`                             | `$.UI.create('View', { classes: ['bg-white'] })` |
-| **Styling existing components** | `Alloy.createStyle()` + `applyProperties()` | `view.applyProperties(Alloy.createStyle(...))`   |
-| **Dynamic style changes**       | `Alloy.createStyle()` + `applyProperties()` | Form validation, theme switching                 |
+| **Styling existing components** | `$.createStyle()` + `applyProperties()`     | `view.applyProperties($.createStyle(...))`       |
+| **Swapping classes at runtime** | `$.addClass()` / `$.removeClass()` / `$.resetClass()` | Form validation, active/inactive states |
 | **Component factories**         | `$.UI.create()`                             | Reusable component creators                      |
 
 ---
@@ -236,21 +237,19 @@ Alloy.createStyle('index', {
 ### Example 1: Dynamic Form Fields
 
 ```javascript
-// lib/factories/formFactory.js
-exports.createFormField = function(fieldType, options) {
-  const baseClasses = ['w-screen', 'h-12', 'mx-4', 'border-gray-300', 'border-(1)', 'rounded-lg']
-
+// controllers/form.js
+function createFormField(fieldType, options) {
   switch (fieldType) {
     case 'text':
       return $.UI.create('TextField', {
         hintText: options.hint,
-        classes: [...baseClasses, 'bg-white', 'px-4']
+        classes: ['w-screen', 'h-12', 'mx-4', 'border-gray-300', 'border-(1)', 'rounded-lg', 'bg-white', 'px-4']
       })
 
     case 'textarea':
       return $.UI.create('TextArea', {
         hintText: options.hint,
-        classes: [...baseClasses, 'h-24', 'bg-white', 'px-4']
+        classes: ['w-screen', 'h-24', 'mx-4', 'border-gray-300', 'border-(1)', 'rounded-lg', 'bg-white', 'px-4']
       })
 
     case 'button':
@@ -261,6 +260,12 @@ exports.createFormField = function(fieldType, options) {
   }
 }
 ```
+
+> **NOTE — Keep factories in controllers, with literal class lists**
+>
+> - `$` is the controller instance, so `$.UI.create()` is not available in a plain `app/lib/` CommonJS module, and PurgeTSS does not scan `app/lib/` for classes.
+> - Each class list is written out in full under `classes:`. A shared `baseClasses` array spread into `classes: [...baseClasses, ...]` is invisible to the scanner: spread elements are skipped and the array itself is not under a `classes:` key, so those classes would be purged from `app.tss`.
+> - `px-4` sets `padding`, which exists only on `Ti.UI.TextField`, `Ti.UI.TextArea` (Android and iOS) and `Ti.UI.Android.CardView` (apidoc 13_4_1_GA). The `// padding - Android Only` comment in `utilities.tss` is inaccurate for the two text inputs.
 
 ### Example 2: Dynamic List Items
 
@@ -306,12 +311,12 @@ function createProductCard(product) {
 function applyTheme(theme) {
   const themes = {
     light: {
-      window: Alloy.createStyle('index', { classes: 'bg-white' }),
-      text: Alloy.createStyle('index', { classes: 'text-gray-900' })
+      window: $.createStyle({ apiName: 'Window', classes: 'bg-white' }),
+      text: $.createStyle({ apiName: 'Label', classes: 'text-gray-900' })
     },
     dark: {
-      window: Alloy.createStyle('index', { classes: 'bg-gray-900' }),
-      text: Alloy.createStyle('index', { classes: 'text-gray-100' })
+      window: $.createStyle({ apiName: 'Window', classes: 'bg-gray-900' }),
+      text: $.createStyle({ apiName: 'Label', classes: 'text-gray-100' })
     }
   }
 
@@ -325,13 +330,19 @@ function applyTheme(theme) {
 ```javascript
 // controllers/dashboard/grid.js
 function createIconGrid(items) {
+  // `grid` goes on the container; `grid-cols-4` (width: 25%) goes on each cell
   const grid = $.UI.create('View', {
-    classes: ['w-screen', 'grid-cols-4', 'gap-4']
+    classes: ['grid']
   })
 
   items.forEach(item => {
+    const cell = $.UI.create('View', {
+      classes: ['grid-cols-4']
+    })
+
+    // Optional gutter: `gap-*` sets margins, so it goes on an inner view
     const icon = $.UI.create('View', {
-      classes: ['vertical']
+      classes: ['gap-1', 'vertical']
     })
 
     const iconView = $.UI.create('Label', {
@@ -346,7 +357,8 @@ function createIconGrid(items) {
 
     icon.add(iconView)
     icon.add(label)
-    grid.add(icon)
+    cell.add(icon)
+    grid.add(cell)
   })
 
   return grid
@@ -361,13 +373,39 @@ function createIconGrid(items) {
 
 > **NOTE — HOW IT WORKS**
 >
-> When you use `$.UI.create()` or `Alloy.createStyle()` with classes:
+> When you use `$.UI.create()` or `$.createStyle()` with classes:
 >
 > 1. PurgeTSS scans your controllers for these class references
 > 2. It adds the classes to the generated `app.tss`
 > 3. At runtime, Alloy applies the styles to your components
 >
-> This means you get the full PurgeTSS utility surface even with dynamic components.
+> This works only for classes the scanner can see (next section). Anything else is purged from `app.tss` and silently does nothing at runtime.
+
+### What the Class Scanner Collects
+
+PurgeTSS parses every file in `app/controllers/**/*.js`, plus `app/widgets/**/controllers/*.js` when `purge.options.widgets` is `true`. Files in `app/lib/` are not scanned.
+
+It collects class names only from these shapes:
+
+| Shape | Example |
+| --- | --- |
+| Value of a `classes:` or `apply:` property | `classes: ['bg-white', 'rounded-lg']`, `classes: 'bg-white rounded-lg'` |
+| Second argument of any `*Class(target, value)` call, or `resetClass(target, value)` | `$.addClass($.label, 'text-red-500')` |
+
+Inside those, it reads string literals, template literals without `${}`, array elements, and both branches of a ternary (`isActive ? 'text-green-500' : 'text-red-500'`).
+
+It does not see classes held in a variable, built by concatenation or interpolation (`` `bg-${color}-500` ``), added with `.push()`, or spread from another array (`[...baseClasses]`). For classes that must be built dynamically, list them in `purge.options.safelist` in `purgetss/config.cjs`, which keeps them no matter the purge mode (see the PurgeTSS configuring guide, `options.safelist`):
+
+```javascript
+// purgetss/config.cjs
+module.exports = {
+  purge: {
+    options: {
+      safelist: ['bg-red-500', 'bg-green-500', 'bg-blue-500']
+    }
+  }
+}
+```
 
 ### Class Verification
 
@@ -378,7 +416,10 @@ Just like with XML views, always verify classes exist before using them:
 classes: ['w-screen', 'h-auto', 'bg-white', 'rounded-lg']
 
 // WRONG - These classes don't exist
-classes: ['flex-row', 'justify-center', 'p-4']  // No flexbox, no p-* on View
+classes: ['flex-row', 'justify-center']  // No flexbox in Titanium
+
+// NO EFFECT - `p-4` exists, but it sets `padding`, which only TextField, TextArea and Android CardView have
+$.UI.create('View', { classes: ['p-4'] })  // Use margins on the children instead
 ```
 
 See [Class Index](class-index.md) for available classes.
@@ -394,7 +435,7 @@ classes: [
   'bg-white'
 ]
 
-// Avoid: Conditional logic in controllers
+// Avoid: Conditional logic in controllers (the scanner does not see `.push()`, so classes added only this way are purged)
 if (OS_IOS) {
   classes.push('mx-4')
 } else {
@@ -404,19 +445,23 @@ if (OS_IOS) {
 
 ---
 
-## Dynamic Styling with `classes` Property
+## Changing Classes at Runtime
 
-You can change PurgeTSS classes dynamically at runtime using the `classes` property in `applyProperties()`:
+`applyProperties({ classes: [...] })` does not restyle a view: it only sets a `classes` property on the proxy. To change the classes of a view that already exists, use the controller's `addClass`, `removeClass` and `resetClass` methods (Alloy dynamic styles guide). Pass the view, then the classes as an array or space-separated string, and optionally inline properties as a third argument:
 
 ```javascript
 // Toggle status styling dynamically
 function setStatus(isActive) {
-  $.statusLabel.applyProperties({
-    classes: isActive ? ['text-green-500'] : ['text-red-500'],
+  $.removeClass($.statusLabel, isActive ? 'text-red-500' : 'text-green-500')
+  $.addClass($.statusLabel, isActive ? 'text-green-500' : 'text-red-500', {
     text: isActive ? L('active') : L('inactive')
   })
 }
 ```
+
+- `resetClass(view, classes)` replaces every class on the view, including the ones set in XML, so pass the full list.
+- Enable autostyle (`<Alloy autoStyle="true">` in the view, or `autoStyle: true` in `config.json`) so removing a class also reverts its properties. Without it, a removed class leaves its values on the view.
+- The PurgeTSS scanner reads the second argument of these calls, including both branches of a ternary.
 
 ### Conditional Styling Based on State
 
@@ -452,9 +497,9 @@ function setState(state) {
 }
 ```
 
-> **NOTE — When to use `classes` vs `applyProperties`**
+> **NOTE — When to use `addClass`/`removeClass` vs `applyProperties`**
 >
-> - Use `classes` when you want to swap entire style sets (e.g., active/inactive states)
+> - Use `addClass`/`removeClass`/`resetClass` when you want to swap entire style sets (e.g., active/inactive states)
 > - Use `applyProperties` with direct values when changing individual properties (e.g., text, enabled)
 > - Combine both for complex state changes
 
@@ -483,17 +528,17 @@ const view = $.UI.create('View', {
 })
 ```
 
-### Don't mix inline styles and classes
+### Mixing inline properties and classes: keep inline values for runtime data
+
+Alloy supports inline properties next to `classes`, and inline properties take precedence over class styles. Use them for values only known at runtime, and keep static styling in classes so it stays consistent with the rest of the app:
 
 ```javascript
-// CONFUSING - Mix of styles and classes
+// Avoid - a static value that a class already covers
 const view = $.UI.create('View', {
-  backgroundColor: '#ffffff',  // Manual style
-  classes: ['w-screen', 'rounded-lg']  // PurgeTSS classes
+  backgroundColor: '#ffffff',  // Same as `bg-white`
+  classes: ['w-screen', 'rounded-lg']
 })
 ```
-
-### Use only classes (or only styles)
 
 ```javascript
 // CORRECT - Pure PurgeTSS
@@ -501,15 +546,12 @@ const view = $.UI.create('View', {
   classes: ['w-screen', 'h-auto', 'bg-white', 'rounded-lg']
 })
 
-// OR for truly dynamic/runtime-only values
-const view = Ti.UI.createView({
-  backgroundColor: dynamicColor,  // Runtime value
-  width: calculatedWidth
-})
-// Then apply PurgeTSS classes
-view.applyProperties(Alloy.createStyle('index', {
+// CORRECT - Runtime values inline, static styling as classes
+const view = $.UI.create('View', {
+  backgroundColor: dynamicColor,  // Runtime value, overrides any class color
+  width: calculatedWidth,
   classes: ['rounded-lg', 'm-4']
-}))
+})
 ```
 
 ---
@@ -519,8 +561,9 @@ view.applyProperties(Alloy.createStyle('index', {
 | Method                    | Use Case                    | Syntax                                               |
 | ------------------------- | --------------------------- | ---------------------------------------------------- |
 | **`$.UI.create()`**       | Creating new components     | `$.UI.create('View', { classes: ['bg-white'] })`     |
-| **`Alloy.createStyle()`** | Styling existing components | `Alloy.createStyle('view', { classes: 'bg-white' })` |
+| **`$.createStyle()`**     | Styling existing components | `$.createStyle({ apiName: 'View', classes: 'bg-white' })` |
 | **`applyProperties()`**   | Apply style to component    | `component.applyProperties(style)`                   |
+| **`$.addClass()` / `$.removeClass()` / `$.resetClass()`** | Swapping classes at runtime | `$.addClass($.label, 'text-red-500')` |
 
 > **NOTE — REMEMBER**
 >
@@ -531,4 +574,4 @@ view.applyProperties(Alloy.createStyle('index', {
 > - All layout classes (`horizontal`, `vertical`)
 > - All typography classes (`text-*`, `font-*`)
 > - Platform modifiers (`ios:*`, `android:*`)
-> - Arbitrary values (`w-(100px)`, `bg-(#ff0000)`)
+> - Arbitrary values (`w-(100)`, `bg-(#ff0000)`)

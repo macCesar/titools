@@ -20,8 +20,8 @@ Whether you want to style a Ti Element (a markup element such as `Label`), a cus
 >
 > 1. **Audit current usage.** Set `purge.options.missing` to `true` in `config.cjs`. PurgeTSS will append a list of missing classes at the end of `app.tss` after the next compile — every entry is a class name you still need to migrate.
 > 2. **Rename selectors.** Convert every `.myCustomClassName` to `.my-custom-class-name` in both XML markup and `config.cjs`. The old camelCase names will not match anymore.
-> 3. **Convert config to `.cjs`.** If your project still uses `purgetss.config.js` or a CommonJS-style file with the old layout, rename the file to `config.cjs` and ensure it sits in `./purgetss/`. The single export must be `module.exports = { theme: { ... } }`.
-> 4. **Re-run `purgetss build`.** Verify the missing-classes list at the end of `app.tss` is empty before turning `missing` back off.
+> 3. **Let PurgeTSS rename the config.** If the project still has `./purgetss/config.js`, the next PurgeTSS run renames it to `./purgetss/config.cjs` automatically. If both files exist, PurgeTSS reads only `config.cjs` and leaves `config.js` untouched, so merge any settings it holds into `config.cjs` and delete it.
+> 4. **Re-run `purgetss`** (or build the Alloy project, which runs it through the auto-purge hook). Verify the missing-classes list at the end of `app.tss` is empty before turning `missing` back off. `purgetss build` only regenerates `utilities.tss`; it does not write `app.tss`.
 >
 > Skipping any of these steps tends to surface as silently dropped styles at runtime — the app compiles, but selectors no longer match.
 
@@ -43,7 +43,7 @@ The way you write property values determines how PurgeTSS emits them in the gene
 - For `spacing` values you can mix unit types. Each unit follows a specific conversion rule:
   - `%`, `px`, `cm`, and `in` are passed through to TSS without conversion.
   - `em` and `rem` values are converted with the formula `value * 16` (so `1rem` becomes `16`).
-  - `dp` removes the unit and keeps the numeric value as-is, since Titanium treats unit-less numeric values as density-independent pixels by default.
+  - `dp` removes the unit and keeps the numeric value as-is. Titanium resolves unit-less numbers with `ti.ui.defaultunit` in `tiapp.xml` (the Alloy template default is `dp`).
 
 ## `config.cjs` File Example
 
@@ -100,21 +100,21 @@ module.exports = {
 PurgeTSS reads `config.cjs` and emits a single `utilities.tss` file that Alloy then merges with the rest of the project's styling. The file below shows what the example above generates — note how block keys translate into TSS query suffixes (`[platform=android]`, `[formFactor=tablet]`, `[if=...]`).
 
 ```tss
-/* Property: TextField */
-/* Description: A single line text field. */
+// Property: TextField
+// Description: A single line text field.
 'TextField': { top: 10, left: 20, right: 20, bottom: 0 }
 'TextField[if=Alloy.Globals.iPhoneX]': { bottom: Alloy.CFG.iPhoneXNotchSize }
 'TextField[platform=android]': { touchFeedback: true }
 
-/* Custom Classes */
+// Custom Classes
 '#main-banner': { width: '300px', height: '80px' }
 '#main-banner[platform=ios]': { clipMode: Ti.UI.iOS.CLIP_MODE_DISABLED }
-
 '.gallery': { height: Ti.UI.SIZE }
 '.gallery[platform=ios]': { clipMode: Ti.UI.iOS.CLIP_MODE_ENABLED }
 '.gallery[platform=android]': { hiddenBehavior: Ti.UI.HIDDEN_BEHAVIOR_GONE }
 '.gallery[formFactor=handheld]': { width: '250px' }
 '.gallery[formFactor=tablet]': { width: '500px' }
+// End of Custom Classes
 ```
 
 ## Community-Discovered Patterns
