@@ -6,6 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [5.1.0] - 2026-09-26
+
+### Added
+
+- `purgetss` brings back a guide for adopting PurgeTSS in an existing Alloy app, `adopting-purgetss.md`. The March audit had replaced it with the version-upgrade guide under the same file name. It now covers why leftover controller `.tss` rules and inline attributes override utility classes, a view-by-view workflow that keeps the user's files until they agree, and translation tables whose every class was checked against `utilities.tss`.
+
+### Fixed
+
+- `purgetss` audited against PurgeTSS 7.17.1, source and docs. Every example now uses unitless arbitrary values: since 7.8.0 `w-(100px)` stops the build. Classes that do not exist are gone (`absolute`, `border-t`, `border-b`, `hires-true`, `start`, `end`, `center`, `p-1/2`, `col-1/2`), and `rounded-full`, `w-full`, `autocorrect` and `password-mask` are no longer listed as missing.
+- `purgetss` corrects the image and SVG pipelines: outputs are capped at 4096 px per side, SVG sources always produce PNGs, and only `image` and `backgroundImage` are scanned. Store artwork is always flattened, and the master icon is 1024 px since 7.14.0.
+- `purgetss` fixes broken examples: `extend.View` without the `default` wrapper, `applyProperties({ classes })`, which restyles nothing, and animation snippets that called undefined views. The invented claim that `theme.View.DEFAULT` was deprecated in 7.5.0 is removed.
+- `purgetss` documents `padding` classes for `TextField` and `TextArea` on both platforms. The "Android Only" label in `utilities.tss` is wrong for those two (apidoc 13_4_1_GA).
+- `purgetss update` is documented as `npm update -g purgetss`, and the `materialsymbols` vendor alias, which the CLI ignores, is replaced by `materialsymbol`.
+
+### Changed
+
+- `purgetss` class indexes are generated from `utilities.tss` by `.claude/skills/titools-skill-auditor/scripts/purgetss-class-index.mjs`. The hand-written tables had drifted into prefixes the generator never emits (`row-height-*` for `row-h-*`, `background-disabled-*` for `bg-disabled-*`). `class-categories.md` now groups families by the kind of value they set.
+- `purgetss` splits `brand-padding-geometry.md` out of `app-branding.md` and `color-commands.md` out of `cli-commands.md`, keeping both under the 800-line limit.
+- `purgetss` migration guide covers 7.14.0 through 7.17.1, and the version history adds 7.5.1, 7.3.x (the `tailwind.tss` → `utilities.tss` rename), 7.2.x and 7.1.10.
+
 ## [5.0.0] - 2026-09-12
 
 ### Changed
