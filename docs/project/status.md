@@ -1,10 +1,10 @@
 # Status — 2026-09-26
 
-**Phase:** v5.1.0 shipped; live and maintained.
+**Phase:** v5.1.1 shipped; live and maintained.
 **Session by:** Claude Code · Opus 5.5 (`claude-opus-5-5`).
-**Deployed:** `@maccesar/titools@5.1.0` on npm, published by `publish.yml` run [36289538960](https://github.com/macCesar/titools/actions/runs/36289538960), `success`; the log shows `+ @maccesar/titools@5.1.0` with a provenance statement. The registry serves `latest 5.1.0`, read from `registry.npmjs.org` directly; reads in the first two minutes after the run still answered `5.0.0` while the tarball already returned 200, the same CDN lag as the last releases. Tag `v5.1.0` → `8a9818f`, the release commit. GitHub release at <https://github.com/macCesar/titools/releases/tag/v5.1.0>. `package.json`, `package-lock.json` and `.claude-plugin/plugin.json` all read `5.1.0`.
+**Deployed:** `@maccesar/titools@5.1.1` on npm, published by `publish.yml` run [36292092017](https://github.com/macCesar/titools/actions/runs/36292092017), `success`; the log shows `+ @maccesar/titools@5.1.1` with a provenance statement. `registry.npmjs.org` serves `latest 5.1.1`. The packument listed 5.1.1 about two minutes after the run, while the tarball answered 404 until about six minutes after it (then 200): the reverse of the lag seen on 5.1.0. Tag `v5.1.1` → `1a4dbb4`, the release commit. GitHub release at <https://github.com/macCesar/titools/releases/tag/v5.1.1>. `package.json`, `package-lock.json` and `.claude-plugin/plugin.json` all read `5.1.1`.
 **Branch:** `main`, aligned with `origin/main`, working tree clean before this note.
-**Sibling:** `git diff v5.0.0..v5.1.0 -- lib/ bin/ hooks/` is empty, so no port to `../aiskills` is owed. `../aiskills` is at `a9a869e`, aligned with its `origin/main`, with an uncommitted `CLAUDE.md` of the maintainer's that this session did not touch.
+**Sibling:** `git diff v5.1.0..v5.1.1 -- lib/ bin/ hooks/` is empty, so no port to `../aiskills` is owed. `../aiskills` is aligned with its `origin/main` and clean.
 
 ## Where things stand
 
@@ -17,12 +17,12 @@ v5.1.0 is a full audit of the `purgetss` skill against PurgeTSS 7.17.1: `purgets
 
 The audit also found defects in the PurgeTSS CLI and errors in its official docs. Those are not fixed here: they were handed off to a session in `~/Developer/openSource/purgeTSS` (11 CLI items and about 20 docs items, plus an annex), which fixed them and deleted its `HANDOFF.md` as instructed.
 
-## In flight
+## Last shipped
 
-Unreleased on `main`:
+Shipped in v5.1.1; nothing unreleased on `main`.
 
-- **`4e94537` (committed, unreleased):** `SKILL.md:332` and `arbitrary-values.md:60` no longer say unitless arbitrary values are pixels.
-- **The `purgetss` skill aligned with PurgeTSS 7.18.0 and purgetss-docs 1.1.14** (`067c852` indexes, `2ed041c` passages, pushed). The purgeTSS session fixed the CLI and docs defects from the handoff and released both; its `HANDOFF.md` to TiTools listed the passages here. `.purgetss-source` is at `d46f95b` (package `7.18.0`) and `.purgetss-docs` at `f596432`.
+- **`4e94537`:** `SKILL.md:332` and `arbitrary-values.md:60` no longer say unitless arbitrary values are pixels.
+- **The `purgetss` skill aligned with PurgeTSS 7.18.0 and purgetss-docs 1.1.14** (`067c852` indexes, `2ed041c` passages). The purgeTSS session fixed the CLI and docs defects from the handoff and released both; its `HANDOFF.md` to TiTools listed the passages here. `.purgetss-source` is at `d46f95b` (package `7.18.0`) and `.purgetss-docs` at `f596432`.
   - Indexes regenerated: 23,343 → 23,332 classes, the 9 `*-keyboard-type-appearance*` plus `snap-magnet` / `snap-magnet-false`.
   - `(Npx)` is version-dependent everywhere it appeared: valid and explicit pixels since 7.18.0, a build stop from 7.8.0 through 7.17.1. The pre-validator lists 4 patterns.
   - New section `platform-modifiers.md` § "Combining a platform and a device"; new "Upgrade to v7.18.0" in `migration-guide.md` and "v7.18.0" in `version-history.md` (which replaces its "Unreleased (after v7.17.1)" block). Older history entries are annotated, not rewritten.
@@ -38,25 +38,24 @@ Unreleased on `main`:
 
 ## Requirements
 
-- R3 (version files agree) holds at `5.1.0` across the registry, `package.json` and `plugin.json`; `publish.yml` re-checked it before publishing.
+- R3 (version files agree) holds at `5.1.1` across the registry, `package.json` and `plugin.json`; `publish.yml` re-checked it before publishing.
 - R7–R9 hold: 362/362 tests, green locally before the release commit and again in CI.
 - R10 is not implicated: no shared CLI machinery changed.
 
 ## Next step
 
-1. **Release** the 7.18.0 alignment together with `4e94537`, when the maintainer says so.
-2. **Re-audit `purgetss` against `.purgetss-docs` 1.1.14**, now that the docs were corrected at the source. The alignment above followed the handoff's list and the 7.18.0 changelog; it was not a page-by-page pass over the docs.
-3. **The contribution to the new Titanium site, once PR #170 merges.** The plan in the previous status still stands: `content/docs/build/notifications.md` against `skills/ti-expert/references/push-notifications.md`, after reading the site's `docs/writing-guides.md` and adding an `upstream` remote.
-4. **When Titanium 14.0.0 ships**, run `apidoc-coverage.mjs` against the new tag.
-5. **`EXAMPLE-PROMPTS.md` has no prompt routed at the push-notification reference or at `adopting-purgetss.md`.** Not re-checked today beyond noting the new guide.
-6. **The SessionStart hook still does not reach npm-only installs.** A design question, written up in `context.md` § Traps.
+1. **Re-audit `purgetss` against `.purgetss-docs` 1.1.14**, now that the docs were corrected at the source. The alignment above followed the handoff's list and the 7.18.0 changelog; it was not a page-by-page pass over the docs.
+2. **The contribution to the new Titanium site, once PR #170 merges.** The plan in the previous status still stands: `content/docs/build/notifications.md` against `skills/ti-expert/references/push-notifications.md`, after reading the site's `docs/writing-guides.md` and adding an `upstream` remote.
+3. **When Titanium 14.0.0 ships**, run `apidoc-coverage.mjs` against the new tag.
+4. **`EXAMPLE-PROMPTS.md` has no prompt routed at the push-notification reference or at `adopting-purgetss.md`.** Not re-checked today beyond noting the new guide.
+5. **The SessionStart hook still does not reach npm-only installs.** A design question, written up in `context.md` § Traps.
 
 ## Verified vs. assumed
 
-- **Verified now:** publish run `36289538960` concluded `success`; the registry serves `latest 5.1.0`; tag `v5.1.0` → `8a9818f`; all three version files read `5.1.0`.
+- **Verified now:** publish run `36292092017` concluded `success`; the registry serves `latest 5.1.1` and the 5.1.1 tarball returns 200; tag `v5.1.1` → `1a4dbb4`; all three version files read `5.1.1`.
 - **Verified now:** 362/362 tests before the release commit and in CI.
-- **Verified now:** the three generated indexes name 3015 class tokens, 0 absent from `utilities.tss`. The checker was run first on known-good (`bg-white`, `row-h-*`) and known-bad (`row-height-*`, `border-t-*`, `hires-true`) inputs. The parser's unique-class count, 23,343, matches an independent `grep`.
-- **Verified now:** 553 relative links and anchors under `skills/purgetss` resolve (checker controlled with a known-bad anchor and a missing file). No PUA glyphs, no `var`, no reference over 800 lines, and every code fence closes.
+- **Verified now:** the three generated indexes name 3015 class tokens, 0 absent from `utilities.tss`. The checker was run first on known-good (`bg-white`, `row-h-*`) and known-bad (`row-height-*`, `border-t-*`, `hires-true`) inputs. The parser's unique-class count matched an independent `grep` at 7.17.1 (23,343); at 7.18.0 it reports 23,332.
+- **Verified at v5.1.0:** 553 relative links and anchors under `skills/purgetss` resolve (checker controlled with a known-bad anchor and a missing file). No PUA glyphs, no `var`, no reference over 800 lines, and every code fence closes.
 - **Verified by running the cached CLI in throwaway projects:** `(Npx)` halts the purge; semantic color nesting works at any depth since 7.10.0; `extend.View` needs the `default` wrapper; the 4096 px output cap (width 1024 passes, 1025 aborts).
 - **Verified against apidoc `13_4_1_GA`:** `padding` exists only on `TextField` and `TextArea` (both platforms), `Ti.UI.Android.CardView`, `ScrollableView` (Android), `TabGroup` bottom navigation (Android) and `Ti.UI.iOS.ButtonConfiguration`. PurgeTSS's "padding - Android Only" label is wrong for the two text inputs; the skill says so.
 - **Corrected during the session:** the agents first propagated that "Android Only" label into two references; fixed after checking the apidoc.
