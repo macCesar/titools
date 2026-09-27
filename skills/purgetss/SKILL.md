@@ -329,7 +329,7 @@ purgetss create 'MyApp' -d -v fa
 > ```
 
 - **NEVER add `composite` class explicitly** - That's the default, use `horizontal`/`vertical` when needed
-- **Arbitrary values use parentheses**: `w-(100)`, `bg-(#ff0000)` - NO square brackets, and no `px` unit (unitless values are resolved through `ti.ui.defaultunit`, see [values-and-units.md](references/values-and-units.md); since v7.8.0 `w-(100px)` stops the build with a `Class Syntax Error`)
+- **Arbitrary values use parentheses**: `w-(100)`, `bg-(#ff0000)` - NO square brackets. A unitless value is resolved through `ti.ui.defaultunit` (see [values-and-units.md](references/values-and-units.md)); `w-(100px)` is explicit pixels, valid again since v7.18.0 after stopping the build from v7.8.0 through v7.17.1
 - **`mode: 'all'` required** in `config.cjs` for Ti Elements styling
 - **Classes use `kebab-case`**: `.my-class`, IDs use `camelCase`: `#myId`
 
@@ -427,7 +427,7 @@ Load these only when needed:
 - [CLI Commands](references/cli-commands.md) - All `purgetss` commands
 - [Color Commands](references/color-commands.md) - `semantic`, `shades` and `color-module`: Light/Dark semantic colors, palettes in `config.cjs`, and the CommonJS color module
 - [Adopting PurgeTSS](references/adopting-purgetss.md) - Moving an existing Alloy app from hand-written `.tss` files to utility classes: the style-priority trap, view-by-view workflow, and property-to-class translation tables
-- [Migration Guide](references/migration-guide.md) - Upgrading between PurgeTSS versions (v7.2.6 → v7.17.1): breaking changes and what to review after each upgrade
+- [Migration Guide](references/migration-guide.md) - Upgrading between PurgeTSS versions (v7.2.6 → v7.18.0): breaking changes and what to review after each upgrade
 - **[Values and Units](references/values-and-units.md)** - How `ti.ui.defaultunit` in `tiapp.xml` interprets the unitless numeric values PurgeTSS writes (foundational concept for spacing, sizes, typography)
 
 ### Customization
@@ -445,7 +445,7 @@ Load these only when needed:
 - [Grid Layout System](references/grid-layout.md) - 12-column grid, responsive layouts
 - [Smart Mappings](references/smart-mappings.md) - How gap, shadows, and grid work under the hood
 - [Arbitrary Values](references/arbitrary-values.md) - Parentheses notation for custom values
-- [Platform Modifiers](references/platform-modifiers.md) - ios:, android:, tablet:, handheld:
+- [Platform Modifiers](references/platform-modifiers.md) - ios:, android:, tablet:, handheld:, and stacked `ios:tablet:` (v7.18.0)
 - [Opacity Modifier](references/opacity-modifier.md) - Color transparency with /50 syntax
 - [Titanium Resets](references/titanium-resets.md) - Default styles for Ti elements
 - [iOS Large Titles](references/ios-large-titles.md) - Best practice for iOS Large Title navigation
@@ -471,7 +471,7 @@ Load these only when needed:
 - [PurgeTSS UI in Classic](references/purgetss-ui-classic.md) - Native JavaScript setup, public exports, animation objects, cleanup, and platform notes
 
 ### Release Notes
-- [Version History](references/version-history.md) - Release-by-release feature additions and behavior changes (v7.4.0 → v7.17.1)
+- [Version History](references/version-history.md) - Release-by-release feature additions and behavior changes (v7.4.0 → v7.18.0)
 
 > **💡 TEXT FONTS (Google Fonts, Roboto, etc.)**
 > For text fonts, see [Custom Fonts](references/custom-fonts.md).

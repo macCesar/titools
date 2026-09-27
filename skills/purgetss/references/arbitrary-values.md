@@ -49,7 +49,7 @@ Example output:
 
 ### Detected patterns
 
-The validator catches five narrow, actionable mistakes:
+The validator catches four narrow, actionable mistakes:
 
 | Pattern                       | Offending input | Suggested fix | Notes                                                            |
 | ----------------------------- | --------------- | ------------- | ---------------------------------------------------------------- |
@@ -57,13 +57,14 @@ The validator catches five narrow, actionable mistakes:
 | Square-bracket notation       | `top-[10]`      | `top-(10)`    | PurgeTSS uses parentheses, not square brackets, for arbitrary values (v7.10.1 reworded the error from `Tailwind-style brackets "[ ]"` to `Square brackets "[ ]" are not supported`) |
 | Empty parentheses             | `wh-()`         | (flagged, no auto-fix) | Add a value such as `wh-(10)`                           |
 | Whitespace inside parentheses | `wh-( 200 )`    | `wh-(200)`    | No spaces allowed between `(`, the value, and `)`                |
-| Redundant `px` unit           | `top-(10px)`    | `top-(10)`    | The error text says unit-less values are pixels; Titanium actually resolves them through `ti.ui.defaultunit` (see [values-and-units.md](values-and-units.md)) |
+
+From v7.8.0 through v7.17.1 there was a fifth pattern, "Redundant `px` unit", which rejected `top-(10px)` and suggested `top-(10)`. v7.18.0 removed it: its error text claimed unit-less values are pixels, but they resolve through `ti.ui.defaultunit`, so the suggested fix changed the size.
 
 ### Unknown classes are still silently dropped
 
-The pre-validator only fires on the five patterns above. Any other unknown class — typos, custom utilities not yet declared, vendor classes that are not enabled in `config.cjs` — is **not** reported as a `Class Syntax Error`. Those classes continue to flow into the `// Unused or unsupported classes` comment block in `app.tss`, exactly like before. This keeps the validator focused on actionable mistakes and avoids noise while you sketch out class names.
+The pre-validator only fires on the four patterns above. Any other unknown class — typos, custom utilities not yet declared, vendor classes that are not enabled in `config.cjs` — is **not** reported as a `Class Syntax Error`. Those classes continue to flow into the `// Unused or unsupported classes` comment block in `app.tss`, exactly like before. This keeps the validator focused on actionable mistakes and avoids noise while you sketch out class names.
 
-> **Units: write arbitrary values unitless.** Because of the redundant-`px` rule, any class like `m-(50px)`, `w-(2300px)` or `text-(48px)` halts the purge. Write `m-(50)`, `w-(2300)`, `text-(48)` instead; other units such as `rem`, `in` or `%` are not flagged.
+> **Units.** A unitless value such as `w-(100)` generates `width: 100`, which Titanium resolves through `ti.ui.defaultunit` (normally `dp`; see [values-and-units.md](values-and-units.md)). A value with a unit keeps it: `w-(100px)` generates `width: '100px'`, explicit pixels, and `rem`, `in` or `%` work the same way. On v7.8.0 through v7.17.1 a `px` suffix stops the purge; write `w-(100)` there only if `dp` is what you meant.
 
 ### v7.8.0 parser fix for negatives inside parentheses
 
@@ -182,9 +183,11 @@ You can set an arbitrary value for any of the following color properties:
 - `bg-` (*hex-rgb-or-rgba-value*)
 - `bg-disabled-` (*hex-rgb-or-rgba-value*)
 - `bg-focused-` (*hex-rgb-or-rgba-value*)
+- `bg-from-` (*hex-rgb-or-rgba-value*) — v7.18.0; earlier versions wrote a literal `{value1}`
 - `bg-selected-` (*hex-rgb-or-rgba-value*)
 - `bg-selected-from-` (*hex-rgb-or-rgba-value*)
 - `bg-selected-to-` (*hex-rgb-or-rgba-value*)
+- `bg-to-` (*hex-rgb-or-rgba-value*)
 - `border-` (*hex-rgb-or-rgba-value*)
 - `colors-` (*hex-rgb-or-rgba-value*)
 - `content-scrim-` (*hex-rgb-or-rgba-value*)
@@ -236,7 +239,7 @@ You can set an arbitrary value for any of the following color properties:
 
 ## Spacing Properties
 
-You can set arbitrary values for most size and dimension properties using unitless numbers or units such as `rem`, `in`, or `%`, directly in XML files or in `config.cjs`. A `px` suffix is rejected by the pre-validator (see above).
+You can set arbitrary values for most size and dimension properties using unitless numbers or units such as `px`, `rem`, `in`, or `%`, directly in XML files or in `config.cjs`. A `px` suffix is rejected on v7.8.0 through v7.17.1 (see above).
 
 ```xml
 <Alloy>

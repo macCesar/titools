@@ -1,6 +1,6 @@
 # Migration Guide
 
-This guide summarizes the official PurgeTSS changelog: `CHANGELOG.md` in the package repository and the docs changelog page (`src/pages/changelog.md`, published at <https://purgetss.com/changelog>). It walks through the upgrade-relevant changes from v7.2.6 through v7.17.1, flags breaking changes, and links each section to the reference files that cover the new surface area in depth.
+This guide summarizes the official PurgeTSS changelog: `CHANGELOG.md` in the package repository and the docs changelog page (`src/pages/changelog.md`, published at <https://purgetss.com/changelog>). It walks through the upgrade-relevant changes from v7.2.6 through v7.18.0, flags breaking changes, and links each section to the reference files that cover the new surface area in depth.
 
 Changelog source of truth: [CHANGELOG.md](https://github.com/macCesar/purgetss/blob/main/CHANGELOG.md).
 
@@ -9,6 +9,7 @@ Changelog source of truth: [CHANGELOG.md](https://github.com/macCesar/purgetss/b
 <!-- TOC-START -->
 ## Contents
 
+- [Upgrade to v7.18.0](#upgrade-to-v7180)
 - [Upgrade to v7.17.x](#upgrade-to-v717x)
 - [Upgrade to v7.16.x](#upgrade-to-v716x)
 - [Upgrade to v7.15.0](#upgrade-to-v7150)
@@ -32,6 +33,35 @@ Changelog source of truth: [CHANGELOG.md](https://github.com/macCesar/purgetss/b
 - [Quick Checklist](#quick-checklist)
 
 <!-- TOC-END -->
+
+## Upgrade to v7.18.0
+
+v7.18.0 fixes the defects an audit of the CLI found, and removes three things that never worked. Full release notes in [`version-history.md`](./version-history.md).
+
+### Removed
+
+- **The `(Npx)` check.** `w-(100px)` is valid again and generates `width: '100px'`, explicit pixels. A unitless `w-(100)` still follows `ti.ui.defaultunit`. The pre-validator now catches four patterns. See [`arbitrary-values.md`](./arbitrary-values.md#class-syntax-pre-validation).
+- **`snap-magnet` and `snap-magnet-false`.** The animation module never read `snap.magnet`.
+- **`init --all`.** Declared in 7.0.0, never implemented. The root `purgetss --all` is unaffected.
+
+### Fixed
+
+- **Stacked modifiers** such as `ios:tablet:bg-red-500` are generated, with every condition in one bracket. See [`platform-modifiers.md`](./platform-modifiers.md#combining-a-platform-and-a-device).
+- **Icon classes written only with a modifier** (`android:ms-home`) are generated.
+- **`bg-from-(#hex)`** writes a gradient instead of a literal `{value1}`.
+- **Font Awesome Pro/Beta:** `purgetss build` no longer fails with `ENOENT`, and `icon-library --module` / `--styles` build the files instead of printing a placeholder.
+- **`icon-library --vendor`** accepts `materialsymbols`; an unknown value stops the command before it writes anything.
+- **The nine `*-keyboard-type-appearance*` classes are gone.** They assigned an appearance constant to `keyboardType`; use `keyboard-appearance-*`.
+- **`images --width`** accepts 1 to 1024; above 1024 it used to write some densities and then fail at the 4096 px cap.
+- **`images`** detects Alloy from `app/views/`, like every other command.
+- **`swap()`** reads the source view's position from `rect` when it has no `top`/`left`.
+
+### What to review
+
+- Replace any `snap-magnet`, `*-keyboard-type-appearance*` or `init --all` in your project or scripts.
+- Anything you rewrote from `(Npx)` to a unitless value to get past the check now uses `dp` instead of pixels; restore the `px` if pixels are what you meant.
+
+---
 
 ## Upgrade to v7.17.x
 
@@ -328,11 +358,11 @@ Five patterns are now caught and reported with file + line + suggested fix:
 | Whitespace inside parentheses | `wh-( 200 )` | `wh-(200)` |
 | Redundant `px` unit | `top-(10px)` | `top-(10)` |
 
-All offenders are reported in a single run. Generic unknown classes — typos, vendor utilities not enabled, custom classes not declared yet — continue to flow into `// Unused or unsupported classes`. See [`arbitrary-values.md` → Class syntax pre-validation](./arbitrary-values.md#class-syntax-pre-validation).
+v7.18.0 removed the redundant-`px` pattern (see [Upgrade to v7.18.0](#upgrade-to-v7180)). All offenders are reported in a single run. Generic unknown classes — typos, vendor utilities not enabled, custom classes not declared yet — continue to flow into `// Unused or unsupported classes`. See [`arbitrary-values.md` → Class syntax pre-validation](./arbitrary-values.md#class-syntax-pre-validation).
 
 ### Added — `purgetss images --width <n>` (v7.8.0)
 
-Pins Android `mdpi` (= iPhone `@1x`) to `<n>` pixels wide. Larger scales derive as ×1.5, ×2, ×3, ×4 from that base. Range `[1, 8192]`. Most useful for SVG sources from vector editors (Affinity, Illustrator) with disproportionate viewBoxes. CLI-only — width is per-asset, not a project-wide setting. See [`multi-density-images.md`](./multi-density-images.md#pinning-the-output-width-with---width).
+Pins Android `mdpi` (= iPhone `@1x`) to `<n>` pixels wide. Larger scales derive as ×1.5, ×2, ×3, ×4 from that base. Range `[1, 8192]` (v7.18.0 narrowed it to `[1, 1024]`). Most useful for SVG sources from vector editors (Affinity, Illustrator) with disproportionate viewBoxes. CLI-only — width is per-asset, not a project-wide setting. See [`multi-density-images.md`](./multi-density-images.md#pinning-the-output-width-with---width).
 
 ### Fixed in v7.8.0
 
@@ -498,7 +528,7 @@ v7.4.0 is the **Animation module expansion**. Nine new methods bring the Animati
 ### Added
 
 - **New methods**: `transition`, `pulse`, `sequence`, `swap`, `shake`, `snapTo`, `reorder`, `undraggable`, `detectCollisions`.
-- **New utility classes**: `snap-back`, `snap-center`, `snap-magnet`, `keep-z-index`.
+- **New utility classes**: `snap-back`, `snap-center`, `snap-magnet`, `keep-z-index` (`snap-magnet` was removed in v7.18.0).
 - **Delta-based drag for transformed views** — drag math now works correctly when the view already has a 2D transform applied.
 - **Position normalization** and **property inheritance** from the Animation object — reduces boilerplate when sequencing multiple animations on the same view.
 

@@ -321,14 +321,14 @@ alloy compile
 <View class="w-(100) bg-(#ff0000)" />
 ```
 
-**PurgeTSS syntax for arbitrary values uses `()` not `[]`, and pixel values are written without a unit: `w-(100px)` also stops the build (`Explicit "px" unit is redundant`).**
+**PurgeTSS syntax for arbitrary values uses `()` not `[]`. A unitless value follows `ti.ui.defaultunit`; `w-(100px)` is explicit pixels (it stops the build only on v7.8.0 through v7.17.1).**
 
 > **🚨 v7.8.0+ HARD-FAILS THE BUILD ON SQUARE BRACKETS**
 > Since v7.8.0, the build stops with a structured `Class Syntax Error` block (file path + line number + `Fix:` suggestion) the moment it spots `top-[10px]`, `wh-[12]`, or any other square-bracket utility. Pre-v7.8.0, those classes silently dropped into the `// Unused or unsupported classes` block of `app.tss` — easy to miss. Now they're loud and actionable.
 >
 > v7.10.1 reworded the error message from `'Tailwind-style brackets "[ ]" are not supported'` to `'Square brackets "[ ]" are not supported'`. Same enforcement, less framing.
 >
-> See [Arbitrary Values → Class syntax pre-validation](arbitrary-values.md#class-syntax-pre-validation) for the full list of patterns the pre-validator catches (5 total, including inverted negative sign, whitespace inside parentheses, and redundant `px` units).
+> See [Arbitrary Values → Class syntax pre-validation](arbitrary-values.md#class-syntax-pre-validation) for the full list of patterns the pre-validator catches (4 since v7.18.0: inverted negative sign, square brackets, empty parentheses, and whitespace inside parentheses).
 
 **Examples:**
 - `w-(100)` - Custom width
@@ -434,7 +434,7 @@ module.exports = {
 | `w-full`                              | Percentage-based                     | `w-screen` (Ti.UI.FILL)                      |
 | `rounded-full` with `w-*`/`h-*`       | Fixed 8×8 circle, conflicts on size  | `rounded-full-12`                            |
 | `composite` class                     | Already default                      | Omit it                                      |
-| `w-[100]`, `w-(100px)`                | Stops the build (v7.8.0+)            | `w-(100)`                                    |
+| `w-[100]`                             | Stops the build (v7.8.0+)            | `w-(100)`                                    |
 | Manual `.tss`                         | Duplicates classes; its rules override `app.tss` | Use utility classes (`app.tss` itself is rewritten on every run) |
 | `gap` on a `%`-width column           | Total exceeds 100%                   | `gap-*` on an inner View, or explicit margins |
 | ScrollView without `content-*` sizing | No/unexpected scroll                 | Add `content-w-screen` + `content-h-auto`    |

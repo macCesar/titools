@@ -204,7 +204,7 @@ Control how draggable views behave when dropped. All are **off by default**.
 | `snap-center` | `{ animationProperties: { snap: { center: true } } }` | Auto-centers on target |
 | `snap-center-false` | `{ animationProperties: { snap: { center: false } } }` | Disables snap-center |
 
-Generated utility inventories may still contain `snap-magnet` names, but the current `purgetss.ui` runtime never reads `animationProperties.snap.magnet`. Do not use or recommend those classes as working drag behavior.
+There is no magnet snap: `snap-magnet` and `snap-magnet-false` were generated from v7.5.1 through v7.17.1, but the runtime never read `snap.magnet`, and v7.18.0 removed them.
 
 ### keep-z-index
 
@@ -307,7 +307,7 @@ The callback is a new object containing selected native primitives plus PurgeTSS
 
 ### Position and drag state
 
-`swap()`, `snapTo()`, and `reorder()` persist destinations with `applyProperties()` and update private origin fields. They fall back to rendered `rect` coordinates, so call them only after layout.
+`swap()`, `snapTo()`, and `reorder()` persist destinations with `applyProperties()` and update private origin fields. They fall back to rendered `rect` coordinates, so call them only after layout. `swap()` has this fallback since v7.18.0; before, a source view with no `top`/`left` sent the target view to `top: undefined`.
 
 Drag precedence is precise:
 

@@ -6,9 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- `purgetss` follows PurgeTSS 7.18.0 and purgetss-docs 1.1.14. `w-(100px)` is valid again and means explicit pixels (it stopped the build from 7.8.0 through 7.17.1); stacked modifiers such as `ios:tablet:` are documented; `snap-magnet` and the `*-keyboard-type-appearance*` classes are gone from the regenerated class indexes; `images --width` accepts 1 to 1024; `materialsymbols` is a valid vendor alias; `bg-from-` and `bg-to-` are listed as arbitrary values. The migration guide and version history gain a 7.18.0 section, and older entries note what 7.18.0 reverted.
+
 ### Fixed
 
-- `purgetss` no longer says unitless arbitrary values are pixels. Titanium resolves them through `ti.ui.defaultunit`; the PurgeTSS error message that says "pixels" is quoted as such.
+- `purgetss` no longer says unitless arbitrary values are pixels. Titanium resolves them through `ti.ui.defaultunit`.
 
 ## [5.1.0] - 2026-09-26
 

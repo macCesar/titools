@@ -103,7 +103,7 @@ Once the converted view looks right on both platforms, and the user agrees:
 | `layout: 'vertical'` | `vertical` |
 | `elevation: 4` | `elevation-1` (the scale is ×4: `elevation-4` is `16`) |
 
-Spacing classes multiply by 4 (`mt-4` = 16), and the numbers are unitless: Titanium resolves them with `ti.ui.defaultunit` (see [values-and-units.md](values-and-units.md)). For a value off the scale use an arbitrary value **without a unit**: `h-(60)`, not `h-(60px)`, which stops the build since v7.8.0 (see [arbitrary-values.md](arbitrary-values.md)). Colors in your brand palette belong in `config.cjs` (see [customization-deep-dive.md](customization-deep-dive.md)), not in arbitrary `bg-(#hex)` classes repeated across views.
+Spacing classes multiply by 4 (`mt-4` = 16), and the numbers are unitless: Titanium resolves them with `ti.ui.defaultunit` (see [values-and-units.md](values-and-units.md)). For a value off the scale use an arbitrary value: `h-(60)` keeps the default unit, while `h-(60px)` means explicit pixels and stops the build on v7.8.0 through v7.17.1 (see [arbitrary-values.md](arbitrary-values.md)). Colors in your brand palette belong in `config.cjs` (see [customization-deep-dive.md](customization-deep-dive.md)), not in arbitrary `bg-(#hex)` classes repeated across views.
 
 ### Platform and device conditionals
 
@@ -133,5 +133,5 @@ See [animation-system.md](animation-system.md).
 | Keeping inline attributes (`backgroundColor="…"`) | They override every class | Move them into classes |
 | Flexbox classes (`flex-row`, `justify-between`) | Classes don't exist | `horizontal` / `vertical` layouts |
 | `p-*` on a `View` or `Window` | No effect: `padding` exists only on `TextField`, `TextArea` and Android `CardView` | Margins on the children |
-| `w-[100]` or `w-(100px)` | Stops the build | `w-(100)` |
+| `w-[100]` | Stops the build | `w-(100)` |
 | Converting every view at once | Hard to find what broke | One view per step, tested on both platforms |

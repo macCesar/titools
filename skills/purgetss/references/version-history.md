@@ -8,7 +8,12 @@ When in doubt about whether a class, flag, or config key exists in the user's in
 
 ---
 
-## Unreleased (after v7.17.1)
+## v7.18.0
+- **`(Npx)` is valid again.** The redundant-`px` check is gone: `w-(100px)` generates `width: '100px'`, explicit pixels; unitless values follow `ti.ui.defaultunit`. The pre-validator catches 4 patterns. See [arbitrary-values.md](arbitrary-values.md).
+- Stacked modifiers (`ios:tablet:`, either order) generate one bracket, `[platform=ios formFactor=tablet]`; a contradicting modifier leaves a comment in `app.tss`. See [platform-modifiers.md](platform-modifiers.md).
+- Removed: `snap-magnet` / `snap-magnet-false`, the nine `*-keyboard-type-appearance*` classes, and `init --all`.
+- Fixed: `bg-from-(#hex)`, icon classes written only with a modifier, Font Awesome Pro/Beta in `build` and `icon-library -m/-s`, `icon-library --vendor=materialsymbols` (unknown vendors now abort), `images --width` limited to 1–1024, one `detectProjectType()`, `swap()` falling back to `rect`.
+- The `padding` block in `utilities.tss` is no longer labeled Android-only.
 - The comment above the opt-in pieces in the generated config now names each consumer instead of claiming both are inert without hand-edited XML. Only `splash_icon` is.
 
 ## v7.17.1
@@ -108,7 +113,7 @@ When in doubt about whether a class, flag, or config key exists in the user's in
 
 ## v7.8.0
 - `purgetss images --width <n>` pins Android `mdpi` / iPhone `@1x` to `<n>` pixels for SVG sources with disproportionate viewBoxes (Affinity, Illustrator). CLI-only.
-- Class syntax pre-validation emits `Class Syntax Error` blocks for 5 patterns: inverted negative (`top-(-10)` → `-top-(10)`), brackets (`top-[10px]` → `top-(10px)`), empty parens (`wh-()`), whitespace in parens, redundant `px` unit. Generic unknown classes still flow into `// Unused or unsupported classes`.
+- Class syntax pre-validation emits `Class Syntax Error` blocks for 5 patterns: inverted negative (`top-(-10)` → `-top-(10)`), brackets (`top-[10px]` → `top-(10px)`), empty parens (`wh-()`), whitespace in parens, redundant `px` unit (removed in v7.18.0). Generic unknown classes still flow into `// Unused or unsupported classes`.
 
 ## v7.7.0
 - `brand:` config restructured into grouped sections: `brand.logos`, `brand.padding`, `brand.android`, `brand.ios`, `brand.colors`. Old projects keep working; new configs use grouped form. See [app-branding.md](app-branding.md).
@@ -129,7 +134,7 @@ When in doubt about whether a class, flag, or config key exists in the user's in
 
 ## v7.5.1
 - Fix: `dist/purgetss.ui.js` shipped in v7.5.0 without `pulse()`, the latest `transition()` improvements, and delta-based drag for transformed views; rebuilt from the template. Re-run `purgetss module` to get them.
-- Fix: `snap-back`, `snap-center`, `snap-magnet`, and `keep-z-index` classes are now generated in `utilities.tss`.
+- Fix: `snap-back`, `snap-center`, `snap-magnet`, and `keep-z-index` classes are now generated in `utilities.tss` (`snap-magnet` was removed in v7.18.0).
 - Font Awesome updated to 7.2.0.
 
 ## v7.5.0
@@ -140,7 +145,7 @@ When in doubt about whether a class, flag, or config key exists in the user's in
 
 ## v7.4.0
 - Animation module: 9 new methods (`transition`, `pulse`, `sequence`, `swap`, `shake`, `snapTo`, `reorder`, `undraggable`, `detectCollisions`). 15 methods total. See [animation-system.md](animation-system.md).
-- New utility classes: `snap-back`, `snap-center`, `snap-magnet`, `keep-z-index`.
+- New utility classes: `snap-back`, `snap-center`, `snap-magnet`, `keep-z-index` (`snap-magnet` removed in v7.18.0).
 - Delta-based drag for transformed views; property inheritance from Animation object.
 
 ## v7.3.1

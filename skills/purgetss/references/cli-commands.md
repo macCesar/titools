@@ -346,7 +346,7 @@ purgetss images background/                           # re-process one subfolder
 | `--ios` | Only emit iPhone scale variants. Mutually exclusive with `--android`. |
 | `--format <ext>` | Convert all outputs to `webp`, `jpeg`, `png`, `avif`, `gif`, or `tiff`. Default: keep source format. |
 | `--quality <n>` | Quality `0-100` for `webp`, `jpeg`, `avif` and `tiff`. PNG and GIF ignore it. Default `85`. |
-| `--width <n>` | (v7.8.0) Pin Android `mdpi` (= iPhone `@1x`) to `<n>` pixels wide. Larger scales derive as ×1.5, ×2, ×3, ×4 from that base; height stays proportional to the source's aspect ratio. Integer in `[1, 8192]`. |
+| `--width <n>` | (v7.8.0) Pin Android `mdpi` (= iPhone `@1x`) to `<n>` pixels wide. Larger scales derive as ×1.5, ×2, ×3, ×4 from that base; height stays proportional to the source's aspect ratio. Integer in `[1, 1024]`. |
 | `--opacity <n>` | (v7.10.0) Multiply alpha of every density by `n/100`. Integer in `[0, 100]`. With `--format jpeg`, alpha flattens on white. |
 | `--padding <n>` | (v7.10.0) Shrink the rendered image inside each density canvas by `n%` symmetric borders. Integer in `[0, 40]`. |
 | `--output <relpath>` | (v7.10.0) Override the basename and subpath relative to each platform's `images/` root. |
@@ -458,7 +458,7 @@ purgetss il [-v=fa,mi,ms,f7] [-m] [-s]
 | `-m, --module` | Copy the matching CommonJS module into `app/lib/` (Alloy) or `Resources/lib/` (Classic). |
 | `-s, --styles` | Alloy only: copy official `.tss` sources into `purgetss/styles/` for reference. Classic skips this output. |
 
-Vendor aliases: `fa`/`fontawesome`, `mi`/`materialicons`, `ms`/`materialsymbol`, `f7`/`framework7`.
+Vendor aliases: `fa`/`fontawesome`, `mi`/`materialicons`, `ms`/`materialsymbol`/`materialsymbols` (v7.18.0), `f7`/`framework7`. An unknown value stops the command before it writes anything and lists the valid ones (v7.18.0).
 
 Every installed module exposes `families.default`. Direct variant aliases are `solid`/`regular`/`brands` for Font Awesome; `regular`/`outlined`/`round`/`sharp`/`twoTone` for Material Icons; `outlined`/`rounded`/`sharp` for Material Symbols; and `fontFamily` for Framework7.
 
