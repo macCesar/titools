@@ -125,3 +125,13 @@ The new site is not a smaller replacement to fear. TiDev's own `docs/legacy-guid
 Two traps are written into the auditor because both were hit while establishing this. `registry/sdk/_pool/` is content-addressed and shared across every version, so grepping it says some version has an API, not which — that is how `hideSharedBackground` was first misreported as shipped in 13.4.1. And a hand-written type-to-reference map sends an audit at the wrong file and reports every member of a type as missing.
 
 The auditor travels with the repo: `.gitignore` blocks `.claude/*` but re-admits `!.claude/skills/`, so `titools-skill-auditor` and its new `scripts/` are versioned like anything else.
+
+---
+
+## 2026-09-26 — The `purgetss` class indexes are generated from `utilities.tss`, never edited by hand
+
+**Decision:** `class-index-properties.md` and `class-categories.md` are written whole, and `class-index.md` between its `GENERATED` markers, by `.claude/skills/titools-skill-auditor/scripts/purgetss-class-index.mjs`, reading the `utilities.tss` the PurgeTSS package ships. Shipped in v5.1.0. The prose around the markers in `class-index.md` stays hand-written and is audited like any other reference.
+
+**Why:** The hand-written tables had drifted into prefixes the generator never emits (44 rows: `row-height-*` for `row-h-*`, `background-disabled-*` for `bg-disabled-*`) and into Tailwind names PurgeTSS never had (`border-t-*`, `p-1/2`, `col-1/2`). An agent that trusts the index suggests classes that silently do nothing. Reading the shipped file means the index cannot disagree with it.
+
+**Consequences:** After a PurgeTSS release, refresh `.purgetss-source`, run the script with `--write`, then `node scripts/generate-toc.mjs --write`. `source-map.md` records this. The generated output was checked the day it landed: 3015 class tokens, 0 absent from `utilities.tss`, with a checker validated on known-good and known-bad inputs first.
