@@ -54,7 +54,7 @@ The docs are primary for workflows and user-facing paths. Use the package `CHANG
 |---|---|
 | `installation-setup.md` | `.purgetss-docs/docs/installation.md` + `commands.md` compatibility table |
 | `cli-commands.md`, `classic-projects.md` | `.purgetss-docs/docs/commands.md` + `.purgetss-source/CHANGELOG.md` |
-| `app-branding.md`, `launch-background.md` | `.purgetss-docs/docs/app-assets/1-app-icons-and-branding.md` + branding CLI/source/tests |
+| `app-branding.md`, `brand-padding-geometry.md`, `launch-background.md` | `.purgetss-docs/docs/app-assets/1-app-icons-and-branding.md` + branding CLI/source/tests |
 | `multi-density-images.md` | `.purgetss-docs/docs/app-assets/2-multi-density-images.md` + images CLI/source/tests |
 | `svg-pipeline.md` | `.purgetss-docs/docs/app-assets/3-svg-pipeline.md` |
 | `appearance-module.md` | `.purgetss-docs/docs/best-practices/1-appearance-setup.md` + `docs/purgetss-ui/10-appearance.md` |
@@ -71,10 +71,12 @@ The docs are primary for workflows and user-facing paths. Use the package `CHANG
 | `icon-fonts.md` | `.purgetss-docs/docs/customization/8-icon-fonts-libraries.md` + generated modules in `.purgetss-source/dist/` |
 | `grid-layout.md` | `.purgetss-docs/docs/grid-system.md` |
 | `animation-system.md`, `animation-advanced.md`, `purgetss-ui-classic.md` | `.purgetss-docs/docs/purgetss-ui/` + UI module template/source |
-| `class-index.md`, `class-index-properties.md`, `class-categories.md` | Generated utilities, builders, config template, and `dist/*.tss` in `.purgetss-source/`; verify class existence from source/output, not from Tailwind memory |
+| `class-index.md`, `class-index-properties.md`, `class-categories.md` | `.purgetss-source/dist/utilities.tss`. Do not edit the tables by hand: run `node .claude/skills/titools-skill-auditor/scripts/purgetss-class-index.mjs --write`, then `node scripts/generate-toc.mjs --write`. It rewrites `class-index-properties.md` and `class-categories.md` whole and `class-index.md` between its `GENERATED` markers; the prose around those markers is audited by hand |
 | `dynamic-component-creation.md` | Official configuration/custom-rule docs plus Alloy integration code in `.purgetss-source/`; mark any production convention beyond those sources as community-discovered |
 | `smart-mappings.md`, `performance-tips.md`, `ui-ux-design.md`, `tikit-components.md`, `EXAMPLES.md` | Curated cross-topic references. Verify every PurgeTSS class/API against the mapped official docs/source; preserve valid `Community-Discovered Patterns` and flag unsupported prose |
 | `version-history.md` | `.purgetss-source/CHANGELOG.md` (agent-facing summary, not a copy of the full changelog) |
+| `adopting-purgetss.md` | No official source. Author guidance: verify every class against `.purgetss-source/dist/utilities.tss`, the `app.tss` / `_app.tss` behavior against `src/cli/commands/purge.js`, and the priority rules against `skills/alloy-guides/references/VIEWS_STYLES.md` § Style Priorities |
+| `migration-guide.md` | `.purgetss-source/CHANGELOG.md` + `.purgetss-docs/src/pages/changelog.md` (per-version upgrade steps; every release with a behavior change a project must act on gets a section) |
 
 Do not treat the similarly named `alloy-guides/references/PURGETSS.md` as the source for this skill. That file is separately marked `AUDIT-SKIP` in the titanium-docs audit because `skills/purgetss/` is the maintained PurgeTSS authority in this repository.
 
