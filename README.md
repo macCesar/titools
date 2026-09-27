@@ -192,7 +192,7 @@ Notes:
 - `ti-game` documents the `ti.game` native module (2D sprite engine on OpenGL ES 2.0, Android and iOS). Its API reference was verified against the module source and tracks upstream `main` (the module ships features ahead of its manifest version); it applies to Alloy and Classic projects alike and does not depend on PurgeTSS.
 - `ti-synthengine` translates aesthetic sound requests into strict, production-ready JavaScript for the cross-platform `ti.synthengine` 1.0.0 module. Seven references preserve the official documentation and an eighth adds curated retro, xylophone, memory-pad, polyphony and timer-ownership recipes; the API contract was cross-checked against both native implementations.
 - The latter five are documentation-mirror skills, audited against official sources via the internal `titools-skill-auditor`. See [Where the references come from](#where-the-references-come-from).
-- `purgetss` reference files are audited against the official PurgeTSS documentation, but its workflow conventions are opinionated.
+- `purgetss` reference files are audited against the official PurgeTSS documentation and against the package source (the CLI and the generated `utilities.tss`), but its workflow conventions are opinionated.
 
 ---
 
