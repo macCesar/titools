@@ -84,7 +84,7 @@ The `play`, `toggle`, `open`, `close`, `apply`, and `sequence` methods accept an
 | --- | --- |
 | `open:` | Properties applied during open state |
 | `close:` | Properties applied during close state |
-| `complete:` | Additional properties applied after the active `play`/`toggle`/`open`/`close` state, or immediately after `apply` |
+| `complete:` | Additional properties applied after the active `play`/`toggle`/`open`/`close` state (and after each view of a `sequence`), or immediately after `apply` |
 | `children:` | Global properties for all children of a View |
 | `child:` | Individual properties for specific children |
 | `bounds:` | Drag boundaries within parent |
@@ -93,13 +93,17 @@ The `play`, `toggle`, `open`, `close`, `apply`, and `sequence` methods accept an
 
 ### Timing and Special Classes
 
-`delay-*`, `duration-*`, `rotate-*`, `scale-*`, `repeat-*`, `zoom-in-*`, `zoom-out-*`, `drag-apply`, `drag-animate`, `ease-in`, `ease-out`, `ease-linear`, `ease-in-out`, `vertical-constraint`, `horizontal-constraint`.
+`delay-*`, `duration-*`, `rotate-*`, `scale-*`, `repeat-*`, `zoom-in-*`, `zoom-out-*`, `drag-apply`, `drag-animate`, `ease-in`, `ease-out`, `ease-linear`, `ease-in-out`, `vertical-constraint`, `horizontal-constraint`, `debug`.
+
+The `debug` class sets `debug: true` (in Classic, pass `debug: true` to `createAnimation()`). The object then logs every method call and internal step with `console.warn('::ti.animation:: …')`.
 
 ---
 
 ## The `play` Method
 
 Runs the animation for a single view or an array of views. Toggles between open and close states on repeated calls.
+
+`play` and `toggle` do nothing while the object's internal `playing` flag is set. The flag turns on when a native animation starts and off at the first completion event, so with an array it clears when the first view finishes. `open`, `close`, `apply`, and `sequence` do not check it.
 
 ```javascript
 $.myAnimation.play($.myView)
@@ -262,6 +266,10 @@ function showPanel() {
 function closePanel() {
   $.panelAnim.close($.panel, () => { $.panel.hide() })
 }
+
+function onOverlayTap({ source }) {
+  if (source.id === 'panel') closePanel()
+}
 ```
 
 Key classes: `zoom-in-110` (pop effect), `opacity-to-100` (fade overlay), `close:duration-0 open:duration-100` (instant close, animated open).
@@ -341,6 +349,8 @@ function onClose() {
 
 After calling `draggable()`, enable collision detection based on center-point hit testing.
 
+Include the dragged views themselves in the `views` list: drop callbacks, `snap-center`, and `snap-back` run only for a view registered with `detectCollisions()`.
+
 ```javascript
 $.myAnimation.draggable(views)
 $.myAnimation.detectCollisions(views, dragCB, dropCB)
@@ -351,8 +361,10 @@ $.myAnimation.detectCollisions(views, dragCB, dropCB)
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `views` | `View/Array` | Views to register for collision detection |
-| `dragCB` | `Function(source, target)` | Called during drag; `target` is the view under the drag center, or `null` when leaving |
+| `dragCB` | `Function(source, target)` | Called during drag; `target` is the view under the drag center, or `null` when leaving. Also called with `null` whenever a registered view is released |
 | `dropCB` | `Function(source, target)` | Called on drop when a collision target is found |
+
+Hit testing during movement runs only when a `dragCB` was supplied. Without one, the drop uses only the final hit test at release; the last-hovered target is not available as a fallback.
 
 ### Snap Classes
 
@@ -436,12 +448,12 @@ $.myAnimation.sequence(views, callback)
 ```
 
 ```javascript
-$.fadeIn.sequence([$.title, $.subtitle, $.cta], () => {
+$.revealAnim.sequence([$.title, $.subtitle, $.cta], () => {
   console.log('All views animated in sequence')
 })
 
 // Use close() to force state back before revealing again
-$.revealAnim.close(views)
+$.revealAnim.close([$.title, $.subtitle, $.cta])
 ```
 
 ---
@@ -459,7 +471,7 @@ $.myAnimation.swap(view1, view2)
 - Resets the source transform while persisting the exchanged positions
 - Temporarily elevates z-index; then assigns z-index from the current draggable-registry order rather than restoring arbitrary original values
 - Updates `_originLeft`/`_originTop` for subsequent drag operations
-- **Automatic position normalization**: no explicit `top`/`left` needed -- resolved via `view.rect`
+- **Position resolution**: `view2`'s destination is read from `view2.rect`, but `view1`'s home comes from its stored drag origin or its `top`/`left`, with no `rect` fallback. Give `view1` explicit `top`/`left` unless it has already been dragged or moved by a helper
 - **Bounce-back safe**: completes any in-progress bounce-back before swapping
 
 ### Memory Card Game Example
@@ -469,7 +481,7 @@ let firstCard = null
 function onCardTap({ source }) {
   $.flipAnim.open(source)
   if (!firstCard) { firstCard = source; return }
-  if (firstCard.valor === source.valor) {
+  if (firstCard.value === source.value) {
     firstCard = null
   } else {
     $.gameAnim.swap(firstCard, source)
@@ -552,7 +564,7 @@ $.puzzleAnim.draggable(pieces)
 $.puzzleAnim.detectCollisions(pieces.concat(slots),
   null,
   (source, target) => {
-    if (source.valor === target.valor) {
+    if (source.value === target.value) {
       $.puzzleAnim.undraggable(source)
       source.applyProperties({ opacity: 0.6 })
     }
@@ -643,7 +655,7 @@ $.anim.transition(screensB, fanOut)
 
 ```javascript
 const photos = [$.photo1, $.photo2, $.photo3]
-function doFan() { $.galleryAnim.transition(photos, fan) }
+function doFan() { $.galleryAnim.transition(photos, fanOut) }
 function doStack() { $.galleryAnim.transition(photos, stack) }
 $.galleryAnim.draggable(photos)  // photos keep rotation/scale while dragging
 ```

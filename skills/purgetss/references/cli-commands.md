@@ -38,6 +38,11 @@ The utility-class lifecycle remains Alloy-only. Classic projects can use indepen
 | `color-module`, `module` | yes | yes | Writes CommonJS modules to `app/lib/` or `Resources/lib/`. |
 | `icon-library`, `build-fonts` | yes | yes | Writes fonts to `Resources/fonts/` and optional modules to `Resources/lib/`; Classic receives no TSS. |
 | Root `purgetss`, `--all`, `init`, `create`, `install-dependencies`, `build`, `watch` | yes | no | Alloy utility-class lifecycle only. |
+| `update`, `sudo-update` | yes | yes | Global CLI maintenance; no project layout is required. |
+
+The output-only modes `shades --log`, `shades --json`, `shades --tailwind`, and `semantic --log` write nothing and also work outside a project.
+
+The root command is `purgetss [-a|--all] [--debug]`: without options it purges the Alloy project; `--all` runs `build`, `build-fonts`, and the purge in sequence; `--debug` displays execution time for each process.
 
 See [Classic Project Support](./classic-projects.md) for the complete boundary and audit checklist.
 
@@ -122,12 +127,12 @@ The `create` command generates a new Alloy project with PurgeTSS already set up.
 - `-f, --force` to overwrite an existing project.
 - `-d, --dependencies` to install ESLint and Tailwind CSS.
 - `-m, --module` to install the `purgetss.ui.js` module in the project's `./app/lib/` folder.
-- `-v, --vendor [fa,mi,ms,f7]` to copy the selected fonts into your project and add the CommonJS module in `./app/lib/`. See the `icon-library` command for available fonts.
+- `-v, --vendor <fa,mi,ms,f7>` to copy the selected fonts into your project and add the CommonJS module in `./app/lib/`. See the `icon-library` command for available fonts.
 
 If a project with the same name already exists, the command will prompt you to confirm whether you want to overwrite it.
 
 ```bash
-purgetss create 'Name of the Project' [--vendor="fontawesome, materialicons, materialsymbols, framework7"]
+purgetss create 'Name of the Project' [--vendor="fontawesome, materialicons, materialsymbol, framework7"]
 
 # alias:
 purgetss c 'Name of the Project' [-v=fa,mi,ms,f7]
@@ -232,7 +237,7 @@ The 14 pieces, their config keys and what each one writes are tabulated in [app-
 
 Splash padding is a share of the canvas's **shorter** side, so one number keeps the logo at the same visual weight in portrait and in landscape: the `26%` default leaves it at 48% of the shorter side.
 
-Radius precedence and the outputs intentionally left unmasked are documented in [Rounded non-icon artwork](./app-branding.md#rounded-non-icon-artwork). Normal and `--dry-run` summaries report effective padding and radius.
+Radius precedence: the piece-specific flag, then `--splash-corner-radius` (splashes only), then `--artwork-corner-radius`, then the piece's `cornerRadius`, then `brand.splashCornerRadius` (splashes only), then `brand.artworkCornerRadius`, and finally `0%`. `DefaultIcon*`, `iTunesConnect.png`, `MarketplaceArtwork.png`, adaptive/legacy/app icons, and `splash_icon.png` stay unmasked. Normal and `--dry-run` summaries report effective padding and radius.
 **Optional asset types**
 
 | Flag | Purpose |
@@ -281,7 +286,7 @@ Every piece has a `--<piece>-logo <path>` flag — with no exceptions since v7.1
 
 ### Positional argument
 
-- `[logo-path]` (optional) — main source for every piece without an override. In a standalone Classic first run, when no canonical logo exists, PurgeTSS moves this source to `purgetss/brand/logo.{svg,png}` after confirmation and reports the destination.
+- `[logo-path]` (optional) — main source for every piece without an override. In an in-place run (Alloy or Classic; not with `--output`) where no canonical logo exists, PurgeTSS moves this source to `purgetss/brand/logo.{svg,png}` after confirmation and reports the destination.
 
 ### Config block (v7.13.0 per-piece structure)
 
@@ -317,6 +322,8 @@ purgetss brand --dry-run                                  # preview without writ
 ### Android output groups
 
 `brand` writes four Android-facing asset groups with different jobs — `ic_launcher*`, `appicon.png`, `default.png` + `images/res-*/default.png`, and the opt-in `splash_icon.png`. What each one is actually read by is spelled out in [app-branding.md → What gets generated](./app-branding.md#what-gets-generated).
+
+`brand.background` is baked into the generated assets, but `brand` does not edit the iOS LaunchScreen or the Android theme. Run `purgetss brand --notes` to print the snippets with the current color; see [launch-background.md](./launch-background.md).
 
 ## `images` Command
 
@@ -407,79 +414,7 @@ purgetss images --dry-run                              # preview
 
 ## `semantic` Command
 
-Introduced in v7.6.0. Generates Titanium semantic colors with Light/Dark support. Alloy writes `app/assets/semantic.colors.json` and utility mappings; Classic writes only `Resources/semantic.colors.json` and does not create `purgetss/`, `config.cjs`, TSS, `app/`, or a hook. The command dispatches between two modes based on `--single`.
-
-> **Tip**
-> This is a quick reference. See [semantic-colors.md](./semantic-colors.md) for the complete guide — mirror inversion math, Titanium semantic color spec, class mapping conventions, and strategies for purpose-based design systems.
-
-### Palette mode (no `--single`)
-
-One base hex, 11-shade tonal palette with mirror-by-index Light/Dark inversion anchored at shade `500`. Alloy writes the JSON plus the utility mapping in `config.cjs`; Classic writes only the native JSON entries.
-
-```bash
-purgetss semantic <hex> <name>
-purgetss semantic '#15803d' amazon
-```
-
-Usage produces classes like `bg-amazon-50`, `text-amazon-500`, `border-amazon-950` that flip tonal contrast automatically with the system appearance.
-
-### Single mode (`--single`)
-
-Explicit per-mode hex values for purpose-based semantic colors (`surfaceColor`, `textColor`, `borderColor`, `overlayColor`, etc.). Alloy writes the JSON entry and maps it to a utility class in `config.cjs`; Classic writes only the native JSON entry and uses its key directly in Titanium color properties.
-
-```bash
-purgetss semantic --single <hex> <name> [--dark <hex>] [--alpha <0-100>]
-
-# Examples:
-purgetss semantic --single '#F9FAFB' surfaceColor     --dark '#0f172a'
-purgetss semantic --single '#111827' textColor        --dark '#f1f5f9'
-purgetss semantic --single '#3B82F6' accentColor      --dark '#60a5fa' --alpha 80
-purgetss semantic --single '#000000' overlayColor     --alpha 50
-```
-
-When `--dark` is omitted, it defaults to the light hex — useful for overlays/glass surfaces where alpha is the only variation.
-
-### Customizing the class name
-
-The auto-mapping uses the most literal Titanium-style transform: strip `Color`, then kebab-case the rest (e.g. `surfaceColor` → `surface`, `textSecondaryColor` → `text-secondary`). If your design system prefers different names — for example `on-surface` instead of `text`, or nesting the surface family under `DEFAULT` / `high` — edit `config.cjs` after running the `--single` batch:
-
-`./purgetss/config.cjs`
-```javascript
-theme: {
-  extend: {
-    colors: {
-      surface: { DEFAULT: 'surfaceColor', high: 'surfaceHighColor' },
-      'on-surface': 'textColor',
-      'on-surface-variant': 'textSecondaryColor',
-      muted: 'textMutedColor',
-      border: 'borderColor',
-      accent: 'accentColor',
-      overlay: 'overlayColor'
-    }
-  }
-}
-```
-
-The next `purgetss build` picks up the renamed classes. Editing one generated mapping is faster than typing the whole structure from scratch. See [semantic-colors.md](./semantic-colors.md) for the full nested-vs-flat discussion (including the `[object Object]` pitfall when nesting without `DEFAULT`).
-
-### Smart in-place updates
-
-If a `--single` name matches an existing palette shade — e.g. `purgetss semantic --single '#000' amazon500` while palette `amazon` exists — PurgeTSS narrows the operation to an in-place JSON value edit. The entry stays in its original position, and `config.cjs` is left untouched (the palette already maps to that key).
-
-Re-running on the same palette family fully replaces it: PurgeTSS strips prior keys belonging to that family (bare name + 11 shade keys) before writing the new entries. Unrelated palettes and manually-defined entries survive.
-
-### Flags
-
-| Flag | Purpose |
-| --- | --- |
-| `-s, --single` | Generate a single purpose-based semantic color (requires explicit per-mode hex). |
-| `-d, --dark <hex>` | With `--single`, the dark-mode hex (defaults to the light value). |
-| `-a, --alpha <0-100>` | With `--single`, wraps both modes in `{ color, alpha }` per the Titanium spec. |
-| `-n, --name <name>` | Specify the name (alternative to the positional argument). |
-| `-r, --random` | Palette mode — use a random base color. |
-| `-o, --override` | Alloy only: place the mapping in `theme.colors` instead of `theme.extend.colors`. Ignored in Classic. |
-| `-q, --quotes` | Alloy only: keep double quotes in `config.cjs`. Ignored in Classic. |
-| `-l, --log` | Preview the JSON without writing any files. |
+Documented in [color-commands.md](color-commands.md#semantic-command).
 
 ## `install-dependencies` Command
 
@@ -519,7 +454,7 @@ purgetss il [-v=fa,mi,ms,f7] [-m] [-s]
 
 | Flag | Purpose |
 | --- | --- |
-| `-v, --vendor [fa,mi,ms,f7]` | Copy specific font vendors only (default copies all four). |
+| `-v, --vendor <fa,mi,ms,f7>` | Copy specific font vendors only (default copies all four). |
 | `-m, --module` | Copy the matching CommonJS module into `app/lib/` (Alloy) or `Resources/lib/` (Classic). |
 | `-s, --styles` | Alloy only: copy official `.tss` sources into `purgetss/styles/` for reference. Classic skips this output. |
 
@@ -554,6 +489,16 @@ purgetss bf [-m] [-f]
 2. In Alloy only, creates `purgetss/styles/fonts.tss` with the TSS class definitions.
 3. With `--module`, creates the CommonJS module even for text-only font collections. Classic loads it with `require('lib/purgetss.fonts')`; see the [Classic module path table](./classic-projects.md#loading-generated-modules-in-classic).
 
+`Resources/app.js`
+```javascript
+const customFonts = require('lib/purgetss.fonts')
+
+const title = Ti.UI.createLabel({
+  text: 'Custom typography',
+  font: { fontFamily: customFonts.families.poppinsSemiBold }
+})
+```
+
 > **Tip**
 > This is a quick reference. See [Custom Fonts](./custom-fonts.md) for the complete guide — folder organization, class renaming, adding icon libraries, the `--module` output structure, and `--font-class-from-filename` workflow.
 
@@ -562,142 +507,11 @@ purgetss bf [-m] [-f]
 
 ## `shades` Command
 
-The `shades` command generates shades and tints for a given color and writes the palette to `config.cjs`.
-
-Saving works in Alloy and Classic. In Classic, `config.cjs` is only a development-time color source for commands such as `color-module`; it does not install the PurgeTSS utility lifecycle or create empty brand, font, or image source folders. If `Resources/lib/purgetss.colors.js` already exists, saving refreshes it. `--log`, `--json`, and `--tailwind` write nothing and work outside a project.
-
-```bash
-purgetss shades [hexcode] [name]
-
-# alias:
-purgetss s [hexcode] [name]
-```
-
-### Arguments
-
-- `[hexcode]`: The base hexcode value. Omit this to create a random color.
-- `[name]`: The name of the color. Omit this and a name based on the color's hue will be automatically selected.
-
-### Options
-
-- `-n, --name`: Specifies the name of the color.
-- `-q, --quotes`: Retains double quotes in the `config.cjs` file.
-- `-r, --random`: Generates shades from a random color.
-- `-o, --override`: Places the new shades in `theme.colors` (instead of `theme.extend.colors`) to override default colors.
-- `-s, --single`: Generates a single color definition.
-- `-t, --tailwind`: Logs the generated shades with a `tailwind.config.js` compatible structure.
-- `-l, --log`: Logs the generated shades instead of saving them.
-- `-j, --json`: Logs a JSON compatible structure, which can be used in `./app/config.json`.
-
-> **Info**
-> More than 66% of `utilities.tss` classes are related to color properties, so `shades` is a practical way to extend color choices.
-
-Basic usage:
-
-```bash
-purgetss shades 53606b Primary
-
-# alias:
-purgetss s 53606b Primary
-```
-
-The shades are added to `config.cjs`. Next time `purgetss` runs, `utilities.tss` picks them up.
-
-`./purgetss/config.cjs`
-```javascript
-module.exports = {
-  theme: {
-    extend: {
-      colors: {
-        primary: {
-          '50': '#f4f6f7',
-          '100': '#e3e7ea',
-          '200': '#cad2d7',
-          '300': '#a6b3ba',
-          '400': '#7a8b96',
-          '500': '#5f707b',
-          '600': '#53606b',
-          '700': '#464f58',
-          '800': '#3e444c',
-          '900': '#373c42',
-          default: '#53606b'
-        }
-      }
-    }
-  }
-}
-```
-
-Use the `--log` option to output to the console instead of saving to `config.cjs`.
-
-```bash
-purgetss shades 53606b Primary --log
-
-# alias:
-purgetss s 53606b Primary -l
-```
-
-Use the `--tailwind` option to output the generated shades with a `tailwind.config.js` compatible structure.
-
-```bash
-purgetss shades 000f3d --tailwind
-
-# alias:
-purgetss s 000f3d -t
-```
-
-To generate a random color value, use `--random`. Here, `--log` logs it to the console:
-
-```bash
-purgetss shades -rl
-```
-
-To log a Titanium `config.json` compatible structure to the console, use `--json`:
-
-```bash
-purgetss shades '#65e92c' -j
-
-# alias:
-purgetss s '#65e92c' -j
-```
-
-> **Info**
-> The `shades` command is the first one that writes to `config.cjs`. If you run into issues, please report them.
+Documented in [color-commands.md](color-commands.md#shades-command).
 
 ## `color-module` Command
 
-This command creates `purgetss.colors.js` with all colors defined in `config.cjs`: `app/lib/` in Alloy or `Resources/lib/` in Classic. A missing config is created as the color source, but Classic receives no empty `purgetss/brand/`, `purgetss/fonts/`, or `purgetss/images/` folders, Alloy hook, or TSS.
-
-Classic loads the result with `require('lib/purgetss.colors')`; see [Classic module paths](./classic-projects.md#loading-generated-modules-in-classic).
-
-```bash
-purgetss color-module
-
-# alias:
-purgetss cm
-```
-
-`./lib/purgetss.colors.js`
-```javascript
-module.exports = {
-  primary: {
-    '50': '#f4f6f7',
-    '100': '#e3e7ea',
-    '200': '#cad2d7',
-    '300': '#a6b3ba',
-    '400': '#7a8b96',
-    '500': '#5f707b',
-    '600': '#53606b',
-    '700': '#464f58',
-    '800': '#3e444c',
-    '900': '#373c42',
-    default: '#53606b'
-  }
-  // ...additional colors from config.cjs
-}
-```
-
-This is handy for using colors in code without hardcoding values in multiple places.
+Documented in [color-commands.md](color-commands.md#color-module-command).
 
 ## `build` Command
 
@@ -789,11 +603,11 @@ purgetss update
 purgetss u
 ```
 
-Runs `npm install -g purgetss@latest`.
+Runs `npm update -g purgetss`.
 
 ## `sudo-update` Command
 
-The `sudo-update` command is the same as `update`, but uses `sudo` to install npm modules when needed.
+The `sudo-update` command is the same as `update`, but runs `sudo npm update -g purgetss` for installs that need elevated permissions.
 
 ```bash
 purgetss sudo-update

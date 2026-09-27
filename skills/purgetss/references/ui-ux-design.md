@@ -85,24 +85,30 @@ The catalog below collects real-world UI patterns verified against Titanium's co
 ### Simple List Item
 
 ```xml
-<View class="border-b border-gray-200 bg-white">
+<View class="w-screen bg-white">
   <Label class="mx-4 my-4 h-auto text-base text-gray-800" text="List item content" />
+  <!-- Titanium has no per-side border width: draw the divider as a 1px child -->
+  <View class="bottom-0 h-px w-screen bg-gray-200" />
 </View>
 ```
 
 ### List with Avatar
 
 ```xml
-<View class="horizontal border-b border-gray-200 bg-white">
-  <View class="ml-4 my-4 rounded-full-12 bg-blue-500">
-    <!-- A child with no top/left centers itself in a composite parent -->
-    <Label class="text-lg font-bold text-white" text="JD" />
+<View class="w-screen bg-white">
+  <View class="horizontal">
+    <View class="ml-4 my-4 rounded-full-12 bg-blue-500">
+      <!-- A child with no top/left centers itself in a composite parent -->
+      <Label class="text-lg font-bold text-white" text="JD" />
+    </View>
+
+    <View class="vertical ml-3 my-4">
+      <Label class="text-base font-semibold text-gray-800" text="John Doe" />
+      <Label class="text-sm text-gray-500" text="john.doe@example.com" />
+    </View>
   </View>
 
-  <View class="vertical ml-3 my-4">
-    <Label class="text-base font-semibold text-gray-800" text="John Doe" />
-    <Label class="text-sm text-gray-500" text="john.doe@example.com" />
-  </View>
+  <View class="bottom-0 h-px w-screen bg-gray-200" />
 </View>
 ```
 
@@ -163,7 +169,7 @@ The catalog below collects real-world UI patterns verified against Titanium's co
 ```
 
 > **⚠️ Input Padding**
-> Padding utilities (`p-`, `px-`, `py-`) work on `TextField` and `TextArea`, but NOT on `Button` (especially iOS/Mac) and NOT on container views (`View`, `Window`, `ScrollView`, `TableView`). Use margins on children to simulate internal spacing on containers.
+> Padding utilities (`p-`, `px-`, `py-`) set the `padding` property, which the Titanium API defines only on `TextField` and `TextArea` (Android and iOS; `TextArea` honors left and right only) and `Ti.UI.Android.CardView` (apidoc 13_4_1_GA). `utilities.tss` labels the block "Android Only", which is inaccurate for the two text inputs. They are NOT for `Button` (especially iOS/Mac) and NOT on container views (`View`, `Window`, `ScrollView`, `TableView`). Use margins on children to simulate internal spacing on containers.
 
 ## Buttons
 
@@ -210,30 +216,35 @@ For an icon-with-text pair, use a horizontal `View` containing an icon `Label` a
 ### Top Bar with Title and Action
 
 ```xml
-<View class="h-14 w-screen bg-white border-b border-gray-200">
+<View class="h-14 w-screen bg-white">
   <!-- Omitting top/bottom lets each child center vertically in the composite bar -->
   <Label class="left-4 text-lg font-bold text-gray-800" text="Dashboard" />
   <Label class="right-4 fas fa-bars text-gray-700" />
+  <View class="bottom-0 h-px w-screen bg-gray-200" />
 </View>
 ```
 
 ### Bottom Tab Bar
 
 ```xml
-<View class="bottom-0 h-16 w-screen bg-white border-t border-gray-200 horizontal">
-  <View class="vertical w-1/3">
-    <Label class="mx-auto mt-2 fas fa-home text-blue-500" />
-    <Label class="mx-auto mt-1 text-xs text-blue-500" text="Home" />
-  </View>
+<View class="bottom-0 h-16 w-screen bg-white">
+  <View class="top-0 h-px w-screen bg-gray-200" />
 
-  <View class="vertical w-1/3">
-    <Label class="mx-auto mt-2 fas fa-search text-gray-400" />
-    <Label class="mx-auto mt-1 text-xs text-gray-400" text="Search" />
-  </View>
+  <View class="horizontal w-screen">
+    <View class="vertical w-1/3">
+      <Label class="mx-auto mt-2 fas fa-home text-blue-500" />
+      <Label class="mx-auto mt-1 text-xs text-blue-500" text="Home" />
+    </View>
 
-  <View class="vertical w-1/3">
-    <Label class="mx-auto mt-2 fas fa-user text-gray-400" />
-    <Label class="mx-auto mt-1 text-xs text-gray-400" text="Profile" />
+    <View class="vertical w-1/3">
+      <Label class="mx-auto mt-2 fas fa-search text-gray-400" />
+      <Label class="mx-auto mt-1 text-xs text-gray-400" text="Search" />
+    </View>
+
+    <View class="vertical w-1/3">
+      <Label class="mx-auto mt-2 fas fa-user text-gray-400" />
+      <Label class="mx-auto mt-1 text-xs text-gray-400" text="Profile" />
+    </View>
   </View>
 </View>
 ```
@@ -288,8 +299,9 @@ For an icon-with-text pair, use a horizontal `View` containing an icon `Label` a
 ```xml
 <Window class="bg-gray-100">
   <View class="vertical h-screen w-screen">
-    <View class="h-14 w-screen border-b border-gray-200 bg-white">
+    <View class="h-14 w-screen bg-white">
       <Label class="left-4 text-xl font-bold text-gray-800" text="Screen Title" />
+      <View class="bottom-0 h-px w-screen bg-gray-200" />
     </View>
 
     <ScrollView class="vertical content-w-screen content-h-auto">
@@ -299,7 +311,7 @@ For an icon-with-text pair, use a horizontal `View` containing an icon `Label` a
 </Window>
 ```
 
-> **ScrollView sizing (PurgeTSS v7.3+)**
+> **ScrollView sizing**
 > The recommended pattern for a vertically scrolling `ScrollView` is `class="vertical content-w-screen content-h-auto"`. This sets `layout=vertical`, `contentWidth=Ti.UI.FILL`, and `contentHeight=Ti.UI.SIZE` so the content region grows to fit its children. Older examples using `h-screen w-screen` on the `ScrollView` itself describe the viewport, not the content — use the `content-*` variants to describe how the scrollable content flows.
 >
 > For iOS windows with large titles, also apply `extendEdges`, `autoAdjustScrollViewInsets`, and `largeTitleEnabled` on the `Window`. See `ios-large-titles.md`.
@@ -382,7 +394,7 @@ Example:
 | Row of actions | `horizontal` |
 | Fill space in overlay/modal | `h-screen w-screen` |
 | Card spacing | Margins on children |
-| Input inner spacing | `px-*`, `py-*` on input controls |
+| Input inner spacing | `px-*`, `py-*` on `TextField` / `TextArea` |
 | Tablet adaptation | `tablet:*`, `handheld:*` |
 | Overlay background | `bg-(#88000000)` |
 

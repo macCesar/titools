@@ -187,12 +187,13 @@ $.nameLabel.applyProperties({
 ### Dynamic Class Changes
 
 ```javascript
-// Change styles dynamically using classes array
-$.statusLabel.applyProperties({
-  classes: isActive ? ['text-green-500'] : ['text-red-500'],
+// Swap PurgeTSS classes on an existing view; the third argument sets inline properties
+$.resetClass($.statusLabel, isActive ? 'text-green-500' : 'text-red-500', {
   text: isActive ? L('active') : L('inactive')
 })
 ```
+
+`applyProperties({ classes })` does not restyle a view: Alloy resolves classes only through `$.UI.create()`, `$.createStyle()`, and `$.addClass()` / `$.removeClass()` / `$.resetClass()`. Alloy recommends enabling `autoStyle` on views whose classes change this way. An equivalent one-off form is `$.statusLabel.applyProperties($.createStyle({ apiName: 'Label', classes: ['text-green-500'] }))`.
 
 ## Debouncing and Throttling
 
@@ -257,7 +258,7 @@ exports.throttle = function(fn, limit = 100) {
 | **Bridge**    | Cached `Ti.Platform` properties                        |
 | **Bridge**    | Using `applyProperties` for batch updates              |
 | **Bridge**    | PurgeTSS classes instead of inline styles              |
-| **Memory**    | All global listeners cleaned up in `$.cleanup`         |
+| **Memory**    | All global listeners removed when the window closes (e.g. a `cleanup` function — project convention, not Alloy API); `$.destroy()` frees data bindings |
 | **Memory**    | Heavy objects nulled in cleanup                        |
 | **Memory**    | Images resized appropriately                           |
 | **Animation** | Using PurgeTSS Animation component                     |

@@ -1,6 +1,6 @@
 # Classic Project Support
 
-Since PurgeTSS 7.15, the utility-class lifecycle remains Alloy-only while independent asset and CommonJS commands can run in Titanium Classic projects. Detect the project layout before choosing a command or output path.
+The utility-class lifecycle remains Alloy-only while independent asset and CommonJS commands can run in Titanium Classic projects: `brand` since 7.6.0 (self-contained since 7.14.0), `semantic` since 7.6.2, and the remaining standalone commands since 7.15.0. Detect the project layout before choosing a command or output path.
 
 Official source: <https://purgetss.com/docs/commands#alloy-and-classic-compatibility>
 
@@ -64,7 +64,7 @@ Titanium resolves local CommonJS paths from `Resources/`. Omit both the `Resourc
 | `Resources/lib/materialsymbols.js` | `require('lib/materialsymbols')` |
 | `Resources/lib/framework7icons.js` | `require('lib/framework7icons')` |
 
-This follows Titanium's [CommonJS module path resolution](https://titaniumsdk.com/docs/build/modules).
+This follows Titanium's [CommonJS module path resolution](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_Guide/Best_Practices_and_Recommendations/CommonJS_Modules_in_Titanium.html#javascript-module-path-resolution).
 
 ## Deployment Targets
 
@@ -80,7 +80,7 @@ Do not assume that Classic means Android-only or that an Alloy project targets b
 
 ### `brand`
 
-In a Classic project without `purgetss/config.cjs`, `brand` creates the canonical config before resolving settings. If a positional PNG/SVG is supplied and no canonical `purgetss/brand/logo.{png,svg}` exists, the command moves the source into that convention after overwrite confirmation and reports the destination. It never replaces an existing canonical logo silently.
+In a Classic project without `purgetss/config.cjs`, `brand` creates the canonical config before resolving settings. In any in-place run (Alloy or Classic), if a positional PNG/SVG is supplied and no canonical `purgetss/brand/logo.{png,svg}` exists, the command moves the source into that convention after overwrite confirmation and reports the destination. It never replaces an existing canonical logo silently.
 
 Classic Android receives the 11 `Resources/android/images/res-*` splash variants even when a fresh `ti create` template did not seed those folders. Titanium consumes those qualifier paths.
 

@@ -81,7 +81,7 @@ $.navWin.open()
 
 > **WARNING**
 >
-> Call `Appearance.init()` **before** `$.navWin.open()` (or whichever window you open first). If the window opens first, it will render once against the system default and then flicker to the saved mode when `init()` runs — a visible flash on cold launch.
+> Call `Appearance.init()` **before** `$.navWin.open()` (or whichever window you open first). Both official pages place the call before the first window opens.
 
 ### 3. Build an Appearance toggle
 
@@ -158,7 +158,61 @@ function updateUI(value) {
 
 The background, text, border, and icon colors in the XML come from semantic color classes (`bg-surface`, `bg-surface-high`, `text-on-surface`, `bg-border`, etc.) — see [semantic-colors.md](./semantic-colors.md) for how to wire those up so the whole view flips when `Appearance.set('dark')` fires.
 
-> **Why named functions in Alloy controllers?** Alloy resolves `onClick="selectDark"` by looking up a top-level identifier on the controller scope. Named function declarations (`function selectDark() { ... }`) hoist and are reliably resolvable; arrow functions assigned to `const` are not hoisted and tend to bite you when an XML attribute fires before the binding has executed. The official setup guide uses named functions for this reason.
+Semantic colors apply anywhere you use `bg-*`, `text-*`, and `border-*` classes: Windows, Views, Labels, Buttons, TextFields, TextAreas, ListViews, and custom classes that reference a semantic name. One appearance switch updates the UI.
+
+The official setup guide declares the `onClick` handlers (`selectDark`, `selectLight`, `selectSystem`) as named functions at the top level of the controller.
+
+### Minimal Alloy example
+
+The API page uses a flat three-color mapping and a single toggle button:
+
+`app/assets/semantic.colors.json`
+```json
+{
+  "surfaceColor": { "light": "#F8FAFC", "dark": "#0F172A" },
+  "textColor": { "light": "#0F172A", "dark": "#F8FAFC" },
+  "accentColor": { "light": "#2563EB", "dark": "#60A5FA" }
+}
+```
+
+`purgetss/config.cjs`
+```js
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        surface: 'surfaceColor',
+        text: 'textColor',
+        accent: 'accentColor'
+      }
+    }
+  }
+}
+```
+
+`app/views/index.xml`
+```xml
+<Alloy>
+  <Window class="bg-surface">
+    <Label class="text-text" text="Appearance" />
+    <Button class="bg-accent text-white" title="Toggle" onClick="toggleAppearance" />
+  </Window>
+</Alloy>
+```
+
+`app/controllers/index.js`
+```js
+const { Appearance } = require('purgetss.ui')
+
+Appearance.init()
+
+function toggleAppearance() {
+  Appearance.toggle()
+  Ti.API.info(`Mode: ${Appearance.get()}`)
+}
+
+$.index.open()
+```
 
 ## Titanium Classic
 
@@ -190,9 +244,18 @@ const toggleButton = Ti.UI.createButton({
   backgroundColor: 'accentColor'
 })
 
+function updateModeLabel() {
+  title.text = `Mode: ${Appearance.get()}`
+}
+
 function toggleAppearance() {
   Appearance.toggle()
-  title.text = `Mode: ${Appearance.get()}`
+  updateModeLabel()
+}
+
+function useSystemAppearance() {
+  Appearance.set('system')
+  updateModeLabel()
 }
 
 function disposeWindow() {
@@ -205,6 +268,8 @@ window.add(title)
 window.add(toggleButton)
 window.addEventListener('close', disposeWindow)
 window.open()
+
+// Call useSystemAppearance() from your own System mode control.
 ```
 
 Run a full native build after adding or changing semantic keys. A LiveView reload alone does not refresh Titanium's native color catalog. The `purgetss semantic` command can create the JSON for a Classic project; it writes only `Resources/semantic.colors.json`, not `config.cjs`, TSS, or utility mappings.
@@ -261,7 +326,7 @@ app startup
 ## Related
 
 - [semantic-colors.md](./semantic-colors.md) — defining `app/assets/semantic.colors.json` and mapping the color names in `config.cjs` so views actually respond to mode changes.
-- [cli-commands.md#semantic-command](./cli-commands.md#semantic-command) — the `purgetss semantic` command; Alloy also receives `config.cjs` mappings, while Classic receives only the native JSON.
+- [color-commands.md#semantic-command](./color-commands.md#semantic-command) — the `purgetss semantic` command; Alloy also receives `config.cjs` mappings, while Classic receives only the native JSON.
 - [customization-deep-dive.md](./customization-deep-dive.md) — full `config.cjs` structure, including the `theme.extend.colors` section where semantic names are registered.
 - [purgetss-ui-classic.md](./purgetss-ui-classic.md) — generated module path, Classic animation factory, method contracts, and cleanup.
 
@@ -269,5 +334,5 @@ app startup
 
 These field-tested patterns are now also confirmed by the official Appearance documentation:
 
-- **Always call `Appearance.init()` before opening the first window.** Opening the window first causes a visible flicker on cold launch as the UI repaints from the system default to the saved mode. The official best-practices guide puts `Appearance.init()` on line 3 of `app/controllers/index.js`, immediately before `$.navWin.open()`, for exactly this reason.
+- **Always call `Appearance.init()` before opening the first window.** The official best-practices guide calls `Appearance.init()` right after the `require` in `app/controllers/index.js`, before `$.navWin.open()`. The docs give no reason beyond the ordering; the flicker on cold launch when the window opens first is a community observation.
 - **`toggle()` is not a three-state cycle.** It only alternates between `'light'` and `'dark'`. If the saved mode is `'system'`, the first `toggle()` call lands on `'dark'`. Build a cycle yourself with `get()` + `set(...)` when you need one.

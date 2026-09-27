@@ -38,7 +38,7 @@ The pipeline only touches SVGs you actually reference from views or controllers.
 
 ## What gets detected
 
-**XML views:** any node attribute ending in `.svg` is captured along with its `class=""` attribute:
+**XML views:** an `image` or `backgroundImage` attribute ending in `.svg` is captured along with the node's `class=""` attribute:
 
 ```xml
 <ImageView class="w-32 h-auto" image="/images/logos/logo.svg" />
@@ -46,7 +46,7 @@ The pipeline only touches SVGs you actually reference from views or controllers.
 <View backgroundImage="/images/textures/grain.svg" class="wh-screen" />
 ```
 
-Both `image` and `backgroundImage` (and any other attribute whose value ends in `.svg`) are picked up.
+Only `image` and `backgroundImage` are scanned, and only paths under `/images/` (`/images/<sub>/<name>.svg`) are handled; the file must exist at `purgetss/images/<sub>/<name>.svg`, or the run warns `SVG not found: … — skipping`.
 
 **Controllers:** objects passed to `$.UI.create(...)` (or similar) that mix `image: '...svg'` and `classes: '...'` are captured by an AST walker:
 
@@ -66,7 +66,7 @@ The scanner sees **literal string values only**, not computed paths. Dynamically
 image: '/images/' + variant + '.svg'
 ```
 
-For dynamic references, pin the dimensions manually under `images.files` (see [Manual pinning](#manual-pinning-for-undetected-references)) so the pipeline still generates the PNGs.
+For dynamic references, pin the dimensions under `images.files` and generate the PNGs with `purgetss images` (see [Manual pinning](#manual-pinning-for-undetected-references)). If acorn cannot parse a controller, a conservative regex scan looks for the same `image`/`backgroundImage` + `classes` pairs.
 
 ## How dimensions get resolved
 
@@ -79,7 +79,7 @@ For each SVG reference, the cascade of classes is applied against `app.tss` in d
 | `class="w-(300)"`              | `width: 300` (arbitrary value)     | `widthDp = 300`                                                |
 | `class="h-44"` (no `w-*`)      | `height: 176`                      | `heightDp = 176`; width derived from viewBox at generation time |
 | `class="w-32 h-auto"`          | `width: 128`, `height: Ti.UI.SIZE` | `widthDp = 128`; height derived from viewBox                   |
-| `class="w-full"` (non-numeric) | `width: Ti.UI.FILL`                | skipped with a warning; no usable dim                          |
+| `class="w-full"` (non-numeric) | `width: '100%'`                    | skipped with a warning; no usable dim                          |
 
 Note the spacing convention: PurgeTSS multiplies the Tailwind-style numeric scale, so `w-32` resolves to `width: 128` (128 dp), not 32.
 
@@ -140,8 +140,8 @@ images: {
 
 With `autoSync: false`:
 
-- The pipeline still derives dimensions and generates PNGs, using the values you wrote in `images.files` — or the cascade fallback for files not listed.
-- `config.cjs` is **never** written. Those entries are yours to maintain.
+- The pipeline still derives dimensions from the class cascade and generates PNGs at those sizes. It does not read the values you wrote in `images.files`; it only reports what it would have inserted or updated.
+- `config.cjs` is **never** written. Those entries are yours to maintain, and `purgetss images` is the command that applies them.
 
 Use this when you want to pin sizes by hand and not have PurgeTSS overwrite your work.
 
@@ -152,7 +152,7 @@ The SVG pipeline **always emits `.png`**, regardless of `images.format`. This is
 1. Titanium's `image="/foo.svg"` fallback resolves to `.png` only. `.webp`, `.jpeg`, and `.avif` are not picked up through the `.svg` reference.
 2. Having a sibling `.webp` (or any non-`.png`) next to `.png` on disk for the same basename **breaks the fallback entirely**. Titanium then shows nothing.
 
-So even if you set `format: 'webp'` (which is honored by `purgetss images` for raster sources and unlisted SVGs), the post-purge pipeline emits `.png` for every SVG it processes. The `--debug` output line reads `png (forced; ignores format: webp)`.
+So even if you set `format: 'webp'` (which is honored by `purgetss images` for raster sources and unlisted SVGs), the post-purge pipeline emits `.png` for every SVG it processes. The pipeline logs each generated file as `✓ <sub>/<name>.svg → <W>×<H>dp`; the `png (forced; ignores format: webp)` line belongs to the standalone `purgetss images` command.
 
 If you genuinely want a `.webp` of an SVG, reference it as `image="/.../foo.webp"` in your XML, not as `.svg`. The standalone `purgetss images` command will then generate `.webp` for that file. See the [WebP and SVG warning](./multi-density-images.md) in the multi-density reference.
 
@@ -188,7 +188,7 @@ Otherwise, PurgeTSS regenerates the image. If you `git clean`, delete a PNG by h
 
 ## Manual pinning for undetected references
 
-When the static scanner cannot see a reference (dynamic/concatenated paths) or a view has no resolvable `w-*` / `h-*` class, pin the entry by hand so the pipeline still generates the PNGs:
+When the static scanner cannot see a reference (dynamic/concatenated paths) or a view has no resolvable `w-*` / `h-*` class, pin the entry by hand and run `purgetss images`. The post-purge pipeline only generates what it detected and resolved; pinned entries are applied by the standalone command:
 
 ```javascript title="./purgetss/config.cjs"
 images: {
@@ -210,11 +210,19 @@ images: {
 
 Both share the same `images.files` array and the same generation engine (`gen-scales`). They do not fight each other: the pipeline edits `images.files`; the standalone command reads it as overrides. Run either, or both.
 
+## Scope and limits
+
+- The pipeline runs inside `purgetss` (the purge), which requires an Alloy project, so it does not run in Classic projects. It does nothing when `purgetss/images/` does not exist or no SVG reference is found.
+- It always generates both platforms (5 Android + 3 iPhone PNGs); it does not read `<deployment-targets>` from `tiapp.xml` the way `purgetss images` does.
+- An SVG with neither a `viewBox` nor explicit `width` and `height` attributes is skipped with a warning.
+- Every PNG is capped at 4096 px per side, and `xxxhdpi` is 4× the resolved dp size, so an SVG resolved wider or taller than 1024 dp (for example `w-(1100)`) fails with `✗ <sub>/<name>.svg: … exceeds the 4096px cap`. The other SVGs in the run still generate.
+- A run that generated or reused any PNG ends with `SVG pipeline: N generated, M cached.`
+
 ## Troubleshooting
 
-### "no class resolved width or height to a number; skipping"
+### "no class resolved width or height to a number — skipping"
 
-The SVG is referenced from a view with no resolvable `w-*` or `h-*` class (just `w-full`, `w-screen`, `bg-*`, etc.). Add a numeric `w-*` or `h-*` utility, or pin the size manually in `images.files`:
+The SVG is referenced from a view with no resolvable `w-*` or `h-*` class (just `w-full`, `w-screen`, `bg-*`, etc.). Add a numeric `w-*` or `h-*` utility, or pin the size manually in `images.files` and run `purgetss images`:
 
 ```javascript
 files: [
@@ -224,13 +232,13 @@ files: [
 
 ### My change to a class didn't update the PNG
 
-Check that the class actually exists in `app.tss` after purging. The Tailwind-style spacing scale skips numbers like `h-50`; only `h-48`, `h-52`, `h-56` are emitted by default. Add custom values under `theme.extend.spacing` if you need them, or use arbitrary values: `h-(50)`, `h-(200px)`, `h-(12.5rem)`.
+Check that the class actually exists in `app.tss` after purging. The Tailwind-style spacing scale skips numbers like `h-50`; only `h-48`, `h-52`, `h-56` are emitted by default. Add custom values under `theme.extend.spacing` if you need them, or use arbitrary values: `h-(50)`, `h-(200)`, `h-(12.5rem)`.
 
 If the class is correct but the image didn't refresh on device, it might be the Titanium simulator's image cache. Do a clean build.
 
 ### The pipeline didn't detect my SVG reference
 
-The static scanner sees literal string values, not computed paths. Concatenated strings (`'/images/' + variant + '.svg'`) are not detected. Pin the entry in `images.files` manually so the pipeline still generates the PNGs.
+The static scanner sees literal string values, not computed paths. Concatenated strings (`'/images/' + variant + '.svg'`) are not detected. Pin the entry in `images.files` manually and run `purgetss images` to generate the PNGs.
 
 ### `<ImageView image="/.../foo.svg" />` shows nothing
 
@@ -241,7 +249,7 @@ Two common causes:
 
 ### I want to opt out for a specific run
 
-Switch `autoSync: false` and manage the `images.files` entries yourself, or delete the SVG cache entry. The pipeline still derives dimensions and generates the PNGs so views keep working, but it does not write to `config.cjs`.
+Switch `autoSync: false` and manage the `images.files` entries yourself. The pipeline still derives dimensions and generates the PNGs so views keep working, but it does not write to `config.cjs`. Deleting the SVG cache entry does not opt out; it only forces that SVG to regenerate on the next run.
 
 ## See also
 

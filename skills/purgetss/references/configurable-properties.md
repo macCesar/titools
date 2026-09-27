@@ -2,6 +2,8 @@
 
 This reference lists all customizable properties from the official PurgeTSS configuration guide. Add these under `theme` in `config.cjs` to override defaults, or under `theme.extend` to add new values while keeping defaults.
 
+The lists below also include properties that PurgeTSS v7.17.1 generates classes for but the official guide omits (e.g. `badgeBackgroundColor`, `statusBarColor`, `letterSpacing`, `titlePadding`). `scalesPageToFit` appears in the official configurable list but is a Boolean property: it only generates `.scales-page-to-fit` and `.scales-page-to-fit-false`.
+
 ## Global Properties
 
 - All color properties inherit from `theme.colors`.
@@ -19,7 +21,9 @@ You can customize any of the following properties individually by adding them in
 - `backgroundGradient`
 - `backgroundSelectedColor`
 - `backgroundSelectedGradient`
+- `badgeBackgroundColor`
 - `badgeColor`
+- `badgeTextColor`
 - `barColor`
 - `borderColor`
 - `color`
@@ -35,8 +39,10 @@ You can customize any of the following properties individually by adding them in
 - `indicatorColor`
 - `keyboardToolbarColor`
 - `lightColor`
+- `navBarColor`
 - `navigationIconColor`
 - `navTintColor`
+- `onThumbColor`
 - `onTintColor`
 - `pageIndicatorColor`
 - `pagingControlColor`
@@ -44,6 +50,7 @@ You can customize any of the following properties individually by adding them in
 - `resultsBackgroundColor`
 - `resultsSeparatorColor`
 - `selectedBackgroundColor`
+- `selectedBorderColor`
 - `selectedButtonColor`
 - `selectedColor`
 - `selectedSubtitleColor`
@@ -51,10 +58,12 @@ You can customize any of the following properties individually by adding them in
 - `separatorColor`
 - `shadowColor`
 - `statusBarBackgroundColor`
+- `statusBarColor`
 - `subtitleColor`
 - `subtitleTextColor`
 - `tabsBackgroundColor`
 - `tabsBackgroundSelectedColor`
+- `thumbColor`
 - `thumbTintColor`
 - `tint`
 - `tintColor`
@@ -88,6 +97,8 @@ You can customize any of the following properties individually by adding them in
 - `fontSize`
 - `height`
 - `horizontalMargin`
+- `imageHeight`
+- `imagePadding`
 - `indentionLevel`
 - `keyboardToolbarHeight`
 - `left`
@@ -95,6 +106,7 @@ You can customize any of the following properties individually by adding them in
 - `leftTrackLeftCap`
 - `leftTrackTopCap`
 - `leftWidth`
+- `letterSpacing`
 - `lineHeightMultiple`
 - `lines`
 - `lineSpacing`
@@ -131,14 +143,17 @@ You can customize any of the following properties individually by adding them in
 - `rowCount`
 - `rowHeight`
 - `scale`
-- `scalesPageToFit`
 - `scaleX`
 - `scaleY`
 - `sectionHeaderTopPadding`
 - `separatorHeight`
 - `shadowRadius`
 - `shiftMode`
+- `statusBarHeight`
+- `targetImageHeight`
+- `targetImageWidth`
 - `timeout`
+- `titlePadding`
 - `top`
 - `uprightHeight`
 - `uprightWidth`
@@ -158,7 +173,7 @@ Create your own custom rules and include Ti Elements with any number of attribut
 The following notes come from community experience applying PurgeTSS configurable properties against Titanium's native layout constraints. They are not part of the official reference but prevent common mistakes.
 
 > **ℹ️ `backgroundGradient`**
-> For custom gradient rules, `backgroundGradient.colors` can use arrays of `{ color, offset }` objects. PurgeTSS v7.4.0 fixed serialization for those nested object arrays in `utilities.tss`.
+> For custom gradient rules, `backgroundGradient.colors` can use arrays of `{ color, offset }` objects. Since v7.10.0, nested `backgroundGradient` / `backgroundSelectedGradient` objects under `theme` or `theme.extend` flatten into kebab-case class suffixes (e.g. `brand-primary-warm`).
 
 > **WARNING: Titanium Padding Constraint**
 > Titanium does not support native `padding` on `View`, `Window`, `ScrollView`, or `TableView`. Even if `padding*` is configurable, use margins on children for those elements.

@@ -273,7 +273,7 @@ module.exports = {
     extend: {
       ImageView: {
         ios: {
-          apply: 'hires-true'
+          apply: 'hires'
         }
       },
       View: {
@@ -467,19 +467,27 @@ Constants like `Ti.UI.iOS.CLIP_MODE_ENABLED` or `Ti.UI.iOS.StatusBar.LIGHT_CONTE
 
 **See the dedicated reference: [`ios-large-titles.md`](./ios-large-titles.md)** — it covers the full pattern (three-property pairing, global-defaults recipe, TabGroup implicit NavigationWindow behavior, detail-window opt-out, and the ScrollView `content-w-screen` / `content-h-auto` pairing).
 
-Minimal recap — when Large Titles are in use, set the base iOS Window defaults once via `apply` in `config.cjs` rather than repeating them in every XML view:
+Minimal recap — when Large Titles are in use, set the base iOS Window defaults once via `apply` in `config.cjs` rather than repeating them in every XML view. Put it under `theme.extend.Window` so the framework's white `backgroundColor` default is kept (a top-level `theme.Window` is replace mode and drops it):
 
 `./purgetss/config.cjs`
 ```javascript
 module.exports = {
   theme: {
-    Window: {
-      ios: {
-        apply: 'auto-adjust-scroll-view-insets extend-edges-all large-title-enabled'
+    extend: {
+      Window: {
+        ios: {
+          apply: 'auto-adjust-scroll-view-insets extend-edges-all large-title-enabled'
+        }
       }
     }
   }
 };
 ```
 
-The `ios:` block (not an inline `ios:` prefix) is required because these classes only exist with a `[platform=ios]` suffix — see "Platform-Specific Classes" above. The *why* (rendering delay vs content-behind-nav-bar), the display-mode constants, and per-window overrides live in [`ios-large-titles.md`](./ios-large-titles.md) and in the official PurgeTSS docs at [Best Practices → Large Titles on iOS](https://purgetss.com/docs/best-practices/3-large-titles-on-ios).
+`./purgetss/styles/utilities.tss`
+```tss
+'Window': { backgroundColor: '#FFFFFF' }
+'Window[platform=ios]': { autoAdjustScrollViewInsets: true, extendEdges: [ Ti.UI.EXTEND_EDGE_ALL ], largeTitleEnabled: true }
+```
+
+These three classes exist without a platform suffix in `utilities.tss`, so they would resolve from a `default` block too; the `ios:` block is what scopes the generated rule to `[platform=ios]` so Android never receives these properties. The *why* (rendering delay vs content-behind-nav-bar), the display-mode constants, and per-window overrides live in [`ios-large-titles.md`](./ios-large-titles.md) and in the official PurgeTSS docs at [Best Practices → Large Titles on iOS](https://purgetss.com/docs/best-practices/large-titles-on-ios).

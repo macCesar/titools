@@ -50,6 +50,8 @@ The most important reset is for the `View` element. By default, `View` is set to
 
 ### Practical Examples
 
+Numeric values are unitless; Titanium resolves them with `ti.ui.defaultunit` in `tiapp.xml` (the Alloy template default is `dp`). See [Values and Units](./values-and-units.md).
+
 ```xml
 <!-- View without any classes = SIZE of its content -->
 <View>
@@ -61,19 +63,19 @@ The most important reset is for the `View` element. By default, `View` is set to
 <View class="h-32 w-64 bg-white">
   <Label text="Hello" />
 </View>
-<!-- Result: View is exactly 256px wide x 128px tall, label inside -->
+<!-- Result: View is exactly 256dp wide x 128dp tall, label inside -->
 
 <!-- View with margins (expands to include margins) -->
 <View class="m-4 bg-blue-500">
   <Label text="Hello" />
 </View>
-<!-- Result: View is 16px larger on all sides (content + 16px margins) -->
+<!-- Result: View is 16dp larger on all sides (content + 16dp margins) -->
 
 <!-- View with w-screen (fills parent) -->
 <View class="h-16 w-screen bg-red-500">
   <Label text="Full width banner" />
 </View>
-<!-- Result: View fills parent's width, 64px tall -->
+<!-- Result: View fills parent's width, 64dp tall -->
 ```
 
 ### View in Different Layouts
@@ -187,7 +189,7 @@ PurgeTSS provides `wh-` shortcuts to set both width and height simultaneously. T
 | `.wh-full`   | `width: '100%', height: '100%'`         | Relative 100% sizing.                                 |
 
 **The `wh-` Scale:**
-- **Numeric**: `wh-0` (0px) up to `wh-96` (384px) following the spacing scale.
+- **Numeric**: `wh-0` (0dp) up to `wh-96` (384dp) following the spacing scale.
 - **Fractions**: `wh-1/2` (50%), `wh-1/3` (33%), up to `wh-11/12` (91%).
 
 > **💡 TIP**
@@ -224,7 +226,7 @@ This generates classes for ALL color properties:
 
 <!-- CORRECT: Explicitly set dimensions -->
 <View class="h-64 w-screen bg-blue-500">
-  <!-- Fills parent width, 256px tall -->
+  <!-- Fills parent width, 256dp tall -->
 </View>
 ```
 
@@ -280,23 +282,24 @@ This generates classes for ALL color properties:
 When PurgeTSS generates your `app.tss`, these resets appear first:
 
 ```tss
-/* PurgeTSS v7.11.1 */
-/* Created by César Estrada */
-/* https://purgetss.com */
+// PurgeTSS v7.17.1
+// Created by César Estrada
+// https://purgetss.com
 
 // Ti Elements
-'View': { width: Ti.UI.SIZE, height: Ti.UI.SIZE }
 'ImageView[platform=ios]': { hires: true }
+'View': { width: Ti.UI.SIZE, height: Ti.UI.SIZE }
 'Window': { backgroundColor: '#FFFFFF' }
 
-/* Main Styles */
+// Main Styles
 '.bg-white': { backgroundColor: '#ffffff' }
 '.h-screen': { height: Ti.UI.FILL }
 '.w-screen': { width: Ti.UI.FILL }
-// ... your custom classes
 ```
 
-These are **always included** - they're fundamental to how PurgeTSS works.
+Content from `_app.tss`, if any, goes between the header and `// Ti Elements` under a `// _app.tss styles` comment.
+
+A reset is included only when its element is actually used: with the default `purge.mode: 'all'`, PurgeTSS keeps `View`, `ImageView` or `Window` only if that tag appears in your XML views (or in `purge.options.safelist`). A project whose views contain only a `<Window>` gets only the `'Window'` reset.
 
 ## Default font family classes (v7.5.3+)
 
@@ -354,16 +357,23 @@ module.exports = {
   theme: {
     extend: {
       View: {
-        width: Ti.UI.FILL,
-        height: Ti.UI.SIZE
+        default: {
+          width: 'Ti.UI.FILL',
+          height: 'Ti.UI.SIZE'
+        }
       }
     }
   }
-}
+};
 ```
 
-> **⚠️ DEPRECATED SHAPE (pre-v7.5.0)**
-> The older `theme.View.DEFAULT` shape is deprecated as of PurgeTSS v7.5.0. Migrate to `theme.extend.View` shown above. The same extend-based shape works for any Ti element default (`Window`, `Label`, `ImageView`, etc.).
+Generated `utilities.tss`:
+```tss
+'View': { width: Ti.UI.FILL, height: Ti.UI.SIZE }
+```
+
+> **⚠️ CAUTION**
+> Wrap the properties in a `default` (or `DEFAULT`) block, or use `apply` (`View: { apply: 'w-screen h-auto' }`), and quote Titanium constants. Unquoted `Ti.UI.FILL` throws when Node loads `config.cjs`, and properties placed directly under `View` without a `default` wrapper generate broken rules such as `'View-width': { 0: 'T', 1: 'i', ... }`.
 
 > **💡 TIP**
 > Prefer `config.cjs` for custom defaults because they're preserved when PurgeTSS regenerates `app.tss`. For advanced overrides — including per-platform defaults, `apply` shorthand, and pseudo-class targeting — see `customization-deep-dive.md`.

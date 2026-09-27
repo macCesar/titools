@@ -17,11 +17,11 @@ Complete examples of common patterns with anti-patterns and correct implementati
   - [Gap Usage](#gap-usage)
   - [Padding on Container Views](#padding-on-container-views)
   - [`w-full` vs `w-screen`](#w-full-vs-w-screen)
-  - [`rounded-full` Without Size](#rounded-full-without-size)
+  - [`rounded-full` Is a Fixed 8×8 Circle](#rounded-full-is-a-fixed-88-circle)
   - [Square Brackets for Arbitrary Values](#square-brackets-for-arbitrary-values)
   - [Layout Defaults](#layout-defaults)
   - [ScrollView Without `content-w-screen` / `content-h-auto`](#scrollview-without-content-w-screen--content-h-auto)
-  - [Deprecated `theme.View.DEFAULT` vs `theme.extend.View`](#deprecated-themeviewdefault-vs-themeextendview)
+  - [`theme.View` (Replace) vs `theme.extend.View` (Merge)](#themeview-replace-vs-themeextendview-merge)
   - [Quick Reference Table](#quick-reference-table)
 
 <!-- TOC-END -->
@@ -45,18 +45,19 @@ The examples below catalog anti-patterns observed in real Titanium + PurgeTSS pr
 </View>
 ```
 
-**✅ CORRECT (Use horizontal layout + spacer):**
+**✅ CORRECT (Composite parent + edge positioning):**
 ```xml
-<View class="horizontal w-screen">
-  <Label text="Left" />
-  <View class="w-screen" />  <!-- Spacer -->
-  <Label text="Right" />
+<!-- Parent defaults to composite; each child is pinned to one edge -->
+<View class="w-screen">
+  <Label text="Left" class="left-0" />
+  <Label text="Right" class="right-0" />
 </View>
 ```
 
 **✅ ALTERNATIVE (Use margins):**
 ```xml
-<View class="horizontal w-screen">
+<!-- In a composite parent, ml-4 emits left: 16 and mr-4 emits right: 16 -->
+<View class="w-screen">
   <Label text="Left" class="ml-4" />
   <Label text="Right" class="mr-4" />
 </View>
@@ -172,8 +173,8 @@ The examples below catalog anti-patterns observed in real Titanium + PurgeTSS pr
 ```
 
 ```bash
-# Then run:
-purgetss build
+# Then run (bare command = purge; `purgetss build` only regenerates utilities.tss):
+purgetss
 # OR just compile:
 alloy compile
 ```
@@ -193,8 +194,8 @@ alloy compile
 **❌ WRONG (Children with % widths, parent without w-screen):**
 ```xml
 <View class="horizontal m-4">
-  <View class="w-(48%)">...</view>
-  <View class="w-(48%)">...</view>
+  <View class="w-(48%)">...</View>
+  <View class="w-(48%)">...</View>
 </View>
 <!-- Parent doesn't have w-screen, % calculations may fail -->
 ```
@@ -202,8 +203,8 @@ alloy compile
 **✅ CORRECT (Parent has w-screen):**
 ```xml
 <View class="horizontal m-4 w-screen">
-  <View class="w-(48%)">...</view>
-  <View class="w-(48%)">...</view>
+  <View class="w-(48%)">...</View>
+  <View class="w-(48%)">...</View>
 </View>
 ```
 
@@ -211,20 +212,32 @@ alloy compile
 
 ### Gap Usage
 
-**❌ WRONG (gap adds margin all around, breaks % widths):**
+**❌ WRONG (gap on the column itself: margins add to the % width):**
 ```xml
-<View class="grid grid-cols-2 gap-4">
-  <View class="col-span-6">...</view>  <!-- 50% + 16px margins -->
-  <View class="col-span-6">...</view>  <!-- 50% + 16px margins -->
+<View class="grid">
+  <View class="grid-cols-2 gap-4">...</View>  <!-- 50% + 16 left + 16 right -->
+  <View class="grid-cols-2 gap-4">...</View>  <!-- 50% + 16 left + 16 right -->
 </View>
 <!-- Total > 100%, elements wrap or overflow -->
 ```
 
-**✅ CORRECT (Use explicit margins):**
+**✅ CORRECT (Official grid pattern: gap on an inner View inside each column):**
+```xml
+<View class="grid">
+  <View class="grid-cols-2">
+    <View class="gap-4">...</View>
+  </View>
+  <View class="grid-cols-2">
+    <View class="gap-4">...</View>
+  </View>
+</View>
+```
+
+**✅ ALTERNATIVE (Use explicit margins):**
 ```xml
 <View class="horizontal mb-4 w-screen">
-  <View class="w-(48%) mr-2">...</view>
-  <View class="w-(48%) ml-2">...</view>
+  <View class="w-(48%) mr-2">...</View>
+  <View class="w-(48%) ml-2">...</View>
 </View>
 ```
 
@@ -274,9 +287,9 @@ alloy compile
 
 ---
 
-### `rounded-full` Without Size
+### `rounded-full` Is a Fixed 8×8 Circle
 
-**❌ WRONG (rounded-full alone doesn't exist):**
+**❌ WRONG (`rounded-full` emits `width: 8, height: 8, borderRadius: 4`, which conflicts with `w-12 h-12`; at 48×48 a radius of 4 is not a circle):**
 ```xml
 <View class="h-12 w-12 rounded-full" />
 ```
@@ -300,25 +313,25 @@ alloy compile
 
 **❌ WRONG (Square brackets are not supported):**
 ```xml
-<View class="w-[100px] bg-[#ff0000]" />
+<View class="w-[100] bg-[#ff0000]" />
 ```
 
 **✅ CORRECT (PurgeTSS uses parentheses):**
 ```xml
-<View class="w-(100px) bg-(#ff0000)" />
+<View class="w-(100) bg-(#ff0000)" />
 ```
 
-**PurgeTSS syntax for arbitrary values uses `()` not `[]`.**
+**PurgeTSS syntax for arbitrary values uses `()` not `[]`, and pixel values are written without a unit: `w-(100px)` also stops the build (`Explicit "px" unit is redundant`).**
 
 > **🚨 v7.8.0+ HARD-FAILS THE BUILD ON SQUARE BRACKETS**
 > Since v7.8.0, the build stops with a structured `Class Syntax Error` block (file path + line number + `Fix:` suggestion) the moment it spots `top-[10px]`, `wh-[12]`, or any other square-bracket utility. Pre-v7.8.0, those classes silently dropped into the `// Unused or unsupported classes` block of `app.tss` — easy to miss. Now they're loud and actionable.
 >
 > v7.10.1 reworded the error message from `'Tailwind-style brackets "[ ]" are not supported'` to `'Square brackets "[ ]" are not supported'`. Same enforcement, less framing.
 >
-> See [Arbitrary Values → Class syntax pre-validation](arbitrary-values.md#class-syntax-pre-validation) for the full list of patterns the pre-validator catches (5 total, including inverted negative sign and whitespace inside parentheses).
+> See [Arbitrary Values → Class syntax pre-validation](arbitrary-values.md#class-syntax-pre-validation) for the full list of patterns the pre-validator catches (5 total, including inverted negative sign, whitespace inside parentheses, and redundant `px` units).
 
 **Examples:**
-- `w-(100px)` - Custom width
+- `w-(100)` - Custom width
 - `bg-(#ff0000)` - Custom background color
 - `mt-(20dp)` - Custom margin top
 - `text-(#333333)` - Custom text color
@@ -381,33 +394,31 @@ alloy compile
 
 ---
 
-### Deprecated `theme.View.DEFAULT` vs `theme.extend.View`
+### `theme.View` (Replace) vs `theme.extend.View` (Merge)
 
-**WRONG (old shape — deprecated in recent PurgeTSS):**
+**Replace mode (`theme.View`, no `extend`) — the framework default `Ti.UI.SIZE` for View is dropped:**
 ```javascript
 // purgetss/config.cjs
 module.exports = {
   theme: {
-    View: {
-      DEFAULT: { backgroundColor: '#ffffff' }
-    }
+    View: { apply: 'bg-white' }
   }
 }
 ```
 
-**CORRECT (new `extend` shape):**
+**Extend mode (`theme.extend.View`) — merges with the built-in defaults:**
 ```javascript
 // purgetss/config.cjs
 module.exports = {
   theme: {
     extend: {
-      View: { backgroundColor: '#ffffff' }
+      View: { apply: 'bg-white' }
     }
   }
 }
 ```
 
-**Why:** The nested `DEFAULT` key is a legacy artifact. Component-level theme overrides now live directly under `theme.extend.<Component>` and are merged with built-in defaults. Using the old shape silently produces unexpected styles on newer PurgeTSS versions.
+**Why:** `Window`, `View`, and `ImageView` have built-in defaults (white Window background, `Ti.UI.SIZE` on View, iOS `hires: true` on ImageView). Under `theme.extend` your customization merges with them; at the top level of `theme` your config replaces them. The `DEFAULT` / `default` wrapper is not deprecated: `View: { apply: '...' }` and `View: { default: { apply: '...' } }` produce the same TSS, and the explicit wrapper is how you add `ios:` / `android:` blocks next to it.
 
 ---
 
@@ -421,10 +432,10 @@ module.exports = {
 | `items-center`                        | Exists but maps to fill, not centering — avoid for centering | Use layout + positioning         |
 | `p-4` on View                         | No padding on containers             | `m-4` on children                            |
 | `w-full`                              | Percentage-based                     | `w-screen` (Ti.UI.FILL)                      |
-| `rounded-full`                        | Needs size suffix                    | `rounded-full-12`                            |
+| `rounded-full` with `w-*`/`h-*`       | Fixed 8×8 circle, conflicts on size  | `rounded-full-12`                            |
 | `composite` class                     | Already default                      | Omit it                                      |
-| `w-[100px]`                           | Wrong syntax                         | `w-(100px)`                                  |
-| Manual `.tss`                         | Overwritten by PurgeTSS              | Use utility classes                          |
-| `gap` with `%` widths                 | Total exceeds 100%                   | Use explicit margins                         |
+| `w-[100]`, `w-(100px)`                | Stops the build (v7.8.0+)            | `w-(100)`                                    |
+| Manual `.tss`                         | Duplicates classes; its rules override `app.tss` | Use utility classes (`app.tss` itself is rewritten on every run) |
+| `gap` on a `%`-width column           | Total exceeds 100%                   | `gap-*` on an inner View, or explicit margins |
 | ScrollView without `content-*` sizing | No/unexpected scroll                 | Add `content-w-screen` + `content-h-auto`    |
-| `theme.View.DEFAULT`                  | Legacy shape in newer PurgeTSS       | `theme.extend.View`                          |
+| `theme.View` to tweak one default     | Replaces all View defaults           | `theme.extend.View`                          |

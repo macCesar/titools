@@ -65,7 +65,7 @@ app/assets/
 ├── android/images/
 │   ├── res-mdpi/
 │   │   ├── my-hero-illustration.png
-│   │   └── buttons/primary.svg
+│   │   └── buttons/primary.png
 │   ├── res-hdpi/…
 │   ├── res-xhdpi/…
 │   ├── res-xxhdpi/…
@@ -75,12 +75,12 @@ app/assets/
     ├── my-hero-illustration@2x.png
     ├── my-hero-illustration@3x.png
     └── buttons/
-        ├── primary.svg                 (@1x)
-        ├── primary@2x.svg
-        └── primary@3x.svg
+        ├── primary.png                 (@1x)
+        ├── primary@2x.png
+        └── primary@3x.png
 ```
 
-Classic projects output to `Resources/android/images/res-*/` and `Resources/iphone/images/` — the command auto-detects the layout.
+SVG sources are written as `.png` (Sharp cannot write SVG) unless `--format` or `images.format` picks another format. Classic projects output to `Resources/android/images/res-*/` and `Resources/iphone/images/` — the command auto-detects the layout.
 
 ## The `purgetss/images/` convention
 
@@ -119,7 +119,11 @@ That means:
 | 200×200 | Button, inline icon |
 | 96×96 | Small inline icon |
 
-If your source is smaller than 4×, the tool still runs but the larger density outputs are essentially upscaled — quality drops on high-DPI devices.
+For example, a 1024×512 `logos/hero.webp` produces eight files: `res-xxxhdpi` 1024×512 (the master, untouched), `res-xxhdpi` and `@3x` 768×384, `res-xhdpi` and `@2x` 512×256, `res-hdpi` 384×192, and `res-mdpi` and `@1x` 256×128. The intended `@1x` display size is the source ÷ 4.
+
+In this default mode every density is the source or a reduction of it, so nothing is upscaled: a source that is too small simply yields a smaller `@1x` than you wanted. Upscaling only happens when a width is pinned (`--width` or `images.files`); then, for raster sources, the run warns `source is Xpx wide but xxxhdpi needs Ypx` and the output may look blurry. SVGs are exempt from that warning.
+
+Every generated file is capped at **4096 px per side**. A source (or pinned width) that would exceed it aborts the run with `… would render W×Hpx, which exceeds the 4096px cap`. In practice the largest usable raster master is 4096 px wide, and the largest usable `--width` is 1024.
 
 Recommended sizes for common UI elements (in source pixels, assumed 4×):
 
@@ -130,7 +134,7 @@ Recommended sizes for common UI elements (in source pixels, assumed 4×):
 
 ## Pinning the output width with `--width`
 
-The 4× master convention works well for raster sources (`.png`, `.jpg`, `.webp`) because the file's pixel dimensions usually reflect the intended 4× size. **SVGs are different.** Their logical size comes from the `viewBox`, and vector editors (Affinity Designer, Illustrator, Figma exports) frequently emit viewBoxes in points or with disproportionate values — a logo can ship with `viewBox="0 0 29559 13542"` and `purgetss images` would happily scale every density from that base, producing files far too large for any UI surface.
+The 4× master convention works well for raster sources (`.png`, `.jpg`, `.webp`) because the file's pixel dimensions usually reflect the intended 4× size. **SVGs are different.** Their logical size comes from the `viewBox`, and vector editors (Affinity Designer, Illustrator, Figma exports) frequently emit viewBoxes in points or with disproportionate values — a logo can ship with `viewBox="0 0 29559 13542"`, and `purgetss images` would scale every density from that base: even `res-mdpi` would be 7390×3386 px, so the run aborts on the 4096 px cap.
 
 `--width <n>` (added in PurgeTSS v7.8.0) is the escape hatch: it pins the **`mdpi` / `@1x`** output width to exactly `n` pixels, then derives every other density from that base. Height stays proportional to the source aspect ratio — you only specify width.
 
@@ -165,20 +169,18 @@ purgetss images logo.svg --width abc
 # Invalid --width 'NaN'. Must be an integer between 1 and 8192.
 ```
 
-The upper bound of `8192` exists because `--width 8192` already produces a `xxxhdpi` output of 32 768 px — that's Sharp's render ceiling and well beyond anything a Titanium UI needs.
+Passing validation does not guarantee a run: every output is capped at 4096 px per side, and `xxxhdpi` is 4× the pinned width, so any `--width` above `1024` aborts with `… exceeds the 4096px cap`.
 
 ### The hint message for unflagged SVGs
 
-Whenever you run `purgetss images` against an SVG **without** `--width`, PurgeTSS prints a one-time hint:
+Whenever you run `purgetss images` against an SVG that has neither `--width` nor an entry in `images.files`, PurgeTSS prints a one-time hint:
 
 ```text
-⚠  SVG source detected without --width. Output sizes will be derived from
-   each SVG's viewBox (treated as a 4× master).
-   For SVGs from vector editors with disproportionate viewBoxes, pass
-   --width <n> (e.g. --width 256) to pin the @1x/mdpi width.
+⚠  SVG source detected without --width and no entry in config.cjs > images.files. Output sizes will be derived from each SVG's viewBox (treated as a 4× master).
+   For SVGs from vector editors with disproportionate viewBoxes, pass --width <n> (e.g. --width 256) or add an entry to images.files to pin the @1x/mdpi width.
 ```
 
-This is a hint, **not an error**. The legacy 4×-from-viewBox behavior still runs in the same invocation. If your SVG has a sensible viewBox (`300×150` for a 300px-wide logo at 1×, etc.), the default is fine. If the viewBox is in points or noticeably larger than expected, re-run with `--width <n>` for predictable scaling.
+This is a hint, **not an error**. The legacy 4×-from-viewBox behavior still runs in the same invocation. If your SVG has a sensible viewBox (`1200×600` for a logo meant to display 300 px wide at @1x, since the viewBox is read as the 4× size), the default is fine. If the viewBox is in points or noticeably larger than expected, re-run with `--width <n>` for predictable scaling.
 
 ### Why CLI-only (no `images:` config equivalent)
 
@@ -186,7 +188,7 @@ This is a hint, **not an error**. The legacy 4×-from-viewBox behavior still run
 
 ## The `images:` config section
 
-On the first run, `purgetss images` injects an `images:` block into your existing `purgetss/config.cjs` (between `brand:` and `theme:`) with these defaults:
+When `purgetss images` runs without a positional source and an existing `purgetss/config.cjs` has no `images:` section, it injects this block before `theme:` (after `brand:` when present). A run with a positional source never touches the config:
 
 ```javascript
 // Sources in purgetss/images/ are 4x masters: a 1024px file yields
@@ -259,6 +261,8 @@ Precedence is the same for every file processed:
 2. Otherwise, the matching entry in `images.files` (if any).
 3. Otherwise, the source's natural size: `viewBox` for SVG, intrinsic pixel size for rasters (treated as 4× master).
 
+`purgetss images` only applies an entry that has a numeric `width` (plus `height` when present). An entry with only `height`, which the SVG pipeline writes for `h-*`-only references, is not used by this command.
+
 | Source | In `files`? | Width source | Output format |
 | --- | --- | --- | --- |
 | `logos/logo.svg` | yes | 256 px @1x (from `files`) | `png` (forced; see below) |
@@ -273,7 +277,7 @@ Raster entries you add by hand survive subsequent runs untouched. For SVGs detec
 
 ## Output layouts
 
-**Alloy layout** (auto-detected when `app/assets/` exists):
+**Alloy layout** (auto-detected when `app/views/` exists):
 
 ```text
 <project>/
@@ -290,7 +294,7 @@ Raster entries you add by hand survive subsequent runs untouched. For SVGs detec
         └── <name>@3x.<ext>
 ```
 
-**Classic layout** (auto-detected otherwise):
+**Classic layout** (auto-detected when there is no `app/views/` but a `Resources/` folder exists; with neither, the command stops with `Could not detect a Titanium Alloy or Classic project`):
 
 ```text
 <project>/
@@ -375,7 +379,7 @@ Useful when:
 - You're iterating on an iOS-only screen and don't need to regenerate Android assets every time.
 - You want to tune JPEG quality differently for the two platforms (run the command twice with different flags).
 
-The two flags are mutually exclusive. Passing neither means “use the project's enabled targets,” not “always generate both.”
+The two flags are mutually exclusive. Passing neither means “use the project's enabled targets,” not “always generate both.” If `tiapp.xml` enables neither platform, the command stops with `No Android or iOS deployment target is enabled in tiapp.xml.`
 
 ## Format conversion
 
@@ -386,7 +390,7 @@ purgetss images --format webp            # convert every output to WebP
 purgetss images --format jpeg --quality 90
 ```
 
-Valid targets: `webp`, `jpeg`, `png`, `avif`, `gif`, `tiff`.
+Valid targets: `webp`, `jpeg`, `png`, `avif`, `gif`, `tiff` (`jpg` is also accepted).
 
 ### Why WebP?
 
@@ -425,7 +429,7 @@ purgetss images logo.svg --opacity 50 --format png
 
 ### Format interactions
 
-- **PNG / WebP / AVIF:** alpha is preserved.
+- **PNG / WebP / AVIF / TIFF / GIF:** alpha is preserved.
 - **JPEG:** JPEG has no alpha. The existing flatten-on-white step composites the semi-transparent image onto white before writing, so `--opacity 50 --format jpeg` produces a 50%-faded version **on white**, not a transparent JPEG.
 
 ## Adding breathing room with `--padding` (v7.10.0)
@@ -458,6 +462,12 @@ purgetss images purgetss/brand/logo.svg --output logos/default-image
 
 That writes `images/logos/default-image.png` (or `.jpg` / `.webp` depending on `--format`) across all densities, regardless of the source's location.
 
+### Constraints
+
+- No extension: pass the basename only. Any extension in `--output` is stripped; the extension comes from `--format` if set, otherwise from the source, or `.png` when the source is SVG.
+- Relative path only: absolute paths and paths containing `..` are rejected, so the output stays inside the platform `images/` folders.
+- Single source only: `--output` with a directory source aborts, because one basename cannot apply to multiple files.
+
 ### Combining `--opacity`, `--padding`, and `--output`
 
 The three flags compose for the canonical "transparent placeholder with padding under a custom path" use case:
@@ -470,7 +480,11 @@ purgetss images purgetss/brand/logo.svg \
     --format png
 ```
 
-Produces a 30% opacity, 15%-padded version of the brand logo at `images/logos/default-image.png` for every Android density and iPhone scale — a one-command way to ship a default ImageView placeholder.
+Produces a 30% opacity, 15%-padded version of the brand logo at `images/logos/default-image.png` for every Android density and iPhone scale — a one-command way to ship a default ImageView placeholder. Reference it from the view:
+
+```xml
+<ImageView defaultImage="/images/logos/default-image.png" image="{remoteUrl}" />
+```
 
 ## Full pipeline alongside `build`
 
@@ -489,6 +503,8 @@ ti build -p android -T emulator
 ```
 
 If you only tweaked CSS classes (no image changes), you don't need to re-run `purgetss images`. It's safe to skip.
+
+Classic projects have no PurgeTSS build step: generate the images, then run `ti build` as usual — the files under `Resources/` are ordinary Titanium resources.
 
 ## Cleaning up
 
@@ -515,7 +531,7 @@ If you only tweaked CSS classes (no image changes), you don't need to re-run `pu
 | --- | --- |
 | `--format <ext>` | Convert all outputs to: `webp`, `jpeg`, `png`, `avif`, `gif`, `tiff`. Default: keep source format. |
 | `--quality <n>` | Quality `0–100` for `webp`, `jpeg`, `avif` and `tiff`. PNG and GIF ignore it. Default `85`. |
-| `--width <n>` | (v7.8.0) Pin `mdpi` / `@1x` output width to `n` pixels; `[1, 8192]`. Other densities derive from this base (×1.5 / ×2 / ×3 / ×4). Most useful for SVG sources with non-standard viewBoxes. CLI-only — no `config.cjs` equivalent because width is per-asset. |
+| `--width <n>` | (v7.8.0) Pin `mdpi` / `@1x` output width to `n` pixels; validated to `[1, 8192]`, but outputs are capped at 4096 px so values above `1024` abort. Other densities derive from this base (×1.5 / ×2 / ×3 / ×4). Most useful for SVG sources with non-standard viewBoxes. CLI-only — no `config.cjs` equivalent because width is per-asset. |
 | `--opacity <n>` | (v7.10.0) Multiply the alpha channel of every generated density by `n/100`. Range `[0, 100]`. Combine with `--format jpeg` and the alpha is flattened on white instead of producing a transparent JPEG. CLI-only. |
 | `--padding <n>` | (v7.10.0) Shrink the rendered image inside each density canvas by `n%` symmetric borders. Range `[0, 40]`. CLI-only. |
 | `--output <relpath>` | (v7.10.0) Override the basename and subpath relative to each platform's `images/` root. Lets a source from outside `purgetss/images/` (e.g. `purgetss/brand/`) write into a custom output folder like `images/logos/`. CLI-only. |
@@ -565,6 +581,10 @@ purgetss images --format webp            # supports alpha
 purgetss images --format png             # keeps alpha
 ```
 
+### My `<ImageView image="/.../foo.svg" />` shows nothing
+
+Titanium falls back from a `.svg` reference to a `.png` sibling only. Either the `.png` was never generated, or a `.webp` (or other non-png) of the same basename sits next to it and breaks the fallback. See [SVG pipeline → Troubleshooting](./svg-pipeline.md#troubleshooting).
+
 ### My subdirectories aren't preserved in the output
 
 Verify your source path is inside `purgetss/images/`. When passing sources from outside the convention (e.g. `./docs/screenshots`), the directory of the source file is used as the root, so a file at `./docs/screenshots/hero.png` outputs to `images/hero.png` (flat), not `images/screenshots/hero.png`.
@@ -587,8 +607,8 @@ Shows every file that would be written, no side effects.
 
 ## Community-Discovered Patterns
 
-- **4× master convention predates PurgeTSS.** Treating the source as a 4× master (`xxxhdpi` on Android, `@4x` equivalent on iOS) is the same convention Titanium Alloy has always used internally when resolving density-qualified image paths. `purgetss images` formalizes the workflow but doesn't invent a new rule — any Alloy project already ships with the same assumption.
-- **Short-path fallback order matters for monorepos.** When you pass `buttons/primary.png`, the command tries `purgetss/images/buttons/primary.png` first, then `./buttons/primary.png` relative to cwd. In a monorepo where a design folder might shadow the convention, the convention wins. To force the cwd-relative interpretation, pass `./buttons/primary.png` with the explicit `./` prefix or an absolute path.
+- **4× master convention predates PurgeTSS.** Treating the source as a 4× master (`xxxhdpi` on Android, `@4x` equivalent on iOS) is described in the PurgeTSS source as a convention inherited from Titanium Alloy. `purgetss images` formalizes the workflow rather than inventing a new rule.
+- **Short-path fallback order matters for monorepos.** When you pass `buttons/primary.png`, the command tries `purgetss/images/buttons/primary.png` first, then `./buttons/primary.png` relative to the project root (`--project`, default cwd). In a monorepo where a design folder might shadow the convention, the convention wins. A `./` prefix does not change that — `./buttons/primary.png` is still looked up in `purgetss/images/` first. To force the other file, pass an absolute path.
 
 ## See also
 

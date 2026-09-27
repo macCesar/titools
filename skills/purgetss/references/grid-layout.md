@@ -83,31 +83,28 @@ The official source organizes the grid utilities into these categories. The stru
 
 ### Row Placement Utilities
 
-Control horizontal placement of children inside a row:
+The official docs list these as `start`, `end`, and `center`, but no classes with those names exist in `utilities.tss`. The grid alignment classes PurgeTSS generates are:
 
-| Class    | Effect                            |
-| -------- | --------------------------------- |
-| `start`  | Align to the start of the row     |
-| `end`    | Align to the end of the row       |
-| `center` | Align to the center of the row    |
+| Class          | Generated rule                                  |
+| -------------- | ----------------------------------------------- |
+| `items-start`  | `{ top: 0 }`                                    |
+| `items-end`    | `{ bottom: 0 }`                                 |
+| `items-center` | `{ width: Ti.UI.FILL, height: Ti.UI.FILL }`     |
 
-These apply to child views inside a `grid-cols-*` container and control horizontal placement within the grid cell.
+## Row Span Use Cases
 
-## Row Placement Use Cases
+`grid-rows-{n}` and `row-span-{n}` both set a percentage `height` on the view that carries them; neither one declares a row count for its children. `grid-rows-{n}` gives `100/n %` (`grid-rows-2` → `50%`), and `row-span-{n}` always gives `n/12` of the parent (`row-span-3` → `25%`), whatever `grid-rows-*` class appears elsewhere. To stack the children vertically, give the parent `grid-flow-row` (`layout: 'vertical'`, `height: '100%'`).
 
-Combining `row-span-{n}` with `grid-rows-{n}` lets you describe how an element occupies vertical space inside a grid column. The table below covers the most common combinations a Titanium UI tends to need. Every entry is verified against the `grid-rows-{n}` and `row-span-{n}` utilities described in the official source.
-
-| Pattern                                  | Example classes                          | Result                                                                                                  |
-| ---------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| Full-height column item                  | `grid-rows-1` + `row-span-1`             | One element fills the entire vertical space of the column.                                              |
-| Two equal stacked items                  | `grid-rows-2` + two children no span     | Two views stack vertically, each taking 50% of the column height.                                       |
-| Tall hero on top, short footer at bottom | `grid-rows-12` + `row-span-9`, `row-span-3` | Hero takes 75% of the column height, footer takes 25%.                                                  |
-| 3-6-3 vertical split                     | `grid-rows-12` + `row-span-3`, `row-span-6`, `row-span-3` | Header / body / footer split. Mirrors the 3-6-3 horizontal split shown for `col-span-{n}`.              |
-| Sidebar that spans every row             | `grid-rows-4` + child with `row-span-4`  | Element occupies the full height of a 4-row column. Useful for vertical separators or full-height nav.  |
-| Two short rows above a tall row          | `grid-rows-12` + `row-span-3`, `row-span-3`, `row-span-6` | Two preview cards above a larger detail panel.                                                          |
+| Pattern                                  | Children of a `grid-flow-row` parent            | Result                          |
+| ---------------------------------------- | ----------------------------------------------- | ------------------------------- |
+| Full-height item                         | `grid-rows-1` or `row-span-12`                  | One view at `100%`              |
+| Two equal stacked items                  | `grid-rows-2` on each child                     | `50%` + `50%`                   |
+| Tall hero on top, short footer at bottom | `row-span-9`, `row-span-3`                      | `75%` + `25%`                   |
+| 3-6-3 vertical split                     | `row-span-3`, `row-span-6`, `row-span-3`        | `25%` + `50%` + `25%`           |
+| Two short rows above a tall row          | `row-span-3`, `row-span-3`, `row-span-6`        | `25%` + `25%` + `50%`           |
 
 > **Note**
-> Just like `col-span-{n}`, the spans you write must add up to the value declared in `grid-rows-{n}` for the layout to fill the column without leftover space.
+> Just like `col-span-{n}` in a row, the `row-span-{n}` values in a column must add up to 12 to fill it without leftover space.
 
 ## Community-Discovered Patterns
 
@@ -118,8 +115,8 @@ The following notes come from community experience using the PurgeTSS grid syste
 
 ### Common Use Cases for Row Placement
 
-| Class    | Use case                          |
-| -------- | --------------------------------- |
-| `start`  | Left-aligned content              |
-| `end`    | Right-aligned buttons or labels   |
-| `center` | Centered content blocks           |
+| Class          | Use case                                                        |
+| -------------- | --------------------------------------------------------------- |
+| `items-start`  | Pin a view to the top of its cell (`top: 0`)                    |
+| `items-end`    | Pin a view to the bottom of its cell (`bottom: 0`)              |
+| `items-center` | Fill the cell (`width` and `height` set to `Ti.UI.FILL`)        |

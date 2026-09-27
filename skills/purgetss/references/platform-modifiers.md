@@ -9,7 +9,7 @@ Platform and device modifiers (also called variants or prefixes) apply styles co
   - `tablet:`
   - `handheld:`
 
-You can set different background colors and font sizes per platform and device, and combine them with arbitrary values. Examples: `ios:bg-(#53606b)`, `ios:text-(20px)`, `android:bg-(#8fb63e)`, and `android:text-(24px)`.
+You can set different background colors and font sizes per platform and device, and combine them with arbitrary values. Examples: `ios:bg-(#53606b)`, `ios:text-(20)`, `android:bg-(#8fb63e)`, and `android:text-(24)`.
 
 ```xml
 <Alloy>
@@ -48,4 +48,4 @@ You can set different background colors and font sizes per platform and device, 
 The following guidance comes from community experience combining platform modifiers with platform-specific Titanium constants.
 
 > **Platform-Specific Properties**
-> If a style relies on `Ti.UI.iOS.*` or `Ti.UI.Android.*` constants, scope it with the matching `ios:` or `android:` modifier, or with the equivalent platform block in `config.cjs`.
+> If a style relies on `Ti.UI.iOS.*` or `Ti.UI.Android.*` constants, scope it with the matching `ios:` or `android:` modifier, or with the equivalent platform block in `config.cjs`. Built-in classes that use those constants already ship scoped in `utilities.tss` (for example `'.clip-enabled[platform=ios]'` and `'.large-title-display-mode-never[platform=ios]'`), so this matters most for custom rules and arbitrary values.

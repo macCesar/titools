@@ -44,7 +44,7 @@ Every utility class you suggest and every styling pattern you describe MUST be b
 
 `[source: references/<file>.md]`
 
-Example: *"Use `wh-12` to set width and height to 48px [source: references/class-index.md]"*
+Example: *"Use `wh-12` to set width and height to 48 [source: references/class-index.md]"*
 
 ### Step 4 — If you must answer from memory
 
@@ -205,7 +205,7 @@ purgetss create 'MyApp' -d -v fa
 ### 🚨 RESPECT USER FILES
 **NEVER delete any existing `.tss` files** (like `index.tss`, `detail.tss`) or other project files without explicit user consent.
 
-**How to handle migration to PurgeTSS:**
+**How to handle migration to PurgeTSS** (full workflow and translation tables in [adopting-purgetss.md](references/adopting-purgetss.md)):
 1. **ONLY** replace custom classes with PurgeTSS utility classes if the user explicitly requests it.
 2. When requested:
     - Analyze the definitions in the existing `.tss` files.
@@ -241,17 +241,16 @@ purgetss create 'MyApp' -d -v fa
 > **`horizontal`** - Arrange elements left to right:
 > ```xml
 > <View class="horizontal w-screen">
->   <Label text="Left" />
->   <View class="w-screen" />  <!-- Spacer -->
->   <Label text="Right" />
+>   <Label text="First" />
+>   <Label class="ml-4" text="Second" />  <!-- ml-4 = 16 after the previous sibling -->
 > </View>
 > ```
 >
-> **`composite`** (default) - Absolute positioning with `top`, `left`, etc.:
+> **`composite`** (default) - Absolute positioning with `top`, `left`, etc. (to pin one child left and another right, use a composite parent with `left-0` / `right-0`):
 > ```xml
 > <View class="h-screen w-screen">
->   <View class="wh-12 absolute left-0 top-0 bg-red-500" />
->   <View class="wh-12 absolute bottom-0 right-0 bg-blue-500" />
+>   <View class="wh-12 left-0 top-0 bg-red-500" />
+>   <View class="wh-12 bottom-0 right-0 bg-blue-500" />
 > </View>
 > ```
 >
@@ -280,8 +279,11 @@ purgetss create 'MyApp' -d -v fa
 >
 > **OR use PurgeTSS platform modifier classes:**
 > ```xml
-> <!-- ✅ GOOD - Platform-specific classes -->
-> <Window class="ios:status-bar-light android:status-bar-dark">
+> <!-- ✅ GOOD - status-bar-* classes are already emitted as [platform=ios] -->
+> <Window class="status-bar-light">
+>
+> <!-- ✅ GOOD - ios: / android: scope any other class to one platform -->
+> <Window class="ios:bg-white android:bg-gray-100">
 > ```
 >
 > **Properties that ALWAYS require platform modifiers:**
@@ -300,7 +302,7 @@ purgetss create 'MyApp' -d -v fa
 
 - **NO `p-` padding classes**: Titanium does NOT support a native `padding` property on `View`, `Window`, `ScrollView`, or `TableView`. Always use **margins on children** (`m-`) to simulate internal spacing.
 - **View defaults to `SIZE`**: Use `w-screen`/`h-screen` to fill space when needed.
-- **`rounded-full`**: To get a perfect circle, use `rounded-full-XX` (where XX is the width/height of the square element).
+- **`rounded-full`**: On its own it is a fixed 8×8 circle (`width: 8, height: 8, borderRadius: 4`). For any other size, use `rounded-full-XX` (where XX is the spacing-scale size of the square element).
 - **`rounded-full-XX` includes size**: These classes already set `width`, `height`, and `borderRadius`. Do **not** add `w-XX h-XX`/`wh-XX` unless you need to override.
 - **`m-xx` on FILL elements**: Adding `m-4` to a `w-screen` element pins it to all four edges (top, bottom, left, right). This will **stretch the component vertically** to fill the parent unless you explicitly add `h-auto` (`Ti.UI.SIZE`) to constrain it to its content.
 - **`w-XX` + `h-XX` → `wh-XX`**: If both width and height use the same scale value, prefer a single `wh-XX` (order doesn't matter: `w-10 h-10` and `h-10 w-10` are equivalent).
@@ -327,7 +329,7 @@ purgetss create 'MyApp' -d -v fa
 > ```
 
 - **NEVER add `composite` class explicitly** - That's the default, use `horizontal`/`vertical` when needed
-- **Arbitrary values use parentheses**: `w-(100px)`, `bg-(#ff0000)` - NO square brackets
+- **Arbitrary values use parentheses**: `w-(100)`, `bg-(#ff0000)` - NO square brackets, and no `px` unit (unitless values are pixels; since v7.8.0 `w-(100px)` stops the build with a `Class Syntax Error`)
 - **`mode: 'all'` required** in `config.cjs` for Ti Elements styling
 - **Classes use `kebab-case`**: `.my-class`, IDs use `camelCase`: `#myId`
 
@@ -400,12 +402,12 @@ PurgeTSS shares naming with some CSS Frameworks but has DIFFERENT classes for Ti
 | ----------------------- | ------------------------------------- |
 | `keyboard-type-email`   | `hintText` (use attribute)            |
 | `return-key-type-next`  | `passwordMask` (use attribute)        |
-| `text-center`           | `autocorrect` (use attribute)         |
-| `bg-blue-500`           | `autocapitalization` (use attribute)  |
-| `w-screen`              | `flex-row` → use `horizontal`         |
-| `wh-16`                 | `justify-between` → use margins       |
-| `rounded-lg`            | `w-full` → use `w-screen`             |
-| `m-4`, `gap-4`          | `p-4` on View → use `m-4` on children |
+| `text-center`           | `flex-row` → use `horizontal`         |
+| `bg-blue-500`           | `justify-between` → use positioning   |
+| `w-screen` (`Ti.UI.FILL`), `w-full` (`'100%'`) | `p-4` on View → use `m-4` on children |
+| `wh-16`, `rounded-lg`, `m-4`, `gap-4` |                         |
+| `autocorrect`, `autocorrect-false` |                            |
+| `autocapitalization-text-none` (also `normal-case`, `uppercase`, `capitalize`, `sentences`) | |
 
 > **💡 TIP**
 > When in doubt, prefer using the search command above to verify. It's better to spend 5 seconds verifying than suggesting a class that doesn't exist and will appear in the "unused classes" warning.
@@ -416,16 +418,16 @@ Load these only when needed:
 
 ### Essential References
 - **[Class Index](references/class-index.md)** - Naming conventions, prohibited classes, prefix inventory, verification commands (LOAD FIRST when unsure about a class)
-- **[Class Index — Properties (A–Z)](references/class-index-properties.md)** - Full A–Z table of every Titanium property and its PurgeTSS class prefix
-- **[Class Categories](references/class-categories.md)** - Complete prefix inventory by category (layout, colors, typography, states, etc.)
+- **[Class Index — Properties (A–Z)](references/class-index-properties.md)** - Every Titanium property with the class families that set it, generated from `utilities.tss`
+- **[Class Categories](references/class-categories.md)** - Every class family grouped by kind of value: colors, dimensions, constants, booleans
 - **[Dynamic Component Creation](references/dynamic-component-creation.md)** - `$.UI.create()` and `Alloy.createStyle()` for creating components in Controllers (READ FIRST for dynamic components)
-- **[Appearance Module](references/appearance-module.md)** - Light/Dark/System mode switching with persistence (v7.5.3)
-- **[Semantic Colors](references/semantic-colors.md)** - Titanium semantic colors for Light/Dark mode via `semantic` command (v7.6.0)
 
 ### Setup & Configuration
 - [Installation & Setup](references/installation-setup.md) - First run, VS Code, LiveView
 - [CLI Commands](references/cli-commands.md) - All `purgetss` commands
-- [Migration Guide](references/migration-guide.md) - Migrating existing apps from manual TSS to PurgeTSS
+- [Color Commands](references/color-commands.md) - `semantic`, `shades` and `color-module`: Light/Dark semantic colors, palettes in `config.cjs`, and the CommonJS color module
+- [Adopting PurgeTSS](references/adopting-purgetss.md) - Moving an existing Alloy app from hand-written `.tss` files to utility classes: the style-priority trap, view-by-view workflow, and property-to-class translation tables
+- [Migration Guide](references/migration-guide.md) - Upgrading between PurgeTSS versions (v7.2.6 → v7.17.1): breaking changes and what to review after each upgrade
 - **[Values and Units](references/values-and-units.md)** - How `ti.ui.defaultunit` in `tiapp.xml` interprets the unitless numeric values PurgeTSS writes (foundational concept for spacing, sizes, typography)
 
 ### Customization
@@ -449,7 +451,8 @@ Load these only when needed:
 - [iOS Large Titles](references/ios-large-titles.md) - Best practice for iOS Large Title navigation
 
 ### App Assets
-- [App Branding](references/app-branding.md) - `brand` command: 14 pieces, per-piece config, selection, optimization, appicon padding, and rounded non-icon artwork (v7.16.0)
+- [App Branding](references/app-branding.md) - `brand` command: 14 pieces, per-piece config, selection, optimization, launch assets, FCM notification icon, and troubleshooting
+- [Brand Padding & Geometry](references/brand-padding-geometry.md) - Per-piece padding, master sizing, splash sizing rule, rounded non-icon artwork (v7.16.0), and adaptive-mask math for `brand`
 - [Launch Background](references/launch-background.md) - Carrying `brand.background` into the iOS LaunchScreen and a launcher-only Android theme (`--notes` output)
 - [Multi-Density Images](references/multi-density-images.md) - `images` command for Android res-*dpi + iPhone @1x/@2x/@3x UI images (v7.6.0)
 - [SVG Pipeline](references/svg-pipeline.md) - SVG-aware compile-time image pipeline: `.svg` refs + numeric `w-*`/`h-*` classes compile to 8 density PNGs; `images.files`/`images.autoSync` (v7.11.0–v7.11.1)

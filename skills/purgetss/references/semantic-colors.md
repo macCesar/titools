@@ -2,7 +2,7 @@
 
 Semantic colors let your app respond to Light / Dark mode changes without any extra runtime code. You define color **names** once, give each name a `light` and `dark` hex value, and Titanium resolves the right one at render time based on `Ti.UI.overrideUserInterfaceStyle`. PurgeTSS's contribution is the `theme.extend.colors` mapping in `config.cjs` that turns those names into utility classes like `bg-surface` or `text-on-surface`.
 
-This file covers the full workflow: the JSON schema, the `config.cjs` mapping, nesting rules (and the `[object Object]` trap), the numeric 11-step tonal-inversion pattern, alpha transparency, the `purgetss semantic` CLI, and three patterns for consuming semantic colors from controllers at runtime.
+This file covers the full workflow: the JSON schema, the `config.cjs` mapping, nesting rules (and the missing-`DEFAULT` trap), the numeric 11-step tonal-inversion pattern, alpha transparency, the `purgetss semantic` CLI, and three patterns for consuming semantic colors from controllers at runtime.
 
 For the mode-switching runtime that drives all of this (`Appearance.init()`, `Appearance.set(...)`, persistence), see [appearance-module.md](./appearance-module.md).
 
@@ -57,6 +57,10 @@ Each top-level key is a color name; each value is an object with `light` and `da
     "light": "#6B7280",
     "dark":  "#94a3b8"
   },
+  "textMutedColor": {
+    "light": "#9CA3AF",
+    "dark":  "#64748b"
+  },
   "borderColor": {
     "light": "#E5E7EB",
     "dark":  "#334155"
@@ -68,11 +72,11 @@ Each top-level key is a color name; each value is an object with `light` and `da
 }
 ```
 
-This is a reasonable 6-color starter palette: background, elevated surfaces, primary text, secondary text, borders, and an accent. Most apps can ship with just these and extend later.
+This is a reasonable 7-color starter palette: background, elevated surfaces, primary text, secondary text, muted text, borders, and an accent. Most apps can ship with just these and extend later.
 
 ### Alpha transparency — the 8-digit format
 
-Titanium accepts the `#RRGGBBAA` 8-digit hex format anywhere a color is expected. Use it in either mode to produce translucent surfaces like overlays or glass sheets:
+In `semantic.colors.json`, the official docs use the 8-digit `#RRGGBBAA` hex format for transparency. Use it in either mode to produce translucent surfaces like overlays or glass sheets:
 
 ```json
 {
@@ -87,7 +91,7 @@ Titanium accepts the `#RRGGBBAA` 8-digit hex format anywhere a color is expected
 }
 ```
 
-The last two hex digits are the alpha channel: `00` is fully transparent, `FF` is fully opaque, `80` is ~50%, `B3` is ~70%, `CC` is ~80%.
+The last two hex digits are the alpha channel: `00` is fully transparent, `FF` is fully opaque, `80` is ~50%, `B3` is ~70%, `CC` is ~80%. This order applies to the JSON file only: the hex colors PurgeTSS writes into TSS put alpha first (`#AARRGGBB`), as in `'.bg-sky-500/50': { backgroundColor: '#800ea5e9' }`, and its own warning suggests `bg-(#AARRGGBB)` for arbitrary values.
 
 ## Registering in `config.cjs`
 
@@ -105,6 +109,7 @@ module.exports = {
         },
         'on-surface':         'textColor',
         'on-surface-variant': 'textSecondaryColor',
+        muted:                'textMutedColor',
         border:               'borderColor',
         accent:               'accentColor'
       }
@@ -113,11 +118,11 @@ module.exports = {
 }
 ```
 
-This generates `bg-surface`, `bg-surface-high`, `text-on-surface`, `text-on-surface-variant`, `bg-border`, `text-accent`, `bg-accent`, etc. Any utility that takes a color — `bg-*`, `text-*`, `border-*`, `placeholder-*`, tint classes — can reference the name.
+This generates `bg-surface`, `bg-surface-high`, `text-on-surface`, `text-on-surface-variant`, `text-muted`, `bg-border`, `text-accent`, `bg-accent`, etc. Any utility that takes a color — `bg-*`, `text-*`, `border-*`, `placeholder-*`, tint classes — can reference the name.
 
 ### Nested pattern with `DEFAULT`
 
-One level of nesting is supported, and it must include a `DEFAULT` key for the base variant:
+Each key of a nested object becomes a class suffix. The `DEFAULT` key (lowercase `default` works too) produces the base class with no suffix:
 
 ```js
 // Correct -- generates bg-surface and bg-surface-high
@@ -127,21 +132,21 @@ surface: {
 }
 ```
 
-`bg-surface` resolves to `surfaceColor` (the `DEFAULT`), and `bg-surface-high` resolves to `surfaceHighColor`.
+`bg-surface` resolves to `surfaceColor` (the `DEFAULT`), and `bg-surface-high` resolves to `surfaceHighColor`. Since v7.10.0, deeper nesting flattens the same way: `brand: { primary: { 500: 'brandColor' } }` generates `bg-brand-primary-500`.
 
 > **DANGER**
 >
 > Common error: nested objects without `DEFAULT`
 >
 > ```js
-> // Wrong -- generates [object Object] instead of a color
+> // Wrong -- generates bg-surface-regular and bg-surface-high, but no bg-surface
 > surface: {
 >   regular: 'surfaceColor',
 >   high:    'surfaceHighColor'
 > }
 > ```
 >
-> If you nest without a `DEFAULT` key and then use the base class (`bg-surface`), PurgeTSS serializes the whole nested object with `String(...)`, producing the literal string `[object Object]` as the color value. Titanium can't parse that, and the view renders with whatever fallback the platform has. Always include `DEFAULT` for the base variant, or use a flat structure.
+> Without a `DEFAULT` key there is no base class. A view that uses `bg-surface` gets no rule for it in `app.tss`, so the class has no effect. The official docs describe the result as `[object Object]`; PurgeTSS 7.17.1 emits no rule at all. Always include `DEFAULT` for the base variant, or use a flat structure.
 
 ### Flat structure alternative
 
@@ -162,6 +167,8 @@ Both approaches work. The nested form groups related shades under one namespace;
 ## Numeric 11-step tonal-inversion palette
 
 Instead of purpose-based names, you can model a color as an 11-step tonal scale (`50` through `950`) where each light-mode value **inverts** in dark mode. This gives you a full tonal range from a single palette and keeps dark-mode contrast in lockstep with light mode.
+
+The example below uses a neutral gray palette for clarity, but the same inversion pattern works with any hue — blues, greens, warm tones, or a custom brand palette — as long as the 11 stops share a consistent tonal progression.
 
 `app/assets/semantic.colors.json`
 ```json
@@ -240,7 +247,7 @@ In Alloy, this:
 1. Generates `amazon50` through `amazon950` using the same algorithm as the `shades` command.
 2. Writes `semantic.colors.json` under `app/assets/` with mirror-by-index values — 50 ↔ 950, 100 ↔ 900, …, 500 as the identical anchor.
 3. Writes the `{ 50: 'amazon50', 100: 'amazon100', ... }` mapping into `config.cjs`.
-4. Strips any prior keys for the `amazon` family before writing — re-runs cleanly replace, never duplicate.
+4. Strips any prior keys for the `amazon` family before writing, including a bare `amazon` key and the 11 shade keys — re-runs cleanly replace, never duplicate.
 
 In Classic, the same command writes only the native `Resources/semantic.colors.json` entries. It does not create `purgetss/`, `config.cjs`, utility mappings, TSS, `app/`, or an Alloy hook. Use keys such as `amazon50` directly in Titanium color properties.
 
@@ -361,7 +368,7 @@ Re-runs are idempotent: existing derived keys are reused, never duplicated. If y
 >
 > `semantic.colors.json` is read at **native build time**, not at runtime. The first time a brand-new opacity variant is auto-derived (a class like `bg-surface/65` you've never used before), the running app **will not see it** until the next full Titanium build. Liveview hot-reload alone does **not** refresh `semantic.colors.json` for the running app — only the native binary does.
 >
-> In practice: after introducing a new opacity class, run `purgetss build` once, then start a fresh native build (`appc run` / `ti build`) before resuming your usual Liveview cycle. Subsequent runs of the *same* `/N` value reuse the existing derived key and need no extra rebuild.
+> In practice: after introducing a new opacity class, run `purgetss build` once, then start a fresh native build (`ti build`) before resuming your usual Liveview cycle. Subsequent runs of the *same* `/N` value reuse the existing derived key and need no extra rebuild.
 
 #### Constraints
 
@@ -444,11 +451,11 @@ Start with these 6-7 colors and add more only when the design requires it. Fewer
 ## Related
 
 - [appearance-module.md](./appearance-module.md) — `Appearance.init()`, `set(...)`, `get()`, `toggle()` — the runtime that switches the whole palette.
-- [cli-commands.md#semantic-command](./cli-commands.md#semantic-command) — full reference for `purgetss semantic` (palette and single modes, all flags).
+- [color-commands.md#semantic-command](./color-commands.md#semantic-command) — full reference for `purgetss semantic` (palette and single modes, all flags).
 - [customization-deep-dive.md](./customization-deep-dive.md) — full `config.cjs` structure, including `theme.extend` vs `theme.colors` and the rest of the extendable keys.
 
 ## Community-Discovered Patterns
 
-- **The `[object Object]` crash is always a missing `DEFAULT`.** Any time a view renders with a mysterious fallback color and the class was something like `bg-surface`, check `config.cjs` first: if `surface` is a nested object without a `DEFAULT` key, PurgeTSS serializes the whole object and emits `[object Object]` as the color value. The fix is either to add `DEFAULT: 'surfaceColor'` inside the nested object or flatten the structure.
+- **A base class that does nothing is always a missing `DEFAULT`.** Any time a class like `bg-surface` has no visible effect, check `config.cjs` first: if `surface` is a nested object without a `DEFAULT` key, PurgeTSS 7.17.1 generates only the suffixed classes (`bg-surface-high`, ...) and no `bg-surface` rule. The official docs describe this case as `[object Object]`. The fix is either to add `DEFAULT: 'surfaceColor'` inside the nested object or flatten the structure.
 - **Semantic resolution is Titanium-native, not PurgeTSS.** This matters when debugging: if a semantic name doesn't resolve, the problem is usually the `semantic.colors.json` file (wrong filename, wrong key, malformed JSON, or wrong location — Alloy expects `app/assets/`, Classic expects `Resources/`). PurgeTSS generates the file in both layouts and an additional utility mapping only in Alloy.
 - **Re-running `purgetss semantic` on the same family is safe.** The CLI strips prior keys for that family from both the JSON and `config.cjs` before writing, so switching between palette and single forms — or changing the base hex — does not leave orphans. Other palettes and manually-defined entries are untouched.

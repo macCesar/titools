@@ -41,7 +41,6 @@ This applies to every utility class that sets a dimension:
 | Typography | `text-*` (font size), `letter-spacing-*`, `line-spacing-*`                                   |
 | Shadows    | `drop-shadow-*`, `shadow-radius-*`                                                           |
 | Elevation  | `elevation-*`, `max-elevation-*`                                                             |
-| Transforms | `translate-*`, `move-by-*`                                                                   |
 | Offsets    | `x-offset-*`, `y-offset-*`                                                                   |
 
 ## Valid values for `ti.ui.defaultunit`
@@ -115,6 +114,6 @@ If that property is missing, Titanium falls back to `system`. That means iOS and
 
 ## Related
 
-- [Arbitrary Values](./arbitrary-values.md) — parentheses notation `(20px)`, `(2rem)`, `(#ff0000)` for one-off values.
+- [Arbitrary Values](./arbitrary-values.md) — parentheses notation `(20)`, `(2rem)`, `(#ff0000)` for one-off values.
 - [Customization Deep Dive](./customization-deep-dive.md) — defining your own spacing scale via `theme.spacing`.
 - [Class Index](./class-index.md) — the full set of generated classes and their numeric vs. percentage vs. constant outputs.
