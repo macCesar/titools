@@ -57,7 +57,7 @@ The validator catches five narrow, actionable mistakes:
 | Square-bracket notation       | `top-[10]`      | `top-(10)`    | PurgeTSS uses parentheses, not square brackets, for arbitrary values (v7.10.1 reworded the error from `Tailwind-style brackets "[ ]"` to `Square brackets "[ ]" are not supported`) |
 | Empty parentheses             | `wh-()`         | (flagged, no auto-fix) | Add a value such as `wh-(10)`                           |
 | Whitespace inside parentheses | `wh-( 200 )`    | `wh-(200)`    | No spaces allowed between `(`, the value, and `)`                |
-| Redundant `px` unit           | `top-(10px)`    | `top-(10)`    | PurgeTSS treats unit-less arbitrary values as pixels             |
+| Redundant `px` unit           | `top-(10px)`    | `top-(10)`    | The error text says unit-less values are pixels; Titanium actually resolves them through `ti.ui.defaultunit` (see [values-and-units.md](values-and-units.md)) |
 
 ### Unknown classes are still silently dropped
 

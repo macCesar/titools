@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- `purgetss` no longer says unitless arbitrary values are pixels. Titanium resolves them through `ti.ui.defaultunit`; the PurgeTSS error message that says "pixels" is quoted as such.
+
 ## [5.1.0] - 2026-09-26
 
 ### Added

@@ -329,7 +329,7 @@ purgetss create 'MyApp' -d -v fa
 > ```
 
 - **NEVER add `composite` class explicitly** - That's the default, use `horizontal`/`vertical` when needed
-- **Arbitrary values use parentheses**: `w-(100)`, `bg-(#ff0000)` - NO square brackets, and no `px` unit (unitless values are pixels; since v7.8.0 `w-(100px)` stops the build with a `Class Syntax Error`)
+- **Arbitrary values use parentheses**: `w-(100)`, `bg-(#ff0000)` - NO square brackets, and no `px` unit (unitless values are resolved through `ti.ui.defaultunit`, see [values-and-units.md](references/values-and-units.md); since v7.8.0 `w-(100px)` stops the build with a `Class Syntax Error`)
 - **`mode: 'all'` required** in `config.cjs` for Ti Elements styling
 - **Classes use `kebab-case`**: `.my-class`, IDs use `camelCase`: `#myId`
 
