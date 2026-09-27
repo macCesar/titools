@@ -132,3 +132,8 @@ Add tests whenever a new command or skill-scripted behavior ships. Skills that i
 - `lib/config.js:SKILLS` — hardcoded list of which skills to install. Keep in sync when adding/removing a skill.
 - `lib/config.js:LEGACY_SKILLS` — skills to actively remove during updates/uninstall. Use this when deprecating a skill so existing users get it cleaned up on their next `titools update`.
 - `EXAMPLE-PROMPTS.md` — doubles as documentation AND as a smoke test for skill triggering. New skills must add at least 2 example prompts.
+
+
+## Memoria del proyecto
+
+@.claude/memory/index.md
