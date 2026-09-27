@@ -1,11 +1,26 @@
 # PurgeTSS Class Index
 
-**Based on the actual PurgeTSS `utilities.tss` file - 23,000+ unique utility classes across 364 unique prefixes covering 416 Titanium properties** (class count grows with each Titanium SDK / Font Awesome release; prefix and property counts are stable)
+<!-- GENERATED:counts START -->
+**Generated from `utilities.tss` (PurgeTSS 7.17.1): 23,343 unique classes, 403 first segments, 620 Titanium properties.** Counts grow with each Titanium SDK and icon-font release.
+<!-- GENERATED:counts END -->
 
 Before suggesting ANY class, verify it exists:
 ```bash
 grep -E "PATTERN" ./purgetss/styles/utilities.tss
 ```
+
+<!-- TOC-START -->
+## Contents
+
+- [PurgeTSS Naming Conventions](#purgetss-naming-conventions)
+- [Class Names You Cannot Derive from the Property](#class-names-you-cannot-derive-from-the-property)
+- [All Titanium Properties with Classes](#all-titanium-properties-with-classes)
+- [Community-Discovered Patterns](#community-discovered-patterns)
+- [All First Segments (Alphabetical)](#all-first-segments-alphabetical)
+- [Quick Verification Commands](#quick-verification-commands)
+- [When to Use Direct Properties (No Classes)](#when-to-use-direct-properties-no-classes)
+
+<!-- TOC-END -->
 
 ## PurgeTSS Naming Conventions
 
@@ -45,7 +60,7 @@ returnKeyType              → return-key-type-*
 | Pattern             | Property                 | Class Example          |
 | ------------------- | ------------------------ | ---------------------- |
 | `*BackgroundColor`  | `resultsBackgroundColor` | `results-bg-gray-900`  |
-| `*Background*Color` | `barBackgroundColor`     | `bar-bg-gray-900`      |
+| `*Background*Color` | `statusBarBackgroundColor` | `status-bar-bg-gray-900` |
 | `*Color`            | `titleColor`             | `title-gray-900`       |
 | `*TextColor`        | `titleTextColor`         | `title-text-gray-900`  |
 | `TintColor`         | `activeTintColor`        | `active-tint-gray-900` |
@@ -54,7 +69,7 @@ returnKeyType              → return-key-type-*
 - `Background` → `bg-`
 - `Color` → (omitted, color value follows)
 - `TextColor` → `text-`
-- `TintColor` → `tint-`
+- `TintColor` → `tint-` when it has a prefix (`activeTintColor` → `active-tint-*`). The bare `tintColor` is `tint-color-*`; `tint-*` sets the MaskedImage `tint` property.
 
 #### 4. No kebab-case Conversion
 
@@ -85,7 +100,7 @@ Each property section in the file includes documentation:
 - `// Component(s): Ti.UI.View, ...` - Which components use these classes
 - `// Description: ...` - Optional description
 
-**Exception:** Only `// debug` exists without a `Property:` label.
+**Exception:** a few blocks carry a free-text comment instead of a `Property:` label, e.g. `// Utilities for controlling an element's margin.` above `m-*`, `// debug`, and the Animation-module drag options (`drag-apply`, `drag-animate`, `move-by-animation`).
 
 Search for any property to see its available classes:
 ```bash
@@ -104,50 +119,99 @@ grep -B 2 "Component(s):.*Ti.UI.ListView" ./purgetss/styles/utilities.tss | grep
 
 ---
 
-## Multiple Properties Grouped Together
+## Class Names You Cannot Derive from the Property
 
-Some PurgeTSS classes combine multiple Titanium properties under a single class prefix:
+For these families the class stem is not the property name in kebab-case, so guessing from the property fails. Generated from `utilities.tss`; the full property table is in [class-index-properties.md](./class-index-properties.md).
 
-| Class Prefix             | Properties                                                     | Description                |
-| ------------------------ | -------------------------------------------------------------- | -------------------------- |
-| `anchor-point-*`         | `anchorPoint`                                                  | Animation/View positioning |
-| `autocapitalization-*`   | `autocapitalization`                                           | Text capitalization        |
-| `bg-gradient-*`          | `backgroundGradient`                                           | Linear gradients           |
-| `bg-radial-*`            | `backgroundGradient`                                           | Radial gradients (iOS)     |
-| `clip-mode-*`            | `clipMode`                                                     | iOS clipping               |
-| `content-*`              | `contentWidth`, `contentHeight`                                | ScrollView content size    |
-| `curve-*`                | `curve`                                                        | Animation easing           |
-| `dragging-*`             | `draggingType`                                                 | Animation module dragging  |
-| `filter-attribute-*`     | `filterAttribute`                                              | ListView filtering         |
-| `flip-*`                 | `flip`                                                         | Animation flipping         |
-| `font-*`                 | `fontFamily`, `fontSize`, `fontStyle`, `fontWeight`            | Typography (v7.5.3+: `font-sans`, `font-serif`, `font-mono` family classes) |
-| `grid-*`                 | Various                                                        | Grid layout system         |
-| `h-*`                    | `height`                                                       | All components             |
-| `hint-*`                 | `hintTextColor`                                                | TextField placeholder      |
-| `keep-z-index`           | `animationProperties.keepZIndex` (v7.4.0+)                     | Preserves z-order during drag when used with `transition` |
-| `layout-*`               | `layout`                                                       | View layout modes          |
-| `minimum-font-size-*`    | `minimumFontSize`                                              | Label auto-shrink          |
-| `navigation-*`           | `navigationMode`                                               | Navigation modes           |
-| `orientation-modes-*`    | `orientationModes`                                             | Supported orientations     |
-| `origin-*`               | `anchorPoint`                                                  | Transform origin           |
-| `padding-*`              | `padding`                                                      | Android-specific padding   |
-| `rotate-*`               | `rotate`                                                       | 2D Matrix rotation         |
-| `scale-*`                | `scale`                                                        | 2D Matrix scaling          |
-| `scroll-type-*`          | `scrollType`                                                   | Android scroll type        |
-| `shadow-*`               | `shadowOffset`, `shadowRadius`, `shadowColor`                  | Box shadows                |
-| `show-*scroll-indicator` | `showHorizontalScrollIndicator`, `showVerticalScrollIndicator` | ScrollView                 |
-| `snap-*`                 | `animationProperties.snap.{back, center, magnet}` (v7.4.0+)    | Draggable drop behaviors   |
-| `status-bar-style-*`     | `statusBarStyle`                                               | iOS status bar             |
-| `tint-*`                 | `tintColor`                                                    | View/Button tinting        |
-| `title-*`                | `titleAttributes: color/shadow`                                | iOS title styling          |
-| `toggle-*`               | `toggle`                                                       | Animation toggle           |
-| `w-*`                    | `width`                                                        | All components             |
-| `wh-*`                   | `width`, `height`                                              | Combined width/height      |
-
+<!-- GENERATED:irregular START -->
+| Classes | Property | Components |
+| --- | --- | --- |
+| `-rotate-*` | `rotate` | For the Animation Component |
+| `alert-dialog-style`, `alert-dialog-style-login-and-password`, `alert-dialog-style-plain-text-input`, `alert-dialog-style-secure-text-input` | `style` | — |
+| `allows-bg-location-updates`, `allows-bg-location-updates-false` | `allowsBackgroundLocationUpdates` | Ti.Geolocation |
+| `allows-picture-in-media-playback`, `allows-picture-in-media-playback-false` | `allowsPictureInPictureMediaPlayback` | iOS.WebViewConfiguration |
+| `allows-tightening-for-truncation`, `allows-tightening-for-truncation-false` | `allowsDefaultTighteningForTruncation` | ParagraphAttribute |
+| `badge-bg-*` | `badgeBackgroundColor` | Tab |
+| `bg-*` | `backgroundColor` | View, Ti.Media.VideoPlayer, Android.CardView +40 more |
+| `bg-auto`, `bg-fill`, `bg-none`, `bg-cover`, `bg-contain` | `scalingMode` | ImageView |
+| `bg-disabled-*` | `backgroundDisabledColor` | View, Ti.Media.VideoPlayer, Android.CardView +25 more |
+| `bg-focused-*` | `backgroundFocusedColor` | View, Ti.Media.VideoPlayer, Android.CardView +25 more |
+| `bg-gradient`, `bg-gradient-*` | `backgroundGradient` | MaskedImage |
+| `bg-left-cap-*` | `backgroundLeftCap` | View, Ti.Media.VideoPlayer, Button +27 more |
+| `bg-linear`, `bg-linear-*` | `backgroundGradient` | MaskedImage |
+| `bg-padding-bottom-*` | `backgroundPaddingBottom` | Label |
+| `bg-padding-left-*` | `backgroundPaddingLeft` | Label |
+| `bg-padding-right-*` | `backgroundPaddingRight` | Label |
+| `bg-padding-top-*` | `backgroundPaddingTop` | Label |
+| `bg-radial`, `bg-radial-*` | `backgroundGradient` | ListItem, View |
+| `bg-selected-*` | `backgroundSelectedColor` | View, Ti.Media.VideoPlayer, Android.CardView +30 more |
+| `bg-selected-from-*` | `backgroundSelectedGradient` | ListItem, View |
+| `bg-selected-to-*` | `backgroundSelectedGradient` | ListItem, View |
+| `bg-top-cap-*` | `backgroundTopCap` | View, Ti.Media.VideoPlayer, Button +27 more |
+| `block`, `hidden` | `visible` | View, Ti.Android.ActionBar, Ti.Android.MenuItem +37 more |
+| `border`, `border-*` | `borderWidth` | View, Ti.Media.VideoPlayer, Android.CardView +32 more |
+| `clip-enabled`, `clip-disabled` | `clipMode` | View |
+| `col-count-*` | `columnCount` | DashboardView |
+| `col-span-*` | `width` | ActivityIndicator, Animation, iPad.Popover +2 more |
+| `content-w-auto`, `content-h-auto`, `content-w-screen`, `content-h-screen`, `content-auto`, `content-screen` | `contentWidth`, `contentHeight` | ScrollView |
+| `dim-bg-for-search`, `dim-bg-for-search-false` | `dimBackgroundForSearch` | ListView, TableView |
+| `drag-apply`, `drag-animate` | `draggingType` | For the Animation Component |
+| `drop-shadow`, `drop-shadow-*` | `shadowOffset`, `shadowRadius`, `shadowColor` | Button, Label |
+| `ease-in`, `ease-out`, `ease-linear`, `ease-in-out` | `curve` | Animation |
+| `font-mono`, `font-sans`, `font-serif` | `font.fontFamily` | ActivityIndicator, Button, Label +9 more |
+| `from-*` | `backgroundGradient` | ListItem, View |
+| `gap-*` | `top`, `right`, `bottom`, `left` | ActivityIndicator, Animation, View, Window |
+| `grid-cols-*` | `width` | ActivityIndicator, Animation, iPad.Popover +2 more |
+| `grid-rows-*` | `height` | ActivityIndicator, Animation, iPad.Popover +2 more |
+| `grid`, `grid-flow-col`, `grid-flow-row` | `layout`, `width`, `height` | View |
+| `horizontal-constraint`, `vertical-constraint` | `constraint` | Animation |
+| `iconified-by`, `iconified-by-false` | `iconifiedByDefault` | Android.SearchView, SearchBar |
+| `italic`, `not-italic` | `font.fontStyle` | ActivityIndicator, Button, Label +9 more |
+| `items-start`, `items-end`, `items-center` | `top`, `bottom`, `width`, `height` | ActivityIndicator, Animaiton, View, Window |
+| `left-track-cap-*` | `leftTrackLeftCap` | Slider |
+| `line-h-multiple-*` | `lineHeightMultiple` | ParagraphAttribute |
+| `list-item-template`, `list-item-template-contacts`, `list-item-template-settings`, `list-item-template-subtitle` | `defaultItemTemplate` | ListView |
+| `m-*`, `my-*`, `mx-*`, `mt-*`, `mr-*`, `mb-*`, `ml-*`, `-m-*`, … | `top`, `right`, `bottom`, `left` | — |
+| `minimum-text-*` | `minimumFontSize` | label, TextField |
+| `object-auto`, `object-fill`, `object-none`, `object-cover`, `object-contain` | `scalingMode` | ImageView |
+| `orientation-landscape-left`, `orientation-landscape-right`, `orientation-portrait`, `orientation-upside-portrait`, `orientation-landscape`, `orientation-all` | `orientationModes` | NavigationWindow, TabGroup, Window, iOS.SplitWindow |
+| `origin-*` | `anchorPoint` | Animation, View |
+| `overflow-x-scroll`, `overflow-y-scroll`, `overflow-x-hidden`, `overflow-y-hidden`, `overflow-scroll`, `overflow-hidden` | `showHorizontalScrollIndicator`, `showVerticalScrollIndicator` | ScrollView |
+| `p-*`, `py-*`, `px-*`, `pt-*`, `pr-*`, `pb-*`, `pl-*` | `padding` | Android.CardView, TextArea, TextField |
+| `picture-in-enabled`, `picture-in-enabled-false` | `pictureInPictureEnabled` | Ti.Media.VideoPlayer |
+| `placeholder-*` | `hintTextColor` | Android.SearchView, SearchBar, TextArea, TextField |
+| `platform-w`, `platform-h`, `platform-wh`, `platform-w-inverted`, `platform-h-inverted`, `platform-wh-inverted`, `inverted-platform-w`, `inverted-platform-h` | `width`, `height` | ActivityIndicator, Animation, iPad.Popover, View |
+| `pointer-events-auto`, `pointer-events-none` | `touchEnabled` | View |
+| `portrait`, `upside-portrait`, `landscape-left`, `landscape-right`, `landscape` | `orientationModes` | NavigationWindow, TabGroup, Window, iOS.SplitWindow |
+| `progress-bar-style-bar`, `progress-bar-style`, `progress-bar-style-plain` | `style` | ProgressBar |
+| `pull-bg-*` | `pullBackgroundColor` | View, Ti.Media.VideoPlayer, Button +31 more |
+| `r-drawable-*` | `icon` | — |
+| `results-bg-*` | `resultsBackgroundColor` | ListView, TableView |
+| `rounded-full`, `rounded-full-*` | `width`, `height`, `borderRadius` | View, Ti.Media.VideoPlayer, Android.CardView +32 more |
+| `rounded`, `rounded-*` | `borderRadius` | View, Ti.Media.VideoPlayer, Android.CardView +32 more |
+| `row-span-*` | `height` | ActivityIndicator, Animation, iPad.Popover +2 more |
+| `selected-bg-*` | `selectedBackgroundColor` | ListItem, OptionBar, TabbedBar, TableViewRow |
+| `shadow`, `shadow-*` | `viewShadowOffset`, `viewShadowRadius`, `viewShadowColor`, `elevation` | iOS: Ti.UI.View, Android: Ti.UI.Android.CardView, Animation, View |
+| `show-bg-location-indicator`, `show-bg-location-indicator-false` | `showBackgroundLocationIndicator` | Ti.Geolocation |
+| `show-search-bar-in-nav`, `show-search-bar-in-nav-false` | `showSearchBarInNavBar` | ListView, TableView |
+| `size-*` | `width`, `height` | View, Ti.Blob, Ti.Media.VideoPlayer +43 more |
+| `status-bar-bg-*` | `statusBarBackgroundColor` | iOS |
+| `status-bar`, `status-bar-dark`, `status-bar-light` | `statusBarStyle` | Window |
+| `tabs-bg-*` | `tabsBackgroundColor` | TabGroup |
+| `tabs-bg-selected-*` | `tabsBackgroundSelectedColor` | TabGroup |
+| `text-*` | `font.fontSize` | ActivityIndicator, Button, Label +9 more |
+| `text-center`, `text-justify`, `text-left`, `text-right` | `textAlign` | Button, Label, Picker +4 more |
+| `to-*` | `backgroundGradient` | ListItem, View |
+| `transparent`, `black`, `white`, `slate-*`, `gray-*`, `zinc-*`, `neutral-*`, `stone-*`, … | `color` | Ti.Android.Notification, Ti.Android.R, ActivityIndicator +20 more |
+| `uppercase`, `normal-case`, `capitalize`, `sentences` | `autocapitalization` | SearchBar, TextArea, TextField |
+| `vertical`, `horizontal`, `composite` | `layout` | View, Ti.Android.R, Ti.Media.VideoPlayer +31 more |
+| `wh-*` | `width`, `height` | View, Ti.Blob, Ti.Media.VideoPlayer +43 more |
+| `zoom-*` | `animationProperties.open`, `animationProperties.complete`, `animationProperties.close` | Animation |
+<!-- GENERATED:irregular END -->
 
 ---
 
-## All 416 Titanium Properties with Classes
+## All Titanium Properties with Classes
 
 The full A–Z property→class table is maintained in a dedicated reference to keep this index scannable:
 
@@ -168,12 +232,10 @@ The rest of this document collects conventions, prohibitions, and insights surfa
 | `flex`            | Flexbox not supported             | `horizontal` or `vertical`                  |
 | `justify-between` | Flexbox not supported             | Use margins/positioning                     |
 | `justify-center`  | Flexbox not supported             | Use margins/positioning                     |
-| `items-center`    | Different meaning in Titanium     | Use layout + sizing                         |
-| `w-full`          | Different meaning than Tailwind   | Use `w-full` for 100%, `w-screen` for FILL  |
+| `items-center`    | Exists, but only as a grid helper: `{ width: Ti.UI.FILL, height: Ti.UI.FILL }` | Use layout + sizing |
 | `flex-wrap`       | Flexbox not supported             | Not supported                               |
 | `flex-grow`       | Flexbox not supported             | Not supported                               |
 | `flex-shrink`     | Flexbox not supported             | Not supported                               |
-| `rounded-full`    | Requires size suffix              | `rounded-full-12` (size × 4 = diameter)     |
 | `space-x-*`       | Space utilities not like Tailwind | Use `gap-*`                                 |
 | `space-y-*`       | Space utilities not like Tailwind | Use `gap-*`                                 |
 | `leading-*`       | Uses different prefix             | Use `line-h-multiple-*` or `line-spacing-*` |
@@ -181,7 +243,7 @@ The rest of this document collects conventions, prohibitions, and insights surfa
 
 ### Key Insights from Real Data
 
-1. **21,236 unique classes** across **364 unique prefixes** - Far more than initially documented
+1. **Tens of thousands of classes** - see the generated counts at the top of this file
 2. **Extensive state management** - Hundreds of `*enabled`, `*-false` classes for UI states
 3. **Platform-specific classes** - Many iOS/Android specific variants (like `[platform=ios]`)
 4. **Complete color coverage** - All 22 Tailwind v3 colors with 11 shades each (50-950) = 242 color variants per prefix
@@ -194,45 +256,49 @@ The rest of this document collects conventions, prohibitions, and insights surfa
 
 ---
 
-## All 364 Unique Prefixes (Alphabetical)
+## All First Segments (Alphabetical)
 
 > **NOTE**: v7.4.0 introduced `snap-back`, `snap-back-false`, `snap-center`, `snap-center-false`, `snap-magnet`, `snap-magnet-false`, `keep-z-index`, and `keep-z-index-false`. The current runtime implements back, center, and touch-start z-index preservation but does not read `snap.magnet`; do not suggest the generated magnet classes as working behavior. v7.5.3 added `font-sans`, `font-serif`, and `font-mono`.
 
 
+<!-- GENERATED:prefixes START -->
 ```
-accessibility, accessory, accuracy, action, active, activity, alignment, all, allow, allows,
-amber, anchor, animated, app, arrow, aspect, audio, authentication, auto, autocapitalization,
-autocorrect, autofill, autohide, autoplay, autorepeat, autoreverse, autorotate, availability,
-available, backfill, background, backward, badge, bar, battery, bg, black, block, blue, border,
-bottom, break, bubble, bubbles, button, bypass, cache, calendar, camera, can, cancel,
-cancelable, canceled, capitalize, case, charset, checkable, checked, clear, clip, closed,
-code, col, colors, compact, composite, compression, connected, contacts, content, continuous,
-count, current, curve, custom, cyan, date, debug, delay, destructive, dim, disable, disabled,
-display, drag, drawer, drop, duration, ease, editable, editing, elevation, eligible, ellipsize,
-emerald, enable, enabled, exact, exit, experimental, extend, fast, filter, fixed, flag, flip,
+accessibility, accessory, accuracy, action, activation, active, activity, alert, alignment, all,
+allow, allows, amber, anchor, animated, animation, app, arrow, aspect, audio, authentication,
+authorization, auto, autocapitalization, autocorrect, autofill, autohide, autoplay, autorepeat,
+autoreverse, autorotate, availability, available, backfill, background, backward, badge, bar,
+battery, behavior, bg, black, block, blue, border, bottom, break, bubble, bubbles, button, bypass,
+cache, calendar, camera, can, cancel, cancelable, canceled, capitalize, car, case, category, charset,
+checkable, checked, clear, clip, closed, code, col, collision, colors, compact, composite,
+compression, connected, contacts, content, continuous, count, critical, current, curve, custom, cyan,
+date, debug, deceleration, defaults, delay, destructive, dim, disable, disabled, display, drag,
+drawer, drop, duration, ease, editable, editing, effect, elevation, eligible, ellipsize, emerald,
+enable, enabled, exact, exit, experimental, extend, fast, filter, fixed, flag, flags, flip,
 focusable, font, footer, force, format, format24, frequency, from, fuchsia, fullscreen, gap,
-generated, getters, gray, green, grid, group, grouping, h, handle, has, header, hidden, hide,
-hides, highlighted, hint, hires, home, horizontal, hour12, html, httponly, hyphenation, icon,
-iconified, idle, ignore, image, in, include, indention, indicator, indigo, input, inputs,
-inset, interactive, is, italic, items, java, keep, keyboard, kind, landscape, large, launch,
-layer, lazy, left, letter, light, lime, line, lines, list, loading, location, login, looping,
-m, main, manual, master, max, maximum, mb, media, method, min, minimum, mixed, ml, modal,
-mode, move, moveable, movie, moving, mr, mt, multiple, mx, my, native, nav, navigation,
-needs, network, neutral, no, normal, not, numeric, object, on, online, opacity, opaque,
-opaquebackground, opaquebg, orange, orientation, origin, outputs, overflow, overlay, override,
-p, padding, page, paging, paragraph, password, path, pause, pb, persistent, picture, pink,
-pl, placeholder, platform, playback, pointer, portrait, position, pr, prevent, proximity,
-prune, pt, pull, purple, px, py, ready, recording, red, remote, repeat, requires, results,
-return, reverse, right, role, rose, rotate, rounded, row, running, save, scale, scales,
-scaling, scroll, scrollable, scrolling, scrolls, search, section, secure, selected, selection,
-sentences, separator, shadow, shift, show, shows, shuffle, size, sky, slate, smooth, snap, sorted,
-source, split, state, status, stone, stopped, style, submit, subtitle, success, suppress,
-suppresses, sustained, swipe, swipeable, tab, tabs, target, teal, text, theme, throw, thumb,
-timeout, tint, title, tls, to, toggle, toolbar, top, torch, touch, trace, track, translucent,
-transparent, treat, type, unique, update, uppercase, upright, upside, use, user, valid,
-validates, value, vertical, video, view, violet, visibility, visible, w, waits, wh, which,
-white, will, wobble, wraps, x, y, yellow, z, zinc, zoom
+generated, getters, gravity, gray, green, grid, group, grouping, h, handle, has, header, hidden,
+hide, hides, highlighted, hint, hires, home, horizontal, hour12, html, httponly, hyphenation, icon,
+iconified, idle, ignore, image, importance, in, include, indention, indicator, indigo, injection,
+input, inputs, inset, interactive, inverted, is, italic, item, items, java, keep, keyboard, kind,
+landscape, large, launch, layer, lazy, left, letter, light, lime, line, lines, list, loading,
+location, lock, lockscreen, login, looping, m, main, manual, master, max, maximum, mb, media, method,
+min, minimize, minimum, mixed, ml, modal, mode, move, moveable, movie, moving, mr, mt, multiple, mx,
+my, native, nav, navigation, needs, network, neutral, no, normal, not, notification, numeric, object,
+on, online, opacity, opaque, opaquebackground, opaquebg, options, orange, orientation, origin,
+outputs, over, overflow, overlay, override, p, padding, page, paging, paragraph, password, path,
+pause, pb, persistent, physical, picture, pink, pl, placeholder, platform, playback, plugin, pointer,
+portrait, position, pr, prevent, progress, provides, proximity, prune, pt, pull, purple, push, px,
+py, r, ready, recording, red, remote, repeat, requested, requires, results, return, reverse, right,
+role, rose, rotate, rounded, row, running, save, scale, scales, scaling, scroll, scrollable,
+scrollbars, scrolling, scrolls, search, section, secure, selected, selection, sentences, separator,
+severity, shadow, shift, show, shows, shuffle, size, sky, slate, smooth, snap, soft, sorted, sound,
+source, split, start, state, status, stone, stopped, style, submit, subtitle, success, suppress,
+suppresses, sustained, swipe, swipeable, system, tab, tabs, target, teal, text, theme, throw, thumb,
+timeout, tint, title, tls, to, toggle, toolbar, top, torch, touch, trace, track, transition,
+translucent, transparent, treat, type, unique, update, uppercase, upright, upside, use, user, valid,
+validates, value, vertical, video, view, violet, visibility, visible, w, waits, wh, which, white,
+will, window, wobble, wraps, x, y, yellow, z, zinc, zoom
 ```
+<!-- GENERATED:prefixes END -->
 
 ---
 
@@ -276,11 +342,10 @@ These properties are NOT styled with classes in PurgeTSS - use as XML attributes
 | `onClick`      | `onClick="functionName"`          | Event handlers           |
 | `onPostlayout` | `onPostlayout="handlePostlayout"` | Event handlers           |
 | `hintText`     | `hintText="Email"`                | Placeholder text         |
-| `passwordMask` | `passwordMask="true"`             | Password masking         |
 | `value`        | `value="value"`                   | Component value          |
 | `text`         | `text="Label text"`               | Label text               |
 | `title`        | `title="Button title"`            | Button title             |
-| `imageUrl`     | `imageUrl="/path.png"`            | Image source             |
+| `image`        | `image="/images/photo.png"`       | Image source             |
 | `bindId`       | `bindId="myData"`                 | ListView data binding    |
 
-**Note:** For `autocapitalization`, `editable`, `enabled`, `visible`, `autocorrect` - PurgeTSS DOES have classes (see above), so you CAN use either the class or the attribute depending on your preference.
+**Note:** For `autocapitalization`, `editable`, `enabled`, `visible`, `autocorrect`, `passwordMask` (`password-mask`) - PurgeTSS DOES have classes (see above), so you CAN use either the class or the attribute depending on your preference.
