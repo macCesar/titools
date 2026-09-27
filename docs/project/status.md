@@ -19,9 +19,18 @@ The audit also found defects in the PurgeTSS CLI and errors in its official docs
 
 ## In flight
 
-- Nothing in this repo.
+- **Unreleased fix on `main`:** `SKILL.md:332` and `arbitrary-values.md:60` said unitless arbitrary values are pixels, which contradicts `values-and-units.md` (they resolve through `ti.ui.defaultunit`). Shipped in 5.1.0 and fixed after it; recorded under `[Unreleased]` in `CHANGELOG.md`, reaches users with the next release.
 
 ## Blocked on someone else
+
+- **Passages here that describe current PurgeTSS behavior, waiting on the purgeTSS CLI session.** An annex to that repo's `HANDOFF.md`, passed to the session already running on it, asks it to report which of these it changed, without editing TiTools:
+  - defect 1, `materialsymbols` alias: the vendor alias list in `cli-commands.md`
+  - defect 5, `snap-magnet` has no runtime: `animation-advanced.md:207` and `:320`, `purgetss-ui-classic.md:252`, `class-index.md:261`
+  - defect 7, "unit-less values as pixels" message: `arbitrary-values.md:60`
+  - defect 9, `bg-from-(…)` writes `{value1}`: `bg-from-` / `bg-to-` deliberately left out of `arbitrary-values.md`
+  - defect 10, "padding - Android Only" label: `dynamic-component-creation.md:268`, `ui-ux-design.md:172`
+  - docs `grid-system.md:81-84`: `grid-layout.md:86`
+  - any change to `dist/utilities.tss` (defects 4, 5, 9, 10): refresh `.purgetss-source`, then regenerate the indexes with `purgetss-class-index.mjs --write`
 
 - **The first contribution to the official Titanium docs still waits on `hansemannn/titanium-firebase-cloud-messaging` PR #170.** Not re-checked today.
 
@@ -33,7 +42,7 @@ The audit also found defects in the PurgeTSS CLI and errors in its official docs
 
 ## Next step
 
-1. **PurgeTSS CLI and docs session, in the purgeTSS repo.** Read `~/Developer/openSource/purgeTSS/HANDOFF.md`. Confirm the CLI defects with tests first, then sweep `purgetss-docs` against the CLI. Once the docs are fixed at the source, re-audit this skill against them so the next audit does not inherit the old errors.
+1. **PurgeTSS CLI and docs session, in the purgeTSS repo** (running now, with the annex). Read `~/Developer/openSource/purgeTSS/HANDOFF.md`. Confirm the CLI defects with tests first, then sweep `purgetss-docs` against the CLI. Once the docs are fixed at the source, re-audit this skill against them so the next audit does not inherit the old errors.
 2. **The contribution to the new Titanium site, once PR #170 merges.** The plan in the previous status still stands: `content/docs/build/notifications.md` against `skills/ti-expert/references/push-notifications.md`, after reading the site's `docs/writing-guides.md` and adding an `upstream` remote.
 3. **When Titanium 14.0.0 ships**, run `apidoc-coverage.mjs` against the new tag.
 4. **`EXAMPLE-PROMPTS.md` has no prompt routed at the push-notification reference or at `adopting-purgetss.md`.** Not re-checked today beyond noting the new guide.
