@@ -15,23 +15,25 @@ v5.1.0 is a full audit of the `purgetss` skill against PurgeTSS 7.17.1: `purgets
 - `adopting-purgetss.md` brings back the guide for moving an existing Alloy app from hand-written `.tss` to utility classes. The 2026-03-09 audit (`ed6b49e`) had replaced it with the version-upgrade guide under the same file name.
 - `brand-padding-geometry.md` and `color-commands.md` were split out, so no `purgetss` reference exceeds 800 lines. The largest is `app-branding.md` at 765.
 
-The audit also found defects in the PurgeTSS CLI and errors in its official docs. Those are not fixed here: they are handed off to `~/Developer/openSource/purgeTSS/HANDOFF.md`, 11 CLI items and about 20 docs items with file and line.
+The audit also found defects in the PurgeTSS CLI and errors in its official docs. Those are not fixed here: they were handed off to a session in `~/Developer/openSource/purgeTSS` (11 CLI items and about 20 docs items, plus an annex), which fixed them and deleted its `HANDOFF.md` as instructed.
 
 ## In flight
 
-- **Unreleased fix on `main`:** `SKILL.md:332` and `arbitrary-values.md:60` said unitless arbitrary values are pixels, which contradicts `values-and-units.md` (they resolve through `ti.ui.defaultunit`). Shipped in 5.1.0 and fixed after it; recorded under `[Unreleased]` in `CHANGELOG.md`, reaches users with the next release.
+Unreleased on `main`:
+
+- **`4e94537` (committed, unreleased):** `SKILL.md:332` and `arbitrary-values.md:60` no longer say unitless arbitrary values are pixels.
+- **The `purgetss` skill aligned with PurgeTSS 7.18.0 and purgetss-docs 1.1.14** (not committed). The purgeTSS session fixed the CLI and docs defects from the handoff and released both; its `HANDOFF.md` to TiTools listed the passages here. `.purgetss-source` is at `d46f95b` (package `7.18.0`) and `.purgetss-docs` at `f596432`.
+  - Indexes regenerated: 23,343 → 23,332 classes, the 9 `*-keyboard-type-appearance*` plus `snap-magnet` / `snap-magnet-false`.
+  - `(Npx)` is version-dependent everywhere it appeared: valid and explicit pixels since 7.18.0, a build stop from 7.8.0 through 7.17.1. The pre-validator lists 4 patterns.
+  - New section `platform-modifiers.md` § "Combining a platform and a device"; new "Upgrade to v7.18.0" in `migration-guide.md` and "v7.18.0" in `version-history.md` (which replaces its "Unreleased (after v7.17.1)" block). Older history entries are annotated, not rewritten.
+  - Also updated: `bg-from-` / `bg-to-` in the arbitrary color list, `--width` 1–1024 and the tall-source cap note, the `materialsymbols` alias, the padding label and `grid-system` remarks removed, `snap-magnet` passages, `swap()`'s `rect` fallback dated to 7.18.0.
+  - Checked: `npm test` 362/362; 562 relative links and anchors in `skills/purgetss` resolve (checker caught 2/2 planted breaks first); the 7.18.0 output for `w-(100px)`, `bg-from-(#ccc)`, `ios:tablet:`, `tablet:ios:`, `android:status-bar-dark` and `android:ms-home` was read from `app.tss` after running the installed `purgetss` 7.18.0 in a throwaway project, with `top-(-10)` as the control that must still fail (it does, exit 1). Alloy 3.0.1 `styler.js` splits one bracket's conditions on whitespace, so `[platform=ios formFactor=tablet]` keeps both.
 
 ## Blocked on someone else
 
-- **Passages here that describe current PurgeTSS behavior, waiting on the purgeTSS CLI session.** An annex to that repo's `HANDOFF.md`, passed to the session already running on it, asks it to report which of these it changed, without editing TiTools:
-  - defect 1, `materialsymbols` alias: the vendor alias list in `cli-commands.md`
-  - defect 5, `snap-magnet` has no runtime: `animation-advanced.md:207` and `:320`, `purgetss-ui-classic.md:252`, `class-index.md:261`
-  - defect 7, "unit-less values as pixels" message: `arbitrary-values.md:60`
-  - defect 9, `bg-from-(…)` writes `{value1}`: `bg-from-` / `bg-to-` deliberately left out of `arbitrary-values.md`
-  - defect 10, "padding - Android Only" label: `dynamic-component-creation.md:268`, `ui-ux-design.md:172`
-  - docs `grid-system.md:81-84`: `grid-layout.md:86`
-  - any change to `dist/utilities.tss` (defects 4, 5, 9, 10): refresh `.purgetss-source`, then regenerate the indexes with `purgetss-class-index.mjs --write`
-
+- **Font Awesome Pro/Beta family names need the maintainer's Pro fonts.** The reset `.tss` for Pro/Beta name `FontAwesome6Pro-*` while the copied files are `FontAwesome7Pro-*`. The skill does not state either, so nothing here depends on it yet.
+- **`swap()`'s `rect` fallback was checked in the PurgeTSS source only**, not on a device.
+- **An adoption page for `purgetss-docs`**, based on `adopting-purgetss.md`, waits on the maintainer's call.
 - **The first contribution to the official Titanium docs still waits on `hansemannn/titanium-firebase-cloud-messaging` PR #170.** Not re-checked today.
 
 ## Requirements
@@ -42,11 +44,12 @@ The audit also found defects in the PurgeTSS CLI and errors in its official docs
 
 ## Next step
 
-1. **PurgeTSS CLI and docs session, in the purgeTSS repo** (running now, with the annex). Read `~/Developer/openSource/purgeTSS/HANDOFF.md`. Confirm the CLI defects with tests first, then sweep `purgetss-docs` against the CLI. Once the docs are fixed at the source, re-audit this skill against them so the next audit does not inherit the old errors.
-2. **The contribution to the new Titanium site, once PR #170 merges.** The plan in the previous status still stands: `content/docs/build/notifications.md` against `skills/ti-expert/references/push-notifications.md`, after reading the site's `docs/writing-guides.md` and adding an `upstream` remote.
-3. **When Titanium 14.0.0 ships**, run `apidoc-coverage.mjs` against the new tag.
-4. **`EXAMPLE-PROMPTS.md` has no prompt routed at the push-notification reference or at `adopting-purgetss.md`.** Not re-checked today beyond noting the new guide.
-5. **The SessionStart hook still does not reach npm-only installs.** A design question, written up in `context.md` § Traps.
+1. **Commit and release** the 7.18.0 alignment together with `4e94537`, when the maintainer says so.
+2. **Re-audit `purgetss` against `.purgetss-docs` 1.1.14**, now that the docs were corrected at the source. The alignment above followed the handoff's list and the 7.18.0 changelog; it was not a page-by-page pass over the docs.
+3. **The contribution to the new Titanium site, once PR #170 merges.** The plan in the previous status still stands: `content/docs/build/notifications.md` against `skills/ti-expert/references/push-notifications.md`, after reading the site's `docs/writing-guides.md` and adding an `upstream` remote.
+4. **When Titanium 14.0.0 ships**, run `apidoc-coverage.mjs` against the new tag.
+5. **`EXAMPLE-PROMPTS.md` has no prompt routed at the push-notification reference or at `adopting-purgetss.md`.** Not re-checked today beyond noting the new guide.
+6. **The SessionStart hook still does not reach npm-only installs.** A design question, written up in `context.md` § Traps.
 
 ## Verified vs. assumed
 
@@ -58,7 +61,7 @@ The audit also found defects in the PurgeTSS CLI and errors in its official docs
 - **Verified against apidoc `13_4_1_GA`:** `padding` exists only on `TextField` and `TextArea` (both platforms), `Ti.UI.Android.CardView`, `ScrollableView` (Android), `TabGroup` bottom navigation (Android) and `Ti.UI.iOS.ButtonConfiguration`. PurgeTSS's "padding - Android Only" label is wrong for the two text inputs; the skill says so.
 - **Corrected during the session:** the agents first propagated that "Android Only" label into two references; fixed after checking the apidoc.
 - **Corrected during the session:** `Alloy.createStyle` was treated as unverifiable. Both it (`Alloy/template/lib/alloy.js:231`) and `$.createStyle` exist in Alloy 3.0.1.
-- **Assumed, not verified:** the TiKit API in `tikit-components.md`, which no cache covers. Stacked modifiers (`ios:tablet:`) were blocked by the CLI's 2-second purge throttle. The Boxicons and LineIcons codepoints in `icon-fonts.md` come from those projects' CSS, not the PurgeTSS package.
+- **Assumed, not verified:** the TiKit API in `tikit-components.md`, which no cache covers. The Boxicons and LineIcons codepoints in `icon-fonts.md` come from those projects' CSS, not the PurgeTSS package.
 - **Assumed, not verified:** the skills have not been reloaded in a client since these edits.
 
 ## Known pending
