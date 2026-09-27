@@ -1,6 +1,6 @@
 # PurgeTSS Class Index — Titanium Properties (A–Z)
 
-Every Titanium property that has PurgeTSS utility classes, with the classes that set it. Generated from `utilities.tss` (PurgeTSS 7.17.1) by `.claude/skills/titools-skill-auditor/scripts/purgetss-class-index.mjs`; do not edit by hand. For naming rules and verification commands see [class-index.md](./class-index.md); for classes grouped by kind of value see [class-categories.md](./class-categories.md).
+Every Titanium property that has PurgeTSS utility classes, with the classes that set it. Generated from `utilities.tss` (PurgeTSS 7.18.0) by `.claude/skills/titools-skill-auditor/scripts/purgetss-class-index.mjs`; do not edit by hand. For naming rules and verification commands see [class-index.md](./class-index.md); for classes grouped by kind of value see [class-categories.md](./class-categories.md).
 
 > Before suggesting ANY class, verify it exists: `grep -E "PATTERN" ./purgetss/styles/utilities.tss`
 
@@ -78,10 +78,10 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `animationProperties.close` | `opacity-to-0`, `opacity-to-100`, `toggle-visible` | 3 | Animation | — |
 | `animationProperties.close` | `zoom-*` | 30 | Animation | — |
 | `animationProperties.complete` | `zoom-*` | 30 | Animation | — |
-| `animationProperties.keepZIndex` | `snap-back`, `snap-back-false`, `snap-center`, `snap-center-false`, `snap-magnet`, `snap-magnet-false`, `keep-z-index`, `keep-z-index-false` | 8 | Animation | — |
+| `animationProperties.keepZIndex` | `snap-back`, `snap-back-false`, `snap-center`, `snap-center-false`, `keep-z-index`, `keep-z-index-false` | 6 | Animation | — |
 | `animationProperties.open` | `opacity-to-0`, `opacity-to-100`, `toggle-visible` | 3 | Animation | — |
 | `animationProperties.open` | `zoom-*` | 30 | Animation | — |
-| `animationProperties.snap` | `snap-back`, `snap-back-false`, `snap-center`, `snap-center-false`, `snap-magnet`, `snap-magnet-false`, `keep-z-index`, `keep-z-index-false` | 8 | Animation | — |
+| `animationProperties.snap` | `snap-back`, `snap-back-false`, `snap-center`, `snap-center-false`, `keep-z-index`, `keep-z-index-false` | 6 | Animation | — |
 | `animationStyle` | `animation-style-*` | 14 | ListViewAnimationProperties, TableViewAnimationProperties, closeWindowParams | iOS only |
 | `appSupportsShakeToEdit` | `app-supports-shake-to-edit`, `app-supports-shake-to-edit-false` | 2 | iOS | — |
 | `arrowDirection` | `arrow-direction-*` | 11 | CameraOptionsType, PhotoGalleryOptionsType, MenuPopupShowParams, iPad.Popover | some variants platform-only |
@@ -388,7 +388,7 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `keyboardDisplayRequiresUserAction` | `keyboard-display-requires-user-action`, `keyboard-display-requires-user-action-false` | 2 | WebView | — |
 | `keyboardToolbarColor` | `keyboard-toolbar-*` | 245 | TextArea, TextField | — |
 | `keyboardToolbarHeight` | `keyboard-toolbar-h-*` | 35 | TextArea, TextField | — |
-| `keyboardType` | `keyboard-type`, `keyboard-type-*` | 14 | AlertDialog, SearchBar, TextArea, TextField | — |
+| `keyboardType` | `keyboard-type`, `keyboard-type-*` | 11 | AlertDialog, SearchBar, TextArea, TextField | — |
 | `keyboardVisible` | `keyboard-visible`, `keyboard-visible-false` | 2 | Ti.App | — |
 | `kind` | `kind-contacts-organization`, `kind-contacts-person` | 2 | Ti.App.iOS.SearchableItemAttributeSet, Ti.Contacts.Person | — |
 | `largeTitleDisplayMode` | `large-title-display-mode-automatic`, `large-title-display-mode-always`, `large-title-display-mode-never` | 3 | NavigationWindow, TabGroup, Window, iOS.SplitWindow | iOS only |
@@ -422,7 +422,7 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `locationServicesEnabled` | `location-services-enabled`, `location-services-enabled-false` | 2 | Ti.Geolocation | — |
 | `lockScreenSetting` | `lock-screen-setting-not-supported`, `lock-screen-setting-enabled`, `lock-screen-setting-disabled` | 3 | GetUserNotificationSettings | iOS only |
 | `lockscreenVisibility` | `lockscreen-visibility-private`, `lockscreen-visibility-public`, `lockscreen-visibility-secret` | 3 | Ti.Android.NotificationChannel | Android only |
-| `loginKeyboardType` | `login-keyboard-type`, `login-keyboard-type-*` | 14 | AlertDialog | — |
+| `loginKeyboardType` | `login-keyboard-type`, `login-keyboard-type-*` | 11 | AlertDialog | — |
 | `loginReturnKeyType` | `login-return-key-type-*` | 12 | AlertDialog | — |
 | `looping` | `looping`, `looping-false` | 2 | Ti.Media.Sound | — |
 | `mainFrameOnly` | `main-frame-only`, `main-frame-only-false` | 2 | UserScriptParams | — |
@@ -503,7 +503,7 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `pagingControlTimeout` | `paging-control-timeout-*` | 22 | ScrollableView | — |
 | `paragraphSpacingAfter` | `paragraph-spacing-after-*` | 64 | ParagraphAttribute | — |
 | `paragraphSpacingBefore` | `paragraph-spacing-before-*` | 64 | ParagraphAttribute | — |
-| `passwordKeyboardType` | `password-keyboard-type`, `password-keyboard-type-*` | 14 | AlertDialog | — |
+| `passwordKeyboardType` | `password-keyboard-type`, `password-keyboard-type-*` | 11 | AlertDialog | — |
 | `passwordMask` | `password-mask`, `password-mask-false` | 2 | TextField | — |
 | `passwordReturnKeyType` | `password-return-key-type-*` | 12 | AlertDialog | — |
 | `pathOnly` | `path-only`, `path-only-false` | 2 | PhotoGalleryOptionsType | — |

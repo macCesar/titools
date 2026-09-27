@@ -1,7 +1,7 @@
 # PurgeTSS Class Index
 
 <!-- GENERATED:counts START -->
-**Generated from `utilities.tss` (PurgeTSS 7.17.1): 23,343 unique classes, 403 first segments, 620 Titanium properties.** Counts grow with each Titanium SDK and icon-font release.
+**Generated from `utilities.tss` (PurgeTSS 7.18.0): 23,332 unique classes, 403 first segments, 620 Titanium properties.** Counts grow with each Titanium SDK and icon-font release.
 <!-- GENERATED:counts END -->
 
 Before suggesting ANY class, verify it exists:
@@ -258,7 +258,7 @@ The rest of this document collects conventions, prohibitions, and insights surfa
 
 ## All First Segments (Alphabetical)
 
-> **NOTE**: v7.4.0 introduced `snap-back`, `snap-back-false`, `snap-center`, `snap-center-false`, `snap-magnet`, `snap-magnet-false`, `keep-z-index`, and `keep-z-index-false`. The current runtime implements back, center, and touch-start z-index preservation but does not read `snap.magnet`; do not suggest the generated magnet classes as working behavior. v7.5.3 added `font-sans`, `font-serif`, and `font-mono`.
+> **NOTE**: v7.4.0 introduced `snap-back`, `snap-back-false`, `snap-center`, `snap-center-false`, `snap-magnet`, `snap-magnet-false`, `keep-z-index`, and `keep-z-index-false`. The runtime never read `snap.magnet`, and v7.18.0 removed `snap-magnet` and `snap-magnet-false`. v7.5.3 added `font-sans`, `font-serif`, and `font-mono`.
 
 
 <!-- GENERATED:prefixes START -->
