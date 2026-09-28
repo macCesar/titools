@@ -153,6 +153,6 @@ skills/<skill-name>/
 After completing an audit:
 
 1. **Spot-check** — open 2–3 updated references and verify content quality.
-2. **Test invocation** — verify the updated skill loads correctly in Claude Code (or the agent of choice).
+2. **Test invocation** — verify the updated skill loads correctly in the agent you use (Claude Code, Codex).
 3. **Commit per skill** — one focused commit per audited skill, naming the source: `audit(ti-api): align refs with apidoc 13_4_1_GA`.
 4. **Mention in the PR description** if changes are substantial, so reviewers see the diff context.
