@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- `purgetss-videos`, a maintainer-only skill under `.claude/skills/` for PurgeTSS video tutorials in Alloy or Classic. It layers the PurgeTSS conventions (`Purge TSS` in voice text, subtitle spelling, the purgetss.com closing, disposable copies under `/Users/PurgeTSS`, Alloy vs. Classic scope) on top of `technical-demo-videos`, and replaces the Classic-only `purgetss-demo-videos`. Not shipped to npm.
+
 ## [5.1.1] - 2026-09-26
 
 ### Changed

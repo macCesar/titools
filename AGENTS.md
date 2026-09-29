@@ -186,7 +186,7 @@ Both default to a dry run. Read the output before passing `--write`.
 
 ### What is versioned under `.claude/`
 
-`.claude/` is ignored except `.claude/skills/`, which carries the maintainer-only `titools-skill-auditor`. The pattern is `.claude/*` plus `!.claude/skills/` — a bare `!.claude/skills/` under a `.claude/` rule does nothing, since git will not descend into an excluded directory. Keeping the skill at that path means Claude Code still discovers it automatically while working in this repo.
+`.claude/` is ignored except `.claude/skills/`, which carries two maintainer-only skills: `titools-skill-auditor` and `purgetss-videos`. `purgetss-videos` is used from other repositories, so `~/.agents/skills/purgetss-videos` and `~/.claude/skills/purgetss-videos` are symlinks to this checkout; `titools update` removes only names in `SKILLS` and `LEGACY_SKILLS`, so it leaves them alone. The pattern is `.claude/*` plus `!.claude/skills/` — a bare `!.claude/skills/` under a `.claude/` rule does nothing, since git will not descend into an excluded directory. Keeping the skill at that path means Claude Code still discovers it automatically while working in this repo.
 
 `settings.local.json` and any local drafts stay ignored, and nothing under `.claude/` ships to npm.
 
