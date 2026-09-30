@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `6685b81` (2026-08-29).
+> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `e8f1d0d` (2026-09-29).
 
 # Audio engine
 
@@ -15,7 +15,7 @@ playTone / playChord / playPattern
              |
    native command ring buffer
              |
- voice pool: oscillator * envelope * event gain * stereo pan
+ voice pool: source -> quantizer -> filter -> envelope -> gain and pan
              |
        sum voices and steal tails
              |
@@ -32,7 +32,7 @@ them and renders the samples.
 
 ## Oscillators
 
-The engine has five sources:
+The engine has six sources:
 
 | Waveform | Source behavior |
 | --- | --- |
@@ -40,15 +40,26 @@ The engine has five sources:
 | `SQUARE` | PolyBLEP band-limited discontinuity. |
 | `SAWTOOTH` | PolyBLEP band-limited discontinuity. |
 | `TRIANGLE` | Continuous triangle oscillator. |
-| `NOISE` | White-noise generator. |
+| `NOISE` | White or variable-rate sample-and-hold pseudo-random generator. |
+| `WAVETABLE` | Caller-supplied 2 to 64-sample stepped cycle. |
 
 Pitch can move linearly from `frequency` to `frequencyEnd`. A sine LFO adds
 `lfoDepth * sin(lfoPhase)` in hertz before the oscillator advances. This makes
 vibrato depth absolute in hertz rather than cents.
 
+Noise rate advances an independent phase accumulator. A zero `noiseRate` uses
+one new pseudo-random value per output sample; a positive rate holds that value
+until the accumulator crosses the next update. `noiseRateEnd` changes the
+increment linearly over the event.
+
+The source is optionally quantized to the selected `bitDepth` (2 to 16 bits)
+and then passes through a one-pole low-pass filter when `lowPassHz` is nonzero.
+Square waves use `pulseWidth` for the second PolyBLEP discontinuity and can
+interpolate that duty cycle toward `pulseWidthEnd`.
+
 ## Envelope
 
-Each voice has a linear attack, a full-level middle section and a linear
+Each voice has a smoothstep attack, a full-level middle section and a smoothstep
 release. `duration` includes the whole envelope. Defaults are adjusted to fit a
 short event, while an explicit envelope that cannot fit is rejected by the
 contract.
@@ -75,7 +86,7 @@ Waveforms are calibrated toward a common source RMS:
 | --- | ---: | ---: |
 | Sine | 0.440 | 0.311 |
 | Square | 0.311 | 0.311 |
-| Sawtooth, triangle and noise | 0.539 | 0.311 |
+| Sawtooth, triangle, noise and wavetable | 0.539 | signal-dependent |
 
 This calculation is why one three-note `playChord` and three `playTone` calls
 are not equivalent. A protected sine triad assigns about 0.254 to each chord
@@ -165,11 +176,12 @@ ABIs are `arm64-v8a`, `armeabi-v7a`, `x86` and `x86_64`.
 
 iOS renders with `AVAudioEngine` and `AVAudioSourceNode`, using the active
 session's sample rate. The module configures the audio session as `Playback`,
-activates it, and observes route and engine configuration notifications. If a
-route change stops the graph, the port reactivates the session and resumes the
-existing renderer.
+or `Ambient` when `startEngine()` receives `audioSession: 'ambient'`, activates
+it, and observes route and engine configuration notifications. If a route
+change stops the graph, the port reapplies the category, reactivates the
+session and resumes the existing renderer.
 
-`AVAudioSourceNode` requires iOS 13 or newer. The module archive contains device,
+The module targets iOS 15 or newer. The module archive contains device,
 simulator and Mac Catalyst slices.
 
 ## Latency
@@ -199,6 +211,7 @@ device:
 ```sh
 node tests/api_contract_regression.js
 node tests/default_profile_regression.js
+node tests/documentation_regression.js
 
 cd android
 test_dir=$(mktemp -d /tmp/ti-synth-test.XXXXXX)

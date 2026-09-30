@@ -7,7 +7,7 @@ description: "Use when a Titanium app declares ti.synthengine in tiapp.xml, impo
 
 Act as an audio engineer and mobile sound designer for the native `ti.synthengine` module. Translate an aesthetic request into acoustically reasoned JavaScript that uses only the module's public contract.
 
-This skill is verified against TiSynthEngine **1.0.0** at commit **`6685b81` (2026-08-29)**. Android and iOS expose the same eight public methods, option contracts, defaults, limits, waveform constants, and validation behavior.
+This skill is verified against TiSynthEngine **1.0.0** at commit **`e8f1d0d` (2026-09-29)**. Android and iOS expose the same eight public methods, option contracts, defaults, limits, waveform constants, and validation behavior.
 
 ## Required workflow
 
@@ -45,14 +45,15 @@ var contract = synth.getDefaults()
 var WAVE = contract.waveTypes
 ```
 
-Never hardcode waveform integers when `WAVE.SINE`, `WAVE.SQUARE`, `WAVE.SAWTOOTH`, `WAVE.TRIANGLE`, and `WAVE.NOISE` are available.
+Never hardcode waveform integers when `WAVE.SINE`, `WAVE.SQUARE`, `WAVE.SAWTOOTH`, `WAVE.TRIANGLE`, `WAVE.NOISE`, and `WAVE.WAVETABLE` are available.
 
 - Option dictionaries are closed. Unknown or misspelled keys, wrong types, non-finite numbers, fractional values for integer fields, and out-of-range values make the entire call return `false`.
 - `playTone()` takes at most one pitch source: `note` or `frequency`. If neither is supplied, it defaults to 440 Hz. Never send both.
-- `playChord()` requires exactly one of `notes` or `frequencies`. It accepts `panSpread` or `pans`, but no sweep or LFO fields.
+- `playChord()` requires exactly one of `notes` or `frequencies`. It accepts `panSpread` or `pans` and the fixed shaping fields `noiseRate`, `lowPassHz`, `pulseWidth`, `waveTable`, and `bitDepth`, but no sweep, LFO, or `*End` fields.
 - Every sounding `playPattern()` step needs exactly one of `note` or `frequency`; a rest uses exactly `rest: true`. Even a `NOISE` step needs a pitch field, although noise ignores its value. Pattern roots do not accept `duration`.
 - `duration` includes attack, the full-level middle, and release. For explicit envelopes, `attack < duration` and `release <= duration - attack`.
 - `pan` and `panEnd` range from -1 to 1. `frequencyEnd` is a linear sweep target. `lfoFreq` is the modulation rate in Hz and `lfoDepth` is absolute pitch deviation in Hz, not cents.
+- `WAVE.WAVETABLE` requires `waveTable`: 2 to 64 finite values from -1 to 1, stepped without interpolation. `bitDepth` is 0 or an integer from 2 to 16; `pulseWidth` is 0.05 to 0.95 and only shapes `SQUARE`; `pulseWidthEnd` is 0 or 0.05 to 0.95. For `noiseRate`, `noiseRateEnd`, and `lowPassHz`, 0 means white noise, no sweep, or no filter.
 - `startEngine()`, `playTone()`, `playChord()`, `playPattern()`, and `setVolume()` return `Boolean`; production code must handle rejection where it matters.
 - Only one pattern can remain pending. A new pattern replaces future steps from the previous one. `stopAll()` fades active voices but does not cancel scheduled steps; `shutdown()` does both and frees the stream.
 
@@ -63,9 +64,10 @@ Use these as starting regions, then keep every explicit value inside the API lim
 | Intent | Starting design |
 | --- | --- |
 | Clean UI click or feedback | `SINE` or `TRIANGLE`, roughly 30–120 ms, 1–5 ms attack, short fitted release |
-| Retro pickup or melody | `SQUARE`, short notes or a rising `playPattern()` |
+| Retro pickup or melody | `SQUARE`, short notes or a rising `playPattern()`; a narrow `pulseWidth` or a `pulseWidthEnd` sweep thins it, `bitDepth` adds grit |
 | Retro bass | `TRIANGLE`, lower pitch, short attack and controlled release |
-| Hit, hat, explosion texture | `NOISE`, immediate attack and short-to-medium release; layer only when the overlap budget allows |
+| Hit, hat, explosion texture | `NOISE`, immediate attack and short-to-medium release; lower `noiseRate` or `lowPassHz` darkens it; layer only when the overlap budget allows |
+| Coarse DAC-like or buzzy custom voice | `WAVETABLE` with a short asymmetric `waveTable`, optionally with `bitDepth` |
 | Alarm or urgent cue | `SAWTOOTH`, repeated pitches, a sweep, or vibrato around 4–7 Hz; use larger `lfoDepth` only for an obvious effect |
 | Laser or sci-fi movement | One `frequency` plus `frequencyEnd`, short attack, fitted release, optional `pan` → `panEnd` |
 | Pad or atmosphere | One `playChord()` with `SINE` or `TRIANGLE`, 2000 ms or longer, 300–600 ms attack, 800–1500 ms release when it fits |
@@ -78,6 +80,7 @@ For playable controls, trigger one event when the finger enters a new key, not o
 
 - Begin with `mixingProfile: 'conservative'`; use `balanced` mainly for one or two voices, `speakerSafe` for demanding small speakers, and `raw` only when the app owns gain staging.
 - Size `maxVoices` for the largest real overlap, including release tails. Capacity is not loudness.
+- On iOS, the default `audioSession: 'playback'` ignores the silent switch and interrupts other apps' audio. Pass `audioSession: 'ambient'` to `startEngine()` when a game should respect the switch and mix with other apps; Android validates the value and ignores it. Profile, voice count, and session are fixed until `shutdown()`.
 - Use one engine owner. On a Titanium screen, start after layout settles and call `shutdown()` when the owner closes.
 - Test on the actual output path. Headphones expose noise and stereo detail; small phone speakers expose weak bass, resonance, and acoustic distortion that a digital limiter cannot repair.
 

@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `6685b81` (2026-08-29).
+> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `e8f1d0d` (2026-09-29).
 
 # Recommendations
 
@@ -65,23 +65,21 @@ play later sounds normally once the system has moved to the new route.
 ## Coexisting with other audio
 
 On iOS, the audio session is app-wide and the last component to configure it
-wins. TiSynthEngine selects `Playback`, which ignores the ring/silent switch and
-normally interrupts other apps. That behavior fits an instrument or an app
-whose sound must be heard.
+wins. By default TiSynthEngine selects `Playback`, which ignores the ring/silent
+switch and normally interrupts other apps. That behavior fits an instrument or
+an app whose sound must be heard.
 
-A game that should respect the silent switch may set Titanium's ambient
-category after the last engine startup:
+A game that should respect the silent switch and let other apps' music keep
+playing starts the engine with the ambient session:
 
 ```javascript
-if (Ti.Platform.osname !== 'android') {
-  Ti.Media.audioSessionCategory = Ti.Media.AUDIO_SESSION_CATEGORY_AMBIENT
-}
+synth.startEngine({ audioSession: 'ambient' })
 ```
 
-The order is important because `startEngine()` configures the session. Other
-native audio modules may configure it again. Test the final startup sequence,
-interruptions, background behavior and route changes on iOS before relying on
-an override.
+The engine applies the category at startup and again when it resumes after a
+route change. Other native audio modules may still configure the app-wide
+session later. Test the final startup sequence, interruptions, background
+behavior and route changes on iOS. Android accepts the option and ignores it.
 
 Android mixes independent output streams at the system level, but another app
 or stale test process can still consume low-latency resources. Force-stop old
@@ -105,6 +103,10 @@ function acceptedFrequency (raw) {
 
 Do not copy the frequency maximum into application code. It depends on the
 active sample rate and should be read again after startup.
+
+The same rule applies to `noiseRate` and `lowPassHz`. Validate a custom
+`waveTable` as 2 to 64 finite values from -1 to 1, and remember that `bitDepth`
+accepts zero or an integer from 2 to 16.
 
 Check Boolean return values during development. A rejected call includes the
 method, key and reason in the native log. Logging that result at the caller is
@@ -145,6 +147,9 @@ whether a waveform, pitch or mix is pleasant.
 - The module emits no JavaScript events.
 - Voice capacity and mixing profile remain fixed until shutdown.
 - Pattern scheduling is timer-based, not sample-accurate.
+- The low-pass filter has no resonance, filter envelope or selectable slope.
+- The module provides generic synthesis primitives, not cycle-accurate hardware
+  emulation.
 
 Use a sample player or a dedicated music engine when a product needs streaming,
 loop points, per-voice control or a synchronized composition timeline.

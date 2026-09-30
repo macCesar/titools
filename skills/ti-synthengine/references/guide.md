@@ -1,13 +1,32 @@
-> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `6685b81` (2026-08-29).
+> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `e8f1d0d` (2026-09-29).
 
 # Guide
 
 This guide covers the normal path from installing TiSynthEngine to releasing
 the native audio resources when the owning screen closes.
 
+<!-- TOC-START -->
+## Contents
+
+- [Install the module](#install-the-module)
+- [Load and verify the contract](#load-and-verify-the-contract)
+- [Lifecycle](#lifecycle)
+- [Play the first sound](#play-the-first-sound)
+- [Choose a pitch](#choose-a-pitch)
+- [Shape a tone](#shape-a-tone)
+- [Shape noise and waveforms](#shape-noise-and-waveforms)
+- [Play simultaneous notes](#play-simultaneous-notes)
+- [Play a pattern](#play-a-pattern)
+- [Master level and stopping](#master-level-and-stopping)
+- [Output route changes](#output-route-changes)
+- [Next steps](#next-steps)
+
+<!-- TOC-END -->
+
 ## Install the module
 
-Use the archive for each target platform:
+Download the archive for each target platform from the
+[latest release](https://github.com/macCesar/TiSynthEngine/releases/latest):
 
 - `ti.synthengine-android-1.0.0.zip`
 - `ti.synthengine-iphone-1.0.0.zip`
@@ -22,8 +41,8 @@ Titanium CLI. Pin the same version for both platforms:
 </modules>
 ```
 
-TiSynthEngine requires Titanium SDK 13.3.1.GA or newer. The iOS renderer
-requires iOS 13 or newer.
+TiSynthEngine requires Titanium SDK 13.2.0.GA or newer. Android projects must
+compile against API 35 or newer. The iOS module requires iOS 15 or newer.
 
 ## Load and verify the contract
 
@@ -161,6 +180,55 @@ synth.playTone({
 channels. `lfoFreq` is the vibrato rate in hertz and `lfoDepth` is its depth in
 hertz.
 
+## Shape noise and waveforms
+
+Use `noiseRate` to hold each pseudo-random noise value instead of generating a
+new one every sample. A low rate sounds sparse and grainy; a high rate moves
+toward white noise. `noiseRateEnd` sweeps the update rate.
+
+```javascript
+synth.playTone({
+  frequency: 120,
+  duration: 700,
+  attack: 1,
+  release: 520,
+  waveType: contract.waveTypes.NOISE,
+  noiseRate: 11000,
+  noiseRateEnd: 650,
+  lowPassHz: 2600,
+  bitDepth: 8
+})
+```
+
+`lowPassHz` is a per-voice one-pole filter. `bitDepth` applies amplitude
+quantization from 2 to 16 bits. Zero disables either control.
+
+Square waves accept a duty cycle and a duty-cycle sweep:
+
+```javascript
+synth.playTone({
+  note: 'A3',
+  duration: 650,
+  release: 180,
+  waveType: contract.waveTypes.SQUARE,
+  pulseWidth: 0.12,
+  pulseWidthEnd: 0.82
+})
+```
+
+For a caller-defined repeating shape, select `WAVETABLE` and provide 2 to 64
+samples from -1 to 1. The table is stepped rather than interpolated.
+
+```javascript
+synth.playTone({
+  note: 'D4',
+  duration: 500,
+  waveType: contract.waveTypes.WAVETABLE,
+  waveTable: [-1, -0.8, -0.1, 0.9, 0.4, 0.1, -0.2, -0.6],
+  bitDepth: 8
+})
+```
+
 ## Play simultaneous notes
 
 Use `playChord` when notes belong to one musical event:
@@ -213,8 +281,9 @@ synth.playPattern({
 
 Step timing is chosen in this order: step `duration`, step `noteValue`, pattern
 `noteValue`, pattern `stepDuration`, then the 100 ms default. A step also
-inherits the pattern's envelope, volume, waveform, pan, sweep and vibrato
-options. Values set on the step override the inherited value.
+inherits the pattern's envelope, volume, waveform, pan, sweep, vibrato, noise,
+filter, pulse-width, wavetable and quantization options. Values set on the step
+override the inherited value.
 
 Only one pattern scheduler is active. Starting another pattern cancels the
 pending steps of the previous pattern. It does not stop voices that have
@@ -238,9 +307,10 @@ other output routes change. The note crossing the transition may end early;
 new notes can be played normally after the system settles. Do not restart the
 whole app for a route change.
 
-On iOS, `startEngine()` activates a `Playback` audio session. That ignores the
-silent switch and normally interrupts other audio. If the app needs different
-session behavior, read [coexisting with other audio](recommendations.md#coexisting-with-other-audio)
+On iOS, `startEngine()` activates a `Playback` audio session by default. That
+ignores the silent switch and normally interrupts other audio. Pass
+`audioSession: 'ambient'` to respect the silent switch and mix with other apps;
+read [coexisting with other audio](recommendations.md#coexisting-with-other-audio)
 and test the final app on a device.
 
 ## Next steps
