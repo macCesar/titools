@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `6685b81` (2026-08-29).
+> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `e8f1d0d` (2026-09-29).
 
 # Examples
 
@@ -19,7 +19,12 @@ if (contract.apiVersion !== '1.0.0') {
 ## Contents
 
 - [Start once after layout](#start-once-after-layout)
-- [Five waveforms](#five-waveforms)
+- [Built-in waveforms](#built-in-waveforms)
+- [Variable-rate filtered noise](#variable-rate-filtered-noise)
+- [Pulse-width sweep](#pulse-width-sweep)
+- [Stepped wavetable](#stepped-wavetable)
+- [Fixed controls on a chord](#fixed-controls-on-a-chord)
+- [Wave-shaping pattern overrides](#wave-shaping-pattern-overrides)
 - [Pitch sweep and pan movement](#pitch-sweep-and-pan-movement)
 - [Vibrato](#vibrato)
 - [Chord with an even spread](#chord-with-an-even-spread)
@@ -65,7 +70,7 @@ win.addEventListener('close', cleanup)
 win.open()
 ```
 
-## Five waveforms
+## Built-in waveforms
 
 ```javascript
 var names = ['SINE', 'SQUARE', 'SAWTOOTH', 'TRIANGLE', 'NOISE']
@@ -85,6 +90,121 @@ names.forEach(function (name, index) {
 ```
 
 Noise ignores pitch, but `note` keeps the event shape valid.
+
+## Variable-rate filtered noise
+
+```javascript
+synth.playTone({
+  frequency: 100,
+  duration: 760,
+  attack: 1,
+  release: 580,
+  volume: 0.65,
+  waveType: WAVE.NOISE,
+  noiseRate: 12000,
+  noiseRateEnd: 600,
+  lowPassHz: 2400,
+  bitDepth: 8
+})
+```
+
+`noiseRate` starts at 12 kHz and falls to 600 Hz. `lowPassHz` removes high
+frequency energy after the 8-bit source quantizer.
+
+## Pulse-width sweep
+
+```javascript
+synth.playTone({
+  note: 'A3',
+  duration: 700,
+  attack: 3,
+  release: 180,
+  volume: 0.55,
+  waveType: WAVE.SQUARE,
+  pulseWidth: 0.1,
+  pulseWidthEnd: 0.86
+})
+```
+
+The square duty cycle moves from 10 percent to 86 percent over the event.
+
+## Stepped wavetable
+
+```javascript
+synth.playTone({
+  note: 'D4',
+  duration: 650,
+  attack: 4,
+  release: 220,
+  volume: 0.58,
+  waveType: WAVE.WAVETABLE,
+  waveTable: [-1, -0.7, -0.1, 0.8, 1, 0.35, -0.25, -0.55],
+  bitDepth: 8
+})
+```
+
+The table repeats as a stepped cycle. `bitDepth: 8` quantizes each table value
+before filtering and the amplitude envelope.
+
+## Fixed controls on a chord
+
+```javascript
+synth.playChord({
+  notes: ['A3', 'E4', 'A4'],
+  duration: 900,
+  attack: 8,
+  release: 220,
+  volume: 0.5,
+  waveType: WAVE.SQUARE,
+  pulseWidth: 0.22,
+  lowPassHz: 3600,
+  bitDepth: 8,
+  pans: [-0.65, 0, 0.65]
+})
+```
+
+Chord voices share fixed shaping controls. Sweep fields such as
+`pulseWidthEnd` and `noiseRateEnd` are not accepted by `playChord()`.
+
+## Wave-shaping pattern overrides
+
+```javascript
+synth.playPattern({
+  stepDuration: 210,
+  attack: 2,
+  release: 80,
+  volume: 0.48,
+  waveType: WAVE.NOISE,
+  noiseRate: 12000,
+  lowPassHz: 2600,
+  bitDepth: 8,
+  steps: [
+    { frequency: 120, duration: 180, release: 150, noiseRateEnd: 800 },
+    { rest: true, duration: 100 },
+    {
+      note: 'A3',
+      duration: 300,
+      release: 120,
+      waveType: WAVE.SQUARE,
+      pulseWidth: 0.1,
+      pulseWidthEnd: 0.82,
+      lowPassHz: 0,
+      bitDepth: 0
+    },
+    {
+      note: 'D4',
+      duration: 360,
+      release: 160,
+      waveType: WAVE.WAVETABLE,
+      waveTable: [-1, -0.7, -0.1, 0.8, 1, 0.35, -0.25, -0.55]
+    }
+  ]
+})
+```
+
+Pattern roots provide inherited values. Each sounding step can override the
+source and any shaping control; a `WAVETABLE` step needs a local or inherited
+`waveTable`.
 
 ## Pitch sweep and pan movement
 

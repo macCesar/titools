@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `6685b81` (2026-08-29).
+> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `e8f1d0d` (2026-09-29).
 
 # Troubleshooting
 
@@ -25,6 +25,8 @@ Common fixes:
 | `out_of_range` | Compare the value with `getDefaults().limits`. |
 | `not_integer` | Use whole milliseconds and integer waveform values where required. |
 | `invalid_note` | Check spelling, accidental case and octave. |
+| `invalid_sample_count` | Supply 2 to 64 values in `waveTable`. |
+| `missing_required` with `waveTable` | Add a table whenever `waveType` is `WAVETABLE`. |
 | envelope reason | Make attack and release fit inside total duration. |
 
 Warnings are deduplicated by method, key and reason. Repeating the same bad
@@ -33,6 +35,11 @@ call may return `false` without printing a new line each time.
 An `overflow` warning means the command queue was full. Reduce the command
 burst or wait for the audio thread to consume queued work. Chords are rejected
 as a whole rather than partially started.
+
+For the shaping controls, check the discontinuous disabled values as well
+as the numeric range: `bitDepth` accepts 0 or 2 through 16, and
+`pulseWidthEnd` accepts 0 or 0.05 through 0.95. A `waveTable` must contain only
+finite values from -1 to 1.
 
 ## The installed contract is wrong
 
@@ -78,8 +85,9 @@ Check these in order:
 7. The app is not relying on a pattern that another `playPattern()` call
    replaced.
 
-On iOS, the module uses a `Playback` session, so the silent switch should not
-mute it. Another audio component can change the app-wide session after engine
+On iOS, the module uses a `Playback` session by default, so the silent switch
+should not mute it. With `audioSession: 'ambient'` the silent switch mutes it by
+design. Another audio component can change the app-wide session after engine
 startup; inspect the order if behavior differs from the simple example.
 
 ## A pattern stops or skips steps
@@ -148,7 +156,7 @@ time.
 
 ## iOS-specific checks
 
-- Confirm the deployment target is iOS 13 or newer.
+- Confirm the deployment target is iOS 15 or newer.
 - Check whether another module changes `AVAudioSession` after startup.
 - Test interruptions, phone calls, Bluetooth and route changes on hardware.
 - Use the matching device or simulator slice from the 1.0.0 archive.

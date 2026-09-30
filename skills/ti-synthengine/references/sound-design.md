@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `6685b81` (2026-08-29).
+> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `e8f1d0d` (2026-09-29).
 
 # Sound design with TiSynthEngine
 
@@ -19,6 +19,7 @@ var WAVE = synth.getDefaults().waveTypes
 
 - [Notes, frequencies and octaves](#notes-frequencies-and-octaves)
 - [Waveform and timbre](#waveform-and-timbre)
+- [Filter, pulse width and quantization](#filter-pulse-width-and-quantization)
 - [Envelope and total duration](#envelope-and-total-duration)
 - [Pan and movement](#pan-and-movement)
 - [Vibrato and the LFO](#vibrato-and-the-lfo)
@@ -105,7 +106,28 @@ melodies, pads and xylophone-like sketches.
 changing that value does not tune the noise. A short envelope turns it into a
 click, hat or impact layer; a long envelope creates wind or static.
 
-Try every waveform at a moderate level before choosing one:
+`noiseRate` changes the source into variable-rate sample-and-hold noise. Zero
+keeps the white-noise default. Lower rates hold each pseudo-random value longer
+and sound grainier. `noiseRateEnd` moves the rate over the event.
+
+### Wavetable
+
+`WAVETABLE` repeats 2 to 64 values supplied in `waveTable`. Values range from
+-1 to 1 and are read as steps, without interpolation. Short asymmetric tables
+are useful for coarse DAC-like voices, buzzy radio tones and original retro
+effects that do not fit the four built-in oscillator shapes.
+
+```javascript
+synth.playTone({
+  note: 'D4',
+  duration: 600,
+  waveType: WAVE.WAVETABLE,
+  waveTable: [-1, -0.8, -0.1, 0.9, 0.45, 0.1, -0.25, -0.6],
+  bitDepth: 8
+})
+```
+
+Try the built-in sources at a moderate level before choosing one:
 
 ```javascript
 ;[WAVE.SINE, WAVE.SQUARE, WAVE.SAWTOOTH, WAVE.TRIANGLE, WAVE.NOISE]
@@ -122,6 +144,32 @@ Try every waveform at a moderate level before choosing one:
     }, index * 550)
   })
 ```
+
+## Filter, pulse width and quantization
+
+`lowPassHz` enables a per-voice one-pole low-pass filter. It is most obvious on
+noise, square and sawtooth sources. Zero bypasses the filter.
+
+`pulseWidth` controls how much of each square-wave cycle stays high. The 0.5
+default is a normal square. Values closer to 0.05 or 0.95 become thinner and
+brighter. `pulseWidthEnd` creates a linear duty-cycle sweep.
+
+```javascript
+synth.playTone({
+  note: 'A3',
+  duration: 700,
+  release: 180,
+  waveType: WAVE.SQUARE,
+  pulseWidth: 0.1,
+  pulseWidthEnd: 0.86,
+  lowPassHz: 4200
+})
+```
+
+`bitDepth` rounds the oscillator or noise amplitude to a fixed number of
+levels before filtering. Values from 2 to 16 are accepted. Zero preserves the
+floating-point signal. Quantization adds harmonic grit; it does not change the
+audio device's output format.
 
 ## Envelope and total duration
 
@@ -388,6 +436,27 @@ synth.playPattern({
 
 Noise steps still need `frequency` or `note` because every sounding pattern
 step follows the same shape. The pitch value is not used by the noise source.
+
+### Filtered noise burst
+
+```javascript
+synth.playTone({
+  frequency: 120,
+  duration: 760,
+  attack: 1,
+  release: 580,
+  volume: 0.62,
+  waveType: WAVE.NOISE,
+  noiseRate: 12000,
+  noiseRateEnd: 650,
+  lowPassHz: 2500,
+  bitDepth: 8
+})
+```
+
+The decreasing update rate makes the texture break into slower chunks while
+the envelope removes energy. Reverse the two rates for an effect that becomes
+more frantic.
 
 ### Simon-style cues
 

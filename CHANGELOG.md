@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - `purgetss-videos`, a maintainer-only skill under `.claude/skills/` for PurgeTSS video tutorials in Alloy or Classic. It layers the PurgeTSS conventions (`Purge TSS` in voice text, subtitle spelling, the purgetss.com closing, disposable copies under `/Users/PurgeTSS`, Alloy vs. Classic scope) on top of `technical-demo-videos`, and replaces the Classic-only `purgetss-demo-videos`. Not shipped to npm.
 
+### Changed
+
+- `ti-synthengine` follows the TiSynthEngine 1.0.0 public release (commit `e8f1d0d`). It adds the `WAVETABLE` waveform with `waveTable`, the shaping controls `noiseRate`/`noiseRateEnd`, `lowPassHz`, `pulseWidth`/`pulseWidthEnd` and `bitDepth`, and `startEngine({ audioSession: 'playback' | 'ambient' })`, which replaces the old advice to set `Ti.Media.audioSessionCategory` after startup. Requirements are now Titanium SDK 13.2.0.GA and iOS 15, the envelope is smoothstep, and install points at the GitHub release archives.
+
 ## [5.1.1] - 2026-09-26
 
 ### Changed
