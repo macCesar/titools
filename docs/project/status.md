@@ -1,9 +1,9 @@
-# Status — 2026-09-29
+# Status — 2026-10-04
 
 **Phase:** v5.1.1 shipped; live and maintained. Three commits on `main` since, none released.
-**Session by:** Claude Code · Opus 5.5 (`claude-opus-5-5`).
+**Session by:** Claude Code · Sonnet 5.5 (`claude-sonnet-5-5`).
 **Deployed:** `@maccesar/titools@5.1.1` on npm (`npm view` answers `5.1.1` today). Tag `v5.1.1` → `1a4dbb4`. Nothing after it is published.
-**Branch:** `main`, 1 commit ahead of `origin/main` (`cff9438`, not pushed). Untracked `por-hacer.md` is the maintainer's note about the PurgeTSS videos; it predates this session and stays out of git.
+**Branch:** `main`, 2 commits ahead of `origin/main` (`a057159` and this note, not pushed). Untracked `por-hacer.md` is the maintainer's note about the PurgeTSS videos; it predates this session and stays out of git.
 **Sibling:** `git diff v5.1.1..HEAD -- lib/ bin/ hooks/` is empty, so no port to `../aiskills` is owed. `../aiskills` is aligned with its `origin/main` and clean.
 
 ## Where things stand
@@ -14,9 +14,11 @@ Unreleased on `main`, under `[Unreleased]` in `CHANGELOG.md`:
 - **`5c08d04`:** `purgetss-videos`, a maintainer-only skill under `.claude/skills/`, not shipped to npm.
 - **`cff9438`:** `ti-synthengine` follows the TiSynthEngine 1.0.0 public release at `e8f1d0d` (2026-09-29), re-pinned from `6685b81` (2026-08-29). The seven references copied from upstream `documentation/` were regenerated from that commit and match it byte for byte apart from the snapshot line, the generated TOCs (`guide`, `examples`, `sound-design`) and the two closing paragraphs that point at `recipes.md`. `SKILL.md` gained `WAVE.WAVETABLE`, the shaping-field ranges, the chord shaping fields and `audioSession: 'ambient'`. `recipes.md` is TiTools-only and needed no change.
 
+**`a057159` (2026-10-04, not pushed):** `ti-synthengine` follows TiSynthEngine `ef62edd`, the commit that adds `decay`/`sustain`, the resonant filter, FM, `detune`/`detunes` and the `patternend` event. `SKILL.md` has the new invariants and decision-guide rows, the seven references match `ef62edd:documentation/` apart from the snapshot line, the generated TOCs and the two closers that point at `recipes.md`, and `recipes.md` has eight new recipes plus the layered chord rewritten around `detunes`. `npm test` gave 364/364 before the commit. Every call in the skill's code blocks was replayed through the real `SynthContract.java`, and the recipes were executed against a mock `synth` (30/30 calls accepted). The new recipes are contract-valid only: nobody has listened to them. **Owed:** run `/humanizer` over the README and CHANGELOG text if it is edited again before a release; re-check the skill if the module's contract changes before it ships.
+
 `ti-game` was checked the same day and is current: the skill pins upstream `3bea2f4` (2026-09-02), and `git ls-remote` shows both `m1ga/ti.game` and the `macCesar` fork at `3bea2f4`; latest upstream tag `0.5.0`.
 
-TiSynthEngine's own docs have two small defects, reported to the maintainer and copied as-is into the skill: `documentation/api.md` lists `missing_required` twice in "Common reasons", and `troubleshooting.md` names `invalid_sample_count`, which that table omits. The repository goes public in a few days.
+The two TiSynthEngine doc defects noted on 2026-09-29 (`missing_required` listed twice, `invalid_sample_count` missing from the reasons table) are fixed in the working tree on both sides, together with a third found on 2026-10-04: upstream gave the `noteValue` list as `1n` to `32n`, but the contract accepts `1n`, `2n`, `4n`, `8n`, `16n`, `2n.`, `4n.`, `8n.`, `8t`, `16t` and rejects `32n`.
 
 ## Blocked on someone else
 
