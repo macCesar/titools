@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `e8f1d0d` (2026-09-29).
+> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `ef62edd` (2026-10-04).
 
 # Troubleshooting
 
@@ -26,6 +26,13 @@ Common fixes:
 | `not_integer` | Use whole milliseconds and integer waveform values where required. |
 | `invalid_note` | Check spelling, accidental case and octave. |
 | `invalid_sample_count` | Supply 2 to 64 values in `waveTable`. |
+| `unsupported_value` | Use `none`, `lowpass`, `highpass` or `bandpass` for `filterType`. |
+| `sustain_without_decay` | Add a `decay` greater than 0, or remove `sustain`. |
+| `decay_exceeds_remaining_duration` | Shorten `attack` or `decay`, or lengthen `duration`. The default attack counts. |
+| `filter_type_required` | Set `filterType` to a filter, or remove `filterHz`, `filterHzEnd` and `filterQ`. |
+| `fm_requires_sine` | Use `SINE` for FM, or set `fmDepth` to 0 and remove `fmDepthEnd`. |
+| `fm_depth_required` | Set `fmDepth` or `fmDepthEnd`, or remove `fmRatio`. |
+| `too_many_values` | Pass no more `pans` or `detunes` than the chord has pitches. |
 | `missing_required` with `waveTable` | Add a table whenever `waveType` is `WAVETABLE`. |
 | envelope reason | Make attack and release fit inside total duration. |
 
@@ -35,6 +42,15 @@ call may return `false` without printing a new line each time.
 An `overflow` warning means the command queue was full. Reduce the command
 burst or wait for the audio thread to consume queued work. Chords are rejected
 as a whole rather than partially started.
+
+The envelope and filter rules read the values a sounding event ends up with.
+In a pattern that means the step over the pattern root, so a `sustain` on the
+root is fine when each step supplies a `decay`, and a root `filterHz` is
+rejected when no step has a `filterType`. A `detune` that pushes the pitch, or
+`frequencyEnd`, outside the frequency range is rejected with `out_of_range`.
+
+`fmDepthEnd: 0` is valid. It sweeps the index down to nothing. Omit the key,
+rather than passing 0, when the index should not move.
 
 For the shaping controls, check the discontinuous disabled values as well
 as the numeric range: `bitDepth` accepts 0 or 2 through 16, and
@@ -110,6 +126,20 @@ steps: [
 ]
 ```
 
+## `patternend` never arrives
+
+The event fires once per accepted `playPattern`. Check, in order:
+
+1. The call returned `true`. A rejected pattern produces no event.
+2. The listener is on the module (`synth.addEventListener`), registered before
+   the pattern started and not removed by a cleanup that already ran.
+3. `shutdown()` was not called first. It discards a pending pattern silently.
+4. The pattern was not replaced. A newer accepted pattern delivers
+   `completed: false` for the old one instead of a natural end.
+
+The event arrives when the pattern ends, about 1 ms after the sum of its step
+lengths, not when you call. A 30 second pattern reports after 30 seconds.
+
 ## A chord is distorted or pumps
 
 Use one `playChord()` call for notes that should begin together. Several
@@ -118,6 +148,8 @@ Use one `playChord()` call for notes that should begin together. Several
 If the limiter engages repeatedly:
 
 - lower event volume;
+- lower `filterQ`, because a resonant low-pass or high-pass boosts its cutoff
+  by about Q;
 - use `conservative` instead of `balanced` or `raw`;
 - use `speakerSafe` on a small speaker;
 - avoid retriggering a long event before its previous release ends.

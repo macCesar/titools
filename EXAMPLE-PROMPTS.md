@@ -463,8 +463,25 @@ Expect:
 Expect:
 - Activates `ti-synthengine`
 - Chooses sine or triangle with short valid envelopes and an ascending interval
-- Uses `playPattern()` with object steps or two deliberately scheduled independent tones; does not invent a multi-stage `playTone` option
+- Uses `playPattern()` with object steps or two deliberately scheduled independent tones; does not invent options outside the contract
 - Keeps event levels conservative, explains speaker testing, and emits exact production JavaScript
+
+```
+"Make an electric-piano key and a bell with ti.synthengine. They should be bright when struck and mellow as they ring out."
+```
+Expect:
+- Activates `ti-synthengine` and reads `references/api.md` plus `references/sound-design.md`
+- Uses `SINE` with `fmRatio` and an `fmDepth` that falls through `fmDepthEnd` (0 is a valid end value), plus `decay` and a low `sustain`
+- Gives the bell a non-integer `fmRatio` and keeps `attack + decay` inside `duration`
+- Does not combine FM with another waveform and does not add effects the module lacks
+
+```
+"I want a wah sweep and a thick, wide pad with ti.synthengine."
+```
+Expect:
+- Activates `ti-synthengine`
+- Builds the wah with `filterType: 'bandpass'` (or `'lowpass'`), `filterHz` moving to `filterHzEnd` and a moderate `filterQ`; never sends filter fields without a `filterType`
+- Builds the pad with one `playChord()` that repeats pitches and uses `detunes` in cents; does not send `detune`, `filterHzEnd` or any `*End` field to the chord
 
 ```
 "Build a playable ti.synthengine xylophone from C5 to C6. Taps should ring naturally and dragging across the bars must not retrigger the same bar on every touchmove."

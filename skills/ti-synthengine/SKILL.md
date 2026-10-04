@@ -1,13 +1,13 @@
 ---
 name: ti-synthengine
-description: "Use when a Titanium app declares ti.synthengine in tiapp.xml, imports require('ti.synthengine'), or asks for generated tones, chords, patterns, retro/game/UI sounds, alarms, sweeps, vibrato, envelopes, panning, gain staging, or troubleshooting with that native module. Covers Android and iOS contract 1.0.0. Do not use for audio-file playback, streaming music, or unrelated synthesizers."
+description: "Use when a Titanium app declares ti.synthengine in tiapp.xml, imports require('ti.synthengine'), or asks for generated tones, chords, patterns, retro/game/UI sounds, alarms, sweeps, vibrato, envelopes (attack, decay, sustain, release), resonant filters, FM bells and electric-piano tones, detune, panning, gain staging, the patternend event, or troubleshooting with that native module. Covers Android and iOS contract 1.0.0. Do not use for audio-file playback, streaming music, or unrelated synthesizers."
 ---
 
 # ti.synthengine — sound synthesis for Titanium SDK
 
 Act as an audio engineer and mobile sound designer for the native `ti.synthengine` module. Translate an aesthetic request into acoustically reasoned JavaScript that uses only the module's public contract.
 
-This skill is verified against TiSynthEngine **1.0.0** at commit **`e8f1d0d` (2026-09-29)**. Android and iOS expose the same eight public methods, option contracts, defaults, limits, waveform constants, and validation behavior.
+This skill is verified against TiSynthEngine **1.0.0** at commit **`ef62edd` (2026-10-04)**, which adds decay and sustain, the resonant filter, FM, detune and the `patternend` event to `e8f1d0d`. Android and iOS expose the same eight public methods, one event, option contracts, defaults, limits, waveform constants, and validation behavior.
 
 ## Required workflow
 
@@ -33,7 +33,7 @@ Answer in the user's language and use this order:
 2. **Safe initialization when needed.** If the surrounding code does not already own a running engine, show `require`, `getDefaults()`, a checked `startEngine()` call, and appropriate cleanup. For a screen startup, follow the post-layout lifecycle in the guide.
 3. **Production JavaScript.** Return a focused, copyable block with short comments, exact option names, valid types and checked Boolean results.
 
-If the request cannot be represented by this synthesizer—audio-file playback, indefinite loops, per-voice control, streaming, or sample-accurate composition—say so and recommend the appropriate kind of audio engine instead of inventing an API.
+If the request cannot be represented by this synthesizer—audio-file playback, indefinite loops, per-voice control, streaming, or sample-accurate composition—say so and recommend the appropriate kind of audio engine instead of inventing an API. The same goes for reverb, delay, chorus and other effects: the module has no effect bus.
 
 ## Contract invariants
 
@@ -49,9 +49,14 @@ Never hardcode waveform integers when `WAVE.SINE`, `WAVE.SQUARE`, `WAVE.SAWTOOTH
 
 - Option dictionaries are closed. Unknown or misspelled keys, wrong types, non-finite numbers, fractional values for integer fields, and out-of-range values make the entire call return `false`.
 - `playTone()` takes at most one pitch source: `note` or `frequency`. If neither is supplied, it defaults to 440 Hz. Never send both.
-- `playChord()` requires exactly one of `notes` or `frequencies`. It accepts `panSpread` or `pans` and the fixed shaping fields `noiseRate`, `lowPassHz`, `pulseWidth`, `waveTable`, and `bitDepth`, but no sweep, LFO, or `*End` fields.
+- `playChord()` requires exactly one of `notes` or `frequencies`. It accepts `panSpread` or `pans`, the fixed shaping fields `noiseRate`, `lowPassHz`, `pulseWidth`, `waveTable`, and `bitDepth`, the fixed expressive fields `decay`, `sustain`, `filterType`, `filterHz`, `filterQ`, `fmRatio`, and `fmDepth`, and `detunes`, but no sweep, LFO, `detune`, or `*End` fields.
 - Every sounding `playPattern()` step needs exactly one of `note` or `frequency`; a rest uses exactly `rest: true`. Even a `NOISE` step needs a pitch field, although noise ignores its value. Pattern roots do not accept `duration`.
-- `duration` includes attack, the full-level middle, and release. For explicit envelopes, `attack < duration` and `release <= duration - attack`.
+- `duration` includes attack, decay, the held level, and release. For explicit envelopes, `attack < duration` and `release <= duration - attack`.
+- `decay` (integer ms, 0 to 4000) and `sustain` (0 to 1) complete the ADSR envelope. `sustain` below 1 needs a `decay`. `attack + decay <= duration`, and the default 50 ms attack counts toward that budget. The release overlaps the decay and fades from wherever the level is.
+- `filterType` is `none`, `lowpass`, `highpass` or `bandpass`. `filterHz` (20 Hz up to the frequency limit), `filterQ` (0.5 to 10) and `filterHzEnd` (0 or 20 Hz up, an exponential sweep) are rejected while no filter type is active. This filter is separate from, and runs after, the one-pole `lowPassHz`. A chord has no `filterHzEnd`.
+- FM is `fmDepth` (modulation index, 0 to 10), `fmRatio` (0.1 to 16) and an optional `fmDepthEnd`; unlike the other `*End` keys, 0 is a real target, so omit the key for no sweep. Only `WAVE.SINE` can carry FM, and `fmRatio` without a depth is rejected.
+- `detune` (cents, -1200 to 1200) works on `playTone` and `playPattern`. `playChord()` uses `detunes`, an array aligned with the pitches. The detuned pitch, and any `frequencyEnd` target, must stay inside the frequency limits.
+- `patternend` is an event, not a method: it fires once per accepted `playPattern()` with `{ completed: true }` at the natural end, or `{ completed: false }` when a newer pattern replaces it. `stopAll()` and `shutdown()` fire nothing. Remove the listener when the owner closes.
 - `pan` and `panEnd` range from -1 to 1. `frequencyEnd` is a linear sweep target. `lfoFreq` is the modulation rate in Hz and `lfoDepth` is absolute pitch deviation in Hz, not cents.
 - `WAVE.WAVETABLE` requires `waveTable`: 2 to 64 finite values from -1 to 1, stepped without interpolation. `bitDepth` is 0 or an integer from 2 to 16; `pulseWidth` is 0.05 to 0.95 and only shapes `SQUARE`; `pulseWidthEnd` is 0 or 0.05 to 0.95. For `noiseRate`, `noiseRateEnd`, and `lowPassHz`, 0 means white noise, no sweep, or no filter.
 - `startEngine()`, `playTone()`, `playChord()`, `playPattern()`, and `setVolume()` return `Boolean`; production code must handle rejection where it matters.
@@ -71,10 +76,14 @@ Use these as starting regions, then keep every explicit value inside the API lim
 | Alarm or urgent cue | `SAWTOOTH`, repeated pitches, a sweep, or vibrato around 4–7 Hz; use larger `lfoDepth` only for an obvious effect |
 | Laser or sci-fi movement | One `frequency` plus `frequencyEnd`, short attack, fitted release, optional `pan` → `panEnd` |
 | Pad or atmosphere | One `playChord()` with `SINE` or `TRIANGLE`, 2000 ms or longer, 300–600 ms attack, 800–1500 ms release when it fits |
+| Plucked string, marimba or keyboard note | `TRIANGLE` or `SINE`, 2 ms attack, `decay` 120–400 ms, `sustain` 0 to 0.3, release that fits |
+| Electric piano, bell or metallic hit | `SINE` with `fmDepth` that falls to `fmDepthEnd: 0`; `fmRatio` 1, 2 or 3.5 for tine-like tones, a non-integer ratio for bells; add `decay` and a low `sustain` |
+| Wah, wind or filter sweep | `SAWTOOTH` or `NOISE` through `filterType: 'bandpass'` or `'lowpass'`, `filterHz` to `filterHzEnd`, `filterQ` 2 to 6 |
+| Thick unison pad or supersaw | `playChord()` with the same pitch repeated and `detunes` of ±5 to ±12 cents; keep the gain staging in mind |
 
 A4 is 440 Hz under twelve-tone equal temperament; each octave doubles or halves frequency. Upward sweeps tend to read as activation, reward, or energy gain; downward sweeps tend to read as dismissal, power-down, or impact. Treat pan as supporting detail because many phone speakers collapse the stereo image.
 
-For playable controls, trigger one event when the finger enters a new key, not on every `touchmove`. For simultaneous musical voices, prefer one atomic `playChord()` call; use small cent offsets in the generated frequency array when a layered sound needs beating because the module has no chord-detune option. Cancel app-owned timers before stopping voices or shutting down the engine. [source: references/recipes.md]
+For playable controls, trigger one event when the finger enters a new key, not on every `touchmove`. For simultaneous musical voices, prefer one atomic `playChord()` call; use `detunes` (cents per pitch) when a layered sound needs beating. Cancel app-owned timers before stopping voices or shutting down the engine. [source: references/recipes.md]
 
 ## Mixing and lifecycle defaults
 
@@ -88,7 +97,8 @@ For playable controls, trigger one event when the finger enters a new key, not o
 
 - Re-read the exact method table in `references/api.md`; remove every unsupported property.
 - Confirm pitch fields are mutually exclusive and numeric values are finite and in range.
-- Compute the envelope intersection explicitly.
+- Compute the envelope intersection explicitly, including `attack + decay <= duration`.
+- Check the cross-field rules: `sustain` below 1 needs a `decay`, filter fields need a `filterType`, FM needs a sine and a depth.
 - Use `WAVE` constants from `getDefaults()`.
 - Use `playChord()` for one simultaneous musical event instead of several hotter independent tones.
 - Include startup and cleanup only at the ownership level relevant to the request.

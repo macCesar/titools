@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `e8f1d0d` (2026-09-29).
+> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `ef62edd` (2026-10-04).
 
 # Sound design with TiSynthEngine
 
@@ -21,8 +21,12 @@ var WAVE = synth.getDefaults().waveTypes
 - [Waveform and timbre](#waveform-and-timbre)
 - [Filter, pulse width and quantization](#filter-pulse-width-and-quantization)
 - [Envelope and total duration](#envelope-and-total-duration)
+- [Decay and sustain](#decay-and-sustain)
 - [Pan and movement](#pan-and-movement)
 - [Vibrato and the LFO](#vibrato-and-the-lfo)
+- [Resonant filter](#resonant-filter)
+- [Frequency modulation](#frequency-modulation)
+- [Detune](#detune)
 - [Chords, polyphony and gain](#chords-polyphony-and-gain)
 - [Mixing profiles and limiter](#mixing-profiles-and-limiter)
 - [Speakers, headphones and devices](#speakers-headphones-and-devices)
@@ -148,7 +152,9 @@ Try the built-in sources at a moderate level before choosing one:
 ## Filter, pulse width and quantization
 
 `lowPassHz` enables a per-voice one-pole low-pass filter. It is most obvious on
-noise, square and sawtooth sources. Zero bypasses the filter.
+noise, square and sawtooth sources. Zero bypasses the filter. For resonance,
+high-pass and band-pass shapes or a moving cutoff, use the
+[resonant filter](#resonant-filter) below.
 
 `pulseWidth` controls how much of each square-wave cycle stays high. The 0.5
 default is a normal square. Values closer to 0.05 or 0.95 become thinner and
@@ -200,6 +206,34 @@ release <= duration - attack
 
 Defaults are adjusted internally if a very short duration leaves no room, but
 values supplied by the caller are never reshaped silently.
+
+## Decay and sustain
+
+Plucked strings, struck keys and mallets start loud and settle. A flat
+envelope cannot do that, so `decay` and `sustain` add a stage after the attack:
+the level falls from full scale to `sustain` over `decay` milliseconds, then
+holds until the release.
+
+```text
+decay: 0                    flat tone, the default
+decay: 260, sustain: 0.18   pluck: loud start, settles low
+decay: 2000, sustain: 0.02  bell or mallet: fades by itself
+```
+
+Practical starting regions:
+
+- plucks and keys: attack 2 to 10 ms, decay 100 to 400 ms, sustain 0.1 to 0.4;
+- struck percussion with a pitch drop: decay about half the duration, sustain
+  near 0.3;
+- bells and mallets: decay over most of the duration, sustain near 0.
+
+`sustain` below 1 needs a nonzero `decay`. Without one the level would jump
+instantly, which clicks, so the call is rejected with `sustain_without_decay`.
+
+The release scales the level the note has reached. If the release begins while
+the decay is still running, the note leaves smoothly from that point. The
+decay still has to fit: `attack` plus `decay` cannot exceed `duration`, and the
+50 ms default attack counts. Set a short `attack` explicitly for a tight pluck.
 
 ## Pan and movement
 
@@ -256,6 +290,101 @@ synth.playTone({
 A rate around 4 to 7 Hz with a small depth sounds like musical vibrato. A fast
 rate or large depth becomes an effect. Because depth is measured in hertz, 8 Hz
 is a larger musical interval on a low note than on a high note.
+
+## Resonant filter
+
+`filterType` adds a filter that removes or emphasizes part of the spectrum. It
+has 12 dB per octave of slope, twice as steep as the one-pole `lowPassHz`
+filter, and can be combined with it (`lowPassHz` runs first).
+
+- `lowpass` darkens the sound. A sawtooth through a closing low-pass reads as a
+  zap or a sound moving away; an opening one reads as a swell.
+- `highpass` thins the sound by removing body. It makes hats, hiss and tinny
+  effects out of noise.
+- `bandpass` keeps one band around `filterHz`, which gives vocal, nasal and
+  wah-like colors.
+
+Filters shape harmonics, so give them a source that has some: `SAWTOOTH`,
+`SQUARE` and `NOISE` respond strongly. A sine has only its fundamental, so a
+filter mostly changes its level.
+
+`filterQ` is the resonance. The default 0.7071 is flat. Values from 2 to 4 add
+character, and above about 6 the filter whistles around the cutoff. A low-pass
+or high-pass boosts the cutoff region by about `filterQ`, so Q 10 is roughly
+20 dB. Lower the event `volume` as Q goes up. The limiter catches peaks, but a
+resonance that keeps hitting it makes the whole mix pump. The band-pass keeps
+unity gain at its center for every Q and only narrows.
+
+`filterHzEnd` moves the cutoff over the whole event. The motion is exponential,
+so each second covers the same musical distance. Set it above `filterHz` to
+open the filter and below to close it. Zero disables the sweep.
+
+```javascript
+synth.playTone({
+  note: 'A2',
+  duration: 1000,
+  attack: 10,
+  release: 200,
+  volume: 0.5,
+  waveType: WAVE.SAWTOOTH,
+  filterType: 'bandpass',
+  filterHz: 350,
+  filterHzEnd: 2400,
+  filterQ: 5
+})
+```
+
+## Frequency modulation
+
+FM makes rich, bright and metallic sounds from a plain sine. A second sine, the
+modulator, bends the pitch of the first one, the carrier. Turn it on with
+`fmDepth` or `fmDepthEnd`, on a `SINE` voice.
+
+- `fmRatio` is the modulator frequency as a multiple of the carrier's. Whole
+  numbers (1, 2, 3) keep the added overtones on the harmonic series, so the
+  pitch stays clear and the sound reads as organ- or piano-like. Fractional
+  ratios such as 1.4142 or 3.5 put the overtones between harmonics, which reads
+  as bells, glass and metal.
+- `fmDepth` is the modulation index and works like a brightness control. Around
+  0.5 to 1.5 it warms a sine, 2 to 5 makes it bright and rich, and values near
+  10 get harsh.
+- `fmDepthEnd` moves the index over the event. Starting high and ending low
+  gives a bright attack that mellows, which is the signature of electric pianos,
+  bells and mallets. Pair it with `decay` so the level falls with the brightness.
+
+FM does not change the sine's amplitude, so gain staging is the same as for a
+plain sine. There is no band-limiting: a high carrier with a large index and
+ratio puts sidebands above the Nyquist frequency, where they alias into
+inharmonic noise. Keep bell carriers modest, around 500 Hz, or lower the index.
+
+## Detune
+
+`detune` shifts a pitch by cents, hundredths of a semitone. Two tones a few
+cents apart drift in and out of phase and beat at a rate close to
+`frequency * (2 ^ (cents / 1200) - 1)`. A 12-cent gap at 440 Hz beats about
+3 times a second. Slow beating (0.5 to 4 Hz) sounds warm and wide, like a
+chorus; past about 20 cents it starts to sound out of tune.
+
+On a single tone, `detune` just retunes it, which is handy for small variations
+so a repeated effect does not sound identical. The effect comes from stacking
+detuned copies. In a chord, give `detunes` one entry per pitch and repeat a
+pitch to thicken it:
+
+```javascript
+synth.playChord({
+  frequencies: [440, 440],
+  detunes: [-6, 6],
+  duration: 2000,
+  attack: 200,
+  release: 600,
+  volume: 0.55,
+  waveType: WAVE.SINE
+})
+```
+
+Each repeated pitch is a voice, so size `maxVoices` for the full stack. Event
+gain is divided by the square root of the voice count, so a thick chord is not
+louder than a thin one.
 
 ## Chords, polyphony and gain
 
@@ -457,6 +586,144 @@ synth.playTone({
 The decreasing update rate makes the texture break into slower chunks while
 the envelope removes energy. Reverse the two rates for an effect that becomes
 more frantic.
+
+### Pluck
+
+```javascript
+synth.playTone({
+  note: 'E4',
+  duration: 900,
+  attack: 2,
+  decay: 260,
+  sustain: 0.18,
+  release: 380,
+  volume: 0.6,
+  waveType: WAVE.TRIANGLE
+})
+```
+
+### Electric piano
+
+```javascript
+synth.playTone({
+  note: 'E3',
+  duration: 1800,
+  attack: 3,
+  decay: 700,
+  sustain: 0.3,
+  release: 600,
+  volume: 0.55,
+  waveType: WAVE.SINE,
+  fmRatio: 1,
+  fmDepth: 2.2,
+  fmDepthEnd: 0.25
+})
+```
+
+The index falls from 2.2 to 0.25 while the level settles, so the attack is
+bright and the sustain is mellow.
+
+### Bell
+
+```javascript
+synth.playTone({
+  note: 'C5',
+  duration: 2600,
+  attack: 1,
+  decay: 2000,
+  sustain: 0.02,
+  release: 500,
+  volume: 0.5,
+  waveType: WAVE.SINE,
+  fmRatio: 3.5,
+  fmDepth: 4,
+  fmDepthEnd: 0
+})
+```
+
+The fractional ratio makes the overtones inharmonic. Try 1.4142 or 2.76 for a
+different metal.
+
+### Wah
+
+The wah in [Resonant filter](#resonant-filter) is also a recipe. Reverse the
+two cutoffs for a sound that closes instead of opening.
+
+### Filtered laser
+
+```javascript
+synth.playTone({
+  frequency: 1600,
+  frequencyEnd: 160,
+  duration: 340,
+  attack: 2,
+  release: 90,
+  volume: 0.4,
+  waveType: WAVE.SAWTOOTH,
+  filterType: 'lowpass',
+  filterHz: 7000,
+  filterHzEnd: 500,
+  filterQ: 4
+})
+```
+
+### Hi-hat
+
+```javascript
+synth.playTone({
+  duration: 80,
+  attack: 1,
+  decay: 30,
+  sustain: 0.25,
+  release: 45,
+  volume: 0.45,
+  waveType: WAVE.NOISE,
+  filterType: 'highpass',
+  filterHz: 7000
+})
+```
+
+For an open hat, use `duration: 320`, `decay: 70` and `release: 220`.
+
+### Thick pad
+
+```javascript
+synth.playChord({
+  notes: ['A3', 'E4', 'A3', 'E4', 'A3', 'E4'],
+  detunes: [-9, -9, 0, 0, 9, 9],
+  duration: 3200,
+  attack: 700,
+  release: 1300,
+  volume: 0.5,
+  waveType: WAVE.SAWTOOTH,
+  filterType: 'lowpass',
+  filterHz: 1500,
+  panSpread: 0.8
+})
+```
+
+Six voices play two pitches, each in three slightly different tunings. The
+low-pass takes the harshness off the sawtooth stack. Start the engine with
+`maxVoices` of at least 6.
+
+### Kick
+
+```javascript
+synth.playTone({
+  frequency: 150,
+  frequencyEnd: 42,
+  duration: 320,
+  attack: 1,
+  decay: 150,
+  sustain: 0.3,
+  release: 140,
+  volume: 0.85,
+  waveType: WAVE.SINE
+})
+```
+
+The pitch drop is the punch and the decay is the thump. A phone speaker cannot
+reproduce 42 Hz, so raise `frequencyEnd` toward 70 for speaker playback.
 
 ### Simon-style cues
 

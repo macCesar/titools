@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `e8f1d0d` (2026-09-29).
+> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `ef62edd` (2026-10-04).
 
 # API reference
 
@@ -6,9 +6,28 @@ Module id: `ti.synthengine`
 
 Public API version: `1.0.0`
 
-Android and iOS expose the same eight methods, defaults, limits, waveform
-values and validation behavior. Option objects are strict: an unknown key is
-rejected with `unsupported_option`.
+Android and iOS expose the same eight methods, one event, defaults, limits,
+waveform values and validation behavior. Option objects are strict: an unknown
+key is rejected with `unsupported_option`.
+
+<!-- TOC-START -->
+## Contents
+
+- [Return values](#return-values)
+- [`getDefaults()`](#getdefaults)
+- [Limits](#limits)
+- [`startEngine(options)`](#startengineoptions)
+- [`playTone(options)`](#playtoneoptions)
+- [`playChord(options)`](#playchordoptions)
+- [`playPattern(options)`](#playpatternoptions)
+- [Expressive controls](#expressive-controls)
+- [`setVolume(options)`](#setvolumeoptions)
+- [`stopAll()`](#stopall)
+- [`shutdown()`](#shutdown)
+- [`patternend` event](#patternend-event)
+- [Strict validation](#strict-validation)
+
+<!-- TOC-END -->
 
 ## Return values
 
@@ -57,11 +76,21 @@ The result has this shape:
     panSpread: 0,
     bpm: 120,
     swing: 0,
-    stepDuration: 100
+    stepDuration: 100,
+    decay: 0,
+    sustain: 1,
+    filterType: 'none',
+    filterHz: 1000,
+    filterHzEnd: 0,
+    filterQ: 0.7071,
+    fmRatio: 1,
+    fmDepth: 0,
+    detune: 0
   },
   limits: { /* ranges listed below */ },
   mixingProfiles: ['conservative', 'raw', 'balanced', 'speakerSafe'],
   audioSessions: ['playback', 'ambient'],
+  filterTypes: ['none', 'lowpass', 'highpass', 'bandpass'],
   waveTypes: {
     SINE: 0,
     SQUARE: 1,
@@ -73,7 +102,8 @@ The result has this shape:
 }
 ```
 
-The maximum frequency is `sampleRate * 0.45`. Before the stream opens, the
+`fmDepthEnd` and `detunes` have no default because omitting them is
+meaningful. The maximum frequency is `sampleRate * 0.45`. Before the stream opens, the
 reported fallback is 19,845 Hz. Read the object again after `startEngine()` if
 the precise device limit matters.
 
@@ -105,8 +135,20 @@ All ranges include their endpoints.
 | `bpm` | 20 | 300 | beats per minute |
 | `swing` | -0.49 | 0.49 | alternating timing offset |
 | `stepDuration` | 1 | 60,000 | ms |
+| `decay` | 0 | 4,000 | integer ms; `attack` plus `decay` must fit in the event |
+| `sustain` | 0 | 1 | level held after the decay |
+| `filterHz` | 20 | `sampleRate * 0.45` | Hz |
+| `filterHzEnd` | 0 or 20 | `sampleRate * 0.45` | Hz; 0 disables the sweep |
+| `filterQ` | 0.5 | 10 | resonance |
+| `fmRatio` | 0.1 | 16 | modulator frequency divided by carrier frequency |
+| `fmDepth`, `fmDepthEnd` | 0 | 10 | modulation index in radians |
+| `detune`, `detunes[]` | -1200 | 1200 | cents |
 
-The allowed `noteValue` strings are `1n`, `2n`, `4n`, `8n`, `16n` and `32n`.
+The allowed `noteValue` strings are `1n`, `2n`, `4n`, `8n` and `16n`, the
+dotted values `2n.`, `4n.` and `8n.`, and the triplets `8t` and `16t`. A dotted
+value lasts one and a half times as long as the plain one. Three triplet steps
+fit in the time of two plain steps of the same name. Any other length is set
+in milliseconds with `duration` or `stepDuration`.
 
 ## `startEngine(options)`
 
@@ -151,6 +193,20 @@ Plays one pitch. It uses 440 Hz when neither pitch field is present.
 | `pulseWidthEnd` | number | `0` | Ending duty cycle; 0 disables the sweep. |
 | `waveTable` | number[] | none | Required for `WAVETABLE`; 2 to 64 normalized samples. |
 | `bitDepth` | integer | `0` | Amplitude quantization from 2 to 16 bits; 0 disables it. |
+| `decay` | integer | `0` | Milliseconds to fall from full level to `sustain` after the attack. |
+| `sustain` | number | `1` | Level held after the decay, from 0 to 1. |
+| `filterType` | string | `none` | `none`, `lowpass`, `highpass` or `bandpass`. Case-insensitive. |
+| `filterHz` | number | `1000` | Cutoff, or center for `bandpass`, in Hz. |
+| `filterHzEnd` | number | `0` | Ending cutoff; 0 disables the sweep. |
+| `filterQ` | number | `0.7071` | Resonance, from 0.5 to 10. |
+| `fmRatio` | number | `1` | Modulator frequency as a multiple of the carrier. |
+| `fmDepth` | number | `0` | Modulation index; 0 leaves FM off unless `fmDepthEnd` is set. |
+| `fmDepthEnd` | number | none | Ending index. Omit it for no sweep; 0 is a valid target. |
+| `detune` | number | `0` | Pitch offset in cents, applied to `frequency` and `frequencyEnd`. |
+
+The controls from `decay` to `detune` are described in
+[Expressive controls](#expressive-controls), including the rules that tie them
+together.
 
 ## `playChord(options)`
 
@@ -173,9 +229,18 @@ required.
 | `pulseWidth` | number | `0.5` | Fixed square-wave duty cycle. |
 | `waveTable` | number[] | none | Required when `waveType` is `WAVETABLE`. |
 | `bitDepth` | integer | `0` | Fixed amplitude quantization; 0 disables it. |
+| `decay` | integer | `0` | Fixed decay time shared by every voice. |
+| `sustain` | number | `1` | Fixed sustain level shared by every voice. |
+| `filterType` | string | `none` | Fixed filter type for every voice. |
+| `filterHz` | number | `1000` | Fixed cutoff or center in Hz. |
+| `filterQ` | number | `0.7071` | Fixed resonance. |
+| `fmRatio` | number | `1` | Fixed modulator ratio. |
+| `fmDepth` | number | `0` | Fixed modulation index; sine voices only. |
+| `detunes` | number[] | none | Per-note offsets in cents, matched to the pitch array. |
 
-`pans` cannot contain more entries than the pitch array. `playChord` does not
-accept sweep or vibrato fields.
+`pans` and `detunes` cannot contain more entries than the pitch array, and
+missing entries count as 0. `playChord` does not accept sweep, vibrato or
+`detune` fields.
 
 ## `playPattern(options)`
 
@@ -207,6 +272,16 @@ Pattern-level keys:
 | `pulseWidthEnd` | number | `0` | Inherited pulse-width sweep target. |
 | `waveTable` | number[] | none | Inherited custom wavetable. |
 | `bitDepth` | integer | `0` | Inherited amplitude quantization. |
+| `decay` | integer | `0` | Inherited decay time. |
+| `sustain` | number | `1` | Inherited sustain level. |
+| `filterType` | string | `none` | Inherited filter type. |
+| `filterHz` | number | `1000` | Inherited cutoff or center. |
+| `filterHzEnd` | number | `0` | Inherited cutoff sweep target. |
+| `filterQ` | number | `0.7071` | Inherited resonance. |
+| `fmRatio` | number | `1` | Inherited modulator ratio. |
+| `fmDepth` | number | `0` | Inherited modulation index. |
+| `fmDepthEnd` | number | none | Inherited index sweep target. |
+| `detune` | number | `0` | Inherited pitch offset in cents. |
 
 Step keys:
 
@@ -223,10 +298,108 @@ Step keys:
 | `pulseWidth`, `pulseWidthEnd` | number | Override square-wave duty cycle or its sweep. |
 | `waveTable` | number[] | Override the custom table for this step. |
 | `bitDepth` | integer | Override amplitude quantization. |
+| `decay`, `sustain` | number | Override the decay stage. |
+| `filterType`, `filterHz`, `filterHzEnd`, `filterQ` | mixed | Override the filter. |
+| `fmRatio`, `fmDepth`, `fmDepthEnd` | number | Override frequency modulation. |
+| `detune` | number | Override the pitch offset in cents. |
 
 Step timing precedence is `duration`, step `noteValue`, pattern `noteValue`,
 pattern `stepDuration`, then 100 ms. Only one pattern remains pending at a
-time. Starting another one cancels steps that have not fired.
+time. Starting another one cancels steps that have not fired, and the cancelled
+pattern reports it through the [`patternend` event](#patternend-event).
+
+## Expressive controls
+
+These options are opt-in. With none of them present, a note sounds exactly as
+it did without them. They apply to `playTone`, to `playChord` as fixed values,
+and to `playPattern` at the root and on each step.
+
+### Decay and sustain
+
+After the attack, the level falls from full scale to `sustain` over `decay`
+milliseconds, then holds there until the release begins. With `decay: 0` and
+`sustain: 1` the envelope is the plain attack, full level and release.
+
+```text
+level
+1.0    /\
+      /  \
+     /    \________  sustain
+    /              \
+   /                \
+  +------------------------> time
+   attack decay hold release
+```
+
+The release scales whatever level the note has reached, so a release that
+begins during the decay stays continuous. `duration` still covers the whole
+event.
+
+### Resonant filter
+
+`filterType` inserts a 12 dB per octave state-variable filter after the
+one-pole `lowPassHz` filter:
+
+| `filterType` | Passes | `filterHz` means |
+| --- | --- | --- |
+| `none` | Everything; the default. | Not allowed. |
+| `lowpass` | Frequencies below the cutoff. | Cutoff. |
+| `highpass` | Frequencies above the cutoff. | Cutoff. |
+| `bandpass` | A band around the center. | Center. |
+
+`filterQ` sets the resonance. The default 0.7071 is flat. Higher values add a
+peak at the cutoff: `lowpass` and `highpass` boost it by about `filterQ`, so Q
+10 is roughly 20 dB. `bandpass` keeps unity gain at its center for every Q and
+only gets narrower.
+
+`filterHzEnd` moves the cutoff over the whole event. The sweep is exponential:
+equal musical distance per unit of time, so 200 Hz to 3,200 Hz crosses 800 Hz
+at the midpoint. `filterHz` and `filterHzEnd` are held between 20 Hz and
+`sampleRate * 0.45`.
+
+### Frequency modulation
+
+A positive `fmDepth`, or any `fmDepthEnd`, turns a `SINE` voice into a
+two-operator phase-modulated voice:
+
+```text
+output = sin(2 * pi * phase + fmDepth * sin(2 * pi * modulatorPhase))
+```
+
+`fmRatio` sets the modulator frequency as a multiple of the carrier's current
+frequency, so pitch sweeps and vibrato keep the ratio. `fmDepth` is the
+modulation index in radians. Index 0 is a plain sine; each increase adds
+sidebands at the carrier frequency plus and minus multiples of the modulator
+frequency. `fmDepthEnd` moves the index linearly over the event. Unlike the
+other `*End` keys, 0 is a real target, so omit the key for no sweep.
+
+FM works only on `SINE`. Another waveform is rejected with `fm_requires_sine`.
+
+### Detune
+
+`detune` shifts the pitch by cents: the frequency is multiplied by
+`2 ^ (cents / 1200)`, so 100 cents is one semitone. It applies to `note`,
+`frequency` and `frequencyEnd`. In a chord, `detunes` supplies one offset per
+pitch instead. The shifted pitch must stay between 1 Hz and the frequency
+ceiling, otherwise the call is rejected with `out_of_range` on `detune` or
+`detunes`.
+
+### Rules across keys
+
+The rules below use the values a sounding event ends up with. For a pattern
+step, that means the step over the pattern root. A pattern made only of rests is
+not checked.
+
+| Reason | Rejected when |
+| --- | --- |
+| `sustain_without_decay` | `sustain` is below 1 and `decay` is 0. |
+| `decay_exceeds_remaining_duration` | `attack` plus `decay` is longer than the event. |
+| `filter_type_required` | `filterHz`, `filterHzEnd` or `filterQ` is set and `filterType` is `none`. |
+| `fm_requires_sine` | `fmDepth` is above 0, or `fmDepthEnd` is set, on a waveform other than `SINE`. |
+| `fm_depth_required` | `fmRatio` is set while FM is off. |
+
+For the decay rule, `attack` is the explicit value or the 50 ms default, held
+below `duration`. Set a short `attack` explicitly when the decay is long.
 
 ## `setVolume(options)`
 
@@ -245,6 +418,36 @@ future pattern steps.
 
 Cancels the pending pattern, stops the native stream and releases its audio
 resources. Call it when the owner closes.
+
+## `patternend` event
+
+The module emits one event. Listen with `addEventListener`:
+
+```javascript
+function onPatternEnd (event) {
+  Ti.API.info(event.completed ? 'pattern finished' : 'pattern replaced')
+}
+
+synth.addEventListener('patternend', onPatternEnd)
+// when the owner closes:
+synth.removeEventListener('patternend', onPatternEnd)
+```
+
+The payload is `{ completed: Boolean }`.
+
+- Every accepted `playPattern` produces exactly one event. A rejected call
+  produces none.
+- `completed: true` arrives at the natural end of the pattern, about 1 ms after
+  the sum of its step lengths counted from the call. The last step's release
+  ends at about the same time.
+- `completed: false` arrives when a later accepted `playPattern` replaces the
+  pattern before it ends.
+- `shutdown()` discards a pending pattern without an event. `stopAll()` does not
+  cancel patterns, so it produces none either.
+
+Both ports deliver the event asynchronously to the JavaScript runtime, never
+from inside the call that caused it. The timing follows the pattern scheduler,
+so it is not sample-accurate.
 
 ## Strict validation
 
@@ -267,15 +470,21 @@ Common reasons include:
 | `missing_required` | A required pitch array or `WAVETABLE` sample array is missing. |
 | `not_string`, `not_array`, `not_boolean` | A field has the wrong container or primitive type. |
 | `invalid_note` | A note name cannot be parsed. |
-| `unsupported_note_value` | A note value is not one of the six supported values. |
-| `missing_required` | A required chord pitch array is absent. |
+| `unsupported_note_value` | A note value is not one of the ten supported values. |
+| `unsupported_value` | `mixingProfile`, `audioSession` or `filterType` is not one of the listed strings. |
+| `invalid_sample_count` | `waveTable` has fewer than 2 or more than 64 samples. |
 | `missing_pitch_or_rest` | A pattern step has no pitch and is not a rest. |
 | `conflicting_pitch_fields` | A call or step provides more than one pitch source. |
 | `invalid_voice_count` | A chord has fewer than 1 or more than 32 pitches. |
 | `invalid_step_count` | A pattern has fewer than 1 or more than 512 steps. |
-| `too_many_values` | `pans` is longer than the chord. |
+| `too_many_values` | `pans` or `detunes` is longer than the chord. |
 | `attack_greater_or_equal_duration` | An explicit attack leaves no time for the event. |
 | `release_exceeds_remaining_duration` | An explicit release does not fit after attack. |
+| `decay_exceeds_remaining_duration` | `attack` plus `decay` does not fit in the event. |
+| `sustain_without_decay` | `sustain` is below 1 while `decay` is 0. |
+| `filter_type_required` | A filter key is set while `filterType` is `none`. |
+| `fm_requires_sine` | FM is active on a waveform other than `SINE`. |
+| `fm_depth_required` | `fmRatio` is set while FM is off. |
 
 Explicit values are not clamped. Read `getDefaults().limits` when accepting
 user input and decide in the app whether to reject or constrain it.

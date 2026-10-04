@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `e8f1d0d` (2026-09-29).
+> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `ef62edd` (2026-10-04).
 
 # Examples
 
@@ -35,6 +35,13 @@ if (contract.apiVersion !== '1.0.0') {
 - [Noise percussion](#noise-percussion)
 - [Xylophone sketch](#xylophone-sketch)
 - [Simon-style pads](#simon-style-pads)
+- [Pluck and electric piano](#pluck-and-electric-piano)
+- [Bell](#bell)
+- [Wah and filtered laser](#wah-and-filtered-laser)
+- [Kick and hi-hat in one pattern](#kick-and-hi-hat-in-one-pattern)
+- [Detuned chords](#detuned-chords)
+- [Chain patterns with `patternend`](#chain-patterns-with-patternend)
+- [Rules across keys](#rules-across-keys)
 - [Speaker-safe startup](#speaker-safe-startup)
 - [Validation at an input boundary](#validation-at-an-input-boundary)
 - [Stop and clean up](#stop-and-clean-up)
@@ -418,6 +425,229 @@ function playAllPads () {
     pans: [-0.75, -0.25, 0.25, 0.75]
   })
 }
+```
+
+## Pluck and electric piano
+
+`decay` and `sustain` turn a flat tone into an instrument. The electric piano
+adds an FM index that falls with the level, so the attack is bright and the
+tail is mellow.
+
+```javascript
+function pluck (note) {
+  return synth.playTone({
+    note: note,
+    duration: 900,
+    attack: 2,
+    decay: 260,
+    sustain: 0.18,
+    release: 380,
+    volume: 0.6,
+    waveType: WAVE.TRIANGLE
+  })
+}
+
+function electricPiano (note) {
+  return synth.playTone({
+    note: note,
+    duration: 1800,
+    attack: 3,
+    decay: 700,
+    sustain: 0.3,
+    release: 600,
+    volume: 0.55,
+    waveType: WAVE.SINE,
+    fmRatio: 1,
+    fmDepth: 2.2,
+    fmDepthEnd: 0.25
+  })
+}
+```
+
+## Bell
+
+```javascript
+synth.playTone({
+  note: 'C5',
+  duration: 2600,
+  attack: 1,
+  decay: 2000,
+  sustain: 0.02,
+  release: 500,
+  volume: 0.5,
+  waveType: WAVE.SINE,
+  fmRatio: 3.5,
+  fmDepth: 4,
+  fmDepthEnd: 0
+})
+```
+
+A fractional `fmRatio` puts the overtones between harmonics, which reads as
+metal. `fmDepthEnd: 0` lets the brightness die away completely.
+
+## Wah and filtered laser
+
+```javascript
+synth.playTone({
+  note: 'A2',
+  duration: 1000,
+  attack: 10,
+  release: 200,
+  volume: 0.5,
+  waveType: WAVE.SAWTOOTH,
+  filterType: 'bandpass',
+  filterHz: 350,
+  filterHzEnd: 2400,
+  filterQ: 5
+})
+
+setTimeout(function () {
+  synth.playTone({
+    frequency: 1600,
+    frequencyEnd: 160,
+    duration: 340,
+    attack: 2,
+    release: 90,
+    volume: 0.4,
+    waveType: WAVE.SAWTOOTH,
+    filterType: 'lowpass',
+    filterHz: 7000,
+    filterHzEnd: 500,
+    filterQ: 4
+  })
+}, 1300)
+```
+
+The cutoff sweep spans the whole event, so a longer note sweeps more slowly.
+
+## Kick and hi-hat in one pattern
+
+Each step can carry its own envelope and filter.
+
+```javascript
+synth.playPattern({
+  bpm: 110,
+  noteValue: '8n',
+  steps: [
+    {
+      frequency: 150,
+      frequencyEnd: 42,
+      noteValue: '4n',
+      attack: 1,
+      decay: 140,
+      sustain: 0.3,
+      release: 120,
+      volume: 0.85
+    },
+    {
+      frequency: 440,
+      waveType: WAVE.NOISE,
+      attack: 1,
+      decay: 30,
+      sustain: 0.25,
+      release: 45,
+      volume: 0.45,
+      filterType: 'highpass',
+      filterHz: 7000
+    },
+    { rest: true },
+    {
+      frequency: 440,
+      waveType: WAVE.NOISE,
+      attack: 1,
+      decay: 30,
+      sustain: 0.25,
+      release: 45,
+      volume: 0.45,
+      filterType: 'highpass',
+      filterHz: 7000
+    }
+  ]
+})
+```
+
+## Detuned chords
+
+Repeat a pitch with small offsets in `detunes` to make it beat and widen. Two
+copies 12 cents apart at 440 Hz beat about three times a second.
+
+```javascript
+synth.playChord({
+  frequencies: [440, 440],
+  detunes: [-6, 6],
+  duration: 2000,
+  attack: 200,
+  release: 600,
+  volume: 0.55,
+  waveType: WAVE.SINE
+})
+
+setTimeout(function () {
+  synth.playChord({
+    notes: ['A3', 'E4', 'A3', 'E4', 'A3', 'E4'],
+    detunes: [-9, -9, 0, 0, 9, 9],
+    duration: 3200,
+    attack: 700,
+    release: 1300,
+    volume: 0.5,
+    waveType: WAVE.SAWTOOTH,
+    filterType: 'lowpass',
+    filterHz: 1500,
+    panSpread: 0.8
+  })
+}, 2400)
+```
+
+Each repeated pitch is a voice. The second chord needs `maxVoices` of at least
+6.
+
+## Chain patterns with `patternend`
+
+```javascript
+var jingles = [
+  [{ note: 'C5' }, { note: 'E5' }, { note: 'G5' }],
+  [{ note: 'G5' }, { note: 'E5' }, { note: 'C5' }]
+]
+var nextJingle = 0
+
+function playNextJingle () {
+  if (nextJingle >= jingles.length) return false
+  return synth.playPattern({
+    noteValue: '8n',
+    attack: 5,
+    release: 60,
+    volume: 0.5,
+    waveType: WAVE.SQUARE,
+    steps: jingles[nextJingle++]
+  })
+}
+
+function onPatternEnd (event) {
+  if (event.completed) playNextJingle()
+}
+
+synth.addEventListener('patternend', onPatternEnd)
+playNextJingle()
+
+// When the audio owner closes:
+synth.removeEventListener('patternend', onPatternEnd)
+```
+
+The event reports `completed: false` when another pattern replaces the running
+one, so a listener that only chains on `completed: true` never double-starts.
+
+## Rules across keys
+
+Some combinations are rejected even when every value is in range. This call
+returns `false` with `sustain_without_decay`, because a sustain below 1 with no
+decay would jump in level and click:
+
+```javascript
+// Rejected on purpose: sustain needs a decay.
+var accepted = synth.playTone({ note: 'A4', sustain: 0.5 })
+
+// Accepted: the same note with a decay.
+synth.playTone({ note: 'A4', decay: 200, sustain: 0.5, duration: 800 })
 ```
 
 ## Speaker-safe startup

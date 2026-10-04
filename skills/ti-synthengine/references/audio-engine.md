@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `e8f1d0d` (2026-09-29).
+> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `ef62edd` (2026-10-04).
 
 # Audio engine
 
@@ -15,7 +15,8 @@ playTone / playChord / playPattern
              |
    native command ring buffer
              |
- voice pool: source -> quantizer -> filter -> envelope -> gain and pan
+ voice pool: source (or FM) -> quantizer -> one-pole low-pass
+             -> state-variable filter -> envelope -> gain and pan
              |
        sum voices and steal tails
              |
@@ -57,12 +58,51 @@ and then passes through a one-pole low-pass filter when `lowPassHz` is nonzero.
 Square waves use `pulseWidth` for the second PolyBLEP discontinuity and can
 interpolate that duty cycle toward `pulseWidthEnd`.
 
+### Frequency modulation
+
+A `SINE` voice with a positive `fmDepth`, or with `fmDepthEnd`, is phase
+modulated: the carrier computes `sin(2 * pi * phase + depth * sin(2 * pi *
+modPhase))`. The modulator phase advances by the carrier's instantaneous phase
+increment times `fmRatio`, so pitch sweeps and vibrato keep the ratio. The
+index moves linearly from `fmDepth` to `fmDepthEnd` over the event. With a depth
+of exactly 0 and no end, the voice takes the plain sine path.
+
+The modulated sine has constant amplitude, so event gain is unchanged. Nothing
+band-limits the sidebands, so a high carrier with a large index aliases.
+
+### State-variable filter
+
+`filterType` selects a topology-preserving state-variable filter that runs
+after the one-pole `lowPassHz` stage. It is stable while its coefficients move,
+which is why a cutoff sweep cannot blow up even at high Q.
+
+| Output | Response |
+| --- | --- |
+| `lowpass` | 12 dB per octave, peak of about Q at the cutoff. |
+| `highpass` | 12 dB per octave, peak of about Q at the cutoff. |
+| `bandpass` | Unity gain at the center for every Q. |
+
+The cutoff is held between 20 Hz and `sampleRate * 0.45`. With `filterHzEnd`
+the cutoff follows `from * (to / from) ^ t`, where `t` runs from 0 to 1 across
+the event, and coefficients are recomputed every eighth sample. Without a
+sweep they are computed once, when the note starts.
+
 ## Envelope
 
-Each voice has a smoothstep attack, a full-level middle section and a smoothstep
-release. `duration` includes the whole envelope. Defaults are adjusted to fit a
-short event, while an explicit envelope that cannot fit is rejected by the
-contract.
+Each voice has a smoothstep attack, an optional smoothstep decay to `sustain`,
+a hold at that level and a smoothstep release. `duration` includes the whole
+envelope. Defaults are adjusted to fit a short event, while an explicit
+envelope that cannot fit is rejected by the contract.
+
+```text
+base = attack ramp, then decay ramp from 1 to sustain, then sustain
+level = base * release ramp
+```
+
+The release ramp multiplies the base level, so a release that begins during the
+decay is continuous. With `decay: 0` and `sustain: 1` the base is 1 after the
+attack and the result is the plain attack, hold and release shape. Voice-steal
+tails read the final level, so they stay continuous with the decay too.
 
 Voice stealing does not cut the old waveform at an arbitrary sample. The old
 voice contributes a short tail of roughly 6 ms while the slot begins the new
@@ -160,7 +200,18 @@ a control fallback so cleanup is not lost under queue pressure.
 
 Pattern timing runs outside the audio callback. A platform timer places each
 step on the command queue. The sequence is suitable for game cues and simple
-musical patterns, but it is not a sample-accurate composition timeline.
+musical patterns, but it is not a sample-accurate composition timeline. The
+same timer fires `patternend`, about 1 ms after the sum of the step lengths,
+and the event is handed to the JavaScript runtime asynchronously.
+
+## Shared DSP core
+
+The envelope, the state-variable filter, the sweep helpers, the FM sine and
+the cents conversion live once, in `shared/synth_core.h`. It is plain C,
+header-only and allocation-free. The Android renderer includes it from
+`android/jni/SynthOboeEngine.cpp` and the iOS renderer from
+`ios/Classes/TiSynthengineModule.m`, so both platforms run the same code. Voice
+management, mixing and the limiter are still separate per platform.
 
 ## Android implementation
 
@@ -228,3 +279,62 @@ The DSP suite covers stable RMS from 1 through 32 voices, limiter transparency
 and recovery, waveform discontinuities, envelope endpoints, master smoothing,
 voice stealing and representative dense chords. Device tests remain necessary
 for route changes, startup underruns and speaker acoustics.
+
+Three more checks cover the shared core, the Android engine and the iOS contract.
+
+The shared DSP core builds with any C99 compiler:
+
+```sh
+test_dir=$(mktemp -d /tmp/ti-synth-core.XXXXXX)
+cc -std=c99 -O2 -Wall -Wextra -o "$test_dir/dsp_core" \
+  tests/dsp_core_regression.c -lm
+"$test_dir/dsp_core"
+```
+
+It checks that the envelope equals the original attack, hold and release shape
+for every attack and release combination when decay is off, the decay and
+sustain endpoints and continuity, the response of each filter type (slope,
+cutoff and the resonance peak), stability of every filter type under a cutoff
+sweep on noise, FM sidebands against the Bessel function values and the cents
+conversion.
+
+The Android engine renders on the host. `tests/engine_render_host.cpp` compiles
+`SynthOboeEngine.cpp` without opening an audio stream and drives the same
+command and callback path Oboe uses. It needs the Oboe headers, which any
+Gradle cache that built the module has, and the JDK's `jni.h`, so it is a local
+check and does not run in CI:
+
+```sh
+OBOE=$(find ~/.gradle -path '*oboe-1.10.0/prefab/modules/oboe/include' | head -1)
+JH=$(/usr/libexec/java_home)
+test_dir=$(mktemp -d /tmp/ti-synth-engine.XXXXXX)
+clang++ -std=c++17 -O1 -Wall -I"$OBOE" -I"$JH/include" -I"$JH/include/darwin" \
+  -DHAS_EXPRESSIVE -DENGINE_CPP='"../android/jni/SynthOboeEngine.cpp"' \
+  -Wl,-undefined,dynamic_lookup tests/engine_render_host.cpp \
+  -o "$test_dir/engine_render"
+"$test_dir/engine_render"
+```
+
+It renders decay and sustain levels, filter attenuation, an opening cutoff
+sweep, FM sidebands and an FM index that decays to nothing, plus voice stealing
+and `stopAll` with every control active. Built without `-DHAS_EXPRESSIVE` it
+renders only the original controls and prints one hash per scenario, so the
+same file can be built against an older copy of the engine and the hashes
+compared.
+
+The iOS contract replays the cases that the Java contract test writes to
+`tests/contract_corpus.jsonl`. The Java test fails when that file no longer
+matches the Java contract; regenerate it from `android/` with
+`-Dsynth.corpus.out=../tests/contract_corpus.jsonl`. On macOS, run the iOS
+side from the repository root:
+
+```sh
+test_dir=$(mktemp -d /tmp/ti-synth-ios.XXXXXX)
+clang -fobjc-arc -Wall -Wextra -framework Foundation \
+  tests/contract_corpus_ios.m ios/Classes/TiSynthengineContract.m \
+  -o "$test_dir/contract_corpus_ios"
+"$test_dir/contract_corpus_ios"
+```
+
+The iOS renderer shares the DSP math through the same header, but nothing
+renders its output on the host, so check it on a device.

@@ -9,10 +9,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 
 - `purgetss-videos`, a maintainer-only skill under `.claude/skills/` for PurgeTSS video tutorials in Alloy or Classic. It layers the PurgeTSS conventions (`Purge TSS` in voice text, subtitle spelling, the purgetss.com closing, disposable copies under `/Users/PurgeTSS`, Alloy vs. Classic scope) on top of `technical-demo-videos`, and replaces the Classic-only `purgetss-demo-videos`. Not shipped to npm.
+- `ti-synthengine` covers the new expressive controls of TiSynthEngine 1.0.0: `decay` and `sustain` for a full ADSR envelope, a resonant `lowpass`, `highpass` or `bandpass` filter (`filterType`, `filterHz`, `filterHzEnd`, `filterQ`), FM with a decaying index (`fmRatio`, `fmDepth`, `fmDepthEnd`), `detune` and chord `detunes` in cents, and the `patternend` event. `recipes.md` gains a marimba pluck, kick, hi-hat, electric piano, bell, wah sweep, unison pad and a chain-after-pattern recipe, and the layered-chord recipe uses `detunes` instead of computing cents by hand. The new recipes pass the real contract but have not been auditioned on a device.
 
 ### Changed
 
-- `ti-synthengine` follows the TiSynthEngine 1.0.0 public release (commit `e8f1d0d`). It adds the `WAVETABLE` waveform with `waveTable`, the shaping controls `noiseRate`/`noiseRateEnd`, `lowPassHz`, `pulseWidth`/`pulseWidthEnd` and `bitDepth`, and `startEngine({ audioSession: 'playback' | 'ambient' })`, which replaces the old advice to set `Ti.Media.audioSessionCategory` after startup. Requirements are now Titanium SDK 13.2.0.GA and iOS 15, the envelope is smoothstep, and install points at the GitHub release archives.
+- `ti-synthengine` follows the TiSynthEngine 1.0.0 public release (commit `e8f1d0d`). `references/api.md` also fixes the `noteValue` list, which the upstream text gave as `1n` to `32n`: the contract accepts `1n`, `2n`, `4n`, `8n`, `16n`, the dotted `2n.`, `4n.`, `8n.` and the triplets `8t`, `16t`, and rejects `32n`. It adds the `WAVETABLE` waveform with `waveTable`, the shaping controls `noiseRate`/`noiseRateEnd`, `lowPassHz`, `pulseWidth`/`pulseWidthEnd` and `bitDepth`, and `startEngine({ audioSession: 'playback' | 'ambient' })`, which replaces the old advice to set `Ti.Media.audioSessionCategory` after startup. Requirements are now Titanium SDK 13.2.0.GA and iOS 15, the envelope is smoothstep, and install points at the GitHub release archives.
 
 ## [5.1.1] - 2026-09-26
 
