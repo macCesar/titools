@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `e8f1d0d` (2026-09-29).
+> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `ef62edd` (2026-10-04).
 
 # Recommendations
 
@@ -85,6 +85,26 @@ Android mixes independent output streams at the system level, but another app
 or stale test process can still consume low-latency resources. Force-stop old
 test builds when diagnosing a glitch that does not reproduce after reboot.
 
+## Keep resonance, FM and detune in check
+
+The resonant filter, FM and stacked detuned voices change level and spectrum
+more than the basic controls do.
+
+- A `lowpass` or `highpass` boosts the cutoff region by about `filterQ`, so Q
+  10 is roughly 20 dB. Raise Q in small steps and lower the event `volume` as
+  you go. `bandpass` keeps unity gain at its center when level must stay put.
+- A swept cutoff passes over every harmonic, so the level moves during the
+  sweep. Judge a wah or laser by the loudest moment, not the start.
+- A resonance that keeps reaching the limiter makes the whole mix pump. Lower
+  the volume or the Q before reaching for a different profile.
+- FM is not band-limited. A high carrier with a large `fmDepth` and `fmRatio`
+  aliases. Keep carriers of bell-like sounds around 500 Hz, or lower the index.
+- A detuned stack is one voice per copy. Count them when choosing `maxVoices`.
+  Event gain divides by the square root of the voice count, so the stack gets
+  wider, not louder.
+- `patternend` follows the pattern scheduler. Use it to chain cues and release
+  state, not to line up audio to the sample.
+
 ## Validate values at the app boundary
 
 The native API rejects invalid values instead of clamping them. Use
@@ -104,9 +124,11 @@ function acceptedFrequency (raw) {
 Do not copy the frequency maximum into application code. It depends on the
 active sample rate and should be read again after startup.
 
-The same rule applies to `noiseRate` and `lowPassHz`. Validate a custom
-`waveTable` as 2 to 64 finite values from -1 to 1, and remember that `bitDepth`
-accepts zero or an integer from 2 to 16.
+The same rule applies to `noiseRate`, `lowPassHz` and `filterHz`. Validate a
+custom `waveTable` as 2 to 64 finite values from -1 to 1, and remember that
+`bitDepth` accepts zero or an integer from 2 to 16. For `detune`, check the
+resulting pitch too: a shifted pitch that leaves the frequency range is
+rejected even when the cents value is in range.
 
 Check Boolean return values during development. A rejected call includes the
 method, key and reason in the native log. Logging that result at the caller is
@@ -143,11 +165,14 @@ whether a waveform, pitch or mix is pleasant.
 - Every event has a finite duration of at most 60 seconds. There is no looping.
 - The module synthesizes waveforms and does not play audio files.
 - Only one pattern scheduler is pending at a time.
-- There is no completion event for a note, chord or pattern.
-- The module emits no JavaScript events.
+- There is no completion event for a single note or chord. Patterns report
+  their end through `patternend`, which is the only event the module emits.
 - Voice capacity and mixing profile remain fixed until shutdown.
 - Pattern scheduling is timer-based, not sample-accurate.
-- The low-pass filter has no resonance, filter envelope or selectable slope.
+- `lowPassHz` is a plain one-pole filter. The resonant filter has fixed 12 dB
+  per octave and one exponential sweep; there is no filter envelope.
+- FM has one modulator and works only on `SINE`.
+- There is no effects bus: no reverb, delay or chorus.
 - The module provides generic synthesis primitives, not cycle-accurate hardware
   emulation.
 

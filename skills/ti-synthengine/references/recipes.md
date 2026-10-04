@@ -17,6 +17,10 @@ Treat levels as starting points, not mastering targets. Test on the actual
 phone speaker and leave headroom when release tails or independent events can
 overlap.
 
+The recipes under "Expressive envelopes, filters and FM" pass the real
+contract, but they come from standard synthesis ranges and have not been
+auditioned on a device. Listen before shipping them.
+
 <!-- TOC-START -->
 ## Contents
 
@@ -24,6 +28,7 @@ overlap.
 - [Playable xylophone](#playable-xylophone)
 - [Four-pad memory cues](#four-pad-memory-cues)
 - [Polyphony and layered chords](#polyphony-and-layered-chords)
+- [Expressive envelopes, filters and FM](#expressive-envelopes-filters-and-fm)
 - [Preset architecture for strict contracts](#preset-architecture-for-strict-contracts)
 - [Recipe verification checklist](#recipe-verification-checklist)
 
@@ -412,8 +417,8 @@ function auditionTimbre (profileName) {
 
 ### Convert MIDI pitch to hertz
 
-The standard A4 = 440 Hz formula makes it easy to build interval recipes and
-small detunings without embedding a long frequency table.
+The standard A4 = 440 Hz formula makes it easy to build interval recipes
+without embedding a long frequency table.
 
 ```javascript
 function midiToHz (midi) {
@@ -421,14 +426,14 @@ function midiToHz (midi) {
 }
 ```
 
-A cent is one hundredth of a semitone, so add `cents / 100` to the MIDI value
-before conversion.
+Detuning needs no conversion: `detune` on a tone or pattern and `detunes` on a
+chord take cents, one hundredth of a semitone.
 
 ### Build a wide layered chord
 
 The interval cycle `[0, 4, 7, ...]` stacks major-triad chord tones across
-octaves. Later layers repeat those tones with small cent offsets, which creates
-width and beating without requiring an unsupported detune option.
+octaves. Later layers repeat those tones with small cent offsets, passed as
+`detunes`, which creates width and beating.
 
 ```javascript
 var CHORD_INTERVALS = [0, 4, 7, 12, 16, 19, 24, 28, 31, 36]
@@ -446,13 +451,22 @@ function buildLayeredFrequencies (voiceCount) {
 
   for (var index = 0; index < count; index++) {
     var intervalIndex = index % CHORD_INTERVALS.length
-    var layer = Math.floor(index / CHORD_INTERVALS.length)
-    var cents = LAYER_DETUNE_CENTS[layer % LAYER_DETUNE_CENTS.length]
-    var midi = 60.12 + CHORD_INTERVALS[intervalIndex] + (cents / 100)
-    frequencies.push(midiToHz(midi))
+    frequencies.push(midiToHz(60.12 + CHORD_INTERVALS[intervalIndex]))
   }
 
   return frequencies
+}
+
+function buildLayerDetunes (voiceCount) {
+  var count = normalizeVoiceCount(voiceCount)
+  var detunes = []
+
+  for (var index = 0; index < count; index++) {
+    var layer = Math.floor(index / CHORD_INTERVALS.length)
+    detunes.push(LAYER_DETUNE_CENTS[layer % LAYER_DETUNE_CENTS.length])
+  }
+
+  return detunes
 }
 
 function buildSymmetricPans (voiceCount, spread) {
@@ -477,6 +491,7 @@ function playLayeredChord (voiceCount) {
 
   return synth.playChord({
     frequencies: buildLayeredFrequencies(count),
+    detunes: buildLayerDetunes(count),
     duration: 800,
     attack: 35,
     release: 220,
@@ -558,6 +573,171 @@ win.addEventListener('close', cleanupAudio)
 Do not call `shutdown()` from a child control if another visible screen owns
 the shared engine.
 
+## Expressive envelopes, filters and FM
+
+### Plucked marimba note
+
+A short attack, a decay that falls to a low sustain and a release that fits
+give the struck-and-ring shape of a mallet or plucked string. A sustain below 1
+needs a decay, and `attack + decay` must fit inside `duration`.
+
+```javascript
+synth.playTone({
+  note: 'C5',
+  duration: 700,
+  attack: 2,
+  decay: 260,
+  sustain: 0.12,
+  release: 240,
+  waveType: WAVE.TRIANGLE,
+  volume: 0.62
+})
+```
+
+### Kick drum
+
+A sine that falls in pitch while its level decays reads as a drum. The pitch
+sweep is linear over the whole event.
+
+```javascript
+synth.playTone({
+  frequency: 150,
+  frequencyEnd: 45,
+  duration: 320,
+  attack: 1,
+  decay: 140,
+  sustain: 0.35,
+  release: 140,
+  volume: 0.9
+})
+```
+
+### Closed hi-hat
+
+White noise through a high-pass filter, with a decay that drops to a quiet
+tail. The filter fields only work together with a `filterType`.
+
+```javascript
+synth.playTone({
+  waveType: WAVE.NOISE,
+  duration: 90,
+  attack: 1,
+  decay: 20,
+  sustain: 0.3,
+  release: 60,
+  filterType: 'highpass',
+  filterHz: 6500,
+  volume: 0.45
+})
+```
+
+### Electric piano
+
+Frequency modulation with a 1:1 ratio gives a tine-like tone. Letting the
+modulation index fall through `fmDepthEnd` makes the note mellow as it rings,
+which is what the ear expects from a struck tine. FM needs a sine carrier.
+
+```javascript
+synth.playTone({
+  note: 'E3',
+  duration: 1400,
+  attack: 3,
+  decay: 700,
+  sustain: 0.25,
+  release: 500,
+  fmRatio: 1,
+  fmDepth: 2.2,
+  fmDepthEnd: 0.3,
+  volume: 0.55
+})
+```
+
+### Bell
+
+A non-integer ratio produces an inharmonic spectrum, and an index that decays
+to nothing leaves a pure ring. `fmDepthEnd: 0` is a real target, so it is
+accepted; omit the key when no sweep is wanted.
+
+```javascript
+synth.playTone({
+  note: 'A5',
+  duration: 2400,
+  attack: 1,
+  decay: 1800,
+  sustain: 0,
+  release: 500,
+  fmRatio: 3.5,
+  fmDepth: 4,
+  fmDepthEnd: 0,
+  volume: 0.5
+})
+```
+
+### Wah sweep
+
+A resonant band-pass opening on a sawtooth. The cutoff moves exponentially, so
+equal distances in pitch take equal time. Keep `filterQ` moderate: high values
+make the resonance peak loud enough to engage the limiter.
+
+```javascript
+synth.playTone({
+  note: 'A2',
+  duration: 900,
+  attack: 20,
+  release: 200,
+  waveType: WAVE.SAWTOOTH,
+  filterType: 'bandpass',
+  filterHz: 350,
+  filterHzEnd: 2200,
+  filterQ: 4,
+  volume: 0.7
+})
+```
+
+### Thick unison pad
+
+Repeat a pitch and spread the copies a few cents apart. The slow beating
+between them is what makes the sound wide. `detunes` is aligned with the
+pitches and can be shorter than the array.
+
+```javascript
+synth.playChord({
+  notes: ['A3', 'A3', 'A3', 'E4', 'E4', 'E4'],
+  detunes: [-9, 0, 9, -7, 0, 7],
+  pans: [-0.6, 0, 0.6, -0.4, 0, 0.4],
+  duration: 2400,
+  attack: 350,
+  release: 900,
+  waveType: WAVE.SAWTOOTH,
+  volume: 0.45
+})
+```
+
+### Chaining after a pattern
+
+`patternend` fires once for every accepted pattern. `completed` is true when it
+ran to its end and false when a newer pattern replaced it, so only the first
+case should start the next cue. `stopAll()` and `shutdown()` fire nothing.
+
+```javascript
+function onPatternEnd (event) {
+  if (event.completed) playOutroCue()
+}
+
+synth.addEventListener('patternend', onPatternEnd)
+
+synth.playPattern({
+  noteValue: '8n',
+  waveType: WAVE.SQUARE,
+  volume: 0.5,
+  steps: [{ note: 'C5' }, { note: 'E5' }, { note: 'G5' }, { note: 'C6' }]
+})
+
+function cleanupPatternEvents () {
+  synth.removeEventListener('patternend', onPatternEnd)
+}
+```
+
 ## Preset architecture for strict contracts
 
 Keep descriptive metadata outside the native options object. Build a new
@@ -601,7 +781,9 @@ Before returning or shipping a variation:
   chord;
 - include a pitch field on every sounding pattern step, including noise;
 - verify `attack < duration` and `release <= duration - attack` for every
-  explicit event or step;
+  explicit event or step, and `attack + decay <= duration` when a decay is set;
+- give `sustain` below 1 a `decay`, give filter fields a `filterType`, and give
+  FM a sine carrier and a depth;
 - keep all numbers finite and integer-only fields integral;
 - use `WAVE` constants, not copied numeric waveform values;
 - check Boolean results at important control boundaries;

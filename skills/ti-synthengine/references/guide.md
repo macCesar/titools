@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `e8f1d0d` (2026-09-29).
+> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `ef62edd` (2026-10-04).
 
 # Guide
 
@@ -14,9 +14,11 @@ the native audio resources when the owning screen closes.
 - [Play the first sound](#play-the-first-sound)
 - [Choose a pitch](#choose-a-pitch)
 - [Shape a tone](#shape-a-tone)
+- [Settle, filter and modulate](#settle-filter-and-modulate)
 - [Shape noise and waveforms](#shape-noise-and-waveforms)
 - [Play simultaneous notes](#play-simultaneous-notes)
 - [Play a pattern](#play-a-pattern)
+- [Know when a pattern ends](#know-when-a-pattern-ends)
 - [Master level and stopping](#master-level-and-stopping)
 - [Output route changes](#output-route-changes)
 - [Next steps](#next-steps)
@@ -180,6 +182,77 @@ synth.playTone({
 channels. `lfoFreq` is the vibrato rate in hertz and `lfoDepth` is its depth in
 hertz.
 
+## Settle, filter and modulate
+
+A flat envelope suits beeps. For plucks, keys and bells, add `decay` and
+`sustain`: the level falls from full scale to `sustain` over `decay`
+milliseconds and holds there until the release.
+
+```javascript
+synth.playTone({
+  note: 'E4',
+  duration: 900,
+  attack: 2,
+  decay: 260,
+  sustain: 0.18,
+  release: 380,
+  waveType: contract.waveTypes.TRIANGLE
+})
+```
+
+`sustain` below 1 needs a nonzero `decay`, and `attack` plus `decay` must fit in
+`duration`. The 50 ms default attack counts, so set a short `attack` when the
+decay is long.
+
+`filterType` adds a resonant filter: `lowpass`, `highpass` or `bandpass`.
+`filterHz` is the cutoff, `filterQ` the resonance, and `filterHzEnd` sweeps the
+cutoff over the note.
+
+```javascript
+synth.playTone({
+  note: 'A2',
+  duration: 1000,
+  release: 200,
+  waveType: contract.waveTypes.SAWTOOTH,
+  filterType: 'bandpass',
+  filterHz: 350,
+  filterHzEnd: 2400,
+  filterQ: 5
+})
+```
+
+Any `filterHz`, `filterHzEnd` or `filterQ` without a `filterType` other than
+`none` is rejected with `filter_type_required`.
+
+`fmDepth` makes a `SINE` voice an FM voice. `fmRatio` is the modulator
+frequency as a multiple of the carrier, and `fmDepthEnd` moves the modulation
+index over the note. Omit `fmDepthEnd` for no sweep; 0 is a real target.
+
+```javascript
+synth.playTone({
+  note: 'C5',
+  duration: 2600,
+  attack: 1,
+  decay: 2000,
+  sustain: 0.02,
+  fmRatio: 3.5,
+  fmDepth: 4,
+  fmDepthEnd: 0
+})
+```
+
+`detune` shifts a pitch in cents. In a chord, `detunes` gives one offset per
+pitch, so repeating a note with small offsets thickens it:
+
+```javascript
+synth.playChord({
+  notes: ['A3', 'A3', 'E4', 'E4'],
+  detunes: [-8, 8, -8, 8],
+  duration: 2000,
+  waveType: contract.waveTypes.SAWTOOTH
+})
+```
+
 ## Shape noise and waveforms
 
 Use `noiseRate` to hold each pseudo-random noise value instead of generating a
@@ -281,13 +354,42 @@ synth.playPattern({
 
 Step timing is chosen in this order: step `duration`, step `noteValue`, pattern
 `noteValue`, pattern `stepDuration`, then the 100 ms default. A step also
-inherits the pattern's envelope, volume, waveform, pan, sweep, vibrato, noise,
-filter, pulse-width, wavetable and quantization options. Values set on the step
-override the inherited value.
+inherits the pattern's envelope, decay, sustain, volume, waveform, pan, sweep,
+vibrato, noise, filter, resonant filter, FM, detune, pulse-width, wavetable and
+quantization options. Values set on the step override the inherited value.
 
 Only one pattern scheduler is active. Starting another pattern cancels the
 pending steps of the previous pattern. It does not stop voices that have
 already started.
+
+## Know when a pattern ends
+
+Each accepted pattern produces one `patternend` event. `completed` is `true`
+when the pattern reaches its natural end and `false` when a newer pattern
+replaces it. Use it to chain jingles or to release state that follows a
+pattern.
+
+```javascript
+function onPatternEnd (event) {
+  if (event.completed) playNextJingle()
+}
+
+synth.addEventListener('patternend', onPatternEnd)
+```
+
+The listener belongs to the module, not to the pattern, so it outlives the
+screen unless you remove it. Add it to the same cleanup that calls
+`shutdown()`:
+
+```javascript
+function closeAudio () {
+  synth.removeEventListener('patternend', onPatternEnd)
+  if (running) synth.shutdown()
+}
+```
+
+`shutdown()` discards a pending pattern without an event, so a closing owner
+never receives a callback after cleanup.
 
 ## Master level and stopping
 
@@ -316,7 +418,7 @@ and test the final app on a device.
 ## Next steps
 
 - [API reference](api.md) for every accepted key and limit.
-- [Sound design](sound-design.md) for waveform and envelope recipes.
+- [Sound design](sound-design.md) for waveform, envelope, filter and FM recipes.
 - [Examples](examples.md) for copy-ready sounds and patterns.
 - [Troubleshooting](troubleshooting.md) when a call returns `false` or audio is
   silent.

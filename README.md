@@ -179,7 +179,7 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 | purgetss     | Alloy styling + asset automation    | Utility classes; Alloy/Classic branding, images, colors, fonts and modules |
 | ti-ui        | UI/UX patterns                      | Complex layouts, ListViews, platform UI |
 | ti-game      | 2D games with the `ti.game` module  | Sprites, physics, tile layers, wall jumps, pathfinding, text/performance HUDs, particles, camera |
-| ti-synthengine | Sound design with `ti.synthengine` | Tones, chords, retro/UI effects, alarms, sweeps, patterns, mixing and troubleshooting |
+| ti-synthengine | Sound design with `ti.synthengine` | Tones, chords, retro/UI effects, alarms, sweeps, patterns, ADSR envelopes, resonant filters, FM, detune, mixing and troubleshooting |
 | ti-api       | Complete Titanium API reference     | Looking up properties, methods, events  |
 | ti-guides    | SDK fundamentals                    | tiapp.xml, Hyperloop, distribution, JDK/Xcode compatibility, release notes |
 | ti-howtos    | Native feature integration          | Location, push, media, platform APIs    |
