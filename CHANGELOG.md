@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `ti-admob-unified` mirrors the official module documentation for installation, privacy, formats and provider setup. It includes the unchanged application library, a pinned source/hash map, snapshot/link tests and maintainer-auditor registration for future updates. The module's first public release remains under preparation.
+- Game asset guides now cover editable SVG/procedural sources, deterministic builds, seamless tiles/parallax, procedural WAV/analysis/loop continuity and responsible advertising through the standalone module skill. Manifest checks optionally verify SVG masters, source/output hashes and PCM WAV headers/payloads.
+- `ti-game-assets` creates and prepares visual and sound assets: integrated image generation, transparent HD masters, strict pixel grids, variants/frames, parallax, synthesis design, sound variations and stereo placement. `ti-game` and `ti-synthengine` retain equal authority over their domains.
+- Pillow helpers analyze alpha at five thresholds, compare images, clean reviewed exterior residue while preserving protected pixels, and record crop offsets. The manifest validator checks per-set visual/audio contracts, sources, alignment, sequences, aliases and independent parallax layers.
+- Installer, research agent, conditional audit and example prompts include the new skill. Python behavioral tests run without paid generation.
+
 - `purgetss-videos`, a maintainer-only skill under `.claude/skills/` for PurgeTSS video tutorials in Alloy or Classic. It layers the PurgeTSS conventions (`Purge TSS` in voice text, subtitle spelling, the purgetss.com closing, disposable copies under `/Users/PurgeTSS`, Alloy vs. Classic scope) on top of `technical-demo-videos`, and replaces the Classic-only `purgetss-demo-videos`. Not shipped to npm.
 - `ti-synthengine` covers the new expressive controls of TiSynthEngine 1.0.0: `decay` and `sustain` for a full ADSR envelope, a resonant `lowpass`, `highpass` or `bandpass` filter (`filterType`, `filterHz`, `filterHzEnd`, `filterQ`), FM with a decaying index (`fmRatio`, `fmDepth`, `fmDepthEnd`), `detune` and chord `detunes` in cents, and the `patternend` event. `recipes.md` gains a marimba pluck, kick, hi-hat, electric piano, bell, wah sweep, unison pad and a chain-after-pattern recipe, and the layered-chord recipe uses `detunes` instead of computing cents by hand. The new recipes pass the real contract but have not been auditioned on a device.
 
