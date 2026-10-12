@@ -12,6 +12,11 @@ This skill is verified against upstream `main` at **`3bea2f4` (2026-09-02)**. Bo
 
 The skill applies to **Classic and Alloy** projects. Nothing here requires PurgeTSS.
 
+## Visual and sound asset collaboration
+
+Use `ti-game-assets` to create/edit complete visual and sound asset sets, preserve art/acoustic palettes and provenance, validate alpha/frames/manifests, prepare exports, and coordinate variants and stereo event placement. `ti-game` governs native representation/motion/events; `ti-synthengine` governs synthesis and sound behavior with `ti.synthengine`. Both have equal domain authority. Read their relevant current references rather than duplicating manuals. Art alone does not require installing modules or adding sounds/mechanics.
+
+
 ## Required workflow
 
 Open the references relevant to the task before proposing code. Do not answer from familiarity with Phaser, Godot, Box2D, or an older `ti.game` build.

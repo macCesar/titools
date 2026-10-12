@@ -1,0 +1,429 @@
+{
+  "schema_version": 1,
+  "contracts": {
+    "demo-world": {
+      "notes": "Minimal example; declare other required families for the real game. Sound assets are separate from PNG frames.",
+      "resources": [
+        {
+          "resource": "ship",
+          "family": "players",
+          "variant": "scout",
+          "state": "intact",
+          "frames": 1
+        },
+        {
+          "resource": "ship",
+          "family": "players",
+          "variant": "scout",
+          "state": "damaged",
+          "frames": 1
+        },
+        {
+          "resource": "explosion",
+          "family": "ambient",
+          "variant": "metal",
+          "state": "burst",
+          "frames": 3
+        },
+        {
+          "resource": "sky-far",
+          "family": "backgrounds",
+          "variant": "base",
+          "state": "idle",
+          "frames": 1
+        },
+        {
+          "resource": "sky-middle",
+          "family": "backgrounds",
+          "variant": "base",
+          "state": "idle",
+          "frames": 1
+        },
+        {
+          "resource": "sky-near",
+          "family": "backgrounds",
+          "variant": "base",
+          "state": "idle",
+          "frames": 1
+        }
+      ],
+      "sounds": [
+        {
+          "sound": "explosion-metal",
+          "variants": [
+            "a",
+            "b",
+            "c"
+          ]
+        }
+      ],
+      "parallax": true
+    }
+  },
+  "sets": [
+    {
+      "id": "world-one",
+      "contract": "demo-world",
+      "assets": [
+        {
+          "resource": "ship",
+          "family": "players",
+          "variant": "scout",
+          "state": "intact",
+          "id": "ship-scout-intact-0",
+          "frame": 0,
+          "source": "art/masters/ship-scout-intact-0.png",
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "canvas": [
+            1024,
+            1024
+          ],
+          "pivot": [
+            512,
+            512
+          ],
+          "style": "hd",
+          "transparency": true,
+          "provenance": {
+            "prompt": "Replace with the actual art-contract prompt",
+            "tool": "image_gen",
+            "reference_roles": {},
+            "lineage": "original"
+          }
+        },
+        {
+          "resource": "ship",
+          "family": "players",
+          "variant": "scout",
+          "state": "damaged",
+          "id": "ship-scout-damaged-0",
+          "frame": 0,
+          "source": "art/masters/ship-scout-damaged-0.png",
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "canvas": [
+            1024,
+            1024
+          ],
+          "pivot": [
+            512,
+            512
+          ],
+          "style": "hd",
+          "transparency": true,
+          "provenance": {
+            "prompt": "Replace with the actual art-contract prompt",
+            "tool": "image_gen",
+            "reference_roles": {},
+            "lineage": "original"
+          }
+        },
+        {
+          "resource": "explosion",
+          "family": "ambient",
+          "variant": "metal",
+          "state": "burst",
+          "id": "explosion-metal-burst-0",
+          "frame": 0,
+          "source": "art/masters/explosion-metal-burst-0.png",
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "canvas": [
+            1024,
+            1024
+          ],
+          "pivot": [
+            512,
+            512
+          ],
+          "style": "soft-fx",
+          "transparency": true,
+          "provenance": {
+            "prompt": "Replace with the actual art-contract prompt",
+            "tool": "image_gen",
+            "reference_roles": {},
+            "lineage": "original"
+          }
+        },
+        {
+          "resource": "explosion",
+          "family": "ambient",
+          "variant": "metal",
+          "state": "burst",
+          "id": "explosion-metal-burst-1",
+          "frame": 1,
+          "source": "art/masters/explosion-metal-burst-1.png",
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "canvas": [
+            1024,
+            1024
+          ],
+          "pivot": [
+            512,
+            512
+          ],
+          "style": "soft-fx",
+          "transparency": true,
+          "provenance": {
+            "prompt": "Replace with the actual art-contract prompt",
+            "tool": "image_gen",
+            "reference_roles": {},
+            "lineage": "original"
+          }
+        },
+        {
+          "resource": "explosion",
+          "family": "ambient",
+          "variant": "metal",
+          "state": "burst",
+          "id": "explosion-metal-burst-2",
+          "frame": 2,
+          "source": "art/masters/explosion-metal-burst-2.png",
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "canvas": [
+            1024,
+            1024
+          ],
+          "pivot": [
+            512,
+            512
+          ],
+          "style": "soft-fx",
+          "transparency": true,
+          "provenance": {
+            "prompt": "Replace with the actual art-contract prompt",
+            "tool": "image_gen",
+            "reference_roles": {},
+            "lineage": "original"
+          }
+        },
+        {
+          "resource": "sky-far",
+          "family": "backgrounds",
+          "variant": "base",
+          "state": "idle",
+          "id": "sky-far-base-idle-0",
+          "frame": 0,
+          "source": "art/masters/sky-far-base-idle-0.png",
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "canvas": [
+            1024,
+            1024
+          ],
+          "pivot": [
+            512,
+            512
+          ],
+          "style": "hd",
+          "transparency": false,
+          "provenance": {
+            "prompt": "Replace with the actual art-contract prompt",
+            "tool": "image_gen",
+            "reference_roles": {},
+            "lineage": "original"
+          }
+        },
+        {
+          "resource": "sky-middle",
+          "family": "backgrounds",
+          "variant": "base",
+          "state": "idle",
+          "id": "sky-middle-base-idle-0",
+          "frame": 0,
+          "source": "art/masters/sky-middle-base-idle-0.png",
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "canvas": [
+            1024,
+            1024
+          ],
+          "pivot": [
+            512,
+            512
+          ],
+          "style": "hd",
+          "transparency": true,
+          "provenance": {
+            "prompt": "Replace with the actual art-contract prompt",
+            "tool": "image_gen",
+            "reference_roles": {},
+            "lineage": "original"
+          }
+        },
+        {
+          "resource": "sky-near",
+          "family": "backgrounds",
+          "variant": "base",
+          "state": "idle",
+          "id": "sky-near-base-idle-0",
+          "frame": 0,
+          "source": "art/masters/sky-near-base-idle-0.png",
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "canvas": [
+            1024,
+            1024
+          ],
+          "pivot": [
+            512,
+            512
+          ],
+          "style": "hd",
+          "transparency": true,
+          "provenance": {
+            "prompt": "Replace with the actual art-contract prompt",
+            "tool": "image_gen",
+            "reference_roles": {},
+            "lineage": "original"
+          }
+        }
+      ],
+      "sounds": [
+        {
+          "id": "explosion-metal-a",
+          "sound": "explosion-metal",
+          "variant": "a",
+          "source": "audio/recipes.js",
+          "reference": "explosions.metal.a",
+          "kind": "effect",
+          "design": {
+            "semantic_event": "explosion",
+            "timbre": "filtered noise and metallic body",
+            "envelope": "Specify validated attack/decay/sustain/release",
+            "variation": "related texture variants without immediate repeat",
+            "stereo": "bounded screen-position pan, coherent event layers",
+            "overlap": "derive voice budget and gain from busy scenes",
+            "owner": "existing project audio service"
+          },
+          "provenance": {
+            "contract": "Read current ti-synthengine API before implementing",
+            "rationale": "material-specific cue"
+          }
+        },
+        {
+          "id": "explosion-metal-b",
+          "sound": "explosion-metal",
+          "variant": "b",
+          "source": "audio/recipes.js",
+          "reference": "explosions.metal.b",
+          "kind": "effect",
+          "design": {
+            "semantic_event": "explosion",
+            "timbre": "filtered noise and metallic body",
+            "envelope": "Specify validated attack/decay/sustain/release",
+            "variation": "related texture variants without immediate repeat",
+            "stereo": "bounded screen-position pan, coherent event layers",
+            "overlap": "derive voice budget and gain from busy scenes",
+            "owner": "existing project audio service"
+          },
+          "provenance": {
+            "contract": "Read current ti-synthengine API before implementing",
+            "rationale": "material-specific cue"
+          }
+        },
+        {
+          "id": "explosion-metal-c",
+          "sound": "explosion-metal",
+          "variant": "c",
+          "source": "audio/recipes.js",
+          "reference": "explosions.metal.c",
+          "kind": "effect",
+          "design": {
+            "semantic_event": "explosion",
+            "timbre": "filtered noise and metallic body",
+            "envelope": "Specify validated attack/decay/sustain/release",
+            "variation": "related texture variants without immediate repeat",
+            "stereo": "bounded screen-position pan, coherent event layers",
+            "overlap": "derive voice budget and gain from busy scenes",
+            "owner": "existing project audio service"
+          },
+          "provenance": {
+            "contract": "Read current ti-synthengine API before implementing",
+            "rationale": "material-specific cue"
+          }
+        }
+      ],
+      "aliases": {
+        "player": "ship-scout-intact-0"
+      },
+      "parallax": [
+        {
+          "depth": "far",
+          "asset": "sky-far-base-idle-0",
+          "order": 0,
+          "transparent": false,
+          "repeat": "x",
+          "displacement": [
+            0.1,
+            0
+          ]
+        },
+        {
+          "depth": "middle",
+          "asset": "sky-middle-base-idle-0",
+          "order": 1,
+          "transparent": true,
+          "repeat": "x",
+          "displacement": [
+            0.4,
+            0
+          ]
+        },
+        {
+          "depth": "near",
+          "asset": "sky-near-base-idle-0",
+          "order": 2,
+          "transparent": true,
+          "repeat": "x",
+          "displacement": [
+            0.8,
+            0
+          ]
+        }
+      ],
+      "events": [
+        {
+          "event": "explosion-metal-a",
+          "visual": "explosion-metal-burst-0",
+          "sound": "explosion-metal-a",
+          "timing": "discrete"
+        },
+        {
+          "event": "explosion-metal-b",
+          "visual": "explosion-metal-burst-0",
+          "sound": "explosion-metal-b",
+          "timing": "discrete"
+        },
+        {
+          "event": "explosion-metal-c",
+          "visual": "explosion-metal-burst-0",
+          "sound": "explosion-metal-c",
+          "timing": "discrete"
+        }
+      ],
+      "exports": {
+        "note": "Declare real atlas/HUD/preview/density paths and exporter commands here"
+      }
+    }
+  ]
+}
