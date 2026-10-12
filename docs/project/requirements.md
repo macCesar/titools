@@ -63,3 +63,12 @@ The five doc-based skills (`ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `
 `@maccesar/aiskills` is the same CLI engine shipped with a different payload. The shared CORE covers CLI entry behavior, common `lib/` and `lib/commands/` behavior, installation and symlink handling, marketplace-plugin detection, non-product-specific hooks, shared tests, manifest wiring, and release mechanics.
 
 **Accepted when:** every shared-CORE change is ported to aiskills in the same working session, both repos are verified independently, and any intentional difference is already listed in `context.md` § "Sibling project" or recorded as a decision before the session ends. Titanium-specific pieces — the Knowledge Index, `tiapp.xml` detection, the `ti-pro` agent, Titanium skills and TiTools-only commands — remain legitimate product differences.
+
+### R11 — Game-art quality survives generation and export
+
+Individual HD masters use maximum useful canvas coverage and actual native
+generator dimensions, with sharp delineation, clean gradients and materials
+appropriate to the world. Reconstructions correct rejected defects. Pixel art
+specifies final logical grid/block scale and partial alpha. Sprite-sheet export
+rounds proportional dimensions and placement to integers for arbitrary cell sizes,
+while preserving animation alignment and authorized runtime rendering options.

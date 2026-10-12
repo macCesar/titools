@@ -150,3 +150,13 @@ Everything below except the tracked files is **local-only** — `docs/` is gitig
 | `message-to-jerry*.md`, `mensaje-a-hans.md`, `preocupaciones-layouts-android.md` | Drafted correspondence and the Android layout concerns that prompted the v4.1.0 work | Historical |
 
 The maintainer-only `titools-skill-auditor` skill lives at `.claude/skills/titools-skill-auditor/` — also gitignored.
+
+## 2026-10-11 — Game-art quality and sprite-sheet integration
+
+`ti-game-assets` separates individual HD generation from game-size derivatives.
+Art-direction and prompts require maximum useful canvas coverage, actual output
+dimensions and a refined finish; reconstruction keeps design identity while
+correcting rejected geometry/shading. Pixel-art guidance maps HD square RGBA
+clusters to the final logical grid, including phase extent and smoke alpha.
+Integration covers arbitrary cell sizes, nearest-integer proportional dimensions,
+integer offsets and aligned animation canvases.32px examples are illustrative.

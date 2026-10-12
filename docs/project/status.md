@@ -4,6 +4,26 @@
 
 ## This session
 
+- Session closed across Asteroids and TiTools:1d04e11 commits the skill and
+  changelog refinements. Context, requirements, decisions and status updated
+  in a separate documentation commit. Manifest suite80/80 repeated at closure;
+  log /tmp/titools-session-final-manifest.log. No push, tag, version bump or release.
+  Pre-existing untracked .agents/skills/purgetss-videos/ and por-hacer.md remain
+  outside this session's commits.
+
+- HD finish follow-up: individual masters require sharp delineation, clean
+  gradients and textures, straight panel boundaries and smooth regular curves.
+  Mechanical reconstruction uses the original for topology, avoiding its rejected
+  shading or geometry; requested symmetry includes balanced lighting. Proportional
+  integer rounding applies to every target cell size, with32px only an example.
+  Manifest suite80/80 and quick_validate pass. Skill changes committed in1d04e11; no release.
+
+- Sprite-sheet integration follow-up: a dedicated section now covers ti.game grid/TexturePacker atlases, proportional reduction rounded with floor(value + 0.5), the28.3→28×32 and17.7→32×18 examples, integer centering, sequence alignment, filters and physical-position separation. Manifest suite80/80 and quick_validate pass. Documentation committed in1d04e11; no release.
+
+- Follow-up from Asteroids: pixel-art guidance now explicitly maps HD blocks to final logical resolution and visible phase extent; uniform square RGBA clusters, progressive smoke alpha and nearest-neighbor inspection at game size. Manifest suite80/80 and skill quick validation pass.
+
+- Follow-up from Asteroids: clarified maximum useful canvas use directly in the canonical `skills/ti-game-assets/SKILL.md`, art-direction guide and prompt examples. Individual HD masters use tight framing and actual generator dimensions, without default occupancy percentages or fixed resolution ceilings. Shared state/animation canvases remain aligned. The installed skill is a symlink to this checkout; no reinstall is needed. This documentation adjustment is committed in1d04e11 and does not create a release.
+
 - Semantic implementation commits: `e623e5b` (`ti-game-assets`) and `5d70bcb` (`ti-admob-unified`, official-source maintenance and integration). The changelog remains under `[Unreleased]`; 5.2.0 is the synchronized development manifest version, not a published release.
 
 - Added `skills/ti-game-assets/`: concise entrypoint, Codex metadata, ten specialized guides, visual/audio manifest example, Pillow alpha helper and manifest validator.

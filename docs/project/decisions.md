@@ -135,3 +135,16 @@ The auditor travels with the repo: `.gitignore` blocks `.claude/*` but re-admits
 **Why:** The hand-written tables had drifted into prefixes the generator never emits (44 rows: `row-height-*` for `row-h-*`, `background-disabled-*` for `bg-disabled-*`) and into Tailwind names PurgeTSS never had (`border-t-*`, `p-1/2`, `col-1/2`). An agent that trusts the index suggests classes that silently do nothing. Reading the shipped file means the index cannot disagree with it.
 
 **Consequences:** After a PurgeTSS release, refresh `.purgetss-source`, run the script with `--write`, then `node scripts/generate-toc.mjs --write`. `source-map.md` records this. The generated output was checked the day it landed: 3015 class tokens, 0 absent from `utilities.tss`, with a checker validated on known-good and known-bad inputs first.
+
+## 2026-10-11 — HD masters, logical pixel grids and integer exports
+
+Asteroids demonstrated that high pixel counts and subtle sharpening can retain
+poor mechanical geometry. Require clean gradients, defined materials, precise
+lines/curves and requested symmetry, inspecting masters and final reductions.
+Use tight useful framing rather than arbitrary78/80% occupancy or fixed output
+resolution caps. Shared animation/state canvases keep their explicit contracts.
+
+Pixel-art block scale follows final logical resolution and visible phase extent;
+smoke retains progressive alpha on that grid. Round proportional dimensions with
+floor(value+0.5), and use integer offsets for every cell size, not just32px.
+Documentation-only skill changes do not trigger a release or version bump.
