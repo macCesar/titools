@@ -1,0 +1,440 @@
+{
+  "module": "ti.admob.unified",
+  "version": "1.0.0",
+  "release_status": "first public release under preparation",
+  "repository": "macCesar/ti.admob.unified",
+  "commit": "5b4cbf9347a51c4f959dc262ac1500f82f28b4a0",
+  "copied": "2026-10-11",
+  "files": [
+    {
+      "source": "documentation/fullscreen.md",
+      "destination": "references/fullscreen.md",
+      "source_sha256": "61e21798b234ff1f06d59d0239c62e3f422a424ebc2ff70e5839d203fa4c85b7",
+      "mirrored_sha256": "8c3defb078bc7115475f1389ee02d8d855164de16287afa4156842fa69e344af",
+      "links": [
+        {
+          "original": "../example/app.js",
+          "mirrored": "../assets/example/app.js"
+        }
+      ]
+    },
+    {
+      "source": "documentation/mediation.md",
+      "destination": "references/mediation.md",
+      "source_sha256": "59ede67bf9389b3b98a45a4eb24b59395a98631b0cb47d1cd24357d35f85d57e",
+      "mirrored_sha256": "3f6623d6178a437249542d191ecc6c5d6e22ae51db78713c41236b6ed637c938",
+      "links": [
+        {
+          "original": "../DEPENDENCIES.md",
+          "mirrored": "dependencies.md"
+        },
+        {
+          "original": "api-reference.md#automatic-adapter-discovery",
+          "mirrored": "api-reference.md#automatic-adapter-discovery"
+        },
+        {
+          "original": "api-reference.md#mediation-diagnostics",
+          "mirrored": "api-reference.md#mediation-diagnostics"
+        },
+        {
+          "original": "../CONTRIBUTING.md#adding-a-network",
+          "mirrored": "contributing.md#adding-a-network"
+        }
+      ]
+    },
+    {
+      "source": "documentation/integration.md",
+      "destination": "references/integration.md",
+      "source_sha256": "47b247dff23ca909b4b8cb598e31571d7ed419feb4b63d59a0d662950d265fa5",
+      "mirrored_sha256": "d63800df29b1857552456e1c73ea7de83aed2596b7704c953be9864ba83fb2ff",
+      "links": [
+        {
+          "original": "../example/lib/ads.js",
+          "mirrored": "../assets/example/lib/ads.js"
+        },
+        {
+          "original": "library.md",
+          "mirrored": "library.md"
+        },
+        {
+          "original": "../example/library-usage.js",
+          "mirrored": "../assets/example/library-usage.js"
+        },
+        {
+          "original": "banners.md#reserve-real-layout-space",
+          "mirrored": "banners.md#reserve-real-layout-space"
+        },
+        {
+          "original": "../example/app.js",
+          "mirrored": "../assets/example/app.js"
+        },
+        {
+          "original": "library.md",
+          "mirrored": "library.md"
+        },
+        {
+          "original": "banners.md",
+          "mirrored": "banners.md"
+        },
+        {
+          "original": "fullscreen.md",
+          "mirrored": "fullscreen.md"
+        },
+        {
+          "original": "privacy.md",
+          "mirrored": "privacy.md"
+        }
+      ]
+    },
+    {
+      "source": "documentation/third-party-notices.md",
+      "destination": "references/third-party-notices.md",
+      "source_sha256": "b203d99e49312a0450db497a0b54dae9fb1f705a27ba18f71fbaf76e46d830cd",
+      "mirrored_sha256": "93c74402995ac911bc96cac3453ca39f1c262653ef4e7d8ebccefe4c3630bbad",
+      "links": [
+        {
+          "original": "../DEPENDENCIES.md",
+          "mirrored": "dependencies.md"
+        }
+      ]
+    },
+    {
+      "source": "documentation/privacy.md",
+      "destination": "references/privacy.md",
+      "source_sha256": "25adc561cf4b1b2b0ae2c25c3373b9a7eae6b429ecdee1a7d4968e3021255d37",
+      "mirrored_sha256": "68ec23fc532865910ec2e6cb801b33f9afb788eac7c3dc5e1e230ad245a1ad03",
+      "links": [
+        {
+          "original": "getting-started.md#optional-if-the-application-requests-att",
+          "mirrored": "getting-started.md#optional-if-the-application-requests-att"
+        },
+        {
+          "original": "getting-started.md#ios",
+          "mirrored": "getting-started.md#ios"
+        }
+      ]
+    },
+    {
+      "source": "documentation/migration.md",
+      "destination": "references/migration.md",
+      "source_sha256": "85c6e3b897c4ac7f7cfb4f2a4fc61936f2e43a81de620a6c89fed670157877b3",
+      "mirrored_sha256": "028890977867cecef1f6c8a67b526bece5919200d061cabca61f0f12f9b8eb12",
+      "links": [
+        {
+          "original": "mediation.md",
+          "mirrored": "mediation.md"
+        },
+        {
+          "original": "banners.md#creation-properties-1",
+          "mirrored": "banners.md#creation-properties-1"
+        },
+        {
+          "original": "getting-started.md",
+          "mirrored": "getting-started.md"
+        },
+        {
+          "original": "banners.md#who-pauses-a-banner",
+          "mirrored": "banners.md#who-pauses-a-banner"
+        },
+        {
+          "original": "fullscreen.md#the-four-hour-window",
+          "mirrored": "fullscreen.md#the-four-hour-window"
+        },
+        {
+          "original": "api-reference.md#automatic-adapter-discovery",
+          "mirrored": "api-reference.md#automatic-adapter-discovery"
+        }
+      ]
+    },
+    {
+      "source": "documentation/getting-started.md",
+      "destination": "references/getting-started.md",
+      "source_sha256": "82e606a8807a75985f8371876650f6499028e2b4452f28f525cd9edced2f0a7d",
+      "mirrored_sha256": "a1784814b78d17d3c6a928f0aed34cadccc100cf6ce57b9e05b309745ecac652",
+      "links": [
+        {
+          "original": "mediation.md",
+          "mirrored": "mediation.md"
+        },
+        {
+          "original": "migration.md",
+          "mirrored": "migration.md"
+        },
+        {
+          "original": "mediation.md",
+          "mirrored": "mediation.md"
+        },
+        {
+          "original": "api-reference.md#automatic-adapter-discovery",
+          "mirrored": "api-reference.md#automatic-adapter-discovery"
+        },
+        {
+          "original": "privacy.md",
+          "mirrored": "privacy.md"
+        },
+        {
+          "original": "api-reference.md#reserved-and-unavailable-apis",
+          "mirrored": "api-reference.md#reserved-and-unavailable-apis"
+        },
+        {
+          "original": "banners.md",
+          "mirrored": "banners.md"
+        }
+      ]
+    },
+    {
+      "source": "documentation/library.md",
+      "destination": "references/library.md",
+      "source_sha256": "0da03f4b91912045737da2a8992679c7a1503f5085abc9d7495817ae54e68021",
+      "mirrored_sha256": "40568c25adc6e5cf7a27ad0305205dfc6847c7c6039eae095bf102f6b8688873",
+      "links": [
+        {
+          "original": "../example/lib/ads.js",
+          "mirrored": "../assets/example/lib/ads.js"
+        },
+        {
+          "original": "../example/app.js",
+          "mirrored": "../assets/example/app.js"
+        },
+        {
+          "original": "../example/library-usage.js",
+          "mirrored": "../assets/example/library-usage.js"
+        }
+      ]
+    },
+    {
+      "source": "documentation/index.md",
+      "destination": "references/index.md",
+      "source_sha256": "358dbe96a4f5ff49179b05bed5a1a28a2c13b0c698663a6f8fba6b858a55ffaf",
+      "mirrored_sha256": "1f07d92cfc885074bedfea0bfc8164df4dbb1091ecf4193ee733162b3a60e2ab",
+      "links": [
+        {
+          "original": "getting-started.md",
+          "mirrored": "getting-started.md"
+        },
+        {
+          "original": "integration.md",
+          "mirrored": "integration.md"
+        },
+        {
+          "original": "library.md",
+          "mirrored": "library.md"
+        },
+        {
+          "original": "privacy.md",
+          "mirrored": "privacy.md"
+        },
+        {
+          "original": "mediation.md",
+          "mirrored": "mediation.md"
+        },
+        {
+          "original": "banners.md",
+          "mirrored": "banners.md"
+        },
+        {
+          "original": "fullscreen.md",
+          "mirrored": "fullscreen.md"
+        },
+        {
+          "original": "api-reference.md",
+          "mirrored": "api-reference.md"
+        },
+        {
+          "original": "migration.md",
+          "mirrored": "migration.md"
+        },
+        {
+          "original": "third-party-notices.md",
+          "mirrored": "third-party-notices.md"
+        },
+        {
+          "original": "../CONTRIBUTING.md#adding-a-network",
+          "mirrored": "contributing.md#adding-a-network"
+        },
+        {
+          "original": "../DEPENDENCIES.md",
+          "mirrored": "dependencies.md"
+        },
+        {
+          "original": "../CHANGELOG.md",
+          "mirrored": "module-changelog.md"
+        },
+        {
+          "original": "../ROADMAP.md",
+          "mirrored": "roadmap.md"
+        },
+        {
+          "original": "../CONTRIBUTING.md",
+          "mirrored": "contributing.md"
+        }
+      ]
+    },
+    {
+      "source": "documentation/banners.md",
+      "destination": "references/banners.md",
+      "source_sha256": "6503b64e3adca882c099710c9df7d3f03ce6ff21cf98e54c199e3f9020581990",
+      "mirrored_sha256": "aaf1cc653f9c4d6085e21e88496259b7b3e4abfcd8ba9aa39a5f25cfc6c1db26",
+      "links": []
+    },
+    {
+      "source": "documentation/api-reference.md",
+      "destination": "references/api-reference.md",
+      "source_sha256": "e1e0e51562f18cca354d58ca0dffeb32830b07fea0f4cafecd356eca832b8ab7",
+      "mirrored_sha256": "d1fec104a8f8ffb153c0fbcc9e405c224145f0dd439a5d9caa4ac78ad64064fa",
+      "links": [
+        {
+          "original": "mediation.md#missing-configuration-and-startup-errors",
+          "mirrored": "mediation.md#missing-configuration-and-startup-errors"
+        },
+        {
+          "original": "banners.md#creation-properties-1",
+          "mirrored": "banners.md#creation-properties-1"
+        },
+        {
+          "original": "banners.md#creation-properties",
+          "mirrored": "banners.md#creation-properties"
+        },
+        {
+          "original": "fullscreen.md#the-four-hour-window",
+          "mirrored": "fullscreen.md#the-four-hour-window"
+        },
+        {
+          "original": "fullscreen.md",
+          "mirrored": "fullscreen.md"
+        },
+        {
+          "original": "banners.md#who-pauses-a-banner",
+          "mirrored": "banners.md#who-pauses-a-banner"
+        },
+        {
+          "original": "banners.md#creation-properties",
+          "mirrored": "banners.md#creation-properties"
+        },
+        {
+          "original": "fullscreen.md#events",
+          "mirrored": "fullscreen.md#events"
+        },
+        {
+          "original": "mediation.md",
+          "mirrored": "mediation.md"
+        },
+        {
+          "original": "migration.md#generic-mediation-diagnostics",
+          "mirrored": "migration.md#generic-mediation-diagnostics"
+        }
+      ],
+      "link_fixes": [
+        {
+          "original_markdown": "[Mediation diagnostics and compatibility](#mediation-diagnostics-and-compatibility)",
+          "mirrored_markdown": "[Mediation diagnostics and compatibility](#mediation-diagnostics)",
+          "reason": "Official document references a removed heading; target its existing Mediation diagnostics section. Original source is unchanged."
+        }
+      ]
+    },
+    {
+      "source": "DEPENDENCIES.md",
+      "destination": "references/dependencies.md",
+      "source_sha256": "345106277d89646fa2f79026d28fcef39c2c97701f0190141efdfaaf2cc988be",
+      "mirrored_sha256": "131c1a1042905893ef122ef6b44acfeba701177d42377061c60f827a686336fc",
+      "links": [
+        {
+          "original": "documentation/mediation.md#unity-consent-with-the-pinned-adapter",
+          "mirrored": "mediation.md#unity-consent-with-the-pinned-adapter"
+        }
+      ]
+    },
+    {
+      "source": "ROADMAP.md",
+      "destination": "references/roadmap.md",
+      "source_sha256": "e51337b46621f513bd0e7ece60604cb52b05137dce4a30e15474babb8ac2b3be",
+      "mirrored_sha256": "8d214f8b74201a1f60fa92df039eb8af88926159e2f26e946252eadd1afb214e",
+      "links": [
+        {
+          "original": "DEPENDENCIES.md#transitive-security-review",
+          "mirrored": "dependencies.md#transitive-security-review"
+        }
+      ]
+    },
+    {
+      "source": "CONTRIBUTING.md",
+      "destination": "references/contributing.md",
+      "source_sha256": "836799de6a281aec867f9df34a520963db337733caf33e7ea0bc314365bd5c6b",
+      "mirrored_sha256": "4cfb401b52a0de14fd72b040ff88c64d1be7fdba27e56c1ec1fcd9008cae8ae9",
+      "links": [
+        {
+          "original": "DEPENDENCIES.md",
+          "mirrored": "dependencies.md"
+        },
+        {
+          "original": "DEPENDENCIES.md",
+          "mirrored": "dependencies.md"
+        },
+        {
+          "original": "documentation/getting-started.md",
+          "mirrored": "getting-started.md"
+        },
+        {
+          "original": "documentation/privacy.md",
+          "mirrored": "privacy.md"
+        },
+        {
+          "original": "documentation/banners.md",
+          "mirrored": "banners.md"
+        },
+        {
+          "original": "LICENSE",
+          "mirrored": "module-license.txt"
+        }
+      ]
+    },
+    {
+      "source": "CHANGELOG.md",
+      "destination": "references/module-changelog.md",
+      "source_sha256": "206836587f356a152b6f9b3dbc3ecafdc47d006dc04ef9272be22fb61e1730a7",
+      "mirrored_sha256": "d7c53654b8b4c3166a8c86ed6a9d20d141692dbdfcd9ffacde4887367588adfa",
+      "links": [
+        {
+          "original": "DEPENDENCIES.md",
+          "mirrored": "dependencies.md"
+        },
+        {
+          "original": "DEPENDENCIES.md",
+          "mirrored": "dependencies.md"
+        },
+        {
+          "original": "documentation/mediation.md#release-validation",
+          "mirrored": "mediation.md#release-validation"
+        }
+      ]
+    },
+    {
+      "source": "LICENSE",
+      "destination": "references/module-license.txt",
+      "source_sha256": "4f0914a1e3dba2ee340a000feddd0700eb1977923090d77c0fa32e2a47830823",
+      "mirrored_sha256": "4f0914a1e3dba2ee340a000feddd0700eb1977923090d77c0fa32e2a47830823",
+      "links": []
+    },
+    {
+      "source": "example/lib/ads.js",
+      "destination": "assets/example/lib/ads.js",
+      "source_sha256": "7103fd5406a6fdae2652fdb75d6e76bbe8e1f820183d8caafcdacbb38c939567",
+      "mirrored_sha256": "7103fd5406a6fdae2652fdb75d6e76bbe8e1f820183d8caafcdacbb38c939567",
+      "links": []
+    },
+    {
+      "source": "example/library-usage.js",
+      "destination": "assets/example/library-usage.js",
+      "source_sha256": "1dc8f385dda582cfadcd0f77edc24681214ac7b066909d5d9d1599c923eece24",
+      "mirrored_sha256": "1dc8f385dda582cfadcd0f77edc24681214ac7b066909d5d9d1599c923eece24",
+      "links": []
+    },
+    {
+      "source": "example/app.js",
+      "destination": "assets/example/app.js",
+      "source_sha256": "ba0bfcb76dcc727e9f1785a3980ec0df3bdd4f62fceba6efb1938295ba2d2ab5",
+      "mirrored_sha256": "ba0bfcb76dcc727e9f1785a3980ec0df3bdd4f62fceba6efb1938295ba2d2ab5",
+      "links": []
+    }
+  ]
+}

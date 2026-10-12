@@ -1,6 +1,6 @@
 # Responsible monetization in the game flow
 
-Advertising is a game lifecycle/experience concern, not an image or sound asset format. Route here when the user requests monetization or the task touches existing ad transitions; do not initialize ads because assets are being generated. Use `ti-game` for native pause/cleanup and Titanium integration skills plus the installed ad-module documentation for exact APIs. If the project uses `ti.admob.unified`, inspect its version/source/examples; do not invent method names or edit a vendored upstream helper casually.
+Advertising is a game lifecycle/experience concern, not an image or sound asset format. Route here when the user requests monetization or the task touches existing ad transitions; do not initialize ads because assets are being generated. Use `ti-game` for native pause/cleanup and Titanium integration skills plus the installed ad-module documentation for exact APIs. For César's **TiAdmobUnified** module (`ti.admob.unified`), use the standalone `ti-admob-unified` skill: official installation/API/privacy/library/mediation guides govern technical integration and provider setup. Its first public 1.0.0 release is under preparation at the initial snapshot; do not assume publication. Inspect the installed version/source/examples; do not invent method names or edit a vendored upstream helper casually.
 
 ## Protect play and navigation
 

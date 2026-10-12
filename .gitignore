@@ -9,6 +9,7 @@ docs/*
 .titaniumsdk-site
 .purgetss-docs
 .purgetss-source
+.ti-admob-unified
 
 # Node.js
 node_modules/

@@ -38,6 +38,7 @@ Read the relevant references before acting:
 
 - Read `ti-game` for sprites, sheets, animation, atlas, particles and parallax integration. Verify APIs against its current references and installed build.
 - Read `ti-synthengine` for creation or editing of synthesized effects, variants, music, ambience, stereo placement and audiovisual timing. The identifier is **`ti.synthengine`**. Read its current API/lifecycle contract before proposing calls.
+- Read `ti-admob-unified` for requested ad integration, configuration and providers using **`ti.admob.unified`**; the responsible-ad guide adds game experience criteria without duplicating that module manual.
 - Read `purgetss` for its existing asset exporters and the Titanium/UI/Alloy skills relevant to the destination. Detect Alloy vs. Classic.
 - Creating drawings does not require installing modules. An image does not authorize a new mechanic, sound, collision profile or balance change.
 
