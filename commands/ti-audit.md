@@ -27,6 +27,7 @@ Native-module audit:
 
 12. If the project has game art/sound inventories or asset-generation/export workflows, invoke `ti-game-assets` — check contracts per set, master provenance/transparency, protected alpha cleanup, frame/pivot alignment, complete derived exports, parallax layers, sound variants and semantic event bindings. Consult `ti-game` and `ti-synthengine` equally in their applicable domains; do not require module installation or new sounds for an image-only task.
 
+13. If the project declares `ti.admob.unified`/mediation complements or implements an ad flow through this module, invoke `ti-admob-unified` — verify official module APIs, consent/request eligibility/initialization, test IDs, banner layout and refresh ownership, deliberate fullscreen presentation, callback cleanup and selected-provider mappings. Separate linking, Google test ads, provider delivery and physical acceptance. In games preserve native pause/audio/input ownership and the existing frequency policy.
 
 If a conditional skill does not apply, record it as `not applicable` with the detected reason instead of inventing findings from it.
 

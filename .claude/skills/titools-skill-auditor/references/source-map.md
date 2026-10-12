@@ -17,6 +17,7 @@ That leaves three roots with different standing, and the difference is the whole
 | `.titaniumsdk-site/registry/sdk/<version>/` | compiled from `apidoc/` by `scripts/docgen/` | Live cross-check: says which release actually shipped an API. Resolve through that version's `contents.json`, never by grepping `_pool/`. |
 | `.titanium-docs/docs/guide/` | `tidev/titanium-docs:docs/guide/` | **Archive.** 336 pages TiDev condensed into 62. Preserved here, never a source of a *new* claim. |
 | `.titanium-docs/docs/api/` | `tidev/titanium-docs:docs/api/` | **Archive, and already behind.** Verified 2026-09-11: `Ti.UI.Toolbar.hideSharedBackground` (apidoc 2026-07-12) and `Ti.UI.ListView.snapping` (apidoc 2026-07-20) never reached it, though both are in the site's `registry/sdk/main/`. |
+| `.ti-admob-unified/documentation/` and platform source/tests | `macCesar/ti.admob.unified` | Live module source; first public 1.0.0 under preparation at initial snapshot. |
 | `.purgetss-docs/docs/` | `macCesar/purgetss-docs:docs/` | Live. |
 | `.purgetss-source/` | `macCesar/purgeTSS` package source, `CHANGELOG.md`, `README.md`, `bin/`, `src/`, and `dist/` | Live. |
 
@@ -28,7 +29,7 @@ All cache roots are gitignored. See `SKILL.md` § "Setup" for clone/refresh comm
 
 An audit that reads the wrong root reports green against a corpus that stopped moving. These rules decide what beats what.
 
-**1. For anything factual about the API — a property, a method, a signature, a constant, a platform flag — `.titanium-sdk/apidoc/` wins, always.** It is the file the SDK team edits. The site's registry and the archived markdown are both downstream of it.
+**1. For anything factual about the Titanium SDK API — a property, a method, a signature, a constant, a platform flag — `.titanium-sdk/apidoc/` wins, always.** It is the file the SDK team edits. The site's registry and the archived markdown are both downstream of it.
 
 **2. For anything factual about a guide topic — a command, a path, a version number, a required tool — the new site wins when it has a page on that topic.** The archive was written across a decade of "the latest version" and points at hosts that no longer resolve. Where the new page says something different, the new page is right.
 
@@ -290,3 +291,24 @@ node .claude/skills/titools-skill-auditor/scripts/api-map.mjs --by-file
 ```
 
 As of 2026-09-11 the 20 reference files carry 305 types with no type documented in two places.
+
+## `ti-admob-unified`
+
+- **Source type:** Mixed official narrative + native implementation.
+- **Canonical repository:** `macCesar/ti.admob.unified`; cache `.ti-admob-unified` or the existing module checkout. Do not require a machine-specific path.
+- **Version/commit/hash map:** `skills/ti-admob-unified/references/source-snapshot.json`. Distinguish prerelease source from published/installed artifacts.
+
+| Skill resource | Official source |
+| --- | --- |
+| `references/{index,getting-started,integration,library,privacy,banners,fullscreen,api-reference,mediation,migration,third-party-notices}.md` | Corresponding `documentation/*.md` |
+| `references/dependencies.md` | `DEPENDENCIES.md` |
+| `references/roadmap.md` | `ROADMAP.md` |
+| `references/contributing.md` | `CONTRIBUTING.md` |
+| `references/module-changelog.md`, `module-license.txt` | `CHANGELOG.md`, `LICENSE` |
+| `assets/example/{app.js,library-usage.js,lib/ads.js}` | Corresponding official `example/` files, copied unchanged |
+| `references/game-monetization.md` | Author/community guidance from Lander/Guardian plus current linked Google placement guidance, not an official module-doc mirror |
+| `references/source-notes.md` | TiTools maintenance guidance |
+
+For exact native behavior/parity, inspect `android/src/ti/admob/unified/`, `ios/Classes/` and `tests/` at the reviewed build; for integration-library behavior inspect `example/lib/ads.js`. A doc/source disagreement is a reported finding, not permission to invent a contract. Provider account/format/consent setup also needs the current official links from `documentation/mediation.md`.
+
+Start with `node scripts/verify-module-snapshot.mjs --source .ti-admob-unified`. Review changed, removed and newly added documents and native/library changes between the pin and candidate commit. Read each updated source before writing. Preserve rebased links, snapshot headers, generated TOCs and protected community patterns. Do not blindly replace curated files or repair hashes over unreviewed changes. Verify snapshot fidelity, links/anchors, syntax, skill registration, package contents and applicable consumer/device behavior separately.

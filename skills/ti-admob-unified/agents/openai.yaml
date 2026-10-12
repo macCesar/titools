@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ti AdMob Unified"
+  short_description: "Configure ads, privacy and mediation in Titanium"
+  default_prompt: "Use $ti-admob-unified to integrate ads and configure the selected mediation providers for my Titanium app."

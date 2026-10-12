@@ -16,6 +16,7 @@ The skill applies to **Classic and Alloy** projects. Nothing here requires Purge
 
 Use `ti-game-assets` to create/edit complete visual and sound asset sets, preserve art/acoustic palettes and provenance, validate alpha/frames/manifests, prepare exports, and coordinate variants and stereo event placement. `ti-game` governs native representation/motion/events; `ti-synthengine` governs synthesis and sound behavior with `ti.synthengine`. Both have equal domain authority. Read their relevant current references rather than duplicating manuals. Art alone does not require installing modules or adding sounds/mechanics.
 
+For requested advertising or existing `ti.admob.unified`, use `ti-admob-unified` for the official module/privacy/provider contract and deliberate game-ad boundaries. Preserve native clock, inputs and audio ownership; graphics work alone does not authorize monetization.
 
 ## Required workflow
 

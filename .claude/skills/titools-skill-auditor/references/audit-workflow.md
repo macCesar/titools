@@ -32,6 +32,7 @@ Which caches an audit needs depends on the skill, and getting this wrong is the 
 | `ti-api` | `.titanium-sdk` (canonical) + `.titaniumsdk-site` (release cross-check) + `.titanium-docs` (provenance only) |
 | `alloy-guides`, `alloy-howtos`, `ti-guides`, `ti-howtos` | `.titaniumsdk-site` (live) + `.titanium-docs` (archive) |
 | `purgetss` | `.purgetss-docs` + `.purgetss-source` |
+| `ti-admob-unified` | `.ti-admob-unified` or existing module checkout; `references/source-snapshot.json` |
 
 If one is missing, stop and prompt the user with the matching clone command from `SKILL.md` § Setup.
 
@@ -60,7 +61,7 @@ For `purgetss`, require both `.purgetss-docs/` and `.purgetss-source/`, then rec
 |---|---|---|
 | **Narrative, two layers** | `alloy-guides`, `alloy-howtos`, `ti-guides`, `ti-howtos` | Compare against the live page in `.titaniumsdk-site/content/docs/` first; fall back to `.titanium-docs` only for topics the new site has not written |
 | **API** | `ti-api` | Compare against `.titanium-sdk/apidoc/*.yml` at the newest GA tag, cross-checked with `.titaniumsdk-site/registry/sdk/<version>/` |
-| **Mixed narrative + implementation** | `purgetss` | Compare workflows against `.purgetss-docs`, then verify commands, classes, paths, aliases, and defaults against `.purgetss-source` |
+| **Mixed narrative + implementation** | `purgetss`, `ti-admob-unified` | Compare workflows against `.purgetss-docs`, then verify commands, classes, paths, aliases, and defaults against `.purgetss-source` |
 
 The source type determines audit strategy:
 
@@ -69,6 +70,8 @@ The source type determines audit strategy:
 - **Mixed**: Documentation prose is not enough when it lags a same-day release. Prefer observable CLI/source/test behavior for exact contracts and use the docs for explanations.
 
 ---
+
+For `ti-admob-unified`, run the read-only snapshot checker from `source-map.md` and distinguish official mirrors, byte-identical example assets and curated `game-monetization.md` before coverage comparison. Resolve exact module claims against Android/iOS implementation/tests and official module docs, not Titanium SDK apidoc.
 
 ## Phase 1: Coverage analysis
 
