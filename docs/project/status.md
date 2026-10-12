@@ -1,3 +1,42 @@
+# Status — 2026-10-11
+
+**Phase:** 5.2.0 development implementation installed and committed for internal use. César explicitly deferred releases: no push, tag or publication in this session. `ti.admob.unified` has not been publicly released. Package/plugin/lockfile versions agree at 5.2.0. Previous release evidence below is historical, not a current registry check.
+
+## This session
+
+- Semantic implementation commits: `e623e5b` (`ti-game-assets`) and `5d70bcb` (`ti-admob-unified`, official-source maintenance and integration). The changelog remains under `[Unreleased]`; 5.2.0 is the synchronized development manifest version, not a published release.
+
+- Added `skills/ti-game-assets/`: concise entrypoint, Codex metadata, ten specialized guides, visual/audio manifest example, Pillow alpha helper and manifest validator.
+- Sound creation/refinement is an essential domain alongside images, per César's clarification. Includes synthesis fundamentals, meaningful variants, stereo placement, mixing/overlap budgets and audition criteria. `ti-game` and `ti-synthengine` retain equal authority in their domains; the native sound identifier is `ti.synthengine`.
+- Raster creation/editing uses integrated `image_gen`. Existing SVG/procedural pipelines preserve editable sources and generate PNG derivatives; procedural sound generators may produce WAV. No paid image generation, new Asteroids sound library, asset/balance changes or frame loops were performed.
+- Registered in installer catalog, `ti-pro`, conditional audit, README/examples and reciprocal module-skill links. Canonical `~/.agents/skills/ti-game-assets` resolves to this checkout. Existing platform detection/plugin suppression linked Claude because its enabled cache does not provide the new skill.
+- New Python tests cover threshold residue, soft effects, detached pieces, empty/faint images, preserved RGBA/RGB, crop offsets/common canvas, incomplete contracts, sound-only contracts, sequences, aliases, dimensions, transparency declarations and parallax. Publish CI installs only the TiTools-specific helper dependency in a venv; shared CLI behavior was not changed and no sibling port is owed.
+- Independent read-only review evaluated pixel art, HD art, soft explosion, parallax with audio and synthesis requests without paid generation. It found a missing Boolean/opaque transparency check; regression failed before the fix and passes after. Empty contracts are also rejected; sound-only contracts remain valid. Codex metadata now names both art and sound.
+
+## Follow-up: Lander, Guardian and official AdMob skill
+
+- Read-only project review found missing repeat topology/phase checks, editable SVG/procedural source workflows, deterministic source-to-output hashes, offline PCM WAV analysis/loop validation and responsible advertising. Added four references and optional SVG/build-hash/WAV manifest checks; their regression tests failed before implementation and pass now. No assets, balance or native modules in those games were changed.
+- Created/installed `ti-admob-unified` directly after César authorized proceeding without another plan. All new skill instructions, references, examples and metadata are English. It mirrors all 11 official guides at clean module commit `5b4cbf9347a51c4f959dc262ac1500f82f28b4a0`, includes dependency/roadmap/contributing/history/license references, and ships three byte-identical official example files.
+- Registered installer, agent, conditional audit, README/examples and game-asset routing. The native module identifier is `ti.admob.unified`; its first public 1.0.0 release is under preparation. Package/plugin/lock remain synchronized at the still-unpublished TiTools 5.2.0 implementation.
+- Added source mapping and cache entry to the maintainer auditor. `scripts/verify-module-snapshot.mjs` detects changed/missing/new docs, modified mirrors, dirty sources and commit changes without writing/fetching. Curated game experience guidance is protected separately under `Community-Discovered Patterns`; official docs/library do not silently absorb it.
+- Snapshot/source-fidelity, cross-file-link/anchor, official-example syntax and drift-detection tests pass. A broken official API anchor was corrected only in the mirror and recorded as a reversible transformation; reconstructed original hashes still match. TiAdmobUnified source checkout stays clean. Linking, Google test ads, provider account/mapping/test delivery and visible device behavior remain distinct acceptance categories, not claims from a documentation check.
+- Verified available FFmpeg/ffprobe/rsvg tools; read-only FFprobe and `astats` ran on Lander's current thruster WAV. Its generator uses Python PCM synthesis, Guardian's backup uses direct Node RIFF synthesis; no evidence was used to attribute their original generation to FFmpeg or certify automatic musical note recognition.
+
+## Validation and limits
+
+- `TITOOLS_ASSETS_PYTHON=/tmp/titools-game-assets-venv/bin/python npm test`: 407 Node checks, including the Python helper suite (16 behavioral tests after SVG/hash/WAV additions).
+- `npm run lint`, skill-creator `quick_validate.py`, `git diff --check` and npm dry-run content inspection checked this session. An actual 5.2.0 tarball in `/tmp` contains 16 game-asset files and 24 AdMob-skill files; installing it into a disposable consumer verified copied references and both callable helpers. The preview was inspected on checkerboard, light and dark backgrounds; legitimate detached components remain.
+- Manifest checks prove source/inventory/geometry contracts, not artistic quality, recipe symbol resolution, exact synthesis options, native synchronization or device sound quality. The skill delegates those to project exporters and current native-module contracts. No new sound recipes were auditioned because this task creates a skill, not a game library.
+- Pre-existing untracked `.agents/skills/purgetss-videos/` and `por-hacer.md` were preserved.
+
+## Next step
+
+Use the installed skills internally. Do not create releases, tags, publish or push from this task; César requested semantic commits only and explicitly deferred releases, especially while `ti.admob.unified` remains unpublished. Existing unrelated pending work is recorded in the historical status below.
+
+---
+
+## Historical status — prior session
+
 # Status — 2026-10-04
 
 **Phase:** v5.1.1 shipped; live and maintained. Three commits on `main` since, none released.

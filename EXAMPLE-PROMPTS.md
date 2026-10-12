@@ -13,7 +13,7 @@ These prompts verify the assistant read the docs index from your project's instr
 ```
 Expect:
 - Titanium SDK docs index
-- All 10 TiTools skills: `ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-synthengine`, `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`
+- All 13 TiTools skills: `ti-reuse-first`, `ti-game-assets`, `ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-synthengine`, `ti-admob-unified`, `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`
 - Reference file locations
 
 ---
@@ -791,3 +791,29 @@ After installing AGENTS.md or CLAUDE.md, ask these to verify it works.
 - [ ] "My ListView is slow with lots of items. Where are the performance docs?" should point to docs
 - [ ] "How do I create views from code instead of XML?" should explain with reference
 - [ ] "Make a clean ti.synthengine success cue" should explain the acoustics and return strict, valid module code
+
+## ti-game-assets: evaluation requests (no paid generation)
+
+For a dry evaluation, inspect the relevant references and produce the contract/workflow without calling image generation or changing gameplay.
+
+1. "Prepare a 64×64 logical pixel-art ship with intact/damaged states from this world's references." Expect integrated `image_gen`, strict grid and nearest-neighbor logical export, HD masters, no external shadows, common pivot, style-appropriate filtering and preserved project exceptions.
+2. "Edit this HD enemy to match the clean world's palette; the scrap sheet is only a layout reference." Expect reference-role separation, no universal scrap styling, real alpha, updated atlas/HUD/cards/previews/densities and no balance change.
+3. "Clean the faint outline around these soft explosion frames without losing smoke or tiny separated sparks." Expect threshold analysis/comparison, no automatic soft-effect cleaning, explicit protected region, no component-size deletion, common canvas and growing frames.
+4. "Create a level with independent far/middle/near parallax and three synthesized explosion variants positioned in stereo." Expect complete per-level image and sound contracts, synthesis fundamentals, current `ti-synthengine` contract, meaningful variants, coherent pan and overlap budget, semantic events instead of per-frame sound, native motion/clock and separate listening acceptance.
+5. "Design distinct synthesized pickup and weapon effects using envelopes, filtered noise and FM; preserve the existing audio owner." Expect `ti-synthengine` sound-design/recipes/API references, acoustic reasoning, checked option/envelope validity, separate sound variant counts and physical-speaker audition.
+
+No evaluation requires paid generation, a module install or a new sound library in Asteroids.
+
+## ti-game-assets: editable sources and offline audio
+
+- "Our sprites are editable SVG symbols. Regenerate their PNG states and prove the source/catalog/atlas are aligned." Expect vector masters, preserved proportions/pivots, recorded renderer/seed, hashes, deterministic regeneration and real-scale visual review; no forced image-model replacement.
+- "Make terrain repeat without a visible pattern seam; a mirrored center stripe is not acceptable." Expect repeat axes/topology, reachable neighbors, offset/3×3 previews, premultiplied-edge checks, symmetry/repetition review and native circular parallax phase where applicable.
+- "Regenerate the procedural thruster WAV without a heartbeat on each loop." Expect generator provenance, format/header checks, phase and RMS/edge analysis, complete mixed-signal loop review and device listening; no automatic synth-module install.
+
+## ti-admob-unified
+
+- "Integrate ti.admob.unified in an Alloy game with interstitials only at settled results, never during flight or every retry." Expect official startup/privacy/library/API/fullscreen references, native game/audio ownership, deliberate load/show separation, no-fill/close/destroy handling and test IDs.
+- "Configure AppLovin and Unity mediation on Android and iOS; are the installed adapters enough?" Expect official mediation/dependency guides, selected complement declarations, provider accounts and AdMob placement mappings, request eligibility, diagnostics and single-source Ad Inspector testing. A Google test ad is not provider delivery.
+- "Update the AdMob skill after its official documentation changes." Expect source-map/snapshot review, changed/new/missing-document detection, current commit and per-reference source reads, protected community additions, unchanged official library, link/hash checks and separate consumer/provider acceptance.
+
+The standalone advertising skill must also trigger in non-game Titanium apps without requiring ti.game, ti.synthengine or PurgeTSS.
