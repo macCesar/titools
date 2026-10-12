@@ -36,6 +36,11 @@ jobs:
 
       - run: npm ci
 
-      - run: npm test
+      # TiTools-only asset helpers require Pillow; no shared CLI dependency.
+      - name: Test CLI and game asset helpers
+        run: |
+          python3 -m venv /tmp/titools-assets-env
+          /tmp/titools-assets-env/bin/pip install -r skills/ti-game-assets/scripts/requirements.txt
+          TITOOLS_ASSETS_PYTHON=/tmp/titools-assets-env/bin/python npm test
 
       - run: npm publish

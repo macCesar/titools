@@ -9,6 +9,10 @@ Act as an audio engineer and mobile sound designer for the native `ti.synthengin
 
 This skill is verified against TiSynthEngine **1.0.0** at commit **`ef62edd` (2026-10-04)**, which adds decay and sustain, the resonant filter, FM, detune and the `patternend` event to `e8f1d0d`. Android and iOS expose the same eight public methods, one event, option contracts, defaults, limits, waveform constants, and validation behavior.
 
+## Visual and sound asset collaboration
+
+Use `ti-game-assets` to create/edit complete visual and sound asset sets, preserve art/acoustic palettes and provenance, validate alpha/frames/manifests, prepare exports, and coordinate variants and stereo event placement. `ti-game` governs native representation/motion/events; `ti-synthengine` governs synthesis and sound behavior with `ti.synthengine`. Both have equal domain authority. Read their relevant current references rather than duplicating manuals. Art alone does not require installing modules or adding sounds/mechanics.
+
 ## Required workflow
 
 Read the references relevant to the task before proposing code. Do not infer option names from Web Audio, another synthesizer, or general DSP libraries.

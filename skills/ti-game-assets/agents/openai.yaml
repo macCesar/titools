@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ti Game Assets"
+  short_description: "Create game art and synthesized sound assets"
+  default_prompt: "Use $ti-game-assets to prepare a complete game asset set and validate its exports."
