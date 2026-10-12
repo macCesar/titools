@@ -19,6 +19,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- HD game-art guidance requires high native resolution and a refined finish together: defined materials/textures, clean gradients, precise lines/curves and coherent shading, reviewed at master and final display sizes. Mechanical reconstruction separates design references from rejected rendering defects.
+
+- Game-asset integration has an explicit ti.game sprite-sheet section for proportional reduction, nearest-integer dimensions, integer centering/atlas rectangles, aligned animation cells, style-specific filtering and export/runtime verification.
+
+- Pixel-art guidance ties HD block size to final logical resolution and visible animation phase extent, with consistent square RGBA clusters, progressive smoke alpha and nearest-neighbor review at game size.
+
+- `ti-game-assets` requests tightly framed individual HD masters with maximum useful generator canvas coverage, crisp world-specific detail and actual output dimensions. Removes generous-margin guidance and arbitrary occupancy percentages; aligned states, animations and intentional effects retain their documented canvas contracts.
+
 - `ti-synthengine` follows the TiSynthEngine 1.0.0 public release (commit `e8f1d0d`). `references/api.md` also fixes the `noteValue` list, which the upstream text gave as `1n` to `32n`: the contract accepts `1n`, `2n`, `4n`, `8n`, `16n`, the dotted `2n.`, `4n.`, `8n.` and the triplets `8t`, `16t`, and rejects `32n`. It adds the `WAVETABLE` waveform with `waveTable`, the shaping controls `noiseRate`/`noiseRateEnd`, `lowPassHz`, `pulseWidth`/`pulseWidthEnd` and `bitDepth`, and `startEngine({ audioSession: 'playback' | 'ambient' })`, which replaces the old advice to set `Ti.Media.audioSessionCategory` after startup. Requirements are now Titanium SDK 13.2.0.GA and iOS 15, the envelope is smoothstep, and install points at the GitHub release archives.
 
 ## [5.1.1] - 2026-09-26

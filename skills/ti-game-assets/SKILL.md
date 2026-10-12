@@ -9,6 +9,12 @@ metadata:
 
 Produce coherent visual and sound assets and complete, reproducible exports. Sound creation and refinement are an essential domain alongside images, governed by `ti-synthengine`. Preserve editable SVG/procedural sources when used, full-canvas PNG masters/renders, audio recipes or WAV generators, prompts and provenance in the project's source of truth. Read its art workflow and inventory before editing; a world's own style and authorized rendering exceptions govern that world.
 
+For individual raster masters, request maximum useful canvas coverage and the highest suitable detail supported by the current generator. Frame the complete subject closely with only the transparent edge needed to avoid clipping. Do not prescribe a default occupancy percentage or generous empty margins. Game-size outputs are derivatives of these masters. Record actual generated dimensions; no permanent 1024, 1254 or 1400-pixel cap applies. Shared animation/state canvases and intentional effect extents follow their explicit contracts; see [references/art-direction.md](references/art-direction.md).
+
+For pixel art, specify the actual final logical grid and visible phase extent before generation. HD blocks must map proportionally to final pixels, with consistent square color/alpha blocks; "pixel-art style" alone is insufficient. Preserve progressive smoke alpha on that grid, export with nearest-neighbor resampling and inspect at actual game size. HD gradients follow their own filtering contract.
+
+For HD illustration, require both the highest useful native generation resolution and a visibly refined finish: well-defined materials/textures, clean gradients, precise straight edges, smooth regular curves, crisp delineation and coherent light/shadow. Follow the world's style and any requested symmetry. Inspect the full-resolution master and its final reduction; pixel count alone does not establish quality, and minor sharpening does not satisfy a requested reconstruction.
+
 ## Required workflow
 
 Read the relevant references before acting:
@@ -18,7 +24,7 @@ Read the relevant references before acting:
 | Generate/edit art, pixel grid, variants, animation continuity | [references/art-direction.md](references/art-direction.md) |
 | Inventory, contracts per game/world/level, frames, aliases, parallax | [references/manifest.md](references/manifest.md) and `references/manifest.example.json` |
 | Analyze/clean alpha, protected regions, trim and alignment | [references/alpha.md](references/alpha.md) |
-| Atlas, HUD, previews, densities, native rendering and sound events | [references/integration.md](references/integration.md) |
+| ti.game sprite-sheets, proportional reduction/integer rounding, atlas packing, HUD, previews, densities and sound events | [references/integration.md](references/integration.md) |
 | Create/edit sounds, variants, stereo, mixing and audition | [references/sound-assets.md](references/sound-assets.md) |
 | Editable SVG/procedural art and deterministic builds | [references/vector-sources.md](references/vector-sources.md) |
 | Seamless textures, tile adjacency and circular parallax phase | [references/repeating-textures.md](references/repeating-textures.md) |
