@@ -8,6 +8,14 @@ Consult `ti-game` for the installed native contract before choosing atlas, anima
 
 Art updates do not alter collision geometry. If sources or approved collision profiles change, regenerate collision overlays and review impact zones independently from the drawings. Never infer physical mechanics from the existence of a frame.
 
+## Export only what each consumer uses
+
+Before exporting menus, previews, cards or density variants, inspect their actual UI/resource references, including dynamic names. Declare an explicit selection per destination and identify the view, controller or runtime loader that consumes each resource. The complete world inventory belongs in canonical sources; it does not automatically belong in every derived folder. Do not use all source filenames, atlas frames, aliases or pre-existing destination files as the selection for a UI folder.
+
+For example, a gallery that shows one player ship per world needs only that ship's menu icon. A Hangar that switches intact/damaged ship states needs those two HD previews, not HD copies of every enemy, projectile, reward and animation frame. An Archive may legitimately need a much larger selection when its cards actually display those assets. Covers and their full-size viewers follow their own consumers. These are examples, not fixed counts or naming requirements for other games.
+
+When a selection changes, remove only obsolete generated derivatives in the owned destination and all affected Android/iOS density folders. Preserve canonical masters, edit history and provenance. PurgeTSS `images` generates files but does not delete obsolete outputs. Validate both presence of required resources and absence of unused extras; when compiling an app, inspect the package so stale build copies cannot hide a failed cleanup. Regeneration must reproduce the same selection without restoring removed files.
+
 ## Sprite-sheets for ti.game: integer dimensions and packing
 
 These sizing and rounding rules apply to every required sprite-sheet size, including rectangular cells and non-power-of-two drawing dimensions. The 32-pixel examples below illustrate the rule; they are not a size restriction.
