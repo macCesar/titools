@@ -28,6 +28,8 @@ When the contract declares `parallax: true`, provide exactly three independent b
 
 Extend the manifest with project-specific `exports` (atlas/JSON/frame map, HUD/cards/previews/menu/densities), collision-overlay references and source-to-output dependencies. Reuse the project's validator/exporter for those formats. The bundled validator validates masters/inventory only; include its report and the project export checks in acceptance. Quantities are compared within a named contract, not across unlike contracts.
 
+For each export destination, record the selected resources/aliases and their actual consumer. Keep this selection distinct from the complete source inventory: menu icons, HD previews, Archive cards and covers can require different subsets. An unused source or alias is not a reason to generate a UI copy. Follow [integration.md](integration.md#export-only-what-each-consumer-uses) for selection, obsolete-density cleanup and package verification.
+
 ## Optional reproducible sources and audio files
 
 For vector-authored artwork, `vector_source` points at the existing SVG with a finite, positive-extent `viewBox`; `source` remains the full-canvas PNG render checked for image geometry. Preserve the actual editable source and record generator/render settings. `build.files` optionally maps all source, generator and generated paths to lowercase SHA-256 hashes, checked against existing files. See [vector-sources.md](vector-sources.md).

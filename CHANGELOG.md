@@ -19,6 +19,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- `ti-game-assets` selects derived UI resources by actual consumers instead of copying the complete world inventory into every output. Explicit export selections, obsolete Android/iOS density cleanup and compiled-package checks prevent unused menu icons and HD previews. Game-specific filenames and display sizes remain in project instructions.
+
 - HD game-art guidance requires high native resolution and a refined finish together: defined materials/textures, clean gradients, precise lines/curves and coherent shading, reviewed at master and final display sizes. Mechanical reconstruction separates design references from rejected rendering defects.
 
 - Game-asset integration has an explicit ti.game sprite-sheet section for proportional reduction, nearest-integer dimensions, integer centering/atlas rectangles, aligned animation cells, style-specific filtering and export/runtime verification.

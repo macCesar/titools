@@ -121,3 +121,17 @@ The two TiSynthEngine doc defects noted on 2026-09-29 (`missing_required` listed
 - The maintainer's CLI is `npm link`-ed here, so the new skills are live; `titools update` adds the symlink for nothing new this time, since no skill was added.
 - `.purgetss-docs` and `.purgetss-source` are full clones duplicating `~/Developer/openSource/purgetss-docs` and `~/Developer/openSource/purgeTSS`, at the same HEADs. Converting them to symlinks frees about 408 MB. Not done: the maintainer's call.
 - `CLAUDE.md` now imports `@.claude/memory/index.md`, but `.gitignore` excludes `.claude/memory/`, so the import resolves only on this machine.
+
+## Game-asset export selections — 2026-10-13
+
+The ti-game-assets entry point and integration/manifest references now require
+an explicit resource selection and actual consumer for every derived output.
+A complete source inventory does not justify copying all frames/aliases to
+menus or HD previews. Regeneration must remove obsolete generated densities
+and verify their absence in the compiled package. Examples are generic;
+Titanium Asteroids filenames, sizes and selections remain in that project.
+
+Validated the skill and passed 408/408 TiTools tests using Pillow/PyYAML via uv
+with PYTHONDONTWRITEBYTECODE=1. The initial plain npm test run lacked Pillow
+and detected bytecode generated during asset preparation; that cache was
+removed before the passing run. No CLI machinery or release manifests changed.
