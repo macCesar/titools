@@ -206,7 +206,17 @@ Slower layers read as further away. Three layers (clouds at 0.15×, hills at 0.4
 
 ### Multitouch on-screen controls
 
-Each button must be **its own Titanium view** — sibling views receive simultaneous pointers, so holding a direction while pressing jump works. A single container splitting touches itself does not.
+Use separate sibling input targets for held directions and actions. Their
+native control type also matters for simultaneous touch; the factory below
+uses Label rather than UIButton-backed controls.
+
+The factory below deliberately uses Label. In Titanium SDK13.4.1.GA on iOS,
+TiUIButton sets its internal UIButton's `exclusiveTouch=YES`; changing the
+outer view's multitouch flag does not remove that exclusivity. Keep held
+flight controls as sibling Label/View targets or native game sprites and
+verify simultaneous input on-device. See `iphone/Classes/TiUIButton.m`,
+method `button`, in that SDK; this is a Titanium UI boundary, not a ti.game
+physics discrepancy.
 
 ```javascript
 function makeButton(title, position, fontSize) {
@@ -487,6 +497,10 @@ Two things bite here. The sweep **ignores** anything that is not `solidMode: 'bl
 
 **`linearDamping` is the missing friction, with a caveat.** `drag` only ever worked inside `carMode`; this is the same idea for ordinary sprites, and it is what brings a pool table to rest. But nothing checks contact — it bleeds speed on both axes, in the air as much as on the felt, and along a slope as much as across it. Right for a table, wrong for a hill. Below a combined 4 px/s the engine zeroes the velocity outright, so a deliberate 3 px/s drift dies the moment that sprite also carries damping.
 
+That threshold can also erase the first increment of an accelerating ship.
+Read [thrust and damping](physics.md#thrust-inertia-and-linear-damping) before
+using a permanent coasting brake on a powered sprite.
+
 **A bouncy surface is now a property of the surface.** `restitution` is read off both sides and mixed as `max`, so a springy floor rebounds riders that are not themselves bouncy:
 
 ```javascript
@@ -673,7 +687,15 @@ What still belongs in `setTimeout`: anything that must keep running while the ga
 
 ### Hit-stop on impact
 
-Freezing the scene for a few frames makes an impact read before the explosion starts. `timeScale = 0` stops the engine from advancing while it keeps drawing and accepting touches — no render loop to restart, no state to save. (Pattern from Titanium Lander: 140 ms on a crash, 90 ms when a shield absorbs a hit.)
+Giving the scene zero dt for a few frames makes an impact read before the
+explosion starts, while it keeps drawing and accepting touches. This avoids
+restarting the render loop. (Pattern from Titanium Lander: 140 ms on a crash,
+90 ms when a shield absorbs a hit.)
+
+This sets scene dt to zero, not a universal suspension of every update.
+Rope's previous-displacement and constraint pass still run in the pinned
+source; verify hit-stop separately for rope scenes. See
+[physics.md](physics.md#verlet-ropes-and-tethers).
 
 ```javascript
 let hitStopTimer = null;

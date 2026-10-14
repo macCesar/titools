@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `ti-game` has a physics reference with native equations, units and model selection across its 34 demos. It separates engine behavior, application rules and analytical tuning, and documents frame-rate, damping, rope-pause and impact-measurement limits.
+
 - `ti-admob-unified` mirrors the official module documentation for installation, privacy, formats and provider setup. It includes the unchanged application library, a pinned source/hash map, snapshot/link tests and maintainer-auditor registration for future updates. The module's first public release remains under preparation.
 - Game asset guides now cover editable SVG/procedural sources, deterministic builds, seamless tiles/parallax, procedural WAV/analysis/loop continuity and responsible advertising through the standalone module skill. Manifest checks optionally verify SVG masters, source/output hashes and PCM WAV headers/payloads.
 - `ti-game-assets` creates and prepares visual and sound assets: integrated image generation, transparent HD masters, strict pixel grids, variants/frames, parallax, synthesis design, sound variations and stereo placement. `ti-game` and `ti-synthengine` retain equal authority over their domains.
@@ -20,6 +22,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Changed
 
 - `ti-game-assets` selects derived UI resources by actual consumers instead of copying the complete world inventory into every output. Explicit export selections, obsolete Android/iOS density cleanup and compiled-package checks prevent unused menu icons and HD previews. Game-specific filenames and display sizes remain in project instructions.
+
+- Audited all `ti-game` references against upstream `3bea2f4`. Corrected diagonal normalization, Lunar Lander impact measurement and wind/fuel guidance, Rhythm beat terminology, demo count and TileLayer source attribution. Added iOS view-lifecycle and shared-gamepad caveats; prepared a separate comment-only Rhythm patch for upstream review.
 
 - HD game-art guidance requires high native resolution and a refined finish together: defined materials/textures, clean gradients, precise lines/curves and coherent shading, reviewed at master and final display sizes. Mechanical reconstruction separates design references from rejected rendering defects.
 

@@ -102,7 +102,7 @@ A normal Titanium view — add it to a window or any container, size it with the
 | `pause()` / `resume()` | method | — | Render loop control. The activity/app lifecycle already pauses and resumes automatically |
 | `backgroundColor` | string | — | GL clear color |
 | `maxFps` | int | `0` | Frame cap. `60` stops 120 Hz ProMotion displays from doubling render work; `0` = display refresh rate |
-| `timeScale` | float | `1` | Global multiplier for everything the engine ticks: physics, sheet animations, tweens, particles, camera. `0.5` = slow motion, `0` freezes the scene while rendering and touch keep running (pause menus, hit-stop) |
+| `timeScale` | float | `1` | Multiplies the scene dt for physics, sheet animations, tweens, particles and camera. `0.5` = slow motion; at `0` rendering/touch continue. Rope's previous-displacement integration still runs at zero dt in the pinned source, so complete rope freeze is not guaranteed; see [physics.md](physics.md#verlet-ropes-and-tethers) |
 | `surfaceWidth` / `surfaceHeight` | int | — | Read-only surface size in pixels |
 | `cameraX` / `cameraY` | float | `0` | World-space offset of the view |
 | `cameraScale` | float | `1` | Zoom, anchored on the view center |
@@ -192,6 +192,10 @@ On Android the buttons are captured at the activity window: the game view needs 
 
 `platformer.js` runs on either the on-screen buttons or a pad.
 
+That single-view example does not establish independent receivers for several
+retained iOS GameViews: the pinned controller adapter overwrites a shared
+GCController callback. See [lifecycle and input ownership](project-setup.md#retained-ios-scenes-and-multiple-gameviews).
+
 ## SpriteSheet
 
 Create one sheet per texture and share it across every sprite that uses it — sprites sharing a sheet batch into a single draw call.
@@ -271,7 +275,7 @@ Hit-testing runs against the transformed shape (rotation and scale included), to
 | `velocityX`, `velocityY` | `0` | px/s |
 | `gravity` | `0` | px/s², added to `velocityY`. Per sprite — there is no global gravity |
 | `gravityX` | `0` | px/s², added to `velocityX`. The **sibling** of `gravity`, not half of a vector: `gravity` keeps its exact vertical meaning. Wind, a conveyor, or a top-down game whose "down" is sideways (`gravity: 0`, `gravityX` non-zero). Since 2026-08-27 |
-| `linearDamping` | `0` | Fraction of speed shed per second, applied to both velocity axes before the position integration — rolling friction for ordinary sprites, which `drag` never was (that one only runs inside `carMode`). ~`0.6` is a pool ball on felt. Proportional, so a fast body sheds a lot and a slow one very little; below **4 px/s** the engine zeroes both axes outright, because a proportion never reaches zero on its own. Negative values are clamped to 0. Since 2026-08-27 |
+| `linearDamping` | `0` | Coefficient in 1/s: each step retains `max(0, 1−linearDamping·dt)` of both velocity axes, after thrust/gravity and before position. Below combined speed **4 px/s** it zeroes both axes; this can erase a small first thrust step. ~`0.6` is used for pool felt, but damping acts even without contact. Negative values clamp to0. See [physics.md](physics.md#thrust-inertia-and-linear-damping) |
 | `maxSpeed` | `500` | px/s cap applied **only** to `thrust` acceleration and the `carMode` model. Writing `velocityX`/`velocityY` directly is never clamped |
 | `angularVelocity` | `0` | deg/s |
 | `thrust` | `0` | px/s² along the current heading (Newtonian flight) |
@@ -572,6 +576,10 @@ A native Verlet chain: integration and distance constraints run in the game loop
 | `zIndex` | `0` | |
 | `visible` | `true` | |
 | `endX`, `endY` | — | Read-only live position of the loose end (grappling-hook tips) |
+
+Per-step retention is not a per-second rate. Rope's existing displacement and
+constraint passes still execute at `dt=0` in the pinned implementation;
+see [Verlet equations and pause limits](physics.md#verlet-ropes-and-tethers).
 
 The tether yields at the end no finger owns: with a fixed head anchor the tail sprite is simply leashed, but with sprites on both ends you can drag either one and the other is towed once the rope goes taut.
 

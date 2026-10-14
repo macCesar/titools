@@ -232,6 +232,12 @@ Add `blend: 'add'` for fire, magic and sparks — overlaps bloom instead of cove
 
 ## Ropes and chains
 
+Rope `damping` retains a fraction of the previous displacement **per update**,
+unlike Sprite `linearDamping`, whose coefficient is in 1/s. In the pinned
+source, Verlet displacement and constraint relaxation still run at `dt=0`;
+`timeScale=0` does not guarantee a motionless rope. See the equations and
+pause boundary in [physics.md](physics.md#verlet-ropes-and-tethers).
+
 ```javascript
 // hangs from a draggable ball
 const ball = Game.createSprite({ sheet: ballSheet, x: W / 2, y: H * 0.22, width: BALL, height: BALL, zIndex: 10, draggable: true, hitboxShape: 'circle' });
@@ -335,6 +341,11 @@ gameView.addEventListener('tap', () => {
 });
 ```
 
-**`timeScale`** — one property slows or freezes physics, sheet animations, tweens, particles, the camera and the game-clock timers together, while rendering and touch keep running. `0.5` for slow motion, `0` for a pause that still draws, short bursts of `0` for hit-stop. `timescale.js` makes the timer half visible: a clock on `gameView.every(1000, ...)` freezes with the scene while a `setInterval` clock beside it keeps ticking.
+**`timeScale`** scales the dt for physics, sheet animations, tweens, particles,
+camera and game-clock timers, while rendering/touch keep running. `0.5` gives
+slow motion; `0` gives zero dt for a pause or hit-stop. Rope still applies
+previous displacement and constraints at zero dt in this snapshot, so test
+rope scenes separately. `timescale.js` compares a game-clock timer with an
+independent JS interval; it does not include a rope.
 
 **`idleAnimation`** — a per-sprite organic sway that composes with tweens and drags. Cheap life for cards, icons, floating pickups and menu art. Disable it before a tween that must land precisely.

@@ -40,7 +40,8 @@ For Tiled JSON, pass the layer data with `cols: map.width`, `rows: map.height`, 
 
 ## Portable property timing
 
-The upstream README says every property is live, but the native bindings differ. Use the portable contract below:
+The pinned upstream README now documents the same creation-time portability
+boundary as the native bindings. Use this contract:
 
 | Timing | Properties |
 | --- | --- |

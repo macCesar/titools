@@ -27,6 +27,7 @@ Open the references relevant to the task before proposing code. Do not answer fr
 | Exact methods, properties, defaults, event payloads, percentages | [references/api.md](references/api.md) |
 | Install, Classic/Alloy structure, assets, cleanup, lifecycle | [references/project-setup.md](references/project-setup.md) |
 | Choose a runnable upstream example | [references/examples.md](references/examples.md) |
+| Choose or tune a physical model, derive equations/units, diagnose FPS-dependent motion | [references/physics.md](references/physics.md) |
 | Reusable level, pooling, HUD, collision, path, timer patterns | [references/patterns.md](references/patterns.md) |
 | Platformer, racer, shooter, runner, rhythm, ball-game recipes | [references/recipes-action.md](references/recipes-action.md) |
 | Cards, point-and-click, particles, ropes, camera, effects | [references/recipes-adventure-effects.md](references/recipes-adventure-effects.md) |
@@ -133,7 +134,9 @@ When sources disagree, use this order:
 3. Upstream `README.md` and `TUTORIAL.md` for intended public usage.
 4. Upstream `TODO.md` for what remains partial or absent.
 
-The prose drift recorded at the previous pin is gone: upstream now states 34 demos (correct), names the HUD corners correctly, and documents `legend`, `firstGid`, `cols` and `rows` as creation-time on Android. What remains uncovered by any demo is `wallSlideSpeed` and the `onWallLeft`/`onWallRight` flags — `wallhit` itself is now exercised by `worldwrap.js` — so that part of the contract still comes from the README and both native implementations.
+Rechecked upstream HEAD on 2026-10-12: it remains `3bea2f4`. The catalog contains 34 demos. Examples establish intended API combinations; source inspection does not certify an installed binary or hardware behavior. Keep local fork changes separate from that upstream pin.
+
+Known source-level traps are collected in [references/physics.md](references/physics.md): thrust can be erased by the damping rest threshold, rope damping is per update and zero-delta rope updates are not a guaranteed freeze, and Rhythm's 400 ms subdivision comment is wrong at its stated 150 BPM. The wall-slide flags still have no demo; their contract comes from the README and both native implementations. Classify a wrong demo comment separately from a reproduced native-engine defect before proposing an upstream change.
 
 ## Before returning code
 

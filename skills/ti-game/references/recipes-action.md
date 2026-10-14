@@ -2,6 +2,10 @@
 
 Production-oriented patterns distilled from the upstream action demos at `ti.game@3bea2f4`. Use [examples.md](examples.md) to locate the full runnable demo and [api.md](api.md) for exact defaults and payloads. The wall-contact API is source/README-backed because upstream has not added a wall-jump demo yet.
 
+Use [physics.md](physics.md) for the implemented equations, units, jump tuning,
+inertia versus direct control, and numerical limits. Recipes select native
+mechanisms; they do not replace that model reference.
+
 <!-- TOC-START -->
 ## Contents
 
@@ -19,7 +23,7 @@ Production-oriented patterns distilled from the upstream action demos at `ti.gam
 
 ## Tap-to-flap
 
-Gravity plus an impulse per tap. Scoring and death are collisions with invisible zones. The rotation tween is what sells the arc.
+Gravity plus a replacement vertical velocity per tap, not an accumulated impulse. Scoring and death are collisions with invisible zones. The rotation tween is what sells the arc.
 
 ```javascript
 const pig = Game.createSprite({
@@ -236,8 +240,9 @@ let lastFacing = 'down';
 let walking = false;
 
 function applyMovement() {
-	player.velocityX = moveX * SPEED;
-	player.velocityY = moveY * SPEED;
+	const speed = (moveX !== 0 && moveY !== 0) ? SPEED / Math.sqrt(2) : SPEED;
+	player.velocityX = moveX * speed;
+	player.velocityY = moveY * speed;
 	if (moveX === 0 && moveY === 0) {
 		player.stop();
 		walking = false;
@@ -418,7 +423,13 @@ Rocks are round (`hitboxShape: 'circle'`), drift on random velocities, spin on `
 
 ## Lunar lander
 
-Same flight model as Asteroids, with gravity on and a landing test. There is no "landing" event — you judge the touchdown yourself in the `land` handler, where velocities are still readable.
+Same flight model as Asteroids, with gravity and a touchdown rule. This is a
+curated recipe, not one of the 34 upstream demos. `land` reports grounding
+after the solid response: live velocity may already be zero or reflected.
+For a static sprite pad, use the snapshotted normal speed in `solidimpact`.
+It is compensated for this frame's acceleration, not the full incoming
+velocity vector. Tiles do not emit that event; use a sprite pad when the
+impact must be measured. See [landing evidence](physics.md#landing-and-impact-measurements).
 
 ```javascript
 const lander = Game.createSprite({
@@ -428,6 +439,7 @@ const lander = Game.createSprite({
 	gravity: world.gravity,                    // per-world, e.g. H * 0.35 for the Moon
 	maxSpeed: MAX_SPEED,
 	hitboxScale: 0.8,
+	impactThreshold: 0,                       // include gentle physical impacts
 	solidWith: ['terrain', 'pad'],
 	collidesWith: ['hazard']
 });
@@ -435,12 +447,12 @@ const lander = Game.createSprite({
 const MAX_LANDING_SPEED = H * 0.18;
 const MAX_LANDING_TILT = 12;                   // degrees
 
-lander.addEventListener('land', (e) => {
-	const speed = Math.abs(lander.velocityY);
+lander.addEventListener('solidimpact', (e) => {
+	const speed = e.speed;                    // immutable contact payload, not live velocity
 	const tilt = Math.abs(((lander.rotation % 360) + 540) % 360 - 180);
 	const onPad = e.group === 'pad';
 
-	if (onPad && speed <= MAX_LANDING_SPEED && tilt <= MAX_LANDING_TILT) {
+	if (onPad && e.normalY < -0.7 && speed <= MAX_LANDING_SPEED && tilt <= MAX_LANDING_TILT) {
 		succeed();
 		return;
 	}
@@ -458,12 +470,17 @@ function crash() {
 }
 ```
 
-Thrust burns fuel on the same coarse tick that reads the controls — 80 ms is fast enough to feel responsive and slow enough to stay off the bridge:
+Fuel and control decisions use a coarse game-clock tick. `BURN_RATE` is fuel
+units per game second; each nominal tick removes the rate times its interval.
+GameView timers can fire late and do not catch up after stalls, so this is a
+cadence approximation, not exact elapsed-time accounting. Store the timer ID
+and cancel it with `gameView.cancelTimer(timer)` on cleanup:
 
 ```javascript
-timer = setInterval(() => {
+const CONTROL_MS = 80;
+timer = gameView.every(CONTROL_MS, () => {
 	if (mainThrusterHeld && fuel > 0) {
-		fuel -= BURN_RATE;
+		fuel = Math.max(0, fuel - BURN_RATE * CONTROL_MS / 1000);
 		lander.thrust = THRUST;
 		exhaust.emitting = true;
 	} else {
@@ -471,10 +488,13 @@ timer = setInterval(() => {
 		exhaust.emitting = false;
 	}
 	fuelLabel.text = Math.max(0, Math.round(fuel)) + '%';
-}, 80);
+});
 ```
 
-Wind is just a horizontal acceleration you re-apply on that same tick by nudging `velocityX`; per-world gravity, drag and wind are plain numbers in a catalog object.
+Set `lander.gravityX = world.wind` in px/s² when the wind changes. Native
+integration applies it every frame; do not add velocity repeatedly from a JS
+timer. For lateral-velocity limits or exact vector touchdown tests, normal
+impact speed alone is insufficient: design a separate measurement contract.
 
 ## Endless runner
 
@@ -599,7 +619,15 @@ function hitLane(lane, pad) {
 }
 ```
 
-An invisible `misszone` trigger below the pads catches gems that got away and counts the miss. Derive the fall speed from the beat: `FALL_SPEED = (PAD_Y + NOTE) / 1.6` with a 400 ms spawn interval puts four eighth notes between spawn and pad at 150 BPM.
+An invisible `misszone` trigger below the pads catches gems that got away and
+counts the miss. `FALL_SPEED = (PAD_Y + NOTE) / 1.6` gives a 1.6 s trip from
+`-NOTE` to `PAD_Y`. At the stated 150 BPM, `60000 / 150 = 400` ms is a quarter
+note; 1.6 s is four quarter notes (eight eighths). The upstream comments say
+"eighth" but the timing constants describe quarters. Correct that wording,
+not the engine or the demo's timing without a separate design decision.
+Position windows convert to time with `windowSeconds = windowPx / FALL_SPEED`.
+The demo uses a JS interval and independent music playback, not an audio-clock
+beat scheduler; see [rhythm timing](physics.md#rhythm-timing).
 
 ## Ball sports / breakout physics
 
@@ -634,7 +662,11 @@ ball.addEventListener('collision', (e) => {
 
 Note the split: walls and the net are `solidWith` (the engine bounces the ball off them for free), while the players and the floor are `collidesWith` (you decide what happens). For breakout, bricks go in `collidesWith` and are removed with `visible = false` on hit while the paddle and walls stay solid.
 
-A `restitution: 1` ball on an invisible floor bounces forever with no JS at all — and since 2026-08-27 the bounce can live on the *floor* instead, which is what makes one springy platform in an otherwise dead level a one-property change. Round obstacles, bumpers that knock each other around and a table that brings everything to rest are all in [Shaped solids](patterns.md#shaped-solids-ramps-round-posts-and-bodies-that-push-back--slopesjs-circlesjs-pooljs-drumjs).
+A `restitution: 1` ball reflects larger impacts without restitution loss;
+the small-bounce cutoff can still settle it. Restitution can live on the
+floor, so one springy platform can bounce otherwise non-bouncy riders.
+Round obstacles, mutual push bodies and pool damping are in
+[Shaped solids](patterns.md#shaped-solids-ramps-round-posts-and-bodies-that-push-back--slopesjs-circlesjs-pooljs-drumjs).
 
 **Opponent AI** on an 80 ms timer, reading a handful of live properties per tick:
 

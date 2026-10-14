@@ -2,7 +2,17 @@
 
 Verified against all 34 self-contained demos under `ti.game@3bea2f4:example/`, plus the launcher `example/app.js` and the shared back-control helper `example/backnav.js` (neither is a demo). `wallhit` now has one user — `worldwrap.js` counts bolt hits with it — but `wallSlideSpeed` and the `onWallLeft`/`onWallRight` flags still have no demo; for those use [the platformer recipe](recipes-action.md#platformer), verified against both native implementations and the README contract.
 
-The demos prove that API combinations run together on the current module. They are **not** production templates: most keep state in one file, repeat launcher/back-button plumbing, and still use pre-ES6 syntax. Start from the closest demo, retain the demonstrated engine calls, then apply the focused structure and cleanup patterns in this skill.
+The demos show intended API combinations; reading them does not verify an
+installed module or device. They are **not** production templates: most keep
+state in one file, repeat launcher/back-button plumbing, and still use pre-ES6
+syntax. Start from the closest demo, retain the demonstrated engine calls,
+then apply the focused structure and cleanup patterns in this skill.
+
+For equations, units, genre selection and frame-rate limits, use
+[physics.md](physics.md). Rhythm's 400 ms interval is a quarter note at its
+stated 150 BPM, despite the upstream "eighth" comments. Flappy replaces
+vertical velocity per tap; it does not add repeated impulses. The curated
+Lunar Lander recipe is not an additional upstream demo.
 
 | Demo | What it proves | Production-oriented reference |
 | --- | --- | --- |

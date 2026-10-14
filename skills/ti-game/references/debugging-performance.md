@@ -94,6 +94,12 @@ Telemetry is opt-in inside the renderers. With the HUD disabled and no `performa
 
 ## Common diagnostic order
 
+For a physics discrepancy, record the installed build/commit, surface size,
+`timeScale`, input values and actual FPS first. `maxFps` is a cap, not a fixed
+physics step. A visible thruster proves an animation state, not acceleration.
+The damping rest threshold can erase a small first thrust step, and Rope uses
+per-update damping. See [physics.md](physics.md#time-step-and-frame-rate).
+
 1. Confirm the object was added and is visible/in bounds.
 2. Turn on the relevant sprite/layer debug shape, then the global overlay if relationships are unclear.
 3. Verify `collisionGroup` is on the target and `solidWith`/`collidesWith` on the mover.
