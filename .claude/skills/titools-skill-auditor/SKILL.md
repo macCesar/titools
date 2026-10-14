@@ -1,6 +1,6 @@
 ---
 name: titools-skill-auditor
-description: Use when reference files for the doc-based skills in this repo need re-aligning with their upstream sources — after a Titanium SDK, Alloy, or PurgeTSS release; when an audit reveals stale or training-data content; or before tagging a TiTools version. Covers the five Titanium documentation skills plus `purgetss` and the official `ti-admob-unified` module snapshot. Maintenance-only — not intended for end-user Titanium projects.
+description: Use when reference files for the doc-based skills in this repo need re-aligning with their upstream sources — after a Titanium SDK, Alloy, PurgeTSS, or native module update; when an audit reveals stale or unsupported content; or before tagging a TiTools version. Covers the five Titanium documentation skills plus `purgetss`, `ti-admob-unified`, and `ti-synthengine`. Maintenance-only — not intended for end-user Titanium projects.
 metadata:
   internal: true
 ---
@@ -13,7 +13,7 @@ For *creating* a new skill from scratch, use a generic skill-creator workflow in
 
 ## Scope
 
-This skill audits seven reference skills:
+This skill audits eight reference skills:
 
 - `ti-api`
 - `ti-guides`
@@ -22,6 +22,7 @@ This skill audits seven reference skills:
 - `alloy-howtos`
 - `purgetss`
 - `ti-admob-unified`
+- `ti-synthengine`
 
 It does **not** audit:
 
@@ -38,6 +39,7 @@ Source caches, all gitignored, all symlinks or clones at the repo root.
 | `.titaniumsdk-site` | `tidev/titaniumsdk.com` | the four guide skills (`content/docs/`) and the release cross-check (`registry/sdk/`) |
 | `.titanium-docs` | `tidev/titanium-docs` | the frozen archive, additive only |
 | `.ti-admob-unified` | `macCesar/ti.admob.unified` | `ti-admob-unified` — official docs, integration library, Android/iOS contract |
+| Existing TiSynthEngine checkout (or a gitignored source cache) | `macCesar/TiSynthEngine` | `ti-synthengine` — official docs, Android/iOS contracts, renderers, shared DSP and tests |
 | `.purgetss-docs` + `.purgetss-source` | `macCesar/purgetss-docs`, `macCesar/purgeTSS` | `purgetss` |
 
 Read `references/source-map.md` § "Precedence" before any audit. Which root wins is not a preference; an audit that reads the archive first reports green against a corpus that stopped moving.
@@ -69,6 +71,8 @@ done
 
 For `ti-admob-unified`, use the existing module checkout or a `.ti-admob-unified` symlink/cache. Run `node scripts/verify-module-snapshot.mjs --source .ti-admob-unified` before proposing updates. It reports changed/missing/new official docs, modified mirrors, source dirtiness and a changed commit; it never pulls or writes. Preserve original example/library assets byte-for-byte and curated game guidance separately.
 
+For `ti-synthengine`, use the existing `macCesar/TiSynthEngine` checkout without requiring a machine-specific path. Run `node scripts/verify-module-snapshot.mjs --skill ti-synthengine --source /path/to/TiSynthEngine`, then read its `references/source-notes.md` and `source-snapshot.json`. Check official documentation against native code independently of mirror/hash fidelity. Preserve curated recipes and declared additions/cross-links to the official mirrors; distinguish contract tests from renderer and device verification.
+
 Record in the audit report which commit of each cache the audit read, and for `ti-api` the SDK **tag** it was anchored to. `main` currently declares `14.0.0` and carries unreleased APIs.
 
 ## Invocation
@@ -80,7 +84,7 @@ Parse `$ARGUMENTS` to determine which skill to audit:
 | `<skill-name>` | Audit the named skill against its mapped doc subtree |
 | *(empty)* | Ask the user which skill to audit |
 
-Valid skill names: `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`, `purgetss`, `ti-admob-unified`.
+Valid skill names: `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`, `purgetss`, `ti-admob-unified`, `ti-synthengine`.
 
 ## Audit workflow
 

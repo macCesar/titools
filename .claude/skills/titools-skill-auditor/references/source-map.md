@@ -4,6 +4,23 @@ Mapping of doc-based skills in this repo to their upstream documentation source.
 
 ---
 
+<!-- TOC-START -->
+## Contents
+
+- [Documentation roots](#documentation-roots)
+- [Precedence: which root wins](#precedence-which-root-wins)
+- [Per-skill mapping](#per-skill-mapping)
+  - [`purgetss`](#purgetss)
+  - [`alloy-guides`](#alloy-guides)
+  - [`alloy-howtos`](#alloy-howtos)
+  - [`ti-guides`](#ti-guides)
+  - [`ti-howtos`](#ti-howtos)
+  - [`ti-api`](#ti-api)
+- [`ti-admob-unified`](#ti-admob-unified)
+- [`ti-synthengine`](#ti-synthengine)
+
+<!-- TOC-END -->
+
 ## Documentation roots
 
 The Titanium documentation moved during 2026. `tidev/titanium-docs` (VuePress) is frozen and being archived under TI-52; `tidev/titaniumsdk.com` (Next.js) replaces it, and the Titanium SDK now dispatches its API regeneration there. The job that still notifies `titanium-docs` is labelled `Notify titanium-docs (legacy)` in the SDK's own `regen-docs.yml`, with a comment saying to delete it once the move completes.
@@ -18,6 +35,7 @@ That leaves three roots with different standing, and the difference is the whole
 | `.titanium-docs/docs/guide/` | `tidev/titanium-docs:docs/guide/` | **Archive.** 336 pages TiDev condensed into 62. Preserved here, never a source of a *new* claim. |
 | `.titanium-docs/docs/api/` | `tidev/titanium-docs:docs/api/` | **Archive, and already behind.** Verified 2026-09-11: `Ti.UI.Toolbar.hideSharedBackground` (apidoc 2026-07-12) and `Ti.UI.ListView.snapping` (apidoc 2026-07-20) never reached it, though both are in the site's `registry/sdk/main/`. |
 | `.ti-admob-unified/documentation/` and platform source/tests | `macCesar/ti.admob.unified` | Live module source; first public 1.0.0 under preparation at initial snapshot. |
+| Existing TiSynthEngine checkout: `documentation/`, platform source/tests and `shared/` | `macCesar/TiSynthEngine` | Live module source; distinguish 1.0.0 beta commits from installed/published binaries. |
 | `.purgetss-docs/docs/` | `macCesar/purgetss-docs:docs/` | Live. |
 | `.purgetss-source/` | `macCesar/purgeTSS` package source, `CHANGELOG.md`, `README.md`, `bin/`, `src/`, and `dist/` | Live. |
 
@@ -312,3 +330,31 @@ As of 2026-09-11 the 20 reference files carry 305 types with no type documented 
 For exact native behavior/parity, inspect `android/src/ti/admob/unified/`, `ios/Classes/` and `tests/` at the reviewed build; for integration-library behavior inspect `example/lib/ads.js`. A doc/source disagreement is a reported finding, not permission to invent a contract. Provider account/format/consent setup also needs the current official links from `documentation/mediation.md`.
 
 Start with `node scripts/verify-module-snapshot.mjs --source .ti-admob-unified`. Review changed, removed and newly added documents and native/library changes between the pin and candidate commit. Read each updated source before writing. Preserve rebased links, snapshot headers, generated TOCs and protected community patterns. Do not blindly replace curated files or repair hashes over unreviewed changes. Verify snapshot fidelity, links/anchors, syntax, skill registration, package contents and applicable consumer/device behavior separately.
+
+## `ti-synthengine`
+
+- **Source type:** Mixed official documentation + native implementation + curated sound guidance.
+- **Canonical repository:** `macCesar/TiSynthEngine`; use an existing checkout or a gitignored source cache. Do not require a machine-specific path.
+- **Version/commit/hash map:** `skills/ti-synthengine/references/source-snapshot.json`.
+- **Transformations and protected content:** `skills/ti-synthengine/references/source-notes.md`.
+
+| Skill resource | Official source or standing |
+| --- | --- |
+| `references/{api,guide,examples,audio-engine,recommendations,sound-design,troubleshooting}.md` | Corresponding `documentation/*.md`, with the transformations declared in `source-notes.md` |
+| `references/recipes.md` | Curated TiTools recipes; verify public options and envelopes against native contracts and preserve validated recipes |
+| Cross-links from `SKILL.md` and official mirrors into curated recipes | TiTools navigation additions; preserve the two recipe cross-links declared in `source-notes.md` |
+| Demo link in `references/examples.md` | Rebased link to the official `example/app.js` at the snapshot commit, not a nonexistent local asset |
+| `references/source-notes.md`, `source-snapshot.json` | TiTools maintenance metadata |
+| Upstream `documentation/index.md`, `documentation/third-party-notices.md` | Explicitly excluded from the seven-document mirror set; declare both exclusions and reasons in snapshot metadata, and review changed excluded docs for relevant guidance/attribution |
+
+Start with:
+
+```bash
+node scripts/verify-module-snapshot.mjs --skill ti-synthengine --source /path/to/TiSynthEngine
+```
+
+Review source dirtiness, commit changes, hashes, removed/new documents, declared exclusions and mirror transformations. A new upstream document must be mirrored or explicitly excluded with a reason; it must not disappear from coverage accounting. Preserve provenance headers, generated TOCs, ES6+ modernization, curated recipes and their two declared cross-links, and the commit-pinned upstream demo link. `sound-design.md` has an official source; distinguish its documented source content from any curated additions instead of replacing it with recipes or treating all of it as an untracked author contribution.
+
+Independently verify official claims against `android/src/ti/synthengine/SynthContract.java`, `ios/Classes/TiSynthengineContract.m`, both native renderers (`android/jni/SynthOboeEngine.cpp`, `ios/Classes/TiSynthengineModule.m`), and `shared/synth_core.h` / `shared/synth_spatial.h`. Read affected tests as evidence of what is actually exercised. Hash equality establishes snapshot fidelity, not correctness of upstream prose. Report doc/code disagreements before updating either contract; an audit does not authorize changes to the native module.
+
+Distinguish Java/iOS validator acceptance, command construction, Android host rendering, shared DSP checks, and iOS/device rendering. The Java/iOS corpus does not render audio. The spatial sample-rate loop at the 2026-10-14 snapshot tests 16/32/64/128 kHz, not the advertised 8/192 kHz endpoints; stealing/stop checks assert finiteness and eventual silence rather than exact tail history. Recheck the current tests rather than repeating those historical coverage limits as permanent facts. The same audit found iOS command construction turning zero attack/release into one sample; track and report that native discrepancy until independently resolved, without silently changing the documented public range or native implementation. Headphone localization, route recovery and device CPU/latency require device evidence.

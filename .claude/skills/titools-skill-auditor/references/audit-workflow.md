@@ -33,6 +33,7 @@ Which caches an audit needs depends on the skill, and getting this wrong is the 
 | `alloy-guides`, `alloy-howtos`, `ti-guides`, `ti-howtos` | `.titaniumsdk-site` (live) + `.titanium-docs` (archive) |
 | `purgetss` | `.purgetss-docs` + `.purgetss-source` |
 | `ti-admob-unified` | `.ti-admob-unified` or existing module checkout; `references/source-snapshot.json` |
+| `ti-synthengine` | Existing `macCesar/TiSynthEngine` checkout or gitignored source cache; `references/source-snapshot.json` and `source-notes.md` |
 
 If one is missing, stop and prompt the user with the matching clone command from `SKILL.md` § Setup.
 
@@ -61,7 +62,7 @@ For `purgetss`, require both `.purgetss-docs/` and `.purgetss-source/`, then rec
 |---|---|---|
 | **Narrative, two layers** | `alloy-guides`, `alloy-howtos`, `ti-guides`, `ti-howtos` | Compare against the live page in `.titaniumsdk-site/content/docs/` first; fall back to `.titanium-docs` only for topics the new site has not written |
 | **API** | `ti-api` | Compare against `.titanium-sdk/apidoc/*.yml` at the newest GA tag, cross-checked with `.titaniumsdk-site/registry/sdk/<version>/` |
-| **Mixed narrative + implementation** | `purgetss`, `ti-admob-unified` | Compare workflows against `.purgetss-docs`, then verify commands, classes, paths, aliases, and defaults against `.purgetss-source` |
+| **Mixed narrative + implementation** | `purgetss`, `ti-admob-unified`, `ti-synthengine` | Compare against the skill's mapped official docs, then independently verify exact behavior against its own implementation/tests; classify curated additions separately |
 
 The source type determines audit strategy:
 
@@ -72,6 +73,8 @@ The source type determines audit strategy:
 ---
 
 For `ti-admob-unified`, run the read-only snapshot checker from `source-map.md` and distinguish official mirrors, byte-identical example assets and curated `game-monetization.md` before coverage comparison. Resolve exact module claims against Android/iOS implementation/tests and official module docs, not Titanium SDK apidoc.
+
+For `ti-synthengine`, run `node scripts/verify-module-snapshot.mjs --skill ti-synthengine --source /path/to/TiSynthEngine`. Read the snapshot metadata and source notes before comparing the seven official mirrors. Account for explicitly excluded upstream documents (`index.md`, `third-party-notices.md`) separately from newly discovered documents; exclusions require declared reasons. Keep curated `recipes.md`, declared cross-links and the rebased commit-pinned demo link distinct from official source content.
 
 ## Phase 1: Coverage analysis
 
@@ -136,6 +139,16 @@ For each reference file:
    - **Ambiguous** (propose ASK): cannot verify either way. Flag for user decision.
 6. **Respect the `## Community-Discovered Patterns` convention.** Sections under this H2 heading are PROTECTED — never delete during audits, even without official source. See `quality-standards.md` § "Protected sections".
 
+### Native module correctness checks
+
+For `ti-admob-unified` and `ti-synthengine`, perform these checks independently of the documentation comparison. Matching upstream prose and hashes can preserve an upstream error exactly.
+
+- Trace affected public options through validation, conversion/inheritance, command construction and native consumers on both platforms. Verify omissions, explicit zero values, defaults, conflicts and return values, not just accepted key names.
+- Compare official explanations against the executing implementation, including shared DSP and each platform renderer where relevant. Report contradictory prose or native behavior with exact file/line and source commit, distinguishing newly introduced findings from pre-existing issues.
+- Read test assertions and name the boundary they cover: validator acceptance/rejection, command conversion, shared DSP, native host rendering or device behavior. Passing validator parity is not renderer parity; passing structural tests is not proof that recipes or prose are correct.
+- For `ti-synthengine`, check protected recipes against the public contract and envelope constraints. Check spatial opt-in/omission, inherited pan conflicts, fixed coordinates, FIR history/draining, sample-rate coverage and gain staging. Review source notes for the current test blind spots and unresolved iOS zero-envelope conversion issue; do not treat a previously green suite as resolution.
+- State which claims still need device evidence (for example iOS rendering, perceptual localization, route behavior and CPU/latency). Do not change native code or silently redefine a public contract to hide a discrepancy during a documentation audit.
+
 ### Output per reference
 
 ```markdown
@@ -188,6 +201,13 @@ Aggregate all per-reference findings into a single report.
 
 ### Author additions to preserve
 1. [reference] Section X — valid enhancement beyond official docs
+
+### Native evidence and limits (module skills)
+- Snapshot/mirror fidelity: ...
+- Official claims checked against native implementation: ...
+- Validator, command-conversion, DSP and renderer checks: ...
+- Unresolved upstream discrepancies and device-only verification: ...
+- Explicitly excluded upstream docs and reasons: ...
 
 ### Estimated effort
 - Full rewrite of X references
@@ -295,6 +315,8 @@ Verify the updates are correct and complete.
    - References should be under 800 lines each.
 
 4. **Verify cross-references and orphaned content** (see subsection below).
+
+5. **For native module snapshots**, rerun the mapped read-only snapshot checker and verify source/mirror hashes, declared exclusions and transformations after all edits. Validate preserved curated content and links separately. Run applicable contract/DSP/renderer checks from the reviewed module checkout, recording what each proves and which device checks remain. For `ti-synthengine`, keep the one-sample iOS zero attack/release discrepancy reported until command construction or renderer evidence establishes its resolution; validator results alone do not do so.
 
 ### Step 4 — Cross-reference and orphan-content verification
 
