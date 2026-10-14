@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at commit `918c9a6a9e8fc96ee7b6e81c6a8845e612c4f6b6` (2026-10-14). Upstream `documentation/sound-design.md` SHA-256: `bb5fdf61af9ce7a6a5175946c503fa485a972c9db8c0dedbd18d22a6dbd6b129`.
+> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at commit `95901c98af5353b86d9dc7c60b29ab9186b038cd` (2026-10-14). Upstream `documentation/sound-design.md` SHA-256: `4ccbb55b92879c59d20116aff942e16d431c619341b3d4714da4c50c3c691cf9`.
 
 # Sound design with TiSynthEngine
 
@@ -382,16 +382,20 @@ synth.playChord({
 })
 ```
 
-Each repeated pitch is a voice, so size `maxVoices` for the full stack. Event
-gain is divided by the square root of the voice count, so a thick chord is not
-louder than a thin one.
+Each repeated pitch is a voice, so size `maxVoices` for the full stack. Protected
+profiles divide per-voice source gain by the square root of the event voice
+count. This reduces buildup; it does not guarantee equal loudness. Correlated
+voices can still reinforce each other, and detuned voices can produce peaks
+as their phases align. `raw` does not apply this event normalization.
 
 ## Chords, polyphony and gain
 
 `playChord` is for notes that should start together. The call is placed in the
 native queue as one event, so the audio callback sees the whole chord or none
-of it. Its source gain is divided by the square root of the chord's voice count
-to keep power stable.
+of it. In protected profiles, per-voice source gain is divided by the square
+root of the chord's voice count. This approximately stabilizes power for
+uncorrelated voices, not coherent copies; it does not guarantee constant peaks
+or perceived loudness. `raw` bypasses this normalization.
 
 ```javascript
 synth.playChord({
@@ -535,16 +539,18 @@ synth.playPattern({
   volume: 0.5,
   waveType: WAVE.SQUARE,
   steps: [
-    { note: 'C5', duration: 80 },
-    { note: 'E5', duration: 80 },
-    { note: 'G5', duration: 80 },
-    { note: 'C6', duration: 160, noteValue: '8n' }
+    { note: 'C5' },
+    { note: 'E5' },
+    { note: 'G5' },
+    { note: 'C6', noteValue: '8n' }
   ]
 })
 ```
 
-The pattern root does not accept `duration`. Put it on each sounding step when
-you want a gate shorter than its rhythmic step.
+The first three steps use sixteenth notes and the last uses an eighth note.
+`release` fades each voice within that rhythmic length. The pattern root does
+not accept `duration`; a step `duration` replaces its rhythmic length as well
+as its voice length. There is no separate gate parameter.
 
 ### Noise percussion
 
@@ -555,13 +561,16 @@ synth.playPattern({
   waveType: WAVE.NOISE,
   volume: 0.34,
   steps: [
-    { frequency: 220, duration: 65, attack: 1, release: 55 },
+    { frequency: 220, attack: 1, decay: 65, sustain: 0, release: 55 },
     { rest: true },
-    { frequency: 220, duration: 35, attack: 1, release: 28 },
-    { frequency: 220, duration: 35, attack: 1, release: 28 }
+    { frequency: 220, attack: 1, decay: 35, sustain: 0, release: 28 },
+    { frequency: 220, attack: 1, decay: 35, sustain: 0, release: 28 }
   ]
 })
 ```
+
+The steps keep the eighth-note grid while short decay and `sustain: 0` let
+each hit settle to silence inside its step.
 
 Noise steps still need `frequency` or `note` because every sounding pattern
 step follows the same shape. The pitch value is not used by the noise source.
@@ -757,5 +766,7 @@ function playAllSimonPads () {
 }
 ```
 
-For more complete code, continue with [Examples](examples.md). For gain and
-device-testing advice, see [Recommendations](recommendations.md).
+For more complete code, continue with [Examples](examples.md) and
+[Curated sound and interaction recipes](recipes.md). The latter includes retro
+effects, a playable xylophone, memory-pad timbres, layered chords and timer
+ownership. For gain and device-testing advice, see [Recommendations](recommendations.md).

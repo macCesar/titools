@@ -110,19 +110,21 @@ were chosen for it.
 
 ### Three-note bonus cue
 
-Short ascending square notes read as collection or reward. `stepDuration`
-controls spacing; each step's `duration` controls its gate.
+Short ascending square notes read as collection or reward. A step's `duration`
+sets both its voice length and the time before the next step; it overrides
+`stepDuration` and `noteValue`. Explicit rests separate 95 ms notes by 110 ms.
 
 ```javascript
 synth.playPattern({
-  stepDuration: 110,
   attack: 2,
   release: 30,
   volume: 0.55,
   waveType: WAVE.SQUARE,
   steps: [
     { frequency: 523.25, duration: 95 },
+    { rest: true, duration: 15 },
     { frequency: 587.33, duration: 95 },
+    { rest: true, duration: 15 },
     { frequency: 659.25, duration: 130 }
   ]
 })
@@ -131,19 +133,22 @@ synth.playPattern({
 ### Fast four-note arpeggio
 
 Very short square notes with a small attack retain the hard cartridge-era
-edge while reducing uncontrolled clicks.
+edge while reducing uncontrolled clicks. The 10 ms rests keep the first three
+40 ms notes on a 50 ms grid; the final note rings for 80 ms.
 
 ```javascript
 synth.playPattern({
-  stepDuration: 50,
   attack: 5,
   release: 15,
   volume: 0.5,
   waveType: WAVE.SQUARE,
   steps: [
     { frequency: 261.63, duration: 40 },
+    { rest: true, duration: 10 },
     { frequency: 329.63, duration: 40 },
+    { rest: true, duration: 10 },
     { frequency: 392, duration: 40 },
+    { rest: true, duration: 10 },
     { frequency: 523.25, duration: 80 }
   ]
 })
@@ -152,8 +157,8 @@ synth.playPattern({
 ### Rapid score ticks
 
 Use one native pattern instead of ten JavaScript timers. Explicit attack and
-release values make every 60 ms step valid without relying on shortened
-defaults.
+release values make every 60 ms tone valid without relying on shortened
+defaults. A 10 ms rest after each tone places the ticks 70 ms apart.
 
 ```javascript
 var scoreSteps = []
@@ -165,10 +170,10 @@ for (var index = 0; index < 10; index++) {
     attack: 2,
     release: 20
   })
+  scoreSteps.push({ rest: true, duration: 10 })
 }
 
 synth.playPattern({
-  stepDuration: 70,
   volume: 0.42,
   waveType: WAVE.SQUARE,
   steps: scoreSteps
@@ -199,19 +204,20 @@ synth.playTone({
 ### Alternating warning alarm
 
 An octave-like high/low alternation is easy to identify even through a small
-speaker. The envelope fits exactly inside every 120 ms tone:
-`10 + 100 <= 120`.
+speaker. Each 120 ms tone has a fitted envelope (`10 + 100 <= 120`), followed
+by a 10 ms rest, so the pitch changes every 130 ms.
 
 ```javascript
 var warningSteps = []
 
 for (var pulse = 0; pulse < 5; pulse++) {
   warningSteps.push({ frequency: 800, duration: 120 })
+  warningSteps.push({ rest: true, duration: 10 })
   warningSteps.push({ frequency: 400, duration: 120 })
+  warningSteps.push({ rest: true, duration: 10 })
 }
 
 synth.playPattern({
-  stepDuration: 130,
   attack: 10,
   release: 100,
   volume: 0.45,
@@ -780,6 +786,8 @@ Before returning or shipping a variation:
 - use exactly one pitch source for a tone and exactly one pitch array for a
   chord;
 - include a pitch field on every sounding pattern step, including noise;
+- treat each resolved step duration as both its voice length and timeline
+  advance; insert explicit rests when a shorter note needs a longer interval;
 - verify `attack < duration` and `release <= duration - attack` for every
   explicit event or step, and `attack + decay <= duration` when a decay is set;
 - give `sustain` below 1 a `decay`, give filter fields a `filterType`, and give

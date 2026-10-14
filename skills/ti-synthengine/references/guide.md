@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at commit `918c9a6a9e8fc96ee7b6e81c6a8845e612c4f6b6` (2026-10-14). Upstream `documentation/guide.md` SHA-256: `c5fb4ff34ec425487221b80d6793bda24aa328281ab9ccb02e65b0065e54842e`.
+> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at commit `95901c98af5353b86d9dc7c60b29ab9186b038cd` (2026-10-14). Upstream `documentation/guide.md` SHA-256: `c5fb4ff34ec425487221b80d6793bda24aa328281ab9ccb02e65b0065e54842e`.
 
 # Guide
 
