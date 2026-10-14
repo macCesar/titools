@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `ef62edd` (2026-10-04).
+> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at commit `918c9a6a9e8fc96ee7b6e81c6a8845e612c4f6b6` (2026-10-14). Upstream `documentation/examples.md` SHA-256: `059d427fa1d4edcf5274741da028e78f5a493ceaf56b61ea3b6201b0665fd9fe`.
 
 # Examples
 
@@ -45,6 +45,7 @@ if (contract.apiVersion !== '1.0.0') {
 - [Speaker-safe startup](#speaker-safe-startup)
 - [Validation at an input boundary](#validation-at-an-input-boundary)
 - [Stop and clean up](#stop-and-clean-up)
+- [Positioned headphone effect](#positioned-headphone-effect)
 
 <!-- TOC-END -->
 
@@ -302,8 +303,7 @@ synth.playPattern({
 })
 ```
 
-Positive swing lengthens one step and shortens the next. Negative swing flips
-that relationship. Keep it subtle unless the lurch is the intended effect.
+Swing offsets scheduled starts without changing voice durations: positive swing delays even steps and advances odd steps (zero-based); negative swing reverses those offsets. Each offset is the swing value times that step's duration, and a start before the call time is clamped to zero. This can overlap voices. Keep it subtle unless the lurch is the intended effect.
 
 ## Millisecond pattern
 
@@ -695,4 +695,26 @@ synth.shutdown()
 `stopAll()` fades current voices but leaves pending pattern scheduling alone.
 `shutdown()` cancels the scheduler and releases the native stream.
 
-The complete interactive demo is `example/app.js` in the upstream TiSynthEngine repository. For additional retro effects, playable xylophone interaction, memory pads, layered polyphony and cancellable repetition, continue with [Curated sound and interaction recipes](recipes.md).
+The complete interactive demo is in [`example/app.js`](../example/app.js).
+
+## Positioned headphone effect
+
+Check the installed coordinate limits and keep the engine running. This JavaScript places one generated noise effect above and to the right; it does not change other sound calls:
+
+```javascript
+if (!contract.limits.spatialX || !contract.limits.spatialY) {
+  throw new Error('This installed module does not report binaural support')
+}
+if (!synth.playTone({
+  frequency: 90,
+  waveType: WAVE.NOISE,
+  duration: 500,
+  attack: 2,
+  release: 200,
+  volume: 0.3,
+  spatialX: 0.8,
+  spatialY: 0.75
+})) Ti.API.warn('Positioned effect rejected')
+```
+
+For app switches, amplitude sliders, all nine screen positions and routing multiple effects through one service, use the [binaural integration guide](guide.md#integrate-binaural-in-a-2d-app). Omitting both coordinates disables binaural for that event; setting both to zero keeps it enabled at the front center.

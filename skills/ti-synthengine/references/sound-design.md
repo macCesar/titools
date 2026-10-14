@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `ef62edd` (2026-10-04).
+> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at commit `918c9a6a9e8fc96ee7b6e81c6a8845e612c4f6b6` (2026-10-14). Upstream `documentation/sound-design.md` SHA-256: `bb5fdf61af9ce7a6a5175946c503fa485a972c9db8c0dedbd18d22a6dbd6b129`.
 
 # Sound design with TiSynthEngine
 
@@ -757,8 +757,5 @@ function playAllSimonPads () {
 }
 ```
 
-For more complete code, continue with [Examples](examples.md) and
-[Curated sound and interaction recipes](recipes.md). The latter includes retro
-effects, a playable xylophone, memory-pad timbres, layered chords and timer
-ownership. For gain and device-testing advice, see
-[Recommendations](recommendations.md).
+For more complete code, continue with [Examples](examples.md). For gain and
+device-testing advice, see [Recommendations](recommendations.md).

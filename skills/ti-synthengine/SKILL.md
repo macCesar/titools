@@ -7,7 +7,7 @@ description: "Use when a Titanium app declares ti.synthengine in tiapp.xml, impo
 
 Act as an audio engineer and mobile sound designer for the native `ti.synthengine` module. Translate an aesthetic request into acoustically reasoned JavaScript that uses only the module's public contract.
 
-This skill follows TiSynthEngine **1.0.0 beta**, based on commit **`ef62edd` (2026-10-04)** plus the uncommitted spatial update captured **2026-10-14**. The API and audio-engine references record the source-document hashes for that update. Android and iOS expose the same eight public methods and one event. Older 1.0.0 builds may lack spatial support: inspect `getDefaults().limits` for `spatialX` and `spatialY` before offering binaural controls; `apiVersion` alone does not distinguish these builds.
+This skill follows TiSynthEngine **1.0.0 beta** at commit **`918c9a6a9e8fc96ee7b6e81c6a8845e612c4f6b6` (2026-10-14)**. All seven official references record the commit and complete source-document hashes. Android and iOS expose the same eight public methods and one event. Inspect `getDefaults().limits` for `spatialX` and `spatialY` before offering binaural controls; `apiVersion` alone does not distinguish installed beta builds.
 
 ## Visual and sound asset collaboration
 
@@ -15,12 +15,12 @@ Use `ti-game-assets` to create/edit complete visual and sound asset sets, preser
 
 ## Required workflow
 
-Read the references relevant to the task before proposing code. Do not infer option names from Web Audio, another synthesizer, or general DSP libraries.
+Read the references relevant to the task before proposing code. These are source snapshots, not an independent validation oracle: when reviewing the module or updating its official documentation, compare against the native contract and both renderers, then synchronize the references. Do not infer option names from Web Audio, another synthesizer, or general DSP libraries.
 
 | Task | Read first |
 | --- | --- |
 | Any code using a public method, option, default, limit, or return value | [references/api.md](references/api.md) |
-| Position sounds in a headphone front plane, map spatial controls, or diagnose spatial/pan conflicts | [references/api.md](references/api.md), [references/audio-engine.md](references/audio-engine.md) |
+| Position sounds in a headphone front plane, map spatial controls, or diagnose spatial/pan conflicts | [references/guide.md](references/guide.md#integrate-binaural-in-a-2d-app), [references/api.md](references/api.md), [references/audio-engine.md](references/audio-engine.md) |
 | Design a sound from an aesthetic description | [references/sound-design.md](references/sound-design.md), then [references/recipes.md](references/recipes.md) for a tuned starting point |
 | Build retro/arcade effects, a playable instrument, memory pads, layered chords, timbre comparisons, or cancellable repetition | [references/recipes.md](references/recipes.md), plus [references/api.md](references/api.md) |
 | Learn the official examples for tones, chords, tempo, patterns, noise, validation, startup, and cleanup | [references/examples.md](references/examples.md) |
@@ -63,7 +63,7 @@ Never hardcode waveform integers when `WAVE.SINE`, `WAVE.SQUARE`, `WAVE.SAWTOOTH
 - `detune` (cents, -1200 to 1200) works on `playTone` and `playPattern`. `playChord()` uses `detunes`, an array aligned with the pitches. The detuned pitch, and any `frequencyEnd` target, must stay inside the frequency limits.
 - `patternend` is an event, not a method: it fires once per accepted `playPattern()` with `{ completed: true }` at the natural end, or `{ completed: false }` when a newer pattern replaces it. `stopAll()` and `shutdown()` fire nothing. Remove the listener when the owner closes.
 - `spatialX` (left/right) and `spatialY` (below/above) are finite numbers from -1 to 1 on `playTone`, `playChord`, and `playPattern` roots/steps. Supplying either enables binaural processing, with 0 for the omitted coordinate; omitting both preserves stereo. A chord shares one fixed position. Never combine coordinates with `pan`, `panEnd`, `pans` or `panSpread`, even through pattern inheritance: the call returns `false` with `conflicting_spatial_fields`. [source: references/api.md]
-- A binaural switch and percentage sliders belong to the app. Map signed percentages from -100 to 100 by dividing by 100, then send only the coordinates when enabled. When disabled, omit both coordinates; sending two zeros still enables binaural processing. The module has no separate switch option. Positions stay fixed for each event; later events can use updated coordinates. Test with stereo headphones and broadband sounds; the front plane has no rear sources, distance attenuation, room reflections or head tracking. [source: references/api.md]
+- A binaural switch and percentage sliders belong to the app. For direct direction sliders, divide signed percentages from -100 to 100 by 100. For amplitude sliders from 0 to 100%, multiply each source's normalized coordinate by the percentage divided by 100; 100% height does not move every source above. Route every effect that should be spatial through that conversion, preserving its synthesis recipe, then send only the coordinates when enabled. When disabled, omit both coordinates; sending two zeros still enables binaural processing. The module has no separate switch option. Positions stay fixed for each event; later events can use updated coordinates. Test with stereo headphones and broadband sounds; the front plane has no rear sources, distance attenuation, room reflections or head tracking. [source: references/api.md]
 - `pan` and `panEnd` range from -1 to 1. `frequencyEnd` is a linear sweep target. `lfoFreq` is the modulation rate in Hz and `lfoDepth` is absolute pitch deviation in Hz, not cents.
 - `WAVE.WAVETABLE` requires `waveTable`: 2 to 64 finite values from -1 to 1, stepped without interpolation. `bitDepth` is 0 or an integer from 2 to 16; `pulseWidth` is 0.05 to 0.95 and only shapes `SQUARE`; `pulseWidthEnd` is 0 or 0.05 to 0.95. For `noiseRate`, `noiseRateEnd`, and `lowPassHz`, 0 means white noise, no sweep, or no filter.
 - `startEngine()`, `playTone()`, `playChord()`, `playPattern()`, and `setVolume()` return `Boolean`; production code must handle rejection where it matters.
