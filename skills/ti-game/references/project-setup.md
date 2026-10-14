@@ -78,7 +78,7 @@ ti build -p ios --build-only        # macOS only → ios/dist/ti.game-iphone-<ve
 
 ## Classic projects
 
-`require('ti.game')` anywhere and add the GameView to a window. The 33 demos in the module's `example/` folder are Classic, each one a CommonJS module exporting a start function (`app.js` is the launcher, not a demo):
+`require('ti.game')` anywhere and add the GameView to a window. The 34 demos in the module's `example/` folder are Classic, each one a CommonJS module exporting a start function (`app.js` is the launcher and `backnav.js` is a helper, neither is a demo):
 
 ```javascript
 // Resources/flappy.js
@@ -331,6 +331,28 @@ function unloadLevel(level) {
 ```
 
 A single-level game with a handful of sheets should not call it at all: the textures die with the window.
+
+### Retained iOS scenes and multiple GameViews
+
+In the pinned iOS source, `TiGameGameView.didMoveToWindow` calls
+`shutdownRendering` when an attached view loses its window. That teardown
+sets a terminal shutdown flag and releases the renderer. Reattaching the
+same proxy or calling resume is not a documented reconstruction mechanism.
+If a navigation/modal presentation detaches a backdrop that must remain
+alive, keep that GameView attached or create a fresh one on return; rebuilding
+only its Sprite session is insufficient. Verify the actual UIKit presentation
+and installed module on-device.
+
+Multiple retained iOS GameViews also share each physical GCController's
+single `extendedGamepad.valueChangedHandler`. At this pin, each view's
+TGGamepadController installs its own handler and detach clears it. Another
+view can therefore replace or clear an active scene's receiver. Use explicit
+input ownership and test open/close transitions; do not assume independent
+gamepad subscriptions or treat a local fork fix as shipped upstream.
+
+Sources: upstream `ios/Classes/TiGameGameView.m` (`didMoveToWindow`,
+`shutdownRendering`) and `ios/Classes/TGGamepadController.m`
+(`attachController`, `detachController`) at `3bea2f4`.
 
 ### LiveView reloads
 

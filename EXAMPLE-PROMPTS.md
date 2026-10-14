@@ -265,6 +265,38 @@ Expect:
 ---
 
 ### ti-game
+
+```
+"My ship shows thrust but stays still: thrust220, damping1.2, starting at rest at60FPS. What equation explains it?"
+```
+Expect:
+- Loads `ti-game/references/physics.md` and applies the native update order.
+- Calculates3.593px/s after the first damped thrust step, below the4px/s rest cutoff.
+- Distinguishes braking only while coasting from preserving powered drag through a native rest-policy change; no per-frame JS motion or device-FPS guesses.
+
+```
+"Compare platformer, car, billiards and Rope equations. Does Rope damping0.985 mean the same decay at30/60/120FPS, and does timeScale0 freeze it?"
+```
+Expect:
+- Distinguishes Engine, Demo and Analytical formulas and units.
+- Provides native car forward/lateral decomposition, equal-mass push impulse and jump derivations.
+- Rope damping retains displacement per update; zero-delta Verlet/constraints can still move nodes. It does not promise whole-rope amplitude or a universal freeze.
+
+```
+"Rhythm says400ms is an eighth at150BPM. Should I halve the interval or patch the engine?"
+```
+Expect:
+- At the stated tempo400ms is a quarter,200ms an eighth;1.6s is four quarters.
+- Corrects the comment/recipe terminology while preserving timing. Audio tempo/phase and synchronization defects require separate evidence.
+
+```
+"My lander hits a static pad at impact speed400px/s, surface height540px, tilt0. The land callback reads velocityY0. Is that safe?"
+```
+Expect:
+- Does not use live post-response zero velocity as touchdown evidence.
+- Uses `solidimpact.speed`, its compensation/normal-speed limitations and a sprite pad with `impactThreshold:0`.
+- The recipe's limit97.2px/s is exceeded; no claim that TileLayer cells provide that event.
+
 ```
 "I want to build a little endless runner with ti.game — the guy jumps over obstacles that come from the right. Where do I start?"
 ```

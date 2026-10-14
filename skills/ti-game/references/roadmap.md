@@ -8,7 +8,7 @@ Verified against `ti.game@3bea2f4` (2026-09-02), especially upstream `TODO.md` a
 | --- | --- | --- |
 | `gameView.panTo(x, y, options)` | Planned | Tween an invisible sprite, follow it for the cutscene, then follow the player again |
 | Full `sprite.parent` transform inheritance | Partial | `attachTo()` supplies position, optional rotation, and inherited opacity. Scale, visibility, flips, tint, hit-test hierarchy, y-sort hierarchy, and a `parent` property do not exist |
-| Native joystick/d-pad binding (`joystick.bind(sprite)`) | Planned | Use overlaid Titanium controls that write native motion/input properties on `touchstart`/`touchend`; sibling views support simultaneous touches. Upstream intends the same binding to accept a gamepad's left stick, which also does not exist yet |
+| Native joystick/d-pad binding (`joystick.bind(sprite)`) | Planned | Use sibling Label/View targets or game sprites that write native motion/input properties on input transitions; UIKit UIButton exclusivity needs care for simultaneous touch. Upstream intends a future joystick binding to accept the left stick |
 | Complete platformer slopes | Partial | `rotatedRect` geometry, normals, rider carrying, and sliding work. Smooth uphill walking, contact-only surface friction, and connected terrain are not implemented |
 | Tile animation | Planned TileLayer follow-up | Change ids deliberately or use sprites for the animated cells; there is no per-id native frame cycle |
 | `raycast()` against TileLayer cells | Planned TileLayer follow-up | Use sprite colliders for ray-visible obstacles or grid/cell queries appropriate to the game |
@@ -22,7 +22,7 @@ Verified against `ti.game@3bea2f4` (2026-09-02), especially upstream `TODO.md` a
 | TypeScript declarations | Planned | No upstream `ti.game.d.ts` exists |
 | Aseprite JSON import | Planned | SpriteSheet atlases support TexturePacker JSON hash/array formats |
 | Tweening `width`, `height`, or `tintColor` | Not implemented | Tween scale/opacity/glowOpacity; other properties are instant writes |
-| A GameView-level `stop()` | Already covered differently | `timeScale = 0` freezes engine ticks while rendering/touch continue; `pause()` stops the render loop |
+| A GameView-level `stop()` | Already covered differently | `timeScale = 0` passes zero dt while rendering/touch continue; Rope can still integrate prior displacement and constraints. `pause()` stops the render loop; see [physics.md](physics.md#verlet-ropes-and-tethers) |
 | Standard Titanium touch events on GameView | By design | Use GameView `press`/`tap`/`release`, sprite events, or Titanium views over the canvas |
 | A per-frame JS event | Deliberately absent | React to discrete events and use native movement; coarse `every()` calls are for decisions, not motion |
 
