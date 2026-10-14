@@ -13,17 +13,9 @@ verification levels. No shared CLI machinery changed in this audit.
 
 ## ti.synthengine beta source provenance
 
-`skills/ti-synthengine/references/api.md` and `audio-engine.md` record the
-spatial addition from the module's working tree based on `ef62edd`, with a
-SHA-256 per complete upstream source document. Remove only snapshot metadata
-and generated TOCs when comparing mirrors. The other official references
-remain pinned to their existing committed sources.
+All seven official `skills/ti-synthengine/references/` mirrors are pinned to TiSynthEngine commit `918c9a6a9e8fc96ee7b6e81c6a8845e612c4f6b6` (2026-10-14), with a SHA-256 for each complete source document. Remove only snapshot metadata and generated TOCs to compare mirrors. `recipes.md` remains curated skill content rather than an official mirror.
 
-Read these two references before changing binaural guidance. The beta keeps
-API version 1.0.0, so support detection uses `getDefaults().limits.spatialX`
-and `.spatialY`. Contract checks establish acceptance and conflicts; they do
-not establish perceived localization on headphones. Recheck source hashes
-and provenance when the module commits or revises this update.
+Read `guide.md` for per-effect binaural app integration, amplitude sliders, screen conversion and stereo fallback, then `api.md` for the contract. The beta keeps API1.0.0, so support detection uses both coordinate limits. When auditing the module's official documentation, verify native code and contracts first; these derived mirrors cannot independently validate their own source. Native acceptance, host rendering and headphone perception are different checks.
 
 ## Architecture
 

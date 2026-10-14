@@ -1,6 +1,6 @@
 # Status — 2026-10-14
 
-**Phase:** binaural beta skill update completed for internal use. Package,
+**Phase:** synthesis documentation audit and seven-reference synchronization completed for internal use. Package,
 plugin and lockfile versions remain at 5.2.0; no release, tag or push.
 **Session by:** Codex.
 
@@ -215,3 +215,11 @@ Validated the skill and passed 408/408 TiTools tests using Pillow/PyYAML via uv
 with PYTHONDONTWRITEBYTECODE=1. The initial plain npm test run lacked Pillow
 and detected bytecode generated during asset preparation; that cache was
 removed before the passing run. No CLI machinery or release manifests changed.
+
+## Official synthesis documentation completed — 2026-10-14
+
+César identified that the previous source lacked app-integration instructions. TiSynthEngine now commits the completed guide and documentation regressions in f1b3919/918c9a6. All seven official mirrors and the skill entry point are synchronized to918c9a6 with document SHA-256 provenance. Guide routing now covers per-effect adaptation, amplitude versus direction, screen-coordinate conversion and bypass. The copies match upstream exactly after stripping provenance/TOCs. The installed universal skill symlink resolves to this checkout.
+
+The module's audit checks method-option tables against both native contracts, every reported default, coordinate-helper behavior and165calls accepted by native iOS; its78case parity corpus passes. No skill reference is treated as independent proof of its source. TiTools versions remain5.2.0 and module beta1.0.0; no publishing, tag, push or device installation. Pre-existing untracked `.agents/skills/purgetss-videos/` and `por-hacer.md` are unrelated and preserved.
+
+Verification: skill-creator quick validation passed;408/408TiTools tests passed using Pillow/PyYAML via uv. Content committed in `407bb70`; session-note updates are committed separately. Versions and unrelated untracked files remain unchanged.

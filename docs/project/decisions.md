@@ -186,3 +186,11 @@ fields when enabled, including inherited pattern fields. Native contract
 checks and headphone listening remain separate acceptance levels. This work
 changes skill content only; it does not require a shared-CLI sibling port or
 a release. Revisit the source pin once the native update is committed.
+
+## 2026-10-14 — Synchronize all synthesis mirrors after the documentation audit
+
+**Decision:** Pin all seven official synthesis references to TiSynthEngine918c9a6 and record full-source hashes; route spatial app-integration requests to the expanded guide. Preserve curated recipes and unrelated work.
+
+**Why:** The previous skill update relied on official documentation that omitted app integration and contained incomplete tables. Native contracts/renderers are the audit source; derived skill references are not independent evidence. The same beta version requires capability detection.
+
+**Consequences:** Copy verified source text before regenerating navigation, compare all seven mirrors after stripping provenance/TOC, and retain the module1.0.0 and TiTools5.2.0 versions. This is an internal content correction, without CLI changes or release actions.
