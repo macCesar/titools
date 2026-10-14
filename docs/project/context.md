@@ -13,9 +13,25 @@ verification levels. No shared CLI machinery changed in this audit.
 
 ## ti.synthengine beta source provenance
 
-All seven official `skills/ti-synthengine/references/` mirrors are pinned to TiSynthEngine commit `918c9a6a9e8fc96ee7b6e81c6a8845e612c4f6b6` (2026-10-14), with a SHA-256 for each complete source document. Remove only snapshot metadata and generated TOCs to compare mirrors. `recipes.md` remains curated skill content rather than an official mirror.
+The seven official synthesis references are pinned to TiSynthEngine
+`95901c98af5353b86d9dc7c60b29ab9186b038cd` (2026-10-14).
+`skills/ti-synthengine/references/source-snapshot.json` records complete source
+and mirror hashes, reversible navigation fixes, and reviewed exclusions.
+`source-notes.md` explains how to update them and protects curated recipes and
+their two incoming links. The read-only snapshot checker now accepts
+`--skill ti-synthengine`; excluded documents still trigger review if changed.
 
-Read `guide.md` for per-effect binaural app integration, amplitude sliders, screen conversion and stereo fallback, then `api.md` for the contract. The beta keeps API1.0.0, so support detection uses both coordinate limits. When auditing the module's official documentation, verify native code and contracts first; these derived mirrors cannot independently validate their own source. Native acceptance, host rendering and headphone perception are different checks.
+Read `guide.md` for binaural integration, then `api.md` for exact options.
+The unchanged 1.0.0 beta version requires checking both spatial limits.
+Pattern duration controls both voice length and timeline advance; explicit
+rests preserve short-note spacing. Protected-profile gain normalization is
+not a constant-loudness guarantee, and `raw` bypasses it.
+
+The maintainer auditor registers this skill and requires native correctness
+checks independently of mirror fidelity. JavaScript rhythm assertions,
+validator acceptance, native rendering and headphone perception are separate
+evidence levels. The unresolved iOS zero-envelope sample conversion is recorded
+in `source-notes.md`; it was not changed in this documentation audit.
 
 ## Architecture
 

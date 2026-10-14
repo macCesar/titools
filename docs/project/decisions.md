@@ -194,3 +194,23 @@ a release. Revisit the source pin once the native update is committed.
 **Why:** The previous skill update relied on official documentation that omitted app integration and contained incomplete tables. Native contracts/renderers are the audit source; derived skill references are not independent evidence. The same beta version requires capability detection.
 
 **Consequences:** Copy verified source text before regenerating navigation, compare all seven mirrors after stripping provenance/TOC, and retain the module1.0.0 and TiTools5.2.0 versions. This is an internal content correction, without CLI changes or release actions.
+
+
+## 2026-10-14 — Audit the synthesis source and preserve declared skill additions
+
+**Decision:** Correct upstream timing/gain prose and examples before refreshing
+mirrors. Record source and mirror hashes plus reversible navigation fixes in
+`source-snapshot.json`. Keep curated recipes, restore both incoming links and
+rebase the demo to its source commit. Register the skill in the maintainer auditor.
+
+**Why:** A byte-identical mirror preserved false timing and loudness explanations.
+The existing green suite checked wiring and local anchors, but did not check
+cross-file synthesis links or the declared rhythm of copied examples. New tests
+execute the Markdown requests, verify intended timing/envelopes and guard source
+provenance and curated navigation. They do not claim native scheduler timing.
+
+**Consequences:** The source checker accounts for every official document;
+excluded index/notices keep reviewed hashes and still trigger review on change.
+No shared CLI machinery changed, so no sibling port is required. No native DSP
+behavior, module binaries or release versions changed. The one-sample iOS
+zero-attack/release difference remains an upstream implementation finding.

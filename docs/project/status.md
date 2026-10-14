@@ -1,43 +1,51 @@
 # Status — 2026-10-14
 
-**Phase:** synthesis documentation audit and seven-reference synchronization completed for internal use. Package,
-plugin and lockfile versions remain at 5.2.0; no release, tag or push.
+**Phase:** synthesis source audit and corrections completed for internal use.
 **Session by:** Codex.
+**Distribution:** installed universal skill resolves to this checkout; saved
+changes are available through that installation. TiTools remains 5.2.0 and
+TiSynthEngine remains unreleased beta 1.0.0. No push, tag or publication.
 
-## Completed
+## Completed and committed
 
-- `fa8a470` — `feat(ti-synthengine): document binaural positioning in 1.0.0 beta`.
-  API and engine mirrors preserve the uncommitted module documentation based
-  on `ef62edd`, with full upstream document SHA-256 values. Skill guidance,
-  README and two smoke prompts cover coordinate limits, inherited pan
-  conflicts, fixed positions, app-owned switches/percentages and stereo bypass.
-- This session-documentation commit records source provenance in `context.md`
-  and the rationale in `decisions.md`. Requirements did not change. No shared
-  CLI changes or sibling port were needed.
-- The installed `~/.agents/skills/ti-synthengine` resolves to this checkout,
-  so the saved changes are available through the existing installation.
+- TiSynthEngine `95901c9`: corrected official pattern timing, short-note gaps,
+  gain guarantees, effective sweep limits and swing wording. Executed example
+  regressions guard the stated rhythm. No native implementation changes.
+- TiTools `055cf71`: synchronized seven mirrors to that commit; preserved
+  curated navigation, rebased the demo, corrected four curated patterns and
+  added source/mirror metadata, reviewed exclusions and behavioral/link tests.
+- TiTools `447799a`: registered synthesis in the maintainer auditor and source
+  map, including independent native checks, preservation and evidence limits.
+- This session-documentation commit updates context, decisions and current
+  state. Requirements did not change. Shared CLI/sibling machinery unchanged.
 
-## Verification and limits
+## Verification
 
-- Fresh closure run: 408/408 TiTools tests, no failures or skips; Pillow/PyYAML
-  supplied within the `uv run` process lifetime. Log:
-  `/tmp/titools-spatial-close-tests.log`. Whitespace checks pass.
-- Earlier in this session, Java `SynthSpatialContractRegression` passed and
-  the iOS contract matched all 78 corpus cases. Both updated mirrors matched
-  upstream after snapshot/TOC removal, with matching hashes; generated TOCs
-  were idempotent. No device listening or perceived localization is certified.
-- The initial suite invocation failed only because its temporary Python
-  executable expired; rerunning within the uv process lifetime passed.
-- Native module implementation was read and tested without editing it.
-  Pre-existing untracked `.agents/skills/purgetss-videos/` and `por-hacer.md`
-  remain outside the commits. No external blocker prevents this closure.
+- 417/417 TiTools tests pass with Pillow/PyYAML via uv; lint passes. After the
+  source-map TOC update, all 222 anchor tests also pass. Snapshot checker:
+  valid, clean source, matching commit/hashes, no unmapped official docs.
+- All nine source-document hashes (seven mirrors and two reviewed exclusions)
+  match the source commit. npm dry-run includes snapshot/maintenance notes
+  and excludes maintainer scripts/tests. Source/mirror whitespace checks pass.
+- Official documentation and API regressions pass. New rhythm assertions reject
+  the old official examples in an isolated checkout. Before correction, the
+  new TiTools link check reproduced the missing demo destination.
+- An independent replay compiled the real iOS contract and accepted 9/9 changed
+  patterns (78 steps, 46 sounding). This proves validator acceptance; the
+  JavaScript tests interpret requests, not native scheduling or rendered audio.
+- Logs: `/tmp/titools-synth-audit-tests.log` and
+  `/tmp/titools-synth-audit-anchors.log`. No device or listening acceptance.
 
-## Next step
+## Remaining work and next step
 
-Recheck the module documentation hashes and replace working-tree provenance
-with the actual source commit when the native spatial update is committed.
-Headphone/device audition remains separate acceptance work. Releases remain
-deferred; this task authorizes semantic commits and session documentation.
+The native iOS conversion of zero attack/release to one sample remains a
+reported implementation discrepancy; see the skill's `source-notes.md`.
+Investigate it as native-module work before claiming exact rendered parity.
+Device startup/routes, localization and CPU/underruns retain their own acceptance
+requirements. No documentation correction from this approved audit remains.
+Re-audit source changes with the registered auditor; release remains deferred.
+Pre-existing untracked `.agents/skills/purgetss-videos/` and `por-hacer.md` remain
+untouched and outside the commits.
 
 ---
 
