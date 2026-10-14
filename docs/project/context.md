@@ -2,6 +2,15 @@
 
 How TiTools is put together, where its documentation lives, and the traps that already cost time.
 
+## ti.game physical-model reference
+
+`skills/ti-game/references/physics.md` owns reusable equations and units;
+`examples.md` owns the 34-demo inventory and the recipes own integration
+patterns. The October 12 audit and prepared Rhythm comment patch live under
+`docs/project/audits/`. Native source is pinned independently from local fork changes.
+An equation calculation, extracted-method fixture and hardware run are distinct
+verification levels. No shared CLI machinery changed in this audit.
+
 ## Architecture
 
 Single source tree, two distribution channels:
@@ -121,7 +130,8 @@ The record starts where it was first written down; work before 2026-09-11 is not
 
 ## Documentation map
 
-Everything below except the tracked files is **local-only** — `docs/` is gitignored, so a fresh clone gets none of it.
+`docs/project/` is tracked, including session state and audit evidence. Other
+documents under `docs/` remain ignored and are absent from a fresh clone.
 
 ### Tracked, in the repo root
 

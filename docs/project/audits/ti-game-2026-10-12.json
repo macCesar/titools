@@ -1,0 +1,257 @@
+{
+  "date": "2026-10-12",
+  "upstream": "m1ga/ti.game",
+  "commit": "3bea2f4007d4aa515e432ec2a016dd14c5c0f2ba",
+  "scope": "Pinned upstream blobs, not the local dirty working tree. Source review and extracted-method fixtures do not certify target devices.",
+  "sources": [
+    {
+      "file": "example/asteroids.js",
+      "sha256": "b1f2f04ddc02d01e96bd69d99c8db4ae64ce0620ce799961f642fa4a50f26a78"
+    },
+    {
+      "file": "example/basic.js",
+      "sha256": "40bca86dd9f6d42e39cecd4e68d06ddd93c911251a39dcb6ad1b715340eb8c87"
+    },
+    {
+      "file": "example/drum.js",
+      "sha256": "23a3f2ecf853aae7e770a791baebceab6ea07e6a328e76fa3d09b303369ad1a0"
+    },
+    {
+      "file": "example/blend.js",
+      "sha256": "21fad67e5ca9c7f088073fbdc9964007b2edfe8fe7605c6dbab8035342b469d3"
+    },
+    {
+      "file": "example/camera.js",
+      "sha256": "e9aa5516d49871efc5c61a227d39b2d22e8f59e59cac7b6e368fd26b13c71bcd"
+    },
+    {
+      "file": "example/cards.js",
+      "sha256": "1adf28e5ed4e57fe0c1820eb84456f69a2c9930bcc25cb41df516828f4cd05ed"
+    },
+    {
+      "file": "example/circles.js",
+      "sha256": "bdd1268b366f918ce9a65824e620a6063259b70cbd2549856571c606aed6d27c"
+    },
+    {
+      "file": "example/demoscene.js",
+      "sha256": "33078cfdfa8e60496edcfbd8f86e26d905c4e11efaaabab59efbbc4445c8aaba"
+    },
+    {
+      "file": "example/flappy.js",
+      "sha256": "bdcbc90843abeec2d7cb926b0895b5650c861ef5f21a4980067665cdd23b8dd8"
+    },
+    {
+      "file": "example/flip.js",
+      "sha256": "6bf574b066e2eb223606f5f745cde4cf4d2ce9733d3be34aa81808d599ac8125"
+    },
+    {
+      "file": "example/hitbox.js",
+      "sha256": "1eaa78ad9403c9f7abad9f136799fe8e8e21feb60947da5543a6757487fc84fb"
+    },
+    {
+      "file": "example/maze.js",
+      "sha256": "f9b8bcbc4028f9de5d0c39925f27248958abfb861f9af9d3c4bf8589846b8cea"
+    },
+    {
+      "file": "example/particles.js",
+      "sha256": "ab28b63cecc74f1c41e2c71e371efb388b5c3353227a79f69c36e292607afdf5"
+    },
+    {
+      "file": "example/path.js",
+      "sha256": "5099bbe91c135210acbbbf9756f471d8197ef88ec2ef1e1ee925b6ee4507035c"
+    },
+    {
+      "file": "example/platformer.js",
+      "sha256": "193e761867c30bb145c4aa0a71abab67d9145437eb64d1e5fb12032af1c9aa83"
+    },
+    {
+      "file": "example/plinko.js",
+      "sha256": "2e57e45858f638d0cf9f70df1b4f5e1bd21289a2dd2886228a0a6c014b3d38a5"
+    },
+    {
+      "file": "example/pool.js",
+      "sha256": "d7116827d954ab40ee4d2e90a917afc64d0a400436938b24132278a6094e828d"
+    },
+    {
+      "file": "example/pointclick.js",
+      "sha256": "13026ca9c1a57c522f7c5b85389c4622fa25c9b50cceb9ff28549eee35f4e999"
+    },
+    {
+      "file": "example/puzzle.js",
+      "sha256": "974217dbcab8bfc27a213fd0a2b4f9998c0545b8698487288d62e033ea9a2ea1"
+    },
+    {
+      "file": "example/racing.js",
+      "sha256": "76fabb46e19adb4d68016ee03a446741ed6653cadd6e69c5fef6e4212a2952a7"
+    },
+    {
+      "file": "example/raycast.js",
+      "sha256": "4a011f9330b8199bf94c4007810cbb3125ab11494c43014fd067a1bd20fa6e36"
+    },
+    {
+      "file": "example/rhythm.js",
+      "sha256": "76954cc0f6be2d8e55d8861d4fa517ad10417c8568335f5283f6781a3727827c"
+    },
+    {
+      "file": "example/rope.js",
+      "sha256": "ebff5eba8880e75ee81f1864d1c8dd9a476b62605361f514707ed7282520e398"
+    },
+    {
+      "file": "example/skate.js",
+      "sha256": "5013a218e9bf09916ec7045aff22480a807dcc3d80e34321ada5477acff24099"
+    },
+    {
+      "file": "example/slopes.js",
+      "sha256": "7a389c601dbc9540dee537dcba90df01ed8850c50a2dc4caa6cc27a59bf32c33"
+    },
+    {
+      "file": "example/swept.js",
+      "sha256": "ac7d8f5a7da55bd1a4d2099a6004524cf18d691bb34a6ea8b514886093ce8926"
+    },
+    {
+      "file": "example/text.js",
+      "sha256": "bef129c6414d293d5e352c276f369d36abc528256b9ca66cc5f006fda06df677"
+    },
+    {
+      "file": "example/tilemap.js",
+      "sha256": "0b5c0127b7e0a1cb40f200fd2b4d9a57c1c8ac2c83b76dd4e1807b417d4eedfc"
+    },
+    {
+      "file": "example/timescale.js",
+      "sha256": "0e6daf924cc8c90a4547f6e502ff719a4ac84efc3baa490c2657298a41c456de"
+    },
+    {
+      "file": "example/topdown.js",
+      "sha256": "8e4242dcc5642777d19d5922c4da7f4b2b6392ae592b33f202ee9975ad9dc71b"
+    },
+    {
+      "file": "example/zones.js",
+      "sha256": "d7c1d91c2214a9f1555a2624842a2ff56e4f057fea72f62e163e86e73b4aea4d"
+    },
+    {
+      "file": "example/volley.js",
+      "sha256": "e792a4c89e3e21d9f4c14aea4520325ecc259688f2a939f99a8ba79c583ed3e9"
+    },
+    {
+      "file": "example/wind.js",
+      "sha256": "4a10ad76dd6c3026133dc31ecd36f66c56924661319de40bfa61e57ede1679a8"
+    },
+    {
+      "file": "example/worldwrap.js",
+      "sha256": "622a443d7a4047fc6838b8a3fffba2255671cea6d2324d54d95d4b4f05a84e7d"
+    },
+    {
+      "file": "example/app.js",
+      "sha256": "7317c91bf6553aa3be985e09937fe8fb3387d6e8ac0dc103e92004de1eb1df00"
+    },
+    {
+      "file": "README.md",
+      "sha256": "5939e9fa3721f7a7c515f2508abd020009fd0e55b7cd1de1cd30bd6fbef6a1e9"
+    },
+    {
+      "file": "TODO.md",
+      "sha256": "21d9259461230ef26d225c93259667b0bc0f3db7b399106350d06abe1232d076"
+    },
+    {
+      "file": "android/src/ti/game/engine/Sprite.java",
+      "sha256": "f65412229f9c36b7e98f1c5547a033ed6e3151d8189ef9bd538cd1a939452333"
+    },
+    {
+      "file": "ios/Classes/TGSprite.m",
+      "sha256": "c3be5528e83abecc89f6e3697033b7bad618f12d7b3aa4fc3e961616f351e7b9"
+    },
+    {
+      "file": "android/src/ti/game/engine/Scene.java",
+      "sha256": "f07922eb0fac98ee4aef9605b2e6c5fd7a87d303eb7b822da8baf7fdaa15f5ab"
+    },
+    {
+      "file": "ios/Classes/TGScene.m",
+      "sha256": "a335ee974251225ed3d1ef5b2fb76bc7c8c3cbcf6d7c776f8530fbcbe74de2c1"
+    },
+    {
+      "file": "android/src/ti/game/engine/Rope.java",
+      "sha256": "2ab8e92919cdee633c54bf505e4b62077c069ccfbbbda1b2524c749453e34254"
+    },
+    {
+      "file": "ios/Classes/TGRope.m",
+      "sha256": "d646956697c93aef5fc644492f6cf8eb358a01b1752d12722f95faac5f9199e4"
+    },
+    {
+      "file": "android/src/ti/game/engine/Path.java",
+      "sha256": "929e864c07f90f16608cdf3a79f66ee548ac6fbf2d9f86ea076c64c831375e21"
+    },
+    {
+      "file": "android/src/ti/game/engine/Tween.java",
+      "sha256": "640339af7008f906735867067340dbfb111aed8f140a686c2a032aed6891ecf2"
+    },
+    {
+      "file": "android/src/ti/game/engine/ParticleEmitter.java",
+      "sha256": "e42e2c903a3560921ddb1f5661d32cc302574dd4ea41f2bed505eb290f66e3ec"
+    },
+    {
+      "file": "android/src/ti/game/engine/SceneRenderer.java",
+      "sha256": "c98be7030f075f13f3862e32a32102a94e5234a5d036a227c06926c683dd6521"
+    },
+    {
+      "file": "ios/Classes/TGSceneRenderer.m",
+      "sha256": "bca8e9a5f8f0ed31f5966813c2659b6dac5d6879d0713a48b1e27629b5e30e53"
+    },
+    {
+      "file": "ios/Classes/TiGameGameView.m",
+      "sha256": "6b0213f2a558741b3715357b013e70f22ab4c307f287dd70a514a91981cec5dd"
+    },
+    {
+      "file": "ios/Classes/TGGamepadController.m",
+      "sha256": "e8d18245cd993a813ed47661868de9252cf7b02d2acebde6d5ce9f3a3119fabe"
+    }
+  ],
+  "demo_count": 34,
+  "checks": {
+    "skill_files": 11,
+    "local_links": 169,
+    "javascript_blocks_parsed": 89,
+    "checker_negative_controls": 2,
+    "status": "pass"
+  },
+  "behavioral_recipe_cases": [
+    "diagonal magnitude equals350px/s",
+    "impact speed400px/s exceeds97.2px/s despite live velocityY0 at H540"
+  ],
+  "native_characterizations": {
+    "rope_dt0": {
+      "initial": [
+        10,
+        0
+      ],
+      "previous": [
+        10,
+        -1
+      ],
+      "damping": 0.985,
+      "segment_length": 10,
+      "result": [
+        9.951838,
+        0.980256
+      ],
+      "scope": "Original Java Rope.update extracted unchanged with initialized fixture fields and minimal Sprite fields; no renderer."
+    },
+    "thrust_damping": {
+      "source": "TGSprite.update acceleration/damping/position statements compiled in C with equivalent scalar fields",
+      "fps": [
+        30,
+        60,
+        120
+      ],
+      "thrust": [
+        100,
+        220
+      ],
+      "damping": [
+        1.2,
+        0
+      ],
+      "result": "At60/120FPS damped first thrust is erased; damping0 permits launch. Not full native Sprite proxy/scene execution."
+    }
+  },
+  "retrieval_tests": "Independent agent before/after using only skill content. Final scenarios passed; car equation gap corrected during green iteration."
+}

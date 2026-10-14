@@ -1,8 +1,45 @@
-# Status — 2026-10-11
+# Status — 2026-10-13
 
-**Phase:** 5.2.0 development implementation installed and committed for internal use. César explicitly deferred releases: no push, tag or publication in this session. `ti.admob.unified` has not been publicly released. Package/plugin/lockfile versions agree at 5.2.0. Previous release evidence below is historical, not a current registry check.
+**Phase:** ti.game skill audit completed and committed for internal use; earlier 5.2.0 development implementation remains installed. César explicitly deferred releases: no push, tag or publication in this session. `ti.admob.unified` has not been publicly released according to the prior session record; no registry check was made today. Package/plugin/lockfile versions remain at 5.2.0.
 
 ## This session
+
+- 2026-10-13 — Codex closed the pending audit with semantic commits, as
+  requested. `627db16` contains the physics reference, corrected recipes,
+  lifecycle/input caveats, example prompts and Unreleased changelog entry.
+  The session-documentation commit contains context, decisions, this status
+  and the audit report/source evidence/Rhythm proposal under
+  `docs/project/audits/`. Requirements did not change.
+- Fresh closure verification: 408/408 tests, zero failures or skips, using
+  `TITOOLS_ASSETS_PYTHON=/tmp/titools-game-assets-venv/bin/python npm test`;
+  `npm run lint` and staged whitespace checks pass. Test log:
+  `/tmp/titools-session-close-tests.log`. Native/device, audio and retrieval
+  results below are evidence from the October 12 audit, not rerun today.
+- The installed skill continues to resolve to this checkout; saved reference
+  changes are available through that existing installation. No shared CLI
+  changes or sibling port are involved. The pre-existing untracked
+  `.agents/skills/purgetss-videos/` and `por-hacer.md` remain outside the commits.
+
+## Previous session — 2026-10-12
+
+- 2026-10-12: added César's positively rated autopilot coasting brake profile
+  to ti-game/references/physics.md: damping1.2/s without thrust,0 with thrust.
+  Optional feel reference for future games, especially arcade racing; not a
+  default or a request to change Asteroids. Installed skill resolves to this
+  checkout, so the reference is available through its existing physics route.
+
+- 2026-10-12: audited `ti-game` entrypoint and all nine existing references;
+  added reusable `references/physics.md` and routed it from the skill/recipes.
+  Upstream HEAD rechecked at3bea2f4; local native changes remain separate.
+  Corrected diagonal movement, lander impact evidence, wind/fuel guidance,
+  Rhythm subdivisions, counts and stale TileLayer attribution; documented
+  damping/rope pause and iOS view/gamepad ownership limits.
+  Baseline retrieval gaps and two failing recipe cases were reproduced;
+  corrected scenarios now pass. Full TiTools suite408/408 and lint pass.
+  Audit/report and comment-only Rhythm PR draft/patch are in docs/project/audits/.
+  Installed ti-game skill points to this source checkout. At audit completion
+  on October 12, no commit, push, tag, release, upstream PR or native-module
+  edit had been made; the TiTools changes were committed on October 13 above.
 
 - Session closed across Asteroids and TiTools:1d04e11 commits the skill and
   changelog refinements. Context, requirements, decisions and status updated

@@ -148,3 +148,22 @@ Pixel-art block scale follows final logical resolution and visible phase extent;
 smoke retains progressive alpha on that grid. Round proportional dimensions with
 floor(value+0.5), and use integer offsets for every cell size, not just32px.
 Documentation-only skill changes do not trigger a release or version bump.
+
+## 2026-10-13 — Physics guidance separates native behavior from game rules
+
+**Decision:** Keep reusable equations and units in `ti-game/references/physics.md`,
+the demo inventory in `examples.md`, and integration rules in the recipes.
+Label native implementation, demo choices and analytical predictions separately.
+Use the pinned upstream commit for native claims, independently from local fork
+changes; keep audit evidence and the comment-only Rhythm proposal in
+`docs/project/audits/`.
+
+**Why:** The audit found scattered equations, incorrect musical subdivisions,
+post-response landing measurements and unqualified damping/pause guarantees.
+Source calculations and extracted-method fixtures establish narrower facts than
+native scenes or target-device acceptance, so those evidence levels stay explicit.
+
+**Consequences:** The coasting brake profile remains optional tuning guidance.
+Native policies, module binaries and upstream PR submission require separate
+work. This closure commits the documentation without a release, version bump,
+tag or push, consistent with César's deferred-release instruction.
