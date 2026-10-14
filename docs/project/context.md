@@ -11,6 +11,20 @@ patterns. The October 12 audit and prepared Rhythm comment patch live under
 An equation calculation, extracted-method fixture and hardware run are distinct
 verification levels. No shared CLI machinery changed in this audit.
 
+## ti.synthengine beta source provenance
+
+`skills/ti-synthengine/references/api.md` and `audio-engine.md` record the
+spatial addition from the module's working tree based on `ef62edd`, with a
+SHA-256 per complete upstream source document. Remove only snapshot metadata
+and generated TOCs when comparing mirrors. The other official references
+remain pinned to their existing committed sources.
+
+Read these two references before changing binaural guidance. The beta keeps
+API version 1.0.0, so support detection uses `getDefaults().limits.spatialX`
+and `.spatialY`. Contract checks establish acceptance and conflicts; they do
+not establish perceived localization on headphones. Recheck source hashes
+and provenance when the module commits or revises this update.
+
 ## Architecture
 
 Single source tree, two distribution channels:

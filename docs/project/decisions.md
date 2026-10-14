@@ -167,3 +167,22 @@ native scenes or target-device acceptance, so those evidence levels stay explici
 Native policies, module binaries and upstream PR submission require separate
 work. This closure commits the documentation without a release, version bump,
 tag or push, consistent with César's deferred-release instruction.
+
+## 2026-10-14 — Binaural beta guidance records the working-tree source
+
+**Decision:** Incorporate the module's spatial documentation while explicitly
+labeling it as an uncommitted 1.0.0 beta update based on `ef62edd`. Record the
+upstream document hashes in the two changed mirrors and preserve their text
+apart from snapshot metadata and generated navigation.
+
+**Why:** The supplied update is present in the native module checkout but not
+in its HEAD commit. Claiming that commit contains spatial support would make
+the source pin misleading; the unchanged API version also cannot identify
+which installed beta supports the new fields.
+
+**Consequences:** Detect support through coordinate limits. App-owned switches
+omit both coordinates to preserve stereo and remove all conflicting pan
+fields when enabled, including inherited pattern fields. Native contract
+checks and headphone listening remain separate acceptance levels. This work
+changes skill content only; it does not require a shared-CLI sibling port or
+a release. Revisit the source pin once the native update is committed.

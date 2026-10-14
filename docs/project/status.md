@@ -1,3 +1,46 @@
+# Status — 2026-10-14
+
+**Phase:** binaural beta skill update completed for internal use. Package,
+plugin and lockfile versions remain at 5.2.0; no release, tag or push.
+**Session by:** Codex.
+
+## Completed
+
+- `fa8a470` — `feat(ti-synthengine): document binaural positioning in 1.0.0 beta`.
+  API and engine mirrors preserve the uncommitted module documentation based
+  on `ef62edd`, with full upstream document SHA-256 values. Skill guidance,
+  README and two smoke prompts cover coordinate limits, inherited pan
+  conflicts, fixed positions, app-owned switches/percentages and stereo bypass.
+- This session-documentation commit records source provenance in `context.md`
+  and the rationale in `decisions.md`. Requirements did not change. No shared
+  CLI changes or sibling port were needed.
+- The installed `~/.agents/skills/ti-synthengine` resolves to this checkout,
+  so the saved changes are available through the existing installation.
+
+## Verification and limits
+
+- Fresh closure run: 408/408 TiTools tests, no failures or skips; Pillow/PyYAML
+  supplied within the `uv run` process lifetime. Log:
+  `/tmp/titools-spatial-close-tests.log`. Whitespace checks pass.
+- Earlier in this session, Java `SynthSpatialContractRegression` passed and
+  the iOS contract matched all 78 corpus cases. Both updated mirrors matched
+  upstream after snapshot/TOC removal, with matching hashes; generated TOCs
+  were idempotent. No device listening or perceived localization is certified.
+- The initial suite invocation failed only because its temporary Python
+  executable expired; rerunning within the uv process lifetime passed.
+- Native module implementation was read and tested without editing it.
+  Pre-existing untracked `.agents/skills/purgetss-videos/` and `por-hacer.md`
+  remain outside the commits. No external blocker prevents this closure.
+
+## Next step
+
+Recheck the module documentation hashes and replace working-tree provenance
+with the actual source commit when the native spatial update is committed.
+Headphone/device audition remains separate acceptance work. Releases remain
+deferred; this task authorizes semantic commits and session documentation.
+
+---
+
 # Status — 2026-10-13
 
 **Phase:** ti.game skill audit completed and committed for internal use; earlier 5.2.0 development implementation remains installed. César explicitly deferred releases: no push, tag or publication in this session. `ti.admob.unified` has not been publicly released according to the prior session record; no registry check was made today. Package/plugin/lockfile versions remain at 5.2.0.
