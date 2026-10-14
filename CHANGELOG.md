@@ -21,6 +21,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- `ti-synthengine` documents the 1.0.0 beta binaural update: fixed `spatialX`/`spatialY` coordinates, pan conflicts, app-owned percentage controls, installed-support detection and headphone/front-plane limits. API and engine mirrors record hashes of the uncommitted module documentation captured on 2026-10-14.
+
 - `ti-game-assets` selects derived UI resources by actual consumers instead of copying the complete world inventory into every output. Explicit export selections, obsolete Android/iOS density cleanup and compiled-package checks prevent unused menu icons and HD previews. Game-specific filenames and display sizes remain in project instructions.
 
 - Audited all `ti-game` references against upstream `3bea2f4`. Corrected diagonal normalization, Lunar Lander impact measurement and wind/fuel guidance, Rhythm beat terminology, demo count and TileLayer source attribution. Added iOS view-lifecycle and shared-gamepad caveats; prepared a separate comment-only Rhythm patch for upstream review.

@@ -180,7 +180,7 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 | ti-ui        | UI/UX patterns                      | Complex layouts, ListViews, platform UI |
 | ti-game      | 2D games with the `ti.game` module  | Sprites, physics, tile layers, wall jumps, pathfinding, text/performance HUDs, particles, camera |
 | ti-game-assets | Visual and sound assets | Image generation/editing, synthesis variants, stereo placement, alpha cleanup, manifests, parallax and complete exports |
-| ti-synthengine | Sound design with `ti.synthengine` | Tones, chords, retro/UI effects, alarms, sweeps, patterns, ADSR envelopes, resonant filters, FM, detune, mixing and troubleshooting |
+| ti-synthengine | Sound design with `ti.synthengine` | Tones, chords, retro/UI effects, alarms, sweeps, patterns, ADSR envelopes, resonant filters, FM, detune, binaural positioning, mixing and troubleshooting |
 | ti-admob-unified | Advertising, privacy and mediation | Official `ti.admob.unified` guides, copy-ready library, banners/fullscreen, UMP/ATT and selected-provider configuration |
 | ti-api       | Complete Titanium API reference     | Looking up properties, methods, events  |
 | ti-guides    | SDK fundamentals                    | tiapp.xml, Hyperloop, distribution, JDK/Xcode compatibility, release notes |
@@ -532,7 +532,7 @@ Installing an adapter does not configure a publisher account or prove delivery. 
 
 ### ti-synthengine
 
-Cross-platform sound design and synthesis with the native `ti.synthengine` 1.0.0 module for Android and iOS.
+Cross-platform sound design and synthesis with the native `ti.synthengine` 1.0.0 beta module for Android and iOS.
 
 When it activates:
 - `tiapp.xml` declares `ti.synthengine`, or code calls `require('ti.synthengine')`
@@ -555,6 +555,7 @@ Key rules:
 - `playTone` accepts `note` or `frequency`, never both; `playChord` accepts `notes` or `frequencies`, never both
 - `duration` includes attack, the full-level middle, and release, so explicit envelope times must intersect correctly
 - Use `frequencyEnd` for sweeps, `panEnd` for stereo movement, and `lfoFreq`/`lfoDepth` for pitch vibrato
+- Binaural headphone positioning uses `spatialX`/`spatialY` from -1 to 1, without pan fields. Omit both to keep stereo; check installed coordinate limits because older 1.0.0 builds lack this beta addition
 - Curated recipes cover retro effects, playable xylophone gestures, four-pad memory cues, controlled waveform comparisons, layered chords and cancellable repetition
 - Start after the first layout settles, keep one lifecycle owner, check Boolean returns, and call `shutdown()` on cleanup
 

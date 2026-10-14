@@ -1,13 +1,13 @@
 ---
 name: ti-synthengine
-description: "Use when a Titanium app declares ti.synthengine in tiapp.xml, imports require('ti.synthengine'), or asks for generated tones, chords, patterns, retro/game/UI sounds, alarms, sweeps, vibrato, envelopes (attack, decay, sustain, release), resonant filters, FM bells and electric-piano tones, detune, panning, gain staging, the patternend event, or troubleshooting with that native module. Covers Android and iOS contract 1.0.0. Do not use for audio-file playback, streaming music, or unrelated synthesizers."
+description: "Use when a Titanium app declares ti.synthengine in tiapp.xml, imports require('ti.synthengine'), or asks for generated tones, chords, patterns, retro/game/UI sounds, alarms, sweeps, vibrato, envelopes (attack, decay, sustain, release), resonant filters, FM bells and electric-piano tones, detune, panning, binaural headphone positioning (spatialX/spatialY), gain staging, the patternend event, or troubleshooting with that native module. Covers Android and iOS contract 1.0.0. Do not use for audio-file playback, streaming music, or unrelated synthesizers."
 ---
 
 # ti.synthengine — sound synthesis for Titanium SDK
 
 Act as an audio engineer and mobile sound designer for the native `ti.synthengine` module. Translate an aesthetic request into acoustically reasoned JavaScript that uses only the module's public contract.
 
-This skill is verified against TiSynthEngine **1.0.0** at commit **`ef62edd` (2026-10-04)**, which adds decay and sustain, the resonant filter, FM, detune and the `patternend` event to `e8f1d0d`. Android and iOS expose the same eight public methods, one event, option contracts, defaults, limits, waveform constants, and validation behavior.
+This skill follows TiSynthEngine **1.0.0 beta**, based on commit **`ef62edd` (2026-10-04)** plus the uncommitted spatial update captured **2026-10-14**. The API and audio-engine references record the source-document hashes for that update. Android and iOS expose the same eight public methods and one event. Older 1.0.0 builds may lack spatial support: inspect `getDefaults().limits` for `spatialX` and `spatialY` before offering binaural controls; `apiVersion` alone does not distinguish these builds.
 
 ## Visual and sound asset collaboration
 
@@ -20,6 +20,7 @@ Read the references relevant to the task before proposing code. Do not infer opt
 | Task | Read first |
 | --- | --- |
 | Any code using a public method, option, default, limit, or return value | [references/api.md](references/api.md) |
+| Position sounds in a headphone front plane, map spatial controls, or diagnose spatial/pan conflicts | [references/api.md](references/api.md), [references/audio-engine.md](references/audio-engine.md) |
 | Design a sound from an aesthetic description | [references/sound-design.md](references/sound-design.md), then [references/recipes.md](references/recipes.md) for a tuned starting point |
 | Build retro/arcade effects, a playable instrument, memory pads, layered chords, timbre comparisons, or cancellable repetition | [references/recipes.md](references/recipes.md), plus [references/api.md](references/api.md) |
 | Learn the official examples for tones, chords, tempo, patterns, noise, validation, startup, and cleanup | [references/examples.md](references/examples.md) |
@@ -61,6 +62,8 @@ Never hardcode waveform integers when `WAVE.SINE`, `WAVE.SQUARE`, `WAVE.SAWTOOTH
 - FM is `fmDepth` (modulation index, 0 to 10), `fmRatio` (0.1 to 16) and an optional `fmDepthEnd`; unlike the other `*End` keys, 0 is a real target, so omit the key for no sweep. Only `WAVE.SINE` can carry FM, and `fmRatio` without a depth is rejected.
 - `detune` (cents, -1200 to 1200) works on `playTone` and `playPattern`. `playChord()` uses `detunes`, an array aligned with the pitches. The detuned pitch, and any `frequencyEnd` target, must stay inside the frequency limits.
 - `patternend` is an event, not a method: it fires once per accepted `playPattern()` with `{ completed: true }` at the natural end, or `{ completed: false }` when a newer pattern replaces it. `stopAll()` and `shutdown()` fire nothing. Remove the listener when the owner closes.
+- `spatialX` (left/right) and `spatialY` (below/above) are finite numbers from -1 to 1 on `playTone`, `playChord`, and `playPattern` roots/steps. Supplying either enables binaural processing, with 0 for the omitted coordinate; omitting both preserves stereo. A chord shares one fixed position. Never combine coordinates with `pan`, `panEnd`, `pans` or `panSpread`, even through pattern inheritance: the call returns `false` with `conflicting_spatial_fields`. [source: references/api.md]
+- A binaural switch and percentage sliders belong to the app. Map signed percentages from -100 to 100 by dividing by 100, then send only the coordinates when enabled. When disabled, omit both coordinates; sending two zeros still enables binaural processing. The module has no separate switch option. Positions stay fixed for each event; later events can use updated coordinates. Test with stereo headphones and broadband sounds; the front plane has no rear sources, distance attenuation, room reflections or head tracking. [source: references/api.md]
 - `pan` and `panEnd` range from -1 to 1. `frequencyEnd` is a linear sweep target. `lfoFreq` is the modulation rate in Hz and `lfoDepth` is absolute pitch deviation in Hz, not cents.
 - `WAVE.WAVETABLE` requires `waveTable`: 2 to 64 finite values from -1 to 1, stepped without interpolation. `bitDepth` is 0 or an integer from 2 to 16; `pulseWidth` is 0.05 to 0.95 and only shapes `SQUARE`; `pulseWidthEnd` is 0 or 0.05 to 0.95. For `noiseRate`, `noiseRateEnd`, and `lowPassHz`, 0 means white noise, no sweep, or no filter.
 - `startEngine()`, `playTone()`, `playChord()`, `playPattern()`, and `setVolume()` return `Boolean`; production code must handle rejection where it matters.
@@ -79,6 +82,7 @@ Use these as starting regions, then keep every explicit value inside the API lim
 | Coarse DAC-like or buzzy custom voice | `WAVETABLE` with a short asymmetric `waveTable`, optionally with `bitDepth` |
 | Alarm or urgent cue | `SAWTOOTH`, repeated pitches, a sweep, or vibrato around 4–7 Hz; use larger `lfoDepth` only for an obvious effect |
 | Laser or sci-fi movement | One `frequency` plus `frequencyEnd`, short attack, fitted release, optional `pan` → `panEnd` |
+| Headphone cue above/right or below/left | Use `spatialX`/`spatialY` on a broadband sound, without stereo pan fields; verify perceived direction with headphones |
 | Pad or atmosphere | One `playChord()` with `SINE` or `TRIANGLE`, 2000 ms or longer, 300–600 ms attack, 800–1500 ms release when it fits |
 | Plucked string, marimba or keyboard note | `TRIANGLE` or `SINE`, 2 ms attack, `decay` 120–400 ms, `sustain` 0 to 0.3, release that fits |
 | Electric piano, bell or metallic hit | `SINE` with `fmDepth` that falls to `fmDepthEnd: 0`; `fmRatio` 1, 2 or 3.5 for tine-like tones, a non-integer ratio for bells; add `decay` and a low `sustain` |
@@ -103,6 +107,7 @@ For playable controls, trigger one event when the finger enters a new key, not o
 - Confirm pitch fields are mutually exclusive and numeric values are finite and in range.
 - Compute the envelope intersection explicitly, including `attack + decay <= duration`.
 - Check the cross-field rules: `sustain` below 1 needs a `decay`, filter fields need a `filterType`, FM needs a sine and a depth.
+- Check installed spatial limits before using binaural coordinates; remove conflicting stereo fields at both pattern root and step. Omit coordinates when the app switch is off.
 - Use `WAVE` constants from `getDefaults()`.
 - Use `playChord()` for one simultaneous musical event instead of several hotter independent tones.
 - Include startup and cleanup only at the ownership level relevant to the request.
