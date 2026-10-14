@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at commit `918c9a6a9e8fc96ee7b6e81c6a8845e612c4f6b6` (2026-10-14). Upstream `documentation/examples.md` SHA-256: `059d427fa1d4edcf5274741da028e78f5a493ceaf56b61ea3b6201b0665fd9fe`.
+> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at commit `95901c98af5353b86d9dc7c60b29ab9186b038cd` (2026-10-14). Upstream `documentation/examples.md` SHA-256: `53a8bd95215cc24a35776edb8686fa0d60c5399be0b4ff2685eee1563738f6cb`.
 
 # Examples
 
@@ -294,11 +294,11 @@ synth.playPattern({
   volume: 0.55,
   waveType: WAVE.SQUARE,
   steps: [
-    { note: 'C4', duration: 150 },
-    { note: 'E4', duration: 150 },
+    { note: 'C4' },
+    { note: 'E4' },
     { rest: true },
-    { note: 'G4', duration: 150 },
-    { note: 'C5', duration: 280, noteValue: '4n' }
+    { note: 'G4' },
+    { note: 'C5', noteValue: '4n' }
   ]
 })
 ```
@@ -309,21 +309,26 @@ Swing offsets scheduled starts without changing voice durations: positive swing 
 
 ```javascript
 synth.playPattern({
-  stepDuration: 110,
   pan: -0.4,
   panEnd: 0.4,
   waveType: WAVE.TRIANGLE,
   steps: [
     { note: 'C5', duration: 90 },
+    { rest: true, duration: 20 },
     { note: 'D5', duration: 90 },
+    { rest: true, duration: 20 },
     { note: 'E5', duration: 90 },
+    { rest: true, duration: 20 },
     { note: 'G5', duration: 180 }
   ]
 })
 ```
 
-`stepDuration` controls spacing. Per-step `duration` controls how long the
-sound itself lasts. The pattern root does not accept `duration`.
+Each `duration` sets both the voice length and the advance to the next step.
+The 90 ms tones followed by 20 ms rests put the first four notes 110 ms apart;
+the last tone lasts 180 ms. Rests provide actual silence. `release` only fades
+within a sounding step, not a separate gate. The pattern root does not accept
+`duration`, and `stepDuration` is only a fallback when a step has no timing.
 
 ## Step overrides
 
@@ -360,16 +365,18 @@ synth.playPattern({
   volume: 0.32,
   waveType: WAVE.NOISE,
   steps: [
-    { frequency: 200, duration: 70, attack: 1, release: 60 },
+    { frequency: 200, attack: 1, decay: 70, sustain: 0, release: 60 },
     { rest: true },
-    { frequency: 200, duration: 32, attack: 1, release: 25 },
-    { frequency: 200, duration: 32, attack: 1, release: 25 },
+    { frequency: 200, attack: 1, decay: 32, sustain: 0, release: 25 },
+    { frequency: 200, attack: 1, decay: 32, sustain: 0, release: 25 },
     { rest: true },
-    { frequency: 200, duration: 52, attack: 1, release: 44 }
+    { frequency: 200, attack: 1, decay: 52, sustain: 0, release: 44 }
   ]
 })
 ```
 
+The steps retain the sixteenth-note grid. Short decay with `sustain: 0` makes
+each hit settle to silence before its step ends, without changing that grid.
 Every sounding step needs `frequency` or `note`, including a noise step. Do not
 write a primitive step such as `200`; primitive steps return
 `invalid_step_type`.
@@ -695,7 +702,7 @@ synth.shutdown()
 `stopAll()` fades current voices but leaves pending pattern scheduling alone.
 `shutdown()` cancels the scheduler and releases the native stream.
 
-The complete interactive demo is in [`example/app.js`](../example/app.js).
+The complete interactive demo is in the upstream [`example/app.js`](https://github.com/macCesar/TiSynthEngine/blob/95901c98af5353b86d9dc7c60b29ab9186b038cd/example/app.js). For additional retro effects, playable xylophone interaction, memory pads, layered polyphony and cancellable repetition, continue with [Curated sound and interaction recipes](recipes.md).
 
 ## Positioned headphone effect
 

@@ -192,7 +192,7 @@ Notes:
 - The first eight (`ti-reuse-first`, `ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-game-assets`, `ti-synthengine`, `ti-admob-unified`) are specialist workflow skills reflecting TiTools' Titanium conventions and native-module contracts.
 - `ti-reuse-first` runs before the others. It asks whether a thing needs to exist and what already does it — a search order that stops at the first rung that holds — and sweeps an existing `app/` for near-identical controllers, single-listener events, wrappers around one call, and layout recomputed in JavaScript. It is deliberately two-sided: it says when adding a module or a Widget is the right answer, so the bias does not simply invert.
 - `ti-game` documents the `ti.game` native module (2D sprite engine on OpenGL ES 2.0, Android and iOS). Its API reference was verified against the module source and tracks upstream `main` (the module ships features ahead of its manifest version); it applies to Alloy and Classic projects alike and does not depend on PurgeTSS.
-- `ti-synthengine` translates aesthetic sound requests into strict, production-ready JavaScript for the cross-platform `ti.synthengine` 1.0.0 module. Seven references preserve the official documentation and an eighth adds curated retro, xylophone, memory-pad, polyphony and timer-ownership recipes; the API contract was cross-checked against both native implementations.
+- `ti-synthengine` translates aesthetic sound requests into strict, production-ready JavaScript for the cross-platform `ti.synthengine` 1.0.0 module. Seven references preserve the official documentation; curated recipes add retro effects, xylophone interaction, memory pads, polyphony and timer ownership. Maintenance notes and a hash manifest track source provenance, preserved navigation and audit limits; API claims are checked against native implementations.
 - `ti-game-assets` treats images and sounds as essential game assets. It coordinates integrated `image_gen` artwork with `ti-synthengine` sound design, variants and stereo placement, and ships Pillow helpers for conservative alpha cleanup and per-world visual/audio manifests.
 - The latter five are documentation-mirror skills, audited against official sources via the internal `titools-skill-auditor`. See [Where the references come from](#where-the-references-come-from).
 - `purgetss` reference files are audited against the official PurgeTSS documentation and against the package source (the CLI and the generated `utilities.tss`), but its workflow conventions are opinionated.
@@ -867,7 +867,7 @@ This pattern is documented across four bundled TiTools skills: `ti-ui`, `ti-expe
 | ti-game   | Native 2D Game Workflow       | 9 files (API, setup, patterns, recipes, tile maps, debugging, roadmap) |
 | ti-game-assets | Visual and Sound Assets | 10 guides and a manifest example; alpha and contract validation scripts |
 | ti-admob-unified | Unified Advertising | 11 official module guides, source/hash update checks, official example library and game integration guidance |
-| ti-synthengine | Native Sound Synthesis   | 8 files (API, sound design, lifecycle, engine, official examples, curated recipes, recommendations, troubleshooting) |
+| ti-synthengine | Native Sound Synthesis   | 9 Markdown references (7 official, curated recipes, maintenance notes) plus a source hash manifest |
 
 ---
 

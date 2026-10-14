@@ -33,7 +33,18 @@ export async function verifySnapshot(source, skill) {
     else if (digest(original) !== record.source_sha256) changed.push(record.source);
     if (!existsSync(mirrored) || digest(mirrored) !== record.mirrored_sha256) modifiedMirror.push(record.destination);
   }
-  const known = new Set(snapshot.files.map(record => record.source));
+  // Documents deliberately left upstream still need review when they change.
+  // Exclusions are reviewed source records, not an unchecked ignore list.
+  const excluded = snapshot.excluded_documents || [];
+  for (const record of excluded) {
+    if (!record.source || !record.source_sha256 || !record.reason) {
+      throw new Error('Excluded documents require source, source_sha256 and reason');
+    }
+    const original = path.join(source, record.source);
+    if (!existsSync(original)) missing.push(record.source);
+    else if (digest(original) !== record.source_sha256) changed.push(record.source);
+  }
+  const known = new Set([...snapshot.files, ...excluded].map(record => record.source));
   const newDocuments = markdownFiles(path.join(source, 'documentation'), source).filter(file => !known.has(file));
   let currentCommit = null;
   let dirtySource = null;

@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at commit `918c9a6a9e8fc96ee7b6e81c6a8845e612c4f6b6` (2026-10-14). Upstream `documentation/recommendations.md` SHA-256: `856b2accf9cdbaa873a8962529c6253b21cbe47253c6107a85096e7b914d7b91`.
+> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at commit `95901c98af5353b86d9dc7c60b29ab9186b038cd` (2026-10-14). Upstream `documentation/recommendations.md` SHA-256: `0f09ee6ef0876b3a23021fddb509dfd1e1206d08e836acae8f32b58b6481c055`.
 
 # Recommendations
 
@@ -9,7 +9,8 @@ audio systems sharing one lifecycle.
 ## Group simultaneous notes
 
 Use `playChord()` when pitches form one known simultaneous event. The chord is
-atomic and its source gain accounts for its voice count. Separate `playTone()`
+atomic. Protected profiles normalize per-voice source gain by the square root
+of the event voice count; `raw` bypasses that normalization. Separate `playTone()`
 calls are appropriate for independent touches and effects, but their start
 times and gain are independent too.
 
@@ -100,8 +101,9 @@ more than the basic controls do.
 - FM is not band-limited. A high carrier with a large `fmDepth` and `fmRatio`
   aliases. Keep carriers of bell-like sounds around 500 Hz, or lower the index.
 - A detuned stack is one voice per copy. Count them when choosing `maxVoices`.
-  Event gain divides by the square root of the voice count, so the stack gets
-  wider, not louder.
+  Protected profiles divide per-voice source gain by the square root of the
+  event voice count; `raw` does not. Correlated or phase-aligned voices can still
+  reinforce each other, so this is not a guarantee of constant loudness or peaks.
 - `patternend` follows the pattern scheduler. Use it to chain cues and release
   state, not to line up audio to the sample.
 
