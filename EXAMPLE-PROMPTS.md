@@ -480,6 +480,23 @@ Expect:
 ---
 
 ### ti-synthengine
+
+```
+"Place a noise explosion above and to the right with ti.synthengine on headphones."
+```
+Expect:
+- Reads `references/api.md` and `references/audio-engine.md`; checks installed spatial coordinate limits
+- Uses finite `spatialX` and `spatialY` within -1 to 1, with positive Y for above and no pan fields
+- Checks the Boolean result and explains fixed event position, front-plane limits and headphone listening acceptance
+
+```
+"Add a binaural switch and signed percentage sliders for X/Y to my existing synth controls. Keep stereo when the switch is off."
+```
+Expect:
+- Treats the switch and sliders as app UI, maps -100..100 to -1..1 and sends coordinates only when enabled
+- Omits both coordinates when disabled; does not send an invented module switch or treat `(0, 0)` as stereo bypass
+- Removes `pan`, `panEnd`, `pans` and `panSpread` conflicts, including pattern inheritance; a chord shares one position
+
 ```
 "Create a short sci-fi laser with ti.synthengine. It should rise in pitch while moving from the left speaker to the right."
 ```
