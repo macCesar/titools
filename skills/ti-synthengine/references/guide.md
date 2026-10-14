@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 documentation at commit `ef62edd` (2026-10-04).
+> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at commit `918c9a6a9e8fc96ee7b6e81c6a8845e612c4f6b6` (2026-10-14). Upstream `documentation/guide.md` SHA-256: `c5fb4ff34ec425487221b80d6793bda24aa328281ab9ccb02e65b0065e54842e`.
 
 # Guide
 
@@ -21,14 +21,14 @@ the native audio resources when the owning screen closes.
 - [Know when a pattern ends](#know-when-a-pattern-ends)
 - [Master level and stopping](#master-level-and-stopping)
 - [Output route changes](#output-route-changes)
+- [Integrate binaural in a 2D app](#integrate-binaural-in-a-2d-app)
 - [Next steps](#next-steps)
 
 <!-- TOC-END -->
 
 ## Install the module
 
-Download the archive for each target platform from the
-[latest release](https://github.com/macCesar/TiSynthEngine/releases/latest):
+For the unreleased beta, use the packages built from the current module source in `android/dist` and `ios/dist`. The [latest release](https://github.com/macCesar/TiSynthEngine/releases/latest) is a separate package snapshot; it does not update when source files change. The archive names are:
 
 - `ti.synthengine-android-1.0.0.zip`
 - `ti.synthengine-iphone-1.0.0.zip`
@@ -321,8 +321,7 @@ The chord is placed on the audio queue atomically. Its voices also share a
 constant-power event gain. Several separate `playTone` calls are independent,
 can begin in different callbacks, and are hotter when summed.
 
-Use `pans` when every note needs a deliberate position. Missing entries remain
-centered, and an array longer than the note array is rejected.
+Use `pans` when notes need deliberate positions. Supplied entries override `panSpread`; missing entries use the spread position, or remain centered when spread is 0. An array longer than the note array is rejected.
 
 ```javascript
 synth.playChord({
@@ -414,6 +413,154 @@ ignores the silent switch and normally interrupts other audio. Pass
 `audioSession: 'ambient'` to respect the silent switch and mix with other apps;
 read [coexisting with other audio](recommendations.md#coexisting-with-other-audio)
 and test the final app on a device.
+
+## Integrate binaural in a 2D app
+
+The JavaScript app chooses a position for each sound; the native module generates and filters that voice. Installing the module or enabling an app switch does not convert existing `pan` calls into binaural calls. Update every playback path that should use positioning, including explosions, impacts, shots, lasers and repeated motor/thrust events. A central audio service can do this once for all effects that supply their current source position. Calls bypassing that service keep their existing behavior.
+
+Keep the synthesis recipe (pitch, waveform, duration, envelope, filters, FM and volume). Replace its placement fields when submitting the event. This is per-event processing inside the native ports using the shared KEMAR FIR, rather than a global platform spatial-audio switch.
+
+### Detect the installed feature
+
+During the unreleased 1.0.0 beta, the version string alone does not prove that an installed binary has binaural support. Check both coordinate limits before enabling the controls:
+
+```javascript
+var synth = require('ti.synthengine')
+var contract = synth.getDefaults()
+var supportsBinaural = !!(contract.limits &&
+  contract.limits.spatialX && contract.limits.spatialY)
+```
+
+If the limits are absent, disable the binaural switch and keep stereo playback. Replace the installed module package and rebuild and reinstall the app to use a new native binary. Updating `tiapp.xml` or copying module files does not change an app already installed on a device. Follow the [lifecycle](#lifecycle) above to start the engine before playing.
+
+### Direction and amplitude are different controls
+
+`spatialX`/`spatialY` are signed directions from -1 to 1. A 0 to 100% amplitude slider scales the position derived from the object; it does not select a direction. At height 100%, an upper object remains above and a lower object remains below. At height 0%, both are at the front-center height, while binaural remains enabled. Direct direction sliders would instead need -100 to +100%, divided by 100.
+
+| App control | Effect |
+| --- | --- |
+| Binaural switch | Send spatial coordinates when on; omit both when off. |
+| Horizontal amplitude, 0 to 100% | Scale each source's left/right coordinate; also controls stereo `pan` when binaural is off. |
+| Height amplitude, 0 to 100% | Scale each source's below/above coordinate; inactive in stereo mode. |
+| Master volume | Use `setVolume`; independent of direction and amplitude. |
+
+These are app preferences, not options for `startEngine` or additional native methods. Keep the app's chosen defaults and saved preferences; the module does not impose a 100% slider default. Persist them in the app if they should survive restart. A switch change applies to newly submitted events, without restarting the engine or repositioning voices already playing.
+
+With both amplitude controls at 100%, screen positions map as follows:
+
+| Position | `spatialX` | `spatialY` |
+| --- | ---: | ---: |
+| Top left | -1 | 1 |
+| Top center | 0 | 1 |
+| Top right | 1 | 1 |
+| Middle left | -1 | 0 |
+| Center | 0 | 0 |
+| Middle right | 1 | 0 |
+| Bottom left | -1 | -1 |
+| Bottom center | 0 | -1 |
+| Bottom right | 1 | -1 |
+
+### Convert screen positions when playing a tone
+
+This example preserves a recipe, removes conflicting placement fields, and computes new coordinates for each call. Coordinates use the same local arena space: X grows right, Y grows down, and width/height are the arena dimensions. Convert world or camera coordinates into that space first. The example percentages are app choices; retain your own defaults.
+
+```javascript
+var audioSettings = {
+  binaural: supportsBinaural,
+  horizontalPercent: 50,
+  heightPercent: 100
+}
+
+function clamp (value, min, max) {
+  return Math.max(min, Math.min(max, value))
+}
+
+function playPositionedTone (recipe, x, y, width, height) {
+  var values = [x, y, width, height]
+  if (!values.every(function (value) {
+    return typeof value === 'number' && isFinite(value)
+  }) || width <= 0 || height <= 0) {
+    throw new Error('Sound position needs finite coordinates and positive dimensions')
+  }
+
+  var options = Object.assign({}, recipe)
+  delete options.pan
+  delete options.panEnd
+  delete options.pans
+  delete options.panSpread
+  delete options.spatialX
+  delete options.spatialY
+
+  var horizontal = clamp(audioSettings.horizontalPercent, 0, 100) / 100
+  var vertical = clamp(audioSettings.heightPercent, 0, 100) / 100
+  var nx = clamp(2 * x / width - 1, -1, 1)
+  var ny = clamp(1 - 2 * y / height, -1, 1)
+
+  if (audioSettings.binaural && supportsBinaural) {
+    options.spatialX = nx * horizontal
+    options.spatialY = ny * vertical
+  } else {
+    options.pan = nx * horizontal
+    options.panEnd = options.pan
+  }
+  return synth.playTone(options)
+}
+
+var explosion = {
+  frequency: 90,
+  waveType: contract.waveTypes.NOISE,
+  duration: 500,
+  attack: 2,
+  release: 200,
+  volume: 0.3
+}
+if (!playPositionedTone(explosion, 900, 100, 1000, 800)) {
+  Ti.API.warn('Positioned explosion rejected')
+}
+```
+
+Connect a Titanium switch's `change` event to `audioSettings.binaural = event.value`; connect the two sliders' `change` events to `horizontalPercent` and `heightPercent`. Configure slider minimum 0 and maximum 100, and disable the height slider while the switch is off. Validate restored preference values as finite numbers within those ranges before using them. Do not pass these preference names to `playTone`: that would return `false` with `unsupported_option`.
+
+Supply the current position whenever an effect fires. A projectile launch cue can use the launch position; an impact uses the collision position. Repeated short motor events can use successive positions. A single active tone cannot move after submission because this API has no per-voice handle or position-update method. Stereo `panEnd` movement cannot be combined with binaural; do not continually retrigger long sounds every frame to imitate movement.
+
+### Chords and patterns
+
+A chord shares one binaural position across all its voices. Remove `pans` and `panSpread` when sending coordinates. For different simultaneous source positions, use independent tone events and account for their different gain/overlap behavior:
+
+```javascript
+if (!synth.playChord({
+  notes: ['C4', 'E4', 'G4'],
+  duration: 500,
+  volume: 0.3,
+  spatialX: -0.5,
+  spatialY: 0.7
+})) Ti.API.warn('Spatial chord rejected')
+```
+
+Pattern steps inherit coordinates from the root and can override either one. Remove conflicting stereo fields from both the root and every step; even `pan: 0` conflicts with a spatial coordinate. A step cannot opt out of inherited binaural by passing zero coordinates; use a pattern without spatial coordinates on its root for a mix of spatial and stereo steps.
+
+```javascript
+if (!synth.playPattern({
+  stepDuration: 300,
+  attack: 5,
+  release: 80,
+  volume: 0.3,
+  spatialX: 0,
+  spatialY: 1,
+  steps: [
+    { note: 'C4' },
+    { note: 'E4', spatialY: -1 },
+    { rest: true },
+    { note: 'G4', spatialX: 1, spatialY: 0 }
+  ]
+})) Ti.API.warn('Spatial pattern rejected')
+```
+
+### Listen and measure
+
+Use stereo headphones and compare isolated broadband noise above/below before testing many collisions. Perceived elevation varies with the listener, headphones and spectrum; low sine tones are weak tests. The output is still stereo, with a front plane and no rear sources, distance attenuation, room reflections or head tracking. A 100% slider uses the modeled directional range; it does not guarantee strong localization for every person.
+
+CPU cost depends on concurrent spatial voices and their short tails, not the total number of effects over a game. Measure the intended device and realistic event overlap. Host replay is a comparison tool, not device CPU, battery, heat or underrun evidence. See [the renderer](audio-engine.md#binaural-front-plane-renderer) and [diagnostic checks](troubleshooting.md#binaural-does-not-change-the-position).
 
 ## Next steps
 

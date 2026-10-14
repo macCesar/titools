@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation from the uncommitted working tree based on `ef62edd` (captured 2026-10-14). Upstream `documentation/audio-engine.md` SHA-256: `2266b2997b9799bc40c499bd24ecb7d689da9815f05c46abccdb0733b5d37937`.
+> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at commit `918c9a6a9e8fc96ee7b6e81c6a8845e612c4f6b6` (2026-10-14). Upstream `documentation/audio-engine.md` SHA-256: `f0f40ba36199720a9135f3a3632feb8da1b3df0abb00325d2c4d0ddf958f4b74`.
 
 # Audio engine
 
@@ -38,7 +38,8 @@ playTone / playChord / playPattern
    native command ring buffer
              |
  voice pool: source (or FM) -> quantizer -> one-pole low-pass
-             -> state-variable filter -> envelope -> gain and pan
+             -> state-variable filter -> envelope -> gain
+             -> stereo pan OR binaural FIR
              |
        sum voices and steal tails
              |
@@ -291,9 +292,11 @@ test_dir=$(mktemp -d /tmp/ti-synth-test.XXXXXX)
 javac -d "$test_dir" \
   src/ti/synthengine/SynthContract.java \
   test/ti/synthengine/SynthContractRegression.java \
+  test/ti/synthengine/SynthSpatialContractRegression.java \
   src/ti/synthengine/SynthDsp.java \
   test/ti/synthengine/SynthDspRegression.java
 java -cp "$test_dir" ti.synthengine.SynthContractRegression
+java -cp "$test_dir" ti.synthengine.SynthSpatialContractRegression
 java -cp "$test_dir" ti.synthengine.SynthDspRegression
 ```
 
@@ -368,3 +371,19 @@ renders its output on the host, so check it on a device.
 Spatial voice-steal and stop tails copy the filter history as well as oscillator state. After the source envelope or fade ends, both ports drain the FIR with zero input for `taps - 1` samples before freeing the voice; this preserves even 1 ms events. Ordinary voices bypass the FIR. CPU cost grows with spatial voices, including short replacement tails. A fixed position avoids changing the filter during an event. The intended output-rate range is 8 to 192 kHz. Interpolated generic HRTFs provide directional cues, not guaranteed individual localization.
 
 The shared processor check is `cc -std=c99 -O2 -Wall -Wextra -Wpedantic tests/spatial_regression.c -lm -o /tmp/spatial_regression` followed by `/tmp/spatial_regression`. `tests/spatial_engine_host.cpp` uses the same compile flags as `engine_render_host.cpp` and verifies native left/right rendering, elevation changes, stealing and stopping. Java spatial validation is checked by `SynthSpatialContractRegression`; the common Java/iOS corpus also covers spatial acceptance and conflicts.
+
+### Reproduce a host CPU comparison
+
+Compile `tests/spatial_benchmark_host.cpp` with the same Oboe/JDK includes and definitions as `engine_render_host.cpp` above, replacing the source filename and choosing an output such as `/tmp/spatial_benchmark`. Supply a whitespace-separated timeline, one event per line, with these 25 columns in order:
+
+```text
+timeMs frequency frequencyEnd durationMs attackMs releaseMs decayMs sustain waveType volume noiseRate noiseRateEnd lowPassHz pulseWidth lfoFreq lfoDepth filterTypeIndex filterHz filterHzEnd filterQ fmRatio fmDepth fmDepthEnd pan panEnd
+```
+
+The filter indices are 0=none, 1=lowpass, 2=highpass and 3=bandpass. This internal harness bypasses public contract validation, so only feed valid event recipes. In binaural mode every event uses its `pan` column as spatialX and a synthetic moving elevation `0.8 * sin(timeMs / 1000)`; the other pan column is irrelevant to that mode. This tests CPU, not the localization of the original timeline.
+
+```sh
+python3 tools/benchmark_spatial.py /tmp/spatial_benchmark /path/to/timeline.txt
+```
+
+The script compares stereo and binaural using a warmup and five measured trials, reporting the median by audio processing time. There is no hardware stream or JavaScript bridge. Results include peak level, non-finite/clipped frames, voice replacements and processing time; they do not measure device CPU, latency, underruns, heat or battery.

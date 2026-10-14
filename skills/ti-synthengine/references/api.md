@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation from the uncommitted working tree based on `ef62edd` (captured 2026-10-14). Upstream `documentation/api.md` SHA-256: `d89c42377f5d4e4c9a4384957ba1482d9d13299b94559e534e82ba80000cc646`.
+> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at commit `918c9a6a9e8fc96ee7b6e81c6a8845e612c4f6b6` (2026-10-14). Upstream `documentation/api.md` SHA-256: `a23870e1af36ce46e0c06d5db090a47bd3064e25bad4dabae19131d064d3490b`.
 
 # API reference
 
@@ -103,26 +103,26 @@ The result has this shape:
 }
 ```
 
-`fmDepthEnd` and `detunes` have no default because omitting them is
-meaningful. The maximum frequency is `sampleRate * 0.45`. Before the stream opens, the
+`fmDepthEnd`, `detunes`, `spatialX` and `spatialY` have no reported default because omitting them is meaningful. Supplying a spatial coordinate enables binaural; the other coordinate then defaults to 0 internally. The maximum frequency is `sampleRate * 0.45`. Before the stream opens, the
 reported fallback is 19,845 Hz. Read the object again after `startEngine()` if
 the precise device limit matters.
 
 ## Limits
 
-All ranges include their endpoints.
+All ranges include their endpoints. `getDefaults().limits` uses `{ min, max }` objects. Sweep targets and array elements share the corresponding base range: `panEnd`/`pans[]` use `pan`, `frequencyEnd` uses `frequency` plus disabled value 0, `noiseRateEnd` uses `noiseRate`, `filterHzEnd` uses `filterHz` plus disabled value 0, `fmDepthEnd` uses `fmDepth`, and `detunes[]` uses `detune`. The sample-count key is `waveTableSamples`; there is no `limits.waveTable` object.
 
 | Field | Minimum | Maximum | Unit or rule |
 | --- | ---: | ---: | --- |
 | `maxVoices` | 1 | 32 | integer voices |
 | `frequency` | 1 | `sampleRate * 0.45` | Hz |
-| `duration` | 1 | 60,000 | integer ms |
+| `duration` | 1 | 60,000 | integer ms, including explicit pattern step duration |
 | `attack` | 0 | 2,000 | integer ms; must be less than duration |
 | `release` | 0 | 4,000 | integer ms; must fit after attack |
 | `volume` | 0 | 2 | event or master multiplier |
 | `waveType` | 0 | 5 | integer waveform value |
 | `patternSteps` | 1 | 512 | object steps |
 | `pan`, `panEnd`, `pans[]` | -1 | 1 | left to right |
+| `spatialX`, `spatialY` | -1 | 1 | fixed binaural direction; omitted unless enabled |
 | `panSpread` | 0 | 1 | chord stereo width |
 | `frequencyEnd` | 0 | `sampleRate * 0.45` | Hz; 0 disables the sweep |
 | `lfoFreq` | 0 | 20,000 | Hz; 0 disables vibrato |
@@ -131,7 +131,7 @@ All ranges include their endpoints.
 | `lowPassHz` | 0 | `sampleRate * 0.45` | Hz; 0 disables the filter |
 | `pulseWidth` | 0.05 | 0.95 | fraction of a square-wave cycle |
 | `pulseWidthEnd` | 0 or 0.05 | 0.95 | 0 disables the sweep |
-| `waveTable` | 2 samples | 64 samples | each value must be from -1 to 1 |
+| `waveTable` | 2 samples | 64 samples | each value must be from -1 to 1; count range is `limits.waveTableSamples` |
 | `bitDepth` | 0 or 2 | 16 | integer bits; 0 disables quantization |
 | `bpm` | 20 | 300 | beats per minute |
 | `swing` | -0.49 | 0.49 | alternating timing offset |
@@ -162,6 +162,8 @@ Starts the native stream. Calling it again while the engine is running returns
 | `mixingProfile` | string | `conservative` | `conservative`, `balanced`, `speakerSafe` or `raw`. Matching is case-insensitive. |
 | `audioSession` | string | `playback` | iOS session category: `playback` or `ambient`. Matching is case-insensitive. Android validates the value and does not change its output. |
 
+Options are validated even when the engine is already running; a second call with invalid options still returns `false`.
+
 The profile, voice capacity and audio session stay fixed for the session. Call
 `shutdown()` before starting again with different values.
 
@@ -171,7 +173,7 @@ module applies the category again when it resumes after a route change.
 
 ## `playTone(options)`
 
-Plays one pitch. It uses 440 Hz when neither pitch field is present.
+Plays one pitch. It uses 440 Hz when neither pitch field is present. Note names accept C through B or DO, RE, MI, FA, SOL, LA, SI and TI, followed by optional `#` or lowercase `b` and one octave digit from 0 to 9. Letters are case-insensitive, the omitted octave is 4, and A4 is 440 Hz. A valid named pitch is limited to the active frequency ceiling when rendered; an out-of-range numeric `frequency` is rejected.
 
 | Key | Type | Default | Description |
 | --- | --- | ---: | --- |
@@ -183,7 +185,7 @@ Plays one pitch. It uses 440 Hz when neither pitch field is present.
 | `volume` | number | `1` | Event level multiplier. |
 | `waveType` | integer | `SINE` | One of the six waveform values. |
 | `pan` | number | `0` | Starting stereo position. |
-| `panEnd` | number | `0` | Ending stereo position. |
+| `panEnd` | number | same as `pan` | Ending stereo position; omission keeps the position fixed. |
 | `frequencyEnd` | number | `0` | Ending frequency; 0 keeps the starting pitch. |
 | `lfoFreq` | number | `0` | Vibrato rate in Hz. |
 | `lfoDepth` | number | `0` | Vibrato depth in Hz. |
@@ -204,6 +206,10 @@ Plays one pitch. It uses 440 Hz when neither pitch field is present.
 | `fmDepth` | number | `0` | Modulation index; 0 leaves FM off unless `fmDepthEnd` is set. |
 | `fmDepthEnd` | number | none | Ending index. Omit it for no sweep; 0 is a valid target. |
 | `detune` | number | `0` | Pitch offset in cents, applied to `frequency` and `frequencyEnd`. |
+| `spatialX` | number | omitted | Fixed left/right binaural direction; see [positioning](#binaural-front-plane-positioning). |
+| `spatialY` | number | omitted | Fixed below/above binaural direction. |
+
+Omitted attack/release values are shortened to fit an event smaller than the default envelope. Explicit values must satisfy the documented envelope rules. `getDefaults()` reports the baseline defaults, not these per-event adjustments.
 
 The controls from `decay` to `detune` are described in
 [Expressive controls](#expressive-controls), including the rules that tie them
@@ -238,14 +244,16 @@ required.
 | `fmRatio` | number | `1` | Fixed modulator ratio. |
 | `fmDepth` | number | `0` | Fixed modulation index; sine voices only. |
 | `detunes` | number[] | none | Per-note offsets in cents, matched to the pitch array. |
+| `spatialX` | number | omitted | Shared fixed left/right binaural direction. |
+| `spatialY` | number | omitted | Shared fixed below/above binaural direction. |
 
 `pans` and `detunes` cannot contain more entries than the pitch array, and
-missing entries count as 0. `playChord` does not accept sweep, vibrato or
+missing detune entries count as 0. Missing `pans` entries use the position computed from `panSpread`, or 0 when no spread is set. `playChord` does not accept sweep, vibrato or
 `detune` fields.
 
 ## `playPattern(options)`
 
-Schedules a monophonic sequence. The required `steps` array must contain only
+Schedules one pitch or rest per step. Swing can cause successive voices to overlap; a step does not contain a chord. The required `steps` array must contain only
 objects. A string or number step is rejected with `invalid_step_type`.
 
 Pattern-level keys:
@@ -262,7 +270,7 @@ Pattern-level keys:
 | `volume` | number | `1` | Inherited event level. |
 | `waveType` | integer | `SINE` | Inherited waveform. |
 | `pan` | number | `0` | Inherited starting pan. |
-| `panEnd` | number | `0` | Inherited ending pan. |
+| `panEnd` | number | same as root `pan` | Inherited ending pan. |
 | `frequencyEnd` | number | `0` | Inherited sweep target. |
 | `lfoFreq` | number | `0` | Inherited vibrato rate. |
 | `lfoDepth` | number | `0` | Inherited vibrato depth. |
@@ -283,6 +291,8 @@ Pattern-level keys:
 | `fmDepth` | number | `0` | Inherited modulation index. |
 | `fmDepthEnd` | number | none | Inherited index sweep target. |
 | `detune` | number | `0` | Inherited pitch offset in cents. |
+| `spatialX` | number | omitted | Inherited fixed left/right binaural direction. |
+| `spatialY` | number | omitted | Inherited fixed below/above binaural direction. |
 
 Step keys:
 
@@ -291,7 +301,7 @@ Step keys:
 | `note` | string | Pitch name; exclusive with `frequency` and `rest`. |
 | `frequency` | number | Pitch in Hz; exclusive with `note` and `rest`. |
 | `rest` | Boolean | Must be exactly `true` for a rest. |
-| `duration` | integer | Step length in ms. |
+| `duration` | integer | Explicit step length in ms. |
 | `noteValue` | string | Step length derived from `bpm`. |
 | `attack`, `release`, `volume`, `waveType` | number | Override the pattern value for this step. |
 | `pan`, `panEnd`, `frequencyEnd`, `lfoFreq`, `lfoDepth` | number | Override motion or vibrato for this step. |
@@ -303,11 +313,16 @@ Step keys:
 | `filterType`, `filterHz`, `filterHzEnd`, `filterQ` | mixed | Override the filter. |
 | `fmRatio`, `fmDepth`, `fmDepthEnd` | number | Override frequency modulation. |
 | `detune` | number | Override the pitch offset in cents. |
+| `spatialX`, `spatialY` | number | Override either inherited coordinate for this step. |
 
 Step timing precedence is `duration`, step `noteValue`, pattern `noteValue`,
 pattern `stepDuration`, then 100 ms. Only one pattern remains pending at a
 time. Starting another one cancels steps that have not fired, and the cancelled
 pattern reports it through the [`patternend` event](#patternend-event).
+
+Musical note values and numeric `stepDuration` can resolve to fractional milliseconds; each voice envelope uses the nearest integer millisecond. Explicit step `duration` must be an integer. Each step keeps its resolved duration. Swing changes its scheduled start by `swing * stepDuration` for even steps (zero-based) and the negative of that offset for odd steps; a negative start is clamped to the call time. Positive swing delays even steps and advances odd ones, so voices can overlap. Pattern `panEnd` defaults to the root `pan`; a step overriding only `pan` still inherits the root ending position. Set both on that step for fixed stereo placement.
+
+Acceptance schedules the pattern, but a later native queue overflow can still drop an individual step and log `overflow`; `patternend` describes the schedule, not a guarantee that every step sounded.
 
 ## Expressive controls
 
@@ -439,8 +454,7 @@ The payload is `{ completed: Boolean }`.
 - Every accepted `playPattern` produces exactly one event. A rejected call
   produces none.
 - `completed: true` arrives at the natural end of the pattern, about 1 ms after
-  the sum of its step lengths counted from the call. The last step's release
-  ends at about the same time.
+  the sum of its step lengths counted from the call. This reports scheduler completion, not audible silence: swing, callback timing and the binaural FIR tail can leave audio after that event.
 - `completed: false` arrives when a later accepted `playPattern` replaces the
   pattern before it ends.
 - `shutdown()` discards a pending pattern without an event. `stopAll()` does not
@@ -476,6 +490,7 @@ Common reasons include:
 | `invalid_sample_count` | `waveTable` has fewer than 2 or more than 64 samples. |
 | `missing_pitch_or_rest` | A pattern step has no pitch and is not a rest. |
 | `conflicting_pitch_fields` | A call or step provides more than one pitch source. |
+| `conflicting_spatial_fields` | Spatial coordinates are combined with stereo pan fields, including inherited pattern values. |
 | `invalid_voice_count` | A chord has fewer than 1 or more than 32 pitches. |
 | `invalid_step_count` | A pattern has fewer than 1 or more than 512 steps. |
 | `too_many_values` | `pans` or `detunes` is longer than the chord. |
@@ -504,5 +519,7 @@ var accepted = synth.playTone({
 })
 if (!accepted) Ti.API.warn('Spatial explosion rejected')
 ```
+
+There is no `binaural` Boolean option or percentage parameter on the native API. JavaScript chooses which coordinates to send for each event; `spatialX: 0, spatialY: 0` still enables binaural at the front center. To turn it off, omit both keys. The [integration guide](guide.md#integrate-binaural-in-a-2d-app) shows a switch, amplitude sliders and screen-coordinate conversion without changing synthesis recipes.
 
 Listen with stereo headphones. Height perception depends on the listener, headphones and sound spectrum; a low sine tone is a weak test of elevation. This version models a front plane without rear sources, distance attenuation, room reflections or head tracking. The output remains two channels. Filter positions do not follow objects automatically; submit later events at their updated coordinates.
