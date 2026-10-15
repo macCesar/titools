@@ -341,11 +341,12 @@ Start with `node scripts/verify-module-snapshot.mjs --source .ti-admob-unified`.
 | Skill resource | Official source or standing |
 | --- | --- |
 | `references/{api,guide,examples,audio-engine,recommendations,sound-design,troubleshooting}.md` | Corresponding `documentation/*.md`, with the transformations declared in `source-notes.md` |
+| `references/stats-performance.md`, `references/stats-performance.json` | Official host statistics comparison and complete raw trials; preserve JSON byte for byte, review methodology and stated limits |
 | `references/recipes.md` | Curated TiTools recipes; verify public options and envelopes against native contracts and preserve validated recipes |
 | Cross-links from `SKILL.md` and official mirrors into curated recipes | TiTools navigation additions; preserve the two recipe cross-links declared in `source-notes.md` |
-| Demo link in `references/examples.md` | Rebased link to the official `example/app.js` at the snapshot commit, not a nonexistent local asset |
+| Demo link in `references/examples.md` | Rebased link to the last committed official `example/app.js` at the base commit; label pending working-tree example changes explicitly |
 | `references/source-notes.md`, `source-snapshot.json` | TiTools maintenance metadata |
-| Upstream `documentation/index.md`, `documentation/third-party-notices.md` | Explicitly excluded from the seven-document mirror set; declare both exclusions and reasons in snapshot metadata, and review changed excluded docs for relevant guidance/attribution |
+| Upstream `documentation/index.md`, `documentation/third-party-notices.md` | Explicitly excluded from the nine-asset mirror set (eight Markdown documents plus raw statistics JSON); declare both exclusions and reasons in snapshot metadata, and review changed excluded docs for relevant guidance/attribution |
 
 Start with:
 
@@ -355,6 +356,10 @@ node scripts/verify-module-snapshot.mjs --skill ti-synthengine --source /path/to
 
 Review source dirtiness, commit changes, hashes, removed/new documents, declared exclusions and mirror transformations. A new upstream document must be mirrored or explicitly excluded with a reason; it must not disappear from coverage accounting. Preserve provenance headers, generated TOCs, ES6+ modernization, curated recipes and their two declared cross-links, and the commit-pinned upstream demo link. `sound-design.md` has an official source; distinguish its documented source content from any curated additions instead of replacing it with recipes or treating all of it as an untracked author contribution.
 
+The statistics snapshot includes authorized uncommitted changes based on `95901c98af5353b86d9dc7c60b29ab9186b038cd`. Verify its `reviewed_worktree_sha256` against tracked differences and untracked files as well as per-file hashes. Headers must say working tree based on that commit; a base hash must not be presented as containing those changes. Fingerprint drift needs review. This exception does not make arbitrary dirty source acceptable or prove that published/installed binaries have the feature.
+
 Independently verify official claims against `android/src/ti/synthengine/SynthContract.java`, `ios/Classes/TiSynthengineContract.m`, both native renderers (`android/jni/SynthOboeEngine.cpp`, `ios/Classes/TiSynthengineModule.m`), and `shared/synth_core.h` / `shared/synth_spatial.h`. Read affected tests as evidence of what is actually exercised. Hash equality establishes snapshot fidelity, not correctness of upstream prose. Report doc/code disagreements before updating either contract; an audit does not authorize changes to the native module.
+
+For statistics, also inspect `shared/synth_stats.h`, both platform method bindings and native integration tests. The reviewed API has eleven methods: `getStats` returns a non-resetting snapshot, `resetStats` returns nothing, and `setStatsEnabled` takes a Boolean and returns acceptance. Check older-beta feature detection, basic counters versus optional timing/signal meters (off by default), `null` versus zero, callback-boundary resets and owner-scoped polling cleanup. Host Android benchmarks exclude bridge/device/iOS callback costs; never infer total app CPU, physical underruns, battery or heat guarantees from their percentages.
 
 Distinguish Java/iOS validator acceptance, command construction, Android host rendering, shared DSP checks, and iOS/device rendering. The Java/iOS corpus does not render audio. The spatial sample-rate loop at the 2026-10-14 snapshot tests 16/32/64/128 kHz, not the advertised 8/192 kHz endpoints; stealing/stop checks assert finiteness and eventual silence rather than exact tail history. Recheck the current tests rather than repeating those historical coverage limits as permanent facts. The same audit found iOS command construction turning zero attack/release into one sample; track and report that native discrepancy until independently resolved, without silently changing the documented public range or native implementation. Headphone localization, route recovery and device CPU/latency require device evidence.

@@ -482,6 +482,24 @@ Expect:
 ### ti-synthengine
 
 ```
+"Show voice occupancy, queue pressure and rejected requests from ti.synthengine. Enable output meters only while my diagnostics panel is open."
+```
+Expect:
+- Reads `references/api.md` and `references/audio-engine.md`; detects all three statistics methods for older beta binaries
+- Uses `getStats()` snapshots and `setStatsEnabled(Boolean)` with checked acceptance; `resetStats()` does not stop sounds
+- Distinguishes basic counters from the five optional load/signal fields and preserves `null` instead of displaying it as measured zero
+- Polls at a modest rate, cancels the timer with the owner, and treats Android backend readings as best-effort metrics independent of the diagnostic switch
+
+```
+"Do these ti.synthengine statistics benchmark percentages prove unchanged iOS battery use or device CPU?"
+```
+Expect:
+- Reads `references/stats-performance.md` and the associated raw trials
+- Explains Android native host conditions, variability, output comparisons and excluded JavaScript/JNI, hardware and iOS callback costs
+- Does not turn a zero underrun count, callback render load or host percentages into guarantees about device sound, CPU, heat or battery
+
+
+```
 "Place a noise explosion above and to the right with ti.synthengine on headphones."
 ```
 Expect:

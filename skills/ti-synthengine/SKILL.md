@@ -1,13 +1,13 @@
 ---
 name: ti-synthengine
-description: "Use when a Titanium app declares ti.synthengine in tiapp.xml, imports require('ti.synthengine'), or asks for generated tones, chords, patterns, retro/game/UI sounds, alarms, sweeps, vibrato, envelopes (attack, decay, sustain, release), resonant filters, FM bells and electric-piano tones, detune, panning, binaural headphone positioning (spatialX/spatialY), gain staging, the patternend event, or troubleshooting with that native module. Covers Android and iOS contract 1.0.0. Do not use for audio-file playback, streaming music, or unrelated synthesizers."
+description: "Use when a Titanium app declares ti.synthengine in tiapp.xml, imports require('ti.synthengine'), or asks for generated tones, chords, patterns, retro/game/UI sounds, alarms, sweeps, vibrato, envelopes (attack, decay, sustain, release), resonant filters, FM bells and electric-piano tones, detune, panning, binaural headphone positioning (spatialX/spatialY), gain staging, engine statistics, render load, the patternend event, or troubleshooting with that native module. Covers Android and iOS contract 1.0.0. Do not use for audio-file playback, streaming music, or unrelated synthesizers."
 ---
 
 # ti.synthengine — sound synthesis for Titanium SDK
 
 Act as an audio engineer and mobile sound designer for the native `ti.synthengine` module. Translate an aesthetic request into acoustically reasoned JavaScript that uses only the module's public contract.
 
-This skill follows TiSynthEngine **1.0.0 beta** at commit **`95901c98af5353b86d9dc7c60b29ab9186b038cd` (2026-10-14)**. All seven official references record the commit and complete source-document hashes; [source notes](references/source-notes.md) and [snapshot metadata](references/source-snapshot.json) record the maintained navigation additions and exclusions. Android and iOS expose the same eight public methods and one event. Inspect `getDefaults().limits` for `spatialX` and `spatialY` before offering binaural controls; `apiVersion` alone does not distinguish installed beta builds.
+This skill follows the reviewed TiSynthEngine **1.0.0 beta working tree based on `95901c98af5353b86d9dc7c60b29ab9186b038cd` (2026-10-14)**, including uncommitted statistics changes. Eight official Markdown references and the raw statistics comparison record source hashes; [source notes](references/source-notes.md) and [snapshot metadata](references/source-snapshot.json) record the reviewed working-tree fingerprint, maintained navigation additions and exclusions. The reviewed Android and iOS source exposes eleven public methods and one event; this is not a claim about published packages. Inspect `getDefaults().limits` for `spatialX` and `spatialY` before offering binaural controls, and detect statistics methods before calling them; `apiVersion` alone does not distinguish installed beta builds.
 
 ## Visual and sound asset collaboration
 
@@ -26,6 +26,7 @@ Read the references relevant to the task before proposing code. These are source
 | Learn the official examples for tones, chords, tempo, patterns, noise, validation, startup, and cleanup | [references/examples.md](references/examples.md) |
 | Install the module, start it safely, or manage screen/app cleanup | [references/guide.md](references/guide.md) |
 | Choose a mixing profile, voice count, gain, latency strategy, or understand the signal path | [references/audio-engine.md](references/audio-engine.md), [references/recommendations.md](references/recommendations.md) |
+| Query/reset statistics, enable diagnostics, interpret render load/meters, or compare host performance | [references/api.md](references/api.md#getstats), [references/audio-engine.md](references/audio-engine.md#engine-statistics), [references/stats-performance.md](references/stats-performance.md), [raw trials](references/stats-performance.json) |
 | Diagnose `false`, silence, glitches, distortion, pattern replacement, or route changes | [references/troubleshooting.md](references/troubleshooting.md), [references/api.md](references/api.md) |
 
 Cite factual guidance with `[source: references/<file>.md]`. If a relevant reference cannot be consulted, prefix the claim with `FROM_MEMORY (unverified):` instead of filling the gap silently.
@@ -67,6 +68,7 @@ Never hardcode waveform integers when `WAVE.SINE`, `WAVE.SQUARE`, `WAVE.SAWTOOTH
 - `pan` and `panEnd` range from -1 to 1. `frequencyEnd` accepts 0 through the frequency maximum; targets below 1 Hz disable the linear sweep. `lfoFreq` is the modulation rate in Hz and `lfoDepth` is absolute pitch deviation in Hz, not cents.
 - `WAVE.WAVETABLE` requires `waveTable`: 2 to 64 finite values from -1 to 1, stepped without interpolation. `bitDepth` is 0 or an integer from 2 to 16; `pulseWidth` is 0.05 to 0.95 and only shapes `SQUARE`; `pulseWidthEnd` is 0 or 0.05 to 0.95. For `noiseRate`, `noiseRateEnd`, and `lowPassHz`, 0 means white noise, no sweep, or no filter.
 - `startEngine()`, `playTone()`, `playChord()`, `playPattern()`, and `setVolume()` return `Boolean`; production code must handle rejection where it matters.
+- `getStats()` returns a snapshot without resetting it; `resetStats()` returns nothing and does not stop playback. `setStatsEnabled(enabled)` accepts a Boolean and returns Boolean acceptance. Detect each method with `typeof synth.<method> === 'function'` when supporting older beta binaries. Basic occupancy/queue/rejection counters remain available with diagnostics off; optional render-load timing and output peak/RMS/limiter measurements default off. Android backend underrun/buffer/latency fields are best-effort and independent of that switch. Preserve `null` for unavailable or unmeasured fields: it is not zero. Poll slowly (for example, 5 Hz), cancel the timer with its owner and disable diagnostics when no owner needs them. Render load is callback elapsed work, not total app CPU; Android host comparisons do not establish iOS/device performance, physical underruns, heat or battery behavior. [source: references/api.md] [source: references/audio-engine.md] [source: references/stats-performance.md]
 - Only one pattern can remain pending. A new pattern replaces future steps from the previous one. `stopAll()` fades active voices but does not cancel scheduled steps; `shutdown()` does both and frees the stream.
 
 ## Acoustic decision guide
