@@ -74,7 +74,7 @@ The source type determines audit strategy:
 
 For `ti-admob-unified`, run the read-only snapshot checker from `source-map.md` and distinguish official mirrors, byte-identical example assets and curated `game-monetization.md` before coverage comparison. Resolve exact module claims against Android/iOS implementation/tests and official module docs, not Titanium SDK apidoc.
 
-For `ti-synthengine`, run `node scripts/verify-module-snapshot.mjs --skill ti-synthengine --source /path/to/TiSynthEngine`. Read the snapshot metadata and source notes before comparing the seven official mirrors. Account for explicitly excluded upstream documents (`index.md`, `third-party-notices.md`) separately from newly discovered documents; exclusions require declared reasons. Keep curated `recipes.md`, declared cross-links and the rebased commit-pinned demo link distinct from official source content.
+For `ti-synthengine`, run `node scripts/verify-module-snapshot.mjs --skill ti-synthengine --source /path/to/TiSynthEngine`. Read the snapshot metadata and source notes before comparing the mapped official mirrors and raw assets. For an explicitly reviewed working-tree snapshot, verify its fingerprint and base commit; ordinary dirty sources still require review. Account for explicitly excluded upstream documents (`index.md`, `third-party-notices.md`) separately from newly discovered documents; exclusions require declared reasons. Keep curated `recipes.md`, declared cross-links and the rebased commit-pinned demo link distinct from official source content.
 
 ## Phase 1: Coverage analysis
 

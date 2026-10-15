@@ -214,3 +214,23 @@ excluded index/notices keep reviewed hashes and still trigger review on change.
 No shared CLI machinery changed, so no sibling port is required. No native DSP
 behavior, module binaries or release versions changed. The one-sample iOS
 zero-attack/release difference remains an upstream implementation finding.
+
+
+## 2026-10-14 — Fingerprint reviewed uncommitted module updates
+
+**Decision:** Record the statistics source as an explicitly reviewed working tree
+based on its actual HEAD, rather than claiming those changes are in that commit
+or committing another team's pending native implementation. Verify both per-file
+hashes and a framed fingerprint of tracked differences plus untracked nonignored
+names/content. Any source edit or HEAD change requires review; ordinary dirty
+snapshots remain rejected.
+
+**Why:** The three new statistics methods and host comparison were available in
+the source checkout before a module commit existed. Updating only hashes or the
+base pin would misrepresent provenance and miss native changes outside the docs.
+
+**Consequences:** The skill now carries eight official Markdown references and
+byte-identical raw trials. Optional render/signal measurements, independent
+Android backend readings and evidence limits remain explicit. TiTools commit
+`2fdfc7e` includes the update; no upstream implementation commit, binary rebuild,
+release or shared CLI/sibling change is implied.

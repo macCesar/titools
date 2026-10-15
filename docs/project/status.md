@@ -1,51 +1,52 @@
 # Status — 2026-10-14
 
-**Phase:** synthesis source audit and corrections completed for internal use.
+**Phase:** statistics skill update completed for internal use.
 **Session by:** Codex.
-**Distribution:** installed universal skill resolves to this checkout; saved
-changes are available through that installation. TiTools remains 5.2.0 and
-TiSynthEngine remains unreleased beta 1.0.0. No push, tag or publication.
+**Distribution:** installed universal skill resolves to this checkout. TiTools
+remains 5.2.0; TiSynthEngine remains beta 1.0.0. No push, tag or publication.
 
-## Completed and committed
+## Completed
 
-- TiSynthEngine `95901c9`: corrected official pattern timing, short-note gaps,
-  gain guarantees, effective sweep limits and swing wording. Executed example
-  regressions guard the stated rhythm. No native implementation changes.
-- TiTools `055cf71`: synchronized seven mirrors to that commit; preserved
-  curated navigation, rebased the demo, corrected four curated patterns and
-  added source/mirror metadata, reviewed exclusions and behavioral/link tests.
-- TiTools `447799a`: registered synthesis in the maintainer auditor and source
-  map, including independent native checks, preservation and evidence limits.
-- This session-documentation commit updates context, decisions and current
-  state. Requirements did not change. Shared CLI/sibling machinery unchanged.
+- `2fdfc7e` — `feat(ti-synthengine): document statistics and reviewed working-tree sources`.
+  Added the three statistics methods, field/diagnostic distinctions, routing,
+  smoke prompts, official host comparison and exact raw trials. Preserved
+  curated recipes and links. Updated source-map coverage and package inventory.
+- Source is the uncommitted statistics tree based on TiSynthEngine `95901c9`.
+  The snapshot explicitly labels it as working-tree state, records the base
+  commit and fingerprints all tracked changes and untracked nonignored content.
+  The checker reports `dirtySource: true`, `reviewedWorktreeMatch: true` and
+  `valid: true`; this does not claim clean, committed or installed native code.
+- Two small official wording corrections remain with the pending module work:
+  index method count eight to eleven, and explicit names of the five gated
+  diagnostic fields to distinguish independent Android backend metrics.
+  No native implementation files were edited or committed by this update.
+- Session documentation updates context/decisions/status and the auditor's
+  generic snapshot wording. Requirements and shared CLI/sibling behavior unchanged.
 
 ## Verification
 
-- 417/417 TiTools tests pass with Pillow/PyYAML via uv; lint passes. After the
-  source-map TOC update, all 222 anchor tests also pass. Snapshot checker:
-  valid, clean source, matching commit/hashes, no unmapped official docs.
-- All nine source-document hashes (seven mirrors and two reviewed exclusions)
-  match the source commit. npm dry-run includes snapshot/maintenance notes
-  and excludes maintainer scripts/tests. Source/mirror whitespace checks pass.
-- Official documentation and API regressions pass. New rhythm assertions reject
-  the old official examples in an isolated checkout. Before correction, the
-  new TiTools link check reproduced the missing demo destination.
-- An independent replay compiled the real iOS contract and accepted 9/9 changed
-  patterns (78 steps, 46 sounding). This proves validator acceptance; the
-  JavaScript tests interpret requests, not native scheduling or rendered audio.
-- Logs: `/tmp/titools-synth-audit-tests.log` and
-  `/tmp/titools-synth-audit-anchors.log`. No device or listening acceptance.
+- 419/419 TiTools tests pass with Pillow/PyYAML via uv; lint and whitespace
+  checks pass. Log: `/tmp/titools-synth-stats-tests.log`.
+- Snapshot/source/mirror checks pass, including new working-tree regression
+  cases for tracked/untracked drift, missing review fingerprints and HEAD drift.
+  Ordinary snapshots still reject dirty sources. All local synthesis links pass.
+- npm dry-run includes stats Markdown/JSON and provenance metadata, excluding
+  maintainer tools/tests. Raw JSON is copied byte for byte; all 14 published
+  medians/percentage changes/mode hashes match the recorded trial data.
+- Module portable C++ telemetry, stopped-engine Java API, public API and official
+  documentation regressions pass. Native method/nullable/reset behavior was
+  inspected across Java/iOS/shared code. No full benchmark rerun, iOS callback
+  execution or device performance/listening acceptance is claimed.
 
-## Remaining work and next step
+## Next step and remaining limits
 
-The native iOS conversion of zero attack/release to one sample remains a
-reported implementation discrepancy; see the skill's `source-notes.md`.
-Investigate it as native-module work before claiming exact rendered parity.
-Device startup/routes, localization and CPU/underruns retain their own acceptance
-requirements. No documentation correction from this approved audit remains.
-Re-audit source changes with the registered auditor; release remains deferred.
+When the module team commits or changes the source, rerun the registered auditor
+and re-pin/review the snapshot instead of merely refreshing its fingerprints.
+Method detection remains necessary for older 1.0.0 beta binaries. The earlier
+one-sample iOS zero-envelope discrepancy remains recorded in `source-notes.md`;
+this task does not resolve it. No requested skill update remains unfinished.
 Pre-existing untracked `.agents/skills/purgetss-videos/` and `por-hacer.md` remain
-untouched and outside the commits.
+untouched. Module source changes remain pending with their owners.
 
 ---
 

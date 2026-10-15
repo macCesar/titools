@@ -13,19 +13,29 @@ verification levels. No shared CLI machinery changed in this audit.
 
 ## ti.synthengine beta source provenance
 
-The seven official synthesis references are pinned to TiSynthEngine
-`95901c98af5353b86d9dc7c60b29ab9186b038cd` (2026-10-14).
-`skills/ti-synthengine/references/source-snapshot.json` records complete source
-and mirror hashes, reversible navigation fixes, and reviewed exclusions.
-`source-notes.md` explains how to update them and protects curated recipes and
-their two incoming links. The read-only snapshot checker now accepts
-`--skill ti-synthengine`; excluded documents still trigger review if changed.
+The synthesis snapshot contains eight official Markdown mirrors plus the raw
+statistics comparison JSON. `skills/ti-synthengine/references/source-snapshot.json`
+records complete source/mirror hashes, reversible navigation and exclusions.
+Its `commit` is the base when `source_state` is `working-tree`; the native
+statistics update is currently uncommitted. The checker verifies the exact
+`reviewed_worktree_sha256` across tracked differences and untracked nonignored
+paths/content. A later source edit or HEAD change requires another review.
+`source-notes.md` documents this distinction, protects curated recipes and their
+two incoming links, and labels the demo link as the last committed example.
+Excluded documents still trigger review if changed. Do not infer installed or
+published native features from this source snapshot.
 
 Read `guide.md` for binaural integration, then `api.md` for exact options.
 The unchanged 1.0.0 beta version requires checking both spatial limits.
 Pattern duration controls both voice length and timeline advance; explicit
 rests preserve short-note spacing. Protected-profile gain normalization is
 not a constant-loudness guarantee, and `raw` bypasses it.
+
+The reviewed source exposes eleven methods, including `getStats`, `resetStats`
+and Boolean `setStatsEnabled`. Basic counters remain available without optional
+load/signal diagnostics. Android backend metrics are independent best-effort
+readings; unavailable `null` differs from measured zero. Host benchmark numbers
+and raw trials document Android native conditions, not device/iOS guarantees.
 
 The maintainer auditor registers this skill and requires native correctness
 checks independently of mirror fidelity. JavaScript rhythm assertions,
