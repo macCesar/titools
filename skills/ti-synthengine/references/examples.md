@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at commit `95901c98af5353b86d9dc7c60b29ab9186b038cd` (2026-10-14). Upstream `documentation/examples.md` SHA-256: `53a8bd95215cc24a35776edb8686fa0d60c5399be0b4ff2685eee1563738f6cb`.
+> Source snapshot: official TiSynthEngine 1.0.0 beta documentation from the reviewed working tree based on `95901c98af5353b86d9dc7c60b29ab9186b038cd` (2026-10-14), including uncommitted statistics changes. Upstream `documentation/examples.md` SHA-256: `53a8bd95215cc24a35776edb8686fa0d60c5399be0b4ff2685eee1563738f6cb`.
 
 # Examples
 
@@ -702,7 +702,7 @@ synth.shutdown()
 `stopAll()` fades current voices but leaves pending pattern scheduling alone.
 `shutdown()` cancels the scheduler and releases the native stream.
 
-The complete interactive demo is in the upstream [`example/app.js`](https://github.com/macCesar/TiSynthEngine/blob/95901c98af5353b86d9dc7c60b29ab9186b038cd/example/app.js). For additional retro effects, playable xylophone interaction, memory pads, layered polyphony and cancellable repetition, continue with [Curated sound and interaction recipes](recipes.md).
+The last committed interactive demo is in the upstream [`example/app.js`](https://github.com/macCesar/TiSynthEngine/blob/95901c98af5353b86d9dc7c60b29ab9186b038cd/example/app.js); that commit does not contain the pending statistics example. For additional retro effects, playable xylophone interaction, memory pads, layered polyphony and cancellable repetition, continue with [Curated sound and interaction recipes](recipes.md).
 
 ## Positioned headphone effect
 

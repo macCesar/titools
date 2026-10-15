@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /** Read-only check of an official module skill snapshot against its source repo. */
 import { createHash } from 'node:crypto';
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, lstatSync, readlinkSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFile } from 'node:child_process';
@@ -10,6 +10,31 @@ import { promisify } from 'node:util';
 const run = promisify(execFile);
 const root = fileURLToPath(new URL('..', import.meta.url));
 const digest = file => createHash('sha256').update(readFileSync(file)).digest('hex');
+
+/** Fingerprint tracked changes and every nonignored untracked path/content. */
+export async function fingerprintWorktree(source) {
+  const options = { cwd: source, encoding: 'buffer', maxBuffer: 64 * 1024 * 1024 };
+  const diff = (await run('git', ['diff', '--no-ext-diff', '--no-textconv', '--no-color', '--src-prefix=a/', '--dst-prefix=b/', '--binary', 'HEAD', '--'], options)).stdout;
+  const listed = (await run('git', ['ls-files', '--others', '--exclude-standard', '-z'], options)).stdout;
+  const hash = createHash('sha256');
+  const frame = value => { hash.update(String(value.length) + '\0'); hash.update(value); };
+  frame(diff);
+  // NUL-separated names support spaces/newlines; byte sorting is locale-independent.
+  const names = [];
+  let start = 0;
+  for (let i = 0; i < listed.length; i += 1) {
+    if (listed[i] === 0) { names.push(listed.subarray(start, i)); start = i + 1; }
+  }
+  names.sort(Buffer.compare);
+  for (const name of names) {
+    const filename = Buffer.concat([Buffer.from(path.resolve(source) + path.sep), name]);
+    frame(name);
+    const symlink = lstatSync(filename).isSymbolicLink();
+    frame(Buffer.from(symlink ? 'symlink' : 'file'));
+    frame(symlink ? readlinkSync(filename, { encoding: 'buffer' }) : readFileSync(filename));
+  }
+  return hash.digest('hex');
+}
 
 function markdownFiles(dir, base, found = []) {
   if (!existsSync(dir)) return found;
@@ -55,18 +80,31 @@ export async function verifySnapshot(source, skill) {
   } catch {
     // An installed package may contain the docs without a Git repository.
   }
+  const reviewedWorkingTree = snapshot.source_state === 'working-tree';
+  let reviewedWorktreeMatch = null;
+  let currentWorktreeSha256 = null;
+  if (reviewedWorkingTree) {
+    reviewedWorktreeMatch = false;
+    if (currentCommit !== null && /^[a-f0-9]{64}$/.test(snapshot.reviewed_worktree_sha256 || '')) {
+      currentWorktreeSha256 = await fingerprintWorktree(source);
+      reviewedWorktreeMatch = currentWorktreeSha256 === snapshot.reviewed_worktree_sha256;
+    }
+  }
   const commitReviewRequired = currentCommit !== null && currentCommit !== snapshot.commit;
   return {
     module: snapshot.module,
     pinnedCommit: snapshot.commit,
     currentCommit,
     dirtySource,
+    reviewedWorktreeMatch,
+    currentWorktreeSha256,
     commitReviewRequired,
     changed,
     missing,
     newDocuments,
     modifiedMirror,
-    valid: !changed.length && !missing.length && !newDocuments.length && !modifiedMirror.length && !commitReviewRequired && dirtySource !== true,
+    valid: !changed.length && !missing.length && !newDocuments.length && !modifiedMirror.length && !commitReviewRequired
+      && (reviewedWorkingTree ? reviewedWorktreeMatch === true && currentCommit === snapshot.commit : dirtySource !== true),
   };
 }
 

@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at commit `95901c98af5353b86d9dc7c60b29ab9186b038cd` (2026-10-14). Upstream `documentation/api.md` SHA-256: `845b1a793d01d2418d1f0859a3f34a1431ac4264107366d1ec8f343877307a9d`.
+> Source snapshot: official TiSynthEngine 1.0.0 beta documentation from the reviewed working tree based on `95901c98af5353b86d9dc7c60b29ab9186b038cd` (2026-10-14), including uncommitted statistics changes. Upstream `documentation/api.md` SHA-256: `60f9eda77f327bad6b66b0b6a49089c383a49a211c0691d09a0d715731434b56`.
 
 # API reference
 
@@ -6,7 +6,7 @@ Module id: `ti.synthengine`
 
 Public API version: `1.0.0`
 
-Android and iOS expose the same eight methods, one event, defaults, limits,
+Android and iOS expose the same eleven methods, one event, defaults, limits,
 waveform values and validation behavior. Option objects are strict: an unknown
 key is rejected with `unsupported_option`.
 
@@ -27,6 +27,9 @@ key is rejected with `unsupported_option`.
 - [`patternend` event](#patternend-event)
 - [Strict validation](#strict-validation)
 - [Binaural front-plane positioning](#binaural-front-plane-positioning)
+- [`getStats()`](#getstats)
+- [`setStatsEnabled(enabled)`](#setstatsenabledenabled)
+- [`resetStats()`](#resetstats)
 
 <!-- TOC-END -->
 
@@ -36,7 +39,8 @@ key is rejected with `unsupported_option`.
 Boolean. `true` means the request was accepted. `false` means validation
 failed, the engine was unavailable, or the native command queue was full.
 
-`stopAll` and `shutdown` do not return a value. `getDefaults` returns the
+`setStatsEnabled` also returns Boolean acceptance.
+`stopAll`, `resetStats` and `shutdown` do not return a value. `getDefaults` returns the
 contract object described below.
 
 ## `getDefaults()`
@@ -525,3 +529,74 @@ if (!accepted) Ti.API.warn('Spatial explosion rejected')
 There is no `binaural` Boolean option or percentage parameter on the native API. JavaScript chooses which coordinates to send for each event; `spatialX: 0, spatialY: 0` still enables binaural at the front center. To turn it off, omit both keys. The [integration guide](guide.md#integrate-binaural-in-a-2d-app) shows a switch, amplitude sliders and screen-coordinate conversion without changing synthesis recipes.
 
 Listen with stereo headphones. Height perception depends on the listener, headphones and sound spectrum; a low sine tone is a weak test of elevation. This version models a front plane without rear sources, distance attenuation, room reflections or head tracking. The output remains two channels. Filter positions do not follow objects automatically; submit later events at their updated coordinates.
+
+## `getStats()`
+
+Older beta 1.0.0 packages may lack these methods; use `typeof synth.getStats === 'function'` for feature detection when supporting earlier beta installations.
+
+Returns a new snapshot without resetting counters. Available before start and
+after shutdown. Occupancy is the last completed render block; queued commands
+are read at query time. No audio-thread allocation, locks or waiting are added.
+
+| Field | Meaning |
+| --- | --- |
+| `activeVoices` | Occupied primary slots, including binaural FIR draining. |
+| `maxVoices` | Configured primary-slot capacity (default 8 before start). |
+| `peakActiveVoices` | Highest primary occupancy since reset/start, including peaks between queries. |
+| `tailVoices` | External fade tails from replacement or `stopAll`, excluding primary FIR drain. |
+| `spatialVoices` | Spatial primary slots, including FIR draining; excludes external tails. |
+| `voiceStealCount` | Primary replacements while all slots are occupied. |
+| `rejectedRequestCount` | Rejected Boolean API requests, counted once per call. |
+| `rejectedRequestsByReason` | `{ validation, engineStopped, queueFull }`; sum equals rejection total. |
+| `droppedPatternStepCount` | Previously accepted pattern steps that could not enter the render queue; cancelled/replaced steps are excluded. |
+| `pendingCommands` | Published entries awaiting the renderer; chord notes count separately, future scheduler steps are excluded. |
+| `sampleRate` | Current native rate, or the last rate after shutdown; 44100 before start. |
+| `callbackFrames` | Frames processed in the most recent callback; 0 before start/after shutdown. |
+| `renderLoad` | Last callback elapsed seconds / (`callbackFrames / sampleRate`); may exceed 1. |
+| `peakRenderLoad` | Maximum callback load in this diagnostic window. |
+| `outputPeakDbFS` | `{ left, right }` peaks of final float output in the latest completed approximately 200 ms window. |
+| `outputRmsDbFS` | `{ left, right }` RMS of that same window. |
+| `limiterReductionDb` | Maximum limiter attenuation in that window, as a positive dB magnitude. |
+| `underrunCount` | Android Oboe accumulated backend xruns since reset/start when supported; otherwise `null`. |
+| `bufferFrames` | Android Oboe output buffer size; otherwise `null`. This is distinct from `callbackFrames`. |
+| `estimatedOutputLatencyMs` | Android timestamp-based stream-to-DAC estimate plus module lookahead, when valid; otherwise `null` (always `null` on this iOS backend). |
+
+`renderLoad`, `peakRenderLoad`, `outputPeakDbFS`, `outputRmsDbFS` and
+`limiterReductionDb` are `null` until enabled and measured, and after shutdown.
+Android backend metrics (`underrunCount`, `bufferFrames` and
+`estimatedOutputLatencyMs`) are best-effort readings independent of this
+diagnostic switch. Signal windows use the final output after master volume, limiter and
+clamping, with a silence floor of -120 dBFS. A query does not start or consume a
+window. iOS does not expose a trustworthy underrun count or hardware output
+buffer size through this source-node backend, so those fields are `null`.
+Android preserves supported xrun totals across stream recovery and resets the baseline with `resetStats()`. If a route makes xrun coverage unavailable, the count stays `null` until reset/start restores a measurable window.
+The latency estimate excludes command/scheduler delay and any external DAC/HDMI latency unknown to Android. Timestamp errors, unsupported backends and negative estimates return `null`. It is queried off the audio callback.
+A zero underrun count does not prove clean sound. Render load includes elapsed
+callback work, not total app CPU.
+
+## `setStatsEnabled(enabled)`
+
+Accepts a Boolean directly, returns Boolean acceptance. Default `false`.
+Enabling starts a new diagnostic window, without restarting audio. Calling it
+again with `true` also starts a fresh window. Disabling hides timing and signal
+fields immediately. Basic counters remain available in either mode. The setting
+persists across shutdown/start, while a new engine starts with fresh counters.
+
+## `resetStats()`
+
+Returns nothing. Resets accumulated counters and maxima without stopping sounds,
+clearing queued commands or enabling diagnostics. Primary occupancy becomes the
+initial maximum. Render-owned changes take effect at the next callback boundary;
+queries immediately hide stale measurements and report reset accumulated values.
+A new successful start after shutdown also resets statistics. Shutdown clears
+occupancy and commands while retaining accumulated basic totals and maxima.
+
+```javascript
+// Optional diagnostics; poll at 5 Hz and stop the timer with the owner.
+if (synth.setStatsEnabled(true)) {
+  var statsTimer = setInterval(function () {
+    Ti.API.info(JSON.stringify(synth.getStats()))
+  }, 200)
+  // Later: clearInterval(statsTimer); synth.setStatsEnabled(false)
+}
+```

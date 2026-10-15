@@ -8,16 +8,16 @@
     {
       "source": "documentation/api.md",
       "destination": "references/api.md",
-      "source_sha256": "845b1a793d01d2418d1f0859a3f34a1431ac4264107366d1ec8f343877307a9d",
-      "mirrored_sha256": "72c93857f3f0201003253ef07ec330f832d202d85d3f186b3b7caaaa06acd7ef",
+      "source_sha256": "60f9eda77f327bad6b66b0b6a49089c383a49a211c0691d09a0d715731434b56",
+      "mirrored_sha256": "5c07828516109386224c6380d8e603f6889cb1cbc0f29dd79609db288cabd908",
       "links": [],
       "link_fixes": []
     },
     {
       "source": "documentation/audio-engine.md",
       "destination": "references/audio-engine.md",
-      "source_sha256": "f0f40ba36199720a9135f3a3632feb8da1b3df0abb00325d2c4d0ddf958f4b74",
-      "mirrored_sha256": "e2f3f187145ef586def17abfa1cd45a0efa6ef72f47652e364f59d506e362855",
+      "source_sha256": "7b5707ee22e01a351af3633be14458726f8956069fb9355d1fb31cc4f7b9438a",
+      "mirrored_sha256": "22b3665068d9507ef7481a606f8949de24e7429e40609b9760164567220dd8fd",
       "links": [],
       "link_fixes": []
     },
@@ -25,12 +25,12 @@
       "source": "documentation/examples.md",
       "destination": "references/examples.md",
       "source_sha256": "53a8bd95215cc24a35776edb8686fa0d60c5399be0b4ff2685eee1563738f6cb",
-      "mirrored_sha256": "4c9af0677bc93c17994740dd9581ff9852a3896051d7468e97bb03eaefba1219",
+      "mirrored_sha256": "6679554e7f1df97d45a1e3c5ea842a0999d713933c677fc1a4678e72ca226f63",
       "links": [],
       "link_fixes": [
         {
           "original_markdown": "The complete interactive demo is in [`example/app.js`](../example/app.js).",
-          "mirrored_markdown": "The complete interactive demo is in the upstream [`example/app.js`](https://github.com/macCesar/TiSynthEngine/blob/95901c98af5353b86d9dc7c60b29ab9186b038cd/example/app.js). For additional retro effects, playable xylophone interaction, memory pads, layered polyphony and cancellable repetition, continue with [Curated sound and interaction recipes](recipes.md)."
+          "mirrored_markdown": "The last committed interactive demo is in the upstream [`example/app.js`](https://github.com/macCesar/TiSynthEngine/blob/95901c98af5353b86d9dc7c60b29ab9186b038cd/example/app.js); that commit does not contain the pending statistics example. For additional retro effects, playable xylophone interaction, memory pads, layered polyphony and cancellable repetition, continue with [Curated sound and interaction recipes](recipes.md)."
         }
       ]
     },
@@ -38,7 +38,7 @@
       "source": "documentation/guide.md",
       "destination": "references/guide.md",
       "source_sha256": "c5fb4ff34ec425487221b80d6793bda24aa328281ab9ccb02e65b0065e54842e",
-      "mirrored_sha256": "0e2f327dd2c48b22824fe4af8354ce2a2514e4cd48d876522a8756253195d60f",
+      "mirrored_sha256": "d8f58c77c4d622e67ae6e2cafee58a2c24c1c8e31bad719a05ec8a5d968b3d04",
       "links": [],
       "link_fixes": []
     },
@@ -46,7 +46,7 @@
       "source": "documentation/recommendations.md",
       "destination": "references/recommendations.md",
       "source_sha256": "0f09ee6ef0876b3a23021fddb509dfd1e1206d08e836acae8f32b58b6481c055",
-      "mirrored_sha256": "27d38f688c83599f86edb877bdfe216c10fa83aae19980b7799b174d4284fa92",
+      "mirrored_sha256": "f2480f455e55e461c880c8614ac383d60abf0ea8e744e3b99deabea290deb6c6",
       "links": [],
       "link_fixes": []
     },
@@ -54,7 +54,7 @@
       "source": "documentation/sound-design.md",
       "destination": "references/sound-design.md",
       "source_sha256": "4ccbb55b92879c59d20116aff942e16d431c619341b3d4714da4c50c3c691cf9",
-      "mirrored_sha256": "47e6fa01b7eb94dbfd1224c46e44868590ae901b9838ce515775723a150ff427",
+      "mirrored_sha256": "ac716003ff31a9d8dc896faa48ab0a18787a153797b7fa2f77ba0d7a936e8868",
       "links": [],
       "link_fixes": [
         {
@@ -67,7 +67,23 @@
       "source": "documentation/troubleshooting.md",
       "destination": "references/troubleshooting.md",
       "source_sha256": "10949f8f18f9e97933bfb1f025a12217746648c01805ff0fafe2c8e064b1c0cc",
-      "mirrored_sha256": "ae0055fe83e08401bd2aab1dd11ed0ff9cd49d002b3f71fdf92214a939b20464",
+      "mirrored_sha256": "baaa2e31f1c1e0ab8b3dd9924929ec987caa13962b526af1389bdbfb77f4f9af",
+      "links": [],
+      "link_fixes": []
+    },
+    {
+      "source": "documentation/stats-performance.md",
+      "destination": "references/stats-performance.md",
+      "source_sha256": "798075f7bec08b4dafcaa46f1c43552d90ba23e2c85b49b4ab1d4ddf72c210df",
+      "mirrored_sha256": "40e4dc748379a24a90a812f26177372530a8138324d465a11f75ff7f45c3dc1d",
+      "links": [],
+      "link_fixes": []
+    },
+    {
+      "source": "documentation/stats-performance.json",
+      "destination": "references/stats-performance.json",
+      "source_sha256": "bd0cf07295d0d8f1120e66f527e9ca6d9a014efdc43dff5675716e8e26abe5b3",
+      "mirrored_sha256": "bd0cf07295d0d8f1120e66f527e9ca6d9a014efdc43dff5675716e8e26abe5b3",
       "links": [],
       "link_fixes": []
     }
@@ -75,7 +91,7 @@
   "excluded_documents": [
     {
       "source": "documentation/index.md",
-      "source_sha256": "65f44c2086694edfbea11f041f59841dba42730f011d02c4cb79b1aad0a9bcc4",
+      "source_sha256": "a1fee9bfc45e461594b54cc226cf21e9ecbee358400b3414643a199c18b1edb2",
       "reason": "Upstream documentation index; SKILL.md is the distributed navigation entry point."
     },
     {
@@ -83,5 +99,7 @@
       "source_sha256": "cff5eb2cb19c9128e33f26d524fac1f7cad43e263693f34413392ead97b0f1c5",
       "reason": "Dependency and KEMAR notices remain with the official module and its binary packages; this skill redistributes documentation, not the native code or HRTF data. Re-review attribution when the source notice changes."
     }
-  ]
+  ],
+  "source_state": "working-tree",
+  "reviewed_worktree_sha256": "5a5085884d65ec92b6281f2c04cf47adaa864d988e3462fca98340d4a9a27ad9"
 }

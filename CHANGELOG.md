@@ -21,6 +21,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- `ti-synthengine` includes the reviewed statistics update: `getStats()`, `resetStats()` and `setStatsEnabled(Boolean)`, optional output/load meters, backend metric limits and the official host comparison with raw trials. Source metadata fingerprints the reviewed uncommitted tree instead of attributing these changes to its base commit.
+
 - `ti-synthengine` corrects pattern timing, preserves short-note spacing with explicit rests, and qualifies chord gain normalization. Its seven official mirrors follow TiSynthEngine `95901c9`; recorded navigation fixes preserve curated recipe links and rebase the upstream demo. The maintainer auditor now covers the skill, with source/mirror hashes, reviewed exclusions, cross-file links and executable recipe checks.
 
 - `ti-synthengine` documents the 1.0.0 beta binaural update: fixed `spatialX`/`spatialY` coordinates, pan conflicts, app-owned percentage controls, installed-support detection and headphone/front-plane limits. API and engine mirrors record hashes of the uncommitted module documentation captured on 2026-10-14.

@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at commit `95901c98af5353b86d9dc7c60b29ab9186b038cd` (2026-10-14). Upstream `documentation/audio-engine.md` SHA-256: `f0f40ba36199720a9135f3a3632feb8da1b3df0abb00325d2c4d0ddf958f4b74`.
+> Source snapshot: official TiSynthEngine 1.0.0 beta documentation from the reviewed working tree based on `95901c98af5353b86d9dc7c60b29ab9186b038cd` (2026-10-14), including uncommitted statistics changes. Upstream `documentation/audio-engine.md` SHA-256: `7b5707ee22e01a351af3633be14458726f8956069fb9355d1fb31cc4f7b9438a`.
 
 # Audio engine
 
@@ -25,6 +25,7 @@ voice pool or investigating device behavior.
 - [Route behavior](#route-behavior)
 - [Regression coverage](#regression-coverage)
 - [Binaural front-plane renderer](#binaural-front-plane-renderer)
+- [Engine statistics](#engine-statistics)
 
 <!-- TOC-END -->
 
@@ -387,3 +388,51 @@ python3 tools/benchmark_spatial.py /tmp/spatial_benchmark /path/to/timeline.txt
 ```
 
 The script compares stereo and binaural using a warmup and five measured trials, reporting the median by audio processing time. There is no hardware stream or JavaScript bridge. Results include peak level, non-finite/clipped frames, voice replacements and processing time; they do not measure device CPU, latency, underruns, heat or battery.
+
+## Engine statistics
+
+The [statistics API](api.md#getstats) has the same shape on both platforms.
+`shared/synth_stats.h` owns telemetry math and publication. Voice transitions
+update render-owned occupancy and maxima, including primary FIR draining and
+external replacement/stop tails. Whole empty groups can then be skipped without
+changing the signal. Producers are serialized separately from the renderer;
+querying queue depth does not include future scheduled pattern steps.
+
+The callback publishes atomic words behind a sequence counter. Readers retry a
+snapshot if publication overlaps their read; the callback never waits for them.
+Eight-byte alignment and a compile-time lock-free assertion also cover Android's
+32-bit ABIs. Reset/enable requests are consumed at callback boundaries. A new
+control generation hides stale optional measurements immediately. Shutdown waits
+for the backend callback to stop before clearing occupancy. Queries allocate
+result objects on the calling thread. Pattern publication and shutdown share a
+control monitor; that monitor is never taken by the audio callback.
+
+Diagnostic timing uses a monotonic host clock only while enabled. Stereo peak,
+RMS and maximum limiter reduction accumulate over approximately 200 ms of final
+float output; logarithms are calculated at window boundaries. These readings do
+not diagnose physical distortion, latency, heat, battery use or overall app CPU.
+
+Run portable telemetry and Java API tests with:
+
+```sh
+c++ -std=c++17 -O2 -Wall -Wextra -pthread tests/stats_regression.cpp -o /tmp/stats
+/tmp/stats
+python3 tests/run_stats_java.py
+```
+
+`tests/stats_engine_host.cpp` uses the Oboe/JDK host flags shown above. It tests
+native occupancy, reset while playing, saturated queues, binaural drain,
+shutdown and exact output equality with diagnostics enabled/disabled. This
+native integration harness requires local Oboe headers; portable shared tests
+and the stopped-engine Java API tests also run in CI. iOS builds use the same
+telemetry core, but host Android renders do not execute the iOS audio callback.
+
+`tests/stats_benchmark_host.cpp` extends the spatial replay harness with silence,
+one/32 voices, replacement pressure, chords, scheduled note publications and
+short FIR drains in stereo/binaural. Build it twice with identical `-O3` flags:
+once against the previous engine using `-DSTATS_BASELINE`, and once against the
+current engine. Run `python3 tools/benchmark_stats.py BASELINE CURRENT` for one
+warmup and ten alternating trials/configuration, including current snapshots at
+5 Hz. The harness verifies identical output hashes across all modes. See the
+[measured comparison and limitations](stats-performance.md) before interpreting
+host percentages as a device guarantee.

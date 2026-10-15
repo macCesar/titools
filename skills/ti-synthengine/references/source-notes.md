@@ -1,30 +1,42 @@
 # Maintaining the synthesis snapshot
 
-The seven official document mirrors are derived from the TiSynthEngine commit
-in [source-snapshot.json](source-snapshot.json). A matching hash establishes
-fidelity to that source; it does not establish that the source is correct.
+The eight official Markdown mirrors and raw statistics comparison are derived
+from the reviewed TiSynthEngine working tree based on the commit in
+[source-snapshot.json](source-snapshot.json). This snapshot includes uncommitted
+native statistics methods, tests and documentation. The commit identifies the
+base; it does not contain all reviewed content. `reviewed_worktree_sha256`
+records the reviewed dirty-state fingerprint, including tracked differences
+and untracked files. The checker verifies that fingerprint in addition to the
+individual source/mirror hashes. A match establishes fidelity to that source
+state; it does not establish that the source is correct, committed, published
+or installed in an app. A different dirty fingerprint requires a fresh review.
 Read the native contracts, command conversion and renderers when auditing
 behavior. The maintainer workflow is `titools-skill-auditor` in this repository.
 
 ## Sources and permitted transformations
 
 `api.md`, `audio-engine.md`, `examples.md`, `guide.md`, `recommendations.md`,
-`sound-design.md` and `troubleshooting.md` mirror the corresponding upstream
-`documentation/` files. Every record stores a full-source SHA-256 and a final
-mirror SHA-256. The source header names the commit and full-source hash.
+`sound-design.md`, `troubleshooting.md` and `stats-performance.md` mirror the
+corresponding upstream `documentation/` files. `stats-performance.json` preserves
+the complete raw trials without Markdown transformations. These nine assets
+each record a full-source SHA-256 and final mirror SHA-256. Markdown provenance
+headers identify the working tree, base commit and full-source hash.
 
 Only these transformations are currently declared:
 
 - A provenance header and generated `TOC-START`/`TOC-END` navigation.
-- The upstream demo link in `examples.md` is rebased to `example/app.js` at the
-  pinned source commit. It requires access to the official module repository;
-  the runnable application is not bundled with this skill.
+- The upstream demo link in `examples.md` is rebased to the last committed
+  `example/app.js` at the base commit. Its label explicitly distinguishes that
+  demo from the pending statistics example in the reviewed working tree; a
+  GitHub commit link cannot expose uncommitted changes. It requires access to
+  the official module repository; the runnable app is not bundled here.
 - `examples.md` and `sound-design.md` retain their TiTools links to
   [curated recipes](recipes.md). These additions are recorded as reversible
   `link_fixes`, with the complete original and mirrored Markdown fragments.
 
-The snapshot test removes the header and generated navigation, reverses those
-fragments, and checks the full original source hash. Update the declared
+For Markdown mirrors, the snapshot test removes the header and generated
+navigation, reverses those fragments, and checks the full original source hash.
+The raw JSON is checked byte for byte. Update the declared
 transformations when an intentional source-derived edit is reviewed; never
 regenerate hashes merely to conceal an unexplained difference.
 
@@ -39,6 +51,26 @@ onsets, lengths and cancellation behavior; they do not render audio.
 Do not remove either official mirror's curated recipe link just because the
 upstream source has no equivalent. The snapshot records these intentional
 differences so preservation and source fidelity can both be checked.
+
+## Statistics scope and evidence
+
+The reviewed source adds `getStats()`, `resetStats()` and
+`setStatsEnabled(Boolean)` to the previous eight-method API. Detect support
+before using them with older 1.0.0 beta binaries; the version string alone does
+not identify the feature. Basic counters remain available without enabling
+diagnostics. Monotonic-clock render timing and signal measurements are optional
+and default off; missing/unmeasured fields stay `null`, distinct from measured
+zero. Android backend underrun, buffer and latency fields are independent of
+that diagnostics switch and remain best-effort. Poll at a modest rate and
+cancel polling with the owning screen/service.
+
+[stats-performance.md](stats-performance.md) and its
+[raw trials](stats-performance.json) document an Android native host comparison
+against the base engine, including variability and excluded costs. They do not
+run the iOS callback, JavaScript bridge or real device stream, and do not prove
+device CPU, battery, heat, latency or physical underrun behavior. Review the
+native statistics contract/publication and tests independently of the benchmark
+percentages; no zero-overhead or unchanged device-performance guarantee follows.
 
 ## Upstream documents outside the mirror set
 
