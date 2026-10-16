@@ -234,3 +234,14 @@ byte-identical raw trials. Optional render/signal measurements, independent
 Android backend readings and evidence limits remain explicit. TiTools commit
 `2fdfc7e` includes the update; no upstream implementation commit, binary rebuild,
 release or shared CLI/sibling change is implied.
+
+
+## 2026-10-16 — Audit requirements, not summary length
+
+**Decision:** Require a bidirectional, source-first semantic coverage ledger, including unchanged upstream sections and newly discovered docs. Each operational requirement has a source locator and final skill destination, or an explicit justified exclusion. Preserve prerequisites, configuration targets, ordering, contracts/defaults, platform/version branches, lifecycle, warnings and distinct example behaviors. Equivalent shorter summaries are valid; exact mirrors/assets retain declared fidelity rules. Split references rather than deleting requirements to meet size limits.
+
+**Why:** La Baraja exposed an orientation summary with a launcher-only Android recipe where the official source configures multiple activities. The auditor did not even admit `ti-ui` or `ti-game`; its line-based estimates and final two-to-three-file spot-check could not establish completeness. A fresh read-only baseline confirmed unsupported scope and substantive source omissions.
+
+**Consequences:** Both skills now have source mappings and audit classifications. Whole-ledger reconciliation and source-derived consumer walkthroughs gate completion. Skipped files cannot erase requirements; cross-skill delegation requires usable verified destinations. Archived details remain additive within existing live topics, not only absent topics. Explicit read-only/existing-authorization branches preserve the requested workflow.
+
+A separate read-only validation found the orientation reference incomplete under the revised rules and identified instruction conflicts, which were corrected. This validates the workflow on that scoped case, not every skill's completeness or current native behavior. No runtime skills/native modules, shared CLI, release manifests, tags or publication changed. A complete audit/correction of `ti-ui` and `ti-game` remains separate work.

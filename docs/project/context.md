@@ -191,7 +191,7 @@ documents under `docs/` remain ignored and are absent from a fresh clone.
 | `claude-code-reference/*.md` | Fetched copies of Claude Code docs and the Vercel blog post | Snapshots — check upstream before relying on them |
 | `message-to-jerry*.md`, `mensaje-a-hans.md`, `preocupaciones-layouts-android.md` | Drafted correspondence and the Android layout concerns that prompted the v4.1.0 work | Historical |
 
-The maintainer-only `titools-skill-auditor` skill lives at `.claude/skills/titools-skill-auditor/` — also gitignored.
+The maintainer-only `titools-skill-auditor` lives at `.claude/skills/titools-skill-auditor/` and is tracked under the `.claude/skills/` exception. `.agents/skills/titools-skill-auditor` resolves to it for Codex. It is not distributed through npm; the notes in `docs/titools-skill-auditor.md` remain ignored.
 
 ## 2026-10-11 — Game-art quality and sprite-sheet integration
 
@@ -202,3 +202,13 @@ correcting rejected geometry/shading. Pixel-art guidance maps HD square RGBA
 clusters to the final logical grid, including phase extent and smoke alpha.
 Integration covers arbitrary cell sizes, nearest-integer proportional dimensions,
 integer offsets and aligned animation canvases.32px examples are illustrative.
+
+## Maintainer audit coverage
+
+The auditor covers the five Titanium documentation skills, PurgeTSS, `ti-ui`, `ti-game`, `ti-admob-unified` and `ti-synthengine`. Its source map is a starting topic map, not proof that the upstream inventory is exhaustive. Source-first requirement ledgers include unchanged sections and newly discovered documents; reverse comparison checks unsupported additions.
+
+Summaries can combine equivalent examples, but must preserve every operational requirement and distinct behavior. Source omissions, skill omissions and independently verified author guidance remain separate findings. Current guides take precedence over contradictory archived details; applicable archived requirements omitted from shorter live pages remain available with provenance. File/token limits call for splitting and routing, not dropping requirements.
+
+Phase 6 reconciles the entire ledger and consumer walkthroughs before a complete verdict. Skipped destinations still require coverage accounting, and byte-identical mirrors/assets retain declared transformations. Wiring tests validate packaging/registration, not source completeness or device behavior.
+
+Work on 2026-10-16: Codex · GPT-6; auditor completeness contract and scoped orientation validation, prompted by the consumer project LM - La Baraja. No shared CLI changes or sibling port are involved.
