@@ -39,7 +39,9 @@ If unsure whether something is from official docs or training data:
 
 ## Code style
 
-All code examples must use modern ES6+ JavaScript.
+Modernization must preserve behavior, binding, event payloads, execution order and cleanup. Keep a regular function when an arrow would change required `this` behavior. Byte-identical official mirrors and example assets follow their declared source transformations instead of the general style rules below.
+
+Curated examples and source copies with permitted syntax transformations use modern ES6+ JavaScript under that preservation rule.
 
 ### Pattern replacements
 
@@ -57,7 +59,7 @@ All code examples must use modern ES6+ JavaScript.
 
 - Use `const` by default, `let` only when reassignment is needed
 - Never use `var`
-- Arrow functions for all callbacks (event listeners, promises, array methods)
+- Arrow functions for callbacks that do not require dynamic `this`
 - Keep `function` declarations for named reusable functions
 - Use template literals for string concatenation
 - Use destructuring where it improves readability
@@ -99,6 +101,28 @@ All code examples must use modern ES6+ JavaScript.
 |---|---|---|
 | `SKILL.md` | 500 | Move detailed content to references |
 | Reference file | 800 | Split into two focused references |
+
+Size limits govern organization, not source coverage. Split and link references instead of deleting required information to fit a line/token budget.
+
+### Semantic completeness
+
+A concise reference must let a consumer make the same supported decisions and complete the same documented tasks as the in-scope official sources. It need not reproduce their wording, screenshots, repeated prose or every syntactically similar example.
+
+For each source section, preserve and locate in the coverage ledger:
+
+- Prerequisites, dependencies, permissions, configuration files and **every required target** (activity, platform, device class or build variant).
+- Required steps, their order and when settings take effect (build time, before creation/open, or runtime).
+- API names/signatures, accepted values, units, defaults, returns/events, error cases and conflicting options.
+- Platform/version/device differences, limitations, deprecations, warnings and failure consequences.
+- Lifecycle, ownership, cleanup, performance constraints and distinct behaviors demonstrated by examples.
+
+**Allowed condensation:** equivalent examples may be combined when all distinct branches and requirements survive; tables may replace prose; repeated facts may have one canonical destination with verified links. Record where each distinct behavior went.
+
+**Material omissions:** dropping one required activity from a multi-activity configuration, replacing a multi-step integration with a property name, losing an opt-in/default distinction, or removing a platform caveat while retaining the happy path. These are coverage defects even if every heading exists and most lines were retained.
+
+If a source is wrong or obsolete, record the exact discrepancy and the current authoritative evidence; preserve the applicable task with corrected guidance and provenance. Do not silently copy an error or silently erase the entire topic. If sources are unavailable, record unverified coverage. If a necessary prerequisite belongs to another domain, map the dependency to the relevant skill/reference; do not invent missing module guidance.
+
+Declared exclusions need an item-level reason and a destination when delegated. A technical requirement cannot be excluded merely for brevity, familiarity, age, duplication without a verified destination, or absence from a newer condensed page. Unresolved in-scope requirements prevent a complete verdict.
 
 ### Permitted enhancements beyond official docs
 
@@ -182,13 +206,21 @@ Reusable checklist for audits. Copy and fill in for each skill.
 - [ ] Every section traces to an official source
 - [ ] All methods/properties verified against API docs
 - [ ] No training-data backfill detected
-- [ ] Code examples come from official sources (updated to ES6+)
+- [ ] Code examples come from official sources; modernization respects behavior and declared mirror/asset fidelity
+
+**Coverage and usable summaries:**
+- [ ] All in-scope source documents/sections inventoried, including unchanged and newly added material
+- [ ] Each operational requirement has a source locator and verified skill destination
+- [ ] Prerequisites, all configuration targets, steps/order, contracts and platform/version caveats preserved
+- [ ] Combined examples retain every distinct behavior; changed examples checked for semantic equivalence
+- [ ] Cross-skill dependencies resolve to usable references; source omissions remain distinguished from skill omissions
+- [ ] Exclusions have explicit reasons; partial, missing and unread items remain in the verdict
+- [ ] Final ledger reconciled in full; consumer scenarios verified with evidence and limits
 
 **Code style:**
-- [ ] No `var` declarations
-- [ ] Arrow functions for callbacks
-- [ ] Template literals for string concatenation
-- [ ] Modern patterns throughout
+- [ ] Curated/transformable examples use modern style; byte-identical assets/mirrors retain source syntax
+- [ ] Arrow callbacks preserve required binding and lifecycle semantics
+- [ ] Permitted template-literal and other syntax updates preserve behavior
 
 **URLs:**
 - [ ] No links to dead domains

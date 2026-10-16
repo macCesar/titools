@@ -10,6 +10,8 @@ Mapping of doc-based skills in this repo to their upstream documentation source.
 - [Documentation roots](#documentation-roots)
 - [Precedence: which root wins](#precedence-which-root-wins)
 - [Per-skill mapping](#per-skill-mapping)
+  - [`ti-ui`](#ti-ui)
+  - [`ti-game`](#ti-game)
   - [`purgetss`](#purgetss)
   - [`alloy-guides`](#alloy-guides)
   - [`alloy-howtos`](#alloy-howtos)
@@ -32,12 +34,13 @@ That leaves three roots with different standing, and the difference is the whole
 | `.titanium-sdk/apidoc/` | `tidev/titanium-sdk:apidoc/` | **Live, canonical for the API.** Every other API copy is compiled from it. |
 | `.titaniumsdk-site/content/docs/` | `tidev/titaniumsdk.com:content/docs/` | **Live, canonical for the guides.** Being written; ~20 of 41 approved pages still unwritten. |
 | `.titaniumsdk-site/registry/sdk/<version>/` | compiled from `apidoc/` by `scripts/docgen/` | Live cross-check: says which release actually shipped an API. Resolve through that version's `contents.json`, never by grepping `_pool/`. |
-| `.titanium-docs/docs/guide/` | `tidev/titanium-docs:docs/guide/` | **Archive.** 336 pages TiDev condensed into 62. Preserved here, never a source of a *new* claim. |
+| `.titanium-docs/docs/guide/` | `tidev/titanium-docs:docs/guide/` | **Archive.** 336 pages TiDev condensed into 62. Can restore omitted archived requirements with provenance; does not establish new/current release behavior without current verification. |
 | `.titanium-docs/docs/api/` | `tidev/titanium-docs:docs/api/` | **Archive, and already behind.** Verified 2026-09-11: `Ti.UI.Toolbar.hideSharedBackground` (apidoc 2026-07-12) and `Ti.UI.ListView.snapping` (apidoc 2026-07-20) never reached it, though both are in the site's `registry/sdk/main/`. |
 | `.ti-admob-unified/documentation/` and platform source/tests | `macCesar/ti.admob.unified` | Live module source; first public 1.0.0 under preparation at initial snapshot. |
 | Existing TiSynthEngine checkout: `documentation/`, platform source/tests and `shared/` | `macCesar/TiSynthEngine` | Live module source; distinguish 1.0.0 beta commits from installed/published binaries. |
 | `.purgetss-docs/docs/` | `macCesar/purgetss-docs:docs/` | Live. |
 | `.purgetss-source/` | `macCesar/purgeTSS` package source, `CHANGELOG.md`, `README.md`, `bin/`, `src/`, and `dist/` | Live. |
+| Existing ti.game checkout or gitignored cache | `m1ga/ti.game`: README, tutorial, examples, Android/iOS source | Module authority for `ti-game`; record upstream pin and separate fork/working-tree changes. |
 
 All cache roots are gitignored. See `SKILL.md` § "Setup" for clone/refresh commands.
 
@@ -60,6 +63,46 @@ An audit that reads the wrong root reports green against a corpus that stopped m
 ---
 
 ## Per-skill mapping
+
+### `ti-ui`
+
+- **Source type:** Curated official-source UI guidance; curation does not waive completeness of the documented task.
+- **Live guide roots:** `.titaniumsdk-site/content/docs/build/ui/` and linked current configuration guides. Inventory actual pages instead of assuming every archived topic has a replacement.
+- **Additional official guides:** `.titanium-docs/docs/guide/Titanium_SDK/Titanium_SDK_How-tos/User_Interface_Deep_Dives/` and `User_Interface_Fundamentals/`. Resolve actual paths/indexes; preserve applicable archived details omitted by shorter live pages, with provenance.
+- **Exact API/configuration:** `.titanium-sdk/apidoc/` at the reviewed release; current platform templates/source for manifest details. Never copy obsolete activity attributes or theme names without verification.
+
+| Reference(s) | Source topics to inventory |
+|---|---|
+| `application-structures.md`, `layouts-and-positioning.md` | UI fundamentals: windows, navigation, tabs, layouts/positioning; live `build/ui/index.md`, `layout.md` and applicable API docs |
+| `event-handling.md`, `gestures.md` | Event/listener lifecycle, bubbling and Supporting Gestures; corresponding Gesture/View API contracts |
+| `listviews-and-performance.md`, `tableviews.md`, `scrolling-views.md` | ListViews subtree (including Alloy guidance), TableViews, Scrolling Views and live `build/ui/lists.md` |
+| `orientation.md` | Official `Orientation.md` in UI Deep Dives; live UI/configuration pages; Window/Activity/Gesture API docs and native manifest targets |
+| `custom-fonts-styling.md`, `animation-and-matrices.md` | Custom Fonts, Attributed Strings, Animation and corresponding API docs |
+| `icons-and-splash-screens.md` | Live `build/ui/icons-and-launch-screens.md`, archived icons/images/launch guidance and current platform configuration |
+| `platform-ui-android.md`, `platform-ui-ios.md` | Android/iOS UI Components and Conventions subtrees, live `platform-conventions.md`, and platform API docs |
+| `accessibility-deep-dive.md` | Accessibility guide and current accessibility API/platform contracts |
+
+This is a topic map, not proof of coverage: Phase 1 must enumerate actual documents, linked subpages, warnings and examples. For whole-app orientation, account for every applicable activity, launcher/splash timing, window constraints and platform/device distinctions. A one-activity snippet cannot stand in for a documented multi-activity recipe. Distinguish archived SDK instructions from release-verified current guidance.
+
+### `ti-game`
+
+- **Source type:** Curated module documentation + examples + native implementation.
+- **Canonical upstream:** `m1ga/ti.game`; use an existing checkout or a gitignored cache. Read the skill's recorded upstream pin and verify candidate upstream state before claiming currency. Record local fork commits/dirty source separately; a version string alone does not identify behavior.
+- **Source inventory:** README, tutorial (resolve the filename from the upstream index), example catalog and files, TODO/roadmap, both manifests and release history. Follow links to additional official docs. For exact contracts, read Android/iOS proxy/engine code and tests at that pin.
+
+| Reference(s) | Source topics to inventory |
+|---|---|
+| `api.md` | README public API/options/events/defaults plus both native implementations |
+| `project-setup.md` | README/tutorial installation, minimal scene, resize/init and lifecycle; app/window integration dependencies from Titanium |
+| `examples.md` | Complete upstream example catalog, each distinct demo behavior and cleanup/navigation dependencies |
+| `physics.md`, `patterns.md` | Native motion/collision/time/ownership contracts and demonstrated example combinations; label curated recommendations |
+| `recipes-action.md`, `recipes-adventure-effects.md` | Applicable example scenes and verified API combinations; preserve validated curated recipes |
+| `tilemaps.md`, `debugging-performance.md` | README/example/native tile, camera, telemetry and performance contracts |
+| `roadmap.md` | TODO plus actual implemented/partial/missing behavior at the reviewed pin |
+
+Discover newly added references/examples instead of treating this table as a closed list. Source absence and summary loss are different findings: if module docs do not teach an app prerequisite (for example orientation before splash/window creation), record the source gap and route verified integration guidance through `ti-ui`/`ti-guides`. Do not attribute it to the module docs or silently assume the reader knows it. Verify that cross-skill routes are discoverable and contain the needed requirements.
+
+For contracts, native code wins on observed implementation; README/tutorial describe intended usage, examples demonstrate combinations, and TODO describes planned/partial work. Report conflicts with both locators instead of silently rewriting intent. Native source checks do not establish installed-binary/device behavior.
 
 ### `purgetss`
 

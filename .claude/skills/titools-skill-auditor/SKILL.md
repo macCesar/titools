@@ -1,6 +1,6 @@
 ---
 name: titools-skill-auditor
-description: Use when reference files for the doc-based skills in this repo need re-aligning with their upstream sources — after a Titanium SDK, Alloy, PurgeTSS, or native module update; when an audit reveals stale or unsupported content; or before tagging a TiTools version. Covers the five Titanium documentation skills plus `purgetss`, `ti-admob-unified`, and `ti-synthengine`. Maintenance-only — not intended for end-user Titanium projects.
+description: Use when TiTools reference skills need checking against upstream Titanium SDK, Alloy, PurgeTSS or native-module sources after an update, a suspected omission or an unsupported claim; includes ti-ui and ti-game. Maintenance-only — not intended for end-user Titanium projects.
 metadata:
   internal: true
 ---
@@ -13,7 +13,7 @@ For *creating* a new skill from scratch, use a generic skill-creator workflow in
 
 ## Scope
 
-This skill audits eight reference skills:
+This skill audits ten reference skills, including curated skills whose factual guidance comes from official sources:
 
 - `ti-api`
 - `ti-guides`
@@ -21,6 +21,8 @@ This skill audits eight reference skills:
 - `alloy-guides`
 - `alloy-howtos`
 - `purgetss`
+- `ti-ui`
+- `ti-game`
 - `ti-admob-unified`
 - `ti-synthengine`
 
@@ -41,6 +43,8 @@ Source caches, all gitignored, all symlinks or clones at the repo root.
 | `.ti-admob-unified` | `macCesar/ti.admob.unified` | `ti-admob-unified` — official docs, integration library, Android/iOS contract |
 | Existing TiSynthEngine checkout (or a gitignored source cache) | `macCesar/TiSynthEngine` | `ti-synthengine` — official docs, Android/iOS contracts, renderers, shared DSP and tests |
 | `.purgetss-docs` + `.purgetss-source` | `macCesar/purgetss-docs`, `macCesar/purgeTSS` | `purgetss` |
+| Titanium caches above | UI guides + SDK API/configuration | `ti-ui` — curated references still require complete operational guidance |
+| Existing ti.game checkout (or a gitignored source cache) | `m1ga/ti.game` | `ti-game` — README, tutorial, examples and both native implementations; label fork changes separately |
 
 Read `references/source-map.md` § "Precedence" before any audit. Which root wins is not a preference; an audit that reads the archive first reports green against a corpus that stopped moving.
 
@@ -84,14 +88,22 @@ Parse `$ARGUMENTS` to determine which skill to audit:
 | `<skill-name>` | Audit the named skill against its mapped doc subtree |
 | *(empty)* | Ask the user which skill to audit |
 
-Valid skill names: `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`, `purgetss`, `ti-admob-unified`, `ti-synthengine`.
+Valid skill names: `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`, `purgetss`, `ti-ui`, `ti-game`, `ti-admob-unified`, `ti-synthengine`.
+
+## Coverage contract
+
+Summarize wording, not requirements. Preserve every in-scope operational fact from the official sources: prerequisites, ordered steps, configuration targets, API contracts, platform/version differences, defaults, lifecycle/cleanup, warnings and distinct example behaviors. Repetition and presentation may be condensed. Existing byte-identical mirrors/assets retain their stricter fidelity rules.
+
+Audit in both directions: source → skill finds omissions; skill → source finds unsupported claims. Build the source-section/requirement ledger defined in `audit-workflow.md`, including old unchanged material and newly discovered documents. Each item needs a source locator and a skill destination, or an explicit exclusion with a reason. Line counts, matching headings, hashes and a few spot-checks do not establish semantic completeness.
+
+Keep details in references and route them from `SKILL.md`; split oversized references rather than discarding necessary content. A cross-link counts only when the destination is available to the consumer and actually preserves the requirement. Unread sources, partial guidance and unresolved exclusions remain visible in the verdict; never report them as complete.
 
 ## Audit workflow
 
 1. Load [quality-standards.md](references/quality-standards.md) and [source-map.md](references/source-map.md).
 2. Verify the cache(s) required by the selected skill exist. If not, prompt the user with the matching clone command above.
 3. Execute Phases 0–3 of [audit-workflow.md](references/audit-workflow.md) (classify, analyze, identify gaps, report).
-4. **Phase 4 is a hard STOP** — present the consolidated report and wait for explicit user approval.
+4. **Phase 4 checks authorization** — present findings; read-only audits end there. For updates, use existing explicit authorization covering the proposed edits or obtain it before applying them.
 5. After approval, execute Phases 5–6 (apply updates, verify).
 
 ---
@@ -144,7 +156,7 @@ skills/<skill-name>/
 
 | Reference | Purpose |
 |---|---|
-| [audit-workflow.md](references/audit-workflow.md) | 7-phase audit with hard-stop approval gate |
+| [audit-workflow.md](references/audit-workflow.md) | 7-phase audit with coverage closure and authorization gate |
 | [quality-standards.md](references/quality-standards.md) | Anti-hallucination, ES6+, URL rules, content rules |
 | [source-map.md](references/source-map.md) | Skill → official doc subtree mapping |
 
@@ -160,7 +172,7 @@ skills/<skill-name>/
 
 After completing an audit:
 
-1. **Spot-check** — open 2–3 updated references and verify content quality.
+1. **Close coverage** — reconcile every ledger item against the final references, check every changed example, and rerun the consumer scenarios. Spot-checks are supplementary.
 2. **Test invocation** — verify the updated skill loads correctly in the agent you use (Claude Code, Codex).
-3. **Commit per skill** — one focused commit per audited skill, naming the source: `audit(ti-api): align refs with apidoc 13_4_1_GA`.
+3. **When explicitly authorized to commit**, use one focused commit per audited skill, naming the source: `audit(ti-api): align refs with apidoc 13_4_1_GA`.
 4. **Mention in the PR description** if changes are substantial, so reviewers see the diff context.

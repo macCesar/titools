@@ -1,6 +1,6 @@
 # Audit workflow
 
-7-phase process for auditing and updating an existing doc-based skill in this repo against its upstream documentation source. Includes a mandatory user approval gate before applying any changes.
+7-phase process for auditing and updating an existing doc-based skill in this repo against its upstream documentation source. Verify authorization before applying changes; read-only audits stop after their report.
 
 **Pre-requisite:** Load `quality-standards.md` and `source-map.md` before starting this workflow.
 
@@ -34,6 +34,8 @@ Which caches an audit needs depends on the skill, and getting this wrong is the 
 | `purgetss` | `.purgetss-docs` + `.purgetss-source` |
 | `ti-admob-unified` | `.ti-admob-unified` or existing module checkout; `references/source-snapshot.json` |
 | `ti-synthengine` | Existing `macCesar/TiSynthEngine` checkout or gitignored source cache; `references/source-snapshot.json` and `source-notes.md` |
+| `ti-ui` | Titanium guide caches + `.titanium-sdk` for exact API/configuration claims |
+| `ti-game` | Existing `m1ga/ti.game` checkout or gitignored cache; Titanium sources for app/window integration dependencies |
 
 If one is missing, stop and prompt the user with the matching clone command from `SKILL.md` § Setup.
 
@@ -60,13 +62,14 @@ For `purgetss`, require both `.purgetss-docs/` and `.purgetss-source/`, then rec
 
 | Source type | Skills | Audit approach |
 |---|---|---|
-| **Narrative, two layers** | `alloy-guides`, `alloy-howtos`, `ti-guides`, `ti-howtos` | Compare against the live page in `.titaniumsdk-site/content/docs/` first; fall back to `.titanium-docs` only for topics the new site has not written |
+| **Narrative, two layers** | `alloy-guides`, `alloy-howtos`, `ti-guides`, `ti-howtos` | Compare against the live page in `.titaniumsdk-site/content/docs/` first; use `.titanium-docs` additively for missing topics and applicable details omitted within an existing live topic |
 | **API** | `ti-api` | Compare against `.titanium-sdk/apidoc/*.yml` at the newest GA tag, cross-checked with `.titaniumsdk-site/registry/sdk/<version>/` |
 | **Mixed narrative + implementation** | `purgetss`, `ti-admob-unified`, `ti-synthengine` | Compare against the skill's mapped official docs, then independently verify exact behavior against its own implementation/tests; classify curated additions separately |
+| **Curated official-source guidance** | `ti-ui`, `ti-game` | Inventory every in-scope source topic and distinct example behavior, map into curated references, and verify app-integration dependencies through the owning Titanium skill |
 
 The source type determines audit strategy:
 
-- **Narrative, two layers**: Section-by-section against the live page. Where the live page and the archive disagree on a fact, the live page is right. Where the archive covers a topic the live page does not, keep it and mark it archive-sourced. Never delete a reference for being absent from the new site: the new site condensed 336 pages into 62, and this repo deliberately keeps the rest.
+- **Narrative, two layers**: Section-by-section against the live page. Where the live page and the archive disagree on a fact, the live page is right. Where the archive covers a topic or applicable operational detail the live page omits, keep it and mark it archive-sourced, verifying current behavior when needed. Absence from a condensed page is not evidence of deprecation. Never delete a reference for being absent from the new site: the new site condensed 336 pages into 62, and this repo deliberately keeps the rest.
 - **API**: Compare per-namespace against YAML, not markdown. A property is a `- name:` entry under `properties:`; `platforms`, `since`, `default` and `deprecated` are its siblings. Expect one reference file to map to many `.yml` files.
 - **Mixed**: Documentation prose is not enough when it lags a same-day release. Prefer observable CLI/source/test behavior for exact contracts and use the docs for explanations.
 
@@ -91,6 +94,8 @@ Before doing coverage analysis, scan all reference files in the skill for an `<!
 
 If you propose any change to an AUDIT-SKIP file, that is a bug in the audit. Stop and ask the user before continuing.
 
+This exclusion protects the file from the wrong-source comparison and edits; it does not remove upstream requirements from the source-first ledger. If a skipped file is the destination for an in-scope requirement, record its owner/source and mark the delegation unverified until the owning audit supplies evidence. A skip marker alone cannot satisfy the completion gate.
+
 ### Steps
 
 1. **Identify the source subtree** for the skill from `source-map.md`.
@@ -98,13 +103,20 @@ If you propose any change to an AUDIT-SKIP file, that is a bug in the audit. Sto
    - Official docs/source: `Glob` the mapped upstream roots
    - Skill references: `Glob` the skill's `references/` directory
    - **Filter out AUDIT-SKIP files** (see above) — exclude them from all later phases.
+   - Inventory upstream documents even when no existing reference maps to them. Use upstream indexes, navigation, README/tutorial links and example catalogs to detect source-map gaps. Define the topic scope from the skill's advertised purpose, not just its existing contents. Account for each discovered document as in scope, delegated or explicitly excluded with a reason.
 3. **Read the skill's `SKILL.md`** to understand its quick reference table and overall structure.
-4. **Generate a coverage table:**
+4. **Build a source-first coverage ledger**, not a line-ratio estimate. Read every in-scope section, table, warning and example before assigning a verdict. Expand each section into independently applicable requirements where necessary; one topic heading can hide several required targets or platform branches.
 
-   | Reference file | Official source file(s) | Ref lines | Source lines | Coverage estimate |
+   | Source @ commit + section/lines | Requirement / distinct example behavior | Skill destination + heading/lines | Status | Evidence / gap / exclusion reason |
    |---|---|---|---|---|
-   | `CONTROLLERS.md` | `Alloy_Controllers.md` | 380 | 520 | ~70% |
-   | `MODELS.md` | `Alloy_Models.md` | 450 | 680 | ~65% |
+   | `Orientation.md@<hash>` app-level Android lock | Configure the launcher and each applicable Titanium activity | `orientation.md` locking orientation | Partial | Only launcher shown; remaining activity targets omitted |
+   | `<source>@<hash>` setup | Required permissions and initialization before use | `<reference>#<heading>` | Complete | All steps and timing preserved in a shorter example |
+
+   Statuses: **complete** (including an equivalent summary), **partial**, **missing**, **unverified** (source unread/unavailable or evidence unresolved), **delegated** (verified available destination), **excluded** (explicit reason, no lost in-scope requirement). Track author additions separately. Link the current official source as provenance; an upstream-only link without the required skill guidance is not a complete/delegated summary.
+
+5. **Check both directions.** Source → skill establishes missing material; skill → source establishes unsupported claims and preserved author contributions. A diff-only audit cannot discover older omissions. Read unchanged sections too; label a deliberately narrower request as a partial audit rather than certifying the entire skill.
+
+6. **Define consumer scenarios** for the audited task families. Include a complete setup path and applicable platform/device/version branches, failure cases and cleanup. Use documented multi-target integration to test whether a summary remains actionable; determine expected behavior from the source, not from the existing skill.
 
 ### Output
 
@@ -125,14 +137,15 @@ For each reference file:
 1. **Read the reference file** completely.
 2. **Read the corresponding official source file(s)** completely.
 3. **Compare section by section.** For each section in the official docs:
-   - Mark as **complete** (exists in reference with equivalent detail)
+   - Mark as **complete** (all operational requirements survive, including in an equivalent shorter summary)
    - Mark as **partial** (exists but missing subsections, examples, or options)
    - Mark as **missing** (not covered at all)
    - Mark as **author addition** (exists in reference but NOT in official docs)
 4. **Check code examples:**
-   - Are all official examples present in the reference?
+   - Does every distinct behavior demonstrated by official examples survive in the reference or a verified delegated destination? Equivalent examples may be combined; verbatim duplication is not required.
+   - Are prerequisites, all configuration targets, ordering, platform branches, defaults, errors and cleanup retained? A shorter example must not silently narrow a whole-app recipe to one window/activity.
    - Are reference examples accurate (not hallucinated)?
-   - Are examples updated to ES6+ style?
+   - Are curated/transformable examples updated to ES6+ without changed behavior, respecting declared mirror/asset exceptions?
 5. **Classify content without an official source.** Not all unlabeled content is training-data contamination. Distinguish three cases:
    - **Training-data contamination** (propose DELETE): methods/properties that don't exist in the SDK, wrong parameter names, overly generic advice, patterns from other frameworks (React, Vue, Cordova).
    - **Legitimate author contribution** (propose PRESERVE + MARK): verifiable real-world patterns, workarounds for known SDK bugs, best practices from production apps. Propose moving these into a `## Community-Discovered Patterns` section — never silently delete.
@@ -141,7 +154,7 @@ For each reference file:
 
 ### Native module correctness checks
 
-For `ti-admob-unified` and `ti-synthengine`, perform these checks independently of the documentation comparison. Matching upstream prose and hashes can preserve an upstream error exactly.
+For `ti-game`, `ti-admob-unified` and `ti-synthengine`, perform these checks independently of the documentation comparison. Matching upstream prose and hashes can preserve an upstream error exactly. Use each module's own mapped contracts; DSP/renderer-specific checks apply only where relevant.
 
 - Trace affected public options through validation, conversion/inheritance, command construction and native consumers on both platforms. Verify omissions, explicit zero values, defaults, conflicts and return values, not just accepted key names.
 - Compare official explanations against the executing implementation, including shared DSP and each platform renderer where relevant. Report contradictory prose or native behavior with exact file/line and source commit, distinguishing newly introduced findings from pre-existing issues.
@@ -160,6 +173,10 @@ For `ti-admob-unified` and `ti-synthengine`, perform these checks independently 
 | Event handling | Partial | Missing `removeEventListener` cleanup pattern |
 | Conditional code | Complete | |
 | Passing arguments | Missing | Not covered at all |
+
+**Requirement evidence:** source file @ commit + section/lines → skill file + heading/lines for every ledger item; expand partial sections into their missing requirements.
+**Condensed/combined examples:** source examples → destination; distinct behaviors preserved or missing.
+**Consumer scenarios:** task, source-derived expected steps/branches, observed skill guidance, pass/fail/unverified and verification boundary.
 
 **Author additions (not in official docs):**
 - ES6+ migration tips section — valid enhancement, keep
@@ -183,13 +200,16 @@ Aggregate all per-reference findings into a single report.
 
 ### Overall health
 - **References audited:** X of Y
-- **Average coverage:** XX%
+- **Source documents/sections accounted for:** X of Y; exclusions/delegations listed below
+- **Requirement ledger:** complete X; partial X; missing X; unverified X; delegated X; excluded X
+- **Verdict:** complete / incomplete / partial audit (state exact scope)
 - **Critical gaps:** X sections completely missing
 - **Training-data contamination:** X instances found
 
 ### Priority fixes (must fix)
 1. [reference] Section X — completely missing, covers core functionality
 2. [reference] Method Y — hallucinated, does not exist in SDK
+3. [reference] Required configuration target, prerequisite or platform warning omitted, even within an otherwise complete section
 
 ### Recommended updates (should fix)
 1. [reference] Section X — partial, missing Z examples
@@ -197,7 +217,13 @@ Aggregate all per-reference findings into a single report.
 
 ### Low priority (nice to have)
 1. [reference] Could add cross-reference to related skill
-2. [reference] Platform-specific warning for Android
+2. [reference] Formatting/readability improvement without changed requirements
+
+### Coverage evidence
+- Source-first ledger with exact locators and all unresolved items
+- Explicit exclusions/delegations, reasons and verified destinations
+- Consumer scenarios and distinct example behaviors: pass/fail/unverified
+- Source-document omissions vs skill-summary omissions vs unsupported author claims
 
 ### Author additions to preserve
 1. [reference] Section X — valid enhancement beyond official docs
@@ -220,6 +246,8 @@ Aggregate all per-reference findings into a single report.
 ## Phase 4: User approval gate
 
 > **STOP. Do NOT proceed past this phase without explicit user approval.**
+
+For a read-only audit, deliver the report and stop without asking to apply changes. If the user already explicitly authorized the proposed in-scope updates, record that authorization and continue; do not request the same permission again. Otherwise present the concrete proposed changes below and obtain approval. Deferred items remain visible in the coverage verdict.
 
 ### Present to the user
 
@@ -249,9 +277,9 @@ For each reference file, decide the approach:
 
 | Condition | Approach |
 |---|---|
-| Coverage < 50% or heavy contamination | **Full rewrite** — re-read source, write from scratch |
-| Coverage 50–80% with clear gaps | **Targeted additions** — add missing sections, fix errors |
-| Coverage > 80% with minor gaps | **Targeted edits** — small additions and corrections |
+| Structure cannot hold the mapped requirements or heavy contamination | **Full rewrite** — re-read source, preserve verified content and close every ledger item |
+| Missing requirements fit existing structure | **Targeted additions** — add necessary steps, branches and examples |
+| Local factual/wording errors | **Targeted edits** — correct with source evidence |
 | Training-data contamination found | **Full rewrite** of affected sections at minimum |
 
 ### Applying updates
@@ -271,6 +299,7 @@ For each reference file being updated:
    - No dead URLs
    - English only
    - Practical code examples
+5. **Update the ledger** to the final skill destinations. Preserve the scope of each example and all required behavior when modernizing it. Split oversized files and repair routing instead of shortening away requirements. Follow declared byte-identical mirror/asset rules where applicable.
 
 ### Preservation rules
 
@@ -286,7 +315,7 @@ When updating references, remove or fix:
 - **Training-data contamination** (hallucinated methods, wrong parameters)
 - **Dead URLs** (`docs.appcelerator.com`, etc.)
 - **Duplicate content** (same info in multiple sections)
-- **Outdated patterns** (`var`, `Ti.include`, etc.)
+- **Outdated patterns** (`var`, `Ti.include`, etc.) only in curated/transformable content, preserving semantics; byte-identical mirrors/assets retain the declared source policy
 
 ---
 
@@ -296,11 +325,11 @@ Verify the updates are correct and complete.
 
 ### Steps
 
-1. **Spot-check** — read 2–3 updated reference files and verify:
-   - New content matches official source
-   - No new hallucinations introduced
-   - ES6+ style maintained
-   - Author additions preserved where flagged
+1. **Reconcile the entire coverage ledger against the final references.** Re-read each changed source/skill pairing, confirm all remaining destinations, and record final statuses. Recheck prerequisites, every required target, ordering, contract details, warnings and platform/version branches in every changed example. Compare pre/post requirements to detect information lost during rewriting. Hash equality, headings, line counts and a 2–3-file spot-check cannot replace this semantic closure.
+
+   Replay the consumer scenarios using only the final skill and its available reference routes. Record source-derived expected behavior, actual instructions and pass/fail/unverified results. Syntax/build/contract checks support only the boundaries they exercise; do not claim device behavior from a documentation walkthrough. Supplement with spot-checks for readability and preserved author additions.
+
+   **Completion gate:** report complete only when every in-scope requirement is complete or verified delegated, exclusions are explicit and justified, and no partial/missing/unverified requirement or failed/unverified guidance scenario remains. User-deferred gaps stay listed in an incomplete/partial verdict. Missing device evidence limits runtime claims; it does not by itself invalidate verified documentation coverage.
 
 2. **Verify `SKILL.md`** — does the quick reference table still match the reference files?
    - Were any reference files added or removed?
