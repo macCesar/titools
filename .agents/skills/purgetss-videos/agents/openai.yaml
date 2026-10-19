@@ -1,0 +1,4 @@
+interface:
+  display_name: "PurgeTSS Videos"
+  short_description: "Plan, record and deliver PurgeTSS video tutorials"
+  default_prompt: "Use $purgetss-videos with $technical-demo-videos to prepare a recording plan for this PurgeTSS tutorial. Do not record until I approve the plan."
