@@ -644,7 +644,7 @@ Returns a new snapshot without resetting counters. Available before start and af
 | `tailVoices`               | External fade tails from replacement or `stopAll`, excluding primary FIR drain.                                                         |
 | `spatialVoices`            | Spatial primary slots, including FIR draining; excludes external tails.                                                                 |
 | `voiceStealCount`          | Primary replacements while all slots are occupied.                                                                                      |
-| `rejectedRequestCount`     | Rejected Boolean API requests, counted once per call.                                                                                   |
+| `rejectedRequestCount`     | Observed rejected Boolean API requests. On the reviewed iOS beta, sequence/effects argument or engine-stopped rejections and incompatible modulation updates are not all counted; this is not an exhaustive rejection total. See [native findings](source-notes.md#native-findings-and-acceptance-boundaries).                                                                                   |
 | `rejectedRequestsByReason` | `{ validation, engineStopped, queueFull }`; sum equals rejection total.                                                                 |
 | `droppedPatternStepCount`  | Previously accepted pattern steps that could not enter the render queue; cancelled/replaced steps are excluded.                         |
 | `pendingCommands`          | Published entries awaiting the renderer; chord notes count separately, future scheduler steps are excluded.                             |

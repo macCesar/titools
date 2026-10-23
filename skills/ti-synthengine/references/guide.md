@@ -131,7 +131,7 @@ Use `noteOn({ voiceId, ... })` when duration follows interaction: a piano key, m
 
 `updateVoice` changes compatible pitch, volume, cutoff/Q, vibrato, PWM/FM and LFO targets with 10 ms ramps, without restarting oscillator/envelope phase. Source, table, filter type, noise clock, one-pole cutoff, ADSR and spatial position are fixed at attack. See [complete fields](api.md#updatevoiceoptions). A note that has ended or been stolen accepts updates as a no-op; there is no note-finished event or reserved slot. A `true` return means accepted publication, not proof that the sound is still active.
 
-Release on touch end and cancellation as well as ordinary key up. Retry a rejected release twice at 16 ms outside the audio callback, then shut down and report failure if publication remains blocked. Cancel retries during teardown. The [held motor example](examples.md#sustained-game-motor) implements this ownership policy. For pause/owner close, invalidate app scheduling and shut down; require a new start before future notes.
+Release on touch end and cancellation as well as ordinary key up. Retry a rejected release twice at 16 ms outside the audio callback, then shut down and report failure if publication remains blocked. Cancel retries during teardown. The [held motor example](advanced-examples.md#sustained-game-motor) implements this ownership policy. For pause/owner close, invalidate app scheduling and shut down; require a new start before future notes.
 
 ## Choose the musical transport
 
@@ -142,7 +142,7 @@ Release on touch end and cancellation as well as ordinary key up. Retry a reject
 | Precise musical steps, looping chords, separate gates, swing or arpeggios | `playSequence`, native sample-clock scheduling |
 | Duration follows input or gameplay state | `noteOn`, `updateVoice`, `noteOff` |
 
-The native transport uses 1 to 512 sixteenth-note steps, each with `notes: [60, 64, 67]` (integer MIDI 12 to 119) or `rest: true`. A gate from 0.01 to 1 sets release onset within the swung step. Voice shaping belongs in root `voice`; per-step `overrides` merge into it. Native sequence steps do not accept pattern `duration`, `noteValue` or sweep-end keys. There are no ties or independent tracks. The [sequence example](examples.md#native-sequence-with-chords-and-edits) shows playback, edits, polling and cleanup.
+The native transport uses 1 to 512 sixteenth-note steps, each with `notes: [60, 64, 67]` (integer MIDI 12 to 119) or `rest: true`. A gate from 0.01 to 1 sets release onset within the swung step. Voice shaping belongs in root `voice`; per-step `overrides` merge into it. Native sequence steps do not accept pattern `duration`, `noteValue` or sweep-end keys. There are no ties or independent tracks. The [sequence example](advanced-examples.md#native-sequence-with-chords-and-edits) shows playback, edits, polling and cleanup.
 
 `playSequence` resets musical position and starts the traversal again; `updateSequence` edits the last accepted config without restarting a stopped transport. BPM applies at the next audio block without resetting musical position; structural edits apply at the next step, and swing at the next pair. Root/voice edits merge, while a supplied `steps` array replaces all steps. If no configuration bank or publication space is free, the complete edit is rejected. Keep the previous accepted state and retry outside render. Use the revision from `getSequenceState` to see what the callback has applied.
 
@@ -154,9 +154,9 @@ The native chain is voices, fixed input gain, chorus, ping-pong delay, stereo Sc
 
 Chorus adds gentle stereo movement; delay adds free or tempo-synced echoes; reverb adds a damped room-like tail. Saturation is an explicitly enabled timbre change with drive 1 to 4, not automatic output protection. Every processor acts on the whole mix: there are no per-voice sends or separate music and effects buses. For game cues, choose a context where the whole mix should receive that processing or close effect input before returning to combat.
 
-`setMasterProcessing` merges partial updates, validates the entire result and returns publication acceptance. Continuous controls ramp over 10 ms. Disabling an effect closes input gradually and keeps its tail, bounded to 30 seconds with a final fade, then restores exact bypass. It does not undo a non-unity input gain. `stopAll` invalidates histories and stops the native sequence; `shutdown` also cancels timer patterns and frees the stream/buffers. See the [processing example](examples.md#chorus-delay-reverb-and-creative-saturation) and [field ranges](api.md#setmasterprocessingoptions).
+`setMasterProcessing` merges partial updates, validates the entire result and returns publication acceptance. Continuous controls ramp over 10 ms. Disabling an effect closes input gradually and keeps its tail, bounded to 30 seconds with a final fade, then restores exact bypass. It does not undo a non-unity input gain. `stopAll` invalidates histories and stops the native sequence; `shutdown` also cancels timer patterns and frees the stream/buffers. See the [processing example](advanced-examples.md#chorus-delay-reverb-and-creative-saturation) and [field ranges](api.md#setmasterprocessingoptions).
 
-Delay and LFO sync follow native transport BPM (initially 120), not `playPattern` BPM or an app timer. The two extra voice LFOs target filter cutoff, square PWM or sine FM, with sine/triangle waves. They are independent of `lfoFreq`/`lfoDepth` pitch vibrato. See [two LFOs](examples.md#two-voice-lfos).
+Delay and LFO sync follow native transport BPM (initially 120), not `playPattern` BPM or an app timer. The two extra voice LFOs target filter cutoff, square PWM or sine FM, with sine/triangle waves. They are independent of `lfoFreq`/`lfoDepth` pitch vibrato. See [two LFOs](advanced-examples.md#two-voice-lfos).
 
 ## Play the first sound
 
@@ -615,6 +615,6 @@ See the [complete field contract](api.md#getstats), [measurement limits](stats-p
 
 ## Diagnose mix headroom
 
-The current diagnostics add `preLimiterPeakDb` (maximum signal before final limiting, in dBFS) and `maxLimiterReductionDb` (greatest limiter attenuation in dB) accumulated since reset. Unlike the approximately 200 ms window reduction field, brief peaks remain visible between UI polls. Enable measurements, reset before the scenario and keep `null`/absent fields distinct from measured zero. The [measurement example](examples.md#measure-peaks-and-limiter-reduction) shows opt-in polling and cleanup.
+The current diagnostics add `preLimiterPeakDb` (maximum signal before final limiting, in dBFS) and `maxLimiterReductionDb` (greatest limiter attenuation in dB) accumulated since reset. Unlike the approximately 200 ms window reduction field, brief peaks remain visible between UI polls. Enable measurements, reset before the scenario and keep `null`/absent fields distinct from measured zero. The [measurement example](advanced-examples.md#measure-peaks-and-limiter-reduction) shows opt-in polling and cleanup.
 
 Fixed event/input gain does not normalize continuously by active voice count. Coherent overlapping notes, effects feedback or resonance can still exceed the ceiling; the limiter then acts on the whole stereo sum. Saturation is a separate creative processor, disabled initially. Physical loudness and small-speaker bass response are not measured by these digital meters.

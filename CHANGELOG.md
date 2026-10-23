@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Audited `ti-synthengine` against TiSynthEngine `6b48af5` and its reviewed documentation working tree. Updated discovery for nineteen methods, held voices, native sequences, master effects and two extra LFOs. Split advanced examples without losing official content, bundled the Studio validation report, preserved curated recipes with modern JavaScript and documented iOS rejection-counter omissions plus the existing timed zero-envelope difference. Host/contract evidence remains distinct from device acceptance.
+
 ## [5.2.0] - 2026-10-18
 
 This release publishes TiTools skills and documentation. The native TiSynthEngine and ti.admob.unified modules have not been publicly released; their 1.0.0 references describe development snapshots, not published binaries.
