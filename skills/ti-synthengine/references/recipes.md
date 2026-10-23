@@ -8,9 +8,9 @@ Unless a section says otherwise, the snippets assume one owner has already
 started the engine:
 
 ```javascript
-var synth = require('ti.synthengine')
-var contract = synth.getDefaults()
-var WAVE = contract.waveTypes
+const synth = require('ti.synthengine')
+const contract = synth.getDefaults()
+const WAVE = contract.waveTypes
 ```
 
 Treat levels as starting points, not mastering targets. Test on the actual
@@ -43,7 +43,7 @@ and acceleration. The short release removes the edge without blurring the
 motion.
 
 ```javascript
-var accepted = synth.playTone({
+const accepted = synth.playTone({
   frequency: 196,
   frequencyEnd: 523,
   duration: 350,
@@ -161,9 +161,9 @@ release values make every 60 ms tone valid without relying on shortened
 defaults. A 10 ms rest after each tone places the ticks 70 ms apart.
 
 ```javascript
-var scoreSteps = []
+const scoreSteps = []
 
-for (var index = 0; index < 10; index++) {
+for (let index = 0; index < 10; index++) {
   scoreSteps.push({
     frequency: 1046.5,
     duration: 60,
@@ -208,9 +208,9 @@ speaker. Each 120 ms tone has a fitted envelope (`10 + 100 <= 120`), followed
 by a 10 ms rest, so the pitch changes every 130 ms.
 
 ```javascript
-var warningSteps = []
+const warningSteps = []
 
-for (var pulse = 0; pulse < 5; pulse++) {
+for (let pulse = 0; pulse < 5; pulse++) {
   warningSteps.push({ frequency: 800, duration: 120 })
   warningSteps.push({ rest: true, duration: 10 })
   warningSteps.push({ frequency: 400, duration: 120 })
@@ -243,7 +243,7 @@ function playHeartbeatPair () {
     waveType: WAVE.TRIANGLE
   })
 
-  setTimeout(function () {
+  setTimeout(() => {
     synth.playTone({
       frequency: 80,
       duration: 150,
@@ -266,7 +266,7 @@ harmonics. A 2 ms attack makes the strike immediate, while a 180 ms release
 lets adjacent bars overlap musically.
 
 ```javascript
-var XYLOPHONE = [
+const XYLOPHONE = [
   { label: 'C5', frequency: 523.25 },
   { label: 'D5', frequency: 587.33 },
   { label: 'E5', frequency: 659.25 },
@@ -278,7 +278,7 @@ var XYLOPHONE = [
 ]
 
 function playXylophoneBar (index, pan) {
-  var bar = XYLOPHONE[index]
+  const bar = XYLOPHONE[index]
   if (!bar || !isFinite(pan) || pan < -1 || pan > 1) return false
 
   return synth.playTone({
@@ -288,7 +288,7 @@ function playXylophoneBar (index, pan) {
     release: 180,
     volume: 0.65,
     waveType: WAVE.TRIANGLE,
-    pan: pan
+    pan
   })
 }
 ```
@@ -304,8 +304,8 @@ Track the last entered bar and strike only when the index changes:
 
 ```javascript
 function createBarGesture (playIndex) {
-  var tracking = false
-  var activeIndex = -1
+  let tracking = false
+  let activeIndex = -1
 
   function enter (index) {
     if (!tracking || index < 0 || index === activeIndex) return
@@ -314,13 +314,13 @@ function createBarGesture (playIndex) {
   }
 
   return {
-    start: function (index) {
+    start (index) {
       tracking = true
       activeIndex = -1
       enter(index)
     },
     move: enter,
-    finish: function () {
+    finish () {
       tracking = false
       activeIndex = -1
     }
@@ -347,14 +347,14 @@ durations. Keep each bank as app metadata, then build a fresh closed options
 object for the module.
 
 ```javascript
-var PAD_BANKS = {
+const PAD_BANKS = {
   low: [415, 310, 252, 209],
   equalTempered: [391.995, 329.628, 261.626, 195.998]
 }
 
 function playMemoryPad (bankName, index) {
-  var bank = PAD_BANKS[bankName]
-  var frequency = bank && bank[index]
+  const bank = PAD_BANKS[bankName]
+  const frequency = bank && bank[index]
   if (!isFinite(frequency)) return false
 
   return synth.playTone({
@@ -373,7 +373,7 @@ independent full-gain calls:
 
 ```javascript
 function playMemoryBank (bankName) {
-  var bank = PAD_BANKS[bankName]
+  const bank = PAD_BANKS[bankName]
   if (!bank) return false
 
   return synth.playChord({
@@ -396,7 +396,7 @@ containing labels or other app metadata directly to `playChord()` because its
 options dictionary is closed.
 
 ```javascript
-var TIMBRE_PROFILES = {
+const TIMBRE_PROFILES = {
   square: { waveType: WAVE.SQUARE, volume: 0.52 },
   sine: { waveType: WAVE.SINE, volume: 0.68 },
   triangle: { waveType: WAVE.TRIANGLE, volume: 0.64 },
@@ -404,7 +404,7 @@ var TIMBRE_PROFILES = {
 }
 
 function auditionTimbre (profileName) {
-  var profile = TIMBRE_PROFILES[profileName]
+  const profile = TIMBRE_PROFILES[profileName]
   if (!profile) return false
 
   return synth.playChord({
@@ -442,21 +442,21 @@ octaves. Later layers repeat those tones with small cent offsets, passed as
 `detunes`, which creates width and beating.
 
 ```javascript
-var CHORD_INTERVALS = [0, 4, 7, 12, 16, 19, 24, 28, 31, 36]
-var LAYER_DETUNE_CENTS = [0, -8, 8, -12]
+const CHORD_INTERVALS = [0, 4, 7, 12, 16, 19, 24, 28, 31, 36]
+const LAYER_DETUNE_CENTS = [0, -8, 8, -12]
 
 function normalizeVoiceCount (value) {
-  var count = Math.round(Number(value))
+  const count = Math.round(Number(value))
   if (!isFinite(count)) return 1
   return Math.max(1, Math.min(32, count))
 }
 
 function buildLayeredFrequencies (voiceCount) {
-  var count = normalizeVoiceCount(voiceCount)
-  var frequencies = []
+  const count = normalizeVoiceCount(voiceCount)
+  const frequencies = []
 
-  for (var index = 0; index < count; index++) {
-    var intervalIndex = index % CHORD_INTERVALS.length
+  for (let index = 0; index < count; index++) {
+    const intervalIndex = index % CHORD_INTERVALS.length
     frequencies.push(midiToHz(60.12 + CHORD_INTERVALS[intervalIndex]))
   }
 
@@ -464,11 +464,11 @@ function buildLayeredFrequencies (voiceCount) {
 }
 
 function buildLayerDetunes (voiceCount) {
-  var count = normalizeVoiceCount(voiceCount)
-  var detunes = []
+  const count = normalizeVoiceCount(voiceCount)
+  const detunes = []
 
-  for (var index = 0; index < count; index++) {
-    var layer = Math.floor(index / CHORD_INTERVALS.length)
+  for (let index = 0; index < count; index++) {
+    const layer = Math.floor(index / CHORD_INTERVALS.length)
     detunes.push(LAYER_DETUNE_CENTS[layer % LAYER_DETUNE_CENTS.length])
   }
 
@@ -476,16 +476,16 @@ function buildLayerDetunes (voiceCount) {
 }
 
 function buildSymmetricPans (voiceCount, spread) {
-  var count = normalizeVoiceCount(voiceCount)
-  var numericSpread = Number(spread)
-  var safeSpread = isFinite(numericSpread)
+  const count = normalizeVoiceCount(voiceCount)
+  const numericSpread = Number(spread)
+  const safeSpread = isFinite(numericSpread)
     ? Math.max(0, Math.min(1, numericSpread))
     : 0
-  var pans = []
+  const pans = []
 
   if (count === 1) return [0]
 
-  for (var index = 0; index < count; index++) {
+  for (let index = 0; index < count; index++) {
     pans.push(-safeSpread + (2 * safeSpread * index / (count - 1)))
   }
 
@@ -493,7 +493,7 @@ function buildSymmetricPans (voiceCount, spread) {
 }
 
 function playLayeredChord (voiceCount) {
-  var count = normalizeVoiceCount(voiceCount)
+  const count = normalizeVoiceCount(voiceCount)
 
   return synth.playChord({
     frequencies: buildLayeredFrequencies(count),
@@ -522,8 +522,8 @@ it is not proof that a single chord is defective.
 For a musical pulse, keep the event shorter than its period:
 
 ```javascript
-var pulseTimer = null
-var pulseGeneration = 0
+let pulseTimer = null
+let pulseGeneration = 0
 
 function stopChordPulse () {
   pulseGeneration++
@@ -536,7 +536,7 @@ function stopChordPulse () {
 
 function startChordPulse () {
   stopChordPulse()
-  var generation = pulseGeneration
+  const generation = pulseGeneration
 
   function tick () {
     if (generation !== pulseGeneration) return
@@ -751,7 +751,7 @@ closed object at the call boundary so keys such as `label`, `category`, or
 `description` never reach the module.
 
 ```javascript
-var PRESETS = {
+const PRESETS = {
   success: {
     label: 'Success',
     frequency: 760,
@@ -761,7 +761,7 @@ var PRESETS = {
 }
 
 function playPreset (name) {
-  var preset = PRESETS[name]
+  const preset = PRESETS[name]
   if (!preset) return false
 
   return synth.playTone({
