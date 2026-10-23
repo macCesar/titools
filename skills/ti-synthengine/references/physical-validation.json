@@ -1,0 +1,1456 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-23",
+  "moduleVersion": "1.0.0 beta",
+  "status": "headphone-distortion-investigation-in-progress",
+  "acceptanceComplete": false,
+  "criteria": {
+    "controlledAudioSeconds": 600,
+    "maximumVoices": 32,
+    "nativeSequences": 4,
+    "binaural": true,
+    "lfosPerVoice": 2,
+    "sharedEffects": [
+      "chorus",
+      "delay",
+      "reverb",
+      "saturation"
+    ],
+    "renderP95LoadUpperLimit": 0.5,
+    "deadlineMissesAllowed": 0,
+    "additionalMemoryLimitBytes192k": 33554432,
+    "frameP95RegressionLimitPercent": 5,
+    "meanFpsRegressionLimitPercent": 2
+  },
+  "methodology": {
+    "audioLoad": "Elapsed callback render time divided by its frames/sample-rate deadline. Full native histograms are recorded only in instrumented temporary module copies; production module API remains unchanged.",
+    "percentile": "Nearest-rank p95; histogram bucket width0.001 load with an exclusive upper bound. A maximum below0.5 is also a valid stronger bound. Last-callback polling is not a callback percentile.",
+    "outputUnderruns": "Android backend counts when supported. iOS unavailable readings remain null. Zero measured callback deadline misses does not certify that the hardware output never glitched.",
+    "statePreservation": "Isolated test app identifiers; no user library/preset or app-data reset. No preferred hardware sample-rate or buffer changes used to satisfy a test.",
+    "iosMemoryReference": "https://developer.apple.com/videos/play/wwdc2022/10106/"
+  },
+  "devices": {
+    "android": {
+      "model": "CPH2639",
+      "soc": "mt6835",
+      "os": "Android16",
+      "initialFeasibility": {
+        "status": "failed",
+        "rendererSampleRate": 48000,
+        "callbackFrames": 256,
+        "measuredSeconds": 30.014,
+        "maximumRenderLoad": 4.065,
+        "lastCallbackPollingMedian": 0.799,
+        "renderP95Load": null,
+        "outputUnderruns": 896,
+        "rejectedPublications": 0,
+        "priorityDrops": 0,
+        "note": "Original final module artifact; stopped after feasibility. This is not a ten-minute pass."
+      },
+      "controlledRun": {
+        "status": "failed-feasibility-not-started",
+        "controlled600SecondsStarted": false,
+        "reason": "Short controlled runs exceed callback CPU/wall deadlines and report output underruns. Ten-minute acceptance is not claimed."
+      },
+      "profiledFeasibility": {
+        "name": "exact-neon-cpu",
+        "elapsedMs": 30013,
+        "complete": true,
+        "interrupted": false,
+        "callbacks": 4767,
+        "p95Lower": 2.047,
+        "p95Upper": null,
+        "deadlineMisses": 2074,
+        "sampleRate": 48000,
+        "xruns": 857,
+        "maxLoad": 3.8799808125,
+        "status": "failed-before-next-optimization",
+        "threadCpuDeadlineMisses": 1974,
+        "threadCpuP95Lower": 2.047,
+        "threadCpuP95Upper": null,
+        "interpretation": "Paired thread-CPU and wall histograms both overflow the final bucket. CPU work contributes materially; this is not explained solely by callback preemption. Sampling identifies the FIR loop as a significant cost. No controlled ten-minute run has started."
+      },
+      "memoryBeforeProducerOptimization": {
+        "status": "failed_full_process_32MiB_peak",
+        "actualSampleRate": 48000,
+        "allDensePublicationsAccepted": true,
+        "fullScoreUpdates": 80,
+        "fullScoreUpdatesAccepted": 80,
+        "recoveryStarts": 5,
+        "baselineRssKiB": [
+          246560,
+          254028
+        ],
+        "baselineStartupHwmKiB": 262740,
+        "warmFxRssKiB": [
+          269348,
+          271616
+        ],
+        "callerInputsRssKiB": 277096,
+        "pressurePeakSampledRssKiB": 293364,
+        "wholeProcessHwmKiB": 300740,
+        "hwmIncreaseKiB": 38000,
+        "peakRssDeltaVersusHighestBaselineKiB": 39336,
+        "measurement": "Read-only /proc/PID/status RSS/HWM, with stage meminfo. Whole process includes caller JS input, Titanium/Java/bridge, module and allocator recovery. No192k physical claim."
+      },
+      "exactOutputChecks": {
+        "sampleCount": 150000,
+        "stateDifferences": 0,
+        "outputBitDifferences": 0,
+        "rates": [
+          16000,
+          44100,
+          48000,
+          96000,
+          192000
+        ],
+        "fullEngineCases": 60,
+        "fullEngineHashDifferences": 0
+      },
+      "memoryCorrection": {
+        "implementedInProductionJava": true,
+        "packetRetainedAfterAcceptance": false,
+        "immutablePreviousStepsReused": true,
+        "duplicateIncomingDeepCopyRemoved": true,
+        "focusedTest": "python3 tests/run_studio_java.py --memory-only",
+        "testStatus": "PASS",
+        "ciWired": true,
+        "updatesAccepted": 80,
+        "recoveryStarts": 5,
+        "sampledRssPeakKiB": 282488,
+        "processHwmKiB": 291160,
+        "stableBaselineRssKiB": 252352,
+        "startupBaselineHwmKiB": 263044,
+        "rssReductionVersusPreviousKiB": 10876,
+        "hwmReductionVersusPreviousKiB": 9580,
+        "strictProcessPeak32MiBAccepted": false,
+        "native192kPhysicalAccepted": false,
+        "attribution": {
+          "baselineTotalPssKiB": 102479,
+          "denseTotalPssKiB": 142554,
+          "baselinePrivateDirtyKiB": 72472,
+          "densePrivateDirtyKiB": 95748,
+          "baselineNativeHeapAllocKiB": 22196,
+          "denseNativeHeapAllocKiB": 37392,
+          "baselineDalvikHeapAllocKiB": 4114,
+          "denseDalvikHeapAllocKiB": 8106
+        },
+        "notes": [
+          "Different RSS/PSS/HWM snapshots have different scope and timing; do not select a metric posthoc to claim acceptance.",
+          "Process scope includes caller JS inputs, Titanium/Java/code, bridge and module. 192k native allocation accounting is separate."
+        ]
+      },
+      "rejectedExperiments": {
+        "tiledRenderer": {
+          "productionPromoted": false,
+          "hostAndArm64OutputAndClockStateExact": true,
+          "cases": {
+            "static": 9,
+            "rates": 30,
+            "heldRampsModulation": 60,
+            "transportClockState": 20
+          },
+          "callbacks": 4766,
+          "wallDeadlineMisses": 1180,
+          "cpuDeadlineMisses": 1088,
+          "p95Lower": 2.047,
+          "p95Upper": null,
+          "xruns": 875,
+          "steadyCpuMedianLower": 0.903,
+          "steadyCpuP95": [
+            1.605,
+            1.606
+          ],
+          "profileFirMainLoopVisiblePercent": 29.58,
+          "baselineProfileFirMainLoopVisiblePercent": 33.9,
+          "decision": "Rejected for production: no meaningful full-load median/p95 improvement; steady state still fails."
+        },
+        "offCallbackPerformanceHints": {
+          "status": "rejected_no_substantial_improvement",
+          "productionPromoted": false,
+          "reportsWereUnscaledRealMonotonicDurations": true,
+          "callbacksNeverCalledAdpfOrWaitedForWorker": true,
+          "apiSessionReportWorkerOnly": true,
+          "runs": [
+            {
+              "mode": "off",
+              "elapsedMs": 30031,
+              "callbacks": 4814,
+              "wallP95Lower": 2.047,
+              "wallP95Upper": null,
+              "cpuP95Lower": 2.047,
+              "cpuP95Upper": null,
+              "wallDeadlineMisses": 2059,
+              "cpuDeadlineMisses": 1943,
+              "outputXruns": 809,
+              "maxWallLoad": 4.254418125,
+              "hint": {
+                "workerStarted": 1,
+                "lastActualNanos": 0,
+                "targetNanos": 0,
+                "reportErrors": 0,
+                "createdSessions": 0,
+                "epoch": 2,
+                "tid": 0,
+                "mode": 0,
+                "lastReturnCode": 0,
+                "successfulReports": 0,
+                "preferredUpdateNanos": 1000000,
+                "ringOverflow": 0,
+                "staleRecords": 0,
+                "apiAvailable": 1
+              },
+              "initialHint": {
+                "workerStarted": 1,
+                "lastActualNanos": 0,
+                "targetNanos": 0,
+                "reportErrors": 0,
+                "createdSessions": 0,
+                "epoch": 2,
+                "tid": 0,
+                "mode": 0,
+                "lastReturnCode": 0,
+                "successfulReports": 0,
+                "preferredUpdateNanos": 1000000,
+                "ringOverflow": 0,
+                "staleRecords": 0,
+                "apiAvailable": 1
+              }
+            },
+            {
+              "mode": "full",
+              "elapsedMs": 30028,
+              "callbacks": 4684,
+              "wallP95Lower": 2.047,
+              "wallP95Upper": null,
+              "cpuP95Lower": 2.047,
+              "cpuP95Upper": null,
+              "wallDeadlineMisses": 2166,
+              "cpuDeadlineMisses": 2037,
+              "outputXruns": 940,
+              "maxWallLoad": 4.0037885625000005,
+              "hint": {
+                "workerStarted": 1,
+                "lastActualNanos": 1991769,
+                "targetNanos": 5333333,
+                "reportErrors": 0,
+                "createdSessions": 1,
+                "epoch": 2,
+                "tid": 22411,
+                "mode": 1,
+                "lastReturnCode": 0,
+                "successfulReports": 5597,
+                "preferredUpdateNanos": 1000000,
+                "ringOverflow": 0,
+                "staleRecords": 0,
+                "apiAvailable": 1
+              },
+              "initialHint": {
+                "workerStarted": 1,
+                "lastActualNanos": 5503692,
+                "targetNanos": 5333333,
+                "reportErrors": 0,
+                "createdSessions": 1,
+                "epoch": 2,
+                "tid": 22411,
+                "mode": 1,
+                "lastReturnCode": 0,
+                "successfulReports": 922,
+                "preferredUpdateNanos": 1000000,
+                "ringOverflow": 0,
+                "staleRecords": 0,
+                "apiAvailable": 1
+              }
+            },
+            {
+              "mode": "half",
+              "elapsedMs": 30026,
+              "callbacks": 4734,
+              "wallP95Lower": 2.047,
+              "wallP95Upper": null,
+              "cpuP95Lower": 2.047,
+              "cpuP95Upper": null,
+              "wallDeadlineMisses": 2058,
+              "cpuDeadlineMisses": 1946,
+              "outputXruns": 884,
+              "maxWallLoad": 3.9429230625000002,
+              "hint": {
+                "workerStarted": 1,
+                "lastActualNanos": 1829308,
+                "targetNanos": 2666666,
+                "reportErrors": 0,
+                "createdSessions": 1,
+                "epoch": 2,
+                "tid": 22927,
+                "mode": 2,
+                "lastReturnCode": 0,
+                "successfulReports": 5655,
+                "preferredUpdateNanos": 1000000,
+                "ringOverflow": 0,
+                "staleRecords": 0,
+                "apiAvailable": 1
+              },
+              "initialHint": {
+                "workerStarted": 1,
+                "lastActualNanos": 3660000,
+                "targetNanos": 2666666,
+                "reportErrors": 0,
+                "createdSessions": 1,
+                "epoch": 2,
+                "tid": 22927,
+                "mode": 2,
+                "lastReturnCode": 0,
+                "successfulReports": 931,
+                "preferredUpdateNanos": 1000000,
+                "ringOverflow": 0,
+                "staleRecords": 0,
+                "apiAvailable": 1
+              }
+            }
+          ],
+          "reviewedUnpromotedLimitations": [
+            "Per-epoch API failure/backoff cleanup needs tightening before any future promotion.",
+            "Recovery must invalidate epoch and target/TID telemetry should clear on session close."
+          ],
+          "decision": "Reject worker entirely this cycle; no additional controller or DSP experiments."
+        }
+      },
+      "productionContainsRejectedExperiments": false
+    },
+    "ipad": {
+      "model": "iPad (9th generation)",
+      "initialFeasibility": {
+        "status": "incomplete-acceptance",
+        "rendererSampleRate": 44100,
+        "callbackFrames": 1024,
+        "measuredSeconds": 60,
+        "maximumRenderLoad": 0.56357,
+        "measuredDeadlineMisses": 0,
+        "renderP95Load": null,
+        "outputUnderruns": null
+      },
+      "controlledRun": {
+        "measurementStartedAt": "2026-10-23T14:47:21.878Z",
+        "measurementFinishedAt": "2026-10-23T14:57:22.019Z",
+        "wallDurationMs": 600124,
+        "renderedAudioSeconds": 600.0268480725623,
+        "callbacks": 25841,
+        "renderedFrames": 26461184,
+        "sourceRendererSampleRate": 44100,
+        "audioSession": {
+          "category": "AVAudioSessionCategoryPlayback",
+          "systemOutputVolume": 0.550000011920929,
+          "ports": [
+            {
+              "name": "Altavoz",
+              "type": "Speaker"
+            }
+          ],
+          "mode": "AVAudioSessionModeDefault",
+          "outputLatency": 0.005056689493358135,
+          "sessionSampleRate": 44100,
+          "ioBufferDuration": 0.023219954648526078,
+          "outputNodeSampleRate": 44100,
+          "sourceNodeSampleRate": 44100
+        },
+        "renderLoadP95": {
+          "lowerInclusive": 0.388,
+          "upperExclusive": 0.389,
+          "basis": "all measured callbacks; frozen native histogram; nearest rank"
+        },
+        "renderLoadMaximum": 0.5545140747070313,
+        "measuredRenderDeadlineMisses": 0,
+        "iOSOutputUnderruns": null,
+        "minimumObservedVoices": 32,
+        "minimumObservedSpatialVoices": 32,
+        "fourSequencesContinuouslyObservedPlaying": true,
+        "rejectedRequests": 0,
+        "rejectedPublications": 0,
+        "priorityDrops": 0,
+        "backgroundedAt": null,
+        "output": {
+          "finalPeakDbFS": {
+            "right": -52.89253074974185,
+            "left": -55.82302619493744
+          },
+          "maximumLimiterReductionDb": 0
+        },
+        "status": "passed-render-timing",
+        "histogram": {
+          "bucketWidth": 0.001,
+          "bucketCount": 2048,
+          "lastBucketIncludesOverflow": true,
+          "nonzeroBuckets": [
+            [
+              189,
+              2
+            ],
+            [
+              190,
+              2
+            ],
+            [
+              194,
+              1
+            ],
+            [
+              214,
+              1
+            ],
+            [
+              220,
+              1
+            ],
+            [
+              233,
+              1
+            ],
+            [
+              239,
+              1
+            ],
+            [
+              240,
+              1
+            ],
+            [
+              241,
+              2
+            ],
+            [
+              243,
+              1
+            ],
+            [
+              252,
+              1
+            ],
+            [
+              259,
+              1
+            ],
+            [
+              260,
+              3
+            ],
+            [
+              261,
+              3
+            ],
+            [
+              262,
+              1
+            ],
+            [
+              263,
+              1
+            ],
+            [
+              264,
+              2
+            ],
+            [
+              265,
+              2
+            ],
+            [
+              267,
+              4
+            ],
+            [
+              268,
+              4
+            ],
+            [
+              269,
+              1
+            ],
+            [
+              270,
+              1
+            ],
+            [
+              271,
+              3
+            ],
+            [
+              272,
+              1
+            ],
+            [
+              274,
+              1
+            ],
+            [
+              275,
+              1
+            ],
+            [
+              276,
+              1
+            ],
+            [
+              277,
+              2
+            ],
+            [
+              278,
+              2
+            ],
+            [
+              279,
+              1
+            ],
+            [
+              280,
+              2
+            ],
+            [
+              281,
+              1
+            ],
+            [
+              283,
+              2
+            ],
+            [
+              285,
+              1
+            ],
+            [
+              286,
+              1
+            ],
+            [
+              287,
+              2
+            ],
+            [
+              288,
+              2
+            ],
+            [
+              289,
+              3
+            ],
+            [
+              290,
+              5
+            ],
+            [
+              291,
+              5
+            ],
+            [
+              292,
+              14
+            ],
+            [
+              293,
+              16
+            ],
+            [
+              294,
+              14
+            ],
+            [
+              295,
+              17
+            ],
+            [
+              296,
+              11
+            ],
+            [
+              297,
+              16
+            ],
+            [
+              298,
+              10
+            ],
+            [
+              299,
+              10
+            ],
+            [
+              300,
+              9
+            ],
+            [
+              301,
+              13
+            ],
+            [
+              302,
+              13
+            ],
+            [
+              303,
+              13
+            ],
+            [
+              304,
+              15
+            ],
+            [
+              305,
+              9
+            ],
+            [
+              306,
+              20
+            ],
+            [
+              307,
+              24
+            ],
+            [
+              308,
+              11
+            ],
+            [
+              309,
+              25
+            ],
+            [
+              310,
+              13
+            ],
+            [
+              311,
+              31
+            ],
+            [
+              312,
+              48
+            ],
+            [
+              313,
+              83
+            ],
+            [
+              314,
+              97
+            ],
+            [
+              315,
+              100
+            ],
+            [
+              316,
+              81
+            ],
+            [
+              317,
+              89
+            ],
+            [
+              318,
+              66
+            ],
+            [
+              319,
+              85
+            ],
+            [
+              320,
+              67
+            ],
+            [
+              321,
+              76
+            ],
+            [
+              322,
+              48
+            ],
+            [
+              323,
+              59
+            ],
+            [
+              324,
+              52
+            ],
+            [
+              325,
+              68
+            ],
+            [
+              326,
+              48
+            ],
+            [
+              327,
+              66
+            ],
+            [
+              328,
+              71
+            ],
+            [
+              329,
+              100
+            ],
+            [
+              330,
+              83
+            ],
+            [
+              331,
+              111
+            ],
+            [
+              332,
+              97
+            ],
+            [
+              333,
+              88
+            ],
+            [
+              334,
+              103
+            ],
+            [
+              335,
+              109
+            ],
+            [
+              336,
+              117
+            ],
+            [
+              337,
+              210
+            ],
+            [
+              338,
+              308
+            ],
+            [
+              339,
+              431
+            ],
+            [
+              340,
+              530
+            ],
+            [
+              341,
+              461
+            ],
+            [
+              342,
+              394
+            ],
+            [
+              343,
+              316
+            ],
+            [
+              344,
+              298
+            ],
+            [
+              345,
+              220
+            ],
+            [
+              346,
+              216
+            ],
+            [
+              347,
+              185
+            ],
+            [
+              348,
+              213
+            ],
+            [
+              349,
+              183
+            ],
+            [
+              350,
+              171
+            ],
+            [
+              351,
+              163
+            ],
+            [
+              352,
+              139
+            ],
+            [
+              353,
+              171
+            ],
+            [
+              354,
+              153
+            ],
+            [
+              355,
+              188
+            ],
+            [
+              356,
+              198
+            ],
+            [
+              357,
+              241
+            ],
+            [
+              358,
+              273
+            ],
+            [
+              359,
+              308
+            ],
+            [
+              360,
+              306
+            ],
+            [
+              361,
+              333
+            ],
+            [
+              362,
+              361
+            ],
+            [
+              363,
+              398
+            ],
+            [
+              364,
+              410
+            ],
+            [
+              365,
+              578
+            ],
+            [
+              366,
+              569
+            ],
+            [
+              367,
+              564
+            ],
+            [
+              368,
+              453
+            ],
+            [
+              369,
+              372
+            ],
+            [
+              370,
+              361
+            ],
+            [
+              371,
+              461
+            ],
+            [
+              372,
+              1038
+            ],
+            [
+              373,
+              1512
+            ],
+            [
+              374,
+              1824
+            ],
+            [
+              375,
+              1816
+            ],
+            [
+              376,
+              1679
+            ],
+            [
+              377,
+              1304
+            ],
+            [
+              378,
+              795
+            ],
+            [
+              379,
+              440
+            ],
+            [
+              380,
+              257
+            ],
+            [
+              381,
+              109
+            ],
+            [
+              382,
+              82
+            ],
+            [
+              383,
+              37
+            ],
+            [
+              384,
+              45
+            ],
+            [
+              385,
+              25
+            ],
+            [
+              386,
+              20
+            ],
+            [
+              387,
+              24
+            ],
+            [
+              388,
+              17
+            ],
+            [
+              389,
+              20
+            ],
+            [
+              390,
+              14
+            ],
+            [
+              391,
+              13
+            ],
+            [
+              392,
+              20
+            ],
+            [
+              393,
+              28
+            ],
+            [
+              394,
+              22
+            ],
+            [
+              395,
+              23
+            ],
+            [
+              396,
+              21
+            ],
+            [
+              397,
+              20
+            ],
+            [
+              398,
+              22
+            ],
+            [
+              399,
+              24
+            ],
+            [
+              400,
+              21
+            ],
+            [
+              401,
+              17
+            ],
+            [
+              402,
+              29
+            ],
+            [
+              403,
+              18
+            ],
+            [
+              404,
+              11
+            ],
+            [
+              405,
+              14
+            ],
+            [
+              406,
+              16
+            ],
+            [
+              407,
+              11
+            ],
+            [
+              408,
+              20
+            ],
+            [
+              409,
+              7
+            ],
+            [
+              410,
+              11
+            ],
+            [
+              411,
+              13
+            ],
+            [
+              412,
+              10
+            ],
+            [
+              413,
+              12
+            ],
+            [
+              414,
+              9
+            ],
+            [
+              415,
+              13
+            ],
+            [
+              416,
+              15
+            ],
+            [
+              417,
+              13
+            ],
+            [
+              418,
+              20
+            ],
+            [
+              419,
+              14
+            ],
+            [
+              420,
+              24
+            ],
+            [
+              421,
+              16
+            ],
+            [
+              422,
+              13
+            ],
+            [
+              423,
+              10
+            ],
+            [
+              424,
+              14
+            ],
+            [
+              425,
+              24
+            ],
+            [
+              426,
+              13
+            ],
+            [
+              427,
+              17
+            ],
+            [
+              428,
+              14
+            ],
+            [
+              429,
+              14
+            ],
+            [
+              430,
+              9
+            ],
+            [
+              431,
+              8
+            ],
+            [
+              432,
+              16
+            ],
+            [
+              433,
+              11
+            ],
+            [
+              434,
+              8
+            ],
+            [
+              435,
+              6
+            ],
+            [
+              436,
+              6
+            ],
+            [
+              437,
+              8
+            ],
+            [
+              438,
+              8
+            ],
+            [
+              439,
+              8
+            ],
+            [
+              440,
+              8
+            ],
+            [
+              441,
+              15
+            ],
+            [
+              442,
+              11
+            ],
+            [
+              443,
+              10
+            ],
+            [
+              444,
+              18
+            ],
+            [
+              445,
+              16
+            ],
+            [
+              446,
+              28
+            ],
+            [
+              447,
+              13
+            ],
+            [
+              448,
+              24
+            ],
+            [
+              449,
+              21
+            ],
+            [
+              450,
+              30
+            ],
+            [
+              451,
+              20
+            ],
+            [
+              452,
+              30
+            ],
+            [
+              453,
+              28
+            ],
+            [
+              454,
+              26
+            ],
+            [
+              455,
+              22
+            ],
+            [
+              456,
+              28
+            ],
+            [
+              457,
+              27
+            ],
+            [
+              458,
+              18
+            ],
+            [
+              459,
+              24
+            ],
+            [
+              460,
+              13
+            ],
+            [
+              461,
+              23
+            ],
+            [
+              462,
+              16
+            ],
+            [
+              463,
+              20
+            ],
+            [
+              464,
+              10
+            ],
+            [
+              465,
+              2
+            ],
+            [
+              466,
+              3
+            ],
+            [
+              467,
+              2
+            ],
+            [
+              468,
+              2
+            ],
+            [
+              473,
+              1
+            ],
+            [
+              475,
+              1
+            ],
+            [
+              477,
+              1
+            ],
+            [
+              478,
+              1
+            ],
+            [
+              486,
+              1
+            ],
+            [
+              502,
+              1
+            ],
+            [
+              503,
+              1
+            ],
+            [
+              508,
+              1
+            ],
+            [
+              517,
+              1
+            ],
+            [
+              521,
+              2
+            ],
+            [
+              524,
+              1
+            ],
+            [
+              529,
+              1
+            ],
+            [
+              531,
+              1
+            ],
+            [
+              547,
+              1
+            ],
+            [
+              554,
+              1
+            ]
+          ],
+          "sourceReportSha256": "946ca2e4457eec76507de2e56913d3cc854a7eafd4106af26be8aafeb0d9f253"
+        }
+      },
+      "osVersion": "27.0.1",
+      "memory": {
+        "lifetimePhysicalFootprintPeak": 43894696,
+        "processPeakMinusBaselineCurrentUpper": 20250672,
+        "productionNativeIvarBytes": 2194936,
+        "countedNativeBytesAtActualRate": 13993408,
+        "countedNativeBytes192k": 24625952,
+        "bufferDeltaActualTo192k": 10632544,
+        "conservative192kProjectionBytes": 33405808,
+        "conservative192kProjectionWithin32MiB": true,
+        "projectionScope": "Process lifetime peak minus post-require baseline current footprint, plus production module ivars (potential double count of lazily resident pages) and known native buffer delta. Includes runtime/bridge/diagnostic effects. This is an estimate; 192 kHz hardware/driver behavior was not measured.",
+        "baselinePhysicalFootprintBytes": 23644024,
+        "pressure": {
+          "stepsPerSequence": 512,
+          "notesPerStep": 32,
+          "acceptedEdits": 120,
+          "rejectedEdits": 0
+        },
+        "recoveryStatus": "passed-controlled-production-recovery-path",
+        "baselineResidentBytes": 82001920,
+        "residentHighWaterBytes": 125403136,
+        "residentHighWaterIncreaseBytes": 43401216,
+        "residentIncreaseWithin32MiB": false,
+        "metricDistinction": "Native allocation accounting and charged physical footprint are reported separately from resident high-water, which also includes clean executable/shared mappings. No whole-process RSS <=32MiB or physical192kHz hardware measurement is claimed.",
+        "pressureOnly192kProjectionBytes": 33078152
+      },
+      "controlledStreamRecovery": {
+        "passed": true,
+        "cycles": 10,
+        "scope": "AVAudioEngine pause followed by unchanged production resumeAudioEngineAfterRouteChange helper; no hardware route change or OS setting change",
+        "transportIdentityPreserved": true,
+        "effectsAllocationSizePreserved": true,
+        "allFourSequencesPlayingAfterEveryResume": true,
+        "activeVoicesAfterEveryResume": [
+          32,
+          32,
+          32,
+          32,
+          32,
+          32,
+          32,
+          32,
+          32,
+          32
+        ],
+        "lifetimePhysicalFootprintPeak": 44222352,
+        "newLifetimePeakDuringRecovery": false,
+        "afterShutdown": {
+          "virtualSize": 475656011776,
+          "kernelResult": 0,
+          "physFootprint": 26167208,
+          "thermalState": 0,
+          "residentSize": 91783168,
+          "physFootprintPeak": 44222352,
+          "nativeModuleIvarBytes": 2211360,
+          "residentPeak": 100483072,
+          "telemetryStructBytes": 16816
+        }
+      }
+    }
+  },
+  "frontier": {
+    "status": "android-headphone-distortion-investigation",
+    "evidence": "frontier-physical-validation.json",
+    "devicesMeasured": [
+      "iPad (9th generation)",
+      "Android CPH2639"
+    ],
+    "scenariosWithinMatchedPresentationFrameCriteria": [
+      "Arcade",
+      "simulation20"
+    ],
+    "simulation80": "Strict equivalent-load coverage below50% on both devices; not accepted under predeclared matching rule.",
+    "androidAudio": "Backend xruns67/88 and callback peaks3.07/3.19 times deadline in the two simulation80 Audio-on phases.",
+    "androidRendererElapsedWork": "Matched simulation20 p95-of-window-p95 elapsed+6.91%; investigated but causal attribution unresolved. This is not global thread-CPU p95 or direct eglSwap timing.",
+    "limits": [
+      "Native renderer elapsed-work and actual presentation interval are distinct metrics.",
+      "Simulation population differences restrict causal interpretation; no claimed audio-driven FPS improvement.",
+      "Subjective clean listening does not override measured backend xruns."
+    ]
+  },
+  "nativeMemoryAccounting192k": {
+    "androidBytes": 24649840,
+    "iosBytes": 24625952,
+    "scope": "Android renderer host allocation accounting and iOS native allocation accounting for buffers/transport/voice/limiter state; ABI/allocator/runtime differences and complete physical process/recovery peaks are not bounded.",
+    "physicalPressureResult": "iPad process/bridge pressure measured at44100Hz; conservative charged-footprint/native-buffer projection33405808B at192k including controlled recovery peaks; pressure-only projection33078152B. Neither is a hardware192k measurement or whole-process RSS bound."
+  },
+  "listening": {
+    "completed": false,
+    "observations": [
+      "Cesar described the initial iPad simulation80 Audio on demonstration positively. This is not acceptance of every sound, category-isolation case or both platforms.",
+      "Cesar confirmed clean audio in the manual iPad Sim80 Audio-on diagnostic.",
+      "Cesar confirmed clean audio in the manual Android Sim80 Audio-on diagnostic; technical backend xruns remain a separate failed result.",
+      "Correction after headphone comparison: Cesar reports Android Sim80 saturation with many explosions; iPad remains clean. Android listening acceptance is withdrawn pending diagnosis."
+    ],
+    "ipadSimulation80": {
+      "status": "accepted-by-Cesar",
+      "date": "2026-10-23",
+      "app": "Isolated Frontier manual diagnostic",
+      "scenario": "Sim80, Audio on, approximately30seconds",
+      "reply": "Se escucha limpio",
+      "questionScope": [
+        "continuous motor",
+        "explosions",
+        "fanfares",
+        "dropouts",
+        "clicks",
+        "saturation"
+      ],
+      "scopeLimit": "Applies to this iPad scenario only; Android and other sound/spatial/category cases remain separate."
+    },
+    "androidSimulation80": {
+      "status": "not-accepted-headphone-distortion",
+      "date": "2026-10-23",
+      "scenario": "Sim80 with many explosions, headphones",
+      "latestObservation": "Android sounds saturated; iPad does not in the same scenario.",
+      "supersedes": "Earlier clean Android manual listening reply.",
+      "nextDiagnostic": "Bounded callback CPU/wall and onset profiling during actual Sim80; private artifact prepared, physical capture pending.",
+      "samePcmComparison": {
+        "liveXruns": 89,
+        "replayXruns": 0,
+        "humanObservation": "Live saturated; replay very little or none.",
+        "scope": "Combined live physics and DSP versus exact captured PCM on an empty engine; not DSP-only attribution."
+      }
+    }
+  },
+  "pending": [
+    "Diagnose and correct Android Sim80 delivery failure; same-PCM replay completed, actual-game callback CPU/wall attribution pending",
+    "Android maximum-load render criterion failed on CPH2639; controlled600-second acceptance not started",
+    "Latest-source oneVoice host bypass total-time screen remains above2% after investigation",
+    "Whole-process192k memory bound remains unestablished; native accounting/rate projections have limited scopes",
+    "Android simulation20 renderer elapsed-work increase remains unresolved after investigation",
+    "Strict simulation80 equivalent-load coverage inconclusive on both devices",
+    "Remaining listening cases beyond the accepted manual Sim80 motor/explosion/fanfare case"
+  ],
+  "publication": {
+    "push": false,
+    "release": false
+  },
+  "nativeSourceCommit": "87b2c3354f182c5742cba84775b075552c80572c"
+}

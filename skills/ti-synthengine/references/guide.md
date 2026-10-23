@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation from the reviewed source tree at `937e774db7c5a924c9162cf0bbd01cb546754231` (2026-10-22); implementation and documentation are committed. Upstream `documentation/guide.md` SHA-256: `2e9e3af349f7c24b98b21475897d7aec4deeca0d7130448914804651aa96ccfd`.
+> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at reviewed local commit `5f9bf05ce683794449a49972a963460e6760b07a` (2026-10-23); this synchronization does not publish that commit or a release. Upstream `documentation/guide.md` SHA-256: `46f03434db01a82b3592073f3d984fd2c6988993d5bd316caf1e9fc05f2fc1c9`.
 
 # Guide
 
@@ -20,8 +20,8 @@ Install TiSynthEngine, start it after layout settles, and release its native aud
 - [Settle, filter and modulate](#settle-filter-and-modulate)
 - [Shape noise and waveforms](#shape-noise-and-waveforms)
 - [Play simultaneous notes](#play-simultaneous-notes)
-- [Play a pattern](#play-a-pattern)
-- [Know when a pattern ends](#know-when-a-pattern-ends)
+- [Play a sequence](#play-a-sequence)
+- [Know when a sequence ends](#know-when-a-sequence-ends)
 - [Master level and stopping](#master-level-and-stopping)
 - [Output route changes](#output-route-changes)
 - [Integrate binaural in a 2D app](#integrate-binaural-in-a-2d-app)
@@ -75,7 +75,7 @@ var startTimer = null
 function startAudio () {
   startTimer = null
   win.removeEventListener('postlayout', onPostLayout)
-  running = synth.startEngine({
+  running = synth.start({
     maxVoices: 16,
     mixingProfile: 'conservative',
     audioSession: 'ambient'
@@ -108,7 +108,7 @@ win.addEventListener('close', closeAudio)
 win.open()
 ```
 
-Use one owner for the engine. Start it once, pass a small audio service to the screens that need it, and call `shutdown()` from the owner. While the engine is running, another valid `startEngine()` call returns `true` and leaves the existing options in effect. Changing voice capacity, profile or session policy requires `shutdown()` and a new start. This example selects `ambient` for game/UI audio; the default remains `playback`. Android validates the session policy and leaves output unchanged.
+Use one owner for the engine. Start it once, pass a small audio service to the screens that need it, and call `shutdown()` from the owner. While the engine is running, another valid `start()` call returns `true` and leaves the existing options in effect. Changing voice capacity, profile or session policy requires `shutdown()` and a new start. This example selects `ambient` for game/UI audio; the default remains `playback`. Android validates the session policy and leaves output unchanged.
 
 ## Detect optional beta capabilities
 
@@ -135,28 +135,34 @@ Release on touch end and cancellation as well as ordinary key up. Retry a reject
 
 ## Choose the musical transport
 
-| Need | API |
-| --- | --- |
-| One finite event, sweep, or atomic fixed-duration chord | `playTone` / `playChord` |
-| Existing patterns with note values and arbitrary per-step milliseconds | `playPattern`, platform timer scheduling |
-| Precise musical steps, looping chords, separate gates, swing or arpeggios | `playSequence`, native sample-clock scheduling |
-| Duration follows input or gameplay state | `noteOn`, `updateVoice`, `noteOff` |
+Use `playSequence` for all successive native sounds. `playTone` and `playChord` handle independent timed events; `noteOn`/`noteOff` hold a sound for interaction. Start with `maxSequences: 1…4` to preallocate independent sequence capacity. All use the same pool of up to 32 voices.
 
-The native transport uses 1 to 512 sixteenth-note steps, each with `notes: [60, 64, 67]` (integer MIDI 12 to 119) or `rest: true`. A gate from 0.01 to 1 sets release onset within the swung step. Voice shaping belongs in root `voice`; per-step `overrides` merge into it. Native sequence steps do not accept pattern `duration`, `noteValue` or sweep-end keys. There are no ties or independent tracks. The [sequence example](advanced-examples.md#native-sequence-with-chords-and-edits) shows playback, edits, polling and cleanup.
+Store the positive identifier returned by `playSequence`, and include it in each update, stop or state query. 0 rejects publication. Three banks per sequence publish complete edits atomically. Structural edits enter at the next step; swing at the next pair. `setTempo({ bpm })` applies at the next block, preserving beat position. Beat sequences follow it; ms sequences keep fixed times. `stopSequence({ sequenceId })` releases only that owner's voices and leaves effect tails. A retired identifier returns null from `getSequenceState`.
 
-`playSequence` resets musical position and starts the traversal again; `updateSequence` edits the last accepted config without restarting a stopped transport. BPM applies at the next audio block without resetting musical position; structural edits apply at the next step, and swing at the next pair. Root/voice edits merge, while a supplied `steps` array replaces all steps. If no configuration bank or publication space is free, the complete edit is rejected. Keep the previous accepted state and retry outside render. Use the revision from `getSequenceState` to see what the callback has applied.
+```javascript
+synth.setTempo({ bpm: 112 })
+var sequenceId = synth.playSequence({
+  stepDuration: 0.5, swing: 0.12, bus: 'music',
+  voice: { waveType: WAVE.SQUARE, volume: 0.55 },
+  steps: [{ notes: [60] }, { notes: [64], overrides: { pan: -0.4, panEnd: 0.4 } },
+    { rest: true }, { notes: [67], duration: 1, length: 0.8 }]
+})
+if (sequenceId === 0) throw new Error('Sequence rejected')
+// Stop this owner without affecting unrelated voices:
+synth.stopSequence({ sequenceId: sequenceId })
+```
 
-`stopSequence` releases only its own voices; held keyboard IDs and unrelated tones remain. Check Boolean acceptance. The module exposes one musical transport: `playPattern` and `playSequence` cancel each other's future events. The timer pattern reports replacement through `patternend`; native transport has no completion event. UI polling can show `playing` and original step index, but must not trigger note timing. `shutdown` cancels both scheduling paths.
+See [the full sequence contract](api.md#native-sequence-transport) for length, gate, variable durations, arpeggios, revisions and capacity rejection.
 
 ## Add master effects
 
 The native chain is voices, fixed input gain, chorus, ping-pong delay, stereo Schroeder reverb, master volume, optional saturation, then the final limiter. The initial `inputGain` is 1 and chorus/delay/reverb/saturation are disabled. New notes have no extra LFOs unless requested. This preserves default render behavior without making effects exclusive to instruments or Studio.
 
-Chorus adds gentle stereo movement; delay adds free or tempo-synced echoes; reverb adds a damped room-like tail. Saturation is an explicitly enabled timbre change with drive 1 to 4, not automatic output protection. Every processor acts on the whole mix: there are no per-voice sends or separate music and effects buses. For game cues, choose a context where the whole mix should receive that processing or close effect input before returning to combat.
+Chorus adds stereo movement, delay adds free or synchronized echoes, and reverb adds a damped tail. Saturation is optional creative drive. Select processed categories with `applyTo: ['music', 'ambience']`; a voice's explicit `effectSend` overrides that selection. One chain processes the selected share and one final limiter protects the recombined output.
 
-`setMasterProcessing` merges partial updates, validates the entire result and returns publication acceptance. Continuous controls ramp over 10 ms. Disabling an effect closes input gradually and keeps its tail, bounded to 30 seconds with a final fade, then restores exact bypass. It does not undo a non-unity input gain. `stopAll` invalidates histories and stops the native sequence; `shutdown` also cancels timer patterns and frees the stream/buffers. See the [processing example](advanced-examples.md#chorus-delay-reverb-and-creative-saturation) and [field ranges](api.md#setmasterprocessingoptions).
+`setMasterProcessing` merges partial updates, validates the entire result and returns publication acceptance. Continuous controls ramp over 10 ms. Disabling an effect closes input gradually and keeps its tail, bounded to 30 seconds with a final fade, then restores exact bypass. It does not undo a non-unity input gain. `stopAll` invalidates histories and stops the native sequence; `shutdown` stops the stream and frees its buffers. See the [processing example](advanced-examples.md#chorus-delay-reverb-and-creative-saturation) and [field ranges](api.md#setmasterprocessingoptions).
 
-Delay and LFO sync follow native transport BPM (initially 120), not `playPattern` BPM or an app timer. The two extra voice LFOs target filter cutoff, square PWM or sine FM, with sine/triangle waves. They are independent of `lfoFreq`/`lfoDepth` pitch vibrato. See [two LFOs](advanced-examples.md#two-voice-lfos).
+Delay and LFO sync follow global `setTempo` (initially 120); free settings retain milliseconds or hertz. The two extra voice LFOs target filter cutoff, square PWM or sine FM, with sine/triangle waves. They are independent of `lfoFreq`/`lfoDepth` pitch vibrato. See [two LFOs](advanced-examples.md#two-voice-lfos).
 
 ## Play the first sound
 
@@ -353,53 +359,33 @@ synth.playChord({
 })
 ```
 
-## Play a pattern
-
-A pattern contains 1 to 512 object steps. Each step must have exactly one of `note`, `frequency` or `rest: true`.
+## Play a sequence
 
 ```javascript
-synth.playPattern({
-  bpm: 126,
-  swing: 0.1,
-  noteValue: '8n',
-  waveType: contract.waveTypes.SQUARE,
-  steps: [
-    { note: 'C4' },
-    { note: 'E4' },
-    { rest: true },
-    { note: 'G4', noteValue: '4n', pan: 0.5 }
-  ]
+synth.setTempo({ bpm: 112 })
+var sequenceId = synth.playSequence({
+  stepDuration: 0.5, swing: 0.12, bus: 'music',
+  voice: { waveType: WAVE.SQUARE, volume: 0.55 },
+  steps: [{ notes: [60] }, { notes: [64], overrides: { pan: -0.4, panEnd: 0.4 } },
+    { rest: true }, { notes: [67], duration: 1, length: 0.8 }]
 })
+if (sequenceId === 0) throw new Error('Sequence rejected')
+// Stop this owner without affecting unrelated voices:
+synth.stopSequence({ sequenceId: sequenceId })
 ```
 
-Step timing is chosen in this order: step `duration`, step `noteValue`, pattern `noteValue`, pattern `stepDuration`, then the 100 ms default. A step also inherits the pattern's envelope, decay, sustain, volume, waveform, pan, sweep, vibrato, noise, filter, resonant filter, FM, detune, pulse-width, wavetable and quantization options. Values set on the step override the inherited value.
+## Know when a sequence ends
 
-Only one pattern scheduler is active. Starting another pattern cancels the pending steps of the previous pattern. It does not stop voices that have already started.
-
-## Know when a pattern ends
-
-An accepted pattern produces one `patternend` event unless `shutdown()` discards it first. `completed` is `true` when the pattern reaches its natural end and `false` when a newer pattern or native sequence replaces it. Use it to chain jingles or to release state that follows a pattern.
+Listen for `sequenceend`, whose payload is `{ sequenceId, reason: 'completed' | 'stopped' }`. Filter by the owner ID before changing UI. The event is asynchronous and may arrive while a release or effect tail remains audible. For a precise next attack, place it in the same native sequence; event chaining crosses JavaScript delivery latency. Remove the listener during owner cleanup. Identifiers survive internal slot reuse without referring to the new sequence.
 
 ```javascript
-function onPatternEnd (event) {
-  if (event.completed) playNextJingle()
+function onSequenceEnd (event) {
+  if (event.sequenceId === sequenceId) Ti.API.info(event.reason)
 }
-
-synth.addEventListener('patternend', onPatternEnd)
+synth.addEventListener('sequenceend', onSequenceEnd)
+// During owner cleanup:
+synth.removeEventListener('sequenceend', onSequenceEnd)
 ```
-
-The module keeps the listener across patterns, so it outlives the screen unless you remove it. Add it to the same cleanup that calls `shutdown()`:
-
-```javascript
-function closeAudio () {
-  synth.removeEventListener('patternend', onPatternEnd)
-  if (running) synth.shutdown()
-}
-```
-
-`shutdown()` discards a pending pattern without generating an event. Remove the listener and invalidate app-owned work during cleanup; an event already queued for JavaScript is not a cancellation mechanism. `stopAll()` generates no event and leaves future pattern steps scheduled.
-
-Sound can continue after the scheduler reports completion because of swing, callback timing and FIR draining. Only chain patterns while this owner controls the shared scheduler; events have no pattern identifier.
 
 ## Master level and stopping
 
@@ -414,7 +400,7 @@ Master volume is ramped to avoid a step in the output. `stopAll()` fades active 
 
 The native ports rebuild or resume their stream after headphones, Bluetooth or other output routes change. The note crossing the transition may end early; new notes can be played normally after the system settles. Do not restart the whole app for a route change.
 
-On iOS, `startEngine()` activates a `Playback` audio session by default. That ignores the silent switch and normally interrupts other audio. Pass `audioSession: 'ambient'` to respect the silent switch and mix with other apps; read [coexisting with other audio](recommendations.md#coexisting-with-other-audio) and test the final app on a device.
+On iOS, `start()` activates a `Playback` audio session by default. That ignores the silent switch and normally interrupts other audio. Pass `audioSession: 'ambient'` to respect the silent switch and mix with other apps; read [coexisting with other audio](recommendations.md#coexisting-with-other-audio) and test the final app on a device.
 
 ## Integrate binaural in a 2D app
 
@@ -446,7 +432,7 @@ If the limits are absent, disable the binaural switch and keep stereo playback. 
 | Height amplitude, 0 to 100%     | Scale each source's below/above coordinate; inactive in stereo mode.                        |
 | Master volume                   | Use `setVolume`; independent of direction and amplitude.                                    |
 
-Store these settings as app preferences; `startEngine` does not accept them, and they have no separate native methods. Keep the app's chosen defaults and saved preferences; the module does not impose a 100% slider default. Persist them in the app if they should survive restart. A switch change applies to newly submitted events, without restarting the engine or repositioning voices already playing.
+Store these settings as app preferences; `start` does not accept them, and they have no separate native methods. Keep the app's chosen defaults and saved preferences; the module does not impose a 100% slider default. Persist them in the app if they should survive restart. A switch change applies to newly submitted events, without restarting the engine or repositioning voices already playing.
 
 With both amplitude controls at 100%, screen positions map as follows:
 
@@ -539,21 +525,18 @@ if (!synth.playChord({
 })) Ti.API.warn('Spatial chord rejected')
 ```
 
-Pattern steps inherit coordinates from the root and can override either one. Remove conflicting stereo fields from both the root and every step; even `pan: 0` conflicts with a spatial coordinate. A step cannot opt out of inherited binaural by passing zero coordinates; use a pattern without spatial coordinates on its root for a mix of spatial and stereo steps.
+Sequence steps inherit coordinates from root `voice` and can override either one. Remove conflicting stereo fields from both root `voice` and every step override; even `pan: 0` conflicts with a spatial coordinate. A step cannot opt out of inherited binaural by passing zero coordinates; use a pattern without spatial coordinates in its root voice for a mix of spatial and stereo steps.
 
 ```javascript
-if (!synth.playPattern({
+if (!synth.playSequence({
+  timeUnit: 'ms',
   stepDuration: 300,
-  attack: 5,
-  release: 80,
-  volume: 0.3,
-  spatialX: 0,
-  spatialY: 1,
+  voice: { attack: 5, release: 80, volume: 0.3, spatialX: 0, spatialY: 1 },
   steps: [
-    { note: 'C4' },
-    { note: 'E4', spatialY: -1 },
+    { notes: [60] },
+    { notes: [64], overrides: { spatialY: -1 } },
     { rest: true },
-    { note: 'G4', spatialX: 1, spatialY: 0 }
+    { notes: [67], overrides: { spatialX: 1, spatialY: 0 } }
   ]
 })) Ti.API.warn('Spatial pattern rejected')
 ```
@@ -604,7 +587,7 @@ if (statsSupported) readStats()
 
 Integrate `stopDiagnostics()` into the existing owner's hide/background/close handlers, before shutdown. Resume polling only while the diagnostic view is active; do not add a second engine owner. Timing and output meters stay `null` until enabled and measured. Basic counters remain available when diagnostics are off. Android backend underrun/buffer/latency fields are best-effort and independent of that switch; iOS returns `null` for those backend fields. A zero underrun count does not prove clean sound.
 
-See the [complete field contract](api.md#getstats), [measurement limits](stats-performance.md) and [interactive statistics controls](https://github.com/macCesar/TiSynthEngine/blob/937e774db7c5a924c9162cf0bbd01cb546754231/example/README.md#statistics).
+See the [complete field contract](api.md#getstats), [measurement limits](stats-performance.md) and [interactive statistics controls](../assets/example/README.md#statistics).
 
 ## Next steps
 

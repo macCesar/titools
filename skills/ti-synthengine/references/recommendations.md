@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation from the reviewed source tree at `937e774db7c5a924c9162cf0bbd01cb546754231` (2026-10-22); implementation and documentation are committed. Upstream `documentation/recommendations.md` SHA-256: `f38ff8bd8d4b20620c0be250c813b2125a0c1102f2249a469f73fe59876bd4cd`.
+> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at reviewed local commit `5f9bf05ce683794449a49972a963460e6760b07a` (2026-10-23); this synchronization does not publish that commit or a release. Upstream `documentation/recommendations.md` SHA-256: `62ea42f2d53eb8661c081a8ed19100db5590227f41fb8b110ee9450447e38289`.
 
 # Recommendations
 
@@ -19,7 +19,7 @@ For keys or pads a user can trigger freely, keep each event around 0.4 to 0.7 un
 | Low pitches or distortion from a small phone speaker | `speakerSafe`  |
 | The app performs its own strict gain staging         | `raw`          |
 
-The profile is fixed for the stream. Changing it requires `shutdown()` and a new `startEngine()` call, so it should not be a live sound-design control.
+The profile is fixed for the stream. Changing it requires `shutdown()` and a new `start()` call, so it should not be a live sound-design control.
 
 If a phone buzzes under `speakerSafe`, lower the event volume or raise the pitch. Small drivers can distort acoustically even when the digital output is well below its ceiling.
 
@@ -51,7 +51,7 @@ On iOS, the audio session is app-wide and the last component to configure it win
 A game that should respect the silent switch and let other apps' music keep playing starts the engine with the ambient session:
 
 ```javascript
-synth.startEngine({ audioSession: 'ambient' })
+synth.start({ audioSession: 'ambient' })
 ```
 
 The engine applies the category at startup and again when it resumes after a route change. Other native audio modules may still configure the app-wide session later. Test the final startup sequence, interruptions, background behavior and route changes on iOS. Android accepts the option and ignores it.
@@ -67,7 +67,7 @@ The resonant filter, FM and stacked detuned voices change level and spectrum mor
 - A resonance that keeps reaching the limiter makes the whole mix pump. Lower the volume or the Q before reaching for a different profile.
 - FM is not band-limited. A high carrier with a large `fmDepth` and `fmRatio` aliases. Keep carriers of bell-like sounds around 500 Hz, or lower the index.
 - A detuned stack is one voice per copy. Count them when choosing `maxVoices`. Protected profiles divide per-voice source gain by the square root of the event voice count; `raw` does not. Correlated or phase-aligned voices can still reinforce each other, so this is not a guarantee of constant loudness or peaks.
-- `patternend` follows the pattern scheduler. Use it to chain cues and release state, not to line up audio to the sample.
+- `sequenceend` reports completion or stopping by sequence identifier. Put contiguous notes into one sequence when sample timing matters; the event crosses JavaScript delivery latency.
 
 ## Validate values at the app boundary
 
@@ -114,21 +114,21 @@ Use the [integration guide](guide.md#integrate-binaural-in-a-2d-app) to convert 
 - Use `noteOn` with app-supplied IDs for individual release and compatible live updates. Detect the methods in beta binaries; timed events do not return voice handles.
 - Timed tones, chords and pattern steps last at most 60 seconds. Sustained `noteOn` voices last until release, replacement or shutdown.
 - The module synthesizes waveforms and does not play audio files.
-- One native sequence transport and one timer-based pattern API are available; starting either cancels future events of the other. There are no independent music tracks.
-- There is no completion event for a single note or chord. Patterns report their end through `patternend`, which is the only event the module emits.
+- One native transport supports up to four independent sequences, preallocated by `maxSequences`. All share at most 32 voices.
+- A single tone or chord has no completion event. Sequences emit `sequenceend` with their identifier and completed/stopped reason.
 - Voice capacity and mixing profile remain fixed until shutdown.
-- `playPattern` scheduling is timer-based. `playSequence` is sample-clock driven on a sixteenth-note grid, without arbitrary millisecond step lengths or ties.
+- Sequences run on the sample clock in beats or milliseconds. `duration` controls intervals; `length` independently controls note duration.
 - `lowPassHz` is a plain one-pole filter. The resonant filter has fixed 12 dB per octave and one exponential sweep; there is no filter envelope.
 - FM has one modulator and works only on `SINE`.
-- Binaural positions are fixed per event on a front plane; there is no per-voice movement, rear positioning, distance attenuation or head tracking. Output is two channels, without a multichannel 2.1/5.1 routing API.
-- Chorus, delay, reverb and optional saturation process one shared stereo master bus. There are no per-voice sends or separate category buses.
+- Binaural positions occupy a front plane. Spatial held voices support smooth live movement; there is no rear positioning, distance attenuation or head tracking. Output is two channels, without a multichannel 2.1/5.1 routing API.
+- One chorus/delay/reverb/saturation chain processes selected categories; per-voice sends override selection. It does not provide arbitrary routing or one processor per category.
 - The module provides generic synthesis primitives and does not emulate hardware cycle by cycle.
 
 Use a sample player or a dedicated music engine when a product needs streaming, sample loop points, audio-file decoding or multiple independent composition tracks. Use the native sequence transport for the supported musical grid.
 
 ## Use effects and held voices deliberately
 
-Use `noteOn` for a sound whose duration follows interaction, such as a key, motor or beam; release its ID on touch end, cancellation, pause or scene teardown. Use `playSequence` for a finite musical cue or repeating grid. Neither needs JavaScript to keep an already accepted note alive. Both share the same 32-slot maximum with collision and interface tones; held notes can be stolen, and an accepted `updateVoice` on a stolen ID is a no-op. There is no voice-finished event or priority reservation.
+Use `noteOn` for a sound whose duration follows interaction, such as a key, motor or beam; release its ID on touch end, cancellation, pause or scene teardown. Use `playSequence` for a finite musical cue or repeating grid. Neither needs JavaScript to keep an already accepted note alive. Both share the same 32-slot maximum with collision and interface tones; held notes can be stolen, and an accepted `updateVoice` on a stolen ID is a no-op. Optional priority 0-3 affects stealing; it reserves no voices. There is no voice-finished event.
 
 Keep chorus/delay/reverb mixes modest when dialogue or short game feedback must remain distinct. They process the whole mix, so enabling reverb for a victory chord also affects simultaneous shots and collisions. Use an isolated presentation context, or close effect input before returning to gameplay. Disabling effects lets tails drain for at most 30 seconds; use panic when immediate history invalidation is required. Start with saturation disabled and compare creative drive at matched levels. Do not use saturation as an automatic substitute for the final limiter.
 

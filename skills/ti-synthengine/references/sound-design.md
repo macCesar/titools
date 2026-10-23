@@ -1,8 +1,10 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation from the reviewed source tree at `937e774db7c5a924c9162cf0bbd01cb546754231` (2026-10-22); implementation and documentation are committed. Upstream `documentation/sound-design.md` SHA-256: `278b5bf3812ba72c773f5f67d817ea7780d8ab183ed92c79dca44c32c5d3015e`.
+> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at reviewed local commit `5f9bf05ce683794449a49972a963460e6760b07a` (2026-10-23); this synchronization does not publish that commit or a release. Upstream `documentation/sound-design.md` SHA-256: `dd543e07c825aaf67a0a5f85619088a8d02721a9d33dbf4579edf760dad3e262`.
 
 # Sound design with TiSynthEngine
 
 TiSynthEngine generates sound with oscillators, without recorded samples. Pitch, waveform, envelope, movement and level define each sound, from interface feedback and musical cues to alarms, retro effects and simple percussion.
+
+Additional [curated recipes](recipes.md) provide application sound and interaction variants.
 
 The examples assume the engine is running and use these constants:
 
@@ -104,19 +106,13 @@ synth.playTone({
 Try the built-in sources at a moderate level before choosing one:
 
 ```javascript
-;[WAVE.SINE, WAVE.SQUARE, WAVE.SAWTOOTH, WAVE.TRIANGLE, WAVE.NOISE]
-  .forEach(function (waveType, index) {
-    setTimeout(function () {
-      synth.playTone({
-        note: 'A4',
-        waveType: waveType,
-        duration: 450,
-        attack: 8,
-        release: 120,
-        volume: 0.65
-      })
-    }, index * 550)
-  })
+synth.playSequence({ timeUnit: 'ms', stepDuration: 550,
+  voice: { attack: 8, release: 120, volume: 0.65 },
+  steps: [WAVE.SINE, WAVE.SQUARE, WAVE.SAWTOOTH, WAVE.TRIANGLE, WAVE.NOISE]
+    .map(function (waveType) {
+      return { notes: [69], length: 330, overrides: { waveType: waveType } }
+    })
+})
 ```
 
 ## Filter, pulse width and quantization
@@ -314,7 +310,7 @@ Four separate `playTone` calls are four independent full-gain events. They are n
 
 ## Mixing profiles and limiter
 
-Choose the profile once in `startEngine()`:
+Choose the profile once in `start()`:
 
 | Profile        | Practical use                                                     |
 | -------------- | ----------------------------------------------------------------- |
@@ -391,18 +387,16 @@ synth.playChord({
 ### Two-tone alarm
 
 ```javascript
-synth.playPattern({
-  bpm: 150,
-  noteValue: '8n',
-  attack: 8,
-  release: 70,
-  volume: 0.55,
-  waveType: WAVE.SAWTOOTH,
+synth.setTempo({ bpm: 150 })
+synth.playSequence({
+  timeUnit: 'beats',
+  stepDuration: 0.5,
+  voice: { attack: 8, release: 70, volume: 0.55, waveType: WAVE.SAWTOOTH },
   steps: [
-    { note: 'A4' },
-    { note: 'E5' },
-    { note: 'A4' },
-    { note: 'E5' }
+    { notes: [69] },
+    { notes: [76] },
+    { notes: [69] },
+    { notes: [76] }
   ]
 })
 ```
@@ -410,45 +404,43 @@ synth.playPattern({
 ### Retro pickup
 
 ```javascript
-synth.playPattern({
-  bpm: 180,
+synth.setTempo({ bpm: 180 })
+synth.playSequence({
+  timeUnit: 'beats',
+  stepDuration: 0.25,
   swing: 0.06,
-  noteValue: '16n',
-  attack: 2,
-  release: 45,
-  volume: 0.5,
-  waveType: WAVE.SQUARE,
+  voice: { attack: 2, release: 45, volume: 0.5, waveType: WAVE.SQUARE },
   steps: [
-    { note: 'C5' },
-    { note: 'E5' },
-    { note: 'G5' },
-    { note: 'C6', noteValue: '8n' }
+    { notes: [72] },
+    { notes: [76] },
+    { notes: [79] },
+    { notes: [84], duration: 0.5 }
   ]
 })
 ```
 
-The first three steps use sixteenth notes and the last uses an eighth note. `release` fades each voice within that rhythmic length. The pattern root does not accept `duration`; a step `duration` replaces its rhythmic length as well as its voice length. There is no separate gate parameter.
+The first three intervals are sixteenth notes and the last is an eighth note. Gate sets when release begins; `length` overrides that note duration independently of the next attack.
 
 ### Noise percussion
 
 ```javascript
-synth.playPattern({
-  bpm: 112,
-  noteValue: '8n',
-  waveType: WAVE.NOISE,
-  volume: 0.34,
+synth.setTempo({ bpm: 112 })
+synth.playSequence({
+  timeUnit: 'beats',
+  stepDuration: 0.5,
+  voice: { waveType: WAVE.NOISE, volume: 0.34 },
   steps: [
-    { frequency: 220, attack: 1, decay: 65, sustain: 0, release: 55 },
+    { frequencies: [220], overrides: { attack: 1, decay: 65, sustain: 0, release: 55 } },
     { rest: true },
-    { frequency: 220, attack: 1, decay: 35, sustain: 0, release: 28 },
-    { frequency: 220, attack: 1, decay: 35, sustain: 0, release: 28 }
+    { frequencies: [220], overrides: { attack: 1, decay: 35, sustain: 0, release: 28 } },
+    { frequencies: [220], overrides: { attack: 1, decay: 35, sustain: 0, release: 28 } }
   ]
 })
 ```
 
 The steps keep the eighth-note grid while short decay and `sustain: 0` let each hit settle to silence inside its step.
 
-Noise steps still need `frequency` or `note` because every sounding pattern step follows the same shape. The pitch value is not used by the noise source.
+Noise steps still need `frequencies` or `notes` because every sounding pattern step follows the same shape. The pitch value is not used by the noise source.
 
 ### Filtered noise burst
 
@@ -632,13 +624,13 @@ function playAllSimonPads () {
 }
 ```
 
-See [Examples](examples.md) for complete code and [Recommendations](recommendations.md) for gain and device-testing advice. Additional [curated recipes](recipes.md) remain available.
+See [Examples](examples.md) for complete code and [Recommendations](recommendations.md) for gain and device-testing advice.
 
 ## Holding a sound and adding movement
 
 Choose a held voice when the ending follows a player action instead of a fixed duration: motor, charge beam, pad or the last chord of a ceremony. `noteOn` starts a positive app-owned ID; `noteOff` begins release from the current level, and compatible `updateVoice` edits ramp over 10 ms. Distinct IDs remain independent events with fixed gain. Reserve enough capacity for their releases and unrelated effects, and release on cancellation as well as ordinary key up. See the [held motor recipe](advanced-examples.md#sustained-game-motor) for retry/cleanup handling.
 
-A fanfare's melody benefits from `playSequence`: native sixteenth steps, chords, rests, gates, swing and pitch-ordered arpeggios do not depend on JavaScript firing each note. A long final release can ring over subsequent steps. This musical grid has no arbitrary millisecond lengths or ties; use a held chord when its duration must follow a presentation rather than that grid. See [transport usage](guide.md#choose-the-musical-transport).
+A fanfare can use beat or millisecond sequences with native chords, rests, gate, independent length, swing and pitch-ordered arpeggios. A long release can ring over later steps. Use held voices when release follows presentation or interaction. See [transport usage](guide.md#choose-the-musical-transport).
 
 The two additional voice LFOs move filter cutoff, square PWM or sine FM index using sine/triangle shapes. Cutoff movement creates slow breathing or rhythmic filtering; PWM adds changing harmonic color; a small FM-index modulation varies brightness. Free rates reach 20 Hz, and synced rates follow native transport tempo. These slots are separate from pitch vibrato. Avoid deep/high-rate modulation with strong resonance or high-frequency FM; safe parameter clamping does not guarantee a pleasant or alias-free sound. The [two-LFO example](advanced-examples.md#two-voice-lfos) shows a filtered PWM pad.
 
@@ -651,6 +643,6 @@ The two additional voice LFOs move filter cutoff, square PWM or sine FM index us
 | Stereo reverb | Damped comb/allpass reflections create a diffuse decay. | Decay 0.8 to 1.8 seconds, damping 0.5 to 0.7, mix 0.08 to 0.18. |
 | Optional saturation | Soft waveshaping adds harmonics and changes attack/timbre. | Drive 1.2 to 1.6 with a small blend; compare at matched levels. |
 
-All processors are off initially, with fixed input gain 1. Activate them explicitly through `setMasterProcessing` on a running engine; [copyable configuration](advanced-examples.md#chorus-delay-reverb-and-creative-saturation) and [exact ranges](api.md#setmasterprocessingoptions) are available. The shared chain affects every simultaneous sound. A subtle reverb can enrich a result chord, while many wet collisions can obscure short gameplay feedback. There are no per-voice sends or separate music/effects buses.
+All processors are off initially, with input gain 1. Enable one shared chain through `setMasterProcessing`; select `applyTo` categories such as `music` and `ambience` to keep explosions dry. Per-voice `effectSend` overrides that category selection. [Configuration](advanced-examples.md#chorus-delay-reverb-and-creative-saturation) and [exact ranges](api.md#setmasterprocessingoptions) explain chorus, delay, reverb and optional saturation.
 
 Disabling an effect closes its input gradually and drains the tail before exact bypass; it does not immediately erase its history. Panic invalidates histories. Saturation is a creative choice rather than automatic gain protection; the final limiter stays in place. Match dry/wet comparison levels and watch accumulated limiter reduction so a louder version does not win an A/B comparison merely by level. None of these effects makes a small speaker reproduce missing bass.

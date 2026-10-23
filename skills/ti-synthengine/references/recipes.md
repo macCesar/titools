@@ -110,24 +110,55 @@ were chosen for it.
 
 ### Three-note bonus cue
 
-Short ascending square notes read as collection or reward. A step's `duration`
-sets both its voice length and the time before the next step; it overrides
-`stepDuration` and `noteValue`. Explicit rests separate 95 ms notes by 110 ms.
+Short ascending square notes read as collection or reward. Native millisecond intervals preserve the 110 ms onset spacing; explicit `length` starts release early enough to preserve the original 95/95/130 ms total envelopes.
 
 ```javascript
-synth.playPattern({
-  attack: 2,
-  release: 30,
-  volume: 0.55,
-  waveType: WAVE.SQUARE,
-  steps: [
-    { frequency: 523.25, duration: 95 },
-    { rest: true, duration: 15 },
-    { frequency: 587.33, duration: 95 },
-    { rest: true, duration: 15 },
-    { frequency: 659.25, duration: 130 }
+const sequenceId = synth.playSequence({
+  "timeUnit": "ms",
+  "loop": false,
+  "swing": 0,
+  "voice": {
+    "attack": 2,
+    "release": 30,
+    "volume": 0.55,
+    "waveType": WAVE.SQUARE
+  },
+  "steps": [
+    {
+      "frequencies": [
+        523.25
+      ],
+      "duration": 95,
+      "length": 65,
+      "overrides": {}
+    },
+    {
+      "rest": true,
+      "duration": 15
+    },
+    {
+      "frequencies": [
+        587.33
+      ],
+      "duration": 95,
+      "length": 65,
+      "overrides": {}
+    },
+    {
+      "rest": true,
+      "duration": 15
+    },
+    {
+      "frequencies": [
+        659.25
+      ],
+      "duration": 130,
+      "length": 100,
+      "overrides": {}
+    }
   ]
 })
+if (!sequenceId) throw new Error('Sequence rejected')
 ```
 
 ### Fast four-note arpeggio
@@ -137,21 +168,64 @@ edge while reducing uncontrolled clicks. The 10 ms rests keep the first three
 40 ms notes on a 50 ms grid; the final note rings for 80 ms.
 
 ```javascript
-synth.playPattern({
-  attack: 5,
-  release: 15,
-  volume: 0.5,
-  waveType: WAVE.SQUARE,
-  steps: [
-    { frequency: 261.63, duration: 40 },
-    { rest: true, duration: 10 },
-    { frequency: 329.63, duration: 40 },
-    { rest: true, duration: 10 },
-    { frequency: 392, duration: 40 },
-    { rest: true, duration: 10 },
-    { frequency: 523.25, duration: 80 }
+const sequenceId = synth.playSequence({
+  "timeUnit": "ms",
+  "loop": false,
+  "swing": 0,
+  "voice": {
+    "attack": 5,
+    "release": 15,
+    "volume": 0.5,
+    "waveType": WAVE.SQUARE
+  },
+  "steps": [
+    {
+      "frequencies": [
+        261.63
+      ],
+      "duration": 40,
+      "length": 25,
+      "overrides": {}
+    },
+    {
+      "rest": true,
+      "duration": 10
+    },
+    {
+      "frequencies": [
+        329.63
+      ],
+      "duration": 40,
+      "length": 25,
+      "overrides": {}
+    },
+    {
+      "rest": true,
+      "duration": 10
+    },
+    {
+      "frequencies": [
+        392
+      ],
+      "duration": 40,
+      "length": 25,
+      "overrides": {}
+    },
+    {
+      "rest": true,
+      "duration": 10
+    },
+    {
+      "frequencies": [
+        523.25
+      ],
+      "duration": 80,
+      "length": 65,
+      "overrides": {}
+    }
   ]
 })
+if (!sequenceId) throw new Error('Sequence rejected')
 ```
 
 ### Rapid score ticks
@@ -161,23 +235,168 @@ release values make every 60 ms tone valid without relying on shortened
 defaults. A 10 ms rest after each tone places the ticks 70 ms apart.
 
 ```javascript
-const scoreSteps = []
-
-for (let index = 0; index < 10; index++) {
-  scoreSteps.push({
-    frequency: 1046.5,
-    duration: 60,
-    attack: 2,
-    release: 20
-  })
-  scoreSteps.push({ rest: true, duration: 10 })
-}
-
-synth.playPattern({
-  volume: 0.42,
-  waveType: WAVE.SQUARE,
-  steps: scoreSteps
+const sequenceId = synth.playSequence({
+  "timeUnit": "ms",
+  "loop": false,
+  "swing": 0,
+  "voice": {
+    "volume": 0.42,
+    "waveType": WAVE.SQUARE
+  },
+  "steps": [
+    {
+      "frequencies": [
+        1046.5
+      ],
+      "duration": 60,
+      "length": 40,
+      "overrides": {
+        "attack": 2,
+        "release": 20
+      }
+    },
+    {
+      "rest": true,
+      "duration": 10
+    },
+    {
+      "frequencies": [
+        1046.5
+      ],
+      "duration": 60,
+      "length": 40,
+      "overrides": {
+        "attack": 2,
+        "release": 20
+      }
+    },
+    {
+      "rest": true,
+      "duration": 10
+    },
+    {
+      "frequencies": [
+        1046.5
+      ],
+      "duration": 60,
+      "length": 40,
+      "overrides": {
+        "attack": 2,
+        "release": 20
+      }
+    },
+    {
+      "rest": true,
+      "duration": 10
+    },
+    {
+      "frequencies": [
+        1046.5
+      ],
+      "duration": 60,
+      "length": 40,
+      "overrides": {
+        "attack": 2,
+        "release": 20
+      }
+    },
+    {
+      "rest": true,
+      "duration": 10
+    },
+    {
+      "frequencies": [
+        1046.5
+      ],
+      "duration": 60,
+      "length": 40,
+      "overrides": {
+        "attack": 2,
+        "release": 20
+      }
+    },
+    {
+      "rest": true,
+      "duration": 10
+    },
+    {
+      "frequencies": [
+        1046.5
+      ],
+      "duration": 60,
+      "length": 40,
+      "overrides": {
+        "attack": 2,
+        "release": 20
+      }
+    },
+    {
+      "rest": true,
+      "duration": 10
+    },
+    {
+      "frequencies": [
+        1046.5
+      ],
+      "duration": 60,
+      "length": 40,
+      "overrides": {
+        "attack": 2,
+        "release": 20
+      }
+    },
+    {
+      "rest": true,
+      "duration": 10
+    },
+    {
+      "frequencies": [
+        1046.5
+      ],
+      "duration": 60,
+      "length": 40,
+      "overrides": {
+        "attack": 2,
+        "release": 20
+      }
+    },
+    {
+      "rest": true,
+      "duration": 10
+    },
+    {
+      "frequencies": [
+        1046.5
+      ],
+      "duration": 60,
+      "length": 40,
+      "overrides": {
+        "attack": 2,
+        "release": 20
+      }
+    },
+    {
+      "rest": true,
+      "duration": 10
+    },
+    {
+      "frequencies": [
+        1046.5
+      ],
+      "duration": 60,
+      "length": 40,
+      "overrides": {
+        "attack": 2,
+        "release": 20
+      }
+    },
+    {
+      "rest": true,
+      "duration": 10
+    }
+  ]
 })
+if (!sequenceId) throw new Error('Sequence rejected')
 ```
 
 ### Hovering craft
@@ -208,22 +427,140 @@ speaker. Each 120 ms tone has a fitted envelope (`10 + 100 <= 120`), followed
 by a 10 ms rest, so the pitch changes every 130 ms.
 
 ```javascript
-const warningSteps = []
-
-for (let pulse = 0; pulse < 5; pulse++) {
-  warningSteps.push({ frequency: 800, duration: 120 })
-  warningSteps.push({ rest: true, duration: 10 })
-  warningSteps.push({ frequency: 400, duration: 120 })
-  warningSteps.push({ rest: true, duration: 10 })
-}
-
-synth.playPattern({
-  attack: 10,
-  release: 100,
-  volume: 0.45,
-  waveType: WAVE.SQUARE,
-  steps: warningSteps
+const sequenceId = synth.playSequence({
+  "timeUnit": "ms",
+  "loop": false,
+  "swing": 0,
+  "voice": {
+    "attack": 10,
+    "release": 100,
+    "volume": 0.45,
+    "waveType": WAVE.SQUARE
+  },
+  "steps": [
+    {
+      "frequencies": [
+        800
+      ],
+      "duration": 120,
+      "length": 20,
+      "overrides": {}
+    },
+    {
+      "rest": true,
+      "duration": 10
+    },
+    {
+      "frequencies": [
+        400
+      ],
+      "duration": 120,
+      "length": 20,
+      "overrides": {}
+    },
+    {
+      "rest": true,
+      "duration": 10
+    },
+    {
+      "frequencies": [
+        800
+      ],
+      "duration": 120,
+      "length": 20,
+      "overrides": {}
+    },
+    {
+      "rest": true,
+      "duration": 10
+    },
+    {
+      "frequencies": [
+        400
+      ],
+      "duration": 120,
+      "length": 20,
+      "overrides": {}
+    },
+    {
+      "rest": true,
+      "duration": 10
+    },
+    {
+      "frequencies": [
+        800
+      ],
+      "duration": 120,
+      "length": 20,
+      "overrides": {}
+    },
+    {
+      "rest": true,
+      "duration": 10
+    },
+    {
+      "frequencies": [
+        400
+      ],
+      "duration": 120,
+      "length": 20,
+      "overrides": {}
+    },
+    {
+      "rest": true,
+      "duration": 10
+    },
+    {
+      "frequencies": [
+        800
+      ],
+      "duration": 120,
+      "length": 20,
+      "overrides": {}
+    },
+    {
+      "rest": true,
+      "duration": 10
+    },
+    {
+      "frequencies": [
+        400
+      ],
+      "duration": 120,
+      "length": 20,
+      "overrides": {}
+    },
+    {
+      "rest": true,
+      "duration": 10
+    },
+    {
+      "frequencies": [
+        800
+      ],
+      "duration": 120,
+      "length": 20,
+      "overrides": {}
+    },
+    {
+      "rest": true,
+      "duration": 10
+    },
+    {
+      "frequencies": [
+        400
+      ],
+      "duration": 120,
+      "length": 20,
+      "overrides": {}
+    },
+    {
+      "rest": true,
+      "duration": 10
+    }
+  ]
 })
+if (!sequenceId) throw new Error('Sequence rejected')
 ```
 
 ### Low heartbeat pair
@@ -234,30 +571,17 @@ phone speaker, try 180 and 160 Hz while preserving the rhythm.
 
 ```javascript
 function playHeartbeatPair () {
-  synth.playTone({
-    frequency: 90,
-    duration: 150,
-    attack: 10,
-    release: 120,
-    volume: 0.55,
-    waveType: WAVE.TRIANGLE
+  return synth.playSequence({ timeUnit: 'ms', loop: false,
+    voice: {waveType: WAVE.TRIANGLE, attack: 10, release: 120, volume: 0.55},
+    steps: [
+      {frequencies: [90], duration: 220, length: 30},
+      {frequencies: [80], duration: 150, length: 30, overrides: {volume: 0.48}}
+    ]
   })
-
-  setTimeout(() => {
-    synth.playTone({
-      frequency: 80,
-      duration: 150,
-      attack: 10,
-      release: 120,
-      volume: 0.48,
-      waveType: WAVE.TRIANGLE
-    })
-  }, 220)
 }
 ```
 
-If this becomes a repeating effect, own and cancel its JavaScript timer; see
-[Cancellable repetition](#cancellable-repetition).
+The native clock owns both attacks. Keep the returned ID to stop only this cue.
 
 ## Playable xylophone
 
@@ -432,8 +756,7 @@ function midiToHz (midi) {
 }
 ```
 
-Detuning needs no conversion: `detune` on a tone or pattern and `detunes` on a
-chord take cents, one hundredth of a semitone.
+Detuning needs no conversion: `detune` on a tone or sequence root and `detunes` on a chord take cents, one hundredth of a semitone.
 
 ### Build a wide layered chord
 
@@ -522,62 +845,55 @@ it is not proof that a single chord is defective.
 For a musical pulse, keep the event shorter than its period:
 
 ```javascript
-let pulseTimer = null
-let pulseGeneration = 0
-
+let pulseSequenceId = 0
+let pulseRequested = false
+let pulseStopping = false
+function publishChordPulse () {
+  pulseSequenceId = synth.playSequence({timeUnit: 'ms', stepDuration: 260, loop: true,
+    voice: {attack: 10, release: 60, volume: 0.42, waveType: WAVE.SINE, pan: 0},
+    steps: [{frequencies: buildLayeredFrequencies(4), length: 120}]
+  })
+  if (!pulseSequenceId) throw new Error('Chord pulse rejected')
+}
+function requestPulseStop () {
+  if (!pulseSequenceId || pulseStopping) return
+  pulseStopping = true
+  if (!synth.stopSequence({sequenceId: pulseSequenceId})) throw new Error('Pulse stop rejected')
+}
 function stopChordPulse () {
-  pulseGeneration++
-  if (pulseTimer !== null) {
-    clearTimeout(pulseTimer)
-    pulseTimer = null
-  }
-  synth.stopAll()
+  pulseRequested = false
+  requestPulseStop()
 }
-
 function startChordPulse () {
-  stopChordPulse()
-  const generation = pulseGeneration
-
-  function tick () {
-    if (generation !== pulseGeneration) return
-
-    synth.playChord({
-      frequencies: buildLayeredFrequencies(4),
-      duration: 180,
-      attack: 10,
-      release: 60,
-      volume: 0.42,
-      waveType: WAVE.SINE,
-      pans: buildSymmetricPans(4, 0.7)
-    })
-
-    pulseTimer = setTimeout(tick, 260)
-  }
-
-  tick()
+  pulseRequested = true
+  if (pulseSequenceId) requestPulseStop()
+  else publishChordPulse()
 }
+function onPulseEnd (event) {
+  if (event.sequenceId !== pulseSequenceId) return
+  pulseSequenceId = 0
+  pulseStopping = false
+  if (pulseRequested) publishChordPulse()
+}
+synth.addEventListener('sequenceend', onPulseEnd)
 ```
+
+This repeated chord uses one centered native sequence. The one-off layered chord above retains its individual stereo pans. `length: 120` plus 60 ms release preserves the 180 ms envelope while attacks remain 260 ms apart.
 
 ### Cancellable repetition
 
-`stopAll()` silences native voices, but it cannot cancel JavaScript timers that
-will launch new calls later. Every repeating UI or game effect therefore needs
-an owner-controlled cancellation mechanism. The generation token above guards
-against a callback that was already queued when `clearTimeout()` ran.
-
-When the owning window closes:
+Every repeating sound has an identified native owner. Repeated start requests coalesce until the matching retirement event frees its slot. Stop its sequence ID and cancel pending restarts when its window closes; no JavaScript timer schedules subsequent notes.
 
 ```javascript
 function cleanupAudio () {
   stopChordPulse()
+  synth.removeEventListener('sequenceend', onPulseEnd)
   synth.shutdown()
 }
-
 win.addEventListener('close', cleanupAudio)
 ```
 
-Do not call `shutdown()` from a child control if another visible screen owns
-the shared engine.
+Call `shutdown()` only from the screen or service that owns the shared engine.
 
 ## Expressive envelopes, filters and FM
 
@@ -719,28 +1035,26 @@ synth.playChord({
 })
 ```
 
-### Chaining after a pattern
+### Chaining after a sequence
 
-`patternend` fires once for every accepted pattern. `completed` is true when it
-ran to its end and false when a newer pattern replaced it, so only the first
-case should start the next cue. `stopAll()` and `shutdown()` fire nothing.
+`sequenceend` carries the accepted `sequenceId` and a reason of `completed` or `stopped`. Only the completed event for this owner should trigger the outro; a delayed event for another ID must not affect it.
 
 ```javascript
-function onPatternEnd (event) {
-  if (event.completed) playOutroCue()
+let cueSequenceId = 0
+function onSequenceEnd (event) {
+  if (event.sequenceId !== cueSequenceId) return
+  cueSequenceId = 0
+  if (event.reason === 'completed') playOutroCue()
 }
-
-synth.addEventListener('patternend', onPatternEnd)
-
-synth.playPattern({
-  noteValue: '8n',
-  waveType: WAVE.SQUARE,
-  volume: 0.5,
-  steps: [{ note: 'C5' }, { note: 'E5' }, { note: 'G5' }, { note: 'C6' }]
+synth.addEventListener('sequenceend', onSequenceEnd)
+cueSequenceId = synth.playSequence({timeUnit: 'beats', stepDuration: 0.5, loop: false,
+  voice: {waveType: WAVE.SQUARE, volume: 0.5},
+  steps: [{notes: [72]}, {notes: [76]}, {notes: [79]}, {notes: [84]}]
 })
-
-function cleanupPatternEvents () {
-  synth.removeEventListener('patternend', onPatternEnd)
+if (!cueSequenceId) throw new Error('Cue rejected')
+function cleanupSequenceEvents () {
+  if (cueSequenceId) synth.stopSequence({sequenceId: cueSequenceId})
+  synth.removeEventListener('sequenceend', onSequenceEnd)
 }
 ```
 
@@ -785,16 +1099,14 @@ Before returning or shipping a variation:
 
 - use exactly one pitch source for a tone and exactly one pitch array for a
   chord;
-- include a pitch field on every sounding pattern step, including noise;
-- treat each resolved step duration as both its voice length and timeline
-  advance; insert explicit rests when a shorter note needs a longer interval;
-- verify `attack < duration` and `release <= duration - attack` for every
-  explicit event or step, and `attack + decay <= duration` when a decay is set;
+- use exactly one MIDI `notes` array, `frequencies` array or `rest: true` per native sequence step, including noise;
+- keep `duration` as the onset interval and `length` as the release onset; both use the sequence time unit;
+- verify `attack < duration`, `release <= duration - attack` and `attack + decay <= duration` for timed tones/chords; sequence ADSR remains in milliseconds and has no interval budget;
 - give `sustain` below 1 a `decay`, give filter fields a `filterType`, and give
   FM a sine carrier and a depth;
 - keep all numbers finite and integer-only fields integral;
 - use `WAVE` constants, not copied numeric waveform values;
-- check Boolean results at important control boundaries;
+- check Boolean acceptance and positive sequence IDs at important control boundaries;
 - size `maxVoices` for the largest real overlap, including release tails;
 - cancel app-owned timers before `stopAll()` or `shutdown()`;
 - audition on the intended phone speaker as well as headphones.

@@ -1,0 +1,1916 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-23",
+  "acceptanceComplete": false,
+  "status": "Game measurements recorded; Android audio/headphone acceptance failed and renderer elapsed-work remains unresolved. Strict simulation80 load matching inconclusive on both devices.",
+  "devices": {
+    "ipad": {
+      "schemaVersion": 1,
+      "status": "partial acceptance: Arcade and simulation20 within criteria; strict simulation80 load matching inconclusive",
+      "platform": "physical iPad",
+      "runCount": 2,
+      "phases": 16,
+      "nativePerformanceWindows": 480,
+      "errors": [],
+      "thresholds": {
+        "maxMeanFpsDecreasePercent": 2,
+        "maxActualPresentationIntervalP95IncreasePercent": 5,
+        "bodyTolerancePercent": 5,
+        "minimumMatchedPairs": 30,
+        "minimumWindowCoveragePerState": 0.5
+      },
+      "protocol": {
+        "seed": 20261023,
+        "warmupMs": 5000,
+        "measurementMs": 30000,
+        "order": [
+          "OFF",
+          "ON",
+          "ON",
+          "OFF"
+        ],
+        "officialWorkloads": [
+          "gameplay",
+          "simulation20",
+          "simulation80"
+        ],
+        "supplementalWorkload": "simulation80",
+        "off": "Same game calls with zero audio gains and native stream startup suppressed",
+        "on": "Final production synthesis binary, 32 shared voices/four sequence slots, moving binaural motor, native looping music and complete gameplay effects/fanfares"
+      },
+      "comparisons": [
+        {
+          "workload": "gameplay",
+          "allWindows": {
+            "off": {
+              "windows": 60,
+              "meanFps": 60.0184384749881,
+              "meanCpuMs": 1.5947806802025881,
+              "maxWindowP95CpuMs": 2.3494999622926116,
+              "meanVisibleSprites": 44.25,
+              "maxSprites": 135,
+              "presentedFrameIntervalP95Ms": null
+            },
+            "on": {
+              "windows": 60,
+              "meanFps": 60.01800857677282,
+              "meanCpuMs": 1.6097923471298259,
+              "maxWindowP95CpuMs": 2.4774166522547603,
+              "meanVisibleSprites": 44.88333333333333,
+              "maxSprites": 137,
+              "presentedFrameIntervalP95Ms": null
+            },
+            "fpsChangePercent": -0.0007162769079083198,
+            "presentation": {
+              "offP95Ms": 16.665771484375,
+              "onP95Ms": 16.666259765625,
+              "changePercent": 0.0029298448647185893,
+              "investigate": false
+            }
+          },
+          "populationChangePercent": 3.433476394849788,
+          "populationDistributions": {
+            "off": {
+              "sceneBodies": {
+                "count": 60,
+                "min": 20,
+                "p05": 21,
+                "median": 27,
+                "mean": 27.183333333333334,
+                "p95": 32,
+                "max": 36
+              },
+              "sprites": {
+                "count": 60,
+                "min": 122,
+                "p05": 122,
+                "median": 128,
+                "mean": 127.81666666666666,
+                "p95": 133,
+                "max": 135
+              },
+              "visibleSprites": {
+                "count": 60,
+                "min": 37,
+                "p05": 38,
+                "median": 44,
+                "mean": 44.25,
+                "p95": 50,
+                "max": 52
+              },
+              "particles": {
+                "count": 60,
+                "min": 0,
+                "p05": 0,
+                "median": 0,
+                "mean": 3.6333333333333333,
+                "p95": 14,
+                "max": 26
+              },
+              "drawCalls": {
+                "count": 60,
+                "min": 7,
+                "p05": 7,
+                "median": 7,
+                "mean": 7.3,
+                "p95": 9,
+                "max": 9
+              }
+            },
+            "on": {
+              "sceneBodies": {
+                "count": 60,
+                "min": 20,
+                "p05": 21,
+                "median": 28,
+                "mean": 28.116666666666667,
+                "p95": 32,
+                "max": 33
+              },
+              "sprites": {
+                "count": 60,
+                "min": 123,
+                "p05": 126,
+                "median": 129,
+                "mean": 128.83333333333334,
+                "p95": 134,
+                "max": 137
+              },
+              "visibleSprites": {
+                "count": 60,
+                "min": 37,
+                "p05": 39,
+                "median": 45,
+                "mean": 44.88333333333333,
+                "p95": 50,
+                "max": 51
+              },
+              "particles": {
+                "count": 60,
+                "min": 0,
+                "p05": 0,
+                "median": 0,
+                "mean": 5.783333333333333,
+                "p95": 26,
+                "max": 38
+              },
+              "drawCalls": {
+                "count": 60,
+                "min": 7,
+                "p05": 7,
+                "median": 7,
+                "mean": 7.616666666666666,
+                "p95": 9,
+                "max": 12
+              }
+            }
+          },
+          "strictMatched": {
+            "pairs": 41,
+            "coverage": {
+              "off": 0.6833333333333333,
+              "on": 0.6833333333333333
+            },
+            "adequateCoverage": true,
+            "off": {
+              "windows": 41,
+              "actualPresentationIntervalP95Ms": 16.665771484375,
+              "actualPresentationMeanFps": 60.01965928328766,
+              "nativeMeanFps": 60.019195661333214,
+              "nativeCpuWindowP95Distribution": {
+                "count": 41,
+                "min": 1.7162499716505408,
+                "p05": 1.7412500455975533,
+                "median": 2.0325416699051857,
+                "mean": 1.9957134187812122,
+                "p95": 2.1946249762549996,
+                "max": 2.3494999622926116
+              },
+              "sceneBodies": {
+                "count": 41,
+                "min": 21,
+                "p05": 24,
+                "median": 29,
+                "mean": 27.926829268292682,
+                "p95": 32,
+                "max": 32
+              }
+            },
+            "on": {
+              "windows": 41,
+              "actualPresentationIntervalP95Ms": 16.666259765625,
+              "actualPresentationMeanFps": 60.019673330026855,
+              "nativeMeanFps": 60.015399966777515,
+              "nativeCpuWindowP95Distribution": {
+                "count": 41,
+                "min": 1.6380415763705969,
+                "p05": 1.777958357706666,
+                "median": 2.1164166973903775,
+                "mean": 2.1074542679210624,
+                "p95": 2.277541672810912,
+                "max": 2.4774166522547603
+              },
+              "sceneBodies": {
+                "count": 41,
+                "min": 20,
+                "p05": 24,
+                "median": 29,
+                "mean": 28.146341463414632,
+                "p95": 32,
+                "max": 32
+              }
+            },
+            "frameP95ChangePercent": 0.0029298448647185893,
+            "fpsChangePercent": 2.3403563709223363e-05,
+            "status": "within-threshold"
+          },
+          "scenarioCoverageValid": true,
+          "physicalFrameP95Accepted": true
+        },
+        {
+          "workload": "simulation20",
+          "allWindows": {
+            "off": {
+              "windows": 60,
+              "meanFps": 60.026106284234025,
+              "meanCpuMs": 1.6726383956784103,
+              "maxWindowP95CpuMs": 4.3279583333060145,
+              "meanVisibleSprites": 26.9,
+              "maxSprites": 45,
+              "presentedFrameIntervalP95Ms": null
+            },
+            "on": {
+              "windows": 60,
+              "meanFps": 60.024041672487634,
+              "meanCpuMs": 1.7054195051395942,
+              "maxWindowP95CpuMs": 4.565541748888791,
+              "meanVisibleSprites": 27.933333333333334,
+              "maxSprites": 45,
+              "presentedFrameIntervalP95Ms": null
+            },
+            "fpsChangePercent": -0.0034395230245620745,
+            "presentation": {
+              "offP95Ms": 16.66552734375,
+              "onP95Ms": 16.665771484375,
+              "changePercent": 0.0014649438926594982,
+              "investigate": false
+            }
+          },
+          "populationChangePercent": 4.093567251461994,
+          "populationDistributions": {
+            "off": {
+              "sceneBodies": {
+                "count": 60,
+                "min": 4,
+                "p05": 8,
+                "median": 20,
+                "mean": 22.8,
+                "p95": 38,
+                "max": 40
+              },
+              "sprites": {
+                "count": 60,
+                "min": 7,
+                "p05": 11,
+                "median": 23,
+                "mean": 26.9,
+                "p95": 45,
+                "max": 45
+              },
+              "visibleSprites": {
+                "count": 60,
+                "min": 7,
+                "p05": 11,
+                "median": 23,
+                "mean": 26.9,
+                "p95": 45,
+                "max": 45
+              },
+              "particles": {
+                "count": 60,
+                "min": 0,
+                "p05": 0,
+                "median": 0,
+                "mean": 0.0,
+                "p95": 0,
+                "max": 0
+              },
+              "drawCalls": {
+                "count": 60,
+                "min": 4,
+                "p05": 4,
+                "median": 4,
+                "mean": 4.0,
+                "p95": 4,
+                "max": 4
+              }
+            },
+            "on": {
+              "sceneBodies": {
+                "count": 60,
+                "min": 12,
+                "p05": 12,
+                "median": 20,
+                "mean": 23.733333333333334,
+                "p95": 40,
+                "max": 40
+              },
+              "sprites": {
+                "count": 60,
+                "min": 15,
+                "p05": 15,
+                "median": 23,
+                "mean": 27.933333333333334,
+                "p95": 45,
+                "max": 45
+              },
+              "visibleSprites": {
+                "count": 60,
+                "min": 15,
+                "p05": 15,
+                "median": 23,
+                "mean": 27.933333333333334,
+                "p95": 45,
+                "max": 45
+              },
+              "particles": {
+                "count": 60,
+                "min": 0,
+                "p05": 0,
+                "median": 0,
+                "mean": 0.0,
+                "p95": 0,
+                "max": 0
+              },
+              "drawCalls": {
+                "count": 60,
+                "min": 4,
+                "p05": 4,
+                "median": 4,
+                "mean": 4.0,
+                "p95": 4,
+                "max": 4
+              }
+            }
+          },
+          "strictMatched": {
+            "pairs": 41,
+            "coverage": {
+              "off": 0.6833333333333333,
+              "on": 0.6833333333333333
+            },
+            "adequateCoverage": true,
+            "off": {
+              "windows": 41,
+              "actualPresentationIntervalP95Ms": 16.665771484375,
+              "actualPresentationMeanFps": 60.019738728446846,
+              "nativeMeanFps": 60.025493454040934,
+              "nativeCpuWindowP95Distribution": {
+                "count": 41,
+                "min": 0.6769583560526371,
+                "p05": 0.6989167304709554,
+                "median": 1.789458328858018,
+                "mean": 2.2130172994987265,
+                "p95": 4.3084584176540375,
+                "max": 4.3279583333060145
+              },
+              "sceneBodies": {
+                "count": 41,
+                "min": 12,
+                "p05": 12,
+                "median": 22,
+                "mean": 24.4390243902439,
+                "p95": 40,
+                "max": 40
+              }
+            },
+            "on": {
+              "windows": 41,
+              "actualPresentationIntervalP95Ms": 16.665771484375,
+              "actualPresentationMeanFps": 60.01974508656153,
+              "nativeMeanFps": 60.03214380160339,
+              "nativeCpuWindowP95Distribution": {
+                "count": 41,
+                "min": 0.7622917182743549,
+                "p05": 0.7821250474080443,
+                "median": 1.858291681855917,
+                "mean": 2.3391300687430108,
+                "p95": 4.344708286225796,
+                "max": 4.539041663520038
+              },
+              "sceneBodies": {
+                "count": 41,
+                "min": 12,
+                "p05": 12,
+                "median": 22,
+                "mean": 24.4390243902439,
+                "p95": 40,
+                "max": 40
+              }
+            },
+            "frameP95ChangePercent": 0.0,
+            "fpsChangePercent": 1.0593372801182e-05,
+            "status": "within-threshold"
+          },
+          "scenarioCoverageValid": true,
+          "physicalFrameP95Accepted": true
+        },
+        {
+          "workload": "simulation80",
+          "allWindows": {
+            "off": {
+              "windows": 120,
+              "meanFps": 60.03008321720872,
+              "meanCpuMs": 2.0375757083380646,
+              "maxWindowP95CpuMs": 7.870874949730933,
+              "meanVisibleSprites": 32.708333333333336,
+              "maxSprites": 133,
+              "presentedFrameIntervalP95Ms": null
+            },
+            "on": {
+              "windows": 120,
+              "meanFps": 60.03047350103819,
+              "meanCpuMs": 2.1587705775267443,
+              "maxWindowP95CpuMs": 7.656125002540648,
+              "meanVisibleSprites": 35.36666666666667,
+              "maxSprites": 149,
+              "presentedFrameIntervalP95Ms": null
+            },
+            "fpsChangePercent": 0.0006501470738440318,
+            "presentation": {
+              "offP95Ms": 16.66552734375,
+              "onP95Ms": 16.666015625,
+              "changePercent": 0.002929887785296792,
+              "investigate": false
+            }
+          },
+          "populationChangePercent": 8.595641646489094,
+          "populationDistributions": {
+            "off": {
+              "sceneBodies": {
+                "count": 120,
+                "min": 6,
+                "p05": 8,
+                "median": 20,
+                "mean": 27.533333333333335,
+                "p95": 72,
+                "max": 108
+              },
+              "sprites": {
+                "count": 120,
+                "min": 9,
+                "p05": 11,
+                "median": 23,
+                "mean": 32.78333333333333,
+                "p95": 91,
+                "max": 133
+              },
+              "visibleSprites": {
+                "count": 120,
+                "min": 9,
+                "p05": 11,
+                "median": 23,
+                "mean": 32.708333333333336,
+                "p95": 91,
+                "max": 133
+              },
+              "particles": {
+                "count": 120,
+                "min": 0,
+                "p05": 0,
+                "median": 0,
+                "mean": 0.0,
+                "p95": 0,
+                "max": 0
+              },
+              "drawCalls": {
+                "count": 120,
+                "min": 4,
+                "p05": 4,
+                "median": 4,
+                "mean": 4.0,
+                "p95": 4,
+                "max": 4
+              }
+            },
+            "on": {
+              "sceneBodies": {
+                "count": 120,
+                "min": 4,
+                "p05": 8,
+                "median": 20,
+                "mean": 29.9,
+                "p95": 88,
+                "max": 122
+              },
+              "sprites": {
+                "count": 120,
+                "min": 7,
+                "p05": 11,
+                "median": 25,
+                "mean": 35.43333333333333,
+                "p95": 107,
+                "max": 149
+              },
+              "visibleSprites": {
+                "count": 120,
+                "min": 7,
+                "p05": 11,
+                "median": 25,
+                "mean": 35.36666666666667,
+                "p95": 107,
+                "max": 149
+              },
+              "particles": {
+                "count": 120,
+                "min": 0,
+                "p05": 0,
+                "median": 0,
+                "mean": 0.0,
+                "p95": 0,
+                "max": 0
+              },
+              "drawCalls": {
+                "count": 120,
+                "min": 4,
+                "p05": 4,
+                "median": 4,
+                "mean": 4.0,
+                "p95": 4,
+                "max": 4
+              }
+            }
+          },
+          "strictMatched": {
+            "pairs": 57,
+            "coverage": {
+              "off": 0.475,
+              "on": 0.475
+            },
+            "adequateCoverage": false,
+            "off": {
+              "windows": 57,
+              "actualPresentationIntervalP95Ms": 16.665283203125,
+              "actualPresentationMeanFps": 60.019713249002336,
+              "nativeMeanFps": 60.03561758892554,
+              "nativeCpuWindowP95Distribution": {
+                "count": 57,
+                "min": 0.47958327922970057,
+                "p05": 0.5799166392534971,
+                "median": 1.57670839689672,
+                "mean": 2.8952499892431915,
+                "p95": 7.448499905876815,
+                "max": 7.728291675448418
+              },
+              "sceneBodies": {
+                "count": 57,
+                "min": 8,
+                "p05": 10,
+                "median": 20,
+                "mean": 28.736842105263158,
+                "p95": 72,
+                "max": 92
+              }
+            },
+            "on": {
+              "windows": 57,
+              "actualPresentationIntervalP95Ms": 16.666015625,
+              "actualPresentationMeanFps": 60.019787825213605,
+              "nativeMeanFps": 60.03545114076687,
+              "nativeCpuWindowP95Distribution": {
+                "count": 57,
+                "min": 0.5560832796618342,
+                "p05": 0.6478750146925449,
+                "median": 1.4742499915882945,
+                "mean": 2.935194436934564,
+                "p95": 7.446000003255904,
+                "max": 7.656125002540648
+              },
+              "sceneBodies": {
+                "count": 57,
+                "min": 8,
+                "p05": 10,
+                "median": 20,
+                "mean": 28.80701754385965,
+                "p95": 72,
+                "max": 92
+              }
+            },
+            "frameP95ChangePercent": 0.004394896060699871,
+            "fpsChangePercent": 0.00012425286164408078,
+            "status": "inconclusive"
+          },
+          "scenarioCoverageValid": true,
+          "physicalFrameP95Accepted": false
+        }
+      ],
+      "audioHealth": [
+        {
+          "workload": "gameplay",
+          "phase": 1,
+          "sampleRates": [
+            44100
+          ],
+          "callbackFrameCounts": [
+            1024
+          ],
+          "peakObservedActiveVoices": 10,
+          "peakObservedSpatialVoices": 7,
+          "peakCallbackOccupancy": 0.3829016235351563,
+          "rejectedRequests": 0,
+          "rejectedPublications": 0,
+          "priorityDrops": 0,
+          "backendXruns": null
+        },
+        {
+          "workload": "gameplay",
+          "phase": 2,
+          "sampleRates": [
+            44100
+          ],
+          "callbackFrameCounts": [
+            1024
+          ],
+          "peakObservedActiveVoices": 10,
+          "peakObservedSpatialVoices": 7,
+          "peakCallbackOccupancy": 0.36936082763671874,
+          "rejectedRequests": 0,
+          "rejectedPublications": 0,
+          "priorityDrops": 0,
+          "backendXruns": null
+        },
+        {
+          "workload": "simulation20",
+          "phase": 5,
+          "sampleRates": [
+            44100
+          ],
+          "callbackFrameCounts": [
+            1024
+          ],
+          "peakObservedActiveVoices": 11,
+          "peakObservedSpatialVoices": 9,
+          "peakCallbackOccupancy": 0.38931134033203124,
+          "rejectedRequests": 0,
+          "rejectedPublications": 0,
+          "priorityDrops": 0,
+          "backendXruns": null
+        },
+        {
+          "workload": "simulation20",
+          "phase": 6,
+          "sampleRates": [
+            44100
+          ],
+          "callbackFrameCounts": [
+            1024
+          ],
+          "peakObservedActiveVoices": 12,
+          "peakObservedSpatialVoices": 10,
+          "peakCallbackOccupancy": 0.38793859863281244,
+          "rejectedRequests": 0,
+          "rejectedPublications": 0,
+          "priorityDrops": 0,
+          "backendXruns": null
+        },
+        {
+          "workload": "simulation80",
+          "phase": 9,
+          "sampleRates": [
+            44100
+          ],
+          "callbackFrameCounts": [
+            1024
+          ],
+          "peakObservedActiveVoices": 32,
+          "peakObservedSpatialVoices": 32,
+          "peakCallbackOccupancy": 0.5098721557617188,
+          "rejectedRequests": 0,
+          "rejectedPublications": 0,
+          "priorityDrops": 18,
+          "backendXruns": null
+        },
+        {
+          "workload": "simulation80",
+          "phase": 10,
+          "sampleRates": [
+            44100
+          ],
+          "callbackFrameCounts": [
+            1024
+          ],
+          "peakObservedActiveVoices": 31,
+          "peakObservedSpatialVoices": 31,
+          "peakCallbackOccupancy": 0.5369860473632813,
+          "rejectedRequests": 0,
+          "rejectedPublications": 0,
+          "priorityDrops": 33,
+          "backendXruns": null
+        },
+        {
+          "workload": "simulation80",
+          "phase": 13,
+          "sampleRates": [
+            44100
+          ],
+          "callbackFrameCounts": [
+            1024
+          ],
+          "peakObservedActiveVoices": 32,
+          "peakObservedSpatialVoices": 32,
+          "peakCallbackOccupancy": 0.5216544067382813,
+          "rejectedRequests": 0,
+          "rejectedPublications": 0,
+          "priorityDrops": 21,
+          "backendXruns": null
+        },
+        {
+          "workload": "simulation80",
+          "phase": 14,
+          "sampleRates": [
+            44100
+          ],
+          "callbackFrameCounts": [
+            1024
+          ],
+          "peakObservedActiveVoices": 28,
+          "peakObservedSpatialVoices": 28,
+          "peakCallbackOccupancy": 0.52060107421875,
+          "rejectedRequests": 0,
+          "rejectedPublications": 0,
+          "priorityDrops": 39,
+          "backendXruns": null
+        }
+      ],
+      "posthocExploratorySimulation80": {
+        "label": "Posthoc exploratory sensitivity: same simulation80 mode and bodycount\u00b15%; cue-slot restriction removed. Primary predeclared strict analysis remains inconclusive and unchanged.",
+        "pairs": 73,
+        "coverage": {
+          "off": 0.6083333333333333,
+          "on": 0.6083333333333333
+        },
+        "off": {
+          "windows": 73,
+          "actualPresentationIntervalP95Ms": 16.66552734375,
+          "actualPresentationMeanFps": 60.019697576396524,
+          "nativeMeanFps": 60.03210641489679,
+          "nativeCpuWindowP95Distribution": {
+            "count": 73,
+            "min": 0.48212509136646986,
+            "p05": 0.5815416807308793,
+            "median": 1.5869583003222942,
+            "mean": 2.8626369790824717,
+            "p95": 7.5168333714827895,
+            "max": 7.870874949730933
+          },
+          "sceneBodies": {
+            "count": 73,
+            "min": 6,
+            "p05": 10,
+            "median": 22,
+            "mean": 28.602739726027398,
+            "p95": 68,
+            "max": 92
+          }
+        },
+        "on": {
+          "windows": 73,
+          "actualPresentationIntervalP95Ms": 16.666015625,
+          "actualPresentationMeanFps": 60.019771469158584,
+          "nativeMeanFps": 60.03201302982929,
+          "nativeCpuWindowP95Distribution": {
+            "count": 73,
+            "min": 0.5560832796618342,
+            "p05": 0.6478750146925449,
+            "median": 1.7602083971723914,
+            "mean": 2.8673464588642323,
+            "p95": 7.34645826742053,
+            "max": 7.656125002540648
+          },
+          "sceneBodies": {
+            "count": 73,
+            "min": 6,
+            "p05": 10,
+            "median": 22,
+            "mean": 28.438356164383563,
+            "p95": 66,
+            "max": 92
+          }
+        },
+        "frameP95ChangePercent": 0.002929887785296792,
+        "fpsChangePercent": 0.00012311418591259837,
+        "status": "within-threshold",
+        "replacesStrictResult": false
+      },
+      "rngAudit": {
+        "sharedStream": true,
+        "onOnlyAdditionalDrawsConfirmed": false,
+        "controlledIdenticalEventTrace": "PASS: real audio service OFF/ON identical RNG calls and final state; picker draws before volume gate",
+        "causality": "Native real-time collision/event evolution can amplify divergence; root cause of population shift not established. No physics or RNG production change."
+      },
+      "provenance": {
+        "productionSynthesisLibrarySha256": {
+          "ios-arm64_x86_64-simulator": "43c6f95dbb9545302578987df6ab4e46c2598673bd18baa959e7d856c7ce0b32",
+          "ios-arm64_x86_64-maccatalyst": "f3ec14d634b21d6471962ce7c5d4c6a1724434c84bc2a60884e595439b990124",
+          "ios-arm64": "e1fd2bd257a3d4541e1bed757b42e0d35498e916d93e0c4d77719373cc234263"
+        },
+        "instrumentedRendererLibrarySha256": "a7fcb448b7f3ce123edbf41cd6ec1df199a6adefd7f6db3c17b4c610aaa4f43a",
+        "rendererSourceCommit": "88e181cb85526d8146d0be6e09b2b90c2551baad",
+        "rendererOriginalFileSha256": "413f326bf95e0da8cdf080c63cce183c6c661f7df54d071cda9c2b6d80f48ffa",
+        "rendererInstrumentedFileSha256": "b47f1226fe8507008d3b07dd0521208b7bf1791f7b72b0063df282e526854fa6",
+        "rendererPatchSha256": "a4f58dc00f5a067e674e311eb91aeabfcbc05011a214fd0037bef5852d0b2fd2",
+        "officialControllerSha256": "e7a5f8d3c2b7e6a77233e5e17516a451aefea4a87b7291b5e34ace802b6488ad",
+        "supplementalControllerSha256": "a06332b3c655f319a72eab2f72c3d6a3b58fb7cc2a3d7cf80fd343467c9ee717",
+        "readOnlyStagedSessionSha256": "0cf9390c8785aad50ea3b721e550d2119f373ede901ff09ec6fb8cbcfc43f2b9",
+        "unchangedProductionSessionSha256": "d6a2b04966767d21ef5c43f6b88f058cb23568f1b742b6f5ebd506234edbd1ed",
+        "rawSha256Manifest": {
+          "officialAppReport": "88d56dee18ae0df48dfc2f120c555fe54e5af630d1eb4397a5d5f62988b5165a",
+          "supplementalStressAppReport": "3072c88097b8ef51777d8a685f5f4cb94d3b9fd37929628240cd9f27a0cbc8e4",
+          "officialPresentation01": "1626c8286bbdf4156a12897286b28d9f3cc9d0b2ecff2c20def83af579e9a30d",
+          "officialPresentation02": "e6ef2a1bd2453856d4332e601381b679116d8830f36f6afb1ebf7d956b4d6f32",
+          "officialPresentation03": "d243b8d69b45810d03a43b103f081b6b1bc93099df85afb8fe1e7b1ff533e2ed",
+          "officialPresentation04": "4d6bcd25c4d2a13bba00f5ac93602e02a26a576d9bd39775edee2974a1697052",
+          "officialPresentation05": "93b1d4ca259bf64cc93868342a342a3b61e5b5b043217c2e4fa5898b694d2acb",
+          "officialPresentation06": "325f208a340cc74b789fd03daac7f4b5e3cabbc21290fa4d283e39e1db8b3385",
+          "officialPresentation07": "1cdb1f384668051dd3fcd45405cc5f0231363ddd1cd4f8c2b28f5992179193d4",
+          "officialPresentation08": "25a8030972e55cc7903dfe25c5174d362ab206ae8a37a9eac9d9092cf1c73afa",
+          "officialPresentation09": "d0dc104eea4afb440ecd18ed6cbd86cdedd0f7528681da058f7e690410e9f2a6",
+          "officialPresentation10": "805521b8e31de318c7912162c2d2e32c19cb0f2b1d44da0ba63e7faa7f605bc4",
+          "officialPresentation11": "6bf7bca14abab601ba56092c28fa1e51b54981cb87b214fc6f26d3afe83a579e",
+          "officialPresentation12": "dd6b4466c5ba5ad1d156a0c5d2824746c9eb5a3e45a17a11501829b11a74b034",
+          "supplementalStressPresentation01": "163d09061fd7d65479cb5cb5c7fc7ceab12a54e96c1f148588627baa5fb0b6db",
+          "supplementalStressPresentation02": "2cffd60c4601728cd90eec69252bcb66683a03d386f21d699e937f6dfff7a4be",
+          "supplementalStressPresentation03": "c2c373a220b6d1cda55113c9f03aecccece2c1cda539d6308980d2cd30da6dee",
+          "supplementalStressPresentation04": "6e836f00c0995772a75512e2894c8858a63f9d7a983e0d0da71b636598143c03"
+        }
+      },
+      "limits": [
+        "Current final game code audio OFF versus ON; not a pre-migration renderer comparison.",
+        "iOS actual drawable presentedTime instrumentation is identical in both states; original renderer physics/collision/simulation unchanged.",
+        "One-second body census is endpoint sampled; presentation windows align to performance-event receipt, without native window endpoints or bridge latency.",
+        "Native p95CpuMs is separate from actual presentation interval p95; lower population cannot establish an audio-caused CPU improvement.",
+        "iOS backend xruns are unavailable, not zero. Priority admission drops under voice pressure are distinct from rejected requests/publications.",
+        "Strict simulation80 remains inconclusive at57/120 matched windows; exploratory body-only matching is explicitly posthoc.",
+        "Technical telemetry does not establish human listening approval or Android acceptance."
+      ],
+      "rawEvidenceArchive": {
+        "file": "frontier-ipad-evidence.zip",
+        "sha256": "56369b202d279efbf4f9a720a0a99dba2f398410cb8e042ef1200a3a63be245b",
+        "members": 19,
+        "scope": "Sanitized official and supplemental physical iPad reports, native Metal presentation timestamps and SHA-256 manifest; no initial superseded run."
+      },
+      "listening": {
+        "status": "accepted-by-Cesar",
+        "scenario": "Manual Sim80, Audio on, approximately30seconds",
+        "replyOriginal": "Se escucha limpio",
+        "scope": "Motor, explosions and fanfares; no subjective dropouts, clicks or saturation. Does not override callback/backend counters or approve all listening cases.",
+        "latestHeadphoneObservation": "Cesar does not detect saturation in the same Sim80 scenario on iPad."
+      }
+    },
+    "android": {
+      "schemaVersion": 1,
+      "platform": "physical Android CPH2639",
+      "status": "Short subjective Sim80 listening accepted. Android technical output/max-load acceptance remains open: xruns observed, simulation20 renderer elapsed-cost unresolved, simulation80 strict load matching inconclusive.",
+      "phases": 12,
+      "nativePerformanceWindows": 360,
+      "observedActualPresents": 24831,
+      "appErrors": [],
+      "thresholds": {
+        "maxFpsDecreasePercent": 2,
+        "maxPresentationP95IncreasePercent": 5,
+        "bodyTolerancePercent": 5,
+        "minimumMatchedPairs": 30,
+        "minimumCoveragePerState": 0.5
+      },
+      "protocol": {
+        "seed": 20261023,
+        "warmupMs": 5000,
+        "measurementMs": 30000,
+        "order": [
+          "OFF",
+          "ON",
+          "ON",
+          "OFF"
+        ],
+        "workloads": [
+          "gameplay",
+          "simulation20",
+          "simulation80"
+        ],
+        "off": "Same game calls/zero audio gains; stream startup suppressed",
+        "on": "Frozen production AAR,32sharedvoices/4sequences,moving binaural engine,native music,effects/alerts/fanfares",
+        "physics": "Production native game movement/collisions unchanged; read-only body census in disposable session copy"
+      },
+      "comparisons": [
+        {
+          "workload": "gameplay",
+          "allWindows": {
+            "off": {
+              "windows": 60,
+              "meanFps": 60.017219059683875,
+              "meanCpuMs": 10.06698222992714,
+              "maxWindowP95CpuMs": 16.392923,
+              "meanVisibleSprites": 38.28333333333333,
+              "maxSprites": 129,
+              "presentedFrameIntervalP95Ms": null
+            },
+            "on": {
+              "windows": 60,
+              "meanFps": 60.04905109727344,
+              "meanCpuMs": 9.0261122115847,
+              "maxWindowP95CpuMs": 16.294692,
+              "meanVisibleSprites": 37.333333333333336,
+              "maxSprites": 130,
+              "presentedFrameIntervalP95Ms": null
+            },
+            "nativeFpsChangePercent": 0.053038174857644727,
+            "presentation": {
+              "offP95Ms": 16.938720703125,
+              "onP95Ms": 16.8564453125,
+              "changePercent": -0.4857237572245987,
+              "investigate": false,
+              "offActualMeanFps": 59.95977777441875,
+              "onActualMeanFps": 59.97752909224431,
+              "actualFpsChangePercent": 0.029605376277985762,
+              "investigateActualFps": false
+            }
+          },
+          "bodyPopulationChangePercent": -4.372019077901424,
+          "populationDistributions": {
+            "off": {
+              "sceneBodies": {
+                "count": 60,
+                "min": 16,
+                "p05": 17,
+                "median": 21,
+                "mean": 20.966666666666665,
+                "p95": 26,
+                "max": 28
+              },
+              "sprites": {
+                "count": 60,
+                "min": 118,
+                "p05": 119,
+                "median": 123,
+                "mean": 123.2,
+                "p95": 128,
+                "max": 129
+              },
+              "visibleSprites": {
+                "count": 60,
+                "min": 31,
+                "p05": 33,
+                "median": 38,
+                "mean": 38.28333333333333,
+                "p95": 44,
+                "max": 46
+              },
+              "particles": {
+                "count": 60,
+                "min": 0,
+                "p05": 0,
+                "median": 0,
+                "mean": 5.666666666666667,
+                "p95": 24,
+                "max": 36
+              },
+              "drawCalls": {
+                "count": 60,
+                "min": 7,
+                "p05": 7,
+                "median": 7,
+                "mean": 7.55,
+                "p95": 10,
+                "max": 10
+              }
+            },
+            "on": {
+              "sceneBodies": {
+                "count": 60,
+                "min": 13,
+                "p05": 14,
+                "median": 19,
+                "mean": 20.05,
+                "p95": 26,
+                "max": 29
+              },
+              "sprites": {
+                "count": 60,
+                "min": 116,
+                "p05": 117,
+                "median": 122,
+                "mean": 122.4,
+                "p95": 127,
+                "max": 130
+              },
+              "visibleSprites": {
+                "count": 60,
+                "min": 28,
+                "p05": 30,
+                "median": 37,
+                "mean": 37.333333333333336,
+                "p95": 44,
+                "max": 47
+              },
+              "particles": {
+                "count": 60,
+                "min": 0,
+                "p05": 0,
+                "median": 0,
+                "mean": 7.15,
+                "p95": 24,
+                "max": 37
+              },
+              "drawCalls": {
+                "count": 60,
+                "min": 7,
+                "p05": 7,
+                "median": 7,
+                "mean": 7.5,
+                "p95": 9,
+                "max": 11
+              }
+            }
+          },
+          "strictMatched": {
+            "pairs": 39,
+            "coverage": {
+              "off": 0.65,
+              "on": 0.65
+            },
+            "adequateCoverage": true,
+            "off": {
+              "windows": 39,
+              "actualPresentationIntervalP95Ms": 16.9384765625,
+              "actualPresentationMeanFps": 59.941931329104506,
+              "nativeMeanFps": 60.01636743245397,
+              "nativeCpuWindowP95Distribution": {
+                "count": 39,
+                "min": 13.012076,
+                "p05": 13.063384,
+                "median": 14.659077,
+                "mean": 14.630788974358978,
+                "p95": 15.762077,
+                "max": 15.971461
+              },
+              "sceneBodies": {
+                "count": 39,
+                "min": 17,
+                "p05": 18,
+                "median": 21,
+                "mean": 21.05128205128205,
+                "p95": 27,
+                "max": 28
+              }
+            },
+            "on": {
+              "windows": 39,
+              "actualPresentationIntervalP95Ms": 16.84326171875,
+              "actualPresentationMeanFps": 59.96734569615663,
+              "nativeMeanFps": 60.03619921272333,
+              "nativeCpuWindowP95Distribution": {
+                "count": 39,
+                "min": 12.139385,
+                "p05": 12.34377,
+                "median": 14.141154,
+                "mean": 14.012818538461538,
+                "p95": 15.279308,
+                "max": 15.354077
+              },
+              "sceneBodies": {
+                "count": 39,
+                "min": 17,
+                "p05": 18,
+                "median": 21,
+                "mean": 21.17948717948718,
+                "p95": 28,
+                "max": 29
+              }
+            },
+            "frameP95ChangePercent": -0.5621216488901681,
+            "fpsChangePercent": 0.042398311980629266,
+            "status": "within-threshold"
+          },
+          "scenarioCoverageValid": true,
+          "frameCriterionAccepted": true
+        },
+        {
+          "workload": "simulation20",
+          "allWindows": {
+            "off": {
+              "windows": 60,
+              "meanFps": 60.01824950796583,
+              "meanCpuMs": 7.006617316947631,
+              "maxWindowP95CpuMs": 16.041846,
+              "meanVisibleSprites": 12.4,
+              "maxSprites": 47,
+              "presentedFrameIntervalP95Ms": null
+            },
+            "on": {
+              "windows": 60,
+              "meanFps": 60.03213715216134,
+              "meanCpuMs": 9.0841033684745,
+              "maxWindowP95CpuMs": 15.952,
+              "meanVisibleSprites": 12.683333333333334,
+              "maxSprites": 47,
+              "presentedFrameIntervalP95Ms": null
+            },
+            "nativeFpsChangePercent": 0.0231390357255723,
+            "presentation": {
+              "offP95Ms": 16.946044921875,
+              "onP95Ms": 16.8662109375,
+              "changePercent": -0.47110688507585596,
+              "investigate": false,
+              "offActualMeanFps": 59.90818675010148,
+              "onActualMeanFps": 59.94418478097122,
+              "actualFpsChangePercent": 0.06008866704629856,
+              "investigateActualFps": false
+            }
+          },
+          "bodyPopulationChangePercent": 1.9685039370078705,
+          "populationDistributions": {
+            "off": {
+              "sceneBodies": {
+                "count": 60,
+                "min": 2,
+                "p05": 2,
+                "median": 6,
+                "mean": 8.466666666666667,
+                "p95": 24,
+                "max": 34
+              },
+              "sprites": {
+                "count": 60,
+                "min": 5,
+                "p05": 5,
+                "median": 9,
+                "mean": 12.4,
+                "p95": 27,
+                "max": 47
+              },
+              "visibleSprites": {
+                "count": 60,
+                "min": 5,
+                "p05": 5,
+                "median": 9,
+                "mean": 12.4,
+                "p95": 27,
+                "max": 47
+              },
+              "particles": {
+                "count": 60,
+                "min": 0,
+                "p05": 0,
+                "median": 0,
+                "mean": 0.0,
+                "p95": 0,
+                "max": 0
+              },
+              "drawCalls": {
+                "count": 60,
+                "min": 4,
+                "p05": 4,
+                "median": 4,
+                "mean": 4.0,
+                "p95": 4,
+                "max": 4
+              }
+            },
+            "on": {
+              "sceneBodies": {
+                "count": 60,
+                "min": 2,
+                "p05": 2,
+                "median": 4,
+                "mean": 8.633333333333333,
+                "p95": 26,
+                "max": 36
+              },
+              "sprites": {
+                "count": 60,
+                "min": 5,
+                "p05": 5,
+                "median": 7,
+                "mean": 12.683333333333334,
+                "p95": 35,
+                "max": 47
+              },
+              "visibleSprites": {
+                "count": 60,
+                "min": 5,
+                "p05": 5,
+                "median": 7,
+                "mean": 12.683333333333334,
+                "p95": 35,
+                "max": 47
+              },
+              "particles": {
+                "count": 60,
+                "min": 0,
+                "p05": 0,
+                "median": 0,
+                "mean": 0.0,
+                "p95": 0,
+                "max": 0
+              },
+              "drawCalls": {
+                "count": 60,
+                "min": 4,
+                "p05": 4,
+                "median": 4,
+                "mean": 4.0,
+                "p95": 4,
+                "max": 4
+              }
+            }
+          },
+          "strictMatched": {
+            "pairs": 31,
+            "coverage": {
+              "off": 0.5166666666666667,
+              "on": 0.5166666666666667
+            },
+            "adequateCoverage": true,
+            "off": {
+              "windows": 31,
+              "actualPresentationIntervalP95Ms": 16.93994140625,
+              "actualPresentationMeanFps": 59.97967457264322,
+              "nativeMeanFps": 60.02618076590823,
+              "nativeCpuWindowP95Distribution": {
+                "count": 31,
+                "min": 4.513846,
+                "p05": 4.611308,
+                "median": 4.957308,
+                "mean": 7.502138903225806,
+                "p95": 14.675384,
+                "max": 16.041846
+              },
+              "sceneBodies": {
+                "count": 31,
+                "min": 2,
+                "p05": 2,
+                "median": 4,
+                "mean": 6.193548387096774,
+                "p95": 24,
+                "max": 24
+              }
+            },
+            "on": {
+              "windows": 31,
+              "actualPresentationIntervalP95Ms": 16.8486328125,
+              "actualPresentationMeanFps": 59.918017500760605,
+              "nativeMeanFps": 60.07725237833542,
+              "nativeCpuWindowP95Distribution": {
+                "count": 31,
+                "min": 5.714692,
+                "p05": 6.395769,
+                "median": 13.729847,
+                "mean": 13.267920677419353,
+                "p95": 15.689846,
+                "max": 15.952
+              },
+              "sceneBodies": {
+                "count": 31,
+                "min": 2,
+                "p05": 2,
+                "median": 4,
+                "mean": 6.193548387096774,
+                "p95": 24,
+                "max": 24
+              }
+            },
+            "frameP95ChangePercent": -0.5390136338742635,
+            "fpsChangePercent": -0.1027966095546895,
+            "status": "within-threshold"
+          },
+          "scenarioCoverageValid": true,
+          "frameCriterionAccepted": true,
+          "overallRendererWorkAccepted": false,
+          "unresolvedRendererElapsedCostScreen": true
+        },
+        {
+          "workload": "simulation80",
+          "allWindows": {
+            "off": {
+              "windows": 60,
+              "meanFps": 60.015478894067805,
+              "meanCpuMs": 9.68210469259453,
+              "maxWindowP95CpuMs": 16.774154,
+              "meanVisibleSprites": 24.583333333333332,
+              "maxSprites": 118,
+              "presentedFrameIntervalP95Ms": null
+            },
+            "on": {
+              "windows": 60,
+              "meanFps": 60.03786079557418,
+              "meanCpuMs": 9.278859897602066,
+              "maxWindowP95CpuMs": 17.970846,
+              "meanVisibleSprites": 22.566666666666666,
+              "maxSprites": 138,
+              "presentedFrameIntervalP95Ms": null
+            },
+            "nativeFpsChangePercent": 0.03729354812929131,
+            "presentation": {
+              "offP95Ms": 16.965576171875,
+              "onP95Ms": 16.85498046875,
+              "changePercent": -0.6518829776517854,
+              "investigate": false,
+              "offActualMeanFps": 59.94461455754079,
+              "onActualMeanFps": 59.96027397827163,
+              "actualFpsChangePercent": 0.026123148587120504,
+              "investigateActualFps": false
+            }
+          },
+          "bodyPopulationChangePercent": -10.064043915827991,
+          "populationDistributions": {
+            "off": {
+              "sceneBodies": {
+                "count": 60,
+                "min": 0,
+                "p05": 2,
+                "median": 10,
+                "mean": 18.216666666666665,
+                "p95": 76,
+                "max": 90
+              },
+              "sprites": {
+                "count": 60,
+                "min": 3,
+                "p05": 5,
+                "median": 13,
+                "mean": 24.583333333333332,
+                "p95": 113,
+                "max": 118
+              },
+              "visibleSprites": {
+                "count": 60,
+                "min": 3,
+                "p05": 5,
+                "median": 13,
+                "mean": 24.583333333333332,
+                "p95": 113,
+                "max": 118
+              },
+              "particles": {
+                "count": 60,
+                "min": 0,
+                "p05": 0,
+                "median": 0,
+                "mean": 0.0,
+                "p95": 0,
+                "max": 0
+              },
+              "drawCalls": {
+                "count": 60,
+                "min": 3,
+                "p05": 4,
+                "median": 4,
+                "mean": 3.9833333333333334,
+                "p95": 4,
+                "max": 4
+              }
+            },
+            "on": {
+              "sceneBodies": {
+                "count": 60,
+                "min": 4,
+                "p05": 4,
+                "median": 8,
+                "mean": 16.383333333333333,
+                "p95": 70,
+                "max": 100
+              },
+              "sprites": {
+                "count": 60,
+                "min": 7,
+                "p05": 7,
+                "median": 11,
+                "mean": 22.566666666666666,
+                "p95": 98,
+                "max": 138
+              },
+              "visibleSprites": {
+                "count": 60,
+                "min": 7,
+                "p05": 7,
+                "median": 11,
+                "mean": 22.566666666666666,
+                "p95": 98,
+                "max": 138
+              },
+              "particles": {
+                "count": 60,
+                "min": 0,
+                "p05": 0,
+                "median": 0,
+                "mean": 0.0,
+                "p95": 0,
+                "max": 0
+              },
+              "drawCalls": {
+                "count": 60,
+                "min": 4,
+                "p05": 4,
+                "median": 4,
+                "mean": 4.0,
+                "p95": 4,
+                "max": 4
+              }
+            }
+          },
+          "strictMatched": {
+            "pairs": 27,
+            "coverage": {
+              "off": 0.45,
+              "on": 0.45
+            },
+            "adequateCoverage": false,
+            "off": {
+              "windows": 27,
+              "actualPresentationIntervalP95Ms": 16.96728515625,
+              "actualPresentationMeanFps": 59.93324556946768,
+              "nativeMeanFps": 60.07441204166408,
+              "nativeCpuWindowP95Distribution": {
+                "count": 27,
+                "min": 12.593846,
+                "p05": 13.015692,
+                "median": 13.891616,
+                "mean": 14.022501481481482,
+                "p95": 15.696,
+                "max": 15.77723
+              },
+              "sceneBodies": {
+                "count": 27,
+                "min": 4,
+                "p05": 4,
+                "median": 8,
+                "mean": 15.037037037037036,
+                "p95": 54,
+                "max": 80
+              }
+            },
+            "on": {
+              "windows": 27,
+              "actualPresentationIntervalP95Ms": 16.864013671875,
+              "actualPresentationMeanFps": 60.00980140555183,
+              "nativeMeanFps": 60.08762575024845,
+              "nativeCpuWindowP95Distribution": {
+                "count": 27,
+                "min": 12.023769,
+                "p05": 12.475923,
+                "median": 13.906384,
+                "mean": 13.884564000000001,
+                "p95": 15.262846,
+                "max": 15.383
+              },
+              "sceneBodies": {
+                "count": 27,
+                "min": 4,
+                "p05": 4,
+                "median": 8,
+                "mean": 15.037037037037036,
+                "p95": 54,
+                "max": 80
+              }
+            },
+            "frameP95ChangePercent": -0.6086506086506072,
+            "fpsChangePercent": 0.12773517495463516,
+            "status": "inconclusive"
+          },
+          "scenarioCoverageValid": true,
+          "frameCriterionAccepted": false
+        }
+      ],
+      "audioHealth": [
+        {
+          "phase": 1,
+          "workload": "gameplay",
+          "sampleRates": [
+            48000
+          ],
+          "callbackFrameCounts": [
+            256
+          ],
+          "peakObservedVoices": 9,
+          "peakObservedSpatialVoices": 6,
+          "peakCallbackOccupancy": 0.9189663749999999,
+          "rejectedRequests": 0,
+          "rejectedPublications": 0,
+          "priorityDrops": 0,
+          "backendXruns": 0
+        },
+        {
+          "phase": 2,
+          "workload": "gameplay",
+          "sampleRates": [
+            48000
+          ],
+          "callbackFrameCounts": [
+            256
+          ],
+          "peakObservedVoices": 9,
+          "peakObservedSpatialVoices": 5,
+          "peakCallbackOccupancy": 0.9010963125,
+          "rejectedRequests": 0,
+          "rejectedPublications": 0,
+          "priorityDrops": 0,
+          "backendXruns": 0
+        },
+        {
+          "phase": 5,
+          "workload": "simulation20",
+          "sampleRates": [
+            48000
+          ],
+          "callbackFrameCounts": [
+            256
+          ],
+          "peakObservedVoices": 15,
+          "peakObservedSpatialVoices": 13,
+          "peakCallbackOccupancy": 1.469019375,
+          "rejectedRequests": 0,
+          "rejectedPublications": 0,
+          "priorityDrops": 0,
+          "backendXruns": 0
+        },
+        {
+          "phase": 6,
+          "workload": "simulation20",
+          "sampleRates": [
+            48000
+          ],
+          "callbackFrameCounts": [
+            256
+          ],
+          "peakObservedVoices": 16,
+          "peakObservedSpatialVoices": 14,
+          "peakCallbackOccupancy": 1.9128461250000002,
+          "rejectedRequests": 0,
+          "rejectedPublications": 0,
+          "priorityDrops": 0,
+          "backendXruns": 2
+        },
+        {
+          "phase": 9,
+          "workload": "simulation80",
+          "sampleRates": [
+            48000
+          ],
+          "callbackFrameCounts": [
+            256
+          ],
+          "peakObservedVoices": 32,
+          "peakObservedSpatialVoices": 32,
+          "peakCallbackOccupancy": 3.0690433125000003,
+          "rejectedRequests": 0,
+          "rejectedPublications": 0,
+          "priorityDrops": 21,
+          "backendXruns": 67
+        },
+        {
+          "phase": 10,
+          "workload": "simulation80",
+          "sampleRates": [
+            48000
+          ],
+          "callbackFrameCounts": [
+            256
+          ],
+          "peakObservedVoices": 32,
+          "peakObservedSpatialVoices": 32,
+          "peakCallbackOccupancy": 3.1915961250000002,
+          "rejectedRequests": 0,
+          "rejectedPublications": 0,
+          "priorityDrops": 21,
+          "backendXruns": 88
+        }
+      ],
+      "presentationCapture": {
+        "source": "SurfaceFlinger actual-present timestamp column",
+        "clockAlignment": "Native clock_gettime CLOCK_REALTIME and CLOCK_MONOTONIC paired read; BOOTTIME is recorded only to demonstrate suspend difference",
+        "layerFormat": "Vendor RequestedLayerState envelope removed; full layername#id retained",
+        "maxPollGapMs": 1223.9125419999937,
+        "frameHistoryCapacity": 128,
+        "refreshPeriodsNs": [
+          16666667
+        ],
+        "nonemptySurfaceLayers": 12,
+        "initialPreflight": "First incomplete attempt rejected before clean12-stage cohort because vendor layer syntax and suspend clock domain were incompatible; not included in measurements."
+      },
+      "provenance": {
+        "aarSha256": "9c4c712e590d4f15e94a2ee17931c7cb506879aa3c7bddbf58bd32335f07ef45",
+        "productionSourceSha256": {
+          "SynthOboeEngine.cpp": "205a3723b49a9ddce9926541015f8859e7f50b943057af73a98e6a516cd8520c",
+          "SynthStudioContract.java": "27b94bcf653d6c239bcb92f537633435c04e664a55ab17cf93ede7dea7525d86",
+          "TiSynthEngineModule.java": "d2f904dbf688c7685d541edfea9fdfefbeef5c52493bc529ac4599c6eef4371e",
+          "synth_spatial.h": "ba7eb24b4d4b05281d15af72fc4b100185ead954be05e4eacd082af213b3de7b"
+        },
+        "freshAbiLibrarySha256": {
+          "arm64-v8a": "ba8c549914027fd0c0292d476244359358ed37106454b4b8f8ab0661f64f1392",
+          "armeabi-v7a": "9b1e459a82e3a46754d5988dc8210168bb84e6eea1df1368bd9479b91d8264bc",
+          "x86": "b531f915c5202613af7eeda9abe4d7f9e8b7f63459a4f4f4c8665d99653bb82b",
+          "x86_64": "7b0581450f815af78044a1bf80e6d66de949a27a8765b0d7571d3e62e111b787"
+        },
+        "controllerSha256": "b910f1cc97aac4faf55cd4f685f630223277d0d4f0eb482dae79051ffbe55bc0",
+        "readOnlyStagedSessionSha256": "0cf9390c8785aad50ea3b721e550d2119f373ede901ff09ec6fb8cbcfc43f2b9",
+        "unchangedProductionSessionSha256": "d6a2b04966767d21ef5c43f6b88f058cb23568f1b742b6f5ebd506234edbd1ed",
+        "clockHelperSourceSha256": "bf6d8919d52ad4ec97f48345dda32b75d2c27ffcdfe4c77164023f0f118fbc65",
+        "clockHelperBinarySha256": "a95153c8fd32623ab8b3c6b886ccfabfc78da1e63a034c748a27abe9cdba015f",
+        "collectorSourceSha256": "565a0d42589bb6b78f554ee7bb65e6ef823f3668c438e17293910130eee95cc8",
+        "rawSha256Manifest": {
+          "androidAppReport": "407167c70d697e9d6778a730cc4ee3966985e5358bca44e8dbbaea4e35003127",
+          "androidPresentationCapture": "38634f84af30f9f73b9d59f971b278b6971251b2b14846d6655c4a1460fc520c"
+        },
+        "officialApkSha256": "1d861c071cfbfa6babcc37df610fb1ead4d5b330a1722b866d068636738699e4",
+        "manualApkSha256": "5db0c538bf9868b8da622a42d6305bda914de44d7f97b7fc032f967306fa1bb8",
+        "apkNativeMembersMatchFinalAar": 8
+      },
+      "listeningAcceptance": {
+        "status": "superseded-not-accepted",
+        "reviewer": "user",
+        "statement": "Se escucha limpio",
+        "scenario": "Manual Sim80 Audio ON,approximately30seconds,physical Android CPH2639",
+        "scope": "Subjective short-scene listening only; does not remove measured xruns, renderer elapsed-cost flag or approve extreme-load performance.",
+        "source": "Explicit user statement relayed by task coordinator,2026-10-23",
+        "supersededBy": "Later headphone comparison: live Sim80 saturation; same-PCM replay very little or none."
+      },
+      "limits": [
+        "Stable visual performance does not establish clean audio. Simulation80 had67/88backendxruns and callback peaks3.07/3.19timesdeadline; do not report Android sound/load acceptance.",
+        "No extra ABBA run or synthetic maximum-load case was performed after the planned12stages.",
+        "Scene endpoint body census and presentation windows aligned to native-event receipt have the same limits as the iPad protocol.",
+        "CPU timing differences are not attributed to audio when populations differ. Strict simulation80 remains inconclusive at27/60windows45%.",
+        "Zero publication/request rejection is distinct from priority admission drops and backend output problems."
+      ],
+      "rendererElapsedCostInvestigation": {
+        "status": "unresolved renderer elapsed-cost regression screen; presentation stability is not whole-work acceptance",
+        "workload": "simulation20",
+        "pairs": 31,
+        "sourceSemantics": {
+          "counter": "p95CpuMs",
+          "clock": "System.nanoTime monotonic elapsed wall time, not per-thread CPU time",
+          "startsAfter": "Explicit maxFps Thread.sleep, SceneRenderer.onDrawFrame lines122-135",
+          "endsAt": "SceneRenderer.onDrawFrame lines315-317 before callback returns; FrameStats.addFrame receives frameEnd-now",
+          "includes": [
+            "scene.update and CPU Java work",
+            "GL rendering/driver calls and any waits inside those calls",
+            "thread descheduling/preemption occurring inside measured envelope"
+          ],
+          "excludes": [
+            "explicit maxFps sleep before now",
+            "GLSurfaceView eglSwapBuffers after onDrawFrame returns",
+            "measurement-window event delivery after frameEnd"
+          ],
+          "binaryVerified": "Packaged game AAR javap confirms System.nanoTime, Thread.sleep, FrameStats.addFrame and no thread-CPU clock in this path"
+        },
+        "matched": {
+          "off": {
+            "sceneBodies": {
+              "mean": 6.193548387096774,
+              "median": 4,
+              "p95": 24,
+              "max": 24
+            },
+            "sprites": {
+              "mean": 9.838709677419354,
+              "median": 7,
+              "p95": 27,
+              "max": 41
+            },
+            "visibleSprites": {
+              "mean": 9.838709677419354,
+              "median": 7,
+              "p95": 27,
+              "max": 41
+            },
+            "particles": {
+              "mean": 0,
+              "median": 0,
+              "p95": 0,
+              "max": 0
+            },
+            "drawCalls": {
+              "mean": 4,
+              "median": 4,
+              "p95": 4,
+              "max": 4
+            },
+            "averageCpuMs": {
+              "mean": 5.134946152597646,
+              "median": 3.870707459016393,
+              "p95": 10.184825950819677,
+              "max": 10.587896524590166
+            },
+            "p95CpuMs": {
+              "mean": 7.502138903225807,
+              "median": 4.957308,
+              "p95": 14.675384,
+              "max": 16.041846
+            },
+            "averageUpdateMs": {
+              "mean": 0.7257532691058148,
+              "median": 0.3074741311475411,
+              "p95": 2.9336128360655738,
+              "max": 4.007428672131147
+            },
+            "unassignedRendererElapsedMeanMs": 4.409192883491831
+          },
+          "on": {
+            "sceneBodies": {
+              "mean": 6.193548387096774,
+              "median": 4,
+              "p95": 24,
+              "max": 24
+            },
+            "sprites": {
+              "mean": 9.709677419354838,
+              "median": 7,
+              "p95": 27,
+              "max": 33
+            },
+            "visibleSprites": {
+              "mean": 9.709677419354838,
+              "median": 7,
+              "p95": 27,
+              "max": 33
+            },
+            "particles": {
+              "mean": 0,
+              "median": 0,
+              "p95": 0,
+              "max": 0
+            },
+            "drawCalls": {
+              "mean": 4,
+              "median": 4,
+              "p95": 4,
+              "max": 4
+            },
+            "averageCpuMs": {
+              "mean": 8.879482669266702,
+              "median": 9.291370786885249,
+              "p95": 11.493274300000003,
+              "max": 11.652406081967218
+            },
+            "p95CpuMs": {
+              "mean": 13.267920677419355,
+              "median": 13.729847,
+              "p95": 15.689846,
+              "max": 15.952
+            },
+            "averageUpdateMs": {
+              "mean": 0.7827222623038956,
+              "median": 0.451561131147541,
+              "p95": 2.954658262295082,
+              "max": 3.1924778852459017
+            },
+            "unassignedRendererElapsedMeanMs": 8.096760406962806
+          },
+          "nativeWindowP95DistributionP95ChangePercent": 6.912677719370075,
+          "meanNativeWindowP95ChangePercent": 76.85517221914337,
+          "meanRendererElapsedChangePercent": 72.9226053280965,
+          "meanUpdateElapsedChangePercent": 7.849636456790754
+        },
+        "interpretation": [
+          "The matched body means are equal and drawcalls/particles match; reduced body population does not explain this screen.",
+          "Most added mean elapsed time lies outside the recorded scene.update envelope. Texture/batch native counters were not retained in this capture, so the residual cannot be localized further.",
+          "Audio thread contention, core/frequency/thermal scheduling or GL-driver/GPU backpressure are possible explanations, not established causes. No thread-CPU/Perfetto trace was captured.",
+          "EGL swap and the explicit frame cap are outside the measured envelope; the regression cannot simply be dismissed as those waits. GL calls can still block indirectly.",
+          "A percentile of one-second p95 values is not a pooled per-frame percentile. This is an unresolved additional renderer-cost screen despite stable actual presentation p95/FPS."
+        ],
+        "acceptance": {
+          "actualPresentationCriterion": "within threshold",
+          "rendererElapsedCostCriterion": "unresolved; no whole renderer-work pass claimed",
+          "audioOutput": "backend underruns independently observed",
+          "newPhysicalRunsPerformed": false,
+          "performanceRefactorsPerformed": false
+        },
+        "sourceSha256": {
+          "SceneRenderer.java": "eefcc804ee36456c6f7b01b9a99223e3c9ccb1b09c85449dcb9cab3151f74c36",
+          "FrameStats.java": "fb354d056c57dafdedf66de6302b4478fea693c254720add6040006ab07273c6"
+        },
+        "packagedClassJarSha256": "3c321b6560565cf112fd037b7b6e023454694f9ca111f1721ca0d5f3fe9139e3"
+      },
+      "rawEvidenceArchive": {
+        "file": "frontier-android-evidence.zip",
+        "sha256": "217a06978982d601ad10796865b22dbac69f202e4bf91ae07ba268734d4fef08",
+        "members": 3
+      },
+      "listening": {
+        "status": "not-accepted-headphone-distortion",
+        "scenario": "Manual Sim80, many simultaneous explosions, headphones",
+        "latestUserObservation": "Cesar reports saturation on Android with headphones; does not detect saturation on iPad in the same scenario.",
+        "priorObservation": "Initial Android manual listen was reported clean; superseded by the headphone comparison.",
+        "nextDiagnostic": "Bounded callback CPU/wall and onset profiling during actual Sim80; private artifact prepared, physical capture pending."
+      },
+      "pcmReplayDiagnostic": {
+        "evidence": {
+          "scope": "Private diagnostic only. A: real Sim80 physics plus DSP; B: fresh empty engine copy-only replay of exact captured post-limiter samples. Does not isolate DSP alone or approve maximum-load performance.",
+          "humanListening": {
+            "status": "supports live-delivery failure",
+            "scope": "User clarified live A sounded saturated; replay B had very little or none. This is not an absolute claim that B is perfect. Both refer to the same Android app and unchanged headphones/volume. Prior iPad Sim80 clean listening remains scoped to iPad."
+          },
+          "capture": {
+            "format": "stereo IEEE Float32 WAV, no resampling or gain changes",
+            "frames": 458496,
+            "sampleRate": 48000,
+            "durationMs": 9552.0,
+            "wavSha256": "ddbc73dfcab485d7aec3726b793aae10cbccb5574f98f1e8d568a9d66f8fbd8d",
+            "pcmDataSha256": "3e478615c4711e8d6bee60ef80de72f6ac74807ff00f48d90463336052a51f74",
+            "signal": {
+              "left": {
+                "peak": 0.8500000238418579,
+                "peakDbFS": -1.4116212420815057,
+                "rms": 0.14697399555035084,
+                "rmsDbFS": -16.65518998367989,
+                "nonFiniteSamples": 0,
+                "atOrAboveFullScaleSamples": 0
+              },
+              "right": {
+                "peak": 0.8500000238418579,
+                "peakDbFS": -1.4116212420815057,
+                "rms": 0.14796807348345223,
+                "rmsDbFS": -16.596639611791403,
+                "nonFiniteSamples": 0,
+                "atOrAboveFullScaleSamples": 0
+              }
+            },
+            "last250ms": {
+              "left": {
+                "peak": 0.0,
+                "peakDbFS": null,
+                "rms": 0.0,
+                "rmsDbFS": null,
+                "nonFiniteSamples": 0,
+                "atOrAboveFullScaleSamples": 0
+              },
+              "right": {
+                "peak": 0.0,
+                "peakDbFS": null,
+                "rms": 0.0,
+                "rmsDbFS": null,
+                "nonFiniteSamples": 0,
+                "atOrAboveFullScaleSamples": 0
+              }
+            },
+            "tailQuietBelowMinus80DbFS": true,
+            "scope": "Sample inspection only; clipping/missing samples in the hardware delivery path are outside this captured buffer."
+          },
+          "pcmNativeHash": "928c86b18791b7eb",
+          "wavBytesMatchNativeCaptureDigest": true,
+          "backendConfigurationEqual": {
+            "sampleRate": 48000,
+            "callbackFrames": 256,
+            "format": 2,
+            "channels": 2,
+            "audioApi": 2,
+            "sharingMode": 1,
+            "performanceMode": 12,
+            "usage": 14,
+            "contentType": 2,
+            "burstFrames": 256,
+            "bufferFrames": 512
+          },
+          "routeGuardValid": true,
+          "mediaVolumeIndex": 120,
+          "mediaVolumeMax": 160,
+          "live": {
+            "xrunDelta": 89,
+            "peakRenderLoad": 2.948697
+          },
+          "copyReplay": {
+            "xrunDelta": 0,
+            "peakRenderLoad": 0.0369230625
+          },
+          "ownerFullyClosedBeforeReplay": true,
+          "nativePrivateAarSha256": "7e14092249cd3436606e49ee9c5bb4c97f4852bb73333155e42d90aa14394281",
+          "conclusion": "The user reported saturation in live A and very little or none in B. Exact captured samples replayed with zero reported output xruns versus89 during combined real Sim80 physics and audio synthesis. Together these support live-delivery failure under combined load; this A/B alone does not isolate DSP from game/OS load."
+        },
+        "sha256Manifest": {
+          "summary.json": "4b631e93a7c4b0383dc35ebea2cdfb2bfaf4ca9599ff48d04567a36a5a29a3c9",
+          "app-report.json": "c2d23eb1c33991e86a127b2803e91d0fd398b41a6e86f06a4c6236f55e846129",
+          "pcm-capture-1.wav": "ddbc73dfcab485d7aec3726b793aae10cbccb5574f98f1e8d568a9d66f8fbd8d",
+          "pcm-analysis.json": "1908bf89adca90f7c878579fd0760e8b582fdffaa27ca1cf0b0fa4d5a236b11f"
+        }
+      },
+      "attackPreparationDiagnostic": {
+        "status": "NOT PROMOTED; strict paired comparison INCONCLUSIVE due external route/volume change; candidate output-health FAIL independently",
+        "productionPromoted": false,
+        "baselineXruns": 105,
+        "candidateXruns": [
+          74,
+          166
+        ],
+        "causalImprovementEstablished": false,
+        "limitations": [
+          "Baseline speaker40/160; user connected headphones120/160 before candidate; agent changed no OSsetting.",
+          "User independently started candidateRecord1+Replay while agent preflight was in progress; agent tap began Record2.",
+          "A failed route preflight assertion did not prevent the subsequent shell tap; candidateRecord2 is preserved but not counted as a controlled paired trial.",
+          "No 15s cold-launch quiet fence before candidateRecord1; Record2 followed prior A/B.",
+          "No causal performance improvement claim. Candidate166xruns remains independent failure.",
+          "No additional recordings authorized/performed after this discovery.",
+          "No publicvoicePeak/preLimiter/limiter/bodywindow counters available in this frozen PCMfixture."
+        ]
+      }
+    }
+  }
+}

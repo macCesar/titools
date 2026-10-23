@@ -19,16 +19,19 @@ const run = promisify(execFile);
 
 test('synthesis mirrors reconstruct their pinned official sources with recorded navigation fixes', () => {
   const snapshot = JSON.parse(read(snapshotPath));
-  assert.equal(snapshot.files.length, 11);
-  assert.equal(snapshot.files.filter(record => record.destination.endsWith('.md')).length, 9);
-  assert.equal(snapshot.files.filter(record => record.destination.endsWith('.json')).length, 2);
+  assert.equal(snapshot.files.length, 22);
+  assert.equal(snapshot.files.filter(record => record.destination.startsWith('references/') && record.destination.endsWith('.md')).length, 9);
+  assert.equal(snapshot.files.filter(record => record.destination.endsWith('.json')).length, 6);
+  assert.equal(snapshot.files.filter(record => record.kind === 'example-asset').length, 4);
+  assert.equal(snapshot.files.filter(record => record.kind === 'evidence-archive').length, 3);
   assert.match(snapshot.commit, /^[a-f0-9]{40}$/);
   for (const record of snapshot.files) {
-    const text = read(path.join(skill, record.destination));
-    assert.equal(hash(text), record.mirrored_sha256, record.destination + ' changed after review');
-    if (record.destination.endsWith('.json')) {
-      assert.doesNotThrow(() => JSON.parse(text));
-      assert.equal(hash(text), record.source_sha256, record.destination + ' must remain byte-identical');
+    const bytes = readFileSync(path.join(skill, record.destination));
+    const text = bytes.toString('utf8');
+    assert.equal(hash(bytes), record.mirrored_sha256, record.destination + ' changed after review');
+    if (record.destination.endsWith('.json') || record.destination.endsWith('.js') || record.destination.endsWith('.zip')) {
+      if (record.destination.endsWith('.json')) assert.doesNotThrow(() => JSON.parse(text));
+      assert.equal(hash(bytes), record.source_sha256, record.destination + ' must remain byte-identical');
       continue;
     }
     assert.ok(text.startsWith('> Source snapshot:') && text.split('\n')[0].includes(snapshot.commit));
@@ -51,7 +54,7 @@ test('synthesis mirrors reconstruct their pinned official sources with recorded 
 });
 
 test('synthesis links resolve in the distributed skill and curated recipes retain their entry points', () => {
-  const files = [path.join(skill, 'SKILL.md'), ...readdirSync(path.join(skill, 'references'))
+  const files = [path.join(skill, 'SKILL.md'), path.join(skill, 'assets/example/README.md'), ...readdirSync(path.join(skill, 'references'))
     .filter(name => name.endsWith('.md')).map(name => path.join(skill, 'references', name))];
   for (const file of files) {
     let fenced = false;

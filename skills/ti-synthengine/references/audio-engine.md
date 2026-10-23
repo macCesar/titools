@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation from the reviewed source tree at `937e774db7c5a924c9162cf0bbd01cb546754231` (2026-10-22); implementation and documentation are committed. Upstream `documentation/audio-engine.md` SHA-256: `b8c5ede5dfd467d4199261c5f67eaaee30bac8d708d6e5c3c2090a1d39c0e250`.
+> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at reviewed local commit `5f9bf05ce683794449a49972a963460e6760b07a` (2026-10-23); this synchronization does not publish that commit or a release. Upstream `documentation/audio-engine.md` SHA-256: `8b0ede7f5131c706cf0cfd5f9acbdb8cbcdcbc55e1a5a466f00264ef0f49540c`.
 
 # Audio engine
 
@@ -26,34 +26,32 @@ The native signal path explains how mixing profiles and voice capacity affect th
 - [Engine statistics](#engine-statistics)
 - [Sustained voices](#sustained-voices)
 - [Native transport and processing](#native-transport-and-processing)
+- [Unified transport acceptance boundaries](#unified-transport-acceptance-boundaries)
 
 <!-- TOC-END -->
 
 ## Signal path
 
 ```text
-playTone / playChord / playPattern / noteOn / native sequence
-             |
-       strict validation
-             |
-   native command ring buffer
-             |
- voice pool: source (or FM) -> quantizer -> one-pole low-pass
-             -> state-variable filter -> envelope -> gain
-             -> stereo pan OR binaural FIR
-             |
-       sum voices and steal tails
-             |
- fixed input gain -> chorus -> ping-pong delay -> stereo reverb
-             |
-      smoothed master volume -> optional creative saturation
-             |
- stereo-linked lookahead limiter
-             |
-        floating-point output
+playTone / playChord / noteOn     playSequence / updateSequence
+       strict commands          atomic preallocated score banks
+               \                 /
+                shared 32-voice renderer
+       source/FM -> quantizer -> filters -> envelope -> event gain
+                  stereo pan OR binaural FIR
+                             |
+            per-voice category selection / explicit send
+                   /                         \
+        selected share                    dry share
+ input gain -> chorus -> delay -> reverb   input gain
+        master -> optional saturation       master
+                   \                         /
+                     stereo recombination
+                  one final lookahead limiter
+                      floating-point output
 ```
 
-The audio callback does not allocate memory or wait on a lock. JavaScript and the pattern scheduler publish small commands; the real-time thread consumes them and renders the samples.
+The audio callback does not allocate memory or wait on a lock. JavaScript publishes control commands and immutable score banks; the real-time thread schedules and renders the samples.
 
 ## Oscillators
 
@@ -113,7 +111,7 @@ In protected profiles, gain is fixed when an event starts:
 voiceGain = waveformGain(waveType) * profileFactor / sqrt(eventVoiceCount)
 ```
 
-One tone, one independently held note and one timer-pattern step have an event voice count of 1. A chord or native sequence chord uses the number of pitches in that event. Dividing by the square root of the count keeps the event close to constant power without changing gain sample by sample.
+One tone and one independently held note have an event voice count of 1. Chords, including sequence chords, use their initial pitch count for fixed event compensation. Adding or releasing other voices never rescales an existing event.
 
 Waveforms are calibrated toward a common source RMS:
 
@@ -127,7 +125,7 @@ This calculation is why one three-note `playChord` and three `playTone` calls ar
 
 ## Mixing profiles
 
-The profile is fixed when `startEngine()` opens the stream.
+The profile is fixed when `start()` opens the stream.
 
 | Profile        |              Factor | Sine gain | Limiter ceiling | Intended use                                |
 | -------------- | ------------------: | --------: | --------------: | ------------------------------------------- |
@@ -156,13 +154,13 @@ Overlapping events can trigger audible limiting when their sum exceeds the ceili
 
 `setVolume()` ramps the master to avoid a discontinuous gain step. Per-event `volume` is multiplied before the bus. Values up to 2 are valid, but values above 1 use headroom and make limiting more likely.
 
-Pan uses equal-power coefficients. A centered sound feeds both channels; the sum does not simply double. `panEnd` interpolates the position across a tone or pattern step. Chords use `panSpread` or the explicit `pans` array.
+Pan uses equal-power coefficients. A centered sound feeds both channels; the sum does not simply double. `panEnd` interpolates the position across a tone or sequence note. Chords use `panSpread` or the explicit `pans` array.
 
 ## Voice pool
 
-`maxVoices` reserves between 1 and 32 active voice slots. The setting controls capacity and leaves event gain unchanged. Timed-only replacement selects the least remaining duration. Sustained/transport replacement prefers releasing voices, then the oldest attack. A reused slot receives a short fade tail; no category owns reserved slots.
+`maxVoices` reserves between 1 and 32 active voice slots. The setting controls capacity and leaves event gain unchanged. Replacement first considers the lowest eligible priority (0-3); higher-priority voices are protected. Among that priority, timed-only replacement selects least remaining duration; sustained/transport replacement prefers releasing voices, then oldest attack. A reused slot receives a short fade tail; no category owns reserved slots.
 
-A chord is one command with up to 32 pitches. If its size exceeds the session's voice capacity, slots are reused according to the replacement policy above. When any held/transport voice is active, that policy also applies to incoming timed tones/chords. For normal apps, choose the largest real overlap plus room for release tails.
+A chord is an atomic group of up to 32 pitches. If capacity or priority cannot accommodate every pitch, the entire group is dropped. When any held/transport voice is active, that policy also applies to incoming timed tones/chords. For normal apps, choose the largest real overlap plus room for release tails.
 
 ## Command queue
 
@@ -170,7 +168,7 @@ Both ports use a 128-slot single-consumer ring buffer. Producers are serialized 
 
 `playChord()` publishes its note data and advances the queue index once. The consumer receives the complete event or nothing. `stopAll` and `shutdown` have a control fallback so cleanup is not lost under queue pressure.
 
-The playPattern scheduler runs outside the audio callback. A platform timer places each step on the command queue. That API is suitable for game cues and simple musical patterns. For sample-clock composition, use the separate native transport. The same timer fires `patternend`, about 1 ms after the sum of the step lengths, and the event is handed to the JavaScript runtime asynchronously.
+`playSequence` runs inside the sample-clock callback; JavaScript publishes entire configurations rather than individual notes. Scheduled releases execute independently of public command-queue capacity. `sequenceend` records are delivered outside the callback and retain their sequence identifier when slots are reused.
 
 ## Shared DSP core
 
@@ -184,7 +182,7 @@ The renderer mixes in the data callback and targets a small device buffer. A rou
 
 ## iOS implementation
 
-iOS renders with `AVAudioEngine` and `AVAudioSourceNode`, using the active session's sample rate. The module configures the audio session as `Playback`, or `Ambient` when `startEngine()` receives `audioSession: 'ambient'`, activates it, and observes route and engine configuration notifications. If a route change stops the graph, the port reapplies the category, reactivates the session and resumes the existing renderer.
+iOS renders with `AVAudioEngine` and `AVAudioSourceNode`, using the active session's sample rate. The module configures the audio session as `Playback`, or `Ambient` when `start()` receives `audioSession: 'ambient'`, activates it, and observes route and engine configuration notifications. If a route change stops the graph, the port reapplies the category, reactivates the session and resumes the existing renderer.
 
 The module targets iOS 15 or newer. The module archive contains device, simulator and Mac Catalyst slices.
 
@@ -194,7 +192,7 @@ End-to-end latency contains three main pieces:
 
 1. The fixed 10 ms limiter lookahead.
 2. The hardware and operating-system output buffer.
-3. JavaScript or platform timer scheduling before the command reaches audio.
+3. JavaScript publication and callback-boundary latency for a newly submitted event; accepted sequence steps then follow the sample clock.
 
 Immediate calls are suitable for interface and game feedback. A visual or musical event that must align to a known future time should be scheduled ahead by the app instead of relying on a JavaScript callback at that instant.
 
@@ -215,7 +213,6 @@ cd android
 test_dir=$(mktemp -d /tmp/ti-synth-test.XXXXXX)
 javac -d "$test_dir" \
   src/ti/synthengine/SynthContract.java \
-  src/ti/synthengine/SynthStudioContract.java \
   test/ti/synthengine/SynthContractRegression.java \
   test/ti/synthengine/SynthSpatialContractRegression.java \
   src/ti/synthengine/SynthDsp.java \
@@ -271,7 +268,7 @@ The iOS renderer uses the same DSP header. Its output has no host-rendering test
 
 `shared/synth_spatial.h` runs the same allocation-free FIR processor in both native ports, after each voice envelope and before summation/master/limiter. Nine stereo impulse responses from Gardner and Martin's MIT KEMAR measurements form a compact front-plane grid. The complete 128-sample source responses at 44.1 kHz are interpolated across direction and linearly resampled once at voice onset to the output rate. A single front-response energy calibration preserves directional differences. At 48 kHz the convolution uses 140 padded taps per ear. Buffers are reserved with the voice/tail pools; there are no runtime downloads, callback allocations, or additional callback locks.
 
-Spatial voice-steal and stop tails copy the filter history as well as oscillator state. After the source envelope or fade ends, both ports drain the FIR with zero input for `taps - 1` samples before freeing the voice; this preserves even 1 ms events. Ordinary voices bypass the FIR. CPU cost grows with spatial voices, including short replacement tails. A fixed position avoids changing the filter during an event. The intended output-rate range is 8 to 192 kHz. Interpolated generic HRTFs provide directional cues, but localization varies by listener.
+Spatial voice-steal and stop tails copy the filter history as well as oscillator state. After the source envelope or fade ends, both ports drain the FIR with zero input for `taps - 1` samples before freeing the voice; this preserves even 1 ms events. Ordinary voices bypass the FIR. CPU cost grows with spatial voices, including short replacement tails. Spatial held updates prepare coefficients outside audio, then ramp the FIR over 10 ms while retaining history. The intended output-rate range is 8 to 192 kHz. Interpolated generic HRTFs provide directional cues, but localization varies by listener.
 
 The shared processor check is `cc -std=c99 -O2 -Wall -Wextra -Wpedantic tests/spatial_regression.c -lm -o /tmp/spatial_regression` followed by `/tmp/spatial_regression`. `tests/spatial_engine_host.cpp` uses the same compile flags as `engine_render_host.cpp` and verifies native left/right rendering, elevation changes, stealing and stopping. Java spatial validation is checked by `SynthSpatialContractRegression`; the common Java/iOS corpus also covers spatial acceptance and conflicts.
 
@@ -322,9 +319,9 @@ Run `tests/held_core_regression.c` with C11 for shared envelope/ramp/identity ch
 
 ## Native transport and processing
 
-`shared/synth_sequence.h` advances quarter-note position by compensated sample increments, preserving musical gate positions across tempo changes. A serialized producer prepares sorted traversal and all pitches before publishing one of three immutable banks. The callback accepts tempo at the block boundary and structure at a step boundary; swing changes at a pair boundary. Transport voices share the sustained pool, retain per-slot gate/generation ownership and release independently of the public command queue. See the [public transport contract](api.md#native-sequence-transport).
+`shared/synth_transport.h` owns up to four independent sequences and one global tempo/beat/millisecond clock; `shared/synth_sequence.h` advances each traversal with compensated sample increments. Beat lengths follow tempo changes; millisecond lengths remain constant. A serialized producer prepares sorted traversal and all pitches before publishing one of three immutable banks. The callback accepts tempo at the block boundary and structure at a step boundary; swing changes at a pair boundary. Transport voices share the sustained pool, retain owner identifiers and absolute note deadlines beyond internal slot reuse and release independently of the public command queue. See the [public transport contract](api.md#native-sequence-transport).
 
-`shared/synth_effects.h` supplies chorus, ping-pong delay, damped Schroeder reverb and optional saturation; `shared/synth_modulation.h` supplies two phase-preserving LFOs. Buffers allocate at engine initialization and free after the audio backend stops. Epoch tags invalidate histories during panic without walking the delay memory. Effects start disabled and default rendering follows exact bypass. Enabled effects drain on disable, bounded to 30 seconds. No new external DSP dependency is used.
+`shared/synth_effects.h` supplies chorus, ping-pong delay, damped Schroeder reverb and optional saturation; `shared/synth_modulation.h` supplies two phase-preserving LFOs. Buffers allocate at engine initialization and free after the audio backend stops. Epoch tags on 16-sample pages invalidate histories during panic without walking delay memory; recovery clears at most one short page on a first write. Effects start disabled and default rendering follows exact bypass. Enabled effects drain on disable, bounded to 30 seconds. No new external DSP dependency is used.
 
 Pre-limiter peak and maximum limiter reduction accumulate natively until reset, so polling cannot miss a brief intervention. The callback tracks linear extrema and converts to decibels once per block. Existing output peak/RMS and reduction windows remain approximately 200 ms. Diagnostics are optional; host measurements do not establish device audio deadlines or listening acceptance.
 
@@ -335,3 +332,7 @@ Portable checks: compile and run `tests/sequence_core_regression.c`, `tests/effe
 Device feedback superseded that headroom target for Studio's initial Cristal preset: its fixed gain is restored to 1 because the calibrated setting made a fresh Android installation barely audible. This adds 10.83 dB without saturation or voice-count normalization. Three coherent factory notes remain below the limiter ceiling at maximum master; eight independent coherent notes can require limiting. The calibration recommendations remain recorded separately from this active preset exception.
 
 The [Studio technical validation report](studio-validation.json) records the calibration and corrected full-chain host benchmark, including failed deadline acceptance and pending device checks. Its host performance result must not be presented as hardware realtime acceptance.
+
+## Unified transport acceptance boundaries
+
+The current beta contract uses one renderer, at most 32 voices and capacity for 1-4 sequences. `bus` categories and per-voice sends share one effects chain. No physical-device ten-minute maximum-load acceptance is claimed by these API changes. Host timing, bypass comparisons, memory accounting, actual Android/iOS builds and the remaining device/listening checks are separate evidence. Historical Studio benchmarks below predate these changes and remain historical observations. At 192 kHz, the revised effects buffers use approximately 13.1 MiB; the maximum sequence pool uses approximately 8.23 MiB before renderer voices/queues. Total native accounting must include those remaining structures and recovery peaks; the target is at most 32 MiB additional memory.

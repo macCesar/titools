@@ -1,0 +1,314 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-23",
+  "moduleVersion": "1.0.0 beta",
+  "sourceState": "Native source committed; functional docs committed; physical validation recorded with explicit failed/open criteria",
+  "baselineRevision": "937e774db7c5a924c9162cf0bbd01cb546754231",
+  "implementation": "Unified native transport and selective processing implemented on Android and iOS; eight applications and module example use final API.",
+  "acceptanceComplete": false,
+  "nativeBuilds": {
+    "android": {
+      "result": "success",
+      "command": "ti build -p android --build-only --project-dir android --log-level info",
+      "sdk": "13.4.1.GA",
+      "sourceSha256": "205a3723b49a9ddce9926541015f8859e7f50b943057af73a98e6a516cd8520c",
+      "libraries": [
+        {
+          "abi": "arm64-v8a",
+          "bytes": 136376,
+          "sha256": "ba8c549914027fd0c0292d476244359358ed37106454b4b8f8ab0661f64f1392"
+        },
+        {
+          "abi": "armeabi-v7a",
+          "bytes": 103036,
+          "sha256": "9b1e459a82e3a46754d5988dc8210168bb84e6eea1df1368bd9479b91d8264bc"
+        },
+        {
+          "abi": "x86",
+          "bytes": 151560,
+          "sha256": "b531f915c5202613af7eeda9abe4d7f9e8b7f63459a4f4f4c8665d99653bb82b"
+        },
+        {
+          "abi": "x86_64",
+          "bytes": 148184,
+          "sha256": "7b0581450f815af78044a1bf80e6d66de949a27a8765b0d7571d3e62e111b787"
+        }
+      ],
+      "aarMatchesBuild": true,
+      "sourceFilesSha256": {
+        "android/jni/SynthOboeEngine.cpp": "205a3723b49a9ddce9926541015f8859e7f50b943057af73a98e6a516cd8520c",
+        "android/src/ti/synthengine/SynthStudioContract.java": "27b94bcf653d6c239bcb92f537633435c04e664a55ab17cf93ede7dea7525d86",
+        "android/src/ti/synthengine/TiSynthEngineModule.java": "d2f904dbf688c7685d541edfea9fdfefbeef5c52493bc529ac4599c6eef4371e",
+        "shared/synth_spatial.h": "ba7eb24b4d4b05281d15af72fc4b100185ead954be05e4eacd082af213b3de7b"
+      },
+      "aarSha256": "9c4c712e590d4f15e94a2ee17931c7cb506879aa3c7bddbf58bd32335f07ef45",
+      "sourceUnchangedDuringBuild": true,
+      "productionContainsDiagnosticOrRejectedExperimentCode": false
+    },
+    "ios": {
+      "result": "success",
+      "command": "ti build -p ios --build-only --no-colors --no-progress-bars",
+      "sdk": "13.4.1.GA",
+      "sourceHeaders": {
+        "capturedAt": "2026-10-23T15:07:31.653644+00:00",
+        "files": {
+          "ios/Classes/TiSynthengineContract.h": "484c2b51afbeee17fa5b539f3211256d74c8ef0ad90f0c246229b8e70befc597",
+          "ios/Classes/TiSynthengineContract.m": "1feed79cdced5214a8dadd072ba32c2e82b9aa23d85ba279ea8bb8430f1993e9",
+          "ios/Classes/TiSynthengineModule.h": "30ba0b453ce12eb2717065efa23fb5ab53f901ad0a4d21166fae7f000c66f169",
+          "ios/Classes/TiSynthengineModule.m": "b3c7df467de24658140dfb671f94764686b27066be2920634044628feb8eb85c",
+          "ios/Classes/TiSynthengineModuleAssets.h": "186faae8e50f8e36c7a24abdfef856eb5977cff34fc75f5213287ebf45c4b4b4",
+          "ios/Classes/TiSynthengineModuleAssets.m": "d90360da150669219d27ee32c773781b2079163bc6185af75c857ee583ad04e3",
+          "shared/synth_core.h": "982f819f1450d5a5860133d1b46c5ad16d04e9663a83158314ed7bba3a6ff101",
+          "shared/synth_effects.h": "1d273c2928a4e68aec81490055c10a42886b09c32558be71e37c360f619066c8",
+          "shared/synth_held.h": "c60a42b9716ad56f77844b9d7971dc3fb1d43480467147f7ac46983007681115",
+          "shared/synth_hrtf_data.h": "da3c08282e8078791856b6cc6c4fd5ecc314fc81c82d7bb9764d65a938913a3d",
+          "shared/synth_modulation.h": "dbbd9804e2d7f3530b6880ee8448a9801b401b716f27399fe7894d71d5421d9e",
+          "shared/synth_retrigger.h": "c13ad5179d7cb8e5f43def69e41e9d961805a6f34ad1b0adea1c23bd64acc547",
+          "shared/synth_sequence.h": "45c702d8f0fe9a586e4b105a3d25bdb2c75b9d81551a78edad3b13e7bf2c6a5c",
+          "shared/synth_spatial.h": "ba7eb24b4d4b05281d15af72fc4b100185ead954be05e4eacd082af213b3de7b",
+          "shared/synth_stats.h": "32e6d2a7ed2e1eb410bbcb07bfc300be8e99783169b62ecf1223fa4e47750e27",
+          "shared/synth_transport.h": "290844366ba75fee4d134d297f8cea809b44d2ab68694d415988fe3f22f189e4"
+        },
+        "aggregateSha256": "86f0b22f6f1676bd4fb1ce40cffa9e372dac71f05922febd473a18ed7335494f"
+      },
+      "sourceUnchangedDuringBuild": true,
+      "libraries": [
+        {
+          "path": "ti.synthengine.xcframework/ios-arm64/libti.synthengine.a",
+          "bytes": 302200,
+          "sha256": "e1fd2bd257a3d4541e1bed757b42e0d35498e916d93e0c4d77719373cc234263"
+        },
+        {
+          "path": "ti.synthengine.xcframework/ios-arm64_x86_64-maccatalyst/libti.synthengine.a",
+          "bytes": 612416,
+          "sha256": "f3ec14d634b21d6471962ce7c5d4c6a1724434c84bc2a60884e595439b990124"
+        },
+        {
+          "path": "ti.synthengine.xcframework/ios-arm64_x86_64-simulator/libti.synthengine.a",
+          "bytes": 604368,
+          "sha256": "43c6f95dbb9545302578987df6ab4e46c2598673bd18baa959e7d856c7ce0b32"
+        }
+      ]
+    }
+  },
+  "verification": {
+    "publicContractMethods": 19,
+    "nativeContractPlatforms": [
+      "Android Java",
+      "iOS Foundation"
+    ],
+    "toneChordHeldCorpusCases": 118,
+    "studioCorpusCases": 109,
+    "documentationNativeScoreRecipes": 8,
+    "sharedRatesHz": [
+      16000,
+      44100,
+      48000,
+      96000,
+      192000
+    ],
+    "clock": {
+      "simulatedMinutes": 10,
+      "sequences": 4,
+      "ratesTested": 5,
+      "maximumErrorSamples": 1,
+      "tempoChanges": true,
+      "swing": true,
+      "millisecondClock": true
+    },
+    "concurrency": {
+      "transportCyclesUnderThreadSanitizer": 1000,
+      "androidOnOffGenerationHandoffs": 10000
+    },
+    "render": {
+      "referenceScenarios": 9,
+      "rateWaveCases": 30,
+      "bitExact": true,
+      "effectsEpochOptimizationFiveRatesBitExact": true
+    },
+    "regressions": "Shared DSP/sequence/transport/routing/spatial, native engine, API/defaults, contracts, ownership and consumer audio checks passed; independent review findings corrected.",
+    "hostBypassScreen": "Latest-source four-case recheck: three cases within screening limits; warmed oneVoice stereo remains +3.49% total and +1.73%p95. Follow-up layout investigation did not correct the total threshold. This host screen remains open; all trials are retained.",
+    "physicalSummary": "iPad600-second renderer p95 within limit/zero measured deadline misses. Android extreme-load callback criterion failed. Frontier presentations measured on both devices; Android backend xruns and subsequent headphone distortion reported. iPad Sim80 remains perceptually clean."
+  },
+  "consumers": [
+    {
+      "name": "TiSynth-Studio",
+      "changes": [
+        "start and global tempo",
+        "identified native sequence ownership and completion",
+        "saved instruments/favorites/A/B/steps preserved",
+        "continuous held noise, low-pass bypass and compatible spatial/pan edits",
+        "latest complete sequence coalesces while previous ID retires; cancellation clears pending publication"
+      ],
+      "validation": [
+        "audio14/14",
+        "sequencer7/7",
+        "saved-state/index1/1",
+        "persisted migration3/3",
+        "scoped lint passed"
+      ]
+    },
+    {
+      "name": "titanium-frontier",
+      "changes": [
+        "four native sequence slots",
+        "separate fanfare/extra-life ownership",
+        "selective music processing while combat and propulsion stay dry",
+        "held propulsion with continuous noise/cutoff/position edits",
+        "removed timer-jingle and granular-motor compatibility implementations",
+        "opt-in isolated transport diagnostic",
+        "coalesced complete replacement waits for native sequenceend before slot reuse"
+      ],
+      "validation": [
+        "aggregate79/80; sole duplicate rejection-log failure corrected; affected regression1/1",
+        "all80 audio cases passing across aggregate and focused correction",
+        "scoped source/test lint passed"
+      ]
+    },
+    {
+      "name": "titanium-guardian",
+      "changes": [
+        "start32voices/4slots",
+        "effect sequences compiled to ms with explicit release onset and IDs",
+        "completion listeners and shutdown cleanup",
+        "native sustained motor only; rejected publication/edit reports false without granular fallback",
+        "latest complete sequence coalesces while previous ID retires; cancellation clears pending publication"
+      ],
+      "validation": [
+        "audio-system34/34",
+        "targeted source/test lint"
+      ]
+    },
+    {
+      "name": "synthEngineTest",
+      "changes": [
+        "start/playSequence boundary",
+        "retro scores compile native ms payloads",
+        "preserved existing sound and app changes",
+        "latest complete sequence coalesces while previous ID retires; cancellation clears pending publication"
+      ],
+      "validation": [
+        "synth_safe_regression passed",
+        "retro_1_1_regression passed",
+        "targeted source/test lint"
+      ]
+    },
+    {
+      "name": "Ti-Synthetizer-App",
+      "changes": [
+        "closed final native sequence dictionaries",
+        "native sequence ID ownership and sequenceend lifecycle",
+        "old saved sequence-key migration preserves user identity/name/sound",
+        "separate application score compiler, no JS note scheduler",
+        "latest complete sequence coalesces while previous ID retires; cancellation clears pending publication"
+      ],
+      "validation": [
+        "boundary21/21",
+        "focused sequence UI4/4",
+        "targeted source/test lint"
+      ]
+    },
+    {
+      "name": "BinauralLab",
+      "changes": [
+        "start",
+        "native looping nine-position ms sequence; polling paints only",
+        "identified cancellation",
+        "latest complete sequence coalesces while previous ID retires; cancellation clears pending publication"
+      ],
+      "validation": [
+        "syntax and core-rule lint"
+      ]
+    },
+    {
+      "name": "Simon Game",
+      "changes": [
+        "start method and test doubles; existing edits preserved"
+      ],
+      "validation": [
+        "simon_audio_profile_regression passed",
+        "game_logic_regression passed",
+        "targeted source/test lint"
+      ]
+    },
+    {
+      "name": "sound-engine-test",
+      "changes": [
+        "start method"
+      ],
+      "validation": [
+        "syntax and core-rule lint"
+      ]
+    }
+  ],
+  "example": {
+    "validation": [
+      "example application8/8",
+      "sequence owner5/5",
+      "real Android Java deferred payload corpus1/1",
+      "real iOS deferred payload corpus1/1",
+      "scoped static lint passed"
+    ],
+    "contract": "Partial pending voice edits merge; complete scores replace obsolete source/filter fields; publication waits matching retirement event."
+  },
+  "hostLoad": {
+    "kind": "syntheticAndroidCallback",
+    "sampleRate": 48000,
+    "blockFrames": 256,
+    "simulatedSeconds": 30,
+    "blocks": 5625,
+    "voices": 32,
+    "sequences": 4,
+    "binaural": true,
+    "lfosPerVoice": 2,
+    "effects": true,
+    "loadMedian": 0.197421938,
+    "loadP95": 0.321257813,
+    "loadMax": 1.08478913,
+    "deadlineMisses": 1,
+    "nativeBytes192k": 24649584,
+    "physicalAcceptance": false
+  },
+  "memoryScope": "Counted native engine, command queue, four triple-bank sequence slots, renderer voices/tails, effects and limiter buffers at 192kHz. Excludes managed/bridge/driver/process peak allocations and does not establish the complete recovery-peak acceptance bound.",
+  "performanceReport": "unified-bypass-performance.json",
+  "pendingAcceptance": [
+    "Android Sim80 live delivery/headphone distortion: same-PCM replay comparison completed; actual-game callback attribution and correction remain open",
+    "Android maximum-load callback criterion failed; controlled ten-minute run not started",
+    "Latest-source oneVoice host bypass total-time screen remains above2% after investigation",
+    "Complete192k physical process/bridge/recovery memory bound not established",
+    "Android simulation20 renderer elapsed-work +6.91% investigation remains unresolved",
+    "Strict simulation80 equivalent-load coverage inconclusive on both devices; presentation/FPS limits met for matched Arcade/simulation20",
+    "Remaining listening cases beyond scoped manual Sim80; iPad accepted by Cesar, Android acceptance withdrawn after headphone comparison"
+  ],
+  "scope": {
+    "initialHostValidation": {
+      "devicesAccessed": false,
+      "consumerApplicationsBuilt": false,
+      "commitsMade": false,
+      "pushOrReleases": false
+    },
+    "currentExecution": {
+      "devicesAccessed": true,
+      "nativeModulesBuilt": [
+        "android-four-abis",
+        "ios-device-simulator-catalyst"
+      ],
+      "isolatedFrontierAppsBuilt": [
+        "android",
+        "ios"
+      ],
+      "allEightConsumerApplicationsBuilt": false,
+      "commitsMade": true,
+      "pushOrReleases": false
+    },
+    "interpretation": "Initial host-only scope is preserved as history. Physical reports and later delivery work have their own recorded scope; no complete multiplatform acceptance is claimed."
+  },
+  "nativeSourceCommit": "87b2c3354f182c5742cba84775b075552c80572c",
+  "physicalReport": "physical-validation.json",
+  "latestNativeMemoryAccounting": {
+    "androidRendererHostBytes192k": 24649840,
+    "nativeSourceCommit": "87b2c3354f182c5742cba84775b075552c80572c",
+    "physicalProcessAcceptance": false,
+    "scope": "Current sizeof/capacity accounting, not full process/bridge/allocator/driver peak; one-second host render only sanity-checks finite bounded samples and32activevoices."
+  }
+}

@@ -1,8 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation from the reviewed source tree at `937e774db7c5a924c9162cf0bbd01cb546754231` (2026-10-22); implementation and documentation are committed. Upstream `documentation/examples.md` SHA-256: `90ff3eb384fabbcb104a2b5fc0e8eeac52090a7b9e399241cbc67302abbb225f`.
-
-# Advanced examples
-
-Use these examples with one running engine. Initialize `var synth = require('ti.synthengine')`, `var contract = synth.getDefaults()` and `var WAVE = contract.waveTypes`; verify API version `1.0.0`. See [startup and timed examples](examples.md) and [installation and lifecycle](guide.md#lifecycle).
+> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at reviewed local commit `5f9bf05ce683794449a49972a963460e6760b07a` (2026-10-23); this synchronization does not publish that commit or a release. Upstream `documentation/examples.md` SHA-256: `eba45d9ba675190050f4bfb15873c1c0a9821d5bc034397dcd9bc51dcdbf1e48`.
 
 ## Sustained game motor
 
@@ -62,52 +58,41 @@ function closeMotorAudio () {
 }
 ```
 
-Wire `startMotor` to acceleration/key down, `changeMotor` to a boost change, and `stopMotor` to release or cancellation. Handle a false start/update at the input boundary. On pause/owner close, call `closeMotorAudio` and start the stream again before future input. Only permanent release failure shuts down other audio. Compatible edits ramp for 10 ms without resetting the voice phase; noise clock, source, filter type and spatial position require a new attack. A stolen ID accepts updates as a no-op, so an application requiring continuous recovery must own a renewal policy; there is no reserved motor slot.
+Wire `startMotor` to acceleration/key down, `changeMotor` to a boost change, and `stopMotor` to release or cancellation. Compatible updates ramp over 10 ms without retriggering: frequency, level, noise clock, low-pass, send and position are live controls. Source/filter type requires a new attack. Start spatial voices with coordinates before editing them; pan updates apply to stereo voices. A stolen ID accepts updates as a no-op; optional priority improves admission without reserving voices.
 
 ## Native sequence with chords and edits
 
-Start the engine first and detect all four transport methods. Notes here are integer MIDI values, not the strings used by `playPattern`. Each entry occupies one sixteenth, including rests; `gate` controls the note-off point within it. Release may continue across later steps.
+Start the engine with enough sequence capacity, then store each positive ID. The default interval is a sixteenth note (0.25 beats); rests advance time and gates start release, which can overlap later steps.
 
 ```javascript
-if (!['playSequence', 'updateSequence', 'stopSequence', 'getSequenceState'].every(function (name) {
-  return typeof synth[name] === 'function'
-})) throw new Error('Current native transport beta APIs are required')
-
-if (!synth.playSequence({ bpm: 110, swing: 0.12, loop: true, mode: 'normal',
+synth.setTempo({ bpm: 110 })
+var musicId = synth.playSequence({ swing: 0.12, loop: true, bus: 'music',
   voice: { waveType: WAVE.TRIANGLE, attack: 8, release: 100, volume: 0.3 },
-  steps: [
-    { notes: [60, 64, 67], gate: 0.7 },
-    { rest: true },
+  steps: [{ notes: [60, 64, 67], gate: 0.7 }, { rest: true },
     { notes: [67], gate: 0.5, overrides: { volume: 0.22 } },
-    { notes: [64, 67, 72], gate: 0.85 }
-  ] })) throw new Error('Sequence rejected; retry or retain the previous UI state')
-
-// Later UI edits publish configurations, not individual note timers.
-if (!synth.updateSequence({ bpm: 128, swing: 0.18, voice: { volume: 0.25 } })) {
-  Ti.API.warn('Edit rejected; the previous sequence remains accepted')
-}
+    { notes: [64, 67, 72], duration: 0.5, length: 0.75 }]
+})
+if (musicId === 0) throw new Error('Sequence publication rejected')
+synth.setTempo({ bpm: 128 })
+if (!synth.updateSequence({ sequenceId: musicId, swing: 0.18, voice: { volume: 0.25 } })) Ti.API.warn('Edit rejected')
 var positionTimer = setInterval(function () {
-  var state = synth.getSequenceState()
-  Ti.API.info(JSON.stringify({ playing: state.playing, step: state.step, revision: state.revision }))
+  var state = synth.getSequenceState({ sequenceId: musicId })
+  if (state) Ti.API.info(JSON.stringify(state))
 }, 200)
-
+function stopOnlySequence () {
+  if (!synth.stopSequence({ sequenceId: musicId })) Ti.API.warn('Stop rejected')
+}
 function closeSequenceAudio () {
   clearInterval(positionTimer)
-  // Owner teardown closes the stream, cancelling transport and timer patterns.
   synth.shutdown()
-}
-
-function stopOnlySequence () {
-  // Held keys and unrelated tones continue. A rejected stop must be handled.
-  if (!synth.stopSequence()) Ti.API.warn('Sequence stop rejected; retry outside render')
 }
 ```
 
-BPM changes at the next block while preserving musical position; structural edits apply at the next step and swing at the next pair. To replace a phrase, send the complete `steps` array. Select `up`, `down` or `updown` to reorder sounding steps by pitch; rests participate only in `normal`. `updateSequence` does not resume a stopped sequence; call `playSequence` to restart at the beginning of the traversal. Accepted publication can precede the revision reported by `getSequenceState`. Native completion has no `patternend` event; inspect `playing` for presentation state, without using UI polling to time notes. `playPattern` and `playSequence` replace each other's future events.
+The UI timer presents state; native audio schedules every attack/release. For fixed-time cues use `timeUnit: 'ms'`, whose intervals and note lengths survive tempo changes. Edits enter at the next step, swing at the next pair. Up/down/updown modes reorder sounding steps by pitch; normal mode retains rests. A completed/stopped ID is retired; create a new sequence to play again. `sequenceend` identifies the owner, and releases/tails can outlive completion.
 
 ## Chorus, delay, reverb and creative saturation
 
-This configures the whole mix of a running engine. Check method presence and Boolean acceptance; partial section updates merge with the last accepted settings. Effects start disabled, input gain starts at 1, and no LFOs are added to voices implicitly.
+This configures the selected share of a running engine; `applyTo` defaults to all categories. Check method presence and Boolean acceptance; partial section updates merge with the last accepted settings. Effects start disabled, input gain starts at 1, and no LFOs are added to voices implicitly.
 
 ```javascript
 if (typeof synth.setMasterProcessing !== 'function') {
@@ -136,7 +121,7 @@ function disableMasterEffects () {
 }
 ```
 
-Call `setCreativeDrive(true)` only when a deliberate timbre change is wanted, and check its return value. Drive is not a loudness repair or limiter replacement. `disableMasterEffects` closes effect input gradually and drains delay/reverb/chorus histories for at most 30 seconds before exact bypass; its fixed `inputGain` remains 0.7. Check acceptance and, after tails drain, set `inputGain: 1` if a unity-gain comparison is intended. For panic, `stopAll()` fades current voices, stops native transport and invalidates effect histories; future timer-based `playPattern` steps still require cancellation or `shutdown()`. There are no per-voice sends or separate music/effects buses.
+Call `setCreativeDrive(true)` only for a deliberate timbre change and check acceptance. `disableMasterEffects` closes input and drains bounded tails before exact bypass; it retains input gain 0.7. Set gain back to 1 after tails drain for a unity comparison. Panic stops all sequences, fades voices and invalidates histories. Select music/ambience categories or individual sends when gameplay effects should stay dry.
 
 ## Two voice LFOs
 

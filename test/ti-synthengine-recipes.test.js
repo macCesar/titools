@@ -29,11 +29,11 @@ function explicitTimeline(pattern) {
   for (const step of pattern.steps) {
     assert.ok(Number.isInteger(step.duration) && step.duration > 0);
     if (!step.rest) {
-      const attack = step.attack ?? pattern.attack;
-      const release = step.release ?? pattern.release;
+      const attack = step.overrides?.attack ?? pattern.voice.attack;
+      const release = step.overrides?.release ?? pattern.voice.release;
       assert.ok(Number.isInteger(attack) && attack >= 0 && attack < step.duration);
       assert.ok(Number.isInteger(release) && release >= 0 && release <= step.duration - attack);
-      notes.push({ at: time, duration: step.duration, frequency: step.frequency });
+      notes.push({ at: time, duration: step.length + release, frequency: step.frequencies[0] });
     }
     time += step.duration;
   }
@@ -76,9 +76,9 @@ describe('curated synth pattern rhythm', () => {
     it(`${expected.heading} preserves note spacing and fitted envelopes`, () => {
       const patterns = [];
       const sandbox = context({
-        playPattern(options) {
+        playSequence(options) {
           patterns.push(JSON.parse(JSON.stringify(options)));
-          return true;
+          return patterns.length;
         },
       });
       vm.runInContext(snippet(expected.heading), sandbox);
@@ -92,45 +92,55 @@ describe('curated synth pattern rhythm', () => {
   }
 });
 
-it('closing the pulse owner cancels its timer and guards an already queued callback', () => {
-  const pending = new Map();
-  const listeners = new Map();
-  const chords = [];
-  let nextId = 0;
-  let stops = 0;
+it('closing the native pulse owner stops only its accepted sequence and never schedules JS notes', () => {
+  const listeners = new Map(), sequences = [], stopped = [];
   let shutdowns = 0;
   const sandbox = context({
-    playChord(options) { chords.push(options); return true; },
-    stopAll() { stops++; },
+    addEventListener(event, callback) { listeners.set(event, callback); },
+    removeEventListener(event) { listeners.delete(event); },
+    playSequence(options) { sequences.push(options); return 17; },
+    stopSequence(options) { stopped.push(options.sequenceId); return true; },
     shutdown() { shutdowns++; },
   }, {
-    setTimeout(callback, delay) {
-      const id = ++nextId;
-      pending.set(id, { callback, delay });
-      return id;
-    },
-    clearTimeout(id) { pending.delete(id); },
+    setTimeout() { assert.fail('native pulse must not schedule JS notes'); },
     win: { addEventListener(event, callback) { listeners.set(event, callback); } },
   });
   vm.runInContext([
-    snippet('Convert MIDI pitch to hertz'),
-    snippet('Build a wide layered chord'),
-    snippet('Clean reference versus overlap stress'),
-    snippet('Cancellable repetition'),
+    snippet('Convert MIDI pitch to hertz'), snippet('Build a wide layered chord'),
+    snippet('Clean reference versus overlap stress'), snippet('Cancellable repetition'),
     'startChordPulse()',
   ].join('\n'), sandbox);
-  assert.equal(chords.length, 1);
-  assert.equal(stops, 1);
-  assert.equal(pending.size, 1);
-  const queued = [...pending.values()][0];
-  assert.equal(queued.delay, 260);
-  assert.equal(chords[0].duration, 180);
-
+  assert.equal(sequences.length, 1);
+  assert.equal(sequences[0].timeUnit, 'ms');
+  assert.equal(sequences[0].stepDuration, 260);
+  assert.equal(sequences[0].steps[0].length + sequences[0].voice.release, 180);
+  assert.equal(sequences[0].steps[0].frequencies.length, 4);
+  assert.equal(sequences[0].loop, true);
   listeners.get('close')();
-  assert.equal(pending.size, 0);
-  assert.equal(stops, 2);
+  assert.deepEqual(stopped, [17]);
   assert.equal(shutdowns, 1);
-  queued.callback();
-  assert.equal(chords.length, 1);
-  assert.equal(pending.size, 0);
+});
+
+it('curated scheduling snippets use only the unified native sequence contract', () => {
+  const snippets = Array.from(recipes.matchAll(/```javascript\n([\s\S]*?)```/g), match => match[1]).join('\n');
+  assert.doesNotMatch(snippets, /\b(?:playPattern|startEngine|patternend|setTimeout)\b/);
+  assert.match(snippets, /playSequence/);
+  assert.match(snippets, /stopSequence\(\{sequenceId:/);
+  assert.match(snippets, /event\.sequenceId !== cueSequenceId/);
+});
+
+it('restarting a curated pulse waits for native retirement and coalesces rapid requests', () => {
+  const listeners = new Map(), sequences = [];
+  let active = 0, serial = 0, stops = 0;
+  const sandbox = context({
+    addEventListener(event, callback) { listeners.set(event, callback); },
+    removeEventListener(event) { listeners.delete(event); },
+    playSequence(options) { if(active) return 0; sequences.push(options); active=++serial; return active; },
+    stopSequence() { stops++; return true; }, shutdown() {},
+  });
+  vm.runInContext([snippet('Convert MIDI pitch to hertz'),snippet('Build a wide layered chord'),
+    snippet('Clean reference versus overlap stress'),'startChordPulse();startChordPulse();startChordPulse()'].join('\n'),sandbox);
+  assert.equal(sequences.length,1);assert.equal(stops,1);
+  active=0;listeners.get('sequenceend')({sequenceId:1,reason:'stopped'});
+  assert.equal(sequences.length,2);
 });

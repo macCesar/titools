@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation from the reviewed source tree at `937e774db7c5a924c9162cf0bbd01cb546754231` (2026-10-22); implementation and documentation are committed. Upstream `documentation/troubleshooting.md` SHA-256: `8ec9d1fcf46c111ed5a7bd4c0fb1290d8dc4ca43e7cd44a26802557da1ea18fe`.
+> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at reviewed local commit `5f9bf05ce683794449a49972a963460e6760b07a` (2026-10-23); this synchronization does not publish that commit or a release. Upstream `documentation/troubleshooting.md` SHA-256: `ed2a455e30326894087e393065d9a6f14d8edaf06cbeda5bf472252c38bfea7c`.
 
 # Troubleshooting
 
@@ -9,7 +9,7 @@ Start with the Boolean returned by the call and the native log. Most silent requ
 Look for a structured warning in logcat or the Xcode console:
 
 ```text
-event=validation_warning method=playPattern key=steps reason=invalid_step_type action=rejected value=C4
+event=validation_warning method=playSequence key=steps reason=not_object action=rejected value=C4
 ```
 
 Common fixes:
@@ -107,42 +107,23 @@ If startup remains noisy, temporarily remove other launch work and increase the 
 
 Check these in order:
 
-1. `startEngine()` returned `true`.
+1. `start()` returned `true`.
 2. The tone, chord or pattern call returned `true`.
 3. Master and event `volume` are above zero.
 4. The device media volume is up and the expected route is selected.
 5. `shutdown()` was not called by another owner.
 6. The note is within the current frequency range.
-7. The app is not relying on a pattern that another `playPattern()` call replaced.
+7. The app retained the positive sequence identifier and checked publication acceptance.
 
 On iOS, the module uses a `Playback` session by default, so the silent switch should not mute it. With `audioSession: 'ambient'` the silent switch mutes it by design. Another audio component can change the app-wide session after engine startup; inspect the order if behavior differs from the simple example.
 
-## A pattern stops or skips steps
+## A sequence stops or skips steps
 
-Only one pattern is pending. A new `playPattern()` call cancels steps from the previous scheduler that have not fired. Voices already on the audio thread keep playing.
+Check the positive sequence ID, available `maxSequences` capacity and accepted updates. New sequences do not replace existing ones. All sequences and direct events share the voice pool; higher-priority voices can cause an entire lower-priority chord to drop. Inspect `priorityDropCount`, `rejectedPublicationCount` and output diagnostics separately. A stopped or completed identifier is retired and cannot be resumed by an update.
 
-`stopAll()` fades current voices but does not cancel later scheduled steps. Use `shutdown()` when both active audio and future scheduling must end, or replace the pattern deliberately before stopping its current voices.
+## `sequenceend` never arrives
 
-Make sure every step is an object and has exactly one pitch source:
-
-```javascript
-steps: [
-  { note: 'C4' },
-  { rest: true },
-  { frequency: 660 }
-]
-```
-
-## `patternend` never arrives
-
-The event fires once per accepted `playPattern`, unless shutdown discards the pending schedule. Check, in order:
-
-1. The call returned `true`. A rejected pattern produces no event.
-2. The listener is on the module (`synth.addEventListener`), registered before the pattern started and not removed by a cleanup that already ran.
-3. `shutdown()` was not called first. It discards a pending pattern silently.
-4. The pattern was not replaced. A newer accepted pattern or native sequence delivers `completed: false` for the old one instead of a natural end.
-
-The event arrives when the pattern ends, about 1 ms after the sum of its step lengths, not when you call. A 30 second pattern reports after 30 seconds. Swing and FIR draining can leave sound after completion; the event does not certify audible silence. The [interactive example](https://github.com/macCesar/TiSynthEngine/blob/937e774db7c5a924c9162cf0bbd01cb546754231/example/README.md#pattern-completion-and-replacement) demonstrates completion, replacement and shutdown.
+The event uses `{ sequenceId, reason }`, where reason is `completed` or `stopped`. Looping sequences complete only after an explicit stop. Check that publication returned a positive ID, the listener remains registered and JavaScript is able to receive events. Delivery happens outside audio and does not time the next attack. Shutdown tears down the owner; do not depend on a future completion callback after cleanup.
 
 ## A chord is distorted or pumps
 
@@ -203,19 +184,13 @@ An ended or stolen ID accepts updates as a no-op, so acceptance does not prove a
 
 ## A native sequence edit seems delayed or does not resume
 
-`true` acknowledges publication before the audio callback applies it. Compare `getSequenceState().revision` with the last state you observed; UI polling is presentation, not note timing. BPM applies at the next audio block, structural changes at the next step and swing at the next pair. A whole edit can reject when no preallocated bank/publication slot is free. Retain the last accepted configuration and retry later outside the callback.
-
-`updateSequence` does not start a stopped transport. Use `playSequence` to restart at the beginning of the traversal. Each step must use integer MIDI `notes` or `rest: true`, not pattern note strings or a `duration`. The grid is fixed to sixteenths, and native gate/release scheduling does not require JS timers. For source/filter changes, clear incompatible inherited `modulations` explicitly. See the [native transport contract](api.md#native-sequence-transport).
-
-`playPattern` and `playSequence` cancel each other's future events. Native transport completion/stop has no `patternend`; only a replaced timer pattern reports `completed: false`. `stopSequence` targets only transport voices, while panic and shutdown have wider scope.
+Boolean update acceptance precedes application. Query `getSequenceState({ sequenceId }).revision` when the state is non-null. Structural edits enter at the next step and swing at the next pair. `setTempo` applies globally at the next audio block. Bank pressure rejects the whole publication; retain accepted UI state and retry later. Updates cannot resume retired IDs; create a new sequence and store its new ID. Steps contain MIDI `notes`, `frequencies` or `rest: true`, with optional interval `duration` and independent note `length`.
 
 ## Effects are silent, remain audible when disabled or affect other sounds
 
-Master processing requires a running stream and an accepted `setMasterProcessing` call. Effects start disabled; a low mix can be subtle. Additional voice LFOs are also optional and require the correct source/filter target. There are no new effect fields on `playTone`, `playChord` or `playPattern`; use the master method, or the new `modulations` array on held/sequence voices.
+The stream must run and `setMasterProcessing` must accept the configuration. Effects start disabled. Check `applyTo` categories, each event's `bus` and any explicit `effectSend`, which overrides selection. Delay and LFO sync follow global `setTempo`, initially 120 BPM. Free settings retain hertz or milliseconds.
 
-The master bus processes every simultaneous sound, including dry-looking playback calls. There are no per-voice sends or separate category buses. Delay and LFO sync use the native sequence BPM, initially 120, not the timer-pattern tempo. Use `sync: 'off'` for a free delay time or free LFO rate. Keep source, input and master gains in mind before blaming an effect for a level change.
-
-Disabling chorus/delay/reverb closes their input gradually and drains existing tails for at most 30 seconds, then bypasses exactly. It does not restore a changed `inputGain`. Panic via `stopAll` invalidates histories and stops native transport, while future timer-pattern events can still play. Owner `shutdown` cancels both scheduling paths and closes audio. Saturation remains an optional creative timbre change; it is not the limiter.
+Disabling effects closes input smoothly and lets bounded tails finish, then bypasses exactly. It retains input gain. Panic through `stopAll` stops every sequence, fades voices and invalidates effect histories. Shutdown closes audio and frees resources. Saturation changes timbre separately from the limiter.
 
 ## A brief level dip is gone before the meter refreshes
 
