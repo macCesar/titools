@@ -212,3 +212,21 @@ Summaries can combine equivalent examples, but must preserve every operational r
 Phase 6 reconciles the entire ledger and consumer walkthroughs before a complete verdict. Skipped destinations still require coverage accounting, and byte-identical mirrors/assets retain declared transformations. Wiring tests validate packaging/registration, not source completeness or device behavior.
 
 Work on 2026-10-16: Codex · GPT-6; auditor completeness contract and scoped orientation validation, prompted by the consumer project LM - La Baraja. No shared CLI changes or sibling port are involved.
+
+
+## Synthesis snapshot maintenance
+
+`skills/ti-synthengine/references/source-snapshot.json` records the reviewed module
+commit and, when necessary, the exact dirty-worktree fingerprint. Official
+`documentation/examples.md` is distributed as two ordered `source_parts`:
+`examples.md` and `advanced-examples.md`. Fidelity tests reconstruct the complete
+source after stripping navigation and reversing declared corrections. Both raw
+JSON reports (`stats-performance.json`, `studio-validation.json`) remain byte-identical.
+The snapshot checker auto-discovers Markdown only; audit non-Markdown additions
+explicitly rather than assuming a green checker inventories them.
+
+`source-notes.md` records native discrepancies and evidence boundaries. The
+tracked [synthesis audit record](ti-synthengine-audit-2026-10-22.md) contains the
+source-section routing and exclusions; it is maintainer evidence, not an imported
+startup document or distributed reference. Native implementation fixes require
+work in the module repository; correcting a skill claim does not fix its binary.

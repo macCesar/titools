@@ -245,3 +245,25 @@ release or shared CLI/sibling change is implied.
 **Consequences:** Both skills now have source mappings and audit classifications. Whole-ledger reconciliation and source-derived consumer walkthroughs gate completion. Skipped files cannot erase requirements; cross-skill delegation requires usable verified destinations. Archived details remain additive within existing live topics, not only absent topics. Explicit read-only/existing-authorization branches preserve the requested workflow.
 
 A separate read-only validation found the orientation reference incomplete under the revised rules and identified instruction conflicts, which were corrected. This validates the workflow on that scoped case, not every skill's completeness or current native behavior. No runtime skills/native modules, shared CLI, release manifests, tags or publication changed. A complete audit/correction of `ti-ui` and `ti-game` remains separate work.
+
+
+## 2026-10-22 — Preserve synthesis evidence while correcting upstream claims
+
+**Decision:** Split official examples through ordered snapshot `source_parts`,
+bundle the complete Studio validation JSON, and record native-backed prose and
+validation-command corrections as reversible transformations. Preserve curated
+recipes and their behavior while modernizing JavaScript. Detect the new beta
+capabilities individually rather than relying on the unchanged API version.
+
+**Why:** A passing mirror checker missed a JSON report outside its Markdown
+inventory, and official iOS rejection-count prose promised more than the native
+implementation counts. The oversized example reference needed organization
+without losing any source requirements or runnable control-flow guidance.
+
+**Consequences:** Fidelity tests reconstruct all eight official Markdown sources
+from nine parts and verify two byte-identical JSON reports. The source remains
+TiSynthEngine `6b48af5` plus reviewed documentation edits, not a published binary.
+The rejection-counter omissions and timed one-sample iOS envelope difference
+remain explicit native findings. Device acceptance stays separate from contract,
+shared-DSP and mocked consumer checks. No shared CLI/sibling change or release
+is part of this work. User authorized semantic commits and session documentation.

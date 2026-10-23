@@ -1,6 +1,6 @@
-# Status — 2026-10-18
+# Status — 2026-10-22
 
-**Phase:** TiTools 5.2.0 published and verified on npm and GitHub.
+**Phase:** Synthesis skill audit committed; session documentation updated. Published release remains TiTools 5.2.0.
 **Session by:** Codex · GPT-6.
 **Branch:** `main`.
 
@@ -36,3 +36,22 @@
 TiSynthEngine user requested complete official documentation of the new beta capabilities. The source skill required synchronizing mirrors during that documentation update. Refreshed eight official Markdown mirrors, their navigation/reversible link transformations, unchanged raw statistics JSON, source snapshot and synthesis skill guidance for nineteen methods, held IDs, native transport, master effects/two LFOs, defaults and accumulated telemetry. Preserved curated recipes and their entry links. No CLI, plugin manifests, versions or sibling machinery changed; no commit, push or publication authorized. This is an uncommitted working-tree snapshot of the current module HEAD plus documentation edits, not a new npm/module release.
 
 Targeted mirror fidelity/link checks and five curated recipe regressions pass. Official docs regression and twelve captured option dictionaries pass both native validators; no physical performance/listening claim. Distributed snapshot checker records exact source dirtiness/fingerprint. Existing release history above remains historical and is not a statement that this new reference content has shipped.
+
+
+## Synthesis skill audit — 2026-10-22
+
+- User committed the previous synchronization as `ff3c829` during the audit. This follow-up preserves it and audits TiSynthEngine `6b48af5` plus the exact reviewed documentation dirty fingerprint; upstream documentation remains uncommitted.
+- Completed the source-first review of eight official Markdown documents (906 requirement blocks, 190 sections), two raw reports, README/example integration and curated recipes. Detailed compact routing, exclusions, consumer evidence and native findings are in [the audit record](ti-synthengine-audit-2026-10-22.md).
+- Added the complete Studio validation JSON, split advanced examples with reversible reconstruction, corrected iOS rejection-counter claims, new-function triggers/README and timed-vs-held envelope guidance. Curated modern JavaScript preserves tested rhythm and cancellation.
+- Native findings remain visible: certain iOS sequence/effect/modulation rejections are not counted; timed zero attack/release still convert to one sample on iOS. Device rendering/localization and current full-chain performance remain unverified by this task. No native module changes were made.
+- Verification: 9 targeted TiTools tests; scoped manifest checks; changed-test ESLint; exact snapshot checker; npm dry-run includes both added assets. Upstream documentation, Java/iOS 81-case Studio corpus/contract checks and shared held/sequence/effects/modulation/spatial regressions pass. Three advanced consumer control-flow replays pass with mocked APIs/timers.
+- No shared CLI change or sibling port. User subsequently authorized semantic commits and session documentation. No push or release requested; CHANGELOG records the work under Unreleased and manifests remain 5.2.0.
+
+
+## Session close — 2026-10-22
+
+- `f2a16ae` — `refactor(ti-synthengine): modernize curated recipe JavaScript`.
+- `6c8029a` — `fix(ti-synthengine): align audited references with native beta contracts`.
+- Session documentation records the audit in `status.md`, maintenance conventions in `context.md`, rationale in `decisions.md`, and the full compact coverage/native evidence in `ti-synthengine-audit-2026-10-22.md`. Requirements are unchanged.
+- Validation results from the completed audit remain applicable: no content changed after the successful final checks except session documentation. Commit preparation checks staged whitespace and scope; it does not repeat or expand the already passing suites.
+- Next step: any native iOS corrections or physical audio acceptance belong to TiSynthEngine. A TiTools release is a separate requested action; no push, tag, version bump or publication was performed here.
