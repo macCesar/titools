@@ -1,6 +1,7 @@
 # Native tile maps
 
-Verified against `ti.game@3bea2f4`: upstream `README.md` § Tile maps, `example/tilemap.js`, both `TileLayerProxy` implementations, both native `TileLayer` engines, scene collision, and `Pathfinder`.
+Reviewed on 2026-10-23 against upstream native `88e181c` and
+`macCesar/ti.game@2bf5f82` documentation: `README.md` § Tile maps, `example/tilemap.js`, both `TileLayerProxy` implementations, both native `TileLayer` engines, scene collision, and `Pathfinder`.
 
 Use `Game.createTileLayer()` for a large or mostly static grid. The engine stores the whole map but renders only cells inside the camera, batches the layer through one sheet, checks only collision cells under a mover, and feeds solid cells into `findPath`. A small map whose tiles need independent sprite behavior can still use sprites; `topdown.js` is a 16×12 example of that older pattern.
 
@@ -40,7 +41,7 @@ For Tiled JSON, pass the layer data with `cols: map.width`, `rows: map.height`, 
 
 ## Portable property timing
 
-The pinned upstream README now documents the same creation-time portability
+The reviewed README documents the same creation-time portability
 boundary as the native bindings. Use this contract:
 
 | Timing | Properties |
@@ -52,6 +53,8 @@ boundary as the native bindings. Use this contract:
 iOS rebuilds the grid when `legend`, `firstGid`, `cols`, or `rows` is assigned later. Android exposes no setters for those four. Supplying them in the factory keeps both platforms aligned.
 
 `opacity`, `scrollFactor`, and `restitution` accept ratio numbers or percentage strings. `tileWidth`/`tileHeight`, coordinates, and dimensions do not.
+`data` is a write-only input; inspect individual cells with `getTile()` or
+`cellAt()` instead of expecting the original input shape to read back.
 
 ## Collision cells
 
@@ -116,13 +119,18 @@ function walkTo(player, destination, tileLayer, gameView) {
 }
 ```
 
-Bound the per-query A* search to the useful neighborhood. The layer can be enormous without rendering cost, but `findPath()` still builds a grid for the requested bounds on the calling thread.
+Bound the per-query A* search to the useful neighborhood. Increasing the grid consumes more memory even though drawing only visits visible cells; `findPath()` still builds a grid for the requested bounds on the calling thread.
 
 ## Layering and performance
 
 - Stack separate layers for ground, decoration, and foreground. Layers draw below sprites at the same `zIndex`.
 - Share one sheet when layers use the same tileset.
 - Use `scrollFactor` for parallax layers; collision remains in world coordinates, just as with sprites.
+- In a circular `worldWrapX` scene, the layer repeats drawing and solid cells
+  across the seam only when `x` equals the interval's `minX` and `width` equals
+  `maxX - minX`. This does not make `findPath()` or `raycast()` periodic.
 - Use `visible: false` to exclude the layer from drawing and collision.
-- Toggle `layer.debug` for one layer or `gameView.debug = { hitbox: true }` for every layer's solid cells.
+- Toggle `layer.debug` for one layer or `gameView.debug = { hitbox: true }` for
+  every layer's collision cells: green outlines fully solid cells; yellow
+  draws the top face of one-way cells.
 - Use the performance HUD while scrolling: map dimensions should not change visible-cell draw cost.

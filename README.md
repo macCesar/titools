@@ -178,7 +178,7 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 | ti-expert    | Architecture and implementation     | Starting point for most tasks           |
 | purgetss     | Alloy styling + asset automation    | Utility classes; Alloy/Classic branding, images, colors, fonts and modules |
 | ti-ui        | UI/UX patterns                      | Complex layouts, ListViews, platform UI |
-| ti-game      | 2D games with the `ti.game` module  | Sprites, physics, tile layers, wall jumps, pathfinding, text/performance HUDs, particles, camera |
+| ti-game      | 2D games with the `ti.game` module  | Sprites, physics, tile maps, HUDs, camera, focused keyboard/mouse/gamepad actions, Apple Metal/Catalyst |
 | ti-game-assets | Visual and sound assets | Image generation/editing, synthesis variants, stereo placement, alpha cleanup, manifests, parallax and complete exports |
 | ti-synthengine | Sound design with `ti.synthengine` | Tones, chords, retro/UI effects, alarms, sweeps, patterns, ADSR envelopes, resonant filters, FM, detune, binaural positioning, held voices, native sequences, master effects, voice LFOs, engine statistics, mixing and troubleshooting |
 | ti-admob-unified | Advertising, privacy and mediation | Official `ti.admob.unified` guides, copy-ready library, banners/fullscreen, UMP/ATT and selected-provider configuration |
@@ -191,7 +191,7 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 Notes:
 - The first eight (`ti-reuse-first`, `ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-game-assets`, `ti-synthengine`, `ti-admob-unified`) are specialist workflow skills reflecting TiTools' Titanium conventions and native-module contracts.
 - `ti-reuse-first` runs before the others. It asks whether a thing needs to exist and what already does it — a search order that stops at the first rung that holds — and sweeps an existing `app/` for near-identical controllers, single-listener events, wrappers around one call, and layout recomputed in JavaScript. It is deliberately two-sided: it says when adding a module or a Widget is the right answer, so the bias does not simply invert.
-- `ti-game` documents the `ti.game` native module (2D sprite engine on OpenGL ES 2.0, Android and iOS). Its API reference was verified against the module source and tracks upstream `main` (the module ships features ahead of its manifest version); it applies to Alloy and Classic projects alike and does not depend on PurgeTSS.
+- `ti-game` documents the `ti.game` native module (2D sprite engine using OpenGL ES 2.0 on Android and Metal on iPhone, iPad and Mac Catalyst). Its API reference was verified against the module source and records the reviewed upstream commit and fork documentation snapshot; it applies to Alloy and Classic projects alike and does not depend on PurgeTSS.
 - `ti-synthengine` translates aesthetic sound requests into strict, production-ready JavaScript for the cross-platform `ti.synthengine` 1.0.0 beta module. Official references preserve documentation and raw statistics/Studio validation reports; curated recipes add retro effects, xylophone interaction, memory pads, polyphony and timer ownership. The reviewed source includes nineteen public methods, including held voices, native sequence transport, master effects and optional diagnostics; feature detection remains necessary for older beta binaries. Maintenance notes and a hash manifest distinguish the reviewed working tree from its base commit and published packages, track preserved navigation and state audit limits.
 - `ti-game-assets` treats images and sounds as essential game assets. It coordinates integrated `image_gen` artwork with `ti-synthengine` sound design, variants and stereo placement, and ships Pillow helpers for conservative alpha cleanup and per-world visual/audio manifests.
 - The latter five are documentation-mirror skills, audited against official sources via the internal `titools-skill-auditor`. See [Where the references come from](#where-the-references-come-from).
@@ -460,7 +460,7 @@ Key rules:
 
 ### ti-game
 
-2D game development with the `ti.game` native module — a sprite engine rendered with OpenGL ES 2.0, same JS API on Android and iOS. Works in Alloy and Classic projects.
+2D game development with the `ti.game` native module — a sprite engine rendered with OpenGL ES 2.0 on Android and Metal on iPhone, iPad and Mac Catalyst, with a mostly shared JS API. Works in Alloy and Classic projects.
 
 When it activates:
 - `tiapp.xml` declares `ti.game`, or any file calls `require('ti.game')`
@@ -478,6 +478,7 @@ When it activates:
 - Native `TileLayer` maps with visible-cell rendering, Tiled GIDs, solid/one-way cells, live edits and A* integration
 - Collision-shape overlays plus the expandable performance HUD and opt-in `performance` telemetry event
 - Drag & drop, pinch, rotate, multitouch controls
+- Focused keyboard/mouse/gamepad actions, input contexts, canvas focus and native text-field ownership
 
 Example prompts:
 ```
@@ -865,7 +866,7 @@ This pattern is documented across four bundled TiTools skills: `ti-ui`, `ti-expe
 | ti-expert | Architecture + Implementation | 26 files (patterns, feedback surfaces, file type association, sharing, testing, security, etc.) |
 | purgetss  | Setup + Critical Rules        | 34 files (Classic compatibility, grid, animations, icons, class-index, SVG pipeline, etc.) |
 | ti-ui     | UI Rules + Platform Diffs     | 14 files (layouts, lists, gestures, etc.)             |
-| ti-game   | Native 2D Game Workflow       | 9 files (API, setup, patterns, recipes, tile maps, debugging, roadmap) |
+| ti-game   | Native 2D Game Workflow       | 12 files (API, input, source notes, setup, physics, patterns, recipes, tile maps, debugging, roadmap) |
 | ti-game-assets | Visual and Sound Assets | 10 guides and a manifest example; alpha and contract validation scripts |
 | ti-admob-unified | Unified Advertising | 11 official module guides, source/hash update checks, official example library and game integration guidance |
 | ti-synthengine | Native Sound Synthesis   | 11 Markdown references (9 official parts, curated recipes, maintenance notes), raw statistics and Studio validation reports and a source hash manifest |

@@ -1,6 +1,6 @@
 # Setting up a ti.game project
 
-Installing the module, wiring it into Classic and Alloy projects, organizing art and sound, and the lifecycle work the engine does not do for you. Verified against `ti.game@3bea2f4` (2026-09-02).
+Installing the module, wiring it into Classic and Alloy projects, organizing art and sound, and the lifecycle work the engine does not do for you. Reviewed against `macCesar/ti.game@2bf5f82` (2026-10-23), based on `m1ga/ti.game@88e181c`. See [source-notes.md](source-notes.md) for provenance and verification limits.
 
 <!-- TOC-START -->
 ## Contents
@@ -14,6 +14,8 @@ Installing the module, wiring it into Classic and Alloy projects, organizing art
 - [Lifecycle and cleanup](#lifecycle-and-cleanup)
 - [Debugging and tuning](#debugging-and-tuning)
 - [Platform differences](#platform-differences)
+- [Window resizing, focus and app configuration](#window-resizing-focus-and-app-configuration)
+- [Apple diagnostic workflows](#apple-diagnostic-workflows)
 
 <!-- TOC-END -->
 
@@ -25,8 +27,8 @@ There is no registry and no `ti module install` command — Titanium modules are
 
 ```
 modules/
-├── android/ti.game/0.5.0/
-└── iphone/ti.game/0.5.0/
+├── android/ti.game/1.0.0/
+└── iphone/ti.game/1.0.0/
 ```
 
 Unzipping the module zip at the project root creates exactly that layout.
@@ -37,48 +39,53 @@ Then declare it in `tiapp.xml`. The iOS platform key is `iphone`, not `ios`:
 
 ```xml
 <modules>
-  <module platform="android" version="0.5.0">ti.game</module>
-  <module platform="iphone" version="0.5.0">ti.game</module>
+  <module platform="android" version="1.0.0">ti.game</module>
+  <module platform="iphone" version="1.0.0">ti.game</module>
 </modules>
 ```
 
 Pinning `version` is worth the extra attribute: with two module versions installed side by side, an unpinned entry silently picks the highest one.
 
-**The version string does not identify a feature set — the build date does.** The manifest went `0.3.0` → **`0.4.0`** on 2026-08-20, **`0.5.0`** on 2026-08-27 and **`0.6.0`** on 2026-09-02, and in between each number kept accepting features without moving. So every one of them covers several incompatible builds:
+### Requirements and source builds
 
-| A build from | Missing, compared to what this skill documents |
-| --- | --- |
-| `0.3.0` before 2026-08-18 | `createText`, `createFont`, `screenFixed`, `swept`, `collisionend` |
-| `0.3.0` before 2026-08-19 | also `followPath`, `play(name, { then })`, `raycast`, `after`/`every`, `scrollFactor`, `multiply`/`screen` blends |
-| `0.3.0` before 2026-08-19 16:00 UTC+2 | additionally bleeds at grid-frame edges on smoothed sheets |
-| `0.4.0` — including the 2026-08-20 release zip | `hitboxScaleX`/`hitboxScaleY`, text `maxWidth`, `SpriteSheet.unload()`/`Font.unload()` and the LiveView renderer lifecycle, all added on 2026-08-23 with the manifest untouched |
-| `0.4.0` built before 2026-08-24 | additionally rocks side to side through a multi-frame animation on a `smoothing: true` grid sheet — the half-texel inset was one-sided, so the end frames came out slightly wider and off-centre |
-| `0.4.0` built before 2026-08-26 | additionally `sprite.attachTo()` / `detach()` / `attachedTo`, and `gameView.follow()` still aborts the app on Android if it is handed anything that is not a sprite |
-| `0.4.0` built on 2026-08-26 but before `83b7863` | additionally the opacity an attachment inherits from its target, the `anchor` property, and percentage strings on every ratio — a build in this window has `attachTo` but treats `'55%'` as a number it cannot read |
-| `0.4.0` at its last commit (`b780051`) | additionally everything the `0.5.0` bump carries: `hitboxShape: 'rotatedRect'`, circular solids resolved as circles, `solidMode`, `gravityX`, `linearDamping`, and `restitution` read off both sides of a contact. It also still pulls a swept sprite back to where its frame started when it begins the frame already touching a solid, so a `swept: true` body parked on a slope creeps and then breaks loose as if launched |
-| `0.5.0` built before `d042060` | the performance HUD object form (`debug: { hud, hitbox, hudFont }`) and the `performance` event |
-| `0.5.0` built before `10a046e` | additionally `Game.createTileLayer()`, native visible-cell tile rendering, tile collision/live edits, and TileLayer participation in `findPath` |
-| `0.5.0` built before `85a723d` | additionally read-only `onWallLeft` / `onWallRight` and the `wallhit` transition event for sprite and TileLayer walls |
-| `0.5.0` built before `05cb60c` | additionally `wallSlideSpeed`, the native downward-speed cap while pressed against a wall |
-| `0.5.0` built before `c216e7f` | on Android only, string-row TileLayers with a nested JS `legend` decode as empty because the proxy rejects the ordinary map object; numeric data is unaffected |
-| `0.5.0` built before `d7d471e` (2026-08-28) | additionally the whole gamepad surface: `buttondown`/`buttonup`, `stick`, `trigger`, `gamepadconnected`/`gamepaddisconnected`, and the `gamepads`/`gamepad`/dead-zone properties |
-| `0.5.0` built before `af2e544` (2026-08-29) | additionally circular horizontal worlds: `gameView.worldWrapX` and per-sprite `wrapWorldX` |
-| `0.5.0` built before `80d8f2b` (2026-08-30) | additionally the `solidimpact` event and `impactThreshold` |
-| `0.5.0` built before `9c45cf6` (2026-09-02) — **this includes the artifacts most people have** | no crash fixes: writing `y`/`zIndex` from JS can abort the GL thread with *Comparison method violates its general contract*; a sound whose load failed throws `IllegalStateException` on the next `play()`; passing a mistyped value to `sheet`/`target`/`head`/`tail`/`font` aborts the process in JNI instead of raising a JS error. Also `pinch`/`rotate` fire per motion event instead of ~10 Hz, two-finger rotation can add a whole turn at the ±180° flip, the tap/drag slop ignores `cameraScale`, `cameraX`/`cameraY`/`cameraScale`/`cameraBounds`/`throttle`/`steering` are dropped when passed to a `create*` call, a removed sprite stays retained as the camera's follow target, `collidesWith`/`solidWith` reject a bare string, and the iOS glitch shader goes NaN after roughly 27 minutes |
+Both manifests declare version `1.0.0` and minimum Titanium SDK `13.4.0`.
+The documented build SDK is `13.4.1.GA`. Android uses OpenGL ES 2.0.
+Apple uses Metal and requires iOS/iPadOS 15 or later; the package contains
+arm64 devices, arm64/x86_64 Simulator and arm64/x86_64 Mac Catalyst slices.
+Architecture presence does not establish execution on that hardware.
 
-The newest upstream release is `0.5.0` (2026-09-02), and for once the tag is ahead of the local habit rather than behind it: it sits on `9c45cf6`, so the published zip carries every fix in the row above, while a module built locally from source any time in the previous two weeks reports the same `0.5.0` and does not. Same number, different engine — prefer the release artifact, or rebuild from upstream `main` and let the manifest read `0.6.0`. If a documented call is `undefined`, check the manifest and build commit before hunting for a typo, and rebuild from upstream `main`. More reliable than either is feature detection: read a property **before** writing it (`typeof sprite.hitboxScaleX === 'undefined'`) or probe a method/factory (`typeof Game.createTileLayer === 'function'`). Write-then-read is not proof because Kroll can retain an unknown property on the proxy.
+From the module repository root:
 
-Building the module from source:
-
-```bash
-cd android
-ti build -p android --build-only    # → android/dist/ti.game-android-<version>.zip
-ti build -p ios --build-only        # macOS only → ios/dist/ti.game-iphone-<version>.zip
+```sh
+(cd android && ti build -p android --build-only --sdk 13.4.1.GA)
+(cd ios && ti build -p ios --build-only --sdk 13.4.1.GA)
 ```
+
+Apple requires macOS/Xcode. Its `ios/titanium.xcconfig` selects
+`13.4.1.GA`; selecting another SDK in the CLI also requires changing that
+Xcode SDK setting or providing an external override:
+
+```sh
+cat > /tmp/ti-game-sdk.xcconfig <<'CONFIG'
+TITANIUM_SDK_VERSION = 13.4.1.GA
+CONFIG
+XCODE_XCCONFIG_FILE=/tmp/ti-game-sdk.xcconfig ti build -p ios --build-only --sdk 13.4.1.GA
+```
+
+Run the latter command inside `ios/`. Applications need no `default.metallib`:
+shaders are embedded and compiled once during device initialization. A native
+initialization error logs a diagnostic and stops the view; there is no public
+backend selector or production Apple OpenGL fallback.
+
+Upstream's nightly is an automated `main` build, not a stable release. Record
+source commit and ZIP SHA-256 for any installed artifact: version `1.0.0`
+alone does not establish the reviewed fork's feature set. Probe a method before
+calling it; read a property before writing it. Unknown Kroll properties can
+round-trip without native support, so write-then-read is not proof.
 
 ## Classic projects
 
-`require('ti.game')` anywhere and add the GameView to a window. The 34 demos in the module's `example/` folder are Classic, each one a CommonJS module exporting a start function (`app.js` is the launcher and `backnav.js` is a helper, neither is a demo):
+`require('ti.game')` anywhere and add the GameView to a window. The launcher has 34 mobile touch demos and a 35th Mac input demo; the demos in the module's `example/` folder are Classic, each one a CommonJS module exporting a start function (`app.js` is the launcher; `backnav.js`, `keyboard.js`, and `pool-viewport.js` are helpers):
 
 ```javascript
 // Resources/flappy.js
@@ -111,8 +118,8 @@ The standard Alloy element for a native module view. `method` names the factory 
 ```xml
 <!-- app/views/index.xml -->
 <Alloy>
-	<Window id="index" navBarHidden="true" exitOnClose="true" onOpen="onOpen" onClose="onClose">
-		<Module id="gameView" module="ti.game" method="createGameView" backgroundColor="#8ed8f8" />
+	<Window id="index" navBarHidden="true" exitOnClose="true" onClose="onClose">
+		<Module id="gameView" module="ti.game" method="createGameView" backgroundColor="#8ed8f8" onResize="onResize" />
 		<Button id="jumpButton" title="JUMP" onTouchstart="jump" />
 	</Window>
 </Alloy>
@@ -125,10 +132,6 @@ const Game = require('ti.game');
 const heroSheet = Game.createSpriteSheet({ image: 'hero.png', frameWidth: 64, frameHeight: 64 });
 
 let initialized = false;
-
-function onOpen() {
-	$.gameView.addEventListener('resize', onResize);
-}
 
 function onResize(e) {
 	if (initialized) {
@@ -270,11 +273,17 @@ const mono = Game.createFont({ image: 'fonts/mono.png', charWidth: 9, charHeight
 
 These are **bitmap** fonts — do not put them in `app/assets/fonts/` expecting Titanium's native font handling, and do not use a `.ttf` here. To go from a TTF to either format, the module ships `tools/genfont.py`, which rasterizes it into a grid or BMFont atlas.
 
-The built-in font covers ASCII 32..126 only. Any game whose text includes `ñ`, accents or `¿` needs a generated font — or a `Ti.UI.Label` overlay for that specific string.
+The built-in Press Start 2P font covers ASCII 32..126 plus
+`ÁÉÍÓÚÜÑáéíóúüñ¿¡ÄÖäößËÏëïÈèÊêÀà`. Use precomposed characters;
+combining accents and capital `ẞ` are unsupported (`SS` is the documented
+uppercase alternative). Custom grid fonts still default to ASCII. Generate
+a custom font for other characters. The README's older Draw text paragraph
+still says ASCII-only; its current Font contract and both embedded native
+character maps establish this expanded repertoire.
 
 ## Lifecycle and cleanup
 
-The engine handles what it owns: the render loop pauses and resumes with the activity or app, music pauses and resumes with it, and textures survive an EGL context loss. **Everything you created in JS is yours to stop.**
+The engine handles what it owns: the render loop pauses and resumes with the activity or app, music pauses and resumes with it, and Android textures survive an EGL context loss. Apple retains in-flight GPU resources until Metal commands complete. **Everything you created in JS is yours to stop.**
 
 A leaked `setInterval` keeps running after the window closes, keeps reading sprite properties from a dead scene and keeps the whole closure alive. A looping `createSound` keeps playing over the next screen.
 
@@ -319,7 +328,7 @@ function listen(target, eventName, handler) {
 
 ### GPU textures: `unload()`
 
-Sheets and fonts hold GL textures, and until 2026-08-23 nothing but losing the context ever freed one. `spriteSheet.unload()` and `font.unload()` release the texture on the next rendered frame, from the render thread. Releasing the proxy does the same, so a sheet that goes out of scope no longer strands its memory.
+Sheets and fonts hold GPU textures. `spriteSheet.unload()` and `font.unload()` schedule texture disposal on the render thread; Apple retains resources already encoded in pending Metal commands until completion. Releasing the proxy does the same, so a sheet that goes out of scope no longer strands its memory.
 
 This is for **level streaming** — a game that loads world 2's atlases while world 1's are still resident. It is not a cache: the unload is permanent, and any sprite still pointing at that sheet stops drawing.
 
@@ -343,16 +352,17 @@ alive, keep that GameView attached or create a fresh one on return; rebuilding
 only its Sprite session is insufficient. Verify the actual UIKit presentation
 and installed module on-device.
 
-Multiple retained iOS GameViews also share each physical GCController's
-single `extendedGamepad.valueChangedHandler`. At this pin, each view's
-TGGamepadController installs its own handler and detach clears it. Another
-view can therefore replace or clear an active scene's receiver. Use explicit
-input ownership and test open/close transitions; do not assume independent
-gamepad subscriptions or treat a local fork fix as shipped upstream.
+The reviewed Apple controller implementation uses a shared dispatcher with
+weak per-view receivers (`TGAttachGamepadDevice` / `TGDetachGamepadDevice`).
+Closing one receiver no longer clears another view's physical controller
+handler. Define gameplay input ownership explicitly: retained views may still
+observe gamepad events. Focused keyboard/actions have separate ownership rules
+in [input.md](input.md).
 
-Sources: upstream `ios/Classes/TiGameGameView.m` (`didMoveToWindow`,
-`shutdownRendering`) and `ios/Classes/TGGamepadController.m`
-(`attachController`, `detachController`) at `3bea2f4`.
+Sources: `ios/Classes/TiGameGameView.m` (`didMoveToWindow`,
+`shutdownRendering`) and `ios/Classes/TGGamepadController.m` at the reviewed
+pin. Native inspection verifies lifecycle contracts, not a specific navigation
+presentation on a device.
 
 ### LiveView reloads
 
@@ -373,14 +383,66 @@ Since 2026-08-23 the module retires the previous generation itself: stale render
 
 ## Platform differences
 
-The JS API is identical on Android and iOS. What differs is around it:
+The public API is mostly shared. Preserve these platform contracts:
 
 - **`Ti.UI.createNotification` (Android Toast) does not exist on iOS.** The demos branch on `Ti.Platform.osname` and fall back to `Ti.UI.createAlertDialog`.
-- **The iOS Simulator renders at a 1x logical drawable** (its translated OpenGL path is disproportionately expensive at 3x Retina) and is noticeably slower than any real device. Real iPhone and iPad builds keep the device's native screen scale. Judge performance on device.
+- **The iOS Simulator renders at a 1x logical drawable** (the Metal port retains this policy for comparisons). Simulator timing is not a controlled comparison with physical hardware. Real iPhone and iPad builds keep the device's native screen scale. Judge performance on device.
 - **`logicalDensityFactor` lies in the iOS Simulator** — it reports the device scale while the surface renders at 1x. Derive dp→scene units from the surface instead: `H / Ti.Platform.displayCaps.platformHeight`.
 - **Android's `touchFeedback` ripple** cannot animate over the GL canvas and logs `RippleDrawable` errors; give on-screen buttons manual `backgroundColor` feedback on `touchstart`/`touchend`.
 - **Sound formats**: WAV, MP3 and OGG on Android; WAV, MP3 and M4A on iOS. WAV for effects, MP3 for music covers both.
 - **TileLayer grid configuration**: assign `legend`, `firstGid`, `cols`, and `rows` in `createTileLayer()`. iOS accepts later writes; Android treats them as creation-time inputs.
 - **Android `legend` compatibility**: string-row maps require build `c216e7f` or newer. Older Android proxies ignore a normal nested JS legend object; use numeric data or update the module.
-- **Performance telemetry**: `averagePresentMs` and `presentFailures` exist only on iOS and are omitted on Android.
+- **Performance telemetry**: `averagePresentMs` and `presentFailures` exist only on Apple and are omitted on Android. They measure CPU drawable acquisition/submission and drawable/command failures, not GPU time or confirmed physical presentation.
 - **`theme: 'Theme.Titanium.DayNight.NoTitleBar'`** on the window is the Android idiom for a fullscreen game surface; on iOS use `navBarHidden`/`statusBarHidden` (or the Alloy XML equivalents).
+
+## Window resizing, focus and app configuration
+
+The guarded first `resize` creates the level once. It does not make that level
+responsive: handle later dimensions to reposition HUD/controls and update
+bounds without resetting gameplay. Native touch points are surface pixels;
+Titanium overlay dimensions are points/dp. Derive their conversion from the
+actual canvas, including safe-area and window changes. Pool's source helper
+uses a centered 380×680 point portrait stage; other demos generally use the
+full available canvas. See [examples.md](examples.md).
+
+`extendSafeArea` changes whether window children draw behind system bars.
+For keyboard/mouse, configure the consuming app's indirect-input plist and
+focus ownership before testing; see [input.md](input.md). A fullscreen theme
+alone does not configure launch orientation or guarantee hidden system bars.
+
+Orientation and launch-screen policy are Titanium app configuration, absent
+from the module tutorial. Use `ti-ui` and `ti-guides` before adding a fixed
+orientation: check the app's `tiapp.xml`, iPhone/iPad supported orientations,
+launch screen, root window and applicable Android activities before opening
+the first game window. Do not treat the older `ti-ui` orientation summary as
+proof of complete multi-activity or current launch-screen configuration; that
+cross-skill audit remains outside this module refresh.
+
+## Apple diagnostic workflows
+
+From the source checkout, `python3 tests/apple-renderer/run.py` builds native
+renderer XCTest fixtures (Xcode and XcodeGen required). Its default target is
+iPhone 16e/iOS 18.6; choose another installed runtime with `--destination` and
+`--deployment-target`. Catalyst uses
+`--destination 'platform=macOS,variant=Mac Catalyst' --deployment-target 15.0`.
+`--baseline` compares the preserved OpenGL baseline `127a08c`; this does not
+add an OpenGL backend to the module. Device execution needs
+`--signing-profile`, `--signing-team` and `--signing-identity` together.
+Outputs remain under `/tmp` by default.
+
+After building the Apple ZIP, generate an isolated Classic smoke-test app:
+
+```sh
+python3 tests/apple-renderer/prepare_demos.py --icon /path/to/DefaultIcon.png
+python3 tests/apple-renderer/prepare_demos.py --icon /path/to/DefaultIcon.png --include-input --output /tmp/ti-game-mac-demos
+python3 tests/apple-renderer/test_prepare_demos.py
+```
+
+The helper discovers launcher demos, defaults to SDK `13.4.1.GA` (`--sdk`
+overrides), enables indirect pointer events, and writes diagnostics to
+`metal-demos.json` in the generated app's data directory. Native fixture and
+smoke checks do not replace visual/gameplay review. Current upstream evidence
+records 18 renderer cases on Apple Silicon Catalyst and a physical iPad;
+physical iPhone, Intel execution, complete interactive acceptance and controlled
+performance comparisons remain pending. This skill audit does not rerun or
+extend that hardware evidence.

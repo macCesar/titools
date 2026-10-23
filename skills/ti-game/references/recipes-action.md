@@ -1,6 +1,6 @@
 # Action-game recipes
 
-Production-oriented patterns distilled from the upstream action demos at `ti.game@3bea2f4`. Use [examples.md](examples.md) to locate the full runnable demo and [api.md](api.md) for exact defaults and payloads. The wall-contact API is source/README-backed because upstream has not added a wall-jump demo yet.
+Production-oriented patterns distilled from the action demos and public contracts at `macCesar/ti.game@2bf5f82` (documentation checkout above upstream `m1ga/ti.game@88e181c`; previous skill pin `3bea2f4`). Use [examples.md](examples.md) to locate the full runnable demo and [api.md](api.md) for exact defaults and payloads. The wall-contact API is source/README-backed because upstream has not added a wall-jump demo yet.
 
 Use [physics.md](physics.md) for the implemented equations, units, jump tuning,
 inertia versus direct control, and numerical limits. Recipes select native
@@ -9,6 +9,7 @@ mechanisms; they do not replace that model reference.
 <!-- TOC-START -->
 ## Contents
 
+- [Shared digital actions](#shared-digital-actions)
 - [Tap-to-flap](#tap-to-flap)
 - [Platformer](#platformer)
 - [Top-down / Zelda](#top-down--zelda)
@@ -20,6 +21,80 @@ mechanisms; they do not replace that model reference.
 - [Ball sports / breakout physics](#ball-sports--breakout-physics)
 
 <!-- TOC-END -->
+
+## Shared digital actions
+
+The current `inputmap.js` demonstrates movement, grounded jumps, normalized
+straight/diagonal shots, grounded crouching with fixed feet, separate
+instructions/feedback, and native text-field ownership. [The catalog](examples.md#keyboard-shortcuts-and-shared-helpers)
+lists every shortcut and the Mac-only right/middle mouse limitation. Its
+last-pressed-direction policy differs deliberately from Platformer/Volley,
+where opposite directions cancel and releasing one resumes the other.
+
+For keyboard and digital gamepad actions, write native velocity on action
+transitions; choose one gameplay route per action. This curated extraction
+assumes `player`, `RUN_SPEED`, `jump()` and `win` already exist:
+
+```javascript
+const held = { left: false, right: false };
+gameView.inputMap = {
+	gameplay: {
+		left: [{ device: 'keyboard', code: 'ArrowLeft' }, { device: 'gamepad', button: 'left' }],
+		right: [{ device: 'keyboard', code: 'ArrowRight' }, { device: 'gamepad', button: 'right' }],
+		jump: [{ device: 'keyboard', code: 'Space' }, { device: 'gamepad', button: 'a' }]
+	}
+};
+function applyDirection() {
+	player.velocityX = (Number(held.right) - Number(held.left)) * RUN_SPEED;
+}
+function down(e) {
+	if (Object.prototype.hasOwnProperty.call(held, e.action)) {
+		held[e.action] = true;
+		applyDirection();
+	} else if (e.action === 'jump') {
+		jump();
+	}
+}
+function up(e) {
+	if (Object.prototype.hasOwnProperty.call(held, e.action)) {
+		held[e.action] = false;
+		applyDirection();
+	}
+}
+function focus() {
+	gameView.inputContext = 'gameplay';
+	gameView.focusInput();
+}
+function release() {
+	gameView.inputContext = null;
+	held.left = held.right = false;
+	applyDirection();
+}
+gameView.addEventListener('actiondown', down);
+gameView.addEventListener('actionup', up);
+win.addEventListener('open', focus);
+win.addEventListener('focus', focus);
+win.addEventListener('blur', release);
+win.addEventListener('close', () => {
+	release();
+	gameView.removeEventListener('actiondown', down);
+	gameView.removeEventListener('actionup', up);
+});
+```
+
+Native actions aggregate all bindings: releasing one key/controller leaves
+the action held until the last source releases; repeat does not retrigger it.
+A context change releases actions and requires a fresh press. Do not route
+mapped pad buttons through individual button listeners as well. When keeping
+touch buttons, track each touch source separately from the aggregated native
+action, as Platformer/Volley do, so a key release cannot cancel a held touch.
+
+With a text field, disable the action context on field focus and clear held
+state; restore it and call `focusInput()` only on explicit canvas/focus-button
+return. A paused context can retain just Escape to resume, as in the demo;
+`timeScale = 0` alone does not disable input. Track/cancel owned game timers
+on close. [Project setup](project-setup.md) owns platform and plist prerequisites;
+[API](api.md) owns map validation, raw events and focus contracts.
 
 ## Tap-to-flap
 
@@ -68,7 +143,8 @@ pig.addEventListener('collision', (e) => {
 });
 ```
 
-Obstacles are pooled gates: three sprites each (top pipe, bottom pipe, invisible score zone) that scroll left on `velocityX` and get repositioned when they leave the screen. Freezing the game means setting every scroller's `velocityX = 0` and the player's `gravity = 0` — the engine has no global "stop", but `gameView.timeScale = 0` is one if you want the scene frozen mid-flight.
+Obstacles are pooled gates: three sprites each (top pipe, bottom pipe, invisible score zone) that scroll left on `velocityX` and get repositioned when they leave the screen. The demo wins after five gates; a collision with a pipe or ground ends the
+run, and the next press resets. Freezing the game means setting every scroller's `velocityX = 0` and the player's `gravity = 0` — the engine has no global "stop", but `gameView.timeScale = 0` is one if you want the scene frozen mid-flight.
 
 ## Platformer
 
@@ -176,7 +252,10 @@ Set `carryRiders: false` on terrain that scrolls under a player who should stay 
 
 ## Top-down / Zelda
 
-A tile map from a string array, plus `ySort` for depth. Only water is solid; trees are pure decoration you can walk behind.
+A tile map from a string array, plus `ySort` for depth. Water tiles and the separate house block movement; trees are nonblocking
+decoration you can walk behind. The abbreviated map below shows the tile
+portion; add the house as a separate `collisionGroup: 'solid'`, `ySort: true`
+sprite at the actors' `zIndex`, as in the demo.
 
 ```javascript
 const MAP = [
@@ -204,7 +283,7 @@ for (let row = 0; row < ROWS; row++) {
 			width: TILE,
 			height: TILE,
 			zIndex: 0,
-			collisionGroup: (kind === 'W') ? 'solid' : null    // only water blocks
+			collisionGroup: (kind === 'W') ? 'solid' : null    // only water tiles block; house is a separate solid
 		}));
 	}
 }
@@ -282,6 +361,18 @@ timer = setInterval(() => {
 	}
 }, 100);
 ```
+
+The full companion AI in `topdown.js` adds a timed state machine to the
+simple follow extraction above: sit while the player is idle, stand while
+near a moving player, and walk when outside follow distance. After a startup
+grace period it may approach a nearby tree, face the trunk and play `pee`
+for 1800 ms, then wait 12000 ms before another visit. If the player leaves
+more than five tiles away while it approaches, cancel that visit and use a
+4000 ms retry delay. A started `pee` finishes before following resumes.
+Its 100 ms JS decision interval is cleared on window close; native velocity
+and animation still perform all motion. Water tiles also play staggered
+`flow` animations so the shore does not ripple in sync; track any startup
+JS timeouts when adapting the demo for repeated screen entry.
 
 ## Top-down racer
 
@@ -420,11 +511,16 @@ warnTimer = setInterval(() => {
 ```
 
 Rocks are round (`hitboxShape: 'circle'`), drift on random velocities, spin on `angularVelocity`, and are recycled by `visible = false` rather than removed.
+The demo starts five rocks; clearing them starts another wave. The ship keeps
+flying after a hit, loses one of three lives and receives brief invulnerability.
+Its last life blinks red, and zero lives resets the game. The nose-fired pooled
+bolts inherit ship velocity; hold-to-fire only schedules shots, never movement.
+Stop the looping thruster sound on release and every owned sound/timer on close.
 
 ## Lunar lander
 
 Same flight model as Asteroids, with gravity and a touchdown rule. This is a
-curated recipe, not one of the 34 upstream demos. `land` reports grounding
+curated recipe, not one of the 35 module demos. `land` reports grounding
 after the solid response: live velocity may already be zero or reflected.
 For a static sprite pad, use the snapshotted normal speed in `solidimpact`.
 It is compensated for this frame's acceleration, not the full incoming
@@ -622,9 +718,8 @@ function hitLane(lane, pad) {
 An invisible `misszone` trigger below the pads catches gems that got away and
 counts the miss. `FALL_SPEED = (PAD_Y + NOTE) / 1.6` gives a 1.6 s trip from
 `-NOTE` to `PAD_Y`. At the stated 150 BPM, `60000 / 150 = 400` ms is a quarter
-note; 1.6 s is four quarter notes (eight eighths). The upstream comments say
-"eighth" but the timing constants describe quarters. Correct that wording,
-not the engine or the demo's timing without a separate design decision.
+note; 1.6 s is four quarter notes (eight eighths). The current source corrects the older "eighth" comments
+while preserving the timing constants; an old copy of the demo may still have that wording.
 Position windows convert to time with `windowSeconds = windowPx / FALL_SPEED`.
 The demo uses a JS interval and independent music playback, not an audio-clock
 beat scheduler; see [rhythm timing](physics.md#rhythm-timing).
@@ -659,6 +754,10 @@ ball.addEventListener('collision', (e) => {
 	}
 });
 ```
+
+In Volley, touching the floor scores for the opposite side and serves from
+the center toward the side that conceded. The player/opponent stay on their
+own sides of the net; the AI follows the ball on its side before jumping.
 
 Note the split: walls and the net are `solidWith` (the engine bounces the ball off them for free), while the players and the floor are `collidesWith` (you decide what happens). For breakout, bricks go in `collidesWith` and are removed with `visible = false` on hit while the paddle and walls stay solid.
 

@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- Audited `ti-game` against upstream `88e181c` and fork documentation `2bf5f82`: current keyboard/mouse/gamepad actions and focus, Apple Metal/Catalyst builds and telemetry, shape-aware sweeps, damping/rest and rope-pause corrections, expanded bitmap glyphs, all 35 demos and lifecycle guidance. Added input and source-provenance references; preserved curated recipes and explicit hardware-validation limits.
+
+- Synchronized `ti-synthengine` with the unified 1.0.0 beta working tree: identified simultaneous sequences, global tempo, native-only successive sounds, selective categories/sends and live voice controls. Curated recipes preserve interval/envelope timing through explicit native millisecond lengths; source fingerprints and historical performance limits remain explicit.
+
 - Audited `ti-synthengine` against TiSynthEngine `6b48af5` and its reviewed documentation working tree. Updated discovery for nineteen methods, held voices, native sequences, master effects and two extra LFOs. Split advanced examples without losing official content, bundled the Studio validation report, preserved curated recipes with modern JavaScript and documented iOS rejection-counter omissions plus the existing timed zero-envelope difference. Host/contract evidence remains distinct from device acceptance.
 
 ## [5.2.0] - 2026-10-18

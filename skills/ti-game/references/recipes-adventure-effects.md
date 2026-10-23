@@ -1,6 +1,6 @@
 # Adventure, presentation, and effects recipes
 
-Production-oriented patterns distilled from the upstream non-action demos at `ti.game@3bea2f4`. Use [examples.md](examples.md) to locate the full runnable demo and [api.md](api.md) for exact defaults and payloads.
+Production-oriented patterns distilled from the non-action demos and public contracts at `macCesar/ti.game@2bf5f82` (documentation checkout above upstream `m1ga/ti.game@88e181c`; previous skill pin `3bea2f4`). Use [examples.md](examples.md) to locate the full runnable demo and [api.md](api.md) for exact defaults and payloads.
 
 <!-- TOC-START -->
 ## Contents
@@ -52,6 +52,9 @@ sprite.addEventListener('complete', () => {
 
 ```javascript
 sprite.addEventListener('tap', () => {
+	if (card.state !== 'hand' || card.played || played) {
+		return;
+	}
 	if (card.selected) {
 		card.selected = false;
 		sprite.animate({ x: home.x, y: home.y, rotation: home.rotation, scale: 1, glowOpacity: 0, duration: 150, easing: Game.EASE_OUT });
@@ -65,14 +68,32 @@ sprite.addEventListener('tap', () => {
 });
 ```
 
+The full card state machine deals five cards, permits at most three selected,
+and accepts Done only after dealing/sweeping ends and exactly three are
+selected. `played` guards the whole hand; `card.played` guards each card.
+Done moves the three selected cards side-by-side, disables their wobble and
+fades their glows while the two remaining cards re-fan at center. It becomes
+Reset; reset marks cards `leaving`, disables wobble, sweeps all five left,
+then redeals after 750 ms. Track/cancel that redeal timeout and the 350 ms
+opening-deal timeout when adapting the demo. The completion listener should
+restore wobble after any tween only for cards still in `hand` and unplayed.
+
 **Drag & drop with snapping** (puzzle pieces, board tiles). The drag itself is native; you only decide where it lands:
 
 ```javascript
 const piece = Game.createSprite({ sheet: sheet, frame: index, x: homeX, y: homeY, width: PIECE, height: PIECE, draggable: true, zIndex: 10 });
+let currentCell = null;
 
 piece.addEventListener('press', () => {
 	piece.zIndex = 100;                     // draw above everything while held
 	piece.animate({ scale: 1.15, duration: 120, easing: Game.EASE_OUT });
+});
+
+piece.addEventListener('dragstart', () => {
+	if (currentCell) {
+		currentCell.piece = null;
+		currentCell = null;
+	}
 });
 
 piece.addEventListener('release', () => {
@@ -95,6 +116,7 @@ piece.addEventListener('dragend', (e) => {
 	piece.zIndex = 10;
 	if (best) {
 		best.piece = piece;
+		currentCell = best;
 		piece.animate({ x: best.x, y: best.y, duration: 150, easing: Game.EASE_OUT });
 	} else {
 		piece.animate({ x: homeX, y: homeY, duration: 400, easing: Game.EASE_IN_OUT });
@@ -102,7 +124,13 @@ piece.addEventListener('dragend', (e) => {
 });
 ```
 
-Because every handler is per sprite, this is multi-touch for free: each finger grabs its own piece.
+Because every handler is per sprite, each finger can grab its own piece.
+Release the previous cell on `dragstart` before searching for a new free cell.
+The full puzzle checks all four cells after snapping; when filled, it gives
+each piece a staggered 360-degree celebration tween. Restart clears every
+piece's `currentCell`/occupancy, reduces rotation modulo 360 to avoid unwinding
+previous celebration turns, then tweens position/rotation/scale home. Keep
+those state transitions when building a reusable board.
 
 ## Point & click adventure
 
@@ -233,9 +261,10 @@ Add `blend: 'add'` for fire, magic and sparks — overlaps bloom instead of cove
 ## Ropes and chains
 
 Rope `damping` retains a fraction of the previous displacement **per update**,
-unlike Sprite `linearDamping`, whose coefficient is in 1/s. In the pinned
-source, Verlet displacement and constraint relaxation still run at `dt=0`;
-`timeScale=0` does not guarantee a motionless rope. See the equations and
+unlike Sprite `linearDamping`, whose coefficient is in 1/s. The current
+Android and Apple updates return at `dt <= 0`: nodes, previous positions,
+constraints and tether response freeze. A newly created rope still initializes
+its drawable geometry, and changing the segment count can rebuild it while paused. See the equations and
 pause boundary in [physics.md](physics.md#verlet-ropes-and-tethers).
 
 ```javascript
@@ -294,7 +323,10 @@ gameView.cameraEffect = 'glitch';                                               
 gameView.cameraEffect = 'none';                                                     // skips the pass entirely
 ```
 
-For a big ground plane, one `tileRepeat` sprite covering the whole world beats a grid of tile sprites — the texture keeps its native density and the scene stays one draw call.
+For a repeated decorative ground plane, use `tileRepeat` on one large sprite
+instead of a grid of decorative sprites; it repeats the texture at native
+density. For maps with individual solid/editable cells, use [TileLayer](tilemaps.md).
+Batching, blend changes and effects determine actual draw-call counts.
 
 ## Visual effects
 
@@ -343,9 +375,9 @@ gameView.addEventListener('tap', () => {
 
 **`timeScale`** scales the dt for physics, sheet animations, tweens, particles,
 camera and game-clock timers, while rendering/touch keep running. `0.5` gives
-slow motion; `0` gives zero dt for a pause or hit-stop. Rope still applies
-previous displacement and constraints at zero dt in this snapshot, so test
-rope scenes separately. `timescale.js` compares a game-clock timer with an
+slow motion; `0` gives zero dt for a pause or hit-stop, including rope
+integration and tether response in this snapshot. Rendering, touch and direct
+app property writes remain active; pausing is not an input lock. `timescale.js` compares a game-clock timer with an
 independent JS interval; it does not include a rope.
 
 **`idleAnimation`** — a per-sprite organic sway that composes with tweens and drags. Cheap life for cards, icons, floating pickups and menu art. Disable it before a tween that must land precisely.

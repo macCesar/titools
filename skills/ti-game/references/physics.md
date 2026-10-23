@@ -3,13 +3,13 @@
 Use this reference to choose movement by its intended feel, derive parameters,
 or explain frame-rate-dependent behavior. A camera angle is not a physics
 model: a top-down character, car, spaceship and billiard ball use different
-rules. The [34-demo catalog](examples.md) covers action, platforms, ball games,
+rules. The [demo catalog](examples.md) covers action, platforms, ball games,
 adventures, board interactions and visual demonstrations.
 
-Verified on 2026-10-12 against upstream
-[`3bea2f4007d4aa515e432ec2a016dd14c5c0f2ba`](https://github.com/m1ga/ti.game/tree/3bea2f4007d4aa515e432ec2a016dd14c5c0f2ba).
-Upstream HEAD still has that commit. Local forks and installed binaries can
-contain additional changes; do not silently treat them as this snapshot.
+Reviewed on 2026-10-23 against native upstream
+[`88e181c`](https://github.com/m1ga/ti.game/tree/88e181cb85526d8146d0be6e09b2b90c2551baad)
+and the documentation refresh in `macCesar/ti.game@2bf5f82`. These source
+contracts do not identify the contents of an installed binary.
 
 Each equation is labeled **Engine** (native implementation), **Demo**
 (application rule) or **Analytical** (a mathematical model for tuning).
@@ -80,7 +80,8 @@ For `θ = rotation·π/180`, forward `f=(sin θ,−cos θ)` and right
 | Cross-cutting systems | Camera, Blend, Text, Hitbox, Zones, Timescale | Presentation, geometry, events or clock; not separate locomotion models |
 
 Names map to `example/<name>.js`, with lowercase spelling. These groups cover
-all 34 launcher entries; Lunar Lander in the action recipes is a curated
+the launcher entries; the Configurable input/Keyboard demos exercise input rather
+than add physics models. Lunar Lander in the action recipes is a curated
 composition, not an extra upstream demo. Use [examples.md](examples.md) for
 the exact filenames and [api.md](api.md) for public properties.
 
@@ -96,7 +97,8 @@ pNext = p + vNext·dt
 This is semi-implicit Euler: acceleration before position. In Sprite, the
 order is car integration, angular velocity, thrust and its speed cap,
 gravity, linear damping, position, scroll wrap, path, animation, tween and
-idle wobble. Scene collision/attachment passes can change that result again.
+idle wobble. Scene solid resolution, post-contact damping, and attachment
+passes can change that result again.
 Do not combine several position writers expecting their displacements to add.
 
 **Analytical**, constant acceleration with no cap/contact:
@@ -115,8 +117,8 @@ not eliminate integration error.
 260 and a puck with gravity 0. Constant sideways acceleration is an arcade
 wind field; it is not drag calculated from relative air velocity.
 
-Sources: [Android Sprite.update](https://github.com/m1ga/ti.game/blob/3bea2f4/android/src/ti/game/engine/Sprite.java),
-[iOS TGSprite.update](https://github.com/m1ga/ti.game/blob/3bea2f4/ios/Classes/TGSprite.m).
+Sources: [Android Sprite.update](https://github.com/m1ga/ti.game/blob/88e181cb85526d8146d0be6e09b2b90c2551baad/android/src/ti/game/engine/Sprite.java),
+[iOS TGSprite.update](https://github.com/m1ga/ti.game/blob/88e181cb85526d8146d0be6e09b2b90c2551baad/ios/Classes/TGSprite.m).
 
 ## Thrust, inertia and linear damping
 
@@ -130,7 +132,7 @@ if |v| > maxSpeed: v *= maxSpeed/|v|
 v += (gravityX,gravity)·dt
 if linearDamping > 0:
     v *= max(0,1−linearDamping·dt)
-    if |v| < 4 px/s: v = (0,0)
+    if effectively coasting and |v| < 4 px/s: v = (0,0)
 p += v·dt
 ```
 
@@ -147,32 +149,41 @@ applies its rest threshold. Box2D documents the same continuous decay but
 uses `1/(1+c·dt)`; do not substitute that for ti.game's implemented formula.
 [Box2D damping reference](https://box2d.org/documentation/md_simulation.html).
 
-### Powered launch below the rest threshold
+### Powered launch and post-contact rest
 
-At rest, thrust220 and damping 1.2 at a 1/60 s step give
-`220/60·(1−1.2/60)=3.593` px/s. The threshold erases it before position
-integration, every step. At120 FPS the problem also occurs; thrust100 can
-be erased even at 30 FPS. This follows from the same formula on both platforms.
+The current engine preserves acceleration below the 4 px/s cutoff. At rest,
+thrust 220 and damping 1.2 at a 1/60 s step produce
+`220/60·(1−1.2/60)=3.593` px/s; that powered step now survives. Damping
+still applies during acceleration. An unopposed powered equilibrium may remain
+below 4 px/s without being forced to zero.
 
-For an application that should brake only while coasting, set damping 0
-while thrust is active and restore its chosen coefficient without thrust.
-This changes powered-flight drag. If resistance must remain during thrust,
-the intended correction belongs in the native rest policy, with tests of
-accelerating bodies and resting bodies on both platforms. Do not invent a
-per-frame JS position loop, give an artificial initial velocity, or increase
-thrust solely to escape the cutoff.
+**Engine** tracks the vector sum of thrust, gravity, gravityX and car motor
+acceleration. A tolerance of `1e−6·sum(abs(input acceleration magnitudes))`
+treats floating-point cancellation residue as coasting. After solid resolution,
+`finishDamping()` evaluates the remaining speed and work `v·a`. Below 4 px/s,
+nonpositive or negligible work allows the body to settle. A force cancelled
+by another force, or pressing into a blocked surface, therefore does not
+protect residual tangential drift. An inward rect-wall velocity retained for
+held input is excluded from that tangential test and preserved separately.
 
-Acceleration and resistance together are physically valid. The cutoff is
-the problematic numerical condition. A flame animation proves a visual
-state, not nonzero motion; different device behavior still requires FPS,
-surface, input and installed-build evidence.
+**Historical build boundary:** `3bea2f4` erased every damped velocity below
+4 px/s before position integration, including powered launch. Verify the build
+before diagnosing that behavior. Do not carry its mandatory damping-off
+workaround into current source. Choosing damping only while coasting remains
+a valid application feel, but intentionally removes powered-flight drag.
+
+`tests/test_linear_damping.py` executes production Java/Objective-C update,
+car and post-contact methods at 30/60/120 FPS. Contacts in that fixture are
+velocity projections; it does not certify complete scene/device behavior.
 
 ### Coasting brake feel reference
 
 **Application profile**, Titanium Asteroids autopilot, recorded 2026-10-12:
 set `linearDamping: 0` while thrust is active and `linearDamping: 1.2` s⁻¹
 when thrust stops. Native braking then multiplies velocity by
-`max(0, 1-1.2*dt)`, with the installed engine's rest cutoff.
+`max(0, 1-1.2*dt)`, with the installed engine's rest policy. The current source preserves
+acceleration below the cutoff; this older application profile remains an
+optional control feel rather than a required engine workaround.
 
 César liked the speed of this braking as a reference for other games,
 especially arcade racing, although he did not choose it as the preferred
@@ -317,8 +328,8 @@ instead of simulating two masses. Scenario walls use native restitution;
 player hits use an arcade rule. Plinko uses gravity 1100, restitution 0.42,
 circle pegs and `push` chips.
 
-Sources: [Android Scene.resolveCircleSolids](https://github.com/m1ga/ti.game/blob/3bea2f4/android/src/ti/game/engine/Scene.java),
-[iOS TGScene.resolveCircleSolids](https://github.com/m1ga/ti.game/blob/3bea2f4/ios/Classes/TGScene.m).
+Sources: [Android Scene.resolveCircleSolids](https://github.com/m1ga/ti.game/blob/88e181cb85526d8146d0be6e09b2b90c2551baad/android/src/ti/game/engine/Scene.java),
+[iOS TGScene.resolveCircleSolids](https://github.com/m1ga/ti.game/blob/88e181cb85526d8146d0be6e09b2b90c2551baad/ios/Classes/TGScene.m).
 
 ## Equal-mass billiards and circular containment
 
@@ -396,23 +407,33 @@ at 30 updates,0.404 at 60 and 0.163 at 120. These are not predictions of the
 whole rope's amplitude. An analytical time-normalized alternative would be
 `exp(−c·dt)` or `dRef^(dt/dtRef)`; the engine uses the fixed supplied factor.
 
-At the pinned source, Rope.update has no zero-delta early return. Existing
-Verlet displacement and constraints still run at dt 0; `timeScale=0` is not
-a guarantee that rope nodes freeze. This differs from merely setting the
-gravity term to zero. Scene/hardware acceptance is still needed for a
-pause design; stopping the render loop with `pause()` is a different action
-because it also stops rendering. Do not silently change the global pause
-UX to avoid this boundary.
+At zero or negative dt, the current Rope update returns before tether response,
+Verlet displacement, endpoint pinning and constraint relaxation. Existing node
+positions and their history remain unchanged, so positive dt resumes the saved
+motion. A new rope, or a changed segment count, still rebuilds geometry before
+that return so it is drawable and its endpoint is readable while paused.
 
-Sources: [Android Rope.update](https://github.com/m1ga/ti.game/blob/3bea2f4/android/src/ti/game/engine/Rope.java),
-[iOS TGRope.update](https://github.com/m1ga/ti.game/blob/3bea2f4/ios/Classes/TGRope.m).
+`timeScale=0` now freezes rope simulation while drawing and touch continue.
+A user drag or explicit property write can still move a sprite independently;
+zero scene time does not disable input. `pause()` stops the render loop as well.
+The earlier `3bea2f4` source lacked the early return and could keep relaxing or
+integrating at zero dt; do not apply that historical warning to current builds.
+`tests/test_rope_pause.py` checks node/history/tether state in both native twins
+without a renderer.
+
+Sources: [Android Rope.update](https://github.com/m1ga/ti.game/blob/88e181cb85526d8146d0be6e09b2b90c2551baad/android/src/ti/game/engine/Rope.java),
+[iOS TGRope.update](https://github.com/m1ga/ti.game/blob/88e181cb85526d8146d0be6e09b2b90c2551baad/ios/Classes/TGRope.m).
 
 ## Swept movement and periodic worlds
 
 **Analytical** per-step movement is `Δp=v·dt`:9600 px/s travels160 px
 at 60 FPS. A final-position overlap can skip a thin wall.
 Swept tests examine the traveled segment; circle pairs have circular sweeps,
-other shape pairs use their respective geometry/approximations. The solid
+overlap events for a circle/rect or circle/rotatedRect use an expanded box
+with rounded corners, including relative target movement and periodic offsets.
+Rectangle-pair overlap sweeps retain AABBs. Orientation and size are fixed at
+the end-of-frame values: these are translation sweeps, not rotational sweeps.
+Solid blocking has a separate implementation. The solid
 sweep skips `contain`/`push`; those still use discrete responses. It is not
 a general multiple-substep rigid-body simulation.
 
@@ -422,7 +443,12 @@ Raycast is an instantaneous query, not a gravity-driven projectile.
 **Analytical** normalization for `L=maxX−minX` is
 `x=minX+((x−minX)%L+L)%L`; nearest image displacement is
 `dx−L·round(dx/L)`. Raycast, A*, particles, ropes and skid trails do not
-repeat at the seam. [Worldwrap contract](api.md#physics).
+repeat at the seam. Native path cursors are aligned to the sprite's nearest
+periodic image **before** advancing, preserving signed frame deltas across the
+seam, including steps longer than half a world. This does not make A* itself
+periodic. Rect resting-contact sweeps also defer shallow normal entry to the
+static resolver so tangential sliding survives float-sized contact gaps;
+deep entries and full crossings still sweep. [Worldwrap contract](api.md#physics).
 
 ## Paths, tweens and navigation
 
@@ -440,8 +466,8 @@ Camera/parallax, blend, text, flip and pixel snapping are presentation;
 they do not change those motion equations. Snapping rounds the drawn anchor,
 not physical position, and cannot eliminate every rotational raster change.
 
-Sources: [Path.advance](https://github.com/m1ga/ti.game/blob/3bea2f4/android/src/ti/game/engine/Path.java),
-[Tween.update](https://github.com/m1ga/ti.game/blob/3bea2f4/android/src/ti/game/engine/Tween.java).
+Sources: [Path.advance](https://github.com/m1ga/ti.game/blob/88e181cb85526d8146d0be6e09b2b90c2551baad/android/src/ti/game/engine/Path.java),
+[Tween.update](https://github.com/m1ga/ti.game/blob/88e181cb85526d8146d0be6e09b2b90c2551baad/android/src/ti/game/engine/Tween.java).
 
 ## Rhythm timing
 
@@ -452,8 +478,9 @@ changes the milliseconds represented by a fixed pixel window.
 
 At the demo's stated 150 BPM, quarter duration is `60000/150=400 ms`;
 an eighth is200 ms. The400 ms spawn interval and 1.6s travel are one and four
-quarters, respectively. The upstream comments call them eighths, and the
-old action recipe repeated that error. The corrected recipe preserves timing.
+quarters, respectively. The older `3bea2f4` comments called them eighths, and the old action recipe
+repeated that error. Current source comments and the corrected recipe preserve
+the same timing and identify the quarter-note spacing.
 
 This is a comment/recipe error, not evidence of a faulty native beat engine.
 The demo uses `setInterval(spawn,SPAWN_MS)` and independent `music.play()`;
@@ -461,7 +488,7 @@ it has no audio-position-driven scheduling. Exact musical synchronization,
 actual asset tempo and phase would need separate measurement. A comment-only
 upstream patch should not halve SPAWN_MS or replace the motor.
 
-Source: [Rhythm demo](https://github.com/m1ga/ti.game/blob/3bea2f4/example/rhythm.js).
+Source: [Rhythm demo](https://github.com/m1ga/ti.game/blob/88e181cb85526d8146d0be6e09b2b90c2551baad/example/rhythm.js).
 
 ## Particle integration
 
@@ -479,8 +506,9 @@ come from Euler error, rest/rebound thresholds, per-update Rope damping,
 surface-based parameters, input/lifecycle or different installed binaries.
 
 GameView timers follow scene time, conventional JS timers do not. Rendering
-and touch continue under timeScale 0; the Rope exception above prevents an
-unqualified promise that every position stays unchanged.
+and touch continue under timeScale 0; current Rope nodes/constraints also
+freeze. Explicit writes, dragging and solid/attachment resolution still need
+to be considered when a pause design permits interaction.
 
 For tuning, capture the build, actual FPS, W/H, timeScale, forces and
 velocities. Check rest-to-powered motion, releases, turns, contacts and pauses
@@ -488,8 +516,8 @@ at 30/60/120 FPS, then validate on the target hardware. Scalar equations and
 source parity are useful evidence, not certificates of identical device feel.
 [Telemetry workflow](debugging-performance.md).
 
-Sources: [Android SceneRenderer](https://github.com/m1ga/ti.game/blob/3bea2f4/android/src/ti/game/engine/SceneRenderer.java),
-[iOS TGSceneRenderer](https://github.com/m1ga/ti.game/blob/3bea2f4/ios/Classes/TGSceneRenderer.m).
+Sources: [Android SceneRenderer](https://github.com/m1ga/ti.game/blob/88e181cb85526d8146d0be6e09b2b90c2551baad/android/src/ti/game/engine/SceneRenderer.java),
+[iOS TGSceneRenderer](https://github.com/m1ga/ti.game/blob/88e181cb85526d8146d0be6e09b2b90c2551baad/ios/Classes/TGSceneRenderer.m).
 
 ## What needs a different model
 

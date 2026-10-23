@@ -1,6 +1,7 @@
 # Missing, partial, and out-of-scope features
 
-Verified against `ti.game@3bea2f4` (2026-09-02), especially upstream `TODO.md` and both native implementations. Planned is not shipped; partial means the exact boundary below matters.
+Reviewed on 2026-10-23 against upstream native `88e181c` and
+`macCesar/ti.game@2bf5f82`, especially `TODO.md` and both native implementations. Planned is not shipped; partial means the exact boundary below matters.
 
 ## Not available today
 
@@ -22,7 +23,7 @@ Verified against `ti.game@3bea2f4` (2026-09-02), especially upstream `TODO.md` a
 | TypeScript declarations | Planned | No upstream `ti.game.d.ts` exists |
 | Aseprite JSON import | Planned | SpriteSheet atlases support TexturePacker JSON hash/array formats |
 | Tweening `width`, `height`, or `tintColor` | Not implemented | Tween scale/opacity/glowOpacity; other properties are instant writes |
-| A GameView-level `stop()` | Already covered differently | `timeScale = 0` passes zero dt while rendering/touch continue; Rope can still integrate prior displacement and constraints. `pause()` stops the render loop; see [physics.md](physics.md#verlet-ropes-and-tethers) |
+| A GameView-level `stop()` | Already covered differently | `timeScale = 0` freezes scene time, including Rope integration/constraints/tether, while rendering/touch continue. `pause()` stops the render loop; see [physics.md](physics.md#verlet-ropes-and-tethers) |
 | Standard Titanium touch events on GameView | By design | Use GameView `press`/`tap`/`release`, sprite events, or Titanium views over the canvas |
 | A per-frame JS event | Deliberately absent | React to discrete events and use native movement; coarse `every()` calls are for decisions, not motion |
 
@@ -35,7 +36,13 @@ Verified against `ti.game@3bea2f4` (2026-09-02), especially upstream `TODO.md` a
 - Sprite paths, animation chaining, raycasts, A*, game-clock timers, collision exit, swept movers, and four blend modes.
 - Shape-aware solids: circle and rotated-rect geometry, one-way platforms, carried riders, containment, bilateral circle push, two-sided restitution, `gravityX`, and `linearDamping`.
 - Native wall contacts: `onWallLeft` / `onWallRight`, `wallhit`, TileLayer-wall parity, and `wallSlideSpeed`.
-- Native particles, ropes, effect/music sound backends, car physics, thrust, drag/pinch/rotate, and multi-touch sprites.
+- Native particles, ropes, effect/music sound backends, car physics, thrust, drag/pinch/rotate, and multi-touch sprites. Rope freezes node/history/constraint/tether updates at zero dt; fresh geometry can initialize while paused.
+- Damped powered launch and post-contact rest: effective thrust/gravity/car input survives the 4 px/s cutoff; coasting and blocked tangential drift still settle.
+- Circle-aware swept overlap events (circle/circle and rounded circle/rect/OBB), relative target movement, and periodic offsets; translation only with final-frame shape size/orientation.
+- Resting sweep tangential sliding and periodic path frame-delta preservation.
+- Configurable native digital keyboard/mouse/gamepad actions with contexts, aggregate press/release, raw key events and canvas focus. Mac right/middle mouse action delivery remains unavailable in the reviewed docs; see [input.md](input.md).
+- Extended built-in pixel glyphs for Spanish, German, Dutch and selected French characters; custom font generation still defaults to ASCII.
+- Apple Metal renderer on iPhone, iPad and Mac Catalyst; Android retains OpenGL ES 2.0. This is backend support, not proof of installed-binary/device acceptance.
 - Gamepads: normalized `buttondown`/`buttonup` names, throttled `stick`/`trigger`, connect/disconnect events, `gamepads`/`gamepad` snapshots, dead zone and stick-press hysteresis, and release-everything on background or disconnect.
 - Circular horizontal worlds: `gameView.worldWrapX` plus per-sprite `wrapWorldX`, seam-aware camera, rendering, touch, overlap, solid resolution and swept movement, and a full-width TileLayer that repeats across the seam.
 - Discrete physical impacts: the `solidimpact` event with per-receiver `impactThreshold`, compensated closing speed, shared contact point, opposite normals and mixed restitution, for `block`, `contain` and bilateral `push` responses between sprites.

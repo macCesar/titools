@@ -1,6 +1,7 @@
 # Debugging and performance telemetry
 
-Verified against `ti.game@3bea2f4`: both `GameViewProxy` implementations, `DebugHud`, `FrameStats`, both scene renderers, `example/camera.js`, `example/particles.js`, and `example/tilemap.js`.
+Reviewed on 2026-10-23 against upstream native `88e181c` and
+`macCesar/ti.game@2bf5f82` documentation: both `GameViewProxy` implementations, `DebugHud`, `FrameStats`, both scene renderers, `example/camera.js`, `example/particles.js`, and `example/tilemap.js`.
 
 ## The two debug aids
 
@@ -32,7 +33,7 @@ The HUD is screen-space and is drawn after the camera effect. Camera scroll, zoo
 - Green: collision shape after `hitboxScale`, `hitboxScaleX`, and `hitboxScaleY`.
 - Blue: full sprite/touch bounds.
 - Orange: anchor.
-- Tile debug: outlines fully solid cells in view.
+- Tile debug: green outlines fully solid cells; yellow marks one-way top faces.
 
 Tune geometry in this order:
 
@@ -47,7 +48,7 @@ The scale properties affect collision, not the touch rectangle. `hitboxShape: 'c
 
 | HUD | Event key | Meaning |
 | --- | --- | --- |
-| `FPS` | `fps` | Frames presented in the closed one-second window |
+| `FPS` | `fps` | Frames recorded in the measurement window; Metal submission does not confirm physical presentation |
 | `MS` | `averageCpuMs` | Average engine CPU time per frame; the `maxFps` wait is excluded |
 | `P95` | `p95CpuMs` | 95th percentile CPU frame time |
 | `MAX` | `maxCpuMs` | Worst CPU frame in the window |
@@ -60,8 +61,8 @@ The scale properties affect collision, not the touch rectangle. `hitboxShape: 'c
 | `UPDATE` | `averageUpdateMs` | Physics, animation, tween, and scene update time |
 | `TEXTURE` | `averageTexturePrepareMs` | Texture preparation/upload time |
 | `BATCH` | `averageBatchMs` | Batching and drawing time |
-| `PRESENT` | `averagePresentMs` | iOS only: buffer presentation time |
-| `PRESENTFAIL` | `presentFailures` | iOS only: failed presentations |
+| `PRESENT` | `averagePresentMs` | Apple only: CPU time acquiring a Metal drawable and submitting presentation; excludes GPU execution |
+| `PRESENTFAIL` | `presentFailures` | Apple only: missing drawables and reported command errors |
 
 The event also includes `surfaceWidth` and `surfaceHeight`. Android omits `averagePresentMs` and `presentFailures`; do not interpret missing keys as zero.
 
@@ -81,7 +82,7 @@ function cleanup() {
 }
 ```
 
-Telemetry is opt-in inside the renderers. With the HUD disabled and no `performance` listener, frame-stat clock reads are disabled. Use the HUD while developing; use the event for short diagnostic sessions or a deliberate in-app performance screen, not permanent per-frame business logic.
+Telemetry is opt-in inside the renderers. With the HUD disabled and no `performance` listener, telemetry timing and HUD drawing are skipped. The simulation clock still runs. Use the HUD while developing; use the event for short diagnostic sessions or a deliberate in-app performance screen, not permanent per-frame business logic.
 
 ## Reading the numbers
 
@@ -90,15 +91,23 @@ Telemetry is opt-in inside the renderers. With the HUD disabled and no `performa
 - High update time: narrow collision groups and reduce active colliders/particles; hidden sprites are excluded from render and collision.
 - A large `TileLayer` should keep draw calls and visible work stable while the camera moves; one sprite per tile scales with the whole scene instead.
 - `maxFps: 60` can prevent a 120 Hz display from doubling work when the game does not need it.
-- Judge final performance on hardware. The iOS Simulator's translated OpenGL path is intentionally rendered at 1× and remains slower than a device.
+- Judge final performance on hardware. The Apple backend uses Metal on iPhone, iPad, Simulator and Mac Catalyst. Simulator/host fixture results do not establish physical-device GPU timing or presentation.
+
+The Apple Simulator keeps a 1× logical drawable; physical iPhone/iPad builds
+use native screen scale. A frame-cap request is platform scheduling, and a
+Metal frame can be skipped when its in-flight slot or drawable is unavailable.
+The next successful simulation frame includes elapsed time capped at 0.1 s.
+Do not compare telemetry across different drawable scales or call submission
+counts a measurement of physically presented frames.
 
 ## Common diagnostic order
 
 For a physics discrepancy, record the installed build/commit, surface size,
 `timeScale`, input values and actual FPS first. `maxFps` is a cap, not a fixed
 physics step. A visible thruster proves an animation state, not acceleration.
-The damping rest threshold can erase a small first thrust step, and Rope uses
-per-update damping. See [physics.md](physics.md#time-step-and-frame-rate).
+Older builds could erase a small first thrust step; current source preserves
+effective acceleration and settles coasting after contacts. Rope still uses
+per-update damping, but now freezes at zero game delta. See [physics.md](physics.md#time-step-and-frame-rate).
 
 1. Confirm the object was added and is visible/in bounds.
 2. Turn on the relevant sprite/layer debug shape, then the global overlay if relationships are unclear.

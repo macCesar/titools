@@ -1,14 +1,20 @@
 ---
 name: ti-game
-description: "Use when a Titanium app declares ti.game in tiapp.xml, imports require('ti.game'), or needs a 2D game built or reviewed with that native engine: sprites, native movement, collisions, tile layers, camera, HUD, audio, particles, or touch. Covers Alloy and Classic on Android/iOS. Do not use for unrelated game engines or ordinary Titanium UI."
+description: "Use when a Titanium app declares ti.game in tiapp.xml, imports require('ti.game'), or needs a 2D game built or reviewed with that native engine: sprites, native movement, collisions, tile layers, camera, HUD, audio, particles, touch, keyboard/mouse actions or gamepads. Covers Alloy and Classic on Android, iOS and Mac Catalyst. Do not use for unrelated game engines or ordinary Titanium UI."
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash(node *)
 ---
 
 # ti.game — native 2D games for Titanium SDK
 
-`ti.game` is Michael Gangolf's OpenGL ES 2.0 sprite engine for Titanium. JavaScript describes the scene and reacts to discrete events; Android and iOS run rendering, animation, physics, collision, gestures, audio, particles, ropes, tile layers, camera work, and telemetry natively.
+`ti.game` is Michael Gangolf's native sprite engine for Titanium: OpenGL ES 2.0 on Android and Metal on iPhone, iPad and Mac Catalyst. JavaScript describes the scene and reacts to discrete events; Android and iOS run rendering, animation, physics, collision, gestures, audio, particles, ropes, tile layers, camera work, and telemetry natively.
 
-This skill is verified against upstream `main` at **`3bea2f4` (2026-09-02)**. Both manifests say **`0.6.0`**, which is unreleased; the published **`0.5.0`** release carries the same engine code, because its tag sits on the commit immediately before the version bump. Treat the commit or build date as the capability marker, never the version string — a locally built artifact stamped `0.5.0` can predate that release by weeks. Feature-detect an installed build when the exact artifact is unknown.
+Reviewed on **2026-10-23** against `macCesar/ti.game@2bf5f82`, based on
+upstream `m1ga/ti.game@88e181c`. Both manifests declare **`1.0.0`** and
+minimum Titanium SDK **`13.4.0`**; documented builds use **`13.4.1.GA`**.
+The fork's documentation/build adjustments and upstream engine are recorded
+separately in [references/source-notes.md](references/source-notes.md).
+Identify installed artifacts by source commit and ZIP hash; the version alone
+does not prove these capabilities or publication of the fork.
 
 The skill applies to **Classic and Alloy** projects. Nothing here requires PurgeTSS.
 
@@ -25,6 +31,8 @@ Open the references relevant to the task before proposing code. Do not answer fr
 | Task | Read first |
 | --- | --- |
 | Exact methods, properties, defaults, event payloads, percentages | [references/api.md](references/api.md) |
+| Keyboard, mouse, named actions, contexts, focus and controller ownership | [references/input.md](references/input.md) |
+| Source pins, upstream/fork differences, audit limits | [references/source-notes.md](references/source-notes.md) |
 | Install, Classic/Alloy structure, assets, cleanup, lifecycle | [references/project-setup.md](references/project-setup.md) |
 | Choose a runnable upstream example | [references/examples.md](references/examples.md) |
 | Choose or tune a physical model, derive equations/units, diagnose FPS-dependent motion | [references/physics.md](references/physics.md) |
@@ -63,6 +71,7 @@ Do not move sprites from `setInterval`, `requestAnimationFrame`, or a JS loop. P
 | Chain, tether, cape | `Game.createRope()` |
 | Pause or slow the scene while still drawing | `gameView.timeScale` |
 | Measure FPS, frame time, and draw calls | `debug: { hud: true }` or the `performance` event |
+| Map keyboard, mouse and gamepad buttons to actions | `inputMap`, `inputContext`, `actiondown` / `actionup`, `focusInput()` |
 | Read a game controller | GameView `buttondown`/`buttonup`, `stick`, `trigger` (names normalized across pads) |
 | Wrap the world around horizontally | `gameView.worldWrapX` + per-sprite `wrapWorldX` |
 | React to the force of a hit | `solidimpact` with a per-sprite `impactThreshold` |
@@ -114,6 +123,7 @@ win.open();
 
 ## Non-negotiable invariants
 
+- For keyboard/mouse, read the focused input contract and consuming-app plist requirements before coding; keep native text fields and overlaid controls usable.
 - Build surface-dependent content from the GameView's guarded `resize` event. `Ti.Platform.displayCaps` is not the scene surface and can include system bars or different units.
 - Coordinates use a top-left origin, y increases downward, and `(x, y)` is the sprite anchor. Durations crossing the JS boundary are milliseconds.
 - `solidWith` blocks; `collidesWith` reports `collision`/`collisionend`. They are independent. A sized sprite without a sheet is a valid invisible solid or trigger.
@@ -131,12 +141,19 @@ When sources disagree, use this order:
 
 1. Android and iOS native proxy/engine code for actual behavior and parity.
 2. `example/*.js` for combinations exercised by the module, not code-quality conventions.
-3. Upstream `README.md` and `TUTORIAL.md` for intended public usage.
+3. Upstream `README.md` and `tutorial.md` for intended public usage.
 4. Upstream `TODO.md` for what remains partial or absent.
 
-Rechecked upstream HEAD on 2026-10-12: it remains `3bea2f4`. The catalog contains 34 demos. Examples establish intended API combinations; source inspection does not certify an installed binary or hardware behavior. Keep local fork changes separate from that upstream pin.
+The reviewed launcher has **35 demos**: 34 mobile touch scenes plus
+Configurable Input on Mac. Helpers and layout/focus behavior are cataloged in
+[references/examples.md](references/examples.md). Source inspection and host
+regressions do not certify installed binaries or physical-device behavior.
 
-Known source-level traps are collected in [references/physics.md](references/physics.md): thrust can be erased by the damping rest threshold, rope damping is per update and zero-delta rope updates are not a guaranteed freeze, and Rhythm's 400 ms subdivision comment is wrong at its stated 150 BPM. The wall-slide flags still have no demo; their contract comes from the README and both native implementations. Classify a wrong demo comment separately from a reproduced native-engine defect before proposing an upstream change.
+Current damping lets effective unopposed acceleration build speed from rest, and a zero-delta rope update
+freezes its initialized geometry. Older `3bea2f4` behavior is historical; read
+[references/physics.md](references/physics.md) for the current equations,
+remaining step-size limits and regression boundaries. Input focus and Mac
+right/middle mouse limitations belong in [references/input.md](references/input.md).
 
 ## Before returning code
 

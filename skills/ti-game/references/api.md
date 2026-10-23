@@ -1,8 +1,8 @@
 # ti.game API reference
 
-Complete JS surface of `ti.game` as of upstream `main` at `3bea2f4`, 2026-09-02, verified against every Android proxy/engine and its iOS twin. Defaults come from native fields, not prose. The manifests read **`0.6.0`**, which is unreleased: the published **`0.5.0`** release carries the same engine code, because its tag sits on the commit right before the version bump. Read the number as a floor, never as a feature list — a locally built artifact stamped `0.5.0` may predate that release by weeks. Older `0.3.0`/`0.4.0` artifacts also vary by build date; feature-detect when the artifact is unknown. Read a property before writing it, because Kroll can retain an unknown write on the proxy. Methods are safer probes (`typeof Game.createTileLayer === 'function'`), as are normalized properties (`solidMode` reads an unknown name back as `'block'` only when the engine implements it).
+Portable JS surface reviewed against `m1ga/ti.game` main at `88e181cb85526d8146d0be6e09b2b90c2551baad` and the documentation refresh in `macCesar/ti.game@2bf5f828a3bb8028eed20d6ba27b97dd3aa9a753`, 2026-10-23. Android uses OpenGL ES 2.0; Apple uses Metal on iPhone, iPad and Mac Catalyst. Both manifests declare `1.0.0` and minimum Titanium SDK `13.4.0`; this source review does not establish the version or behavior of an installed artifact. Check the artifact's source commit, especially nightly builds sharing a version. Feature-detect when the artifact is unknown: methods are safer probes than unknown property writes retained on a Kroll proxy.
 
-Properties are live unless their table says creation-time or read-only. Every writable property can be passed to its `create*` factory. `TileLayer` has four cross-platform creation-time inputs (`legend`, `firstGid`, `cols`, `rows`) because Android does not expose the live setters that iOS has. All durations crossing the JS boundary are **milliseconds**.
+Properties are live unless their table says creation-time or read-only. Every writable property can be passed to its `create*` factory. Exceptions for portable code: `animations` must be supplied at Sprite creation, and TileLayer `legend`, `firstGid`, `cols`, `rows` must be supplied at TileLayer creation. All durations crossing the JS boundary are **milliseconds**. For keyboard, mouse, action maps and focus, read [input.md](input.md).
 
 <!-- TOC-START -->
 ## Contents
@@ -100,10 +100,13 @@ A normal Titanium view — add it to a window or any container, size it with the
 | `remove(object)` | method | — | Remove one object from the scene — **and, recursively, every sprite attached to it** (see [Attachment](#attachment)) |
 | `removeAllSprites()` | method | — | Clears Sprite/Text objects and their attachments. It does **not** remove emitters, ropes, or tile layers; track and remove those separately |
 | `pause()` / `resume()` | method | — | Render loop control. The activity/app lifecycle already pauses and resumes automatically |
-| `backgroundColor` | string | — | GL clear color |
+| `backgroundColor` | string | — | Native scene clear color |
 | `maxFps` | int | `0` | Frame cap. `60` stops 120 Hz ProMotion displays from doubling render work; `0` = display refresh rate |
-| `timeScale` | float | `1` | Multiplies the scene dt for physics, sheet animations, tweens, particles and camera. `0.5` = slow motion; at `0` rendering/touch continue. Rope's previous-displacement integration still runs at zero dt in the pinned source, so complete rope freeze is not guaranteed; see [physics.md](physics.md#verlet-ropes-and-tethers) |
+| `timeScale` | float | `1` | Multiplies the scene dt for physics, sheet animations, tweens, particles and camera. `0.5` = slow motion; at `0` rendering/touch continue while rope nodes, their history, constraints and tether response freeze. New rope geometry can still initialize for drawing; see [physics.md](physics.md#verlet-ropes-and-tethers) |
 | `surfaceWidth` / `surfaceHeight` | int | — | Read-only surface size in pixels |
+| `inputMap` | dict | `{}` | Contexts → named actions → binding arrays. Invalid maps throw without replacing the current map or active state; see [input.md](input.md) |
+| `inputContext` | string / null | `'gameplay'` | Active action context; `null` disables actions. A changed context releases active actions and requires a fresh press |
+| `focusInput()` | method | — | Request canvas keyboard focus on the UI thread; does not open the software keyboard or capture keys globally |
 | `cameraX` / `cameraY` | float | `0` | World-space offset of the view |
 | `cameraScale` | float | `1` | Zoom, anchored on the view center |
 | `cameraBounds` | dict / null | `null` | `{ minX, minY, maxX, maxY }` world rect the visible area is clamped into |
@@ -111,7 +114,7 @@ A normal Titanium view — add it to a window or any container, size it with the
 | `follow(sprite, options)` | method | — | Native dead-zone follow, see below |
 | `stopFollow()` | method | — | Stop following; the camera stays where it is |
 | `shake({ strength, duration })` | method | `12` px, `400` ms | Detuned-sine rumble on the projection only — follow, bounds and touch mapping are unaffected |
-| `raycast(x0, y0, x1, y1, groups)` | method | — | One-shot nearest-hit query along the segment against **visible, non-`screenFixed`** sprites carrying a `collisionGroup` in `groups` (omit for any tagged sprite). Returns `null` for a clear ray, else `{ x, y, distance, group, sprite, normal: { x, y } }`. Rect hitboxes are tested as their AABB, circle hitboxes exactly; a ray starting inside a hitbox reports it at distance 0 |
+| `raycast(x0, y0, x1, y1, groups)` | method | — | One-shot nearest-hit query along the segment against **visible, non-`screenFixed`** sprites carrying a `collisionGroup` in `groups` (omit for any tagged sprite). Returns `null` for a clear ray, else `{ x, y, distance, group, sprite, normal: { x, y } }`. Plain rect hitboxes use their AABB; circle and `rotatedRect` hitboxes use their actual shapes; a ray starting inside a hitbox reports it at distance 0 |
 | `findPath(from, to, options)` | method | — | Grid A\* from `from` to `to` (`{ x, y }` world points) around visible, non-`screenFixed` sprites and fully solid TileLayer cells carrying a `collisionGroup` in `options.groups` (omit for any tagged obstacle). Returns `{ x, y }` waypoints ready for `sprite.followPath()`, or `null`. Options below |
 | `after(ms, callback)` | method | — | Runs `callback` once after `ms` of **game time** — the delay stretches under `timeScale` slow motion, freezes at `0` and pauses with the render loop, unlike `setTimeout`. Returns an int id. The callback receives `{ id }` |
 | `every(ms, callback)` | method | — | Like `after()`, repeating until cancelled. Fires at most once per frame, and restarts its interval after a stall instead of bursting to catch up |
@@ -126,6 +129,8 @@ A normal Titanium view — add it to a window or any container, size it with the
 | `debug` | bool / dict | `false` | `true` draws all collision shapes. Object form: `{ hitbox, hud, hudFont }`; `hud` is `true` or a corner name. Readback is normalized to `{ hitbox, hud: false | corner }`. See [debugging-performance.md](debugging-performance.md) |
 
 Events: `press`, `tap`, `release` — fired for **every** touch anywhere on the view, with payload `x`, `y` in scene coordinates (tap-anywhere controls, flappy-style). `resize` carries the real surface `width`, `height` in pixels. `performance` carries a one-second telemetry snapshot only while a listener exists; see [debugging-performance.md](debugging-performance.md).
+
+Keyboard `keydown` / `keyup` carry `code`, `character`, and `modifiers: { shift, control, alt, meta }`. Action `actiondown` / `actionup` carry `action` and `context`; cancellation may release actions without raw `keyup`. See [input.md](input.md).
 
 Plus `timer` with payload `id`, fired only for `after()` / `every()` calls made **without** a callback — pass a callback or listen for the event, not both.
 
@@ -192,9 +197,7 @@ On Android the buttons are captured at the activity window: the game view needs 
 
 `platformer.js` runs on either the on-screen buttons or a pad.
 
-That single-view example does not establish independent receivers for several
-retained iOS GameViews: the pinned controller adapter overwrites a shared
-GCController callback. See [lifecycle and input ownership](project-setup.md#retained-ios-scenes-and-multiple-gameviews).
+Every live GameView receives controller input independently, including retained views under a modal scene. Closing one releases its input and unregisters only that receiver. Apple receivers share the GameController profile callback with registration, dispatch and cleanup on the main queue. Route input to the active screen in app code; see [lifecycle and input ownership](project-setup.md#retained-ios-scenes-and-multiple-gameviews).
 
 ## SpriteSheet
 
@@ -205,17 +208,17 @@ Create one sheet per texture and share it across every sprite that uses it — s
 | `image` | — | Path to the texture, relative to the resources root (`'assets/hero.png'`) |
 | `frameWidth` / `frameHeight` | — | Grid mode: cell size in source pixels. Frames are numbered left-to-right, top-to-bottom, starting at 0 |
 | `atlas` | — | TexturePacker JSON (hash or array format) instead of a grid |
-| `smoothing` | `true` | `false` = GL_NEAREST, the pixel-art setting. On a **grid** sheet, `true` also insets the frame UVs by half a texel so magnified edges cannot sample the neighbouring frame — **both** edges of any axis that has more than one frame, since 2026-08-24. An axis with a single frame keeps the exact 0..1 range, which is what `tileRepeat` needs to wrap. Atlas frames come from the JSON untouched |
-| `repeat` | `false` | GL_REPEAT wrap, required by sprites using `tileRepeat`. Needs power-of-two texture dimensions |
+| `smoothing` | `true` | `false` = nearest-neighbor filtering, the pixel-art setting. On a **grid** sheet, `true` also insets the frame UVs by half a texel so magnified edges cannot sample the neighbouring frame — **both** edges of any axis that has more than one frame, since 2026-08-24. An axis with a single frame keeps the exact 0..1 range, which is what `tileRepeat` needs to wrap. Atlas frames come from the JSON untouched |
+| `repeat` | `false` | Texture repeat, required by sprites using `tileRepeat`. Android OpenGL ES 2.0 requires power-of-two texture dimensions |
 
 | Member | Notes |
 | --- | --- |
 | `frameCount` | Number of frames. `0` until the texture has loaded, for grid sheets |
 | `frameNames` | Sorted frame names — atlas sheets only |
 | `frameIndex(name)` | Index for an atlas frame name, `-1` if unknown |
-| `unload()` | Frees the GL texture on the next rendered frame, from the render thread. **Permanent** — sprites still using the sheet stop drawing. For level streaming: unload the finished level's atlases instead of accumulating GPU memory. Since 2026-08-23 |
+| `unload()` | Permanently disposes the GPU texture on the render thread. Sprites still using the sheet stop drawing. For level streaming: unload the finished level's atlases instead of accumulating GPU memory. Since 2026-08-23 |
 
-Textures upload to the GPU lazily on first use, from the render thread, and are re-created automatically after an EGL context loss. Releasing the proxy unloads its texture too, so a sheet that goes out of scope does not strand GPU memory.
+Textures upload to the GPU lazily on first use, from the render thread, and are re-created automatically after an Android EGL context loss. Apple resources are Metal textures; do not apply EGL-specific lifecycle assumptions to Apple views. Releasing the proxy unloads its texture too, so a sheet that goes out of scope does not strand GPU memory.
 
 ## Sprite
 
@@ -244,12 +247,12 @@ Textures upload to the GPU lazily on first use, from the render thread, and are 
 | Property | Default | Notes |
 | --- | --- | --- |
 | `sheet` | — | The SpriteSheet |
-| `frame` | `0` | Current frame index; writing it stops nothing, it just shows that frame |
-| `animations` | — | Named definitions: `{ walk: { frames: [1, 2], fps: 6, loop: true } }` |
+| `frame` | `0` | Current frame index; writing it stops the running sheet animation and its queued chain, then shows that frame |
+| `animations` | — | Creation-only for portable code; iOS also accepts later assignment, Android has no live setter. Definitions: `{ walk: { frames: [1, 2], fps: 6, loop: true } }` |
 | `animation` | — | Read-only name of the current animation. **Keeps its value after `stop()`** — track "is walking" yourself if you need it |
 | `tileRepeat` | `false` | `true` / `'x'` / `'y'` — tile the frame at native size instead of stretching. Needs `repeat: true` on the sheet and a frame spanning the whole texture |
 
-An animation definition takes `frames` (array of indices), `fps`, `loop`, and an optional `frame` — the sheet frame to show once a non-looping animation finishes (default: hold the last animation frame).
+An animation definition takes `frames` (array of indices), `fps`, `loop`, and, on Android only, an optional completion `frame` (default: hold the last animation frame). iOS ignores that definition key. Both platforms support a completion `frame` in `animate()`.
 
 Methods: `play(name)` starts an animation, `stop()` halts it on the current frame.
 
@@ -275,7 +278,7 @@ Hit-testing runs against the transformed shape (rotation and scale included), to
 | `velocityX`, `velocityY` | `0` | px/s |
 | `gravity` | `0` | px/s², added to `velocityY`. Per sprite — there is no global gravity |
 | `gravityX` | `0` | px/s², added to `velocityX`. The **sibling** of `gravity`, not half of a vector: `gravity` keeps its exact vertical meaning. Wind, a conveyor, or a top-down game whose "down" is sideways (`gravity: 0`, `gravityX` non-zero). Since 2026-08-27 |
-| `linearDamping` | `0` | Coefficient in 1/s: each step retains `max(0, 1−linearDamping·dt)` of both velocity axes, after thrust/gravity and before position. Below combined speed **4 px/s** it zeroes both axes; this can erase a small first thrust step. ~`0.6` is used for pool felt, but damping acts even without contact. Negative values clamp to0. See [physics.md](physics.md#thrust-inertia-and-linear-damping) |
+| `linearDamping` | `0` | Coefficient in 1/s: each step retains `max(0, 1−linearDamping·dt)` of both velocity axes, after thrust/gravity and before position. The **4 px/s** rest cutoff stops coasting and blocked residual motion, but effective thrust, gravity or powered car input can build velocity from rest. The post-contact decision excludes blocked motion and cancelled forces; damping still attenuates acceleration and depends on dt. ~`0.6` is used for pool felt, but damping acts even without contact. Negative values clamp to0. See [physics.md](physics.md#thrust-inertia-and-linear-damping) |
 | `maxSpeed` | `500` | px/s cap applied **only** to `thrust` acceleration and the `carMode` model. Writing `velocityX`/`velocityY` directly is never clamped |
 | `angularVelocity` | `0` | deg/s |
 | `thrust` | `0` | px/s² along the current heading (Newtonian flight) |
@@ -325,7 +328,7 @@ Two consequences that cost an afternoon each if you meet them by surprise:
 | `hitboxScale` | `1` | Shrinks the collision box **around the anchor** — which is what makes `anchor` the other half of the tuning: `anchor: 'bottom'` with `hitboxScaleY: '55%'` covers the lower half without lifting the box off the floor. Also takes `'80%'` |
 | `hitboxScaleX`, `hitboxScaleY` | `1` | Per-axis corrections **multiplied on top of** `hitboxScale`, for art that fills its frame by a different fraction on each axis. A 20×44 drawing in a 32×48 frame needs `0.62` wide and `0.92` tall — no single `hitboxScale` describes it. Ignored by circle hitboxes. Since 2026-08-23 |
 | `hitboxShape` | `'rect'` | `'circle'` — radius = half the smaller drawn side × `hitboxScale` (the per-axis scales are skipped: a circle has no axes). Circles resolve against solids along the contact normal (corner bounces) and get a round touch area. `'rotatedRect'` keeps the collision rect **turned with the sprite** (an OBB) instead of re-boxing it square to the screen: a plain `'rect'` at 45° is re-boxed around its turned corners and comes out 41% wider with a flat top that is not there. Only matters once `rotation` is non-zero, and it does honour `hitboxScaleX`/`hitboxScaleY`, unlike a circle. Covers solids, `collidesWith` overlap, `raycast`, the swept pass and the debug overlay. Since 2026-08-27 |
-| `swept` | `false` | Test this sprite's movement as a **path** (swept AABB), not just at the end position, so a fast mover cannot tunnel between frames. Applies to both `collidesWith` events and `solidWith` blocking (the sprite is clamped to the impact point, then resolved by the normal static pass). Two **circle** hitboxes now sweep as circles (the Minkowski sum of two circles is a circle of radius r1+r2); a circle against a rectangular or turned solid sweeps as a box, and against a turned one the box is grown into a *rounded* rect so the diagonal does not poke out by 1.41r. Set it on the *mover* — the bullet, not the wall. The sweep skips solids that are not `solidMode: 'block'` |
+| `swept` | `false` | Test this sprite's movement as a **path**, not just at the end position, so a fast mover cannot tunnel between frames. Applies to both `collidesWith` events and `solidWith` blocking (the sprite is clamped to the impact point, then resolved by the normal static pass). Two **circle** hitboxes now sweep as circles (the Minkowski sum of two circles is a circle of radius r1+r2); trigger sweeps for circle/rectangle pairs use a rounded box (including turned boxes), while rectangle pairs use AABBs. The `solidWith` blocking sweep is separate: circle pairs use circles; circle-versus-rect blocking keeps its own expanded-box/rounded-OBB path. Do not infer identical trigger and blocking geometry. Set it on the *mover* — the bullet, not the wall. The sweep skips solids that are not `solidMode: 'block'` |
 | `debug` | `false` | Draw this sprite's shapes: green = collision AABB, blue = touch bounds, orange dot = anchor |
 
 ### Car (`carMode`)
@@ -373,7 +376,7 @@ Every sprite gets its own phase, and the wobble unwinds exactly when disabled. T
 | --- | --- |
 | `play(name, options)` | Start a named animation; returns `false` for an unknown name. `options.then` (a name or an array of names) chains natively — each queued animation starts as the previous non-looping one finishes, and `animationcomplete` still fires per step. A looping animation ends the chain |
 | `stop()` | Stop the animation on the current frame; also drops any queued `then` chain |
-| `followPath(points, options)` | Walk the sprite along `points` — `{ x, y }` objects or `[x, y]` pairs, **at least two**, fewer is ignored with a warning. `options`: `speed` px/s (default `100`), `loop` (closed circuit), `rotate` (face along the path, 0 = up), `smoothing` (corner radius in px, precomputed once). Fires `pathcomplete` at the end of a non-looping run and clears itself. `followPath(null)` stops in place |
+| `followPath(points, options)` | Walk the sprite along `points` — `{ x, y }` objects or `[x, y]` pairs, **at least two**; fewer logs a warning and clears the path. `options`: `speed` px/s (default `100`), `loop` (closed circuit), `rotate` (face along the path, 0 = up), `smoothing` (corner radius in px, precomputed once). Fires `pathcomplete` at the end of a non-looping run and clears itself. `followPath(null)` stops in place |
 | `animate(options)` | Native tween, fires `complete` |
 | `clearTweens()` | Cancel tweens in progress — call before starting a replacement tween |
 | `flash(color, duration)` | Fills the sprite's silhouette with `color` (default white) and fades it out over `duration` ms (default 150). The classic damage/invincibility flash that a multiplicative `tintColor` cannot do |
@@ -435,7 +438,7 @@ The rest of the contract, all read from the engine:
 
 ## Font
 
-A glyph atlas for text sprites. Create it once, outside `resize`, like a SpriteSheet — it holds a GL texture.
+A glyph atlas for text sprites. Create it once, outside `resize`, like a SpriteSheet — it holds a GPU texture.
 
 ```javascript
 // 1. Built-in: nothing to ship. A 9x15 pixel font embedded in the module.
@@ -459,6 +462,8 @@ const mono = Game.createFont({ image: 'assets/mono.png', charWidth: 9, charHeigh
 | `smoothing` | `true` | Filters the glyph texture like a sheet. The built-in font is always crisp |
 | `lineHeight` | — | Read-only: the font's natural line height in px |
 | `unload()` | Method, not an option: frees the glyph texture exactly like `SpriteSheet.unload()`, and just as permanently. Since 2026-08-23 |
+
+The built-in font is Press Start 2P with 9×15 cells: ASCII 32..126 plus `ÁÉÍÓÚÜÑáéíóúüñ¿¡ÄÖäößËÏëïÈèÊêÀà`. It accepts these precomposed characters, not combining accents; `ẞ` is absent, so uppercase German text uses `SS`. Custom grid fonts still default to ASCII only. The source TTF and SIL Open Font License are in `tools/default-font/`; regenerate both embedded images with `uv run --with pillow --with fonttools python tools/build_default_font.py`.
 
 A descriptor that fails to parse falls back to the built-in font and logs the error — the text still renders, in the wrong face, which is the symptom to recognize.
 
@@ -520,12 +525,12 @@ music.play();
 
 | Option | Default | Notes |
 | --- | --- | --- |
-| `url` | required | App resource or file path |
+| `url` | required | Creation-only app resource or file path |
 | `volume` | `1` | 0..1, live |
 | `loop` | `false` | Live |
 | `music` | `false` | Chooses the backend — **set at creation, not changeable later** |
 
-Effect mode (the default) is built for low latency: a shared `SoundPool` on Android, a small pool of preloaded players on iOS. Call `play()` from any handler and repeated plays overlap instead of cutting each other off. `music: true` picks the streaming backend (`MediaPlayer` / `AVAudioPlayer`) for longer tracks; music pauses when the app backgrounds and resumes with it.
+Effect mode (the default) is built for low latency: a shared `SoundPool` on Android, a small pool of preloaded players on iOS. Call `play()` from any handler and repeated plays overlap instead of cutting each other off; a play requested during loading is queued. `music: true` picks the streaming backend (`MediaPlayer` / `AVAudioPlayer`) for longer tracks; music pauses when the app backgrounds and resumes with it.
 
 Methods: `play()`, `pause()` (resumes where it stopped), `stop()` (rewinds to the beginning). Formats: WAV, MP3, OGG on Android; WAV, MP3, M4A on iOS.
 
@@ -550,7 +555,7 @@ Add and remove like a sprite: `gameView.add(emitter)` / `remove(emitter)`. Spawn
 | `size` | `0` | Base particle width in px; `0` = frame size |
 | `startScale` / `endScale` | `1` / `1` | Interpolated over `lifetime` |
 | `startOpacity` / `endOpacity` | `1` / `0` | Interpolated over `lifetime` |
-| `tint` | white | Tint white particle art at runtime — one tiny texture covers every color in the game |
+| `tint` | white | Write-only. Tint white particle art at runtime — one tiny texture covers every color in the game |
 | `blend` | `'normal'` | `'add'` for fire, sparks and magic; `'multiply'` for smoke and dust that darken what they cross; `'screen'` for soft haze |
 | `maxParticles` | `200` | Pool size, hard cap 1000 |
 
@@ -577,9 +582,8 @@ A native Verlet chain: integration and distance constraints run in the game loop
 | `visible` | `true` | |
 | `endX`, `endY` | — | Read-only live position of the loose end (grappling-hook tips) |
 
-Per-step retention is not a per-second rate. Rope's existing displacement and
-constraint passes still execute at `dt=0` in the pinned implementation;
-see [Verlet equations and pause limits](physics.md#verlet-ropes-and-tethers).
+Per-step retention is not a per-second rate. At `dt<=0`, node positions, previous positions, constraint relaxation and tether response stay frozen. New geometry still initializes so a newly created rope can draw while paused;
+see [Verlet equations and pause behavior](physics.md#verlet-ropes-and-tethers).
 
 The tether yields at the end no finger owns: with a fixed head anchor the tail sprite is simply leashed, but with sprites on both ends you can drag either one and the other is towed once the rope goes taut.
 
@@ -589,7 +593,7 @@ One native grid replaces a sprite per tile. Only cells inside the camera are dra
 
 | Group | Members | Notes |
 | --- | --- | --- |
-| Grid input | `data` | Nested numeric rows, string rows decoded through `legend`, or flat row-major ids sized by `cols`/`rows`. Live on both platforms |
+| Grid input | `data` | Live write-only input. Nested numeric rows, string rows decoded through `legend`, or flat row-major ids sized by `cols`/`rows`. Live on both platforms |
 | Creation-time grid configuration | `legend`, `firstGid`, `cols`, `rows` | Set in `createTileLayer()` for portability. `cols`/`rows` read back from the parsed grid; Android has no live setters for the four configuration inputs |
 | Derived size | `width`, `height` | Read-only world dimensions |
 | Placement | `x`, `y`, `tileWidth`, `tileHeight`, `zIndex`, `scrollFactor` | Tile sizes default to the sheet frame dimensions |
@@ -603,7 +607,7 @@ Tiled data uses `firstGid`: gid 0 becomes empty when an offset is active, and fl
 | `getTile(col, row)` | Frame id, `-1` when empty or outside |
 | `setTile(col, row, id)` | Replaces art and recalculates its flag from `solid`/`oneWay` |
 | `isBlocked(col, row)` | Fully solid status; one-way cells answer `false` |
-| `setBlocked(col, row, bool)` | Per-cell full-solid override without changing art |
+| `setBlocked(col, row, bool)` | Per-cell full-solid override without changing art, until `data`, `solid` or `oneWay` changes |
 | `tileAt(x, y)` | World point → `{ col, row, tile, solid, x, y }`, or `null` outside |
 | `cellAt(col, row)` | Cell → the same structure; `x`/`y` are the center |
 
@@ -613,7 +617,7 @@ Movers list the layer's `collisionGroup` in `solidWith`. Rect, circle, swept, re
 
 Only these events exist. Nothing fires per frame, and events are only fired if a listener is registered.
 
-- **GameView**: `press`, `tap`, `release`, `resize`, `timer`, `performance`, `buttondown`, `buttonup`, `stick`, `trigger`, `gamepadconnected`, `gamepaddisconnected`
+- **GameView**: `press`, `tap`, `release`, `resize`, `timer`, `performance`, `buttondown`, `buttonup`, `stick`, `trigger`, `gamepadconnected`, `gamepaddisconnected`, `keydown`, `keyup`, `actiondown`, `actionup`
 - **Sprite** (and therefore **Text**): `press`, `release`, `tap`, `dragstart`, `drag`, `dragend`, `pinch`, `rotate`, `animationcomplete`, `complete`, `pathcomplete`, `collision`, `collisionend`, `land`, `wallhit`, `solidimpact`
 - **SpriteSheet, Font, Sound, Emitter, Rope, TileLayer**: none
 
@@ -631,12 +635,12 @@ There is `collision` (enter) and `collisionend` (exit), but deliberately **no** 
 - **`music` is chosen at creation.** Creating an effect sound and flipping `music` later does not switch backends.
 - **`collision` fires once per overlap-enter**, re-arming only after the shapes separate. A sprite resting inside a trigger does not re-fire — `collisionend` tells you when it left.
 - **Pooling a sprite with `visible = false` fires `collisionend`** on whoever was touching it. That is usually what you want (a plate whose ball was despawned closes its door), but a handler that assumes separation means "the player walked away" will misfire.
-- **The built-in pixel font only covers ASCII 32..126.** Em dashes, accents and `ñ` render as blanks or garbage — the module's own demos rewrote `—` as `-` for this reason. Ship a BMFont atlas (`tools/genfont.py` rasterizes any TTF) when the game needs accented Spanish text.
+- **The built-in font includes a specific accented Latin repertoire, not arbitrary Unicode.** Precomposed Spanish `ñ` and the listed accented characters work; combining accents, em dashes and unlisted glyphs need a custom BMFont/grid atlas. Custom grid fonts default to ASCII 32..126 unless `characters` is supplied.
 - **A bouncy floor switches `onGround` off.** In every resolver the grounding and the `land` event live in the branch taken when the bounce is *damped away*; a contact whose rebound would exceed 40 px/s reflects and grounds nothing. That was always true of a bouncy rider, but `restitution` now mixes as `max(mover, solid)`, so giving a *floor* `restitution: 0.5` silently stops every rider that lands hard on it from ever reporting `onGround` — and a jump gated on `onGround` stops working on that one platform.
 - **A two-sided `restitution` cannot be opted out of.** The mix is `max`, not a product or an average, so the springier surface always wins: a deliberately dead `restitution: 0` crate still bounces off a floor set to `0.5`. If one rider must not bounce, the bounce has to live on the riders, not on the surface.
 - **A resting body is allowed to sink half a pixel — in some resolvers.** Separation is skipped when the overlap is under 0.5 px, because shoving a gravity-loaded body back out sixty times a second is what makes a settled pile tremble; the closing velocity is still cancelled, so the sink cannot grow past it. It applies to the circle path, the turned-rect path and `'push'` pairs. Plain rect-against-rect still separates in full. Do not derive an exact contact position from `y` after a landing.
 - **`linearDamping` is not surface friction.** Nothing checks whether the sprite is touching anything: it bleeds speed on both axes every frame, in the air as much as on the felt, and along a slope as much as across it. It is right for a pool table and wrong for a hill, which is why upstream still lists contact-only friction as unbuilt. A projectile that must keep its arc wants `0`.
-- **`linearDamping` kills a slow deliberate drift.** Under a combined 4 px/s the engine zeroes *both* axes outright, since a proportion never reaches zero on its own. A conveyor nudging something along at 3 px/s stops dead the moment that sprite also carries any damping.
+- **`linearDamping` stops slow coasting.** Under 4 px/s it stops unpowered drift; an effective acceleration can now build speed from rest. Forces cancelled by opposing forces or a solid do not keep residual tangential coasting alive. This rest policy does not make Euler damping independent of frame rate.
 - **A swept sprite is not contained and not pushed.** The sweep only considers solids in `solidMode: 'block'` — a `'contain'` boundary would stop the ball against its *outside*, and a `'push'` body is meant to move. So `swept: true` does not stop a fast enough ball from crossing a drum wall between frames; only the static pass contains it. Keep the speeds inside a container below its wall thickness per frame.
 - **`'push'` pairs never publish ground or wall contact.** The bilateral resolver moves positions and exchanges velocity but does not update `onGround`, `onWallLeft` / `onWallRight`, `land`, or `wallhit`. A pile of balls resting on each other reports contact only with any separate `'block'` surface underneath it.
 - **The `'push'` exchange has no masses, no spin and no friction.** A marble and a boulder trade velocity identically, and nothing ever starts rotating from a contact. `restitution` mixes as `max` here too, and with no mass to weight it against, that is the whole model.

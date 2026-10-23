@@ -1,6 +1,7 @@
 # Cross-cutting ti.game patterns
 
-Verified against `ti.game@3bea2f4` and the runnable examples under `example/`. These are production-oriented extractions of the API combinations demonstrated upstream; they intentionally omit demo-launcher and back-navigation plumbing.
+Reviewed against upstream native `88e181c` and the documentation/examples in
+`macCesar/ti.game@2bf5f82` on 2026-10-23. These are production-oriented extractions of the API combinations demonstrated upstream; they intentionally omit demo-launcher and back-navigation plumbing.
 
 See [examples.md](examples.md) to choose the source demo, [api.md](api.md) for exact members, and the genre recipe files for complete game loops.
 
@@ -76,7 +77,14 @@ module.exports = function () {
 };
 ```
 
-Sizing everything as a fraction of `W`/`H` is not cosmetic — a jump tuned in absolute pixels becomes unplayable on a different device. The demos consistently express speeds as `W * f`, accelerations as `H * f` and sprite sizes as `Math.min(W, H) * f`.
+Use the actual canvas for sizing. Current demos cap foreground art and text by
+height as well as width so short desktop windows do not clip their controls.
+For example, text can use `Math.max(1, Math.round(Math.min(W / 240, H / 360)))`.
+Measure surface pixels per view point from `W / gameView.rect.width` when
+converting native control margins; use a positive finite density fallback.
+Keep a guarded first `resize` for world creation and relayout the HUD on later
+resizes when the app supports changing windows. See
+[project-setup.md](project-setup.md) for complete integration.
 
 ## Cross-cutting patterns
 
@@ -146,7 +154,7 @@ Recycling a sprite with `visible = false` fires `collisionend` on anything it wa
 
 ### Freeing a level's textures
 
-Pooling recycles sprites; it does not free the **texture** behind them. A game that streams worlds accumulates every atlas it has ever loaded until the GL context dies. `unload()` releases one on the next rendered frame.
+Pooling recycles sprites; it does not free the **texture** behind them. A game that streams worlds accumulates every atlas it has ever loaded until scene resources are released. `unload()` releases one on the next rendered frame.
 
 ```javascript
 function unloadLevel(level) {
@@ -262,7 +270,14 @@ bindHold(leftButton, () => {
 });
 ```
 
-The guard in the release handler is what keeps two opposite buttons from fighting: releasing left only zeroes steering if left is still the active direction.
+The guard avoids releasing one control cancelling a newer opposite command.
+It does not restore a still-held older direction. For mixed touch, keyboard and
+controller input, track each source's held state and derive direction from the
+active set, as current `platformer.js`/`volley.js` do. They cancel opposing
+directions and resume the remaining one on release. `inputmap.js` deliberately
+uses a different last-pressed-wins rule. Choose the policy explicitly; do not
+confuse either with the native action aggregator, which combines bindings for
+one named action. See [input.md](input.md) for native input maps and focus rules.
 
 ### HUD — `text.js`, `flappy.js`
 
@@ -316,7 +331,11 @@ dialog.addEventListener('tap', () => {
 
 `maxWidth` is measured before `scale`, which is the only trap here — pass screen pixels straight in and the block comes out `scale` times too wide. `align` positions the lines against each other (the block's own width), not inside the wrap column, so anchor the sprite where the text should sit. A word longer than `maxWidth` overflows instead of breaking mid-word.
 
-Overlaid `Ti.UI.Label` views remain the answer for text the engine's font cannot draw (accents, system fonts, right-to-left) and for real UI: menus, dialogs, text inputs.
+The built-in font now includes the accented characters listed in
+[api.md](api.md#font); do not assume all accents need an overlay. Ship a custom
+bitmap font for other supported glyph sets. Overlaid `Ti.UI.Label` views remain
+appropriate for system fonts, right-to-left interfaces and native UI such as
+menus, dialogs and text inputs.
 
 ### Labels, bars and turrets pinned to a sprite — `attachTo`, `text.js`
 
@@ -495,11 +514,15 @@ const ball = Game.createSprite({
 
 Two things bite here. The sweep **ignores** anything that is not `solidMode: 'block'`, so `swept: true` will not stop a fast enough ball crossing the boundary between frames — keep the speeds inside a container sane. And a `'contain'` solid only holds *circles*: a rect mover runs a resolver that never reads `solidMode` and gets pushed **out** of the boundary instead of held in.
 
-**`linearDamping` is the missing friction, with a caveat.** `drag` only ever worked inside `carMode`; this is the same idea for ordinary sprites, and it is what brings a pool table to rest. But nothing checks contact — it bleeds speed on both axes, in the air as much as on the felt, and along a slope as much as across it. Right for a table, wrong for a hill. Below a combined 4 px/s the engine zeroes the velocity outright, so a deliberate 3 px/s drift dies the moment that sprite also carries damping.
-
-That threshold can also erase the first increment of an accelerating ship.
-Read [thrust and damping](physics.md#thrust-inertia-and-linear-damping) before
-using a permanent coasting brake on a powered sprite.
+**`linearDamping` attenuates velocity everywhere.** Car `drag` works inside
+`carMode`; linear damping also works for ordinary sprites and can bring a pool
+table to rest. The attenuation is not contact-only friction: it bleeds speed
+on both axes, in the air as much as on felt, and along a slope as much as
+across it. Below a combined 4 px/s the engine settles coasting or blocked motion, but
+allows effective acceleration to build from rest; the decision is completed
+after contact response. A deliberate unpowered 3 px/s drift with damping still
+stops. See [thrust and damping](physics.md#thrust-inertia-and-linear-damping)
+for the current rest policy and the older powered-launch bug.
 
 **A bouncy surface is now a property of the surface.** `restitution` is read off both sides and mixed as `max`, so a springy floor rebounds riders that are not themselves bouncy:
 
@@ -571,7 +594,7 @@ ship.followPath(diamond, {
 
 A non-looping run fires `pathcomplete` and clears itself; `followPath(null)` stops in place. Two points is the minimum — one point is ignored with a warning, not treated as "go there".
 
-The path writes `x`/`y` outright, after velocity and gravity have been integrated, so **a sprite on a path ignores its own physics for placement**. It still feeds the frame delta, though, which means a platform on a looping circuit carries whatever is standing on it — a moving platform is now a path, not a tween ping-pong.
+The path writes `x`/`y` outright, after velocity and gravity have been integrated, so **a sprite on a path ignores its own physics for placement**. In a periodic world the engine aligns the cursor before advancing so crossing the seam retains the intended frame delta; this does not make pathfinding periodic. It still feeds the frame delta, though, which means a platform on a looping circuit carries whatever is standing on it — a moving platform is now a path, not a tween ping-pong.
 
 Animation chains are native in the same spirit:
 
@@ -611,7 +634,7 @@ Run these from a coarse timer or a tap handler — the demo probes at 150 ms —
 
 ### Pathfinding around obstacles — `maze.js`, `pointclick.js`
 
-`gameView.findPath(from, to, options)` is grid A\* over the same sprites `raycast` sees: visible, tagged with a `collisionGroup`, nothing else to set up. It returns `{ x, y }` waypoints — or `null` — and those waypoints go straight into `followPath`, so the walk itself runs natively.
+`gameView.findPath(from, to, options)` is grid A\* over the same sprites `raycast` sees: visible, non-`screenFixed`, tagged with a `collisionGroup`. It also includes fully solid cells from matching TileLayers; one-way cells remain walkable. It returns `{ x, y }` waypoints — or `null` — and those waypoints go straight into `followPath`, so the walk itself runs natively.
 
 ```javascript
 gameView.addEventListener('tap', (e) => {
@@ -692,9 +715,10 @@ explosion starts, while it keeps drawing and accepting touches. This avoids
 restarting the render loop. (Pattern from Titanium Lander: 140 ms on a crash,
 90 ms when a shield absorbs a hit.)
 
-This sets scene dt to zero, not a universal suspension of every update.
-Rope's previous-displacement and constraint pass still run in the pinned
-source; verify hit-stop separately for rope scenes. See
+This sets scene dt to zero while touch and explicit property writes remain
+active. Current Rope integration, history, constraints and tether response
+freeze as well; newly created geometry can still initialize. The older
+`3bea2f4` rope exception is fixed. See
 [physics.md](physics.md#verlet-ropes-and-tethers).
 
 ```javascript
