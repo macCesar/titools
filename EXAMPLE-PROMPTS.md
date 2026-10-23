@@ -481,13 +481,32 @@ Expect:
 
 ### ti-synthengine
 
+
+```
+"Hold a motor note while the player accelerates, change its cutoff smoothly and release it on touchcancel."
+```
+Expect:
+- Reads the held-voice API, optional capability detection and advanced examples
+- Allocates unique positive IDs, uses supported update fields and checks publication acceptance
+- Retries rejected release twice at 16 ms, then shuts down/reports; cancels retries on owner teardown
+- Does not apply timed duration budgets or send unsupported duration/end fields to held calls
+
+```
+"Play a looping MIDI-note sequence with swing and a shared delay, then edit the tempo without using JS timers for notes."
+```
+Expect:
+- Reads native transport, master-processing and advanced examples; detects all required beta methods
+- Uses sixteenth steps, MIDI arrays/rests and gates; separates accepted edits from applied revisions
+- Handles publication rejection, documents shared master effects and tails, and cleans up the engine owner
+- Distinguishes timer pattern swing from native pair swing and does not claim device performance from host tests
+
 ```
 "Show voice occupancy, queue pressure and rejected requests from ti.synthengine. Enable output meters only while my diagnostics panel is open."
 ```
 Expect:
 - Reads `references/api.md` and `references/audio-engine.md`; detects all three statistics methods for older beta binaries
 - Uses `getStats()` snapshots and `setStatsEnabled(Boolean)` with checked acceptance; `resetStats()` does not stop sounds
-- Distinguishes basic counters from the five optional load/signal fields and preserves `null` instead of displaying it as measured zero
+- Distinguishes basic counters from the seven optional load/signal fields and preserves `null` instead of displaying it as measured zero
 - Polls at a modest rate, cancels the timer with the owner, and treats Android backend readings as best-effort metrics independent of the diagnostic switch
 
 ```

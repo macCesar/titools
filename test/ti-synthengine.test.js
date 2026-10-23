@@ -19,9 +19,9 @@ const run = promisify(execFile);
 
 test('synthesis mirrors reconstruct their pinned official sources with recorded navigation fixes', () => {
   const snapshot = JSON.parse(read(snapshotPath));
-  assert.equal(snapshot.files.length, 9);
-  assert.equal(snapshot.files.filter(record => record.destination.endsWith('.md')).length, 8);
-  assert.equal(snapshot.files.filter(record => record.destination.endsWith('.json')).length, 1);
+  assert.equal(snapshot.files.length, 11);
+  assert.equal(snapshot.files.filter(record => record.destination.endsWith('.md')).length, 9);
+  assert.equal(snapshot.files.filter(record => record.destination.endsWith('.json')).length, 2);
   assert.match(snapshot.commit, /^[a-f0-9]{40}$/);
   for (const record of snapshot.files) {
     const text = read(path.join(skill, record.destination));
@@ -36,9 +36,13 @@ test('synthesis mirrors reconstruct their pinned official sources with recorded 
     if (snapshot.source_state === 'working-tree') {
       assert.match(text.split('\n')[0], /working[ -]tree/i, 'dirty sources must not be presented as committed');
     }
-    let body = text.replace(/^> Source snapshot:[^\n]*\n\n/, '');
-    body = body.replace(/<!-- TOC-START -->[\s\S]*?<!-- TOC-END -->\n\n/, '');
-    for (const fix of record.link_fixes || []) {
+    const parts = record.source_parts || [record.destination];
+    let body = parts.map(part => read(path.join(skill, part))
+      .replace(/^> Source snapshot:[^\n]*\n\n/, '')
+      .replace(/<!-- TOC-START -->[\s\S]*?<!-- TOC-END -->\n\n/, '')).join('');
+    const fixes = snapshot.files.filter(part => part.source === record.source)
+      .flatMap(part => part.link_fixes || []);
+    for (const fix of fixes.slice().reverse()) {
       assert.equal(body.split(fix.mirrored_markdown).length, 2, 'each recorded fix occurs exactly once');
       body = body.replace(fix.mirrored_markdown, fix.original_markdown);
     }

@@ -215,6 +215,7 @@ cd android
 test_dir=$(mktemp -d /tmp/ti-synth-test.XXXXXX)
 javac -d "$test_dir" \
   src/ti/synthengine/SynthContract.java \
+  src/ti/synthengine/SynthStudioContract.java \
   test/ti/synthengine/SynthContractRegression.java \
   test/ti/synthengine/SynthSpatialContractRegression.java \
   src/ti/synthengine/SynthDsp.java \
@@ -333,4 +334,4 @@ Portable checks: compile and run `tests/sequence_core_regression.c`, `tests/effe
 
 Device feedback superseded that headroom target for Studio's initial Cristal preset: its fixed gain is restored to 1 because the calibrated setting made a fresh Android installation barely audible. This adds 10.83 dB without saturation or voice-count normalization. Three coherent factory notes remain below the limiter ceiling at maximum master; eight independent coherent notes can require limiting. The calibration recommendations remain recorded separately from this active preset exception.
 
-The [Studio technical validation report](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/documentation/studio-validation.json) records the calibration and corrected full-chain host benchmark, including failed deadline acceptance and pending device checks. Its host performance result must not be presented as hardware realtime acceptance.
+The [Studio technical validation report](studio-validation.json) records the calibration and corrected full-chain host benchmark, including failed deadline acceptance and pending device checks. Its host performance result must not be presented as hardware realtime acceptance.

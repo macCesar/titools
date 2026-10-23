@@ -2,7 +2,7 @@
 
 # Statistics host comparison
 
-This is a historical statistics-only comparison, before sustained voices, native sequence transport, master effects and the two additional voice LFOs. It is not a performance measurement of those features. See [current technical validation](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/documentation/studio-validation.json) for newer evidence and its device/deadline limits.
+This is a historical statistics-only comparison, before sustained voices, native sequence transport, master effects and the two additional voice LFOs. It is not a performance measurement of those features. See [current technical validation](studio-validation.json) for newer evidence and its device/deadline limits.
 
 Beta 1.0.0. Synthetic Android native render on Apple M1. Apple clang version 21.0.0 (clang-2100.3.34.2). Baseline commit `95901c98af5353b86d9dc7c60b29ab9186b038cd`. Both renderers use identical `-O3` flags.
 

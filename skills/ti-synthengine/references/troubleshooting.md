@@ -197,7 +197,7 @@ The beta remains API version 1.0.0. Detect `noteOn`/`noteOff`/`updateVoice`, all
 
 Use the original positive `voiceId`, not the pitch or an ID that has already been reused. `noteOn` does not accept `duration` or temporal `*End` fields. `updateVoice` cannot change source, filter type, table, noise clock, ADSR or spatial position; restart with a new ID when those attack-time settings must change. Compatible continuous edits ramp for 10 ms.
 
-Check Boolean returns. A full public queue can reject `noteOff`; retry twice at 16 ms outside render, then shut down/report if still rejected. Cancel those retries on owner teardown. The [held motor example](examples.md#sustained-game-motor) implements this policy. Touch cancellation, pause and close need cleanup as well as normal key up.
+Check Boolean returns. A full public queue can reject `noteOff`; retry twice at 16 ms outside render, then shut down/report if still rejected. Cancel those retries on owner teardown. The [held motor example](advanced-examples.md#sustained-game-motor) implements this policy. Touch cancellation, pause and close need cleanup as well as normal key up.
 
 An ended or stolen ID accepts updates as a no-op, so acceptance does not prove audible continuity. Held voices share capacity with timed sounds and transport voices. Check replacement counts under dense collision load, leave headroom in the pool and use an app-owned renewal policy if needed. Increasing capacity above 32 or enabling reverb does not reserve a voice.
 
@@ -219,6 +219,6 @@ Disabling chorus/delay/reverb closes their input gradually and drains existing t
 
 ## A brief level dip is gone before the meter refreshes
 
-Enable diagnostics, reset deliberately, then inspect `preLimiterPeakDb` and `maxLimiterReductionDb`. They retain the native pre-limiter peak and greatest attenuation since reset, including brief interventions between UI polls. `limiterReductionDb` is a window measurement and can return to zero sooner. Older packages may omit the accumulated fields; disabled/unmeasured diagnostics return `null`. See [measurement example](examples.md#measure-peaks-and-limiter-reduction).
+Enable diagnostics, reset deliberately, then inspect `preLimiterPeakDb` and `maxLimiterReductionDb`. They retain the native pre-limiter peak and greatest attenuation since reset, including brief interventions between UI polls. `limiterReductionDb` is a window measurement and can return to zero sooner. Older packages may omit the accumulated fields; disabled/unmeasured diagnostics return `null`. See [measurement example](advanced-examples.md#measure-peaks-and-limiter-reduction).
 
 If accumulated attenuation remains near zero, investigate phase cancellation between repeated same-pitch oscillators, changing filters or the device speaker/protection path. Compatible released public held-note repetitions preserve predecessor phase; simultaneous unisons, timed calls and transport notes retain their existing phase behavior. Extra effects and resonance can consume headroom even when source gain is fixed. Compare matched levels through headphones and the physical speaker before changing the mix globally.

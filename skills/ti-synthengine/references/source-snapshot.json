@@ -9,20 +9,29 @@
       "source": "documentation/api.md",
       "destination": "references/api.md",
       "source_sha256": "74be6e1dbd51caa72bb158606bd01eeb226d4008d242a0965ed61fc03e6785df",
-      "mirrored_sha256": "282d5a54663b7e206a1766e08f56a74cdaca4fb3f70e747130800ed3bf80bd0a",
+      "mirrored_sha256": "4cfb338c2aa04a016e998a7299f61fff83a0cc3823910cdf88fea8371be1e2e1",
       "links": [],
-      "link_fixes": []
+      "link_fixes": [
+        {
+          "original_markdown": "Rejected Boolean API requests, counted once per call.",
+          "mirrored_markdown": "Observed rejected Boolean API requests. On the reviewed iOS beta, sequence/effects argument or engine-stopped rejections and incompatible modulation updates are not all counted; this is not an exhaustive rejection total. See [native findings](source-notes.md#native-findings-and-acceptance-boundaries)."
+        }
+      ]
     },
     {
       "source": "documentation/audio-engine.md",
       "destination": "references/audio-engine.md",
       "source_sha256": "b8c5ede5dfd467d4199261c5f67eaaee30bac8d708d6e5c3c2090a1d39c0e250",
-      "mirrored_sha256": "4c60f0b54c77839ab4b095c8e3115dc572f6747226e9eb7bfe9988115a406105",
+      "mirrored_sha256": "dd33e700480d1ce184e917d3c553a83c350bc767f333492337a533f14b4ba4ed",
       "links": [],
       "link_fixes": [
         {
           "original_markdown": "The [Studio technical validation report](studio-validation.json) records the calibration and corrected full-chain host benchmark, including failed deadline acceptance and pending device checks. Its host performance result must not be presented as hardware realtime acceptance.",
-          "mirrored_markdown": "The [Studio technical validation report](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/documentation/studio-validation.json) records the calibration and corrected full-chain host benchmark, including failed deadline acceptance and pending device checks. Its host performance result must not be presented as hardware realtime acceptance."
+          "mirrored_markdown": "The [Studio technical validation report](studio-validation.json) records the calibration and corrected full-chain host benchmark, including failed deadline acceptance and pending device checks. Its host performance result must not be presented as hardware realtime acceptance."
+        },
+        {
+          "original_markdown": "  src/ti/synthengine/SynthContract.java \\\n",
+          "mirrored_markdown": "  src/ti/synthengine/SynthContract.java \\\n  src/ti/synthengine/SynthStudioContract.java \\\n"
         }
       ]
     },
@@ -30,7 +39,7 @@
       "source": "documentation/examples.md",
       "destination": "references/examples.md",
       "source_sha256": "90ff3eb384fabbcb104a2b5fc0e8eeac52090a7b9e399241cbc67302abbb225f",
-      "mirrored_sha256": "9cde9aea67bce2eaad4347aac96f72589cf8ef1793c8ad3043c5e1c715f5d9c8",
+      "mirrored_sha256": "136c5b00ffb838079974ff32404631d168e31ffadc1573ae51a99c75ff5368ea",
       "links": [],
       "link_fixes": [
         {
@@ -44,19 +53,79 @@
         {
           "original_markdown": "Every snippet on this page uses the TiSynthEngine 1.0.0 contract. Unless a snippet includes startup code, it assumes the engine is already running.",
           "mirrored_markdown": "Every snippet on this page uses the TiSynthEngine 1.0.0 contract. Unless a snippet includes startup code, it assumes the engine is already running. Additional [curated recipes](recipes.md) cover interaction and sound variants."
+        },
+        {
+          "original_markdown": "",
+          "mirrored_markdown": "Continue with [held voices, native sequences, master effects, LFOs and measurements](advanced-examples.md).\n"
+        },
+        {
+          "original_markdown": "",
+          "mirrored_markdown": "# Advanced examples\n\nUse these examples with one running engine. Initialize `var synth = require('ti.synthengine')`, `var contract = synth.getDefaults()` and `var WAVE = contract.waveTypes`; verify API version `1.0.0`. See [startup and timed examples](examples.md) and [installation and lifecycle](guide.md#lifecycle).\n\n"
+        },
+        {
+          "original_markdown": "For the newer beta capabilities, begin with [held motors](#sustained-game-motor), [native sequences](#native-sequence-with-chords-and-edits), [master processing](#chorus-delay-reverb-and-creative-saturation) or [two LFOs](#two-voice-lfos). Detect methods before use; the version string alone cannot identify an installed beta build.",
+          "mirrored_markdown": "For the newer beta capabilities, begin with [held motors](advanced-examples.md#sustained-game-motor), [native sequences](#native-sequence-with-chords-and-edits), [master processing](#chorus-delay-reverb-and-creative-saturation) or [two LFOs](#two-voice-lfos). Detect methods before use; the version string alone cannot identify an installed beta build."
+        },
+        {
+          "original_markdown": "For the newer beta capabilities, begin with [held motors](advanced-examples.md#sustained-game-motor), [native sequences](#native-sequence-with-chords-and-edits), [master processing](#chorus-delay-reverb-and-creative-saturation) or [two LFOs](#two-voice-lfos). Detect methods before use; the version string alone cannot identify an installed beta build.",
+          "mirrored_markdown": "For the newer beta capabilities, begin with [held motors](advanced-examples.md#sustained-game-motor), [native sequences](advanced-examples.md#native-sequence-with-chords-and-edits), [master processing](#chorus-delay-reverb-and-creative-saturation) or [two LFOs](#two-voice-lfos). Detect methods before use; the version string alone cannot identify an installed beta build."
+        },
+        {
+          "original_markdown": "For the newer beta capabilities, begin with [held motors](advanced-examples.md#sustained-game-motor), [native sequences](advanced-examples.md#native-sequence-with-chords-and-edits), [master processing](#chorus-delay-reverb-and-creative-saturation) or [two LFOs](#two-voice-lfos). Detect methods before use; the version string alone cannot identify an installed beta build.",
+          "mirrored_markdown": "For the newer beta capabilities, begin with [held motors](advanced-examples.md#sustained-game-motor), [native sequences](advanced-examples.md#native-sequence-with-chords-and-edits), [master processing](advanced-examples.md#chorus-delay-reverb-and-creative-saturation) or [two LFOs](#two-voice-lfos). Detect methods before use; the version string alone cannot identify an installed beta build."
+        },
+        {
+          "original_markdown": "For the newer beta capabilities, begin with [held motors](advanced-examples.md#sustained-game-motor), [native sequences](advanced-examples.md#native-sequence-with-chords-and-edits), [master processing](advanced-examples.md#chorus-delay-reverb-and-creative-saturation) or [two LFOs](#two-voice-lfos). Detect methods before use; the version string alone cannot identify an installed beta build.",
+          "mirrored_markdown": "For the newer beta capabilities, begin with [held motors](advanced-examples.md#sustained-game-motor), [native sequences](advanced-examples.md#native-sequence-with-chords-and-edits), [master processing](advanced-examples.md#chorus-delay-reverb-and-creative-saturation) or [two LFOs](advanced-examples.md#two-voice-lfos). Detect methods before use; the version string alone cannot identify an installed beta build."
         }
+      ],
+      "source_parts": [
+        "references/examples.md",
+        "references/advanced-examples.md"
+      ]
+    },
+    {
+      "source": "documentation/examples.md",
+      "destination": "references/advanced-examples.md",
+      "source_sha256": "90ff3eb384fabbcb104a2b5fc0e8eeac52090a7b9e399241cbc67302abbb225f",
+      "mirrored_sha256": "fd883e27e3e12bd7960b097101e20ccae08ac75c753b84ce52503f390bfcd748",
+      "links": [],
+      "link_fixes": [],
+      "source_parts": [
+        "references/examples.md",
+        "references/advanced-examples.md"
       ]
     },
     {
       "source": "documentation/guide.md",
       "destination": "references/guide.md",
       "source_sha256": "2e9e3af349f7c24b98b21475897d7aec4deeca0d7130448914804651aa96ccfd",
-      "mirrored_sha256": "bc8b281796e347590860d03df00b11929150fb9e4a01fd2ef321b0bdede32fd0",
+      "mirrored_sha256": "d8df9ce1e1a6cdb706479e913ea95f4b4faf020a401be8216e73d6b9ed238508",
       "links": [],
       "link_fixes": [
         {
           "original_markdown": "See the [complete field contract](api.md#getstats), [measurement limits](stats-performance.md) and [interactive statistics controls](../example/README.md#statistics).",
           "mirrored_markdown": "See the [complete field contract](api.md#getstats), [measurement limits](stats-performance.md) and [interactive statistics controls](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/example/README.md#statistics)."
+        },
+        {
+          "original_markdown": "Release on touch end and cancellation as well as ordinary key up. Retry a rejected release twice at 16 ms outside the audio callback, then shut down and report failure if publication remains blocked. Cancel retries during teardown. The [held motor example](examples.md#sustained-game-motor) implements this ownership policy. For pause/owner close, invalidate app scheduling and shut down; require a new start before future notes.",
+          "mirrored_markdown": "Release on touch end and cancellation as well as ordinary key up. Retry a rejected release twice at 16 ms outside the audio callback, then shut down and report failure if publication remains blocked. Cancel retries during teardown. The [held motor example](advanced-examples.md#sustained-game-motor) implements this ownership policy. For pause/owner close, invalidate app scheduling and shut down; require a new start before future notes."
+        },
+        {
+          "original_markdown": "The native transport uses 1 to 512 sixteenth-note steps, each with `notes: [60, 64, 67]` (integer MIDI 12 to 119) or `rest: true`. A gate from 0.01 to 1 sets release onset within the swung step. Voice shaping belongs in root `voice`; per-step `overrides` merge into it. Native sequence steps do not accept pattern `duration`, `noteValue` or sweep-end keys. There are no ties or independent tracks. The [sequence example](examples.md#native-sequence-with-chords-and-edits) shows playback, edits, polling and cleanup.",
+          "mirrored_markdown": "The native transport uses 1 to 512 sixteenth-note steps, each with `notes: [60, 64, 67]` (integer MIDI 12 to 119) or `rest: true`. A gate from 0.01 to 1 sets release onset within the swung step. Voice shaping belongs in root `voice`; per-step `overrides` merge into it. Native sequence steps do not accept pattern `duration`, `noteValue` or sweep-end keys. There are no ties or independent tracks. The [sequence example](advanced-examples.md#native-sequence-with-chords-and-edits) shows playback, edits, polling and cleanup."
+        },
+        {
+          "original_markdown": "`setMasterProcessing` merges partial updates, validates the entire result and returns publication acceptance. Continuous controls ramp over 10 ms. Disabling an effect closes input gradually and keeps its tail, bounded to 30 seconds with a final fade, then restores exact bypass. It does not undo a non-unity input gain. `stopAll` invalidates histories and stops the native sequence; `shutdown` also cancels timer patterns and frees the stream/buffers. See the [processing example](examples.md#chorus-delay-reverb-and-creative-saturation) and [field ranges](api.md#setmasterprocessingoptions).",
+          "mirrored_markdown": "`setMasterProcessing` merges partial updates, validates the entire result and returns publication acceptance. Continuous controls ramp over 10 ms. Disabling an effect closes input gradually and keeps its tail, bounded to 30 seconds with a final fade, then restores exact bypass. It does not undo a non-unity input gain. `stopAll` invalidates histories and stops the native sequence; `shutdown` also cancels timer patterns and frees the stream/buffers. See the [processing example](advanced-examples.md#chorus-delay-reverb-and-creative-saturation) and [field ranges](api.md#setmasterprocessingoptions)."
+        },
+        {
+          "original_markdown": "Delay and LFO sync follow native transport BPM (initially 120), not `playPattern` BPM or an app timer. The two extra voice LFOs target filter cutoff, square PWM or sine FM, with sine/triangle waves. They are independent of `lfoFreq`/`lfoDepth` pitch vibrato. See [two LFOs](examples.md#two-voice-lfos).",
+          "mirrored_markdown": "Delay and LFO sync follow native transport BPM (initially 120), not `playPattern` BPM or an app timer. The two extra voice LFOs target filter cutoff, square PWM or sine FM, with sine/triangle waves. They are independent of `lfoFreq`/`lfoDepth` pitch vibrato. See [two LFOs](advanced-examples.md#two-voice-lfos)."
+        },
+        {
+          "original_markdown": "The current diagnostics add `preLimiterPeakDb` (maximum signal before final limiting, in dBFS) and `maxLimiterReductionDb` (greatest limiter attenuation in dB) accumulated since reset. Unlike the approximately 200 ms window reduction field, brief peaks remain visible between UI polls. Enable measurements, reset before the scenario and keep `null`/absent fields distinct from measured zero. The [measurement example](examples.md#measure-peaks-and-limiter-reduction) shows opt-in polling and cleanup.",
+          "mirrored_markdown": "The current diagnostics add `preLimiterPeakDb` (maximum signal before final limiting, in dBFS) and `maxLimiterReductionDb` (greatest limiter attenuation in dB) accumulated since reset. Unlike the approximately 200 ms window reduction field, brief peaks remain visible between UI polls. Enable measurements, reset before the scenario and keep `null`/absent fields distinct from measured zero. The [measurement example](advanced-examples.md#measure-peaks-and-limiter-reduction) shows opt-in polling and cleanup."
         }
       ]
     },
@@ -64,12 +133,16 @@
       "source": "documentation/recommendations.md",
       "destination": "references/recommendations.md",
       "source_sha256": "f38ff8bd8d4b20620c0be250c813b2125a0c1102f2249a469f73fe59876bd4cd",
-      "mirrored_sha256": "dea91d5445d7a996d43263fccb519af11dad182a29c3f07bd9cd1963d84789ef",
+      "mirrored_sha256": "0a8c5b74ffb5c1171f9ea428f4a40446aab4e19eb887b67eaa3208de13eac5b4",
       "links": [],
       "link_fixes": [
         {
           "original_markdown": "Measure the complete workload on each target device, including held voices, binaural, LFOs, all enabled effects and tails. The [historical statistics benchmark](stats-performance.md) predates these features; the [current technical report](studio-validation.json) includes an unmet full-chain host deadline criterion. Neither is a guarantee of game-frame rate, physical audio deadlines, heat or battery life.",
-          "mirrored_markdown": "Measure the complete workload on each target device, including held voices, binaural, LFOs, all enabled effects and tails. The [historical statistics benchmark](stats-performance.md) predates these features; the [current technical report](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/documentation/studio-validation.json) includes an unmet full-chain host deadline criterion. Neither is a guarantee of game-frame rate, physical audio deadlines, heat or battery life."
+          "mirrored_markdown": "Measure the complete workload on each target device, including held voices, binaural, LFOs, all enabled effects and tails. The [historical statistics benchmark](stats-performance.md) predates these features; the [current technical report](studio-validation.json) includes an unmet full-chain host deadline criterion. Neither is a guarantee of game-frame rate, physical audio deadlines, heat or battery life."
+        },
+        {
+          "original_markdown": "Fixed input/event gain does not decrease when unrelated voices start. If level dips, inspect `maxLimiterReductionDb` and `preLimiterPeakDb`, then consider same-pitch phase cancellation or the device's speaker protection. Eight coherent independent voices can still exceed the limiter threshold; module capacity is not a clean-mix loudness guarantee. See [measurement example](examples.md#measure-peaks-and-limiter-reduction).",
+          "mirrored_markdown": "Fixed input/event gain does not decrease when unrelated voices start. If level dips, inspect `maxLimiterReductionDb` and `preLimiterPeakDb`, then consider same-pitch phase cancellation or the device's speaker protection. Eight coherent independent voices can still exceed the limiter threshold; module capacity is not a clean-mix loudness guarantee. See [measurement example](advanced-examples.md#measure-peaks-and-limiter-reduction)."
         }
       ]
     },
@@ -77,12 +150,24 @@
       "source": "documentation/sound-design.md",
       "destination": "references/sound-design.md",
       "source_sha256": "278b5bf3812ba72c773f5f67d817ea7780d8ab183ed92c79dca44c32c5d3015e",
-      "mirrored_sha256": "e8f9c8393cc694bd39cb1d91a153ce20bf6519841a085d20dc3521c870078761",
+      "mirrored_sha256": "0805aaa64f8de13da5e0803c656761dbf245f7621bb19c8e92046b60df81c324",
       "links": [],
       "link_fixes": [
         {
           "original_markdown": "See [Examples](examples.md) for complete code and [Recommendations](recommendations.md) for gain and device-testing advice.",
           "mirrored_markdown": "See [Examples](examples.md) for complete code and [Recommendations](recommendations.md) for gain and device-testing advice. Additional [curated recipes](recipes.md) remain available."
+        },
+        {
+          "original_markdown": "Choose a held voice when the ending follows a player action instead of a fixed duration: motor, charge beam, pad or the last chord of a ceremony. `noteOn` starts a positive app-owned ID; `noteOff` begins release from the current level, and compatible `updateVoice` edits ramp over 10 ms. Distinct IDs remain independent events with fixed gain. Reserve enough capacity for their releases and unrelated effects, and release on cancellation as well as ordinary key up. See the [held motor recipe](examples.md#sustained-game-motor) for retry/cleanup handling.",
+          "mirrored_markdown": "Choose a held voice when the ending follows a player action instead of a fixed duration: motor, charge beam, pad or the last chord of a ceremony. `noteOn` starts a positive app-owned ID; `noteOff` begins release from the current level, and compatible `updateVoice` edits ramp over 10 ms. Distinct IDs remain independent events with fixed gain. Reserve enough capacity for their releases and unrelated effects, and release on cancellation as well as ordinary key up. See the [held motor recipe](advanced-examples.md#sustained-game-motor) for retry/cleanup handling."
+        },
+        {
+          "original_markdown": "All processors are off initially, with fixed input gain 1. Activate them explicitly through `setMasterProcessing` on a running engine; [copyable configuration](examples.md#chorus-delay-reverb-and-creative-saturation) and [exact ranges](api.md#setmasterprocessingoptions) are available. The shared chain affects every simultaneous sound. A subtle reverb can enrich a result chord, while many wet collisions can obscure short gameplay feedback. There are no per-voice sends or separate music/effects buses.",
+          "mirrored_markdown": "All processors are off initially, with fixed input gain 1. Activate them explicitly through `setMasterProcessing` on a running engine; [copyable configuration](advanced-examples.md#chorus-delay-reverb-and-creative-saturation) and [exact ranges](api.md#setmasterprocessingoptions) are available. The shared chain affects every simultaneous sound. A subtle reverb can enrich a result chord, while many wet collisions can obscure short gameplay feedback. There are no per-voice sends or separate music/effects buses."
+        },
+        {
+          "original_markdown": "The two additional voice LFOs move filter cutoff, square PWM or sine FM index using sine/triangle shapes. Cutoff movement creates slow breathing or rhythmic filtering; PWM adds changing harmonic color; a small FM-index modulation varies brightness. Free rates reach 20 Hz, and synced rates follow native transport tempo. These slots are separate from pitch vibrato. Avoid deep/high-rate modulation with strong resonance or high-frequency FM; safe parameter clamping does not guarantee a pleasant or alias-free sound. The [two-LFO example](examples.md#two-voice-lfos) shows a filtered PWM pad.",
+          "mirrored_markdown": "The two additional voice LFOs move filter cutoff, square PWM or sine FM index using sine/triangle shapes. Cutoff movement creates slow breathing or rhythmic filtering; PWM adds changing harmonic color; a small FM-index modulation varies brightness. Free rates reach 20 Hz, and synced rates follow native transport tempo. These slots are separate from pitch vibrato. Avoid deep/high-rate modulation with strong resonance or high-frequency FM; safe parameter clamping does not guarantee a pleasant or alias-free sound. The [two-LFO example](advanced-examples.md#two-voice-lfos) shows a filtered PWM pad."
         }
       ]
     },
@@ -90,12 +175,20 @@
       "source": "documentation/troubleshooting.md",
       "destination": "references/troubleshooting.md",
       "source_sha256": "8ec9d1fcf46c111ed5a7bd4c0fb1290d8dc4ca43e7cd44a26802557da1ea18fe",
-      "mirrored_sha256": "40872037635d8ba982e202656d4c853829d65591afd3a87a1205e912d7283feb",
+      "mirrored_sha256": "525f86ff030f930856de54c3725624ed8a608944c40db9b9467cf6f42365fc05",
       "links": [],
       "link_fixes": [
         {
           "original_markdown": "The event arrives when the pattern ends, about 1 ms after the sum of its step lengths, not when you call. A 30 second pattern reports after 30 seconds. Swing and FIR draining can leave sound after completion; the event does not certify audible silence. The [interactive example](../example/README.md#pattern-completion-and-replacement) demonstrates completion, replacement and shutdown.",
           "mirrored_markdown": "The event arrives when the pattern ends, about 1 ms after the sum of its step lengths, not when you call. A 30 second pattern reports after 30 seconds. Swing and FIR draining can leave sound after completion; the event does not certify audible silence. The [interactive example](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/example/README.md#pattern-completion-and-replacement) demonstrates completion, replacement and shutdown."
+        },
+        {
+          "original_markdown": "Check Boolean returns. A full public queue can reject `noteOff`; retry twice at 16 ms outside render, then shut down/report if still rejected. Cancel those retries on owner teardown. The [held motor example](examples.md#sustained-game-motor) implements this policy. Touch cancellation, pause and close need cleanup as well as normal key up.",
+          "mirrored_markdown": "Check Boolean returns. A full public queue can reject `noteOff`; retry twice at 16 ms outside render, then shut down/report if still rejected. Cancel those retries on owner teardown. The [held motor example](advanced-examples.md#sustained-game-motor) implements this policy. Touch cancellation, pause and close need cleanup as well as normal key up."
+        },
+        {
+          "original_markdown": "Enable diagnostics, reset deliberately, then inspect `preLimiterPeakDb` and `maxLimiterReductionDb`. They retain the native pre-limiter peak and greatest attenuation since reset, including brief interventions between UI polls. `limiterReductionDb` is a window measurement and can return to zero sooner. Older packages may omit the accumulated fields; disabled/unmeasured diagnostics return `null`. See [measurement example](examples.md#measure-peaks-and-limiter-reduction).",
+          "mirrored_markdown": "Enable diagnostics, reset deliberately, then inspect `preLimiterPeakDb` and `maxLimiterReductionDb`. They retain the native pre-limiter peak and greatest attenuation since reset, including brief interventions between UI polls. `limiterReductionDb` is a window measurement and can return to zero sooner. Older packages may omit the accumulated fields; disabled/unmeasured diagnostics return `null`. See [measurement example](advanced-examples.md#measure-peaks-and-limiter-reduction)."
         }
       ]
     },
@@ -103,12 +196,12 @@
       "source": "documentation/stats-performance.md",
       "destination": "references/stats-performance.md",
       "source_sha256": "e259df3fccfa5dc4eb4d397ff76277317bf32f394fb88aecc43f32750bf53467",
-      "mirrored_sha256": "305cb578ceea02100d7cdad3f907329cfa238fb06d60a9b1192f5d7b8b795630",
+      "mirrored_sha256": "56b7c4879cf77aaaed56512ce7026d08697c3e5a5f35146b99d94952a378bf4e",
       "links": [],
       "link_fixes": [
         {
           "original_markdown": "This is a historical statistics-only comparison, before sustained voices, native sequence transport, master effects and the two additional voice LFOs. It is not a performance measurement of those features. See [current technical validation](studio-validation.json) for newer evidence and its device/deadline limits.",
-          "mirrored_markdown": "This is a historical statistics-only comparison, before sustained voices, native sequence transport, master effects and the two additional voice LFOs. It is not a performance measurement of those features. See [current technical validation](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/documentation/studio-validation.json) for newer evidence and its device/deadline limits."
+          "mirrored_markdown": "This is a historical statistics-only comparison, before sustained voices, native sequence transport, master effects and the two additional voice LFOs. It is not a performance measurement of those features. See [current technical validation](studio-validation.json) for newer evidence and its device/deadline limits."
         }
       ]
     },
@@ -117,6 +210,14 @@
       "destination": "references/stats-performance.json",
       "source_sha256": "bd0cf07295d0d8f1120e66f527e9ca6d9a014efdc43dff5675716e8e26abe5b3",
       "mirrored_sha256": "bd0cf07295d0d8f1120e66f527e9ca6d9a014efdc43dff5675716e8e26abe5b3",
+      "links": [],
+      "link_fixes": []
+    },
+    {
+      "source": "documentation/studio-validation.json",
+      "destination": "references/studio-validation.json",
+      "source_sha256": "b6abcf9229b8bb812cb4da467e3c495ab66c41041fb7562ca3c371d79671509b",
+      "mirrored_sha256": "b6abcf9229b8bb812cb4da467e3c495ab66c41041fb7562ca3c371d79671509b",
       "links": [],
       "link_fixes": []
     }
