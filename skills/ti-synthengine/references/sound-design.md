@@ -1,11 +1,8 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation from the reviewed working tree based on `95901c98af5353b86d9dc7c60b29ab9186b038cd` (2026-10-14), including uncommitted statistics changes. Upstream `documentation/sound-design.md` SHA-256: `4ccbb55b92879c59d20116aff942e16d431c619341b3d4714da4c50c3c691cf9`.
+> Source snapshot: official TiSynthEngine 1.0.0 beta documentation from the reviewed working tree based on `6b48af568c4a50685541b4ae2800d38081e6ebb7` (2026-10-22), including uncommitted documentation updates. Upstream `documentation/sound-design.md` SHA-256: `278b5bf3812ba72c773f5f67d817ea7780d8ab183ed92c79dca44c32c5d3015e`.
 
 # Sound design with TiSynthEngine
 
-TiSynthEngine builds sounds from oscillators. There is no recorded sample
-underneath a tone: pitch, waveform, envelope, movement and level describe the
-whole sound. That small set of controls is enough for interface feedback,
-musical cues, alarms, retro effects and simple percussion.
+TiSynthEngine generates sound with oscillators, without recorded samples. Pitch, waveform, envelope, movement and level define each sound, from interface feedback and musical cues to alarms, retro effects and simple percussion.
 
 The examples assume the engine is running and use these constants:
 
@@ -31,95 +28,68 @@ var WAVE = synth.getDefaults().waveTypes
 - [Mixing profiles and limiter](#mixing-profiles-and-limiter)
 - [Speakers, headphones and devices](#speakers-headphones-and-devices)
 - [Recipes](#recipes)
+- [Holding a sound and adding movement](#holding-a-sound-and-adding-movement)
+- [Native space and creative drive](#native-space-and-creative-drive)
 
 <!-- TOC-END -->
 
 ## Notes, frequencies and octaves
 
-Frequency is the number of waveform cycles per second, measured in hertz. A
-440 Hz oscillator repeats 440 times each second. TiSynthEngine accepts a
-frequency directly or converts a note name for you:
+Frequency is the number of waveform cycles per second, measured in hertz. A 440 Hz oscillator repeats 440 times each second. TiSynthEngine accepts a frequency directly or converts a note name for you:
 
 ```javascript
 synth.playTone({ frequency: 440 })
 synth.playTone({ note: 'A4' })
 ```
 
-Both calls have the same pitch. Note names use an octave number: `C4` is middle
-C, `C5` is one octave higher, and `C3` is one octave lower. Moving up one
-octave doubles frequency; moving down halves it.
+Both calls have the same pitch. Note names use an octave number: `C4` is middle C, `C5` is one octave higher, and `C3` is one octave lower. Moving up one octave doubles frequency; moving down halves it.
 
-The note parser accepts English letters and solfege. Sharps use `#`; flats use
-a lowercase `b`.
+The note parser accepts English letters and solfege. Sharps use `#`; flats use a lowercase `b`.
 
 ```text
 C4  C#4  Db4  D4
 DO4 DO#4 REb4 RE4
 ```
 
-When no octave is present, octave 4 is used. The supported octave digit is 0
-through 9, subject to the current frequency ceiling.
+When no octave is present, octave 4 is used. The supported octave digit is 0 through 9, subject to the current frequency ceiling.
 
-The tuning system is twelve-tone equal temperament with A4 at 440 Hz. Each
-semitone multiplies frequency by the twelfth root of two:
+The tuning system is twelve-tone equal temperament with A4 at 440 Hz. Each semitone multiplies frequency by the twelfth root of two:
 
 ```text
 frequency = 440 * 2 ^ ((midiNote - 69) / 12)
 ```
 
-Equal temperament keeps intervals consistent in every key. It also means a
-major third is the practical keyboard interval, not a pure 5:4 frequency
-ratio. That distinction rarely matters for game or interface sounds.
+Equal temperament keeps intervals consistent in every key. It also means a major third is the practical keyboard interval, not a pure 5:4 frequency ratio. That distinction rarely matters for game or interface sounds.
 
 ## Waveform and timbre
 
-Pitch says how fast the oscillator repeats. Waveform says how it moves within
-each cycle, which determines the harmonic content and perceived timbre.
+Pitch says how fast the oscillator repeats. Waveform says how it moves within each cycle, which determines the harmonic content and perceived timbre.
 
 ### Sine
 
-`SINE` contains the fundamental and no intentional overtones. It works for
-clean beeps, soft bass notes and sounds that should stay out of the way. On a
-small speaker, very low sines may be quiet or may excite the speaker's own
-distortion because there are no upper harmonics to carry the pitch.
+`SINE` contains the fundamental and no intentional overtones. Use it for clean beeps, soft bass notes and unobtrusive sounds. On a small speaker, very low sines may be quiet or may excite the speaker's own distortion because there are no upper harmonics to carry the pitch.
 
 ### Square
 
-`SQUARE` contains strong odd harmonics. It sounds hollow, bright and electronic.
-It is a good starting point for retro game cues and clear melodic prompts. The
-extra high-frequency energy makes it more assertive than a sine at the same
-pitch.
+`SQUARE` contains strong odd harmonics. It sounds hollow, bright and electronic. Try it for retro game cues and clear melodic prompts. The extra high-frequency energy makes it more assertive than a sine at the same pitch.
 
 ### Sawtooth
 
-`SAWTOOTH` contains both even and odd harmonics. It is the densest pitched
-waveform in the module and reads as buzzy or brassy. Use it for alarms, arcade
-leads and short sweeps. Square and sawtooth are band-limited with PolyBLEP to
-reduce aliasing at discontinuities.
+`SAWTOOTH` contains both even and odd harmonics. It is the densest pitched waveform in the module and reads as buzzy or brassy. Use it for alarms, arcade leads and short sweeps. Square and sawtooth are band-limited with PolyBLEP to reduce aliasing at discontinuities.
 
 ### Triangle
 
-`TRIANGLE` contains odd harmonics that fall off faster than a square wave. It
-has more body than a sine without the hard edge of a square. It suits gentle
-melodies, pads and xylophone-like sketches.
+`TRIANGLE` contains odd harmonics that fall off faster than a square wave. It has more body than a sine without the hard edge of a square. It suits gentle melodies, pads and xylophone-like sketches.
 
 ### Noise
 
-`NOISE` produces white noise rather than a repeating pitched cycle. Its
-`frequency` is accepted because every sound event uses the same contract, but
-changing that value does not tune the noise. A short envelope turns it into a
-click, hat or impact layer; a long envelope creates wind or static.
+`NOISE` produces white noise rather than a repeating pitched cycle. Its `frequency` is accepted because every sound event uses the same contract, but changing that value does not tune the noise. A short envelope turns it into a click, hat or impact layer; a long envelope creates wind or static.
 
-`noiseRate` changes the source into variable-rate sample-and-hold noise. Zero
-keeps the white-noise default. Lower rates hold each pseudo-random value longer
-and sound grainier. `noiseRateEnd` moves the rate over the event.
+`noiseRate` changes the source into variable-rate sample-and-hold noise. Zero keeps the white-noise default. Lower rates hold each pseudo-random value longer and sound grainier. `noiseRateEnd` moves the rate over the event.
 
 ### Wavetable
 
-`WAVETABLE` repeats 2 to 64 values supplied in `waveTable`. Values range from
--1 to 1 and are read as steps, without interpolation. Short asymmetric tables
-are useful for coarse DAC-like voices, buzzy radio tones and original retro
-effects that do not fit the four built-in oscillator shapes.
+`WAVETABLE` repeats 2 to 64 values supplied in `waveTable`. Values range from -1 to 1 and are read as steps, without interpolation. Short asymmetric tables are useful for coarse DAC-like voices, buzzy radio tones and original retro effects that do not fit the four built-in oscillator shapes.
 
 ```javascript
 synth.playTone({
@@ -151,14 +121,9 @@ Try the built-in sources at a moderate level before choosing one:
 
 ## Filter, pulse width and quantization
 
-`lowPassHz` enables a per-voice one-pole low-pass filter. It is most obvious on
-noise, square and sawtooth sources. Zero bypasses the filter. For resonance,
-high-pass and band-pass shapes or a moving cutoff, use the
-[resonant filter](#resonant-filter) below.
+`lowPassHz` enables a per-voice one-pole low-pass filter. It is most obvious on noise, square and sawtooth sources. Zero bypasses the filter. For resonance, high-pass and band-pass shapes or a moving cutoff, use the [resonant filter](#resonant-filter) below.
 
-`pulseWidth` controls how much of each square-wave cycle stays high. The 0.5
-default is a normal square. Values closer to 0.05 or 0.95 become thinner and
-brighter. `pulseWidthEnd` creates a linear duty-cycle sweep.
+`pulseWidth` controls how much of each square-wave cycle stays high. The 0.5 default is a normal square. Values closer to 0.05 or 0.95 become thinner and brighter. `pulseWidthEnd` creates a linear duty-cycle sweep.
 
 ```javascript
 synth.playTone({
@@ -172,10 +137,7 @@ synth.playTone({
 })
 ```
 
-`bitDepth` rounds the oscillator or noise amplitude to a fixed number of
-levels before filtering. Values from 2 to 16 are accepted. Zero preserves the
-floating-point signal. Quantization adds harmonic grit; it does not change the
-audio device's output format.
+`bitDepth` rounds the oscillator or noise amplitude to a fixed number of levels before filtering. Values from 2 to 16 are accepted. Zero preserves the floating-point signal. Quantization adds harmonic grit; it does not change the audio device's output format.
 
 ## Envelope and total duration
 
@@ -186,16 +148,11 @@ silence -> attack -> full level -> release -> silence
           |<---------- duration ---------->|
 ```
 
-`duration` is the total time, not the sustain time. If duration is 500 ms,
-attack is 50 ms and release is 100 ms, the full-level middle lasts 350 ms.
+`duration` is the total time, not the sustain time. If duration is 500 ms, attack is 50 ms and release is 100 ms, the full-level middle lasts 350 ms.
 
-Short attacks feel immediate. A 0 or 1 ms attack can be useful for percussion,
-but an abrupt start at an unlucky phase can sound like a click. Values between
-5 and 15 ms keep most game feedback crisp without a hard edge.
+Short attacks feel immediate. A 0 or 1 ms attack can be useful for percussion, but an abrupt start at an unlucky phase can sound like a click. Values between 5 and 15 ms keep most game feedback crisp without a hard edge.
 
-Long attacks soften the onset. Use 100 to 500 ms for pads and slow warnings.
-Release controls how the sound leaves: 20 to 80 ms feels tight, while several
-hundred milliseconds leaves a tail.
+Long attacks soften the onset. Use 100 to 500 ms for pads and slow warnings. Release controls how the sound leaves: 20 to 80 ms feels tight, while several hundred milliseconds leaves a tail.
 
 Explicit attack and release values must fit. These relationships are required:
 
@@ -204,15 +161,11 @@ attack < duration
 release <= duration - attack
 ```
 
-Defaults are adjusted internally if a very short duration leaves no room, but
-values supplied by the caller are never reshaped silently.
+Defaults are adjusted internally if a very short duration leaves no room, but values supplied by the caller are never reshaped silently.
 
 ## Decay and sustain
 
-Plucked strings, struck keys and mallets start loud and settle. A flat
-envelope cannot do that, so `decay` and `sustain` add a stage after the attack:
-the level falls from full scale to `sustain` over `decay` milliseconds, then
-holds until the release.
+Plucked strings, struck keys and mallets start loud and settle. A flat envelope cannot do that, so `decay` and `sustain` add a stage after the attack: the level falls from full scale to `sustain` over `decay` milliseconds, then holds until the release.
 
 ```text
 decay: 0                    flat tone, the default
@@ -223,22 +176,16 @@ decay: 2000, sustain: 0.02  bell or mallet: fades by itself
 Practical starting regions:
 
 - plucks and keys: attack 2 to 10 ms, decay 100 to 400 ms, sustain 0.1 to 0.4;
-- struck percussion with a pitch drop: decay about half the duration, sustain
-  near 0.3;
+- struck percussion with a pitch drop: decay about half the duration, sustain near 0.3;
 - bells and mallets: decay over most of the duration, sustain near 0.
 
-`sustain` below 1 needs a nonzero `decay`. Without one the level would jump
-instantly, which clicks, so the call is rejected with `sustain_without_decay`.
+`sustain` below 1 needs a nonzero `decay`. Without one the level would jump instantly, which clicks, so the call is rejected with `sustain_without_decay`.
 
-The release scales the level the note has reached. If the release begins while
-the decay is still running, the note leaves smoothly from that point. The
-decay still has to fit: `attack` plus `decay` cannot exceed `duration`, and the
-50 ms default attack counts. Set a short `attack` explicitly for a tight pluck.
+The release scales the level the note has reached. If the release begins while the decay is still running, the note leaves smoothly from that point. The decay still has to fit: `attack` plus `decay` cannot exceed `duration`, and the 50 ms default attack counts. Set a short `attack` explicitly for a tight pluck.
 
 ## Pan and movement
 
-`pan` ranges from -1 on the left to 1 on the right. Zero is centered. Stereo
-movement is a straight interpolation from `pan` to `panEnd` over the event.
+`pan` ranges from -1 on the left to 1 on the right. Zero is centered. Stereo movement is a straight interpolation from `pan` to `panEnd` over the event.
 
 ```javascript
 synth.playTone({
@@ -252,11 +199,9 @@ synth.playTone({
 })
 ```
 
-Phone speakers are often mono or close together, so pan may be subtle. Treat it
-as extra detail rather than the only cue that distinguishes two sounds.
+Phone speakers are often mono or close together, so pan may be subtle. Treat it as extra detail rather than the only cue that distinguishes two sounds.
 
-`frequencyEnd` makes a linear pitch sweep. Use an upward sweep for activation
-or reward and a downward sweep for dismissal, power-down or impact.
+`frequencyEnd` makes a linear pitch sweep. Use an upward sweep for activation or reward and a downward sweep for dismissal, power-down or impact.
 
 ```javascript
 synth.playTone({
@@ -272,8 +217,7 @@ synth.playTone({
 
 ## Vibrato and the LFO
 
-The low-frequency oscillator modulates pitch. `lfoFreq` is the modulation rate
-in cycles per second, and `lfoDepth` is the maximum pitch movement in hertz.
+The low-frequency oscillator modulates pitch. `lfoFreq` is the modulation rate in cycles per second, and `lfoDepth` is the maximum pitch movement in hertz.
 
 ```javascript
 synth.playTone({
@@ -287,37 +231,21 @@ synth.playTone({
 })
 ```
 
-A rate around 4 to 7 Hz with a small depth sounds like musical vibrato. A fast
-rate or large depth becomes an effect. Because depth is measured in hertz, 8 Hz
-is a larger musical interval on a low note than on a high note.
+A rate around 4 to 7 Hz with a small depth sounds like musical vibrato. A fast rate or large depth becomes an effect. Because depth is measured in hertz, 8 Hz is a larger musical interval on a low note than on a high note.
 
 ## Resonant filter
 
-`filterType` adds a filter that removes or emphasizes part of the spectrum. It
-has 12 dB per octave of slope, twice as steep as the one-pole `lowPassHz`
-filter, and can be combined with it (`lowPassHz` runs first).
+`filterType` adds a filter that removes or emphasizes part of the spectrum. It has 12 dB per octave of slope, twice as steep as the one-pole `lowPassHz` filter, and can be combined with it (`lowPassHz` runs first).
 
-- `lowpass` darkens the sound. A sawtooth through a closing low-pass reads as a
-  zap or a sound moving away; an opening one reads as a swell.
-- `highpass` thins the sound by removing body. It makes hats, hiss and tinny
-  effects out of noise.
-- `bandpass` keeps one band around `filterHz`, which gives vocal, nasal and
-  wah-like colors.
+- `lowpass` darkens the sound. A sawtooth through a closing low-pass reads as a zap or a sound moving away; an opening one reads as a swell.
+- `highpass` thins the sound by removing body. It makes hats, hiss and tinny effects out of noise.
+- `bandpass` keeps one band around `filterHz`, which gives vocal, nasal and wah-like colors.
 
-Filters shape harmonics, so give them a source that has some: `SAWTOOTH`,
-`SQUARE` and `NOISE` respond strongly. A sine has only its fundamental, so a
-filter mostly changes its level.
+Filters shape harmonics, so give them a source that has some: `SAWTOOTH`, `SQUARE` and `NOISE` respond strongly. A sine has only its fundamental, so a filter mostly changes its level.
 
-`filterQ` is the resonance. The default 0.7071 is flat. Values from 2 to 4 add
-character, and above about 6 the filter whistles around the cutoff. A low-pass
-or high-pass boosts the cutoff region by about `filterQ`, so Q 10 is roughly
-20 dB. Lower the event `volume` as Q goes up. The limiter catches peaks, but a
-resonance that keeps hitting it makes the whole mix pump. The band-pass keeps
-unity gain at its center for every Q and only narrows.
+`filterQ` is the resonance. The default 0.7071 is flat. Values from 2 to 4 add character, and above about 6 the filter whistles around the cutoff. A low-pass or high-pass boosts the cutoff region by about `filterQ`, so Q 10 is roughly 20 dB. Lower the event `volume` as Q goes up. The limiter catches peaks, but a resonance that keeps hitting it makes the whole mix pump. The band-pass keeps unity gain at its center for every Q and only narrows.
 
-`filterHzEnd` moves the cutoff over the whole event. The motion is exponential,
-so each second covers the same musical distance. Set it above `filterHz` to
-open the filter and below to close it. Zero disables the sweep.
+`filterHzEnd` moves the cutoff over the whole event. The motion is exponential, so each second covers the same musical distance. Set it above `filterHz` to open the filter and below to close it. Zero disables the sweep.
 
 ```javascript
 synth.playTone({
@@ -336,39 +264,19 @@ synth.playTone({
 
 ## Frequency modulation
 
-FM makes rich, bright and metallic sounds from a plain sine. A second sine, the
-modulator, bends the pitch of the first one, the carrier. Turn it on with
-`fmDepth` or `fmDepthEnd`, on a `SINE` voice.
+FM makes rich, bright and metallic sounds from a plain sine. A second sine, the modulator, bends the pitch of the first one, the carrier. Turn it on with `fmDepth` or `fmDepthEnd`, on a `SINE` voice.
 
-- `fmRatio` is the modulator frequency as a multiple of the carrier's. Whole
-  numbers (1, 2, 3) keep the added overtones on the harmonic series, so the
-  pitch stays clear and the sound reads as organ- or piano-like. Fractional
-  ratios such as 1.4142 or 3.5 put the overtones between harmonics, which reads
-  as bells, glass and metal.
-- `fmDepth` is the modulation index and works like a brightness control. Around
-  0.5 to 1.5 it warms a sine, 2 to 5 makes it bright and rich, and values near
-  10 get harsh.
-- `fmDepthEnd` moves the index over the event. Starting high and ending low
-  gives a bright attack that mellows, which is the signature of electric pianos,
-  bells and mallets. Pair it with `decay` so the level falls with the brightness.
+- `fmRatio` is the modulator frequency as a multiple of the carrier's. Whole numbers (1, 2, 3) keep the added overtones on the harmonic series, so the pitch stays clear and the sound reads as organ- or piano-like. Fractional ratios such as 1.4142 or 3.5 put the overtones between harmonics, which reads as bells, glass and metal.
+- `fmDepth` is the modulation index and works like a brightness control. Around 0.5 to 1.5 it warms a sine, 2 to 5 makes it bright and rich, and values near 10 get harsh.
+- `fmDepthEnd` moves the index over the event. Starting high and ending low gives a bright attack that mellows, which is the signature of electric pianos, bells and mallets. Pair it with `decay` so the level falls with the brightness.
 
-FM does not change the sine's amplitude, so gain staging is the same as for a
-plain sine. There is no band-limiting: a high carrier with a large index and
-ratio puts sidebands above the Nyquist frequency, where they alias into
-inharmonic noise. Keep bell carriers modest, around 500 Hz, or lower the index.
+FM does not change the sine's amplitude, so gain staging is the same as for a plain sine. There is no band-limiting: a high carrier with a large index and ratio puts sidebands above the Nyquist frequency, where they alias into inharmonic noise. Keep bell carriers modest, around 500 Hz, or lower the index.
 
 ## Detune
 
-`detune` shifts a pitch by cents, hundredths of a semitone. Two tones a few
-cents apart drift in and out of phase and beat at a rate close to
-`frequency * (2 ^ (cents / 1200) - 1)`. A 12-cent gap at 440 Hz beats about
-3 times a second. Slow beating (0.5 to 4 Hz) sounds warm and wide, like a
-chorus; past about 20 cents it starts to sound out of tune.
+`detune` shifts a pitch by cents, hundredths of a semitone. Two tones a few cents apart drift in and out of phase and beat at a rate close to `frequency * (2 ^ (cents / 1200) - 1)`. A 12-cent gap at 440 Hz beats about 3 times a second. Slow beating (0.5 to 4 Hz) sounds warm and wide, like a chorus; past about 20 cents it starts to sound out of tune.
 
-On a single tone, `detune` just retunes it, which is handy for small variations
-so a repeated effect does not sound identical. The effect comes from stacking
-detuned copies. In a chord, give `detunes` one entry per pitch and repeat a
-pitch to thicken it:
+Use `detune` on a single tone to vary the pitch slightly between repetitions. The effect comes from stacking detuned copies. In a chord, give `detunes` one entry per pitch and repeat a pitch to thicken it:
 
 ```javascript
 synth.playChord({
@@ -382,20 +290,11 @@ synth.playChord({
 })
 ```
 
-Each repeated pitch is a voice, so size `maxVoices` for the full stack. Protected
-profiles divide per-voice source gain by the square root of the event voice
-count. This reduces buildup; it does not guarantee equal loudness. Correlated
-voices can still reinforce each other, and detuned voices can produce peaks
-as their phases align. `raw` does not apply this event normalization.
+Each repeated pitch is a voice, so size `maxVoices` for the full stack. Protected profiles divide per-voice source gain by the square root of the event voice count. This reduces buildup; it does not guarantee equal loudness. Correlated voices can still reinforce each other, and detuned voices can produce peaks as their phases align. `raw` does not apply this event normalization.
 
 ## Chords, polyphony and gain
 
-`playChord` is for notes that should start together. The call is placed in the
-native queue as one event, so the audio callback sees the whole chord or none
-of it. In protected profiles, per-voice source gain is divided by the square
-root of the chord's voice count. This approximately stabilizes power for
-uncorrelated voices, not coherent copies; it does not guarantee constant peaks
-or perceived loudness. `raw` bypasses this normalization.
+`playChord` is for notes that should start together. The call is placed in the native queue as one event, so the audio callback sees the whole chord or none of it. In protected profiles, per-voice source gain is divided by the square root of the chord's voice count. This approximately stabilizes power for uncorrelated voices, not coherent copies; it does not guarantee constant peaks or perceived loudness. `raw` bypasses this normalization.
 
 ```javascript
 synth.playChord({
@@ -409,42 +308,28 @@ synth.playChord({
 })
 ```
 
-Four separate `playTone` calls are four independent full-gain events. They are
-not atomic and may start in different audio callbacks. Their sum is also hotter
-and can push the limiter. Separate calls are correct for unrelated taps or
-effects; use `playChord` when the app already knows the pitches are one chord.
+Four separate `playTone` calls are four independent full-gain events. They are not atomic and may start in different audio callbacks. Their sum is also hotter and can push the limiter. Separate calls are correct for unrelated taps or effects; use `playChord` when the app already knows the pitches are one chord.
 
-`maxVoices` is capacity, not a loudness control. When the pool is full, the
-voice with the least time remaining is faded and reused. Leave a small margin for release tails, but do
-not set 32 by habit when the app can only make four sounds at once.
+`maxVoices` sets voice capacity without changing loudness. Timed-only pools replace the least remaining duration; held/transport pools prefer a releasing voice, then the oldest attack. Leave a small margin for release tails, but do not set 32 by habit when the app can only make four sounds at once.
 
 ## Mixing profiles and limiter
 
 Choose the profile once in `startEngine()`:
 
-| Profile | Practical use |
-| --- | --- |
-| `conservative` | Default for mixed effects, chords and unpredictable overlap. |
-| `balanced` | More level for mostly monophonic sounds. |
-| `speakerSafe` | Lower source gain and a 0.70 ceiling for small speakers. |
-| `raw` | Full source gain; useful only when the app owns all gain staging. |
+| Profile        | Practical use                                                     |
+| -------------- | ----------------------------------------------------------------- |
+| `conservative` | Default for mixed effects, chords and unpredictable overlap.      |
+| `balanced`     | More level for mostly monophonic sounds.                          |
+| `speakerSafe`  | Lower source gain and a 0.70 ceiling for small speakers.          |
+| `raw`          | Full source gain; useful only when the app owns all gain staging. |
 
-Protected profiles calibrate source gain by waveform and event voice count.
-The final stereo-linked limiter catches exceptional peaks with 10 ms of
-lookahead and a 100 ms release. Its ceiling is 0.85, or 0.70 for `speakerSafe`.
+Protected profiles calibrate source gain by waveform and event voice count. The final stereo-linked limiter catches exceptional peaks with 10 ms of lookahead and a 100 ms release. Its ceiling is 0.85, or 0.70 for `speakerSafe`.
 
-The limiter is protection, not a loudness effect. If it works on every note,
-lower event volume or choose a more conservative profile. Repeatedly starting
-the same long sound before its previous release ends raises and lowers the sum,
-which can produce audible pumping. That overlap is useful as a stress test, but
-it is a poor reference for the tone's normal quality.
+The limiter protects against peaks. If it engages on every note, lower event volume or choose a more conservative profile instead of using it to raise loudness. Repeatedly starting the same long sound before its previous release ends raises and lowers the sum, which can produce audible pumping. That overlap is useful as a stress test, but it is a poor reference for the tone's normal quality.
 
 ## Speakers, headphones and devices
 
-Headphones usually reproduce bass and stereo movement more cleanly than a phone
-speaker. A sound that is smooth in headphones can buzz on a small driver even
-when the digital signal never clips. Low pitches and square or sawtooth waves
-are the most demanding.
+Headphones usually reproduce bass and stereo movement more cleanly than a phone speaker. A sound that is smooth in headphones can buzz on a small driver even when the digital signal never clips. Low pitches and square or sawtooth waves are the most demanding.
 
 For speaker-facing sounds:
 
@@ -454,15 +339,11 @@ For speaker-facing sounds:
 - test at several system volume settings on the target device;
 - keep critical meaning in rhythm and pitch, not pan alone.
 
-Different phones have different sample rates, speaker protection and acoustic
-resonances. Test the real device family. A desktop browser or simulator cannot
-answer whether a small speaker will rattle.
+Different phones have different sample rates, speaker protection and acoustic resonances. Test the real device family. A desktop browser or simulator cannot answer whether a small speaker will rattle.
 
 ## Recipes
 
-These recipes use only the 1.0.0 contract and keep explicit envelopes valid.
-Tune pitch and volume for the app's other audio rather than treating the values
-as mastering targets.
+These recipes use only the 1.0.0 contract and keep explicit envelopes valid. Adjust pitch and volume to fit the app's other audio; the recipe values are starting points, not mastering targets.
 
 ### Interface click
 
@@ -477,8 +358,7 @@ synth.playTone({
 })
 ```
 
-The short sine is cleaner than a full-band noise click. Raise the frequency for
-a lighter control or lower it for a heavier one.
+The short sine is cleaner than a full-band noise click. Raise the frequency for a lighter control or lower it for a heavier one.
 
 ### Confirmation hit
 
@@ -547,10 +427,7 @@ synth.playPattern({
 })
 ```
 
-The first three steps use sixteenth notes and the last uses an eighth note.
-`release` fades each voice within that rhythmic length. The pattern root does
-not accept `duration`; a step `duration` replaces its rhythmic length as well
-as its voice length. There is no separate gate parameter.
+The first three steps use sixteenth notes and the last uses an eighth note. `release` fades each voice within that rhythmic length. The pattern root does not accept `duration`; a step `duration` replaces its rhythmic length as well as its voice length. There is no separate gate parameter.
 
 ### Noise percussion
 
@@ -569,11 +446,9 @@ synth.playPattern({
 })
 ```
 
-The steps keep the eighth-note grid while short decay and `sustain: 0` let
-each hit settle to silence inside its step.
+The steps keep the eighth-note grid while short decay and `sustain: 0` let each hit settle to silence inside its step.
 
-Noise steps still need `frequency` or `note` because every sounding pattern
-step follows the same shape. The pitch value is not used by the noise source.
+Noise steps still need `frequency` or `note` because every sounding pattern step follows the same shape. The pitch value is not used by the noise source.
 
 ### Filtered noise burst
 
@@ -592,9 +467,7 @@ synth.playTone({
 })
 ```
 
-The decreasing update rate makes the texture break into slower chunks while
-the envelope removes energy. Reverse the two rates for an effect that becomes
-more frantic.
+The decreasing update rate makes the texture break into slower chunks while the envelope removes energy. Reverse the two rates for an effect that becomes more frantic.
 
 ### Pluck
 
@@ -629,8 +502,7 @@ synth.playTone({
 })
 ```
 
-The index falls from 2.2 to 0.25 while the level settles, so the attack is
-bright and the sustain is mellow.
+The index falls from 2.2 to 0.25 while the level settles, so the attack is bright and the sustain is mellow.
 
 ### Bell
 
@@ -650,13 +522,11 @@ synth.playTone({
 })
 ```
 
-The fractional ratio makes the overtones inharmonic. Try 1.4142 or 2.76 for a
-different metal.
+The fractional ratio makes the overtones inharmonic. Try 1.4142 or 2.76 for a different metal.
 
 ### Wah
 
-The wah in [Resonant filter](#resonant-filter) is also a recipe. Reverse the
-two cutoffs for a sound that closes instead of opening.
+The wah in [Resonant filter](#resonant-filter) is also a recipe. Reverse the two cutoffs for a sound that closes instead of opening.
 
 ### Filtered laser
 
@@ -711,9 +581,7 @@ synth.playChord({
 })
 ```
 
-Six voices play two pitches, each in three slightly different tunings. The
-low-pass takes the harshness off the sawtooth stack. Start the engine with
-`maxVoices` of at least 6.
+Six voices play two pitches, each in three slightly different tunings. The low-pass takes the harshness off the sawtooth stack. Start the engine with `maxVoices` of at least 6.
 
 ### Kick
 
@@ -731,13 +599,11 @@ synth.playTone({
 })
 ```
 
-The pitch drop is the punch and the decay is the thump. A phone speaker cannot
-reproduce 42 Hz, so raise `frequencyEnd` toward 70 for speaker playback.
+The pitch drop is the punch and the decay is the thump. A phone speaker cannot reproduce 42 Hz, so raise `frequencyEnd` toward 70 for speaker playback.
 
 ### Simon-style cues
 
-Use short, distinct square-wave pitches. Play one tone for the sequence and
-one atomic chord only when demonstrating all pads together.
+Use short, distinct square-wave pitches. Play one tone for the sequence and one atomic chord only when demonstrating all pads together.
 
 ```javascript
 var SIMON = [329.63, 440, 554.37, 659.25]
@@ -766,7 +632,25 @@ function playAllSimonPads () {
 }
 ```
 
-For more complete code, continue with [Examples](examples.md) and
-[Curated sound and interaction recipes](recipes.md). The latter includes retro
-effects, a playable xylophone, memory-pad timbres, layered chords and timer
-ownership. For gain and device-testing advice, see [Recommendations](recommendations.md).
+See [Examples](examples.md) for complete code and [Recommendations](recommendations.md) for gain and device-testing advice. Additional [curated recipes](recipes.md) remain available.
+
+## Holding a sound and adding movement
+
+Choose a held voice when the ending follows a player action instead of a fixed duration: motor, charge beam, pad or the last chord of a ceremony. `noteOn` starts a positive app-owned ID; `noteOff` begins release from the current level, and compatible `updateVoice` edits ramp over 10 ms. Distinct IDs remain independent events with fixed gain. Reserve enough capacity for their releases and unrelated effects, and release on cancellation as well as ordinary key up. See the [held motor recipe](examples.md#sustained-game-motor) for retry/cleanup handling.
+
+A fanfare's melody benefits from `playSequence`: native sixteenth steps, chords, rests, gates, swing and pitch-ordered arpeggios do not depend on JavaScript firing each note. A long final release can ring over subsequent steps. This musical grid has no arbitrary millisecond lengths or ties; use a held chord when its duration must follow a presentation rather than that grid. See [transport usage](guide.md#choose-the-musical-transport).
+
+The two additional voice LFOs move filter cutoff, square PWM or sine FM index using sine/triangle shapes. Cutoff movement creates slow breathing or rhythmic filtering; PWM adds changing harmonic color; a small FM-index modulation varies brightness. Free rates reach 20 Hz, and synced rates follow native transport tempo. These slots are separate from pitch vibrato. Avoid deep/high-rate modulation with strong resonance or high-frequency FM; safe parameter clamping does not guarantee a pleasant or alias-free sound. The [two-LFO example](examples.md#two-voice-lfos) shows a filtered PWM pad.
+
+## Native space and creative drive
+
+| Processor | What changes | Useful starting region |
+| --- | --- | --- |
+| Stereo chorus | A short interpolated delay with offset LFO phases adds width and movement. | Rate 0.3 to 0.8 Hz, depth 0.15 to 0.35, mix 0.08 to 0.2. |
+| Ping-pong delay | Alternating echoes create rhythmic or spatial repeats. | 180 to 350 ms or synced eighths, feedback 0.15 to 0.35, mix 0.08 to 0.18. |
+| Stereo reverb | Damped comb/allpass reflections create a diffuse decay. | Decay 0.8 to 1.8 seconds, damping 0.5 to 0.7, mix 0.08 to 0.18. |
+| Optional saturation | Soft waveshaping adds harmonics and changes attack/timbre. | Drive 1.2 to 1.6 with a small blend; compare at matched levels. |
+
+All processors are off initially, with fixed input gain 1. Activate them explicitly through `setMasterProcessing` on a running engine; [copyable configuration](examples.md#chorus-delay-reverb-and-creative-saturation) and [exact ranges](api.md#setmasterprocessingoptions) are available. The shared chain affects every simultaneous sound. A subtle reverb can enrich a result chord, while many wet collisions can obscure short gameplay feedback. There are no per-voice sends or separate music/effects buses.
+
+Disabling an effect closes its input gradually and drains the tail before exact bypass; it does not immediately erase its history. Panic invalidates histories. Saturation is a creative choice rather than automatic gain protection; the final limiter stays in place. Match dry/wet comparison levels and watch accumulated limiter reduction so a louder version does not win an A/B comparison merely by level. None of these effects makes a small speaker reproduce missing bass.

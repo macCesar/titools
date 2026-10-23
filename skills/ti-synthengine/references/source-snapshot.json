@@ -2,82 +2,115 @@
   "module": "ti.synthengine",
   "version": "1.0.0 beta",
   "repository": "https://github.com/macCesar/TiSynthEngine",
-  "commit": "95901c98af5353b86d9dc7c60b29ab9186b038cd",
-  "reviewed_on": "2026-10-14",
+  "commit": "6b48af568c4a50685541b4ae2800d38081e6ebb7",
+  "reviewed_on": "2026-10-22",
   "files": [
     {
       "source": "documentation/api.md",
       "destination": "references/api.md",
-      "source_sha256": "60f9eda77f327bad6b66b0b6a49089c383a49a211c0691d09a0d715731434b56",
-      "mirrored_sha256": "5c07828516109386224c6380d8e603f6889cb1cbc0f29dd79609db288cabd908",
+      "source_sha256": "74be6e1dbd51caa72bb158606bd01eeb226d4008d242a0965ed61fc03e6785df",
+      "mirrored_sha256": "282d5a54663b7e206a1766e08f56a74cdaca4fb3f70e747130800ed3bf80bd0a",
       "links": [],
       "link_fixes": []
     },
     {
       "source": "documentation/audio-engine.md",
       "destination": "references/audio-engine.md",
-      "source_sha256": "7b5707ee22e01a351af3633be14458726f8956069fb9355d1fb31cc4f7b9438a",
-      "mirrored_sha256": "22b3665068d9507ef7481a606f8949de24e7429e40609b9760164567220dd8fd",
+      "source_sha256": "b8c5ede5dfd467d4199261c5f67eaaee30bac8d708d6e5c3c2090a1d39c0e250",
+      "mirrored_sha256": "4c60f0b54c77839ab4b095c8e3115dc572f6747226e9eb7bfe9988115a406105",
       "links": [],
-      "link_fixes": []
+      "link_fixes": [
+        {
+          "original_markdown": "The [Studio technical validation report](studio-validation.json) records the calibration and corrected full-chain host benchmark, including failed deadline acceptance and pending device checks. Its host performance result must not be presented as hardware realtime acceptance.",
+          "mirrored_markdown": "The [Studio technical validation report](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/documentation/studio-validation.json) records the calibration and corrected full-chain host benchmark, including failed deadline acceptance and pending device checks. Its host performance result must not be presented as hardware realtime acceptance."
+        }
+      ]
     },
     {
       "source": "documentation/examples.md",
       "destination": "references/examples.md",
-      "source_sha256": "53a8bd95215cc24a35776edb8686fa0d60c5399be0b4ff2685eee1563738f6cb",
-      "mirrored_sha256": "6679554e7f1df97d45a1e3c5ea842a0999d713933c677fc1a4678e72ca226f63",
+      "source_sha256": "90ff3eb384fabbcb104a2b5fc0e8eeac52090a7b9e399241cbc67302abbb225f",
+      "mirrored_sha256": "9cde9aea67bce2eaad4347aac96f72589cf8ef1793c8ad3043c5e1c715f5d9c8",
       "links": [],
       "link_fixes": [
         {
-          "original_markdown": "The complete interactive demo is in [`example/app.js`](../example/app.js).",
-          "mirrored_markdown": "The last committed interactive demo is in the upstream [`example/app.js`](https://github.com/macCesar/TiSynthEngine/blob/95901c98af5353b86d9dc7c60b29ab9186b038cd/example/app.js); that commit does not contain the pending statistics example. For additional retro effects, playable xylophone interaction, memory pads, layered polyphony and cancellable repetition, continue with [Curated sound and interaction recipes](recipes.md)."
+          "original_markdown": "The startup example uses `ambient` for game/UI feedback. On iOS it respects silent mode and mixes with other apps. The module default is `playback`; Android validates either value without changing its output. Shut down before changing the policy. Use the [interactive session controls](../example/README.md#audio-session) to compare them.",
+          "mirrored_markdown": "The startup example uses `ambient` for game/UI feedback. On iOS it respects silent mode and mixes with other apps. The module default is `playback`; Android validates either value without changing its output. Shut down before changing the policy. Use the [interactive session controls](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/example/README.md#audio-session) to compare them."
+        },
+        {
+          "original_markdown": "Follow the [interactive demo setup and test checklist](../example/README.md) to run [`example/app.js`](../example/app.js). It includes headphone positioning, session selection, pattern completion/replacement and all three statistics methods. For a service-level statistics recipe, see [read engine statistics](guide.md#read-engine-statistics).",
+          "mirrored_markdown": "Follow the [interactive demo setup and test checklist](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/example/README.md) to run [`example/app.js`](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/example/app.js). It includes headphone positioning, session selection, pattern completion/replacement and all three statistics methods. For a service-level statistics recipe, see [read engine statistics](guide.md#read-engine-statistics)."
+        },
+        {
+          "original_markdown": "Every snippet on this page uses the TiSynthEngine 1.0.0 contract. Unless a snippet includes startup code, it assumes the engine is already running.",
+          "mirrored_markdown": "Every snippet on this page uses the TiSynthEngine 1.0.0 contract. Unless a snippet includes startup code, it assumes the engine is already running. Additional [curated recipes](recipes.md) cover interaction and sound variants."
         }
       ]
     },
     {
       "source": "documentation/guide.md",
       "destination": "references/guide.md",
-      "source_sha256": "c5fb4ff34ec425487221b80d6793bda24aa328281ab9ccb02e65b0065e54842e",
-      "mirrored_sha256": "d8f58c77c4d622e67ae6e2cafee58a2c24c1c8e31bad719a05ec8a5d968b3d04",
+      "source_sha256": "2e9e3af349f7c24b98b21475897d7aec4deeca0d7130448914804651aa96ccfd",
+      "mirrored_sha256": "bc8b281796e347590860d03df00b11929150fb9e4a01fd2ef321b0bdede32fd0",
       "links": [],
-      "link_fixes": []
+      "link_fixes": [
+        {
+          "original_markdown": "See the [complete field contract](api.md#getstats), [measurement limits](stats-performance.md) and [interactive statistics controls](../example/README.md#statistics).",
+          "mirrored_markdown": "See the [complete field contract](api.md#getstats), [measurement limits](stats-performance.md) and [interactive statistics controls](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/example/README.md#statistics)."
+        }
+      ]
     },
     {
       "source": "documentation/recommendations.md",
       "destination": "references/recommendations.md",
-      "source_sha256": "0f09ee6ef0876b3a23021fddb509dfd1e1206d08e836acae8f32b58b6481c055",
-      "mirrored_sha256": "f2480f455e55e461c880c8614ac383d60abf0ea8e744e3b99deabea290deb6c6",
+      "source_sha256": "f38ff8bd8d4b20620c0be250c813b2125a0c1102f2249a469f73fe59876bd4cd",
+      "mirrored_sha256": "dea91d5445d7a996d43263fccb519af11dad182a29c3f07bd9cd1963d84789ef",
       "links": [],
-      "link_fixes": []
+      "link_fixes": [
+        {
+          "original_markdown": "Measure the complete workload on each target device, including held voices, binaural, LFOs, all enabled effects and tails. The [historical statistics benchmark](stats-performance.md) predates these features; the [current technical report](studio-validation.json) includes an unmet full-chain host deadline criterion. Neither is a guarantee of game-frame rate, physical audio deadlines, heat or battery life.",
+          "mirrored_markdown": "Measure the complete workload on each target device, including held voices, binaural, LFOs, all enabled effects and tails. The [historical statistics benchmark](stats-performance.md) predates these features; the [current technical report](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/documentation/studio-validation.json) includes an unmet full-chain host deadline criterion. Neither is a guarantee of game-frame rate, physical audio deadlines, heat or battery life."
+        }
+      ]
     },
     {
       "source": "documentation/sound-design.md",
       "destination": "references/sound-design.md",
-      "source_sha256": "4ccbb55b92879c59d20116aff942e16d431c619341b3d4714da4c50c3c691cf9",
-      "mirrored_sha256": "ac716003ff31a9d8dc896faa48ab0a18787a153797b7fa2f77ba0d7a936e8868",
+      "source_sha256": "278b5bf3812ba72c773f5f67d817ea7780d8ab183ed92c79dca44c32c5d3015e",
+      "mirrored_sha256": "e8f9c8393cc694bd39cb1d91a153ce20bf6519841a085d20dc3521c870078761",
       "links": [],
       "link_fixes": [
         {
-          "original_markdown": "For more complete code, continue with [Examples](examples.md). For gain and\ndevice-testing advice, see [Recommendations](recommendations.md).",
-          "mirrored_markdown": "For more complete code, continue with [Examples](examples.md) and\n[Curated sound and interaction recipes](recipes.md). The latter includes retro\neffects, a playable xylophone, memory-pad timbres, layered chords and timer\nownership. For gain and device-testing advice, see [Recommendations](recommendations.md)."
+          "original_markdown": "See [Examples](examples.md) for complete code and [Recommendations](recommendations.md) for gain and device-testing advice.",
+          "mirrored_markdown": "See [Examples](examples.md) for complete code and [Recommendations](recommendations.md) for gain and device-testing advice. Additional [curated recipes](recipes.md) remain available."
         }
       ]
     },
     {
       "source": "documentation/troubleshooting.md",
       "destination": "references/troubleshooting.md",
-      "source_sha256": "10949f8f18f9e97933bfb1f025a12217746648c01805ff0fafe2c8e064b1c0cc",
-      "mirrored_sha256": "baaa2e31f1c1e0ab8b3dd9924929ec987caa13962b526af1389bdbfb77f4f9af",
+      "source_sha256": "8ec9d1fcf46c111ed5a7bd4c0fb1290d8dc4ca43e7cd44a26802557da1ea18fe",
+      "mirrored_sha256": "40872037635d8ba982e202656d4c853829d65591afd3a87a1205e912d7283feb",
       "links": [],
-      "link_fixes": []
+      "link_fixes": [
+        {
+          "original_markdown": "The event arrives when the pattern ends, about 1 ms after the sum of its step lengths, not when you call. A 30 second pattern reports after 30 seconds. Swing and FIR draining can leave sound after completion; the event does not certify audible silence. The [interactive example](../example/README.md#pattern-completion-and-replacement) demonstrates completion, replacement and shutdown.",
+          "mirrored_markdown": "The event arrives when the pattern ends, about 1 ms after the sum of its step lengths, not when you call. A 30 second pattern reports after 30 seconds. Swing and FIR draining can leave sound after completion; the event does not certify audible silence. The [interactive example](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/example/README.md#pattern-completion-and-replacement) demonstrates completion, replacement and shutdown."
+        }
+      ]
     },
     {
       "source": "documentation/stats-performance.md",
       "destination": "references/stats-performance.md",
-      "source_sha256": "798075f7bec08b4dafcaa46f1c43552d90ba23e2c85b49b4ab1d4ddf72c210df",
-      "mirrored_sha256": "40e4dc748379a24a90a812f26177372530a8138324d465a11f75ff7f45c3dc1d",
+      "source_sha256": "e259df3fccfa5dc4eb4d397ff76277317bf32f394fb88aecc43f32750bf53467",
+      "mirrored_sha256": "305cb578ceea02100d7cdad3f907329cfa238fb06d60a9b1192f5d7b8b795630",
       "links": [],
-      "link_fixes": []
+      "link_fixes": [
+        {
+          "original_markdown": "This is a historical statistics-only comparison, before sustained voices, native sequence transport, master effects and the two additional voice LFOs. It is not a performance measurement of those features. See [current technical validation](studio-validation.json) for newer evidence and its device/deadline limits.",
+          "mirrored_markdown": "This is a historical statistics-only comparison, before sustained voices, native sequence transport, master effects and the two additional voice LFOs. It is not a performance measurement of those features. See [current technical validation](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/documentation/studio-validation.json) for newer evidence and its device/deadline limits."
+        }
+      ]
     },
     {
       "source": "documentation/stats-performance.json",
@@ -91,15 +124,15 @@
   "excluded_documents": [
     {
       "source": "documentation/index.md",
-      "source_sha256": "a1fee9bfc45e461594b54cc226cf21e9ecbee358400b3414643a199c18b1edb2",
+      "source_sha256": "50e9c13dea54e2d6ab7533cd8433c037dcc267565a1af318c7032dbcbfb54bbe",
       "reason": "Upstream documentation index; SKILL.md is the distributed navigation entry point."
     },
     {
       "source": "documentation/third-party-notices.md",
-      "source_sha256": "cff5eb2cb19c9128e33f26d524fac1f7cad43e263693f34413392ead97b0f1c5",
+      "source_sha256": "1ff6f3082dec146feb00d790a2abc6f1f97e2f455b2a31c0152a6faae578ddb9",
       "reason": "Dependency and KEMAR notices remain with the official module and its binary packages; this skill redistributes documentation, not the native code or HRTF data. Re-review attribution when the source notice changes."
     }
   ],
   "source_state": "working-tree",
-  "reviewed_worktree_sha256": "5a5085884d65ec92b6281f2c04cf47adaa864d988e3462fca98340d4a9a27ad9"
+  "reviewed_worktree_sha256": "b1674a0c4ae7cced240d4983e415286bdb18d441566c2ac0f5c6fdc8198ef5f3"
 }
