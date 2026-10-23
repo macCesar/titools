@@ -30,3 +30,9 @@
 - The October 16 audit diagnosed orientation omissions in distributed references. A complete `ti-ui` correction and `ti-game` app-integration dependency review remain separate work. No claim of an all-skills audit is made.
 - TiSynthEngine source drift still requires review before re-pinning; this release does not recheck the prior iOS zero-envelope discrepancy or device/renderer limits.
 - Pre-existing untracked `.agents/skills/purgetss-videos/` and `por-hacer.md` remain untouched and excluded. No shared CLI change or sibling aiskills port was introduced by release metadata work.
+
+## Synthesis documentation sync — 2026-10-22
+
+TiSynthEngine user requested complete official documentation of the new beta capabilities. The source skill required synchronizing mirrors during that documentation update. Refreshed eight official Markdown mirrors, their navigation/reversible link transformations, unchanged raw statistics JSON, source snapshot and synthesis skill guidance for nineteen methods, held IDs, native transport, master effects/two LFOs, defaults and accumulated telemetry. Preserved curated recipes and their entry links. No CLI, plugin manifests, versions or sibling machinery changed; no commit, push or publication authorized. This is an uncommitted working-tree snapshot of the current module HEAD plus documentation edits, not a new npm/module release.
+
+Targeted mirror fidelity/link checks and five curated recipe regressions pass. Official docs regression and twelve captured option dictionaries pass both native validators; no physical performance/listening claim. Distributed snapshot checker records exact source dirtiness/fingerprint. Existing release history above remains historical and is not a statement that this new reference content has shipped.

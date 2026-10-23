@@ -1,9 +1,10 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation from the reviewed working tree based on `95901c98af5353b86d9dc7c60b29ab9186b038cd` (2026-10-14), including uncommitted statistics changes. Upstream `documentation/examples.md` SHA-256: `53a8bd95215cc24a35776edb8686fa0d60c5399be0b4ff2685eee1563738f6cb`.
+> Source snapshot: official TiSynthEngine 1.0.0 beta documentation from the reviewed working tree based on `6b48af568c4a50685541b4ae2800d38081e6ebb7` (2026-10-22), including uncommitted documentation updates. Upstream `documentation/examples.md` SHA-256: `90ff3eb384fabbcb104a2b5fc0e8eeac52090a7b9e399241cbc67302abbb225f`.
 
 # Examples
 
-Every snippet on this page uses the TiSynthEngine 1.0.0 contract. Unless a
-snippet includes startup code, it assumes the engine is already running.
+Every snippet on this page uses the TiSynthEngine 1.0.0 contract. Unless a snippet includes startup code, it assumes the engine is already running. Additional [curated recipes](recipes.md) cover interaction and sound variants.
+
+For the newer beta capabilities, begin with [held motors](#sustained-game-motor), [native sequences](#native-sequence-with-chords-and-edits), [master processing](#chorus-delay-reverb-and-creative-saturation) or [two LFOs](#two-voice-lfos). Detect methods before use; the version string alone cannot identify an installed beta build.
 
 ```javascript
 var synth = require('ti.synthengine')
@@ -46,6 +47,11 @@ if (contract.apiVersion !== '1.0.0') {
 - [Validation at an input boundary](#validation-at-an-input-boundary)
 - [Stop and clean up](#stop-and-clean-up)
 - [Positioned headphone effect](#positioned-headphone-effect)
+- [Sustained game motor](#sustained-game-motor)
+- [Native sequence with chords and edits](#native-sequence-with-chords-and-edits)
+- [Chorus, delay, reverb and creative saturation](#chorus-delay-reverb-and-creative-saturation)
+- [Two voice LFOs](#two-voice-lfos)
+- [Measure peaks and limiter reduction](#measure-peaks-and-limiter-reduction)
 
 <!-- TOC-END -->
 
@@ -62,8 +68,10 @@ function onPostLayout () {
     win.removeEventListener('postlayout', onPostLayout)
     started = synth.startEngine({
       maxVoices: 16,
-      mixingProfile: 'conservative'
+      mixingProfile: 'conservative',
+      audioSession: 'ambient'
     })
+    if (!started) Ti.API.warn('Audio startup failed; keep playback controls disabled')
   }, 250)
 }
 
@@ -77,6 +85,8 @@ win.addEventListener('postlayout', onPostLayout)
 win.addEventListener('close', cleanup)
 win.open()
 ```
+
+The startup example uses `ambient` for game/UI feedback. On iOS it respects silent mode and mixes with other apps. The module default is `playback`; Android validates either value without changing its output. Shut down before changing the policy. Use the [interactive session controls](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/example/README.md#audio-session) to compare them.
 
 ## Built-in waveforms
 
@@ -116,8 +126,7 @@ synth.playTone({
 })
 ```
 
-`noiseRate` starts at 12 kHz and falls to 600 Hz. `lowPassHz` removes high
-frequency energy after the 8-bit source quantizer.
+`noiseRate` starts at 12 kHz and falls to 600 Hz. `lowPassHz` removes high frequency energy after the 8-bit source quantizer.
 
 ## Pulse-width sweep
 
@@ -151,8 +160,7 @@ synth.playTone({
 })
 ```
 
-The table repeats as a stepped cycle. `bitDepth: 8` quantizes each table value
-before filtering and the amplitude envelope.
+The table repeats as a stepped cycle. `bitDepth: 8` quantizes each table value before filtering and the amplitude envelope.
 
 ## Fixed controls on a chord
 
@@ -171,8 +179,7 @@ synth.playChord({
 })
 ```
 
-Chord voices share fixed shaping controls. Sweep fields such as
-`pulseWidthEnd` and `noiseRateEnd` are not accepted by `playChord()`.
+Chord voices share fixed shaping controls. Sweep fields such as `pulseWidthEnd` and `noiseRateEnd` are not accepted by `playChord()`.
 
 ## Wave-shaping pattern overrides
 
@@ -210,9 +217,7 @@ synth.playPattern({
 })
 ```
 
-Pattern roots provide inherited values. Each sounding step can override the
-source and any shaping control; a `WAVETABLE` step needs a local or inherited
-`waveTable`.
+Pattern roots provide inherited values. Each sounding step can override the source and any shaping control; a `WAVETABLE` step needs a local or inherited `waveTable`.
 
 ## Pitch sweep and pan movement
 
@@ -230,8 +235,7 @@ synth.playTone({
 })
 ```
 
-Set `frequencyEnd: 0` to keep the starting pitch. Set `panEnd` equal to `pan`
-when no stereo movement is wanted.
+Set `frequencyEnd: 0` to keep the starting pitch. Set `panEnd` equal to `pan` when no stereo movement is wanted.
 
 ## Vibrato
 
@@ -248,8 +252,7 @@ synth.playTone({
 })
 ```
 
-`lfoFreq` and `lfoDepth` are both in hertz. A depth of 6 Hz is gentle around
-E4; use your ears when moving the same setting to a much lower note.
+`lfoFreq` and `lfoDepth` are both in hertz. A depth of 6 Hz is gentle around E4; use your ears when moving the same setting to a much lower note.
 
 ## Chord with an even spread
 
@@ -279,8 +282,7 @@ synth.playChord({
 })
 ```
 
-Use `playChord` for a known simultaneous group. Launching four separate tones
-is not atomic and gives each one full event gain.
+Use `playChord` for a known simultaneous group. Launching four separate tones is not atomic and gives each one full event gain.
 
 ## Tempo, note values and swing
 
@@ -324,11 +326,7 @@ synth.playPattern({
 })
 ```
 
-Each `duration` sets both the voice length and the advance to the next step.
-The 90 ms tones followed by 20 ms rests put the first four notes 110 ms apart;
-the last tone lasts 180 ms. Rests provide actual silence. `release` only fades
-within a sounding step, not a separate gate. The pattern root does not accept
-`duration`, and `stepDuration` is only a fallback when a step has no timing.
+Each `duration` sets both the voice length and the advance to the next step. The 90 ms tones followed by 20 ms rests put the first four notes 110 ms apart; the last tone lasts 180 ms. Rests provide actual silence. `release` only fades within a sounding step, not a separate gate. The pattern root does not accept `duration`, and `stepDuration` is only a fallback when a step has no timing.
 
 ## Step overrides
 
@@ -375,11 +373,7 @@ synth.playPattern({
 })
 ```
 
-The steps retain the sixteenth-note grid. Short decay with `sustain: 0` makes
-each hit settle to silence before its step ends, without changing that grid.
-Every sounding step needs `frequency` or `note`, including a noise step. Do not
-write a primitive step such as `200`; primitive steps return
-`invalid_step_type`.
+The steps retain the sixteenth-note grid. Short decay with `sustain: 0` makes each hit settle to silence before its step ends, without changing that grid. Every sounding step needs `frequency` or `note`, including a noise step. Do not write a primitive step such as `200`; primitive steps return `invalid_step_type`.
 
 ## Xylophone sketch
 
@@ -402,8 +396,7 @@ setTimeout(function () { playBar('G5', 0.3) }, 260)
 setTimeout(function () { playBar('C6', 0.75) }, 390)
 ```
 
-These are deliberately independent strikes. Their releases overlap, so leave
-headroom in `volume` and choose enough `maxVoices` for the tails.
+These strikes are independent events. Their releases overlap, so leave headroom in `volume` and choose enough `maxVoices` for the tails.
 
 ## Simon-style pads
 
@@ -436,9 +429,7 @@ function playAllPads () {
 
 ## Pluck and electric piano
 
-`decay` and `sustain` turn a flat tone into an instrument. The electric piano
-adds an FM index that falls with the level, so the attack is bright and the
-tail is mellow.
+`decay` and `sustain` shape the tone into a plucked or struck sound. The electric piano also lowers the FM index as the level falls, giving it a bright attack and a mellow tail.
 
 ```javascript
 function pluck (note) {
@@ -489,8 +480,7 @@ synth.playTone({
 })
 ```
 
-A fractional `fmRatio` puts the overtones between harmonics, which reads as
-metal. `fmDepthEnd: 0` lets the brightness die away completely.
+A fractional `fmRatio` puts the overtones between harmonics, which reads as metal. `fmDepthEnd: 0` lets the brightness die away completely.
 
 ## Wah and filtered laser
 
@@ -575,8 +565,7 @@ synth.playPattern({
 
 ## Detuned chords
 
-Repeat a pitch with small offsets in `detunes` to make it beat and widen. Two
-copies 12 cents apart at 440 Hz beat about three times a second.
+Repeat a pitch with small offsets in `detunes` to make it beat and widen. Two copies 12 cents apart at 440 Hz beat about three times a second.
 
 ```javascript
 synth.playChord({
@@ -605,8 +594,7 @@ setTimeout(function () {
 }, 2400)
 ```
 
-Each repeated pitch is a voice. The second chord needs `maxVoices` of at least
-6.
+Each repeated pitch is a voice. The second chord needs `maxVoices` of at least 6.
 
 ## Chain patterns with `patternend`
 
@@ -640,14 +628,11 @@ playNextJingle()
 synth.removeEventListener('patternend', onPatternEnd)
 ```
 
-The event reports `completed: false` when another pattern replaces the running
-one, so a listener that only chains on `completed: true` never double-starts.
+The event reports `completed: false` when another pattern or a native sequence replaces the running one, so this handler does not chain from replacement. It assumes exclusive ownership of the module's single scheduler; another owner's later completion could otherwise trigger it. `shutdown()` discards a pending pattern without generating an event. Completion is not a guarantee of audible silence.
 
 ## Rules across keys
 
-Some combinations are rejected even when every value is in range. This call
-returns `false` with `sustain_without_decay`, because a sustain below 1 with no
-decay would jump in level and click:
+Some combinations are rejected even when every value is in range. This call returns `false` with `sustain_without_decay`, because a sustain below 1 with no decay would jump in level and click:
 
 ```javascript
 // Rejected on purpose: sustain needs a decay.
@@ -668,9 +653,7 @@ var accepted = synth.startEngine({
 if (accepted) synth.setVolume({ volume: 0.85 })
 ```
 
-This profile lowers source gain and the limiter ceiling. It cannot repair a
-speaker that physically struggles with a very low pitch, so test the real
-device and raise the pitch when needed.
+This profile lowers source gain and the limiter ceiling. It cannot repair a speaker that physically struggles with a very low pitch, so test the real device and raise the pitch when needed.
 
 ## Validation at an input boundary
 
@@ -686,9 +669,7 @@ function playUserFrequency (input) {
 }
 ```
 
-The native contract rejects bad values rather than clamping them. Validation in
-the app lets you give the user a specific message before the call reaches the
-module.
+The native contract rejects invalid values without clamping them. Validation in the app lets you give the user a specific message before the call reaches the module.
 
 ## Stop and clean up
 
@@ -699,14 +680,13 @@ synth.stopAll()
 synth.shutdown()
 ```
 
-`stopAll()` fades current voices but leaves pending pattern scheduling alone.
-`shutdown()` cancels the scheduler and releases the native stream.
+`stopAll()` fades current voices but leaves pending pattern scheduling alone. `shutdown()` cancels the scheduler and releases the native stream.
 
-The last committed interactive demo is in the upstream [`example/app.js`](https://github.com/macCesar/TiSynthEngine/blob/95901c98af5353b86d9dc7c60b29ab9186b038cd/example/app.js); that commit does not contain the pending statistics example. For additional retro effects, playable xylophone interaction, memory pads, layered polyphony and cancellable repetition, continue with [Curated sound and interaction recipes](recipes.md).
+Follow the [interactive demo setup and test checklist](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/example/README.md) to run [`example/app.js`](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/example/app.js). It includes headphone positioning, session selection, pattern completion/replacement and all three statistics methods. For a service-level statistics recipe, see [read engine statistics](guide.md#read-engine-statistics).
 
 ## Positioned headphone effect
 
-Check the installed coordinate limits and keep the engine running. This JavaScript places one generated noise effect above and to the right; it does not change other sound calls:
+With the engine running, check the installed coordinate limits. This example places one generated noise effect above and to the right. Other sound calls keep their existing placement:
 
 ```javascript
 if (!contract.limits.spatialX || !contract.limits.spatialY) {
@@ -725,3 +705,187 @@ if (!synth.playTone({
 ```
 
 For app switches, amplitude sliders, all nine screen positions and routing multiple effects through one service, use the [binaural integration guide](guide.md#integrate-binaural-in-a-2d-app). Omitting both coordinates disables binaural for that event; setting both to zero keeps it enabled at the front center.
+
+## Sustained game motor
+
+Assume one running engine owned by this service. The positive voice ID belongs to the app; do not reuse it during the session or share its counter with an independent audio owner. There is no `duration` or `*End` target on `noteOn`.
+
+```javascript
+if (!['noteOn', 'noteOff', 'updateVoice'].every(function (name) {
+  return typeof synth[name] === 'function'
+})) throw new Error('Current held-voice beta APIs are required')
+
+var nextMotorId = 1
+var motorId = null
+var releaseTimers = new Set()
+
+function startMotor () {
+  if (motorId !== null) return true
+  var id = nextMotorId++
+  if (!synth.noteOn({ voiceId: id, frequency: 160, waveType: WAVE.NOISE,
+    noiseRate: 1500, lowPassHz: 600, attack: 80, release: 120,
+    filterType: 'bandpass', filterHz: 220, filterQ: 0.8, volume: 0.15 })) return false
+  motorId = id
+  return true
+}
+
+function changeMotor (boosted) {
+  if (motorId === null) return false
+  return synth.updateVoice({ voiceId: motorId,
+    filterHz: boosted ? 320 : 220, volume: boosted ? 0.18 : 0.15 })
+}
+
+function releaseMotorId (id, attempt) {
+  if (synth.noteOff({ voiceId: id })) return
+  if (attempt >= 2) {
+    closeMotorAudio()
+    Ti.API.warn('Release queue stayed full; audio shut down to prevent a stuck note')
+    return
+  }
+  var timer = setTimeout(function () {
+    releaseTimers.delete(timer)
+    releaseMotorId(id, attempt + 1)
+  }, 16)
+  releaseTimers.add(timer)
+}
+
+function stopMotor () {
+  if (motorId === null) return
+  var id = motorId
+  motorId = null
+  releaseMotorId(id, 0)
+}
+
+function closeMotorAudio () {
+  releaseTimers.forEach(function (timer) { clearTimeout(timer) })
+  releaseTimers.clear()
+  motorId = null
+  synth.shutdown()
+}
+```
+
+Wire `startMotor` to acceleration/key down, `changeMotor` to a boost change, and `stopMotor` to release or cancellation. Handle a false start/update at the input boundary. On pause/owner close, call `closeMotorAudio` and start the stream again before future input. Only permanent release failure shuts down other audio. Compatible edits ramp for 10 ms without resetting the voice phase; noise clock, source, filter type and spatial position require a new attack. A stolen ID accepts updates as a no-op, so an application requiring continuous recovery must own a renewal policy; there is no reserved motor slot.
+
+## Native sequence with chords and edits
+
+Start the engine first and detect all four transport methods. Notes here are integer MIDI values, not the strings used by `playPattern`. Each entry occupies one sixteenth, including rests; `gate` controls the note-off point within it. Release may continue across later steps.
+
+```javascript
+if (!['playSequence', 'updateSequence', 'stopSequence', 'getSequenceState'].every(function (name) {
+  return typeof synth[name] === 'function'
+})) throw new Error('Current native transport beta APIs are required')
+
+if (!synth.playSequence({ bpm: 110, swing: 0.12, loop: true, mode: 'normal',
+  voice: { waveType: WAVE.TRIANGLE, attack: 8, release: 100, volume: 0.3 },
+  steps: [
+    { notes: [60, 64, 67], gate: 0.7 },
+    { rest: true },
+    { notes: [67], gate: 0.5, overrides: { volume: 0.22 } },
+    { notes: [64, 67, 72], gate: 0.85 }
+  ] })) throw new Error('Sequence rejected; retry or retain the previous UI state')
+
+// Later UI edits publish configurations, not individual note timers.
+if (!synth.updateSequence({ bpm: 128, swing: 0.18, voice: { volume: 0.25 } })) {
+  Ti.API.warn('Edit rejected; the previous sequence remains accepted')
+}
+var positionTimer = setInterval(function () {
+  var state = synth.getSequenceState()
+  Ti.API.info(JSON.stringify({ playing: state.playing, step: state.step, revision: state.revision }))
+}, 200)
+
+function closeSequenceAudio () {
+  clearInterval(positionTimer)
+  // Owner teardown closes the stream, cancelling transport and timer patterns.
+  synth.shutdown()
+}
+
+function stopOnlySequence () {
+  // Held keys and unrelated tones continue. A rejected stop must be handled.
+  if (!synth.stopSequence()) Ti.API.warn('Sequence stop rejected; retry outside render')
+}
+```
+
+BPM changes at the next block while preserving musical position; structural edits apply at the next step and swing at the next pair. To replace a phrase, send the complete `steps` array. Select `up`, `down` or `updown` to reorder sounding steps by pitch; rests participate only in `normal`. `updateSequence` does not resume a stopped sequence; call `playSequence` to restart at the beginning of the traversal. Accepted publication can precede the revision reported by `getSequenceState`. Native completion has no `patternend` event; inspect `playing` for presentation state, without using UI polling to time notes. `playPattern` and `playSequence` replace each other's future events.
+
+## Chorus, delay, reverb and creative saturation
+
+This configures the whole mix of a running engine. Check method presence and Boolean acceptance; partial section updates merge with the last accepted settings. Effects start disabled, input gain starts at 1, and no LFOs are added to voices implicitly.
+
+```javascript
+if (typeof synth.setMasterProcessing !== 'function') {
+  throw new Error('Current master-processing beta API is required')
+}
+if (!synth.setMasterProcessing({
+  inputGain: 0.7,
+  chorus: { enabled: true, rate: 0.6, depth: 0.25, mix: 0.12 },
+  delay: { enabled: true, timeMs: 280, sync: 'off', feedback: 0.25, mix: 0.1 },
+  reverb: { enabled: true, decay: 1.4, damping: 0.6, mix: 0.14 },
+  saturation: { enabled: false }
+})) throw new Error('Processing rejected')
+
+// Sync follows the native transport tempo, initially 120 BPM.
+if (!synth.setMasterProcessing({ delay: { sync: 'eighth' } })) {
+  Ti.API.warn('Synced delay edit rejected')
+}
+
+function setCreativeDrive (enabled) {
+  return synth.setMasterProcessing({ saturation: { enabled: enabled, drive: 1.5, mix: 0.2 } })
+}
+
+function disableMasterEffects () {
+  return synth.setMasterProcessing({ chorus: { enabled: false }, delay: { enabled: false },
+    reverb: { enabled: false }, saturation: { enabled: false } })
+}
+```
+
+Call `setCreativeDrive(true)` only when a deliberate timbre change is wanted, and check its return value. Drive is not a loudness repair or limiter replacement. `disableMasterEffects` closes effect input gradually and drains delay/reverb/chorus histories for at most 30 seconds before exact bypass; its fixed `inputGain` remains 0.7. Check acceptance and, after tails drain, set `inputGain: 1` if a unity-gain comparison is intended. For panic, `stopAll()` fades current voices, stops native transport and invalidates effect histories; future timer-based `playPattern` steps still require cancellation or `shutdown()`. There are no per-voice sends or separate music/effects buses.
+
+## Two voice LFOs
+
+This square voice modulates cutoff and PWM independently. The original `lfoFreq`/`lfoDepth` pitch vibrato remains a separate control. All LFOs run natively; edits preserve their phases and ramp contributions over 10 ms.
+
+```javascript
+if (typeof synth.noteOn !== 'function' || typeof synth.updateVoice !== 'function') {
+  throw new Error('Current held-voice beta APIs are required')
+}
+var modulatedId = 100001 // Reserve an unused ID from the owner's counter in an app.
+if (!synth.noteOn({ voiceId: modulatedId, note: 'A3', waveType: WAVE.SQUARE,
+  attack: 100, release: 250, pulseWidth: 0.5, volume: 0.2,
+  filterType: 'lowpass', filterHz: 1600, filterQ: 0.8,
+  modulations: [
+    { wave: 'sine', target: 'filterHz', rate: 0.4, depth: 0.12 },
+    { wave: 'triangle', target: 'pulseWidth', sync: 'eighth', depth: 0.15 }
+  ] })) throw new Error('Modulated voice rejected')
+
+function disableVoiceLfos () {
+  return synth.updateVoice({ voiceId: modulatedId, modulations: [] })
+}
+// Call disableVoiceLfos on the UI action and handle false.
+// Later release this ID with the bounded release policy above, or shut down its owner.
+```
+
+Use `target: 'fmDepth'` only with `WAVE.SINE`; a filter target requires an active filter and PWM requires `WAVE.SQUARE`. Free rates are 0 to 20 Hz; synced subdivisions follow native transport BPM. Depth is normalized, with cutoff/PWM/FM contributions clamped to safe parameter ranges. `modulations: []` disables both slots; omitting the field on update preserves them. Copy the same initial `modulations` array into a sequence's `voice` or a step's `overrides` to modulate transport notes. Timed tones/chords/patterns do not accept the new array.
+
+## Measure peaks and limiter reduction
+
+Enable diagnostics only while measuring and keep unavailable readings distinct from zero. A brief overload can disappear from the window meter while remaining in the accumulated maximum.
+
+```javascript
+if (!['setStatsEnabled', 'getStats', 'resetStats'].every(function (name) {
+  return typeof synth[name] === 'function'
+})) throw new Error('Statistics APIs are required')
+if (!synth.setStatsEnabled(true)) throw new Error('Diagnostics rejected')
+synth.resetStats()
+var mixTimer = setInterval(function () {
+  var stats = synth.getStats()
+  Ti.API.info(JSON.stringify({ preLimiterDbFS: stats.preLimiterPeakDb,
+    maximumReductionDb: stats.maxLimiterReductionDb, latestReductionDb: stats.limiterReductionDb }))
+}, 200)
+
+function closeMixMeter () {
+  clearInterval(mixTimer)
+  if (!synth.setStatsEnabled(false)) Ti.API.warn('Diagnostics disable rejected')
+}
+```
+
+Call `closeMixMeter` when its owner hides or closes. The new fields may be absent on older beta packages; display that as unavailable. Reset deliberately before a comparison. These values measure digital peak protection, not speaker loudness, subjective quality or a guarantee that every audio deadline was met.

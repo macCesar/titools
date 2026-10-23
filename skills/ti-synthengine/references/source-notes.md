@@ -2,8 +2,8 @@
 
 The eight official Markdown mirrors and raw statistics comparison are derived
 from the reviewed TiSynthEngine working tree based on the commit in
-[source-snapshot.json](source-snapshot.json). This snapshot includes uncommitted
-native statistics methods, tests and documentation. The commit identifies the
+[source-snapshot.json](source-snapshot.json). This snapshot includes the committed held/transport/effects implementation and uncommitted
+documentation corrections from2026-10-22. The commit identifies the
 base; it does not contain all reviewed content. `reviewed_worktree_sha256`
 records the reviewed dirty-state fingerprint, including tracked differences
 and untracked files. The checker verifies that fingerprint in addition to the
@@ -26,9 +26,8 @@ Only these transformations are currently declared:
 
 - A provenance header and generated `TOC-START`/`TOC-END` navigation.
 - The upstream demo link in `examples.md` is rebased to the last committed
-  `example/app.js` at the base commit. Its label explicitly distinguishes that
-  demo from the pending statistics example in the reviewed working tree; a
-  GitHub commit link cannot expose uncommitted changes. It requires access to
+  `example/app.js` at the base commit. The committed reference app covers timed/statistics controls, not the new held/transport/effects controls; a
+  GitHub commit link cannot expose uncommitted documentation updates. It requires access to
   the official module repository; the runnable app is not bundled here.
 - `examples.md` and `sound-design.md` retain their TiTools links to
   [curated recipes](recipes.md). These additions are recorded as reversible
@@ -119,3 +118,9 @@ scheduler timing measurements.
 Device startup/route behavior, iOS rendering, headphone localization, CPU,
 battery and underruns need their own evidence. Contract-valid recipes are not
 automatically pleasant or perceptually well localized.
+
+## Current synthesis expansion
+
+The2026-10-22 review covers nineteen methods, held voices, native transport, master processing, two extra LFOs and accumulated limiter diagnostics. Official reference mirrors now include integration/copyable usage for those features. Processing defaults remain disabled. Per-voice sends, MIDI reading and independent composition tracks remain unsupported. The master mix is shared across callers.
+
+The statistics-only benchmark is historical. The official studio-validation.json report records newer host evidence, including unmet full-chain deadline acceptance and pending physical checks. Links to assets outside this skill target the pinned upstream tree; its uncommitted documentation edits are represented by the mirrored text and working-tree fingerprint, not claimed as published content. No runtime/device guarantees follow from these hashes or validator checks.
