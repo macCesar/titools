@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation from the reviewed working tree based on `6b48af568c4a50685541b4ae2800d38081e6ebb7` (2026-10-22), including uncommitted documentation updates. Upstream `documentation/troubleshooting.md` SHA-256: `8ec9d1fcf46c111ed5a7bd4c0fb1290d8dc4ca43e7cd44a26802557da1ea18fe`.
+> Source snapshot: official TiSynthEngine 1.0.0 beta documentation from the reviewed source tree at `937e774db7c5a924c9162cf0bbd01cb546754231` (2026-10-22); implementation and documentation are committed. Upstream `documentation/troubleshooting.md` SHA-256: `8ec9d1fcf46c111ed5a7bd4c0fb1290d8dc4ca43e7cd44a26802557da1ea18fe`.
 
 # Troubleshooting
 
@@ -142,7 +142,7 @@ The event fires once per accepted `playPattern`, unless shutdown discards the pe
 3. `shutdown()` was not called first. It discards a pending pattern silently.
 4. The pattern was not replaced. A newer accepted pattern or native sequence delivers `completed: false` for the old one instead of a natural end.
 
-The event arrives when the pattern ends, about 1 ms after the sum of its step lengths, not when you call. A 30 second pattern reports after 30 seconds. Swing and FIR draining can leave sound after completion; the event does not certify audible silence. The [interactive example](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/example/README.md#pattern-completion-and-replacement) demonstrates completion, replacement and shutdown.
+The event arrives when the pattern ends, about 1 ms after the sum of its step lengths, not when you call. A 30 second pattern reports after 30 seconds. Swing and FIR draining can leave sound after completion; the event does not certify audible silence. The [interactive example](https://github.com/macCesar/TiSynthEngine/blob/937e774db7c5a924c9162cf0bbd01cb546754231/example/README.md#pattern-completion-and-replacement) demonstrates completion, replacement and shutdown.
 
 ## A chord is distorted or pumps
 

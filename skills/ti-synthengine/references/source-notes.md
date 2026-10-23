@@ -1,17 +1,6 @@
 # Maintaining the synthesis snapshot
 
-The nine official Markdown parts and two raw validation/statistics JSON records are derived
-from the reviewed TiSynthEngine working tree based on the commit in
-[source-snapshot.json](source-snapshot.json). This snapshot includes the committed held/transport/effects implementation and uncommitted
-documentation corrections from 2026-10-22. The commit identifies the
-base; it does not contain all reviewed content. `reviewed_worktree_sha256`
-records the reviewed dirty-state fingerprint, including tracked differences
-and untracked files. The checker verifies that fingerprint in addition to the
-individual source/mirror hashes. A match establishes fidelity to that source
-state; it does not establish that the source is correct, committed, published
-or installed in an app. A different dirty fingerprint requires a fresh review.
-Read the native contracts, command conversion and renderers when auditing
-behavior. The maintainer workflow is `titools-skill-auditor` in this repository.
+The nine official Markdown parts and two raw validation/statistics JSON records are derived from the reviewed TiSynthEngine commit in [source-snapshot.json](source-snapshot.json). The source implementation and documentation are committed as of 2026-10-22. Source/mirror hashes and the pinned commit identify this state; neither commits nor hash equality establish public release, installation, native correctness or physical sound quality. For a future reviewed dirty source, use `source_state: working-tree` plus the exact `reviewed_worktree_sha256`; ordinary committed snapshots require a clean source checkout. Read native contracts, command conversion and renderers when auditing behavior. The maintainer workflow is `titools-skill-auditor` in this repository.
 
 ## Sources and permitted transformations
 

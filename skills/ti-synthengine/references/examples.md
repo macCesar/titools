@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation from the reviewed working tree based on `6b48af568c4a50685541b4ae2800d38081e6ebb7` (2026-10-22), including uncommitted documentation updates. Upstream `documentation/examples.md` SHA-256: `90ff3eb384fabbcb104a2b5fc0e8eeac52090a7b9e399241cbc67302abbb225f`.
+> Source snapshot: official TiSynthEngine 1.0.0 beta documentation from the reviewed source tree at `937e774db7c5a924c9162cf0bbd01cb546754231` (2026-10-22); implementation and documentation are committed. Upstream `documentation/examples.md` SHA-256: `90ff3eb384fabbcb104a2b5fc0e8eeac52090a7b9e399241cbc67302abbb225f`.
 
 # Examples
 
@@ -81,7 +81,7 @@ win.addEventListener('close', cleanup)
 win.open()
 ```
 
-The startup example uses `ambient` for game/UI feedback. On iOS it respects silent mode and mixes with other apps. The module default is `playback`; Android validates either value without changing its output. Shut down before changing the policy. Use the [interactive session controls](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/example/README.md#audio-session) to compare them.
+The startup example uses `ambient` for game/UI feedback. On iOS it respects silent mode and mixes with other apps. The module default is `playback`; Android validates either value without changing its output. Shut down before changing the policy. Use the [interactive session controls](https://github.com/macCesar/TiSynthEngine/blob/937e774db7c5a924c9162cf0bbd01cb546754231/example/README.md#audio-session) to compare them.
 
 ## Built-in waveforms
 
@@ -677,7 +677,7 @@ synth.shutdown()
 
 `stopAll()` fades current voices but leaves pending pattern scheduling alone. `shutdown()` cancels the scheduler and releases the native stream.
 
-Follow the [interactive demo setup and test checklist](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/example/README.md) to run [`example/app.js`](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/example/app.js). It includes headphone positioning, session selection, pattern completion/replacement and all three statistics methods. For a service-level statistics recipe, see [read engine statistics](guide.md#read-engine-statistics).
+Follow the [interactive demo setup and test checklist](https://github.com/macCesar/TiSynthEngine/blob/937e774db7c5a924c9162cf0bbd01cb546754231/example/README.md) to run [`example/app.js`](https://github.com/macCesar/TiSynthEngine/blob/937e774db7c5a924c9162cf0bbd01cb546754231/example/app.js). It includes headphone positioning, session selection, pattern completion/replacement and all three statistics methods. For a service-level statistics recipe, see [read engine statistics](guide.md#read-engine-statistics).
 
 ## Positioned headphone effect
 

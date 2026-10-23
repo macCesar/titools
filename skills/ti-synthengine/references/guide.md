@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation from the reviewed working tree based on `6b48af568c4a50685541b4ae2800d38081e6ebb7` (2026-10-22), including uncommitted documentation updates. Upstream `documentation/guide.md` SHA-256: `2e9e3af349f7c24b98b21475897d7aec4deeca0d7130448914804651aa96ccfd`.
+> Source snapshot: official TiSynthEngine 1.0.0 beta documentation from the reviewed source tree at `937e774db7c5a924c9162cf0bbd01cb546754231` (2026-10-22); implementation and documentation are committed. Upstream `documentation/guide.md` SHA-256: `2e9e3af349f7c24b98b21475897d7aec4deeca0d7130448914804651aa96ccfd`.
 
 # Guide
 
@@ -604,7 +604,7 @@ if (statsSupported) readStats()
 
 Integrate `stopDiagnostics()` into the existing owner's hide/background/close handlers, before shutdown. Resume polling only while the diagnostic view is active; do not add a second engine owner. Timing and output meters stay `null` until enabled and measured. Basic counters remain available when diagnostics are off. Android backend underrun/buffer/latency fields are best-effort and independent of that switch; iOS returns `null` for those backend fields. A zero underrun count does not prove clean sound.
 
-See the [complete field contract](api.md#getstats), [measurement limits](stats-performance.md) and [interactive statistics controls](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/example/README.md#statistics).
+See the [complete field contract](api.md#getstats), [measurement limits](stats-performance.md) and [interactive statistics controls](https://github.com/macCesar/TiSynthEngine/blob/937e774db7c5a924c9162cf0bbd01cb546754231/example/README.md#statistics).
 
 ## Next steps
 

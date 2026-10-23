@@ -2,14 +2,14 @@
   "module": "ti.synthengine",
   "version": "1.0.0 beta",
   "repository": "https://github.com/macCesar/TiSynthEngine",
-  "commit": "6b48af568c4a50685541b4ae2800d38081e6ebb7",
+  "commit": "937e774db7c5a924c9162cf0bbd01cb546754231",
   "reviewed_on": "2026-10-22",
   "files": [
     {
       "source": "documentation/api.md",
       "destination": "references/api.md",
       "source_sha256": "74be6e1dbd51caa72bb158606bd01eeb226d4008d242a0965ed61fc03e6785df",
-      "mirrored_sha256": "4cfb338c2aa04a016e998a7299f61fff83a0cc3823910cdf88fea8371be1e2e1",
+      "mirrored_sha256": "fe65a97df271ca991a5de626d5b8d18b6c4e146fe15163567a20c8f7f82950e8",
       "links": [],
       "link_fixes": [
         {
@@ -22,7 +22,7 @@
       "source": "documentation/audio-engine.md",
       "destination": "references/audio-engine.md",
       "source_sha256": "b8c5ede5dfd467d4199261c5f67eaaee30bac8d708d6e5c3c2090a1d39c0e250",
-      "mirrored_sha256": "dd33e700480d1ce184e917d3c553a83c350bc767f333492337a533f14b4ba4ed",
+      "mirrored_sha256": "832f2d999b1fe26bb6a319f7f13f18c6e006dbb82ed8d2af44304f83acf5f22b",
       "links": [],
       "link_fixes": [
         {
@@ -39,16 +39,16 @@
       "source": "documentation/examples.md",
       "destination": "references/examples.md",
       "source_sha256": "90ff3eb384fabbcb104a2b5fc0e8eeac52090a7b9e399241cbc67302abbb225f",
-      "mirrored_sha256": "136c5b00ffb838079974ff32404631d168e31ffadc1573ae51a99c75ff5368ea",
+      "mirrored_sha256": "baa7134f9ba099fb82f5a85465398b091a44c48bf41d3bd93a3d04f46b53522b",
       "links": [],
       "link_fixes": [
         {
           "original_markdown": "The startup example uses `ambient` for game/UI feedback. On iOS it respects silent mode and mixes with other apps. The module default is `playback`; Android validates either value without changing its output. Shut down before changing the policy. Use the [interactive session controls](../example/README.md#audio-session) to compare them.",
-          "mirrored_markdown": "The startup example uses `ambient` for game/UI feedback. On iOS it respects silent mode and mixes with other apps. The module default is `playback`; Android validates either value without changing its output. Shut down before changing the policy. Use the [interactive session controls](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/example/README.md#audio-session) to compare them."
+          "mirrored_markdown": "The startup example uses `ambient` for game/UI feedback. On iOS it respects silent mode and mixes with other apps. The module default is `playback`; Android validates either value without changing its output. Shut down before changing the policy. Use the [interactive session controls](https://github.com/macCesar/TiSynthEngine/blob/937e774db7c5a924c9162cf0bbd01cb546754231/example/README.md#audio-session) to compare them."
         },
         {
           "original_markdown": "Follow the [interactive demo setup and test checklist](../example/README.md) to run [`example/app.js`](../example/app.js). It includes headphone positioning, session selection, pattern completion/replacement and all three statistics methods. For a service-level statistics recipe, see [read engine statistics](guide.md#read-engine-statistics).",
-          "mirrored_markdown": "Follow the [interactive demo setup and test checklist](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/example/README.md) to run [`example/app.js`](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/example/app.js). It includes headphone positioning, session selection, pattern completion/replacement and all three statistics methods. For a service-level statistics recipe, see [read engine statistics](guide.md#read-engine-statistics)."
+          "mirrored_markdown": "Follow the [interactive demo setup and test checklist](https://github.com/macCesar/TiSynthEngine/blob/937e774db7c5a924c9162cf0bbd01cb546754231/example/README.md) to run [`example/app.js`](https://github.com/macCesar/TiSynthEngine/blob/937e774db7c5a924c9162cf0bbd01cb546754231/example/app.js). It includes headphone positioning, session selection, pattern completion/replacement and all three statistics methods. For a service-level statistics recipe, see [read engine statistics](guide.md#read-engine-statistics)."
         },
         {
           "original_markdown": "Every snippet on this page uses the TiSynthEngine 1.0.0 contract. Unless a snippet includes startup code, it assumes the engine is already running.",
@@ -88,7 +88,7 @@
       "source": "documentation/examples.md",
       "destination": "references/advanced-examples.md",
       "source_sha256": "90ff3eb384fabbcb104a2b5fc0e8eeac52090a7b9e399241cbc67302abbb225f",
-      "mirrored_sha256": "fd883e27e3e12bd7960b097101e20ccae08ac75c753b84ce52503f390bfcd748",
+      "mirrored_sha256": "b43aafe8870c41afdd996ded9254aa4f63dec23ba2136c9020f373475edcab73",
       "links": [],
       "link_fixes": [],
       "source_parts": [
@@ -100,12 +100,12 @@
       "source": "documentation/guide.md",
       "destination": "references/guide.md",
       "source_sha256": "2e9e3af349f7c24b98b21475897d7aec4deeca0d7130448914804651aa96ccfd",
-      "mirrored_sha256": "d8df9ce1e1a6cdb706479e913ea95f4b4faf020a401be8216e73d6b9ed238508",
+      "mirrored_sha256": "fb25b0239d940bb5d6763d191aeb778bfdce0558fd526450639fbc99a326f24e",
       "links": [],
       "link_fixes": [
         {
           "original_markdown": "See the [complete field contract](api.md#getstats), [measurement limits](stats-performance.md) and [interactive statistics controls](../example/README.md#statistics).",
-          "mirrored_markdown": "See the [complete field contract](api.md#getstats), [measurement limits](stats-performance.md) and [interactive statistics controls](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/example/README.md#statistics)."
+          "mirrored_markdown": "See the [complete field contract](api.md#getstats), [measurement limits](stats-performance.md) and [interactive statistics controls](https://github.com/macCesar/TiSynthEngine/blob/937e774db7c5a924c9162cf0bbd01cb546754231/example/README.md#statistics)."
         },
         {
           "original_markdown": "Release on touch end and cancellation as well as ordinary key up. Retry a rejected release twice at 16 ms outside the audio callback, then shut down and report failure if publication remains blocked. Cancel retries during teardown. The [held motor example](examples.md#sustained-game-motor) implements this ownership policy. For pause/owner close, invalidate app scheduling and shut down; require a new start before future notes.",
@@ -133,7 +133,7 @@
       "source": "documentation/recommendations.md",
       "destination": "references/recommendations.md",
       "source_sha256": "f38ff8bd8d4b20620c0be250c813b2125a0c1102f2249a469f73fe59876bd4cd",
-      "mirrored_sha256": "0a8c5b74ffb5c1171f9ea428f4a40446aab4e19eb887b67eaa3208de13eac5b4",
+      "mirrored_sha256": "17f3126016a8a9f902999bcb32360593ed3026fc03e9bf753eac81933aa979ec",
       "links": [],
       "link_fixes": [
         {
@@ -150,7 +150,7 @@
       "source": "documentation/sound-design.md",
       "destination": "references/sound-design.md",
       "source_sha256": "278b5bf3812ba72c773f5f67d817ea7780d8ab183ed92c79dca44c32c5d3015e",
-      "mirrored_sha256": "0805aaa64f8de13da5e0803c656761dbf245f7621bb19c8e92046b60df81c324",
+      "mirrored_sha256": "6170c4323ce1595e85b707881015b031cfbe6c038f00aa04e32f0070f4879449",
       "links": [],
       "link_fixes": [
         {
@@ -175,12 +175,12 @@
       "source": "documentation/troubleshooting.md",
       "destination": "references/troubleshooting.md",
       "source_sha256": "8ec9d1fcf46c111ed5a7bd4c0fb1290d8dc4ca43e7cd44a26802557da1ea18fe",
-      "mirrored_sha256": "525f86ff030f930856de54c3725624ed8a608944c40db9b9467cf6f42365fc05",
+      "mirrored_sha256": "65404c5c6b24d04c83d860412a2d21019549a4e2c0ba291fbbbd4804d518cf84",
       "links": [],
       "link_fixes": [
         {
           "original_markdown": "The event arrives when the pattern ends, about 1 ms after the sum of its step lengths, not when you call. A 30 second pattern reports after 30 seconds. Swing and FIR draining can leave sound after completion; the event does not certify audible silence. The [interactive example](../example/README.md#pattern-completion-and-replacement) demonstrates completion, replacement and shutdown.",
-          "mirrored_markdown": "The event arrives when the pattern ends, about 1 ms after the sum of its step lengths, not when you call. A 30 second pattern reports after 30 seconds. Swing and FIR draining can leave sound after completion; the event does not certify audible silence. The [interactive example](https://github.com/macCesar/TiSynthEngine/blob/6b48af568c4a50685541b4ae2800d38081e6ebb7/example/README.md#pattern-completion-and-replacement) demonstrates completion, replacement and shutdown."
+          "mirrored_markdown": "The event arrives when the pattern ends, about 1 ms after the sum of its step lengths, not when you call. A 30 second pattern reports after 30 seconds. Swing and FIR draining can leave sound after completion; the event does not certify audible silence. The [interactive example](https://github.com/macCesar/TiSynthEngine/blob/937e774db7c5a924c9162cf0bbd01cb546754231/example/README.md#pattern-completion-and-replacement) demonstrates completion, replacement and shutdown."
         },
         {
           "original_markdown": "Check Boolean returns. A full public queue can reject `noteOff`; retry twice at 16 ms outside render, then shut down/report if still rejected. Cancel those retries on owner teardown. The [held motor example](examples.md#sustained-game-motor) implements this policy. Touch cancellation, pause and close need cleanup as well as normal key up.",
@@ -196,7 +196,7 @@
       "source": "documentation/stats-performance.md",
       "destination": "references/stats-performance.md",
       "source_sha256": "e259df3fccfa5dc4eb4d397ff76277317bf32f394fb88aecc43f32750bf53467",
-      "mirrored_sha256": "56b7c4879cf77aaaed56512ce7026d08697c3e5a5f35146b99d94952a378bf4e",
+      "mirrored_sha256": "46160b11f3d9b3a56c56215b2274cd2a64cc0b4dddb4669dda4f7842b2e01a34",
       "links": [],
       "link_fixes": [
         {
@@ -234,6 +234,5 @@
       "reason": "Dependency and KEMAR notices remain with the official module and its binary packages; this skill redistributes documentation, not the native code or HRTF data. Re-review attribution when the source notice changes."
     }
   ],
-  "source_state": "working-tree",
-  "reviewed_worktree_sha256": "b1674a0c4ae7cced240d4983e415286bdb18d441566c2ac0f5c6fdc8198ef5f3"
+  "source_state": "committed"
 }
