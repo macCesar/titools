@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at reviewed local commit `5f9bf05ce683794449a49972a963460e6760b07a` (2026-10-23); this synchronization does not publish that commit or a release. Upstream `example/README.md` SHA-256: `c3c5041be11c3addfab7fb1248c0aaba81b311c1720c2861e47974412d743bcf`.
+> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at reviewed local commit `7ab31107302d9b7027a6359ba1a6fdb49c250407` (2026-10-23); this synchronization does not publish that commit or a release. Upstream `example/README.md` SHA-256: `c3c5041be11c3addfab7fb1248c0aaba81b311c1720c2861e47974412d743bcf`.
 
 # Interactive example
 

@@ -1,0 +1,162 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-23",
+  "moduleVersion": "1.0.0 beta",
+  "status": "corrected-for-tested-Sim80-headphone-case",
+  "acceptanceComplete": false,
+  "listening": {
+    "accepted": true,
+    "reviewer": "Cesar",
+    "replyTranslation": "Clean, no perceptible distortion.",
+    "scenario": "Real Sim80, live synthesis, headphones, eight-output candidate",
+    "scope": "Subjective acceptance of this short scene, not every voice/effect or a ten-minute maximum-load pass."
+  },
+  "implementation": {
+    "platform": "Android ARM64",
+    "change": "Reuse FIR coefficients across eight consecutive samples per voice while preserving each sample partial-sum and reduction order. Bound tiles at sequence attacks. Keep the previous stereo and other-ABI paths.",
+    "gainQualityOrVoiceLimitsChanged": false,
+    "outputBufferChanged": false,
+    "publicApiChanged": false,
+    "diagnosticInterfacesInProduction": false
+  },
+  "comparisonWithIOS": {
+    "sharedBinauralAlgorithm": true,
+    "ipadMeasuredRate": 44100,
+    "ipadMeasuredBlockFrames": 1024,
+    "androidMeasuredRate": 48000,
+    "androidMeasuredBlockFrames": 256,
+    "ipadTaps": 128,
+    "androidTaps": 140,
+    "limits": "Different measured hardware/output configurations; larger blocks alone do not cure sustained CPU overload."
+  },
+  "profilingBeforeCorrection": {
+    "route": "speaker",
+    "volumeIndex": 80,
+    "callbacks": 1801,
+    "xruns": 73,
+    "cpuBlocksAboveDeadline": 455,
+    "withoutOnsetCpuBlocksAboveDeadline": 357,
+    "onsetCpuShare": 0.004458489684975288,
+    "spatialFirSamples": 1017,
+    "audioThreadSamples": 1566,
+    "scope": "Actual Sim80, flat250HzCPU sampling with inline symbol attribution, not DSP-only isolation."
+  },
+  "fourOutputCandidate": {
+    "speakerXruns": 1,
+    "speakerCpuP95LoadInterval": [
+      1.205,
+      1.21
+    ],
+    "manualHeadphoneXruns": 37,
+    "manualHeadphoneVolumeIndex": 120,
+    "manualHeadphoneCpuP95LoadInterval": [
+      1.62,
+      1.625
+    ],
+    "listening": "Improved but still a couple of perceived distorted moments.",
+    "limits": "Speaker profiling and manual headphone capture are distinct runs/routes, not a controlled route comparison."
+  },
+  "eightOutputCapture": {
+    "device": "Android CPH2639",
+    "route": "wired headphones",
+    "volumeIndex": 120,
+    "volumeMax": 160,
+    "sampleRate": 48000,
+    "callbackFrames": 256,
+    "burstFrames": 256,
+    "bufferFrames": 512,
+    "frames": 480000,
+    "capturedSeconds": 10,
+    "xruns": 0,
+    "routeStayedValid": true,
+    "callbacks": 1875,
+    "maxVoices": 32,
+    "maxTails": 25,
+    "wallP95LoadInterval": [
+      1.02,
+      1.025
+    ],
+    "cpuP95LoadInterval": [
+      0.965,
+      0.97
+    ],
+    "wallMaxNs": 9150154,
+    "cpuMaxNs": 8857462,
+    "wallBlocksAboveDeadline": 104,
+    "cpuBlocksAboveDeadline": 80,
+    "clockErrors": 0,
+    "pcmHash": "7f89b839f15ce44d",
+    "nonFiniteFrames": 0,
+    "peakLeft": 0.8500000238418579,
+    "peakRight": 0.8500000238418579,
+    "scope": "Private instrumented module with PCM capture/clocks and250Hzsampling. Observed output delivery passed this ten-second scene; callback overruns still prevent a strict render-deadline pass."
+  },
+  "verification": {
+    "streamingVsBlocked": "120000 standalone frames/sixrates8\u2013192k, ramps, wrap and complete state bit-identical on Android; varied short blocks also pass C and forcedAndroidNEON on ARM host.",
+    "renderer": "135onset/fullstate,20fractionaltransport/fullstate,9legacy renders, spatial regression and fullheld regression match or pass on ARM host.",
+    "review": "Independent source review found no critical/important issue in four/eight windows, clocks, tails, sends, stereo guard or bounded stack.",
+    "physicalAcceptance": false,
+    "stereoBypassChange": {
+      "scope": "One stereo voice, new fix versus immediately preceding205a renderer, same warmed process, both4slots; previous937screen separate",
+      "pairs": 10,
+      "medianRenderRatio": 1.0113211982131405,
+      "medianP95Ratio": 1.0053333333333334,
+      "ratios": [
+        1.0005653275429052,
+        1.0126349702109787,
+        1.0196281518419976,
+        1.0126315815643214,
+        1.0206466219701242,
+        1.0100108148619595,
+        0.996436735715484,
+        1.016768104985823,
+        1.0091023055656232,
+        0.9846528665539155
+      ],
+      "bitExact": true
+    },
+    "finalProductionClockHeldLegacy": "Byte-identical to the pre-correction renderer after restoring lazy scalar clock reads and forced inlining."
+  },
+  "productionSourceSha256": {
+    "android/jni/SynthOboeEngine.cpp": "cc7f050084871a79cb028b48081a8e51158a3a69f876c59e0f9de1a6ea7ecac6",
+    "shared/synth_spatial.h": "d628ef9c60776be463c5dc45a972c9f9bbb0d183656f0dc177211038ba39d75a",
+    "tests/spatial_regression.c": "2cf768e4dc18035010819b74837921c8b27ae391670acde0bf56197793c655c0"
+  },
+  "measuredPrivateArtifact": {
+    "apkSha256": "324dc75a4b6caddbf6205915287ad90f68f0c735ac9d395ffb6bfb4821cbd934",
+    "aarSha256": "156156df699eabc8647598b5da7fa4f0d20014c3a765b04120a43a0800e40d47",
+    "sourceSha256": {
+      "android/jni/SynthOboeEngine.cpp": "8b0fc7eb99bc1f0b1d76643776fcb7e8eb540f4ba5cd9379313e7f615670e1b0",
+      "shared/synth_spatial.h": "9184a9d81de04c5216c52b96a8860c33bfd3492081089b34df35743d51e90bbb"
+    },
+    "nativeHashes": {
+      "lib/arm64-v8a/liboboe.so": "2696179a9e302f4047ce04146de39f64930bdfaa75d51da63bc7af1a228b8d73",
+      "lib/arm64-v8a/libti.synthengine.so": "3c04735e3f4a60b4d5218fadb192121978c30e105f02115383ba68120635c272",
+      "lib/armeabi-v7a/liboboe.so": "6eebcff8923f11f79d10bd3404afccab9c8d9ba629709334fc76663894b0e914",
+      "lib/armeabi-v7a/libti.synthengine.so": "b07a4b3d2e1d32b71a5267cd47d52024f9f8414d2531867ebcb0281548402919",
+      "lib/x86/liboboe.so": "8846bdc73a1ad884e017c7f3082042184bb8c9876651f48e77faef24f7c7eec4",
+      "lib/x86/libti.synthengine.so": "b13a3adcc8681090d6c305ca7436d60e367ffbcabce0fec0c64861925fcb28cc",
+      "lib/x86_64/liboboe.so": "f1168819d87b8571bb7c8147176854a2e5783bae6e35d2a420d99dc19692db94",
+      "lib/x86_64/libti.synthengine.so": "c008b2eb71b38e271a39fc3c5a1d70698e60bd06da578c723637890291970e98"
+    }
+  },
+  "rawEvidenceArchive": "android-sim80-correction-evidence.zip",
+  "remaining": [
+    "Android ten-minute maximum-load criterion is still open; do not reinterpret this short Sim80 result as that acceptance.",
+    "The measured candidate still has80CPU/104wall callbacks above one deadline.",
+    "Whole-process192k memory, prior one-voice bypass screen, Android Sim20 renderer elapsed work and strict Sim80 presentation matching retain their prior limits."
+  ],
+  "publication": "Beta1.0.0, no release or push.",
+  "rawEvidenceArchiveSha256": "faff448de458ef0cb5299e234177f17a914f7801c27581ab969a9010a68c3c5f",
+  "productionAndroidBuild": {
+    "aarSha256": "7e98bf4fbc6fbe4d1f4a5d9f5a561137522e831fb54480ae0310dd22b60a0c2c",
+    "nativeSoSha256": {
+      "arm64-v8a": "631aaca4f4dabcedc33cf3bf1b23601de3da6291448a299e195cbf5b07f526e3",
+      "armeabi-v7a": "1a4100a25f920784dfc5bda91f30fa6f405e2b85deee51a8b14ce5502a2cf47c",
+      "x86": "8f4545e24cb7f35220445b6e8c04f561bbf5a6cbf55b755c8e8aeffe923e748d",
+      "x86_64": "96a8c5224129de2cd215c9d3b6a2cc50c08865f2de35bf95274026ea452a4a57"
+    },
+    "realFourAbiBuild": true,
+    "diagnosticCodeAbsent": true
+  }
+}

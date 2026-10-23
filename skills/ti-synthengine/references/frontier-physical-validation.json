@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "date": "2026-10-23",
   "acceptanceComplete": false,
-  "status": "Game measurements recorded; Android audio/headphone acceptance failed and renderer elapsed-work remains unresolved. Strict simulation80 load matching inconclusive on both devices.",
+  "status": "Historical game/presentation measurements retained. Later Android Sim80 headphone listening and short output delivery accepted after FIR correction; global performance remains open.",
   "devices": {
     "ipad": {
       "schemaVersion": 1,
@@ -870,7 +870,7 @@
     "android": {
       "schemaVersion": 1,
       "platform": "physical Android CPH2639",
-      "status": "Short subjective Sim80 listening accepted. Android technical output/max-load acceptance remains open: xruns observed, simulation20 renderer elapsed-cost unresolved, simulation80 strict load matching inconclusive.",
+      "status": "Historical12-stage output xruns retained; later corrected short Sim80 headphone case is reported separately.",
       "phases": 12,
       "nativePerformanceWindows": 360,
       "observedActualPresents": 24831,
@@ -1632,10 +1632,11 @@
         "scenario": "Manual Sim80 Audio ON,approximately30seconds,physical Android CPH2639",
         "scope": "Subjective short-scene listening only; does not remove measured xruns, renderer elapsed-cost flag or approve extreme-load performance.",
         "source": "Explicit user statement relayed by task coordinator,2026-10-23",
-        "supersededBy": "Later headphone comparison: live Sim80 saturation; same-PCM replay very little or none."
+        "supersededBy": "Later headphone comparison: live Sim80 saturation; same-PCM replay very little or none.",
+        "latestCorrectionReport": "android-sim80-correction.json"
       },
       "limits": [
-        "Stable visual performance does not establish clean audio. Simulation80 had67/88backendxruns and callback peaks3.07/3.19timesdeadline; do not report Android sound/load acceptance.",
+        "Historical simulation80 phases had67/88xruns and callback peaks3.07/3.19timesdeadline. A later short corrected headphone case is accepted separately; maximum-load and original matched-run metrics remain unapproved.",
         "No extra ABBA run or synthetic maximum-load case was performed after the planned12stages.",
         "Scene endpoint body census and presentation windows aligned to native-event receipt have the same limits as the iPad protocol.",
         "CPU timing differences are not attributed to audio when populations differ. Strict simulation80 remains inconclusive at27/60windows45%.",
@@ -1796,11 +1797,11 @@
         "members": 3
       },
       "listening": {
-        "status": "not-accepted-headphone-distortion",
+        "status": "accepted-by-Cesar-after-eight-output-FIR-correction",
         "scenario": "Manual Sim80, many simultaneous explosions, headphones",
-        "latestUserObservation": "Cesar reports saturation on Android with headphones; does not detect saturation on iPad in the same scenario.",
+        "latestUserObservation": "Clean, no perceptible distortion with headphones in the eight-output candidate.",
         "priorObservation": "Initial Android manual listen was reported clean; superseded by the headphone comparison.",
-        "nextDiagnostic": "Bounded callback CPU/wall and onset profiling during actual Sim80; private artifact prepared, physical capture pending."
+        "correctionReport": "android-sim80-correction.json"
       },
       "pcmReplayDiagnostic": {
         "evidence": {
@@ -1912,5 +1913,6 @@
         ]
       }
     }
-  }
+  },
+  "androidSim80Correction": "android-sim80-correction.json"
 }

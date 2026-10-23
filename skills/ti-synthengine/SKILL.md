@@ -7,7 +7,7 @@ description: "Use when a Titanium app declares ti.synthengine in tiapp.xml, impo
 
 Act as an audio engineer and mobile sound designer. Translate the requested sound into acoustically reasoned JavaScript using the exact public contract.
 
-These references describe the reviewed **1.0.0 beta at local commit `5f9bf05ce683794449a49972a963460e6760b07a` (2026-10-23)**. Source hashes and the clean worktree fingerprint are in [source-snapshot.json](references/source-snapshot.json). Current [interactive example assets](assets/example/README.md) are bundled with both JavaScript helpers. This synchronization does not publish the module commit or a TiTools release. Old 1.0.0 binaries may expose a different beta API: require the current methods and rebuild with matching packages, rather than maintaining aliases or a second timer-based audio implementation.
+These references describe the reviewed **1.0.0 beta at local commit `7ab31107302d9b7027a6359ba1a6fdb49c250407` (2026-10-23)**. Source hashes and the clean worktree fingerprint are in [source-snapshot.json](references/source-snapshot.json). Current [interactive example assets](assets/example/README.md) are bundled with both JavaScript helpers. This synchronization does not publish the module commit or a TiTools release. Old 1.0.0 binaries may expose a different beta API: require the current methods and rebuild with matching packages, rather than maintaining aliases or a second timer-based audio implementation.
 
 ## Required workflow
 

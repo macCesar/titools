@@ -2,14 +2,14 @@
   "module": "ti.synthengine",
   "version": "1.0.0 beta",
   "repository": "https://github.com/macCesar/TiSynthEngine",
-  "commit": "5f9bf05ce683794449a49972a963460e6760b07a",
+  "commit": "7ab31107302d9b7027a6359ba1a6fdb49c250407",
   "reviewed_on": "2026-10-23",
   "files": [
     {
       "source": "documentation/api.md",
       "destination": "references/api.md",
       "source_sha256": "887cd5e381a77ec58726c6ec51c628d1665dcd8d06a17f166b4a9481c0d30de2",
-      "mirrored_sha256": "278e0ddcd735d284e08420ef23fa09c92914d83a9956ac7eeef9ebcaf1ee6273",
+      "mirrored_sha256": "02db751f60fa3fd386101d36b6b2a51462db3605cc1718c30d667224d20dacb1",
       "links": [],
       "link_fixes": []
     },
@@ -17,7 +17,7 @@
       "source": "documentation/audio-engine.md",
       "destination": "references/audio-engine.md",
       "source_sha256": "8b0ede7f5131c706cf0cfd5f9acbdb8cbcdcbc55e1a5a466f00264ef0f49540c",
-      "mirrored_sha256": "86d4072acd9c2afbbf01231c81be5adc553df2634eab95e4c15a0d147fb5f513",
+      "mirrored_sha256": "5cc7daa056f54f83c54a5e0e5bc96fe50b9112f757b9bc32a9baefbb89e0c493",
       "links": [],
       "link_fixes": []
     },
@@ -25,7 +25,7 @@
       "source": "documentation/examples.md",
       "destination": "references/examples.md",
       "source_sha256": "eba45d9ba675190050f4bfb15873c1c0a9821d5bc034397dcd9bc51dcdbf1e48",
-      "mirrored_sha256": "89b71141fed2d01b1efa6564bc1898e8f9566c4da90882372f6c982b51d75df8",
+      "mirrored_sha256": "ceba73b1b4340feea6a71d469f889e7cfb07759190d3ad7d8a61767b39e9351c",
       "links": [],
       "link_fixes": [
         {
@@ -58,7 +58,7 @@
       "source": "documentation/examples.md",
       "destination": "references/advanced-examples.md",
       "source_sha256": "eba45d9ba675190050f4bfb15873c1c0a9821d5bc034397dcd9bc51dcdbf1e48",
-      "mirrored_sha256": "8b8aca74d6cc037bde9fb69090b5082cba8959fd8b2910416050bb61ecb58048",
+      "mirrored_sha256": "dd6ef20f40c894cd6b859ad2f0829a86853b5351b69b36662fe303c47838aece",
       "links": [],
       "link_fixes": [],
       "source_parts": [
@@ -70,7 +70,7 @@
       "source": "documentation/guide.md",
       "destination": "references/guide.md",
       "source_sha256": "46f03434db01a82b3592073f3d984fd2c6988993d5bd316caf1e9fc05f2fc1c9",
-      "mirrored_sha256": "1c6f8819293869eb18ec39cd66cd51a032d4d4c566fe640eca9cff9e715c02db",
+      "mirrored_sha256": "67434aef49290eb4f55f817e833066d74574c76aeb9ebb68b4e89cbfa96fdd81",
       "links": [],
       "link_fixes": [
         {
@@ -99,7 +99,7 @@
       "source": "documentation/recommendations.md",
       "destination": "references/recommendations.md",
       "source_sha256": "62ea42f2d53eb8661c081a8ed19100db5590227f41fb8b110ee9450447e38289",
-      "mirrored_sha256": "ed24dc8ed337987bb580d6a48eb73fb510bc15a0a56d08300ddce86f39b8bcb7",
+      "mirrored_sha256": "575feede272aa4ddea4a2719ab2936c2908f6058ab2bc6fbcff77fcebfba138e",
       "links": [],
       "link_fixes": [
         {
@@ -112,7 +112,7 @@
       "source": "documentation/sound-design.md",
       "destination": "references/sound-design.md",
       "source_sha256": "dd543e07c825aaf67a0a5f85619088a8d02721a9d33dbf4579edf760dad3e262",
-      "mirrored_sha256": "55c98903910347a9051424951328ad429400d11e9e2601445765cd42e11b2d8e",
+      "mirrored_sha256": "3600d21778e2fe897ea903230657e15f1bbbb4ad21a1ff8a20c071a6f94fbe02",
       "links": [],
       "link_fixes": [
         {
@@ -137,7 +137,7 @@
       "source": "documentation/troubleshooting.md",
       "destination": "references/troubleshooting.md",
       "source_sha256": "ed2a455e30326894087e393065d9a6f14d8edaf06cbeda5bf472252c38bfea7c",
-      "mirrored_sha256": "4b9a86e7f80a7e4e9380b27925a71a03b0b3af074be7bf06c74834262aa2f886",
+      "mirrored_sha256": "811f59e01833fb0043fc2122cfcadb87bc2dd29569008db7726b00b1bc9fd192",
       "links": [],
       "link_fixes": [
         {
@@ -153,8 +153,8 @@
     {
       "source": "documentation/stats-performance.md",
       "destination": "references/stats-performance.md",
-      "source_sha256": "e16ace713801bcdb7275ddc73af3d541526abde37b72e82169775aa780fc8ead",
-      "mirrored_sha256": "14df8c164655c825c1dd8e063488ee79593a15de7906edb21355f3e251099a93",
+      "source_sha256": "4b2d798501822eb2a8ef8047b73d8d464622cafbdb2a2cf4dd76d94e96d9e890",
+      "mirrored_sha256": "81d91dbd9110495c27b0e7ebf0f00f2237efb9a141d0c6bfa245d23be17ef9d7",
       "links": [],
       "link_fixes": []
     },
@@ -185,8 +185,8 @@
     {
       "source": "documentation/unified-validation.json",
       "destination": "references/unified-validation.json",
-      "source_sha256": "53dfc647edcfd264d6d1150c637e2441fc184ad8ce76b00419a4b082444048d6",
-      "mirrored_sha256": "53dfc647edcfd264d6d1150c637e2441fc184ad8ce76b00419a4b082444048d6",
+      "source_sha256": "4754da69159f4ab35544d0f0a8ef6e5568dda9e74162b1c2dad2bb807d905fd8",
+      "mirrored_sha256": "4754da69159f4ab35544d0f0a8ef6e5568dda9e74162b1c2dad2bb807d905fd8",
       "links": [],
       "link_fixes": []
     },
@@ -195,16 +195,16 @@
       "destination": "references/physical-validation.json",
       "links": [],
       "link_fixes": [],
-      "source_sha256": "9bb592db4a1196530f28bf2b4a87ce46f0a80f79896aaf6df2a7dfc5862e5a9c",
-      "mirrored_sha256": "9bb592db4a1196530f28bf2b4a87ce46f0a80f79896aaf6df2a7dfc5862e5a9c"
+      "source_sha256": "73233c11a1d2aa06654a06486ef52a08d961473d83b0c5b2a44e19a6eac28c0b",
+      "mirrored_sha256": "73233c11a1d2aa06654a06486ef52a08d961473d83b0c5b2a44e19a6eac28c0b"
     },
     {
       "source": "documentation/frontier-physical-validation.json",
       "destination": "references/frontier-physical-validation.json",
       "links": [],
       "link_fixes": [],
-      "source_sha256": "41c0a6d428136834622d256f5a973a63879cb73d1b9c65d6f4ce4bfacb3d7c2b",
-      "mirrored_sha256": "41c0a6d428136834622d256f5a973a63879cb73d1b9c65d6f4ce4bfacb3d7c2b"
+      "source_sha256": "e64c6b853c6a648bb6ce74ca13f27db30c93f5e1a2b89a495d439dedf8bc1d9d",
+      "mirrored_sha256": "e64c6b853c6a648bb6ce74ca13f27db30c93f5e1a2b89a495d439dedf8bc1d9d"
     },
     {
       "source": "example/README.md",
@@ -234,7 +234,7 @@
         }
       ],
       "source_sha256": "c3c5041be11c3addfab7fb1248c0aaba81b311c1720c2861e47974412d743bcf",
-      "mirrored_sha256": "e34bb08e656976415e514a88765b67588490d4cecf0b0373ec7f236a51589e56"
+      "mirrored_sha256": "8077a1d946c42dcbe48cee82da12998f729e7deb6d3560a10ad91cbaafa029d0"
     },
     {
       "source": "example/app.js",
@@ -289,6 +289,23 @@
       "link_fixes": [],
       "source_sha256": "56369b202d279efbf4f9a720a0a99dba2f398410cb8e042ef1200a3a63be245b",
       "mirrored_sha256": "56369b202d279efbf4f9a720a0a99dba2f398410cb8e042ef1200a3a63be245b"
+    },
+    {
+      "source": "documentation/android-sim80-correction.json",
+      "destination": "references/android-sim80-correction.json",
+      "links": [],
+      "link_fixes": [],
+      "source_sha256": "675c2201b9e0bfad7c8bf6255f8a9440eb45ef0a915c24eee9e47db12745a1c0",
+      "mirrored_sha256": "675c2201b9e0bfad7c8bf6255f8a9440eb45ef0a915c24eee9e47db12745a1c0"
+    },
+    {
+      "source": "documentation/android-sim80-correction-evidence.zip",
+      "destination": "references/android-sim80-correction-evidence.zip",
+      "links": [],
+      "link_fixes": [],
+      "source_sha256": "faff448de458ef0cb5299e234177f17a914f7801c27581ab969a9010a68c3c5f",
+      "mirrored_sha256": "faff448de458ef0cb5299e234177f17a914f7801c27581ab969a9010a68c3c5f",
+      "kind": "evidence-archive"
     }
   ],
   "excluded_documents": [

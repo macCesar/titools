@@ -272,13 +272,12 @@
   "memoryScope": "Counted native engine, command queue, four triple-bank sequence slots, renderer voices/tails, effects and limiter buffers at 192kHz. Excludes managed/bridge/driver/process peak allocations and does not establish the complete recovery-peak acceptance bound.",
   "performanceReport": "unified-bypass-performance.json",
   "pendingAcceptance": [
-    "Android Sim80 live delivery/headphone distortion: same-PCM replay comparison completed; actual-game callback attribution and correction remain open",
     "Android maximum-load callback criterion failed; controlled ten-minute run not started",
     "Latest-source oneVoice host bypass total-time screen remains above2% after investigation",
     "Complete192k physical process/bridge/recovery memory bound not established",
     "Android simulation20 renderer elapsed-work +6.91% investigation remains unresolved",
     "Strict simulation80 equivalent-load coverage inconclusive on both devices; presentation/FPS limits met for matched Arcade/simulation20",
-    "Remaining listening cases beyond scoped manual Sim80; iPad accepted by Cesar, Android acceptance withdrawn after headphone comparison"
+    "Remaining listening cases beyond scoped manual Sim80; iPad and corrected Android short Sim80 accepted by Cesar; other listening cases remain separate"
   ],
   "scope": {
     "initialHostValidation": {
@@ -310,5 +309,6 @@
     "nativeSourceCommit": "87b2c3354f182c5742cba84775b075552c80572c",
     "physicalProcessAcceptance": false,
     "scope": "Current sizeof/capacity accounting, not full process/bridge/allocator/driver peak; one-second host render only sanity-checks finite bounded samples and32activevoices."
-  }
+  },
+  "androidSim80Correction": "android-sim80-correction.json"
 }

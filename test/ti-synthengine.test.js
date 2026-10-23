@@ -19,11 +19,11 @@ const run = promisify(execFile);
 
 test('synthesis mirrors reconstruct their pinned official sources with recorded navigation fixes', () => {
   const snapshot = JSON.parse(read(snapshotPath));
-  assert.equal(snapshot.files.length, 22);
+  assert.equal(snapshot.files.length, 24);
   assert.equal(snapshot.files.filter(record => record.destination.startsWith('references/') && record.destination.endsWith('.md')).length, 9);
-  assert.equal(snapshot.files.filter(record => record.destination.endsWith('.json')).length, 6);
+  assert.equal(snapshot.files.filter(record => record.destination.endsWith('.json')).length, 7);
   assert.equal(snapshot.files.filter(record => record.kind === 'example-asset').length, 4);
-  assert.equal(snapshot.files.filter(record => record.kind === 'evidence-archive').length, 3);
+  assert.equal(snapshot.files.filter(record => record.kind === 'evidence-archive').length, 4);
   assert.match(snapshot.commit, /^[a-f0-9]{40}$/);
   for (const record of snapshot.files) {
     const bytes = readFileSync(path.join(skill, record.destination));

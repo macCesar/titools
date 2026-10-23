@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "date": "2026-10-23",
   "moduleVersion": "1.0.0 beta",
-  "status": "headphone-distortion-investigation-in-progress",
+  "status": "Android short Sim80 headphone delivery/listening corrected; full physical acceptance remains open",
   "acceptanceComplete": false,
   "criteria": {
     "controlledAudioSeconds": 600,
@@ -1406,7 +1406,8 @@
       "Cesar described the initial iPad simulation80 Audio on demonstration positively. This is not acceptance of every sound, category-isolation case or both platforms.",
       "Cesar confirmed clean audio in the manual iPad Sim80 Audio-on diagnostic.",
       "Cesar confirmed clean audio in the manual Android Sim80 Audio-on diagnostic; technical backend xruns remain a separate failed result.",
-      "Correction after headphone comparison: Cesar reports Android Sim80 saturation with many explosions; iPad remains clean. Android listening acceptance is withdrawn pending diagnosis."
+      "Correction after headphone comparison: Cesar reports Android Sim80 saturation with many explosions; iPad remains clean. Android listening acceptance is withdrawn pending diagnosis.",
+      "After the eight-output Android FIR correction, Cesar accepted live Sim80 with headphones as clean, without perceptible distortion; the short diagnostic reported zero backend xruns."
     ],
     "ipadSimulation80": {
       "status": "accepted-by-Cesar",
@@ -1425,22 +1426,21 @@
       "scopeLimit": "Applies to this iPad scenario only; Android and other sound/spatial/category cases remain separate."
     },
     "androidSimulation80": {
-      "status": "not-accepted-headphone-distortion",
+      "status": "accepted-by-Cesar-after-eight-output-FIR-correction",
       "date": "2026-10-23",
       "scenario": "Sim80 with many explosions, headphones",
-      "latestObservation": "Android sounds saturated; iPad does not in the same scenario.",
-      "supersedes": "Earlier clean Android manual listening reply.",
-      "nextDiagnostic": "Bounded callback CPU/wall and onset profiling during actual Sim80; private artifact prepared, physical capture pending.",
+      "latestObservation": "Clean, no perceptible distortion in the eight-output manual headphone candidate.",
+      "supersedes": "Earlier Android saturation and the partially improved four-output candidate.",
       "samePcmComparison": {
         "liveXruns": 89,
         "replayXruns": 0,
         "humanObservation": "Live saturated; replay very little or none.",
         "scope": "Combined live physics and DSP versus exact captured PCM on an empty engine; not DSP-only attribution."
-      }
+      },
+      "correctionReport": "android-sim80-correction.json"
     }
   },
   "pending": [
-    "Diagnose and correct Android Sim80 delivery failure; same-PCM replay completed, actual-game callback CPU/wall attribution pending",
     "Android maximum-load render criterion failed on CPH2639; controlled600-second acceptance not started",
     "Latest-source oneVoice host bypass total-time screen remains above2% after investigation",
     "Whole-process192k memory bound remains unestablished; native accounting/rate projections have limited scopes",
@@ -1452,5 +1452,6 @@
     "push": false,
     "release": false
   },
-  "nativeSourceCommit": "87b2c3354f182c5742cba84775b075552c80572c"
+  "nativeSourceCommit": "87b2c3354f182c5742cba84775b075552c80572c",
+  "androidSim80Correction": "android-sim80-correction.json"
 }
