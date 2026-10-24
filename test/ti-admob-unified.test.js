@@ -27,7 +27,7 @@ function officialBody(record) {
 }
 
 test('AdMob documentation and example assets preserve the official pinned source', () => {
-  assert.equal(snapshot.files.filter(record => record.source.startsWith('documentation/')).length, 11);
+  assert.equal(snapshot.files.filter(record => record.source.startsWith('documentation/')).length, 13);
   for (const record of snapshot.files) {
     const content = readFileSync(path.join(skill, record.destination));
     assert.equal(hash(content), record.mirrored_sha256, record.destination + ' differs from reviewed snapshot');

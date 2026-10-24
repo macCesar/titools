@@ -4,11 +4,56 @@ The native module is `ti.admob.unified`; this skill is `ti-admob-unified`. It wo
 
 ## Provenance
 
-Copied from the official module repository `macCesar/ti.admob.unified`, at clean commit `5b4cbf9347a51c4f959dc262ac1500f82f28b4a0` on 2026-10-11. Use the installed package documentation or a checkout of that repository. Commands below use `/path/to/ti.admob.unified` as a placeholder, not a required machine path. The 1.0.0 first public release remains under preparation according to this session; re-check its release status when installing later.
+Reviewed against public official **1.0.0** source
+`034843299b2984253988e0ffccb9f6a1c91682c9` on 2026-10-24. Clean local HEAD,
+remote main and Android/iOS annotated release tags match. Repository visibility
+and non-draft/non-prerelease platform releases were verified.
 
-`source-snapshot.json` records original paths, source SHA-256, destination hashes and rebased Markdown links. Eleven official `documentation/*.md` guides are preserved, with dependency inventory, roadmap, contributing guide, upstream changelog and module license. Each Markdown file adds a source line and rewrites relative links (with any separately recorded broken-anchor correction) so they resolve inside the skill. Long API/banner references add generated TOCs. This provenance applies to the copied references, not to TiTools' curated `game-monetization.md` or this note.
+| Platform | Published downloads | Verified core ZIP SHA-256 |
+| --- | --- | --- |
+| Android | [android-1.0.0](https://github.com/macCesar/ti.admob.unified/releases/tag/android-1.0.0) | `533ae21b6462ba2d773209f91ea607e975ce34413b165c1d77a34fc5680ec055` |
+| iOS | [ios-1.0.0](https://github.com/macCesar/ti.admob.unified/releases/tag/ios-1.0.0) | `665e0ad85c0d343c47bc1b671d57a1f2ac41cb9f57305053c6ab64b7951ebb20` |
 
-`assets/example/lib/ads.js`, `assets/example/library-usage.js` and `assets/example/app.js` are byte-identical official source files. They are application code resources, not scripts to run in Node for ad delivery. The library is intended to be copied unchanged into the consuming app; keep project policies in a separate director/controller. Review native integration on both target platforms.
+Both core archives were downloaded, independently hashed and CRC/manifest
+checked without installation. Each release's SHA256SUMS lists core plus five
+optional network ZIPs; all twelve hashes match published GitHub asset digests.
+Complement binaries were not downloaded or executed. Core manifests require
+Titanium 13.4.1.GA; Android has four ABIs and Apple declares `mac:false`.
+App requirements also include iOS 15+, Android API 24+ and compile SDK 36. Use
+[installation guidance](getting-started.md) and only selected complements;
+installing adapters alone does not configure provider demand.
+
+`source-snapshot.json` records each source, original/mirror hash and declared
+link/correction transformations. It covers thirteen official documentation pages,
+dependency/roadmap/contributing/changelog/license material and the public
+[mediation parity comparison](mediation-parity.md). The root README is a reviewed,
+hashed exclusion whose operational requirements map to the available guides.
+
+The three official JavaScript resources under `assets/example/` remain
+byte-identical. Copy `lib/ads.js` unchanged; keep app policy/director logic
+outside it. The curated [game guide](game-monetization.md) and this provenance
+note are TiTools contributions rather than upstream mirrors.
+
+## Current source distinctions
+
+- Rewarded interstitial and synchronous ATT status query are implemented.
+  Read the dedicated format/production guides before integration; older
+  unsupported-format guidance does not describe this release.
+- Native `autoReload` is read live at fullscreen close. The other four mutable
+  request options affect the next load. Official API/fullscreen prose grouped
+  all five as next-load properties; exact reversible errata preserve original
+  source hashes while describing current native behavior.
+- Raw proxy `load()`/`show()` do not return success. Manager returns and mocked
+  tests do not establish a delivered ad. UMP consent, ATT query, initialization,
+  per-format layout and account readiness remain separate boundaries.
+- The iOS collapsed-SVG repair is narrowly scoped to the Google interstitial
+  creative case documented in source. Host lifecycle/DOM assertions are not
+  new physical visual acceptance or a generic creative replacement API.
+
+The earlier skill pin `5b4cbf9` is no longer resolvable in the source checkout.
+The audit uses prior shipped mirrors/library as its documentation baseline and
+verifies current released implementation independently. It does not invent an
+unavailable historical native diff or restore removed private history.
 
 ## Source priority and updates
 
@@ -30,4 +75,6 @@ node scripts/verify-module-snapshot.mjs --source /path/to/ti.admob.unified
 
 It reports changed/missing sources, newly added official Markdown, modified shipped mirrors, source dirtiness and commit changes. It performs no fetch, pull, write or hash refresh. Compare the pinned commit to the candidate commit, review the report and relevant native/library changes, then perform only the authorized update. Native-module releases, provider SDK changes and official-doc corrections can all trigger a review.
 
-Snapshot link correction: the official API page still links to `#mediation-diagnostics-and-compatibility` after its heading became `Mediation diagnostics`. The mirrored link targets `#mediation-diagnostics`; `source-snapshot.json` records the exact transformation and tests reconstruct the original source hash. The module repository was not edited. Re-check this correction during the next refresh.
+The old broken mediation heading link was corrected upstream and no longer
+needs a local transformation. Current semantic errata are explicitly recorded
+and reconstructed by the source-fidelity regression.

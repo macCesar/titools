@@ -1,4 +1,4 @@
-> Source snapshot: official ti.admob.unified 1.0.0 documentation at commit `5b4cbf9` (copied 2026-10-11). Relative links rebased for this skill.
+> Source snapshot: official ti.admob.unified 1.0.0 documentation at release source commit `034843299b2984253988e0ffccb9f6a1c91682c9` (copied 2026-10-24). Relative links rebased for this skill.
 
 # ti.admob.unified documentation
 
@@ -12,7 +12,10 @@ This documentation describes the public JavaScript contract implemented by `ti.a
 4. [Privacy and initialization](privacy.md): implement UMP, ATT, the `canRequestAds()` gate, and privacy options correctly.
 5. [AdMob mediation](mediation.md): install selected complements, and configure and validate the five networks without platform-specific JavaScript.
 6. [Banner ads](banners.md): integrate standard or adaptive banners with real layout space and deterministic cleanup.
-7. [Fullscreen ads](fullscreen.md): interstitial, rewarded, and app open ads on one lifecycle, and when it is acceptable to interrupt the user.
+7. [Fullscreen ads](fullscreen.md): interstitial, rewarded, rewarded interstitial, and app open ads on one lifecycle, and when it is acceptable to interrupt the user.
+
+8. [Rewarded interstitial ads](rewarded-interstitial.md): introduce the reward, allow skipping, and handle actual earned rewards.
+9. [Shipping an application](production.md): production configuration, app verification, store disclosures, troubleshooting and validation.
 
 ## Reference
 

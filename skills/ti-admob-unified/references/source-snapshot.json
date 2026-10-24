@@ -1,29 +1,44 @@
 {
   "module": "ti.admob.unified",
   "version": "1.0.0",
-  "release_status": "first public release under preparation",
+  "release_status": "public 1.0.0",
   "repository": "macCesar/ti.admob.unified",
-  "commit": "5b4cbf9347a51c4f959dc262ac1500f82f28b4a0",
-  "copied": "2026-10-11",
+  "commit": "034843299b2984253988e0ffccb9f6a1c91682c9",
+  "copied": "2026-10-24",
   "files": [
     {
       "source": "documentation/fullscreen.md",
       "destination": "references/fullscreen.md",
-      "source_sha256": "61e21798b234ff1f06d59d0239c62e3f422a424ebc2ff70e5839d203fa4c85b7",
-      "mirrored_sha256": "8c3defb078bc7115475f1389ee02d8d855164de16287afa4156842fa69e344af",
+      "source_sha256": "ba3af8803a6bd44431468a68ab2b4b57f6f4fc893da723ff8b39ed5d37595ec9",
+      "mirrored_sha256": "64e6ad2a706f4f48371f6c51cd32b6a96a735b6147422000ee712e1b7fbdb279",
       "links": [
         {
           "original": "../example/app.js",
           "mirrored": "../assets/example/app.js"
+        },
+        {
+          "original": "rewarded-interstitial.md",
+          "mirrored": "rewarded-interstitial.md"
+        }
+      ],
+      "link_fixes": [
+        {
+          "original_markdown": "Pass initial configuration to the factory. Later assignments to the five configuration properties affect the next request on both platforms. An already loaded ad keeps the configuration of its original request.",
+          "mirrored_markdown": "Pass initial configuration to the factory. Later assignments to `adUnitId`, `keywords`, `requestAgent` and `extras` affect the next request on both platforms; an already loaded ad keeps its original request configuration. `autoReload` is a live close policy: both native ports read its current value when the shown ad closes, so changing it while an ad is loaded or presented changes whether that close starts another load. It does not present another ad or retry a load/show failure.",
+          "reason": "Both native fullscreen dismissal callbacks read the current autoReload property; the four request-targeting options apply on the next load. Verified by the parallel native contract audit; official source unchanged."
         }
       ]
     },
     {
       "source": "documentation/mediation.md",
       "destination": "references/mediation.md",
-      "source_sha256": "59ede67bf9389b3b98a45a4eb24b59395a98631b0cb47d1cd24357d35f85d57e",
-      "mirrored_sha256": "3f6623d6178a437249542d191ecc6c5d6e22ae51db78713c41236b6ed637c938",
+      "source_sha256": "b990727c53c33753970ae5875a29a617dcf3e713b81f0a0e54fe5ff847fdc17f",
+      "mirrored_sha256": "b0244e516af711574c62d517ab6dc04a816b250af3395cff5bf43ffbee45c03d",
       "links": [
+        {
+          "original": "../DEPENDENCIES.md",
+          "mirrored": "dependencies.md"
+        },
         {
           "original": "../DEPENDENCIES.md",
           "mirrored": "dependencies.md"
@@ -45,8 +60,8 @@
     {
       "source": "documentation/integration.md",
       "destination": "references/integration.md",
-      "source_sha256": "47b247dff23ca909b4b8cb598e31571d7ed419feb4b63d59a0d662950d265fa5",
-      "mirrored_sha256": "d63800df29b1857552456e1c73ea7de83aed2596b7704c953be9864ba83fb2ff",
+      "source_sha256": "e56f555b0471dd1d60ee64d397e026431321e9b7eed6320a8ebf18c3116e6d8e",
+      "mirrored_sha256": "c49f8eaa727ef39d65350cddc6d6f29ff62a31f13ed4099b1fc61dad403d4c3e",
       "links": [
         {
           "original": "../example/lib/ads.js",
@@ -83,14 +98,18 @@
         {
           "original": "privacy.md",
           "mirrored": "privacy.md"
+        },
+        {
+          "original": "production.md",
+          "mirrored": "production.md"
         }
       ]
     },
     {
       "source": "documentation/third-party-notices.md",
       "destination": "references/third-party-notices.md",
-      "source_sha256": "b203d99e49312a0450db497a0b54dae9fb1f705a27ba18f71fbaf76e46d830cd",
-      "mirrored_sha256": "93c74402995ac911bc96cac3453ca39f1c262653ef4e7d8ebccefe4c3630bbad",
+      "source_sha256": "42b64eb4e99e77ede21aeff8767917a11c4bba44e3a0388e396bebdacf6313cb",
+      "mirrored_sha256": "8afdfabddb1d8c2cef2a104aae9242f23317f72f812649552cc6c1293857bea8",
       "links": [
         {
           "original": "../DEPENDENCIES.md",
@@ -101,12 +120,24 @@
     {
       "source": "documentation/privacy.md",
       "destination": "references/privacy.md",
-      "source_sha256": "25adc561cf4b1b2b0ae2c25c3373b9a7eae6b429ecdee1a7d4968e3021255d37",
-      "mirrored_sha256": "68ec23fc532865910ec2e6cb801b33f9afb788eac7c3dc5e1e230ad245a1ad03",
+      "source_sha256": "527cf14f1445ff36af7e0728cebfc50cd681caa869210678ec869248389b9d08",
+      "mirrored_sha256": "999172264e7ebef16cadf90fae197e80d1ad4f88c5cdfe904882d998ac94b1c9",
       "links": [
         {
           "original": "getting-started.md#optional-if-the-application-requests-att",
           "mirrored": "getting-started.md#optional-if-the-application-requests-att"
+        },
+        {
+          "original": "api-reference.md#automatic-adapter-discovery",
+          "mirrored": "api-reference.md#automatic-adapter-discovery"
+        },
+        {
+          "original": "getting-started.md#ios",
+          "mirrored": "getting-started.md#ios"
+        },
+        {
+          "original": "library.md#privacy-and-diagnostics",
+          "mirrored": "library.md#privacy-and-diagnostics"
         },
         {
           "original": "getting-started.md#ios",
@@ -117,8 +148,8 @@
     {
       "source": "documentation/migration.md",
       "destination": "references/migration.md",
-      "source_sha256": "85c6e3b897c4ac7f7cfb4f2a4fc61936f2e43a81de620a6c89fed670157877b3",
-      "mirrored_sha256": "028890977867cecef1f6c8a67b526bece5919200d061cabca61f0f12f9b8eb12",
+      "source_sha256": "b98d0ee3b2f30563fc446cf592ee266e60ac14350e5e5113dbb6942b0561b29c",
+      "mirrored_sha256": "677f931c29f6fca77d7beed8ebbee91d378c16c5b704b1c44eca739baf7b7ce8",
       "links": [
         {
           "original": "mediation.md",
@@ -149,8 +180,8 @@
     {
       "source": "documentation/getting-started.md",
       "destination": "references/getting-started.md",
-      "source_sha256": "82e606a8807a75985f8371876650f6499028e2b4452f28f525cd9edced2f0a7d",
-      "mirrored_sha256": "a1784814b78d17d3c6a928f0aed34cadccc100cf6ce57b9e05b309745ecac652",
+      "source_sha256": "902dbfefa6a6a01920cd4dd970c065af6306a937782d655b7a932400ebca61a1",
+      "mirrored_sha256": "d3a46fb707a5e6c1f0586518b08f4d55f4e36e4e5a8623faa7bd8be58af17393",
       "links": [
         {
           "original": "mediation.md",
@@ -179,14 +210,18 @@
         {
           "original": "banners.md",
           "mirrored": "banners.md"
+        },
+        {
+          "original": "production.md",
+          "mirrored": "production.md"
         }
       ]
     },
     {
       "source": "documentation/library.md",
       "destination": "references/library.md",
-      "source_sha256": "0da03f4b91912045737da2a8992679c7a1503f5085abc9d7495817ae54e68021",
-      "mirrored_sha256": "40568c25adc6e5cf7a27ad0305205dfc6847c7c6039eae095bf102f6b8688873",
+      "source_sha256": "b49578baf6255d73e4142bf98f630b8d0f0533b2c2f662288b1b26647c5c9453",
+      "mirrored_sha256": "baeaebaee30bd7129fcae827f34bf2cb87eee21ce61c887ecae62fa3c8b085a4",
       "links": [
         {
           "original": "../example/lib/ads.js",
@@ -197,6 +232,14 @@
           "mirrored": "../assets/example/app.js"
         },
         {
+          "original": "rewarded-interstitial.md",
+          "mirrored": "rewarded-interstitial.md"
+        },
+        {
+          "original": "privacy.md#requestconsentconfig",
+          "mirrored": "privacy.md#requestconsentconfig"
+        },
+        {
           "original": "../example/library-usage.js",
           "mirrored": "../assets/example/library-usage.js"
         }
@@ -205,8 +248,8 @@
     {
       "source": "documentation/index.md",
       "destination": "references/index.md",
-      "source_sha256": "358dbe96a4f5ff49179b05bed5a1a28a2c13b0c698663a6f8fba6b858a55ffaf",
-      "mirrored_sha256": "1f07d92cfc885074bedfea0bfc8164df4dbb1091ecf4193ee733162b3a60e2ab",
+      "source_sha256": "0f8d359b08e2cf8a5454855d1745ef0772e4b98f46ce9b151aa4a1d79bfe0c72",
+      "mirrored_sha256": "f9b9c0ae7c85eb141599ea1534bc797d07fb0fc1a532b9cd956cf374c1ba9909",
       "links": [
         {
           "original": "getting-started.md",
@@ -235,6 +278,14 @@
         {
           "original": "fullscreen.md",
           "mirrored": "fullscreen.md"
+        },
+        {
+          "original": "rewarded-interstitial.md",
+          "mirrored": "rewarded-interstitial.md"
+        },
+        {
+          "original": "production.md",
+          "mirrored": "production.md"
         },
         {
           "original": "api-reference.md",
@@ -273,16 +324,37 @@
     {
       "source": "documentation/banners.md",
       "destination": "references/banners.md",
-      "source_sha256": "6503b64e3adca882c099710c9df7d3f03ce6ff21cf98e54c199e3f9020581990",
-      "mirrored_sha256": "aaf1cc653f9c4d6085e21e88496259b7b3e4abfcd8ba9aa39a5f25cfc6c1db26",
-      "links": []
+      "source_sha256": "77c17dbe9eebf1e41b63cfb6d47cf2a6dcd649603953586f7e2294dab5545b4d",
+      "mirrored_sha256": "288488df04ce86515ea90b932f044b281d3c9abb18f02708c0eb0bfe2ededdb0",
+      "links": [
+        {
+          "original": "#full-lifecycle-example",
+          "mirrored": "#full-lifecycle-example"
+        },
+        {
+          "original": "library.md#banners",
+          "mirrored": "library.md#banners"
+        },
+        {
+          "original": "#who-pauses-a-banner",
+          "mirrored": "#who-pauses-a-banner"
+        }
+      ]
     },
     {
       "source": "documentation/api-reference.md",
       "destination": "references/api-reference.md",
-      "source_sha256": "e1e0e51562f18cca354d58ca0dffeb32830b07fea0f4cafecd356eca832b8ab7",
-      "mirrored_sha256": "d1fec104a8f8ffb153c0fbcc9e405c224145f0dd439a5d9caa4ac78ad64064fa",
+      "source_sha256": "0979f275e0ede231927d8344db62ef8cb8ca2bd2f20ec77cf9ef51069bab4e4b",
+      "mirrored_sha256": "65ed507a194f40be0b5952e4a2c61a429e648aa7748907f4b16cbd049f3a4899",
       "links": [
+        {
+          "original": "#mediation-diagnostics",
+          "mirrored": "#mediation-diagnostics"
+        },
+        {
+          "original": "migration.md#generic-mediation-diagnostics",
+          "mirrored": "migration.md#generic-mediation-diagnostics"
+        },
         {
           "original": "mediation.md#missing-configuration-and-startup-errors",
           "mirrored": "mediation.md#missing-configuration-and-startup-errors"
@@ -294,6 +366,10 @@
         {
           "original": "banners.md#creation-properties",
           "mirrored": "banners.md#creation-properties"
+        },
+        {
+          "original": "rewarded-interstitial.md",
+          "mirrored": "rewarded-interstitial.md"
         },
         {
           "original": "fullscreen.md#the-four-hour-window",
@@ -316,6 +392,10 @@
           "mirrored": "fullscreen.md#events"
         },
         {
+          "original": "#reserved-and-unavailable-apis",
+          "mirrored": "#reserved-and-unavailable-apis"
+        },
+        {
           "original": "mediation.md",
           "mirrored": "mediation.md"
         },
@@ -326,17 +406,17 @@
       ],
       "link_fixes": [
         {
-          "original_markdown": "[Mediation diagnostics and compatibility](#mediation-diagnostics-and-compatibility)",
-          "mirrored_markdown": "[Mediation diagnostics and compatibility](#mediation-diagnostics)",
-          "reason": "Official document references a removed heading; target its existing Mediation diagnostics section. Original source is unchanged."
+          "original_markdown": "The five configuration properties `adUnitId` (String), `autoReload` (Boolean), `keywords` (String[]), `requestAgent` (String) and `extras` (Object) are readable and writable on both platforms. Changes affect the next load and do not replace an already loaded ad. `autoReload` defaults to `false`; targeting is omitted when unset. Extras retain String, Boolean and numeric primitive values. Internal load/presentation state and native SDK delegate methods are not application APIs.",
+          "mirrored_markdown": "The five configuration properties `adUnitId` (String), `autoReload` (Boolean), `keywords` (String[]), `requestAgent` (String) and `extras` (Object) are readable and writable on both platforms. Changes to the four request options affect the next load and do not replace an already loaded ad. `autoReload` defaults to `false` and is read live when the shown ad closes; changing it while an ad is loaded or presented changes whether that close starts a reload. It never automatically presents the replacement or retries a failure. Targeting is omitted when unset. Extras retain String, Boolean and numeric primitive values. Internal load/presentation state and native SDK delegate methods are not application APIs.",
+          "reason": "Both native fullscreen dismissal callbacks read the current autoReload property; the four request-targeting options apply on the next load. Verified by the parallel native contract audit; official source unchanged."
         }
       ]
     },
     {
       "source": "DEPENDENCIES.md",
       "destination": "references/dependencies.md",
-      "source_sha256": "345106277d89646fa2f79026d28fcef39c2c97701f0190141efdfaaf2cc988be",
-      "mirrored_sha256": "131c1a1042905893ef122ef6b44acfeba701177d42377061c60f827a686336fc",
+      "source_sha256": "61de90e3b992ff02c1c6866355d352ceaa58f5940a5aa56128ad31e66410de42",
+      "mirrored_sha256": "024f3512ae027e179789866f02854cbb258cf00d8507ea51e7d64dc0e2da8488",
       "links": [
         {
           "original": "documentation/mediation.md#unity-consent-with-the-pinned-adapter",
@@ -347,24 +427,32 @@
     {
       "source": "ROADMAP.md",
       "destination": "references/roadmap.md",
-      "source_sha256": "e51337b46621f513bd0e7ece60604cb52b05137dce4a30e15474babb8ac2b3be",
-      "mirrored_sha256": "8d214f8b74201a1f60fa92df039eb8af88926159e2f26e946252eadd1afb214e",
+      "source_sha256": "7246cee85a0133a1a39584254d2b55ce1a0926965da65cae2399f25170d6a8f0",
+      "mirrored_sha256": "6fbd7e626e28f24e9299d116c1a3a285164154f7b312ead9f782dcd40d95b814",
       "links": [
         {
-          "original": "DEPENDENCIES.md#transitive-security-review",
-          "mirrored": "dependencies.md#transitive-security-review"
+          "original": "DEPENDENCIES.md",
+          "mirrored": "dependencies.md"
+        },
+        {
+          "original": "documentation/production.md",
+          "mirrored": "production.md"
         }
       ]
     },
     {
       "source": "CONTRIBUTING.md",
       "destination": "references/contributing.md",
-      "source_sha256": "836799de6a281aec867f9df34a520963db337733caf33e7ea0bc314365bd5c6b",
-      "mirrored_sha256": "4cfb401b52a0de14fd72b040ff88c64d1be7fdba27e56c1ec1fcd9008cae8ae9",
+      "source_sha256": "30fe1065aeb758c476b995626c593ed8d63c55581466424b0c4e75ddefab9624",
+      "mirrored_sha256": "e8303f51c6c566f7f2748be11ef58f1e7f544a92e08b3a886728b8e1a48a9dae",
       "links": [
         {
           "original": "DEPENDENCIES.md",
           "mirrored": "dependencies.md"
+        },
+        {
+          "original": "#adding-a-network",
+          "mirrored": "#adding-a-network"
         },
         {
           "original": "DEPENDENCIES.md",
@@ -391,8 +479,8 @@
     {
       "source": "CHANGELOG.md",
       "destination": "references/module-changelog.md",
-      "source_sha256": "206836587f356a152b6f9b3dbc3ecafdc47d006dc04ef9272be22fb61e1730a7",
-      "mirrored_sha256": "d7c53654b8b4c3166a8c86ed6a9d20d141692dbdfcd9ffacde4887367588adfa",
+      "source_sha256": "100a54cdc5fc0ff76867deabf307e9f64fc74567b828dac6e9ce10eb0392cc2f",
+      "mirrored_sha256": "bf7c46d8f782b59223e90ec1ea6dc88455e2e053f7cd18a86fe20fec18f1d7ff",
       "links": [
         {
           "original": "DEPENDENCIES.md",
@@ -418,23 +506,139 @@
     {
       "source": "example/lib/ads.js",
       "destination": "assets/example/lib/ads.js",
-      "source_sha256": "7103fd5406a6fdae2652fdb75d6e76bbe8e1f820183d8caafcdacbb38c939567",
-      "mirrored_sha256": "7103fd5406a6fdae2652fdb75d6e76bbe8e1f820183d8caafcdacbb38c939567",
+      "source_sha256": "eb87bab951614ea71721ebb72868c30a0d656818f365e88ef1df635b0deca546",
+      "mirrored_sha256": "eb87bab951614ea71721ebb72868c30a0d656818f365e88ef1df635b0deca546",
       "links": []
     },
     {
       "source": "example/library-usage.js",
       "destination": "assets/example/library-usage.js",
-      "source_sha256": "1dc8f385dda582cfadcd0f77edc24681214ac7b066909d5d9d1599c923eece24",
-      "mirrored_sha256": "1dc8f385dda582cfadcd0f77edc24681214ac7b066909d5d9d1599c923eece24",
+      "source_sha256": "fed548dee9481f00d039e51e50b94a3989c4fe972410e9c5e0962d9e525be682",
+      "mirrored_sha256": "fed548dee9481f00d039e51e50b94a3989c4fe972410e9c5e0962d9e525be682",
       "links": []
     },
     {
       "source": "example/app.js",
       "destination": "assets/example/app.js",
-      "source_sha256": "ba0bfcb76dcc727e9f1785a3980ec0df3bdd4f62fceba6efb1938295ba2d2ab5",
-      "mirrored_sha256": "ba0bfcb76dcc727e9f1785a3980ec0df3bdd4f62fceba6efb1938295ba2d2ab5",
+      "source_sha256": "76d38793c94e205f97102e807dfa69df730e4136e84a530abeb7defd884c3d2c",
+      "mirrored_sha256": "76d38793c94e205f97102e807dfa69df730e4136e84a530abeb7defd884c3d2c",
       "links": []
+    },
+    {
+      "source": "documentation/production.md",
+      "destination": "references/production.md",
+      "source_sha256": "a6e6a8a7209918a3fdfcf75ba4db6c9712dde0254141b7de09301a88102099fa",
+      "links": [
+        {
+          "original": "getting-started.md",
+          "mirrored": "getting-started.md"
+        },
+        {
+          "original": "../ROADMAP.md#release-readiness",
+          "mirrored": "roadmap.md#release-readiness"
+        },
+        {
+          "original": "library.md",
+          "mirrored": "library.md"
+        },
+        {
+          "original": "banners.md",
+          "mirrored": "banners.md"
+        },
+        {
+          "original": "rewarded-interstitial.md",
+          "mirrored": "rewarded-interstitial.md"
+        },
+        {
+          "original": "fullscreen.md",
+          "mirrored": "fullscreen.md"
+        },
+        {
+          "original": "library.md#fullscreen-ads",
+          "mirrored": "library.md#fullscreen-ads"
+        },
+        {
+          "original": "mediation.md",
+          "mirrored": "mediation.md"
+        },
+        {
+          "original": "../DEPENDENCIES.md",
+          "mirrored": "dependencies.md"
+        },
+        {
+          "original": "../ROADMAP.md#release-readiness",
+          "mirrored": "roadmap.md#release-readiness"
+        },
+        {
+          "original": "library.md#cleanup",
+          "mirrored": "library.md#cleanup"
+        },
+        {
+          "original": "api-reference.md#common-google-mobile-ads-error-codes",
+          "mirrored": "api-reference.md#common-google-mobile-ads-error-codes"
+        },
+        {
+          "original": "api-reference.md",
+          "mirrored": "api-reference.md"
+        }
+      ],
+      "mirrored_sha256": "0a799f5e88d7b6653f2d9779c087dfe85867a15fab4b9bb5e066175fbfd7f8fd"
+    },
+    {
+      "source": "documentation/rewarded-interstitial.md",
+      "destination": "references/rewarded-interstitial.md",
+      "source_sha256": "d6837ff0e3a9ab322285abef5c3b918ceeb45a46ec5a8e06997664ba0a013978",
+      "links": [
+        {
+          "original": "../example/app.js",
+          "mirrored": "../assets/example/app.js"
+        },
+        {
+          "original": "library.md#fullscreen-ads",
+          "mirrored": "library.md#fullscreen-ads"
+        },
+        {
+          "original": "fullscreen.md#creation-properties",
+          "mirrored": "fullscreen.md#creation-properties"
+        },
+        {
+          "original": "fullscreen.md#events",
+          "mirrored": "fullscreen.md#events"
+        },
+        {
+          "original": "../example/app.js",
+          "mirrored": "../assets/example/app.js"
+        },
+        {
+          "original": "../example/library-usage.js",
+          "mirrored": "../assets/example/library-usage.js"
+        },
+        {
+          "original": "../ROADMAP.md#release-readiness",
+          "mirrored": "roadmap.md#release-readiness"
+        }
+      ],
+      "mirrored_sha256": "6414d936021a776b666f4c7f19f64eec58dfdc5d1eab236dc8fa55909f170044"
+    },
+    {
+      "source": "MEDIATION_COMPARISON.md",
+      "destination": "references/mediation-parity.md",
+      "source_sha256": "66c2fc72fcdacc0b0c4fff294afa7217daa7f9fa06d04a501f1d43193e4e87a7",
+      "links": [
+        {
+          "original": "documentation/mediation.md",
+          "mirrored": "mediation.md"
+        }
+      ],
+      "mirrored_sha256": "1b9e519e90d3f773baa222cf87ea11f0138bea1f6196d8076abbd4e1e401ca0f"
+    }
+  ],
+  "source_state": "committed",
+  "excluded_documents": [
+    {
+      "source": "README.md",
+      "source_sha256": "38e1438d35248f29f35b543de1286765c66b1946ee81491662933b07c105d228",
+      "reason": "Public overview and entry navigation are represented by the complete getting-started, API, privacy, production, integration, mediation, roadmap, contributing and dependency mirrors; screenshot HTML and repository badges are not integration requirements. Any future source change still triggers review."
     }
   ]
 }

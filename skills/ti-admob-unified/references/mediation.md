@@ -1,4 +1,4 @@
-> Source snapshot: official ti.admob.unified 1.0.0 documentation at commit `5b4cbf9` (copied 2026-10-11). Relative links rebased for this skill.
+> Source snapshot: official ti.admob.unified 1.0.0 documentation at release source commit `034843299b2984253988e0ffccb9f6a1c91682c9` (copied 2026-10-24). Relative links rebased for this skill.
 
 # AdMob mediation
 
@@ -8,11 +8,11 @@ The first release, `1.0.0`, provides five optional dependency modules with ident
 | ------------------------- | ------------------------------------- | ----------- | --------------- |
 | AppLovin                  | `ti.admob.unified.mediation.applovin` | `13.6.4.0`  | `13.6.4.2`      |
 | Meta Audience Network     | `ti.admob.unified.mediation.meta`     | `6.22.0.0`  | `6.22.0.1`      |
-| InMobi                    | `ti.admob.unified.mediation.inmobi`   | `11.4.1.0`  | `11.4.1.2`      |
-| Unity Ads                 | `ti.admob.unified.mediation.unity`    | `4.20.1.0`  | `4.20.1.0`      |
-| Liftoff Monetize (Vungle) | `ti.admob.unified.mediation.liftoff`  | `7.7.7.0`   | `7.7.8.1`       |
+| InMobi                    | `ti.admob.unified.mediation.inmobi`   | `11.5.0.0`  | `11.5.0.1`      |
+| Unity Ads                 | `ti.admob.unified.mediation.unity`    | `4.21.0.0`  | `4.21.0.0`      |
+| Liftoff Monetize (Vungle) | `ti.admob.unified.mediation.liftoff`  | `7.7.8.0`   | `7.7.9.0`       |
 
-ironSource mediation is deferred: neither its adapter nor its advertising SDK is distributed. Unity includes UnityCoherenceLib. Unity Ads 4.20.1 no longer depends on IronSourceAdQualitySDK, so it is not distributed.
+ironSource mediation is deferred: neither its adapter nor its advertising SDK is distributed. Unity includes UnityCoherenceLib. Unity Ads 4.21.0 no longer depends on IronSourceAdQualitySDK, so it is not distributed.
 
 ## Installing one or several networks
 
@@ -57,6 +57,17 @@ Do not silence these messages with placeholder credentials. Complete the provide
 
 Google maintains the current setup instructions and format caveats in its [Android mediation network guide](https://developers.google.com/admob/android/choose-networks) and [iOS mediation network guide](https://developers.google.com/admob/ios/choose-networks). Use formats supported by the selected network and adapter version.
 
+Use the provider-specific instructions for account mapping, privacy, SKAdNetwork IDs and test mode. Their current sample dependency versions may be newer than the versions packaged here; use [Dependencies](dependencies.md) for this release's inventory.
+
+| Provider | Android setup | iOS setup |
+| --- | --- | --- |
+| AppLovin | [Guide](https://developers.google.com/admob/android/mediation/applovin) | [Guide](https://developers.google.com/admob/ios/mediation/applovin) |
+| Meta | [Guide](https://developers.google.com/admob/android/mediation/meta) | [Guide](https://developers.google.com/admob/ios/mediation/meta) |
+| InMobi | [Guide](https://developers.google.com/admob/android/mediation/inmobi) | [Guide](https://developers.google.com/admob/ios/mediation/inmobi) |
+| Unity | [Guide](https://developers.google.com/admob/android/mediation/unity) | [Guide](https://developers.google.com/admob/ios/mediation/unity) |
+| Liftoff | [Guide](https://developers.google.com/admob/android/mediation/liftoff-monetize) | [Guide](https://developers.google.com/admob/ios/mediation/liftoff-monetize) |
+
+
 ## Missing configuration and startup errors
 
 Only install selected complements when the app will use mediation and its publisher accounts, source mappings and credentials are configured. The examples and the core-only test app do not require these accounts. Do not install the complements merely to run Google demo ads.
@@ -71,9 +82,11 @@ An internal Android demo build with several adapters produced these messages. Ea
 
 ### Why there is no automatic “missing local key → skip this network” filter
 
-Each optional module only packages dependencies; it does not call each provider's initializer. Google Mobile Ads controls adapter initialization and supplies mediation parameters from AdMob. There is no supported pre-initialization API in the Google Mobile Ads APIs used here that lets this module read all publisher mappings and selectively suppress adapters with missing credentials.
+Android runs Google request configuration and startup on a worker thread. Waiting for the completion event can still take up to the SDK timeout when a selected provider does not finish. Keep application navigation usable during this wait.
 
-A key may be absent from JavaScript or the native manifest and still be configured in AdMob. The [AppLovin adapter guide](https://developers.google.com/admob/android/mediation/applovin) instructs publishers to enter the SDK key in AdMob; its changelog says adapter 12.1.0.0 stopped checking the Android manifest. The module leaves readiness checks and provider initialization to Google, without using private SDK internals.
+Each optional module packages dependencies. Google calls the provider initializers. Google Mobile Ads controls adapter initialization and supplies mediation parameters from AdMob. There is no supported pre-initialization API in the Google Mobile Ads APIs used here that lets this module read all publisher mappings and selectively suppress adapters with missing credentials.
+
+A key may be absent from JavaScript or the native manifest and still be configured in AdMob. The [AppLovin adapter guide](https://developers.google.com/admob/android/mediation/applovin) instructs publishers to enter the SDK key in AdMob; its changelog says adapter 12.1.0.0 stopped checking the Android manifest. Google handles readiness checks and provider initialization through its public SDK APIs.
 
 Choose the setup that matches the application:
 
@@ -112,7 +125,7 @@ Admob.openAdInspector()
 
 ## Privacy and bundled resources
 
-Continue using UMP and `canRequestAds()` before requests. Each selected iOS complement includes its vendor resources and privacy manifests. Review the current Google/provider guidance for SKAdNetwork entries, privacy disclosures and consent propagation for the networks the application distributes. Android resolves each selected adapter's SDK transitively through its POM.
+Continue using UMP and `canRequestAds()` before requests. Each selected iOS complement includes its vendor resources and privacy manifests. Review the current Google/provider guidance for SKAdNetwork entries, privacy disclosures and consent propagation for the networks the application distributes. Android resolves the Maven dependencies declared by each selected complement, including the explicitly declared Unity SDK.
 
 The public example and the test demo use only the core, with no mediation flag. No provider credentials are required to run Google demo ads. Adding a selected complement to `tiapp.xml` makes its adapter discoverable at SDK startup; configure the provider account and AdMob mapping before using that network. Automatic discovery does not validate credentials or eliminate initialization timeouts.
 
@@ -129,4 +142,4 @@ Google test ads do not prove provider delivery. iOS simulator results do not sub
 
 ## Unity consent with the pinned adapter
 
-The distribution uses Unity adapter `4.20.1.0` on both platforms. It includes the automatic forwarding of `IABTCF_AddtlConsent` introduced in `4.19.0.1` on [Android](https://developers.google.com/admob/android/mediation/unity) and [iOS](https://developers.google.com/admob/ios/mediation/unity). Configure Unity as a consent partner and verify signal propagation with the provider before enabling demand. Adapter presence and a Google test ad do not establish provider consent or delivery.
+The distribution uses Unity adapter `4.21.0.0` on both platforms. It includes the automatic forwarding of `IABTCF_AddtlConsent` introduced in `4.19.0.1` on [Android](https://developers.google.com/admob/android/mediation/unity) and [iOS](https://developers.google.com/admob/ios/mediation/unity). Configure Unity as a consent partner and verify signal propagation with the provider before enabling demand. Adapter presence and a Google test ad do not establish provider consent or delivery.

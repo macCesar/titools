@@ -2,7 +2,7 @@
  * ti.admob.unified example
  *
  * This app uses only Google's official demo ad unit IDs. It demonstrates:
- * - UMP -> canRequestAds -> ATT (iOS) -> initialization
+ * - UMP -> ATT (iOS) -> canRequestAds -> initialization
  * - every ad format the module exposes, one button each
  * - a banner host that reserves its own space
  * - explicit listener and proxy cleanup
@@ -39,11 +39,14 @@ let preserveConsentBannerSlot = false
 let initializationStarted = false
 let initializationComplete = false
 let trackingRequestStarted = false
+let appActive = true
+let trackingPending = false
 let windowClosed = false
 let banner = null
 let activeBannerButton = null
 let interstitial = null
 let rewarded = null
+let rewardedInterstitial = null
 let appOpen = null
 
 // Native semantic color names keep existing views in sync with the system theme.
@@ -59,8 +62,13 @@ const win = Ti.UI.createWindow({
   title: 'AdMob Playground',
   barColor: colors.canvas,
   titleAttributes: { color: colors.ink },
-  layout: 'composite',
+  layout: 'vertical',
   extendSafeArea: false
+})
+
+// Native vertical layout reserves the HUD's measured height above the viewport.
+const viewport = Ti.UI.createView({
+  width: Ti.UI.FILL, height: Ti.UI.FILL, layout: 'composite'
 })
 
 const content = Ti.UI.createScrollView({
@@ -96,7 +104,7 @@ masthead.add(Ti.UI.createLabel({
 page.add(masthead)
 
 const session = Ti.UI.createView({
-  top: '24dp', left: '24dp', right: '24dp', height: Ti.UI.SIZE,
+  top: '12dp', bottom: '12dp', left: '24dp', right: '24dp', height: Ti.UI.SIZE,
   layout: 'vertical', backgroundColor: colors.tint, borderRadius: '12dp'
 })
 const sessionLabel = Ti.UI.createLabel({
@@ -107,12 +115,11 @@ const sessionLabel = Ti.UI.createLabel({
 const statusLabel = Ti.UI.createLabel({
   text: 'Requesting privacy information…',
   top: '8dp', left: '16dp', right: '16dp', bottom: '16dp',
-  height: '48dp', verticalAlign: Ti.UI.TEXT_VERTICAL_ALIGNMENT_TOP, color: colors.ink,
+  height: Ti.UI.SIZE, verticalAlign: Ti.UI.TEXT_VERTICAL_ALIGNMENT_TOP, color: colors.ink,
   font: { fontSize: '16dp', fontWeight: 'semibold' }
 })
 session.add(sessionLabel)
 session.add(statusLabel)
-page.add(session)
 
 const activity = Ti.UI.createLabel({
   text: 'Session events will appear here.', left: '16dp', right: '16dp',
@@ -140,6 +147,10 @@ function setBannerHeight(value) {
 
 let currentSection
 const formatCards = []
+const fullscreenButtons = []
+function cancelPendingFullscreenShows() {
+  fullscreenButtons.forEach(button => button.cancelPendingShow())
+}
 function createSection(title, description, grid) {
   page.add(Ti.UI.createLabel({
     text: title, top: '32dp', left: '24dp', right: '24dp', height: Ti.UI.SIZE,
@@ -190,7 +201,11 @@ function createAdButton(title, handlers) {
     accessibilityHint: handlers.description || ''
   })
   let state = 'idle'
-  const sizeGuard = fullscreen ? createFullscreenSizeGuard(() => win.size) : null
+  let pendingShow = false
+  let introPending = false
+  let introAccepted = false
+  let showIntent = 0
+  const sizeGuard = fullscreen ? createFullscreenSizeGuard(() => win) : null
   button.creating = function () {
     state = 'creating'
     button.applyProperties({ title: 'Loading…', backgroundColor: colors.quiet, color: colors.muted, enabled: false })
@@ -201,8 +216,16 @@ function createAdButton(title, handlers) {
       title: `Show ${title.toLowerCase()}`, backgroundColor: colors.accent,
       backgroundSelectedColor: colors.pressed, color: colors.surface, enabled: true
     })
+    if (pendingShow) presentRequestedAd()
+  }
+  button.cancelPendingShow = function () {
+    pendingShow = false
+    introPending = false
+    introAccepted = false
+    showIntent += 1
   }
   button.reset = function () {
+    button.cancelPendingShow()
     state = 'idle'
     button.applyProperties({
       title: isFormat && consentBusy ? 'Waiting for consent…'
@@ -234,24 +257,59 @@ function createAdButton(title, handlers) {
     if (sizeGuard) sizeGuard.recordLoad()
     handlers.onLoad(button)
   }
-  button.addEventListener('click', () => {
-    if (consentBusy || state === 'creating' || state === 'showing') return
-    if (state === 'ready') {
-      if (windowClosed || !Admob.canRequestAds()) {
-        setStatus(`${title} blocked by privacy settings`)
-        return
-      }
-      sizeGuard.show(() => {
-        state = 'showing'
-        button.applyProperties({ title: 'Showing…', enabled: false, backgroundColor: colors.quiet, color: colors.muted })
-        handlers.onShow(button)
-      }, () => button.load())
+  function presentRequestedAd() {
+    if (!pendingShow || state !== 'ready') return
+    if (windowClosed || consentBusy || !appActive || !Admob.canRequestAds()) {
+      button.cancelPendingShow()
       return
     }
-    if (!fullscreen || state === 'failed') button.load()
+    if (handlers.beforeShow && !introAccepted) {
+      if (introPending) return
+      introPending = true
+      const intent = showIntent
+      handlers.beforeShow(accepted => {
+        if (intent !== showIntent || !pendingShow) return
+        introPending = false
+        if (!accepted) { button.cancelPendingShow(); return }
+        introAccepted = true
+        presentRequestedAd()
+      })
+      return
+    }
+    sizeGuard.show(() => {
+      pendingShow = false
+      state = 'showing'
+      button.applyProperties({ title: 'Showing…', enabled: false, backgroundColor: colors.quiet, color: colors.muted })
+      handlers.onShow(button)
+    }, () => button.load())
+  }
+  button.addEventListener('click', () => {
+    if (consentBusy || state === 'creating' || state === 'showing' || introPending) return
+    if (fullscreen) {
+      if (windowClosed || !appActive || !Admob.canRequestAds()) {
+        setStatus(`${title} blocked by privacy or foreground state`)
+        return
+      }
+      cancelPendingFullscreenShows()
+      pendingShow = true
+      if (state === 'ready') presentRequestedAd()
+      else button.load()
+      return
+    }
+    button.load()
   })
+  if (fullscreen) fullscreenButtons.push(button)
   const parent = card || currentSection
   parent.add(button)
+  if (handlers.policyUrl) {
+    const policy = Ti.UI.createButton({
+      title: 'AdMob rewarded interstitial requirements',
+      top: '8dp', left: '20dp', right: '20dp', bottom: '8dp',
+      height: Ti.UI.SIZE, color: colors.accent, font: { fontSize: '14dp' }
+    })
+    policy.addEventListener('click', () => Ti.Platform.openURL(handlers.policyUrl))
+    parent.add(policy)
+  }
   return button
 }
 
@@ -308,6 +366,7 @@ function loadExampleAds() {
   rewardedButton.load()
   appOpenButton.load()
   adaptiveButton.load()
+  rewardedInterstitialButton.load()
   adsStoppedForConsent = false
   preserveConsentBannerSlot = false
 }
@@ -319,8 +378,39 @@ function onTrackingAuthorizationCompleted(event) {
     onTrackingAuthorizationCompleted
   )
   Ti.API.info(`ATT status: ${event.status}`)
+  Ti.API.info('Current ATT state: ' + JSON.stringify(Admob.getTrackingAuthorizationStatus()))
   initializeAdsOnce()
   updateConsentTools()
+}
+
+function requestExampleTracking() {
+  if (windowClosed || trackingRequestStarted || (Ti.Platform.osname !== 'android' && !appActive)) return
+  trackingRequestStarted = true
+  Admob.addEventListener('tracking_authorization_completed', onTrackingAuthorizationCompleted)
+  updateConsentTools()
+  Admob.requestTrackingAuthorization()
+}
+
+let trackingQueryCount = 0
+function updateTrackingStatus(manual = false) {
+  if (manual) trackingQueryCount += 1
+  const tracking = Admob.getTrackingAuthorizationStatus()
+  const names = ['Not determined', 'Restricted', 'Denied', 'Authorized']
+  trackingStatusLabel.text = tracking.applicable
+    ? `ATT status: ${names[tracking.status] || 'Unknown'} (${tracking.status}). Authorized: ${tracking.authorized}. Applicable: true.`
+    : 'ATT status: not applicable on Android (3). Authorized: true is a portable convention, not general tracking permission.'
+  trackingStatusLabel.text += `\nLast checked: ${new Date().toLocaleTimeString()}. Manual checks: ${trackingQueryCount}.`
+  if (tracking.applicable && tracking.status !== 0) {
+    trackingStatusLabel.text += '\nPermission already resolved. Change it in iOS Settings.'
+  }
+  trackingQueryButton.enabled = !windowClosed && !consentBusy && !trackingRequestStarted
+  trackingPermissionButton.enabled = !windowClosed && appActive && !consentBusy && !trackingRequestStarted
+    && !(initializationStarted && !initializationComplete) && tracking.applicable && tracking.status === 0
+  trackingPermissionButton.applyProperties({
+    backgroundColor: trackingPermissionButton.enabled ? colors.tint : colors.quiet,
+    color: trackingPermissionButton.enabled ? colors.accent : colors.muted
+  })
+  return tracking
 }
 
 function continueAfterPrivacyGate(canRequestAds) {
@@ -332,12 +422,23 @@ function continueAfterPrivacyGate(canRequestAds) {
     return
   }
 
-  trackingRequestStarted = true
-  Admob.addEventListener(
-    'tracking_authorization_completed',
-    onTrackingAuthorizationCompleted
-  )
-  Admob.requestTrackingAuthorization()
+  if (Ti.Platform.osname !== 'android' && !appActive) {
+    trackingPending = true
+    return
+  }
+  trackingPending = false
+  requestExampleTracking()
+}
+
+function onApplicationPause() {
+  appActive = false
+  cancelPendingFullscreenShows()
+  updateTrackingStatus()
+}
+function onApplicationResumed() {
+  appActive = true
+  if (trackingPending) continueAfterPrivacyGate(Admob.canRequestAds())
+  updateTrackingStatus()
 }
 
 // Reopening is separate from initial consent; unknown/error is not NOT_REQUIRED.
@@ -361,7 +462,7 @@ function updateConsentTools() {
     button.enabled = !busy
     button.title = busy ? 'Run test — please wait…' : 'Run test'
   })
-
+  updateTrackingStatus()
 }
 
 function stopAdsForConsent() {
@@ -369,9 +470,11 @@ function stopAdsForConsent() {
   destroyBanner()
   destroyInterstitial()
   destroyRewarded()
+  destroyRewardedInterstitial()
   destroyAppOpen()
   interstitialButton.reset()
   rewardedButton.reset()
+  rewardedInterstitialButton.reset()
   appOpenButton.reset()
   adsStoppedForConsent = true
 }
@@ -680,6 +783,32 @@ function onRewardedClosed() {
   rewardedButton.load()
 }
 
+function destroyRewardedInterstitial() {
+  if (!rewardedInterstitial) return
+  rewardedInterstitial.removeEventListener(Admob.AD_LOADED, onRewardedInterstitialLoaded)
+  rewardedInterstitial.removeEventListener(Admob.AD_FAILED_TO_LOAD, onRewardedInterstitialFailed)
+  rewardedInterstitial.removeEventListener(Admob.AD_FAILED_TO_SHOW, onRewardedInterstitialFailed)
+  rewardedInterstitial.removeEventListener(Admob.AD_REWARDED, onRewardEarned)
+  rewardedInterstitial.removeEventListener(Admob.AD_CLOSED, onRewardedInterstitialClosed)
+  rewardedInterstitial.destroy()
+  rewardedInterstitial = null
+}
+
+function onRewardedInterstitialLoaded() {
+  setStatus('Rewarded interstitial ready')
+  rewardedInterstitialButton.ready()
+}
+
+function onRewardedInterstitialFailed(event) {
+  setStatus(`Rewarded interstitial failed: ${event.error} (${event.code})`)
+  rewardedInterstitialButton.failed()
+}
+
+function onRewardedInterstitialClosed() {
+  rewardedInterstitialButton.reset()
+  rewardedInterstitialButton.load()
+}
+
 function destroyAppOpen() {
   if (!appOpen) {
     return
@@ -760,6 +889,11 @@ const interstitialButton = createAdButton('Interstitial', {
 const rewardedButton = createAdButton('Rewarded', {
   description: 'An opt-in experience that earns an in-app reward.',
   onLoad: () => {
+    // Reuse consumed proxies so a delayed SDK reward still reaches its listener.
+    if (rewarded && !rewarded.isLoaded()) {
+      rewarded.load()
+      return
+    }
     destroyRewarded()
     rewarded = Admob.createRewarded({
       adUnitId: Admob.TEST_REWARDED,
@@ -794,6 +928,43 @@ const appOpenButton = createAdButton('App open', {
     appOpen.load()
   },
   onShow: () => appOpen.show()
+})
+
+const rewardedInterstitialButton = createAdButton('Rewarded interstitial', {
+  description: 'Complete this test ad to earn 10 demo coins. AdMob requires an introduction explaining the reward, a clear Skip option before the ad starts, and enough time to decide. Tap Show to choose Watch test ad or Skip.',
+  policyUrl: 'https://support.google.com/admob/answer/9884467?hl=en',
+  onLoad: () => {
+    // Reuse consumed proxies so a delayed SDK reward still reaches its listener.
+    if (rewardedInterstitial && !rewardedInterstitial.isLoaded()) {
+      rewardedInterstitial.load()
+      return
+    }
+    destroyRewardedInterstitial()
+    rewardedInterstitial = Admob.createRewardedInterstitial({
+      adUnitId: Admob.TEST_REWARDED_INTERSTITIAL,
+      requestAgent: 'ti.admob.unified example', autoReload: false
+    })
+    rewardedInterstitial.addEventListener(Admob.AD_LOADED, onRewardedInterstitialLoaded)
+    rewardedInterstitial.addEventListener(Admob.AD_FAILED_TO_LOAD, onRewardedInterstitialFailed)
+    rewardedInterstitial.addEventListener(Admob.AD_FAILED_TO_SHOW, onRewardedInterstitialFailed)
+    rewardedInterstitial.addEventListener(Admob.AD_REWARDED, onRewardEarned)
+    rewardedInterstitial.addEventListener(Admob.AD_CLOSED, onRewardedInterstitialClosed)
+    rewardedInterstitial.load()
+  },
+  beforeShow: complete => {
+    const intro = Ti.UI.createAlertDialog({
+      title: 'Test ad reward',
+      message: 'Watch this test ad to earn 10 demo coins, or skip and continue without watching.',
+      buttonNames: ['Watch test ad', 'Skip'], cancel: 1
+    })
+    intro.addEventListener('click', event => {
+      const watch = event.index === 0
+      if (!watch) setStatus('Rewarded interstitial skipped')
+      complete(watch)
+    })
+    intro.show()
+  },
+  onShow: () => rewardedInterstitial.show()
 })
 
 createSection('Banner ads', 'Adaptive starts automatically. Choose a format for the banner slot.', true)
@@ -868,6 +1039,30 @@ const privacyNote = Ti.UI.createLabel({
 currentSection.add(privacyNote)
 
 setPrivacyOptionsAvailable(undefined)
+
+createSection('Tracking transparency', 'Check ATT without a prompt. Request it only when the app uses tracking. UMP may already handle the request.', false)
+const trackingStatusLabel = Ti.UI.createLabel({
+  top: '8dp', left: '8dp', right: '8dp', height: Ti.UI.SIZE,
+  color: colors.muted, font: { fontSize: '13dp' }, text: 'ATT status: checking…'
+})
+currentSection.add(trackingStatusLabel)
+const trackingQueryButton = createAdButton('Check ATT status', {
+  privacy: true,
+  onLoad: button => {
+    button.reset()
+    updateTrackingStatus(true)
+    setStatus('ATT status refreshed without requesting permission')
+  }
+})
+const trackingPermissionButton = createAdButton('Request ATT permission', {
+  privacy: true,
+  onLoad: button => {
+    button.reset()
+    const tracking = updateTrackingStatus()
+    if (tracking.applicable && tracking.status === 0 && appActive) requestExampleTracking()
+  }
+})
+updateTrackingStatus()
 
 if (consentTestingEnabled) {
   createSection('Consent demo', 'Choose a scenario and run it. Testing clears the previous consent choice.', false)
@@ -967,14 +1162,22 @@ Admob.addEventListener(
 )
 Admob.addEventListener('ad_inspector_closed', onAdInspectorClosed)
 
-win.add(content)
-win.add(bannerHost)
+viewport.add(content)
+viewport.add(bannerHost)
+win.add(session)
+win.add(viewport)
+Ti.App.addEventListener('pause', onApplicationPause)
+Ti.App.addEventListener('resumed', onApplicationResumed)
 
 // On Android, Titanium also fires close while it recreates the activity, for
 // example on a light/dark switch. The window survives, so its ads must too.
 win.addEventListener('close', event => {
   if (event._closeFromActivityForcedToDestroy) return
   windowClosed = true
+  cancelPendingFullscreenShows()
+  trackingPending = false
+  Ti.App.removeEventListener('pause', onApplicationPause)
+  Ti.App.removeEventListener('resumed', onApplicationResumed)
   content.removeEventListener('postlayout', layoutPage)
 
   Admob.removeEventListener('module_initialized', onModuleInitialized)
@@ -993,6 +1196,7 @@ win.addEventListener('close', event => {
   destroyBanner()
   destroyInterstitial()
   destroyRewarded()
+  destroyRewardedInterstitial()
   destroyAppOpen()
 })
 

@@ -1,23 +1,23 @@
-> Source snapshot: official ti.admob.unified 1.0.0 documentation at commit `5b4cbf9` (copied 2026-10-11). Relative links rebased for this skill.
+> Source snapshot: official ti.admob.unified 1.0.0 documentation at release source commit `034843299b2984253988e0ffccb9f6a1c91682c9` (copied 2026-10-24). Relative links rebased for this skill.
 
 # ti.admob.unified roadmap
 
 ## Current baseline
 
-Version `1.0.0` establishes one portable AdMob distribution with five optional mediation complements:
+Version `1.0.0` includes the core and five optional mediation complements:
 
-- Titanium `13.2.0.GA`
+- Titanium `13.4.1.GA`
 - iOS `15.0+`
-- Google Mobile Ads iOS `13.10.0`
+- Google Mobile Ads iOS `13.11.0`
 - User Messaging Platform iOS `3.1.0`
-- Android API `24+`, the floor the Titanium module template sets
+- Android API `24+`, required by the pinned Google Mobile Ads SDK
 - Google Mobile Ads Android `25.5.0`
 - User Messaging Platform Android `4.0.0`
 - five optional per-network modules on iOS and Android; ironSource mediation deferred
 - idempotent initialization and consent
 - terminal `consent_complete` events
 - one standard/adaptive banner lifecycle on both platforms
-- one interstitial/rewarded/app open lifecycle and event contract on both platforms
+- one interstitial/rewarded/rewarded interstitial/app open lifecycle and event contract on both platforms
 - portable tracking-authorization completion on both platforms
 - no manual TCF personalization inference
 
@@ -47,7 +47,7 @@ Version `1.0.0` establishes one portable AdMob distribution with five optional m
 
 ### Fullscreen contract
 
-- Interstitial, rewarded, and app open proxies expose the same `load()`, `show()`, `isLoaded()`, and terminal `destroy()` lifecycle.
+- Interstitial, rewarded, rewarded interstitial, and app open proxies expose the same `load()`, `show()`, `isLoaded()`, and terminal `destroy()` lifecycle.
 - Duplicate loads are serialized and native fullscreen references are single-use.
 - Common events include `adUnitId` and `adType`; failures add `error`, `message`, and `code`.
 - Both platforms emit `opened`, `showed_fullscreen_content`, and `destroyed`.
@@ -56,26 +56,33 @@ Version `1.0.0` establishes one portable AdMob distribution with five optional m
 
 ### Distribution
 
-- The `ti.admob.unified` artifacts contain Google Mobile Ads and UMP alone: ~14 MB on iOS, ~325 KB on Android, and no network SDK in the consuming application's POM.
+- The `ti.admob.unified` artifacts contain Google Mobile Ads and UMP, with no third-party ad-network SDK in the core POM. Android resolves its SDK dependencies during the consumer build, so module ZIP size is not the installed app size.
 - Five dependency modules under `mediation/<network>/` distribute eleven iOS frameworks and five Android adapter coordinates. Unity includes Coherence; neither AdQuality nor ironSource advertising is included.
 - Dependency versions and iOS checksums are reproducible.
 - Static contract tests cover privacy, lifecycle, payload, cleanup, artifacts, and documentation.
 
 ## Release readiness
 
-The September 2026 audit distinguishes module behavior, consumer integration and provider delivery. A successful build or Google test banner proves neither third-party delivery nor all privacy scenarios.
+Rewarded Interstitial was added after the earlier five-format checks. Its native builds and wrapper tests pass. Physical iPadOS 27.0.1 and Android 16 tests confirmed visible Google test content, presentation, SDK rewards, dismissal and reload. The playground explains the reward in its card and offers Watch test ad or Skip in a dialog after Show. Selected-provider delivery still needs configured accounts and mappings.
 
-The correction pass now has executable coverage for library cleanup and reentrant retries, consent reset ordering, percentage volume validation and delayed reward callbacks. Both native bridges returned the expected Boolean types and loaded all five implemented formats. Repeated banner taps preserved the scroll position in the Android emulator. Three physical-iPad launches loaded the adaptive banner at 810 × 150 and all three fullscreen formats; the earlier startup sizing failure did not recur, but its cause has not been isolated.
+The maintainer reported a store-published app using the module on October 23, 2026. The checks below record what has been verified. Open issues remain listed until a retest confirms a fix.
 
-Remaining acceptance work:
+The September checks covered both native bridges, wrapper Boolean types, all five implemented formats, library cleanup/reentrant retries, consent reset ordering, volume validation and delayed reward callbacks. Core-only and selected-complement consumers were compiled on both platforms. Physical-iPad tests confirmed fullscreen presentation, dismissal and Rewarded delivery; a previous rotation-specific size failure recovered after reloading. The current library instead checks dimensions at Show and reloads only the incompatible ad. That revised policy has build/test coverage. An October 24 physical Android test also verified a single Show tap replacing a stale ad after rotation and presenting the replacement when loaded.
 
-- record fullscreen dismissal and actual reward delivery separately from load and presentation;
-- cover consent acceptance/rejection, privacy reopening, ATT states and orientation/lifecycle changes on the available devices;
-- retain the intermittent iOS Rewarded timeout and its UIKit reproduction until a reproducible SDK/runtime resolution is established;
-- verify provider-side consent propagation and review the updated transitive dependency results in [Dependencies](dependencies.md#transitive-security-review);
-- validate intended mediation providers with configured accounts, mappings and Ad Inspector. Core-only applications need no provider accounts.
+The October 23 dependency refresh passed physical Android 16 load checks for standard and adaptive banners, interstitial, rewarded and app open ads. An isolated consumer build completed consent and initialization, loaded test interstitial/rewarded ads and resumed from the background. SDK startup now runs outside the Android UI thread. These checks do not establish third-party provider delivery.
 
-The declared minimum OS versions and complete physical-device interaction matrix remain unverified. Simulator and emulator evidence is recorded separately. No additional device purchase is required to continue independent checks.
+Earlier simulator runs had fullscreen request timeouts. A later October 23 iPadOS 18.6 simulator pass rendered fixed/adaptive banners and all four fullscreen formats, verified one reward per completed Rewarded and Rewarded Interstitial presentation, and exercised the rotation guard and background recovery. It also covered ATT denial, a permission change in Settings, UMP rejection and privacy reopening. The demo now keeps its Skip button visible on iPad. These simulator results do not close the physical-iPad issues below; the updated binaries still need physical-iOS acceptance.
+
+Known issues and remaining coverage:
+
+- A physical iPad intermittently renders Google's Interstitial demo creative with a zero-width image-bearing SVG inside a correctly sized WebView. Independent UIKit, React Native and Flutter integrations also reproduce it with GMA 13.11.0. A bounded native workaround restores the collapsed column-flex Google SVG on iPad, based on the detected markup rather than the unit ID. Integrated demo presentations confirmed a visible image. The workaround uses internal creative markup and is not an official SDK fix. It also checks publisher-owned Interstitial units for that exact failure; production creative rendering remains unverified.
+- Intermittent iOS Rewarded timeouts, including a reproduction without Titanium, remain unresolved; a public error alone does not establish the cause.
+- An earlier physical-iPad adaptive startup sizing failure did not recur in repeated launches; its cause was not isolated.
+- Complete the consent acceptance/rejection, privacy reopening, ATT, banner orientation and lifecycle matrix on available physical devices. Complete physical-iPad coverage of the final example's Show-time dimension policy; the Android replacement-and-show path has passed.
+- Provider delivery and consent propagation require configured publisher accounts, mappings and Ad Inspector single-source tests. Google test ads and adapter initialization do not establish them. Core-only apps need no provider accounts.
+- The declared minimum OS versions have not been validated across a complete physical-device matrix. Keep simulator/emulator results separate from hardware results.
+
+The pinned dependency matrix is recorded in [Dependencies](dependencies.md), including the dated transitive security review. Follow [Shipping an application](production.md) for the publisher's production checks. A module build, app-store approval or a version scan does not establish every runtime scenario.
 
 ## Next contract work
 
@@ -103,11 +110,11 @@ Both platforms must expose an identical JavaScript surface. An audit against the
 
 ## Differences that stay
 
-The following differences are classified as SDK limitations and are documented where relevant. They are not scheduled for correction:
+These differences come from the native SDKs and remain documented limitations:
 
 | Difference                                         | Why it stays                                                                                                                                                                       |
 | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `module_initialized` has no error branch           | Neither SDK reports one. `GADInitializationStatus` carries no error, and Android's callback has no failure path either; its only `success: false` is a missing-Activity pre-check. |
+| `module_initialized` describes core completion | Native initialization callbacks provide status rather than a unified error contract. Android can emit `success: false` before startup when no Activity exists. Adapter failures belong in `getMediationStatus()`; synchronous native exceptions may also propagate. |
 | `applicable` in `tracking_authorization_completed` | App Tracking Transparency does not exist on Android.                                                                                                                               |
 | The values of the `TEST_*` constants               | They are Google's own demo unit IDs, deliberately different per platform.                                                                                                          |
 | `isTestDevice()`                                   | iOS answers "are any test devices registered?", Android "is this device one?". The iOS SDK does not offer the second.                                                              |
@@ -115,17 +122,7 @@ The following differences are classified as SDK limitations and are documented w
 
 ## Deferred formats
 
-- Rewarded interstitial
-- Native
-
-Their constants are already exported, but they do not have working cross-platform factories. Implementing one requires a complete native proxy, shared events and payloads, cleanup semantics, tests, examples, and physical validation.
-
-These formats remain to be implemented to match the modules this one replaces. As of 4 August 2026: `ti.android.admob` `11.1.0` ships proxies for app open, rewarded interstitial and native, and `ti.admob` `8.1.0` on iOS documents an `AD_TYPE_APP_OPEN`. App open ships here on both platforms, which leaves rewarded interstitial and native.
-
-Decided on 4 August 2026:
-
-- Rewarded interstitial is planned next. App open came first because it was the only format present in both replaced modules.
-- Native remains deferred because none of the applications in progress has a content list that needs ads styled as list items. The decision reflects current use cases, rather than implementation difficulty. A future app with a content feed would justify reconsidering it.
+Native remains reserved without a factory. Its constants are already exported. Implementation requires a complete native proxy, shared events and payloads, cleanup semantics, tests, examples, and physical validation.
 
 Each new format must meet the existing contract: a complete native proxy on both platforms, shared events and payloads, terminal cleanup, contract tests, an example, and physical validation.
 
@@ -137,7 +134,7 @@ The five complements live in `mediation/<network>/` and target the same first re
 - Keep every adapter out of the core module. A contract test fails if `ios/module.xcconfig`, `android/build.gradle`, the core `pbxproj`, or the core checksum inventory names a network again.
 - Preserve one JavaScript ad contract and portable diagnostics.
 - Track privacy manifests, resource bundles, SKAdNetwork guidance, and store disclosure changes with every dependency update.
-- Require consumer builds, physical-device tests, and Ad Inspector evidence before release: record hardware evidence separately from simulator integration and Google test ads.
+- Require the consumer build matrix described in the mediation guide before release. Record physical-device coverage separately from simulator integration. Validate each provider with configured accounts, mappings and Ad Inspector before claiming its ad delivery; Google test ads establish integration only.
 - Evaluate additional networks only when they can be supported on both platforms without fragmenting the public API.
 
 ## Longer-term platform work

@@ -1,12 +1,12 @@
-> Source snapshot: official ti.admob.unified 1.0.0 documentation at commit `5b4cbf9` (copied 2026-10-11). Relative links rebased for this skill.
+> Source snapshot: official ti.admob.unified 1.0.0 documentation at release source commit `034843299b2984253988e0ffccb9f6a1c91682c9` (copied 2026-10-24). Relative links rebased for this skill.
 
 # Integrating the module
 
-The native module manages Google Mobile Ads, UMP, portable proxy behavior and host lifecycle. The consuming application controls navigation and layout, including which screen is visible.
+The native module manages Google Mobile Ads, UMP, proxy behavior and host lifecycle on both platforms. Your application controls navigation, layout and which screen is visible.
 
 ## Recommended path
 
-Copy [`example/lib/ads.js`](../assets/example/lib/ads.js) into the consuming application's `lib/` directory. It covers every format implemented by version `1.0.0` and supplies the startup, cleanup and placement code shared by applications.
+Copy [`example/lib/ads.js`](../assets/example/lib/ads.js) to `app/lib/ads.js` in Alloy or `Resources/lib/ads.js` in Classic Titanium. It supports every format in version `1.0.0` and handles startup, placement lifecycle and cleanup.
 
 See [Copy-ready JavaScript library](library.md) for the API and examples, and [`example/library-usage.js`](../assets/example/library-usage.js) for a compact runnable integration.
 
@@ -33,10 +33,11 @@ An Android secondary window backed by another activity is already covered by the
 
 ```js
 banner.pause()
+showSameActivityOverlay()
 
-const child = Alloy.createController('child').getView()
-child.addEventListener('close', () => banner.resume())
-child.open()
+function onOverlayDismissed() {
+  banner.resume()
+}
 ```
 
 Pausing does not change `visible`, opacity, height, the host, or the loaded creative. Do not destroy/recreate on tab changes, focus/blur, or light/dark appearance changes. Rebuild only for a real configuration or authorization boundary, or after a recoverable failure.
@@ -83,3 +84,4 @@ When using the raw API, keep named event callbacks so every listener can be remo
 - [Banner ads](banners.md)
 - [Fullscreen ads](fullscreen.md)
 - [Privacy and initialization](privacy.md)
+- [Shipping an application](production.md)

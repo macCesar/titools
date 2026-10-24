@@ -1,10 +1,10 @@
-> Source snapshot: official ti.admob.unified 1.0.0 documentation at commit `5b4cbf9` (copied 2026-10-11). Relative links rebased for this skill.
+> Source snapshot: official ti.admob.unified 1.0.0 documentation at release source commit `034843299b2984253988e0ffccb9f6a1c91682c9` (copied 2026-10-24). Relative links rebased for this skill.
 
 # Banner ads
 
 Standard and adaptive banners share one public lifecycle and event contract on iOS and Android.
 
-Both factories return a Titanium `TiViewProxy`, so their creation dictionaries also accept normal Titanium view/layout properties such as `width`, `height`, `top`, `bottom`, `left`, and `right`. The tables below list the AdMob-specific properties.
+Both factories return a Titanium `TiViewProxy`, so their creation dictionaries also accept normal Titanium view/layout properties such as `width`, `height`, `top`, `bottom`, `left`, and `right`. The tables list the AdMob-specific properties.
 
 <!-- TOC-START -->
 ## Contents
@@ -47,7 +47,7 @@ bannerHost.add(banner)
 banner.load()
 ```
 
-The proxy must be in the Titanium view hierarchy before `load()` so its native view can measure the real container width.
+Run these raw API snippets after `module_initialized` succeeds and `canRequestAds()` is true. The proxy must be in the Titanium view hierarchy before `load()` so its native view can measure the real container width. For iOS anchored placements, use the layout-ready pattern under [Full lifecycle example](#full-lifecycle-example), or the [integration library](library.md#banners), rather than calling `load()` immediately after `add()`.
 
 ### Creation properties
 
@@ -169,7 +169,7 @@ function onLoaded(event) {
 
 function onFailed(event) {
   Ti.API.warn(`Banner failed: ${event.error} (${event.code})`)
-  setBannerHeight(0)
+  // Keep the reserved slot stable while a later user action retries.
 }
 
 function onDestroyed() {
@@ -295,7 +295,7 @@ Returns `true` only while the current proxy owns a successfully loaded ad.
 
 Terminal and safe to repeat. It releases the native ad, detaches native delegates/listeners and lifecycle registrations, and emits `destroyed` once.
 
-Never reuse a destroyed banner. Create a new proxy for a new placement or a new width/orientation request.
+Never reuse a destroyed banner. Create a new proxy for a new placement. For a width or orientation change, wait for the host's final positive layout and request the new size; the integration library exposes `rebuild()` for that boundary.
 
 ### Compatibility aliases
 
@@ -347,7 +347,7 @@ An adaptive `loaded` event guarantees:
 }
 ```
 
-Android additionally reports diagnostic size fields:
+Both platforms also report these size fields:
 
 ```js
 {
@@ -416,17 +416,17 @@ Portable fixed sizes, with the device each one was designed for and the height i
 | `FULLBANNER`       | 468×60  | Tablet          |
 | `LEADERBOARD`      | 728×90  | Tablet          |
 
-These device categories come from Google's `GADAdSize.h`. A phone is 360–430 dp wide, so a 468 dp `FULLBANNER` cannot fit at full size regardless of the host height. Use `BANNER` for the fixed phone size, or `customAdSize` with the screen width or an adaptive banner for a full-width strip.
+These device categories come from Google's `GADAdSize.h`. In a portrait placement 360 to 430 dp wide, a 468 dp `FULLBANNER` cannot fit at full size regardless of the host height. Use `BANNER` for the fixed phone size, or `customAdSize` with the screen width or an adaptive banner for a full-width strip.
 
 Give the host the requested height. A `FULLBANNER` in a 50 dp box will be clipped.
 
 Unknown values, including `smart_banner`, fall back to `BANNER`. Google removed smart banners on Android and deprecated them on iOS. The shared fallback avoids selecting a fixed 320×50 banner on one platform and a full-width strip on the other. For full width, use `customAdSize` or `createAdaptiveBanner()` to let Google choose the height.
 
-Changing `adSize` on an existing iOS native banner is not supported. Destroy and recreate the proxy.
+Assign the new `adSize` or `customAdSize`, then call `load()` to apply it on both platforms. The module replaces the native view when needed while retaining the proxy.
 
 ## Refresh behavior
 
-Do not add a JavaScript renewal timer. Google Mobile Ads respects the banner refresh rate configured for the ad unit in AdMob. The application requests the initial load and lets the SDK/ad-unit configuration own later refreshes.
+Do not add a JavaScript renewal timer. Google Mobile Ads respects the banner refresh rate configured for the ad unit in AdMob. The application requests the first load. The SDK and ad-unit configuration control later refreshes.
 
 TiAdMobUnified manages the native banner proxy and its lifecycle without a periodic reload or recreation loop. Google documents that Android automatic refresh requires a visible banner. Set or disable the refresh interval in AdMob, and use screen-level `pause()`/`resume()` when navigation hides or reveals the placement.
 

@@ -1,8 +1,8 @@
-> Source snapshot: official ti.admob.unified 1.0.0 documentation at commit `5b4cbf9` (copied 2026-10-11). Relative links rebased for this skill.
+> Source snapshot: official ti.admob.unified 1.0.0 documentation at release source commit `034843299b2984253988e0ffccb9f6a1c91682c9` (copied 2026-10-24). Relative links rebased for this skill.
 
 # Contributing to ti.admob.unified
 
-Changes to this native bridge must keep the JavaScript contract consistent with native behavior on both platforms, including cleanup. Tests and documentation must describe that same behavior.
+Keep the JavaScript contract consistent with native behavior on both platforms, including cleanup. Tests and documentation must agree with the implementation.
 
 ## Before opening an issue
 
@@ -21,9 +21,9 @@ For layout issues, include the Titanium proxy, host, and parent dimensions plus 
 
 ## Development baseline
 
-- Titanium SDK `13.2.0.GA` or later (build toolchain: `13.4.1.GA`)
+- Titanium SDK `13.4.1.GA` or later (build toolchain: `13.4.1.GA`)
 - iOS `15.0+`
-- Android API `24+`, the floor the Titanium `13.2.0.GA` module template sets
+- Android API `24+`, required by the pinned Google Mobile Ads SDK
 - Node.js with the built-in `node:test` runner
 
 Dependency versions are pinned in [DEPENDENCIES.md](dependencies.md).
@@ -32,12 +32,15 @@ Dependency versions are pinned in [DEPENDENCIES.md](dependencies.md).
 
 Create a focused branch and keep unrelated local changes intact. Before editing a native dependency, establish a recoverable Git baseline and record the upstream source and checksum.
 
-This repository holds the core at its root and five dependency-only complements in `mediation/<network>/`. Each has iOS and Android projects at version `1.0.0`. Scripts discover complement folders and derive archive identity/version from manifests. See [Adding a network](#adding-a-network). Applications call only the core. Both script helpers accept a module directory or `--all`.
+The repository root contains the core. Five dependency-only complements live in `mediation/<network>/`. Each has iOS and Android projects at version `1.0.0`. Scripts discover complement folders and derive archive identity/version from manifests. See [Adding a network](#adding-a-network). Applications call only the core. Both script helpers accept a module directory or `--all`.
 
 Run the static checks from the repository root:
 
 ```sh
 npm test
+python3 tests/native/android.py
+python3 tests/native/initialization.py
+python3 tests/native/run.py
 ./scripts/verify-artifacts.sh
 ./scripts/verify-artifacts.sh --all
 node --check example/app.js
@@ -70,11 +73,11 @@ Complements package existing official Google mediation adapters; writing a new n
 
 ## Platform notes
 
-The native implementations share one JavaScript contract. The notes below describe their source files and platform differences.
+Both native implementations expose the same JavaScript contract. These notes cover their source files and platform differences.
 
 ### iOS
 
-Sources in `ios/Classes/` comprise five proxy pairs and the module:
+The sources in `ios/Classes/` contain six proxy pairs and the module:
 
 | Source                                  | Responsibility                                            |
 | --------------------------------------- | --------------------------------------------------------- |
@@ -83,6 +86,7 @@ Sources in `ios/Classes/` comprise five proxy pairs and the module:
 | `TiAdmobUnifiedAdaptiveBannerAdProxy.*` | Anchored and inline adaptive banner proxy and native view |
 | `TiAdmobUnifiedInterstitialAdProxy.*`   | Interstitial proxy                                        |
 | `TiAdmobUnifiedRewardedAdProxy.*`       | Rewarded proxy                                            |
+| `TiAdmobUnifiedRewardedInterstitialAdProxy.*`       | Rewarded interstitial proxy                                            |
 | `TiAdmobUnifiedAppOpenAdProxy.*`        | App open proxy and the four hour validity window          |
 
 Build from the repository root:
@@ -114,6 +118,7 @@ Sources live in `android/src/ti/admob/unified/`. The banner types split proxy an
 | `TiAdmobUnifiedAdaptiveBannerAdProxy.java` / `…AdView.java` | Adaptive banner proxy and native container           |
 | `TiAdmobUnifiedInterstitialAdProxy.java`                    | Interstitial proxy                                   |
 | `TiAdmobUnifiedRewardedAdProxy.java`                        | Rewarded proxy                                       |
+| `TiAdmobUnifiedRewardedInterstitialAdProxy.java`                        | Rewarded interstitial proxy                                       |
 | `TiAdmobUnifiedAppOpenAdProxy.java`                         | App open proxy and the four hour validity window     |
 
 Maven coordinates are declared in `android/build.gradle`. Build from the module root:
@@ -141,7 +146,7 @@ Do not add a public method or constant on one platform without checking and docu
 For a new or changed method, property, event, payload key, or constant:
 
 1. Define the portable JavaScript contract first.
-2. Implement it on iOS and Android, or document the platform limitation explicitly.
+2. Implement the same JavaScript API on iOS and Android. Document native SDK limitations without adding a public method on only one platform.
 3. Preserve existing supported use cases.
 4. Make cleanup and repeated lifecycle calls deterministic.
 5. Add contract tests for both native sources.
@@ -223,6 +228,6 @@ Contributions are licensed under the [MIT License](module-license.txt).
 
 ### Native wrapper behavior harness
 
-Run `python3 tests/native/android.py` with a JDK, and `python3 tests/native/run.py` on macOS. The Java harness checks percentage validation, the TCF preference store and consent reset ordering. It compiles the current Objective-C method bodies against controlled Foundation-based SDK stand-ins and checks volume validation, load-error mapping, consent retry/reset ordering and delayed reward callbacks. It does not replace a Titanium consumer build, native bridge checks or Google ad presentation tests. `npm test` separately exercises the JavaScript library and example, alongside static contract checks.
+Run `python3 tests/native/android.py` with a JDK, and `python3 tests/native/run.py` on macOS. The Java harness checks percentage validation, the TCF preference store and consent reset ordering. The Objective-C harness compiles the current method bodies against controlled Foundation-based SDK stand-ins and checks volume validation, load-error mapping, consent retry/reset ordering and delayed reward callbacks. It does not replace a Titanium consumer build, native bridge checks or Google ad presentation tests. `npm test` separately exercises the JavaScript library and example, alongside static contract checks.
 
 After individual platform builds, run `python3 scripts/prepare-package-docs.py` before `python3 scripts/verify-packages.py`. Titanium renders guides as HTML without rewriting their Markdown links. The preparation step fixes links between generated guides and includes the linked Markdown sources for offline use. `scripts/build-all.sh` runs both steps automatically.

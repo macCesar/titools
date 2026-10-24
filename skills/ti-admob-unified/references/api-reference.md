@@ -1,4 +1,4 @@
-> Source snapshot: official ti.admob.unified 1.0.0 documentation at commit `5b4cbf9` (copied 2026-10-11). Relative links rebased for this skill.
+> Source snapshot: official ti.admob.unified 1.0.0 documentation at release source commit `034843299b2984253988e0ffccb9f6a1c91682c9` (copied 2026-10-24). Relative links rebased for this skill.
 
 # API reference
 
@@ -34,6 +34,7 @@ const Admob = require('ti.admob.unified')
 | `isPrivacyOptionsRequired()`               | iOS, Android | Supported                  |
 | `presentPrivacyOptions(config)`            | iOS, Android | Supported                  |
 | `resetConsent()`                           | iOS, Android | Testing only               |
+| `getTrackingAuthorizationStatus()`        | iOS, Android | Read-only ATT snapshot     |
 | `requestTrackingAuthorization()`           | iOS, Android | Portable                   |
 | `openAdInspector()`                        | iOS, Android | Development diagnostic     |
 | `createBanner(config)`                     | iOS, Android | Supported                  |
@@ -41,6 +42,7 @@ const Admob = require('ti.admob.unified')
 | `createAdaptiveBanner(config)`             | iOS, Android | Supported                  |
 | `createInterstitial(config)`               | iOS, Android | Supported                  |
 | `createRewarded(config)`                   | iOS, Android | Supported                  |
+| `createRewardedInterstitial(config)`       | iOS, Android | Supported                  |
 | `createAppOpen(config)`                    | iOS, Android | Supported                  |
 | `setTestDevice(deviceId)`                  | iOS, Android | Compatibility utility      |
 | `isTestDevice()`                           | iOS, Android | Supported                  |
@@ -50,11 +52,11 @@ const Admob = require('ti.admob.unified')
 | `canShowPersonalizedAds()`                 | iOS, Android | Deprecated; always `false` |
 | `isGDPR()`                                 | iOS, Android | Deprecated diagnostic      |
 
-The four legacy mediation entries are described under [Mediation diagnostics and compatibility](#mediation-diagnostics).
+See [Mediation diagnostics](#mediation-diagnostics) for adapter status and the [migration guide](migration.md#generic-mediation-diagnostics) for removed pre-release helpers.
 
 ### `initialize(config)`
 
-Configures global request settings and initializes Google Mobile Ads.
+Sets global request options and initializes Google Mobile Ads.
 
 ```js
 Admob.initialize({
@@ -64,12 +66,14 @@ Admob.initialize({
 })
 ```
 
+On Android, native request configuration and SDK initialization run on a worker thread; completion is delivered on the UI thread. The call returns before adapter initialization finishes. Wait for `module_initialized` before loading ads.
+
 Accepted properties:
 
 | Property                       | Type     | Description                                                                    |
 | ------------------------------ | -------- | ------------------------------------------------------------------------------ |
 | `testDeviceIds`                | String[] | Google Mobile Ads test-device identifiers.                                     |
-| `ageRestrictedTreatment`       | String   | `CHILD`, `TEEN`, or `UNSPECIFIED` constant value.                              |
+| `ageRestrictedTreatment`       | String   | `child`, `teen`, or `unspecified` constant value.                              |
 | `maxAdContentRating`           | String   | `G`, `PG`, `T`, or `MA` constant value.                                        |
 | `tagForChildDirectedTreatment` | Boolean  | Deprecated compatibility input.                                                |
 | `tagForUnderAgeOfConsent`      | Boolean  | Deprecated initialization input, separate from the UMP property.               |
@@ -95,7 +99,7 @@ Use the exception only when adapters are installed but the application deliberat
 Admob.initialize({ disableMediation: true })
 ```
 
-This calls Google’s global initialization switch on [Android](https://developers.google.com/admob/android/reference/com/google/android/gms/ads/MobileAds) and [iOS](https://developers.google.com/admob/ios/api/reference/Classes/GADMobileAds), before SDK startup. It skips adapter initialization globally; it does not remove dependencies, validate credentials, select individual networks or provide an ad-source allowlist. Do not set it in an app that intends to serve mediated ads. The first accepted initialization configuration wins; repeating `initialize()` cannot toggle mediation later in the session.
+This calls Google's global initialization switch on [Android](https://developers.google.com/admob/android/reference/com/google/android/gms/ads/MobileAds) and [iOS](https://developers.google.com/admob/ios/api/reference/Classes/GADMobileAds), before SDK startup. It skips adapter initialization globally; it does not remove dependencies, validate credentials, select individual networks or provide an ad-source allowlist. Do not set it in an app that intends to serve mediated ads. The first accepted initialization configuration wins; repeating `initialize()` cannot toggle mediation later in the session.
 
 `applicationId` and `debugGeography` are not accepted here.
 
@@ -144,6 +148,19 @@ The current native implementations do not consume configuration properties. Pass
 Returns `void` and resets UMP test state and the module's cached consent operation. If an update or form is in flight, reset waits for its callback before resetting the SDK. A request made during that wait runs afterwards with the latest supplied configuration. Without a replacement request, the interrupted operation ends with `success: false`, code `-1` and an explanatory error. Resetting does not cancel the SDK's network request.
 
 Use only during controlled consent testing. For a production privacy entry point, call `presentPrivacyOptions()`.
+
+### `getTrackingAuthorizationStatus()`
+
+Returns `{ status: Number, authorized: Boolean, applicable: Boolean }` synchronously. On iOS it reads the current system ATT status on every call: `0` not determined, `1` restricted, `2` denied, `3` authorized. Only status `3` sets `authorized: true`; `applicable` is always `true` on supported iOS versions.
+
+This query never presents a prompt, emits an event, or initializes an SDK. Re-query after returning from Settings to read a changed permission.
+
+On Android it returns `{ status: 3, authorized: true, applicable: false }`. This portable ATT convention does not grant general tracking permission or replace platform privacy requirements or UMP eligibility.
+
+```js
+const tracking = Admob.getTrackingAuthorizationStatus()
+Ti.API.info(`ATT applies: ${tracking.applicable}; status: ${tracking.status}`)
+```
 
 ### `requestTrackingAuthorization()`
 
@@ -207,11 +224,15 @@ Returns an interstitial proxy with `load()`, `show()`, `isLoaded()`, and termina
 
 Returns a rewarded proxy with `load()`, `show()`, `isLoaded()`, and terminal `destroy()`. Grant rewards only from the `rewarded` event.
 
+### `createRewardedInterstitial(config)`
+
+Returns a rewarded interstitial proxy with the same methods and configuration as Rewarded, using `adType: 'rewarded_interstitial'`. Explain the reward and offer a skip option before showing it. See [Rewarded interstitial ads](rewarded-interstitial.md).
+
 ### `createAppOpen(config)`
 
 Returns an app open proxy with `load()`, `show()`, `isLoaded()`, and terminal `destroy()`. An app open ad expires four hours after loading completes: past that point `isLoaded()` reports `false` and `show()` emits `failed_to_show` with code `1`. See [The four hour window](fullscreen.md#the-four-hour-window).
 
-See [Fullscreen ads](fullscreen.md) for the three factories.
+See [Fullscreen ads](fullscreen.md) for the four factories.
 
 ### `setTestDevice(deviceId)`
 
@@ -259,7 +280,7 @@ The standard and adaptive proxies expose the same methods:
 | `destroyAdViewAndCancelRequest()` | `void`  | Compatibility alias of `destroy()`.                                                                 |
 | `destoyAdViewAndCancelRequest()`  | `void`  | Deprecated misspelled alias.                                                                        |
 
-The host lifecycle, meaning the Android activity and the iOS application entering the background, pauses banners on its own as a cause independent from these calls. Neither cause resumes the other's pause. See [Who pauses a banner](banners.md#who-pauses-a-banner).
+The host lifecycle also pauses banners: the Android activity pauses, or the iOS application enters the background. That pause is independent of these calls. Neither cause resumes the other's pause. See [Who pauses a banner](banners.md#who-pauses-a-banner).
 
 An Android activity recreation caused by a configuration change is non-terminal. The module preserves the proxy, releases the stale native view without emitting `destroyed`, and reloads after Titanium creates the replacement view.
 
@@ -298,6 +319,8 @@ Banner events:
 | `AD_CLOSED`         | `closed`         | Ad overlay closed.                     |
 | `AD_DESTROYED`      | `destroyed`      | Emitted once per proxy.                |
 
+Both banner types include Boolean `isCollapsible` in `loaded`, reporting the SDK's classification of the received ad. It does not report whether the ad is currently expanded or visibly rendered.
+
 Common payload:
 
 ```js
@@ -326,7 +349,7 @@ All seven keys are present on both platforms. `density` converts points to pixel
 
 ## Fullscreen proxy
 
-Interstitial, rewarded and app open proxies expose:
+Interstitial, rewarded, rewarded interstitial and app open proxies expose:
 
 | Method       | Return  | Description                                                                              |
 | ------------ | ------- | ---------------------------------------------------------------------------------------- |
@@ -339,7 +362,7 @@ Loads are serialized: calls while loading, loaded, or showing are ignored. Commo
 
 ### Fullscreen creation properties
 
-All three factories accept:
+All four factories accept:
 
 | Property       | Type     | Default | Notes                                                  |
 | -------------- | -------- | ------- | ------------------------------------------------------ |
@@ -355,7 +378,7 @@ See [Fullscreen events](fullscreen.md#events).
 
 ## Fullscreen configuration changes
 
-The five configuration properties `adUnitId` (String), `autoReload` (Boolean), `keywords` (String[]), `requestAgent` (String) and `extras` (Object) are readable and writable on both platforms. Changes affect the next load and do not replace an already loaded ad. `autoReload` defaults to `false`; targeting is omitted when unset. Extras retain String, Boolean and numeric primitive values. Internal load/presentation state and native SDK delegate methods are not application APIs.
+The five configuration properties `adUnitId` (String), `autoReload` (Boolean), `keywords` (String[]), `requestAgent` (String) and `extras` (Object) are readable and writable on both platforms. Changes to the four request options affect the next load and do not replace an already loaded ad. `autoReload` defaults to `false` and is read live when the shown ad closes; changing it while an ad is loaded or presented changes whether that close starts a reload. It never automatically presents the replacement or retries a failure. Targeting is omitted when unset. Extras retain String, Boolean and numeric primitive values. Internal load/presentation state and native SDK delegate methods are not application APIs.
 
 ## Module events
 
@@ -437,7 +460,7 @@ On iOS, status values are `0` not determined, `1` restricted, `2` denied, and `3
 | `AD_TYPE_BANNER`                | `"banner"`                | Implemented    |
 | `AD_TYPE_INTERSTITIAL`          | `"interstitial"`          | Implemented    |
 | `AD_TYPE_REWARDED`              | `"rewarded"`              | Implemented    |
-| `AD_TYPE_REWARDED_INTERSTITIAL` | `"rewarded_interstitial"` | No factory     |
+| `AD_TYPE_REWARDED_INTERSTITIAL` | `"rewarded_interstitial"` | Implemented |
 | `AD_TYPE_APP_OPEN`              | `"app_open"`              | Implemented    |
 | `AD_TYPE_NATIVE`                | `"native"`                | No factory     |
 
@@ -472,7 +495,7 @@ The module exports no `COLLAPSIBLE_TOP` or `COLLAPSIBLE_BOTTOM` constant. Pass G
 | `AD_SHOWED_FULLSCREEN_CONTENT` | `"showed_fullscreen_content"` |
 | `AD_DESTROYED`                 | `"destroyed"`                 |
 
-All three fullscreen proxy types (interstitial, rewarded and app open) emit `AD_SHOWED_FULLSCREEN_CONTENT` and `AD_OPENED` on iOS and Android.
+All four fullscreen proxy types (interstitial, rewarded, rewarded interstitial and app open) emit `AD_SHOWED_FULLSCREEN_CONTENT` and `AD_OPENED` on iOS and Android.
 
 ### Consent status
 
@@ -538,13 +561,13 @@ The constant names are portable; their string values are platform-specific:
 | `TEST_INTERSTITIAL`          | `ca-app-pub-3940256099942544/4411468910` | `ca-app-pub-3940256099942544/1033173712` | Interstitial                 | `createInterstitial()`   |
 | `TEST_INTERSTITIAL_VIDEO`    | `ca-app-pub-3940256099942544/5135589807` | `ca-app-pub-3940256099942544/8691691433` | Interstitial, video creative | `createInterstitial()`   |
 | `TEST_REWARDED`              | `ca-app-pub-3940256099942544/1712485313` | `ca-app-pub-3940256099942544/5224354917` | Rewarded                     | `createRewarded()`       |
-| `TEST_REWARDED_INTERSTITIAL` | `ca-app-pub-3940256099942544/6978759866` | `ca-app-pub-3940256099942544/5354046379` | Rewarded interstitial        | None. Reserved           |
+| `TEST_REWARDED_INTERSTITIAL` | `ca-app-pub-3940256099942544/6978759866` | `ca-app-pub-3940256099942544/5354046379` | Rewarded interstitial        | `createRewardedInterstitial()` |
 | `TEST_NATIVE`                | `ca-app-pub-3940256099942544/3986624511` | `ca-app-pub-3940256099942544/2247696110` | Native                       | None. Reserved           |
 | `TEST_APP_OPEN`              | `ca-app-pub-3940256099942544/5575463023` | `ca-app-pub-3940256099942544/9257395921` | App open                     | `createAppOpen()`        |
 
 Use the constant in shared code so it selects the platform value.
 
-The reserved constants allow code targeting future releases to compile, although no current factory accepts them. See [Reserved and unavailable APIs](#reserved-and-unavailable-apis).
+`TEST_NATIVE` remains reserved; no current factory accepts it. See [Reserved and unavailable APIs](#reserved-and-unavailable-apis).
 
 ## Mediation diagnostics
 
@@ -565,7 +588,7 @@ The reserved constants allow code targeting future releases to compile, although
 
 The method reads Google's current public initialization status without starting SDKs or ad requests. During initialization the map can be empty or partial. An absent entry does not prove that a complement is missing. This is not an installed-module inventory, account check, credential check or guarantee of provider delivery. `ready` does not guarantee an ad.
 
-Query after the unchanged `module_initialized` event:
+Query after `module_initialized`:
 
 ```js
 Admob.addEventListener('module_initialized', event => {
@@ -577,8 +600,8 @@ Use UMP, `canRequestAds()` and each selected provider's current privacy requirem
 
 ## Reserved and unavailable APIs
 
-- There is no `createRewardedInterstitial`.
 - There is no `createNative`.
+- There is no server-side verification configuration (`userId` / `customData`), paid-event / impression-level revenue callback, or public response-info API. Arbitrary `extras` do not add these features. Use `rewarded` for client-side rewards and Ad Inspector for request diagnostics.
 
 
 ## Consent compatibility payloads

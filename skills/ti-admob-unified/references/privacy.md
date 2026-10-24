@@ -1,4 +1,4 @@
-> Source snapshot: official ti.admob.unified 1.0.0 documentation at commit `5b4cbf9` (copied 2026-10-11). Relative links rebased for this skill.
+> Source snapshot: official ti.admob.unified 1.0.0 documentation at release source commit `034843299b2984253988e0ffccb9f6a1c91682c9` (copied 2026-10-24). Relative links rebased for this skill.
 
 # Privacy and initialization
 
@@ -41,7 +41,8 @@ The operation is idempotent:
 
 - Concurrent calls share the active native operation.
 - The first accepted call supplies the configuration.
-- A later call after completion re-emits the cached `consent_complete` result.
+- A later call after success re-emits the cached `consent_complete` result.
+- After an update or form failure, another `requestConsent({})` can retry without clearing persisted consent.
 - `resetConsent()` clears UMP test state and the module's cached consent operation so a new request can run.
 
 Do not put `resetConsent()` in a production launch path.
@@ -70,7 +71,9 @@ On failure:
 }
 ```
 
-The exact native `code` is platform and SDK dependent. Do not make business logic depend on a particular code.
+A failed update can still report `canRequestAds: true` from previously stored consent. Check that field even when `success` is false; do not assume an error requires blocking all requests. If it is false, continue the app without ads and offer a later retry.
+
+The native `code` depends on the platform and SDK. Avoid tying business logic to a particular value.
 
 The payload temporarily retains these deprecated keys:
 
@@ -110,6 +113,7 @@ Configures the global Google Mobile Ads request settings and initializes the SDK
 | Property                       | Type     | Description                                                                                                          |
 | ------------------------------ | -------- | -------------------------------------------------------------------------------------------------------------------- |
 | `testDeviceIds`                | String[] | Google Mobile Ads test-device identifiers.                                                                           |
+| `disableMediation`             | Boolean  | Optional global session exception before SDK startup; defaults to `false`. See [automatic adapter discovery](api-reference.md#automatic-adapter-discovery). |
 | `ageRestrictedTreatment`       | String   | One `AGE_RESTRICTED_TREATMENT_*` constant.                                                                           |
 | `maxAdContentRating`           | String   | One `MAX_AD_CONTENT_RATING_*` constant.                                                                              |
 | `tagForChildDirectedTreatment` | Boolean  | Deprecated compatibility input; maps to child/unspecified.                                                           |
@@ -145,11 +149,15 @@ Android can report a missing-activity failure:
 }
 ```
 
-Use `status` for diagnostics. Its text is not a stable machine-readable value.
+Android SDK initialization failures also emit `success: false`, `code: -1` and the failure text; a later call can retry. Request configuration and SDK startup run in the background, while completion events return to the UI thread. The app can continue while SDK work runs; a provider timeout still delays completion.
+
+Use `status` for diagnostics. Its text can change and should not drive application logic.
 
 ## App Tracking Transparency
 
-`requestTrackingAuthorization()` is available on both platforms and emits:
+`getTrackingAuthorizationStatus()` reads the current ATT state synchronously, without a prompt, event, or SDK initialization. Call it again after returning from Settings; the result is not cached.
+
+`requestTrackingAuthorization()` remains the explicit permission request and emits:
 
 ```js
 {
@@ -168,11 +176,13 @@ On iOS, the numeric status follows Apple's `ATTrackingManagerAuthorizationStatus
 |   `2` | Denied         |
 |   `3` | Authorized     |
 
-On Android, ATT does not apply. The method completes synchronously with `status: 3`, `authorized: true`, and `applicable: false`, allowing the same listener and call site on both platforms.
+On Android, ATT does not apply. The method completes synchronously with `status: 3`, `authorized: true`, and `applicable: false`, allowing the same listener and call site on both platforms. The query returns the same convention. `authorized: true` here is not general permission to track an Android user.
 
-Always wait for `tracking_authorization_completed`, even if the user resolved ATT in an earlier session. Denial changes tracking availability and does not imply `canRequestAds() === false`; UMP still determines permission to request ads.
+For apps that use tracking, run UMP → optional ATT → `canRequestAds()` → `initialize()` → ad loading. Request ATT while the application is active in the foreground, after UMP has dismissed its form and other system prompts have finished. If the app becomes inactive, defer the request until it is active again.
 
-ATT is optional. An application that calls `requestTrackingAuthorization()` must ship `NSUserTrackingUsageDescription` in its plist, because Apple's prompt cannot be presented without one. An application that never calls it should omit the key: Apple reviews the prompt against actual behavior, and UMP works without it. See [Getting started](getting-started.md#ios).
+When requesting ATT, always wait for `tracking_authorization_completed`, even if the user resolved ATT in an earlier session. Denial changes tracking availability and does not imply `canRequestAds() === false`; UMP still determines permission to request ads.
+
+ATT is optional. An application that calls `requestTrackingAuthorization()` must ship `NSUserTrackingUsageDescription` in its plist, because Apple's prompt cannot be presented without one. An IDFA message configured in AdMob can also make UMP request ATT during `requestConsent()`, which requires the same key and translations even if the app never calls the module's explicit request method. Omit the key only when neither the app nor its SDK configuration requests ATT and the app does not track. See Google's [UMP IDFA message guide](https://developers.google.com/admob/ios/privacy/idfa). See [Getting started](getting-started.md#ios).
 
 ## Privacy options
 
@@ -193,6 +203,8 @@ const onPrivacyDismissed = event => {
 
   privacyButton.visible = event.privacyOptionsRequired
   privacyButton.touchEnabled = privacyButton.visible
+  // Recheck event.canRequestAds and replace affected placements before
+  // requesting more ads. The integration library handles this boundary.
 }
 
 Admob.addEventListener('privacy_options_dismissed', onPrivacyDismissed)
@@ -214,7 +226,11 @@ The event payload is:
 
 Failures add `error` and `code`. Remove the module listener when its owning service is disposed.
 
+After a privacy change, stop new loads and presentations until the dismissal result has been evaluated. Discard ads requested under the previous choice and create fresh requests only if `canRequestAds()` allows them. Do not destroy an onscreen fullscreen ad as a way to dismiss it. The [integration library](library.md#privacy-and-diagnostics) manages placement reauthorization.
+
 ## Testing UMP
+
+GMA test-device IDs and UMP test-device IDs belong to separate SDK configurations; registering one does not register the other. Copy each identifier from that SDK's log. `TEST_*` ad units select Google test creatives; they do not force a UMP region.
 
 Use debug geography only with registered UMP test devices:
 
@@ -252,3 +268,14 @@ Demo ad unit IDs do not register physical devices for UMP debugging. If the SDK 
 These test buttons reset UMP consent only. They cannot reset Apple's ATT permission. Do not copy these testing controls or debug geography into a production consent flow. Unknown/error states are displayed separately from a successful result that does not require privacy options.
 
 Google reference: [Testing UMP on iOS](https://developers.google.com/admob/ios/privacy#testing) and [Testing UMP on Android](https://developers.google.com/admob/android/privacy#testing).
+
+
+## ATT demo controls
+
+The published example includes a Tracking transparency section on both platforms:
+
+- Check ATT status calls `getTrackingAuthorizationStatus()` and displays the current status, authorization and applicability without requesting permission or initializing ads. The result also shows when it was checked and a manual check count, so repeated taps have visible feedback.
+- Request ATT permission is enabled only for an undetermined iOS permission while the app is active and no consent/initialization operation is busy. It uses the same request event as startup. Resolved, restricted and Android states keep the button disabled. A resolved iOS permission has a nearby explanation directing changes to Settings.
+- Returning from Settings refreshes the displayed system state. The app cannot reset ATT through UMP or show Apple's prompt again after a resolved choice.
+
+An AdMob UMP IDFA message may already resolve ATT during startup. In that case the request button is disabled and the current result remains visible. On Android, the section explains that the portable `authorized: true` value is not general tracking permission. See [ATT configuration](getting-started.md#ios) for the usage description and translations.

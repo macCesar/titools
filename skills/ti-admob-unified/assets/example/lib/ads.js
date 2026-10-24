@@ -95,6 +95,7 @@ async function initializeIfAllowed() {
  * options.consent: dictionary passed to requestConsent()
  * options.requestTrackingAuthorization: true only when the app has a real ATT use case
  * options.initialization: dictionary passed to initialize()
+ * Call start() while active. If UMP spans an iOS interruption, ATT waits for resumed.
  */
 function start(options) {
   if (startup) {
@@ -103,6 +104,18 @@ function start(options) {
 
   startupOptions = options || {}
   startup = (async () => {
+    const watchForeground = startupOptions.requestTrackingAuthorization === true && Ti.Platform.osname !== 'android'
+    let active = true
+    let resumeTracking = null
+    function onPause() { active = false }
+    function onResumed() {
+      active = true
+      if (resumeTracking) resumeTracking()
+    }
+    if (watchForeground) {
+      Ti.App.addEventListener('pause', onPause)
+      Ti.App.addEventListener('resumed', onResumed)
+    }
     const consent = await waitForEvent('consent_complete', () => {
       Admob.requestConsent(startupOptions.consent || {})
     })
@@ -113,6 +126,11 @@ function start(options) {
 
     let tracking = null
     if (startupOptions.requestTrackingAuthorization === true) {
+      if (watchForeground) {
+        if (!active) await new Promise(resolve => { resumeTracking = resolve })
+        Ti.App.removeEventListener('pause', onPause)
+        Ti.App.removeEventListener('resumed', onResumed)
+      }
       tracking = await waitForEvent('tracking_authorization_completed', () => {
         Admob.requestTrackingAuthorization()
       })
@@ -409,7 +427,12 @@ function fullscreenProperties(options) {
 function createFullscreenSizeGuard(getSize) {
   let requestedSize = null
   function sizeKey() {
-    const size = getSize()
+    const geometry = getSize()
+    // Window.size can change while Android restores bars after a fullscreen ad.
+    // Outer window bounds stay stable and still track rotation and split view.
+    const rect = geometry && geometry.rect
+    const size = rect && rect.width > 0 && rect.height > 0
+      ? rect : (geometry && geometry.size) || geometry
     return size && size.width > 0 && size.height > 0
       ? `${Math.round(size.width)}x${Math.round(size.height)}` : null
   }
@@ -437,7 +460,7 @@ function createFullscreen(options, factoryName) {
   let destroyed = false
   let loadRequested = options.autoLoad === true
   let loading = false
-  const sizeGuard = createFullscreenSizeGuard(() => (options.window || Ti.UI.currentWindow)?.size)
+  const sizeGuard = createFullscreenSizeGuard(() => options.window || Ti.UI.currentWindow)
 
   function detach(destroyNative) {
     if (!proxy) {
@@ -565,6 +588,10 @@ function createRewarded(options) {
   return createFullscreen(options, 'createRewarded')
 }
 
+function createRewardedInterstitial(options) {
+  return createFullscreen(options, 'createRewardedInterstitial')
+}
+
 function createAppOpen(options) {
   return createFullscreen(options, 'createAppOpen')
 }
@@ -613,6 +640,7 @@ module.exports = {
   createFullscreenSizeGuard,
   createInterstitial,
   createRewarded,
+  createRewardedInterstitial,
   createAppOpen,
   destroyAll
 }

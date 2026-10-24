@@ -1,4 +1,4 @@
-> Source snapshot: official ti.admob.unified 1.0.0 documentation at commit `5b4cbf9` (copied 2026-10-11). Relative links rebased for this skill.
+> Source snapshot: official ti.admob.unified 1.0.0 documentation at release source commit `034843299b2984253988e0ffccb9f6a1c91682c9` (copied 2026-10-24). Relative links rebased for this skill.
 
 # Migrating to ti.admob.unified
 
@@ -207,7 +207,7 @@ The application issues the initial `load()`. Google Mobile Ads manages later ref
 
 ## Adopt the fullscreen lifecycle
 
-Interstitial, rewarded, and app open proxies share the same methods and event payloads on iOS and Android:
+Interstitial, rewarded, rewarded interstitial, and app open proxies share the same methods and event payloads on iOS and Android:
 
 ```js
 fullscreen.load()
@@ -222,15 +222,15 @@ Common events include `adUnitId` and `adType`; failures add `error`, `message`, 
 
 ### App open
 
-`createAppOpen()` returns a proxy on both platforms. Of the modules it replaces, `ti.admob` documents the iOS type without a factory, and `ti.android.admob` supplies an Android-only proxy. Applications previously had to implement the missing iOS support themselves.
+`createAppOpen()` returns a dedicated proxy on both platforms. Use this shared factory and the fullscreen lifecycle for app open placements.
 
-It follows the fullscreen contract above, with one addition: an app open ad expires four hours after the request. Past that point `isLoaded()` reports `false` and `show()` emits `failed_to_show` with code `1`. See [The four hour window](fullscreen.md#the-four-hour-window).
+It follows the fullscreen contract above, with one addition: an app open ad expires four hours after loading completes. Past that point `isLoaded()` reports `false` and `show()` emits `failed_to_show` with code `1`. See [The four hour window](fullscreen.md#the-four-hour-window).
 
 ## Mediation
 
 Five optional complements carry AppLovin, Meta, InMobi, Unity and Liftoff dependencies on both platforms. Google Mobile Ads discovers their adapters; applications keep calling the core factories. ironSource mediation is deferred.
 
-Availability probes remain in `ti.admob.unified` for portable diagnostics, and report `false` for every network when no complements are installed. Legacy provider consent setters are deprecated no-ops because UMP and each provider's current requirements must drive privacy configuration. Installing an adapter does not create an account or enable a mediation source: configure mappings and credentials in AdMob, then validate with Ad Inspector.
+The provider availability probes and legacy consent setters from internal builds have been removed from `ti.admob.unified`. Use `getMediationStatus()` for Google-reported initialization diagnostics, then verify the packaged dependencies separately. Follow UMP and each provider's current consent requirements. Configure accounts, mappings and credentials in AdMob, then validate delivery with Ad Inspector.
 
 An application that serves AdMob demand only leaves the complements out and uses `Admob.initialize({})`, with no disabling flag. Including selected complements opts into automatic adapter discovery; no `enableMediation` flag is needed. An exceptional session that skips installed adapters is covered in the [initialization reference](api-reference.md#automatic-adapter-discovery).
 
@@ -241,7 +241,7 @@ An application that serves AdMob demand only leaves the complements out and uses
 - Test consent accepted, rejected, not required, and previous-session states.
 - Test ATT authorized, denied, and previously resolved on iOS.
 - Test banner load, error collapse, rotation, background/resume, and repeated window close.
-- Test interstitial, rewarded, and app open duplicate loads, show failures, close, reward delivery, and repeated destruction.
+- Test interstitial, rewarded, rewarded interstitial, and app open duplicate loads, show failures, close, reward delivery, and repeated destruction.
 - Confirm no duplicate banners or retained listeners.
 - Inspect requests with Ad Inspector.
 - Inspect `getMediationStatus()` after `module_initialized`, and verify installed complements separately through package inventories and Ad Inspector.
@@ -252,4 +252,8 @@ An application that serves AdMob demand only leaves the complements out and uses
 
 Boolean results and payload fields use JavaScript Booleans on both platforms; replace comparisons to numeric `0` or `1`. iOS load errors now use the shared error constants; presentation, UMP and Inspector codes remain domain-specific. Use the event name and the reference's error table when migrating code that compared raw NSError values.
 
-Application volume now works on iOS using the same percentage string accepted on Android. Fullscreen configuration properties are mutable for subsequent loads on both platforms. Native helper/delegate methods and internal state from earlier iOS builds are no longer exposed as application APIs. Availability diagnostics require the adapter class, so a network SDK installed without its adapter reports `false`.
+Application volume now works on iOS using the same percentage string accepted on Android. Fullscreen configuration properties are mutable for subsequent loads on both platforms. Native helper/delegate methods and internal state from earlier iOS builds are no longer exposed as application APIs. The current generic diagnostic reports only the adapters known to Google; it does not return the old per-provider Boolean availability map.
+
+## Earlier core-only startup settings
+
+If an existing startup block passes `disableMediation: true`, remove that exception before using optional mediation complements. Google then initializes the adapters selected in tiapp.xml. Core-only apps need no mediation switch. Changing this option requires a new app session because the first initialization configuration wins.

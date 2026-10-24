@@ -7,7 +7,7 @@
  */
 
 const Admob = require('ti.admob.unified')
-const ads = require('lib/ads')
+const ads = require('lib/ads') // Classic; Alloy app/lib/ads.js: require('ads')
 
 const win = Ti.UI.createWindow({ layout: 'composite', backgroundColor: '#ffffff' })
 const content = Ti.UI.createScrollView({ top: 0, left: 0, right: 0, bottom: 0 })
@@ -48,6 +48,12 @@ const rewarded = ads.createRewarded({
   onRewarded: event => grantReward(event.rewardAmount, event.rewardType)
 })
 
+const rewardedInterstitial = ads.createRewardedInterstitial({
+  window: win,
+  adUnitId: Admob.TEST_REWARDED_INTERSTITIAL,
+  onRewarded: event => grantReward(event.rewardAmount, event.rewardType)
+})
+
 const appOpen = ads.createAppOpen({
   window: win,
   adUnitId: Admob.TEST_APP_OPEN,
@@ -66,6 +72,23 @@ function onRewardAccepted() {
   rewarded.show()
 }
 
+// In production, rewardDescription must describe the reward configured for
+// this placement. Only onRewarded above credits the actual SDK-earned reward.
+function onRewardedTransition(rewardDescription) {
+  if (!rewardedInterstitial.isLoaded()) return
+  const intro = Ti.UI.createAlertDialog({
+    title: 'Rewarded interstitial',
+    message: `Complete the ad to earn ${rewardDescription}. You can skip it.`,
+    buttonNames: ['Watch ad', 'Skip'], cancel: 1
+  })
+  function onChoice(event) {
+    intro.removeEventListener('click', onChoice)
+    if (event.index === 0) rewardedInterstitial.show()
+  }
+  intro.addEventListener('click', onChoice)
+  intro.show()
+}
+
 function onApplicationResumed() {
   appOpen.show()
 }
@@ -82,8 +105,13 @@ win.addEventListener('close', event => {
 })
 win.open()
 
+// Start in the active foreground. Enable requestTrackingAuthorization only for
+// a real tracking use case with a localized NSUserTrackingUsageDescription.
+// Keep it false when an AdMob UMP IDFA message already handles ATT.
+Ti.API.info('Current ATT state: ' + JSON.stringify(Admob.getTrackingAuthorizationStatus()))
 ads.start({
   consent: { tagForUnderAgeOfConsent: false },
+  requestTrackingAuthorization: false,
   initialization: {}
 }).then(result => {
   if (!result.initialized) {
@@ -92,7 +120,10 @@ ads.start({
 
   interstitial.load()
   rewarded.load()
+  rewardedInterstitial.load()
   appOpen.load()
+}).catch(error => {
+  Ti.API.warn(`[ads] Startup failed: ${error.message || error}`)
 })
 
 // References kept here to make the intended call sites explicit in this
@@ -100,5 +131,6 @@ ads.start({
 void createAdaptiveBanner
 void onNaturalBreak
 void onRewardAccepted
+void onRewardedTransition
 void onApplicationResumed
 void openChildWindow
