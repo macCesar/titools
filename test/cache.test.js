@@ -54,6 +54,18 @@ describe('cache', () => {
     assert.ok(Date.now() - data.lastCheck < 5000);
   });
 
+  it('honors the CLI cache TTL override', () => {
+    const previous = process.env.TITOOLS_CACHE_TTL_MS;
+    try {
+      process.env.TITOOLS_CACHE_TTL_MS = '0';
+      writeLastCheck(cacheDir, '2.4.0');
+      assert.strictEqual(shouldCheckForUpdate(cacheDir), true);
+    } finally {
+      if (previous === undefined) delete process.env.TITOOLS_CACHE_TTL_MS;
+      else process.env.TITOOLS_CACHE_TTL_MS = previous;
+    }
+  });
+
   it('readLastCheck returns null when no file exists', () => {
     const data = readLastCheck(cacheDir);
     assert.strictEqual(data, null);

@@ -45,6 +45,7 @@ describe('auto-update command', () => {
       env: {
         ...process.env,
         HOME: tempDir,
+        USERPROFILE: tempDir,
         TITOOLS_CACHE_TTL_MS: String(24 * 60 * 60 * 1000),
       },
     });
@@ -61,6 +62,7 @@ describe('auto-update command', () => {
       env: {
         ...process.env,
         HOME: tempDir,
+        USERPROFILE: tempDir,
         TITOOLS_TEST_NPM_LATEST_VERSION: '99.99.99',
         TITOOLS_CACHE_TTL_MS: '0',
       },
@@ -75,7 +77,9 @@ describe('auto-update command', () => {
       env: {
         ...process.env,
         HOME: tempDir,
+        USERPROFILE: tempDir,
         TITOOLS_CACHE_TTL_MS: '0',
+        TITOOLS_TEST_NPM_LATEST_VERSION: '99.99.99',
       },
     });
 
