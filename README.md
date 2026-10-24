@@ -824,6 +824,9 @@ What it does:
   - Knowledge index blocks from instruction files (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`)
   - Skills from global (`~/.agents/skills/`) or project directory
   - Platform symlinks from global or project directory
+  - Current or retired slash commands, selected separately for home and project
+- Home and project mirror selections always target their named directory, including with `--local`
+- Mirror removal is not preselected
 - Removes both current and legacy artifacts
 - Removes Claude Code auto-update hook
 - Cleans up cache directory (`~/.titools/`)

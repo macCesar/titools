@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [5.2.2] - 2026-10-24
+
+### Fixed
+
+- Keep home and project removal scopes independent with `remove --local`; offer separate slash-command selections and preserve the other scope. Match AISkills command scope handling and use the scoped npm package in reinstall guidance. Expose description helpers through the shared default utility API.
+
+### Changed
+
+- Complete the shared CLI regression port to AISkills for cache, auto-update, hooks and install/update behavior. Add matching mirror/selection cleanup and removal-scope regressions; make auto-update tests offline with isolated homes.
+
+- Require verified sibling implementation and regression-test parity before completing or releasing shared engine changes.
+
 ## [5.2.1] - 2026-10-24
 
 ### Changed
@@ -193,7 +205,6 @@ Measured in a disposable Alloy fixture with 8 positive and 4 negative queries, 2
 
 - The decision matrix answered "`Ti.App.fireEvent` or EventBus?" with "always EventBus" and "Controller > 100 lines?" with "extract to Tier 2". Both are sound comparisons and neither asks the prior question. They now read "EventBus — once `ti-reuse-first` says it needs an event" and "A smell, not a threshold". Nothing else in `ti-expert` changed.
 - `references/patterns.md` opens with a note that each of its nine patterns adds a layer, and that a layer pays for itself at a boundary but costs on every read when it is a detour around a single call site.
-
 
 ## [4.20.0] - 2026-09-05
 
@@ -428,7 +439,6 @@ Upstream also fixed a rendering artifact the same afternoon: a `smoothing: true`
 ### Fixed — a stale `ti-game` expectation in `EXAMPLE-PROMPTS.md`
 
 The eval checklist still listed "text sprites" among the APIs the skill must not invent, three weeks after `createText` shipped. It now names what is actually missing: tilemap layers, sprite parenting, A* pathfinding and word-wrapped text.
-
 
 ## [4.8.0] - 2026-08-18
 
