@@ -38,6 +38,19 @@ they are repository tooling and are not installed as CLI commands.
 - CLI modules use ESM imports with explicit `.js` extensions. Use asynchronous
   child processes inside spinners so the UI remains responsive.
 
+## Shared CLI engine
+
+TiTools and [AISkills](https://github.com/macCesar/aiskills) share the installer,
+updater, cache, prompts, marketplace detection, cleanup and release machinery.
+For shared changes, port behavior and relevant regression tests in both directions
+before closing the work. Verify each repository independently with focused checks
+and record corresponding implementation/test paths, results and justified product
+exceptions. Existing equivalent behavior must be inspected and verified too.
+An incomplete port or failed verification blocks completion and the affected
+release. Catalogs, Titanium project detection, ti-pro and Knowledge Index remain
+product-specific; version numbers and publication authorization stay separate.
+Keep private audit/session evidence outside public commits.
+
 ## Public repository boundaries
 
 Commit product source, public guides, tests, reusable maintenance scripts and
