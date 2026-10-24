@@ -46,11 +46,16 @@ held-voice ownership and historical/private artifacts have distinct contracts.
 
 ## Advertising — ti-admob-unified
 
-- "Review this installed ti.admob.unified integration for consent, eligibility, initialization and fullscreen lifecycle."
-- "Check the selected mediation providers, module declarations and diagnostics without treating a Google test ad as provider acceptance."
+- "Install public ti.admob.unified 1.0.0 on Android/iOS and configure consent-first startup with the official integration library."
+- "Offer a rewarded interstitial at a natural transition with a clear reward, a visible Skip option and cancellation when the screen changes."
+- "Check selected mediation providers and production readiness, including app IDs, app-ads.txt and privacy options, without treating Google test ads as provider acceptance."
 
-The skill and the native module have separate availability. Check the module's
-current release information before attempting installation.
+Use the [public Android](https://github.com/macCesar/ti.admob.unified/releases/tag/android-1.0.0)
+and [iOS](https://github.com/macCesar/ti.admob.unified/releases/tag/ios-1.0.0)
+packages and the [module skill](../skills/ti-admob-unified/SKILL.md). A synchronous
+ATT query is separate from UMP eligibility; Android's ATT convention is not
+permission for general tracking. Real account/provider delivery needs its own
+validation beyond the module's publication.
 
 ## Exact Titanium APIs — ti-api
 
