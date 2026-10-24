@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at reviewed local commit `7ab31107302d9b7027a6359ba1a6fdb49c250407` (2026-10-23); this synchronization does not publish that commit or a release. Upstream `documentation/sound-design.md` SHA-256: `dd543e07c825aaf67a0a5f85619088a8d02721a9d33dbf4579edf760dad3e262`.
+> Source snapshot: official TiSynthEngine 1.0.0 documentation at release source commit `e7cbbe8a6f9ab38088fd8029c7b43cef6501101f` (2026-10-24). Upstream `documentation/sound-design.md` SHA-256: `dd543e07c825aaf67a0a5f85619088a8d02721a9d33dbf4579edf760dad3e262`.
 
 # Sound design with TiSynthEngine
 

@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at reviewed local commit `7ab31107302d9b7027a6359ba1a6fdb49c250407` (2026-10-23); this synchronization does not publish that commit or a release. Upstream `example/README.md` SHA-256: `c3c5041be11c3addfab7fb1248c0aaba81b311c1720c2861e47974412d743bcf`.
+> Source snapshot: official TiSynthEngine 1.0.0 documentation at release source commit `e7cbbe8a6f9ab38088fd8029c7b43cef6501101f` (2026-10-24). Upstream `example/README.md` SHA-256: `c3c5041be11c3addfab7fb1248c0aaba81b311c1720c2861e47974412d743bcf`.
 
 # Interactive example
 
@@ -7,7 +7,7 @@ The Classic Titanium app in [app.js](app.js) demonstrates the timed sounds, nati
 ## Run it
 
 1. Create a Classic Titanium application with Android and/or iOS support. If the app uses Alloy, create a separate Classic test project and leave the Alloy-generated files in place.
-2. Build the current module source, or use the matching packages supplied with the public release when available. Development archives are `android/dist/ti.synthengine-android-1.0.0.zip` and `ios/dist/ti.synthengine-iphone-1.0.0.zip`. The existing private release is a separate snapshot and may lack current features.
+2. Download matching official [Android 1.0.0](https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.0.0) and [iOS 1.0.0](https://github.com/macCesar/TiSynthEngine/releases/tag/ios-1.0.0) packages, or build the matching module source. Source builds produce `android/dist/ti.synthengine-android-1.0.0.zip` and `ios/dist/ti.synthengine-iphone-1.0.0.zip`.
 3. Put the archive for each target platform in the test app root. Add these entries inside its `tiapp.xml`:
 
 ```xml

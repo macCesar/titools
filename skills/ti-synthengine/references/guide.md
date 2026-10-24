@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at reviewed local commit `7ab31107302d9b7027a6359ba1a6fdb49c250407` (2026-10-23); this synchronization does not publish that commit or a release. Upstream `documentation/guide.md` SHA-256: `46f03434db01a82b3592073f3d984fd2c6988993d5bd316caf1e9fc05f2fc1c9`.
+> Source snapshot: official TiSynthEngine 1.0.0 documentation at release source commit `e7cbbe8a6f9ab38088fd8029c7b43cef6501101f` (2026-10-24). Upstream `documentation/guide.md` SHA-256: `dd03392e1d5f89e520f4be70dab2fbad8e86776bf3a60d6af93f0dc0695c8c69`.
 
 # Guide
 
@@ -10,7 +10,7 @@ Install TiSynthEngine, start it after layout settles, and release its native aud
 - [Install the module](#install-the-module)
 - [Load and verify the contract](#load-and-verify-the-contract)
 - [Lifecycle](#lifecycle)
-- [Detect optional beta capabilities](#detect-optional-beta-capabilities)
+- [Detect required capabilities](#detect-required-capabilities)
 - [Hold and edit a voice](#hold-and-edit-a-voice)
 - [Choose the musical transport](#choose-the-musical-transport)
 - [Add master effects](#add-master-effects)
@@ -33,7 +33,7 @@ Install TiSynthEngine, start it after layout settles, and release its native aud
 
 ## Install the module
 
-For the unreleased beta, use the packages built from the current module source in `android/dist` and `ios/dist`. The [latest release](https://github.com/macCesar/TiSynthEngine/releases/latest) is a separate package snapshot; it does not update when source files change. The archive names are:
+Download both official packages from [Android 1.0.0](https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.0.0) and [iOS 1.0.0](https://github.com/macCesar/TiSynthEngine/releases/tag/ios-1.0.0). For source builds, the matching archives are produced under `android/dist` and `ios/dist`:
 
 - `ti.synthengine-android-1.0.0.zip`
 - `ti.synthengine-iphone-1.0.0.zip`
@@ -51,7 +51,7 @@ TiSynthEngine requires Titanium SDK 13.2.0.GA or newer. Android projects must co
 
 ## Load and verify the contract
 
-Require the module once in the code that owns audio. Check `apiVersion` before starting. During development, different beta binaries can report the same version; also check the [spatial limits](#detect-the-installed-feature) and [statistics methods](#read-engine-statistics) if the app needs those features. Check [optional beta capabilities](#detect-optional-beta-capabilities) for held voices, musical transport and master processing.
+Require the module once in the code that owns audio. Check `apiVersion` before starting. Also check the [spatial limits](#detect-the-installed-feature) and [statistics methods](#read-engine-statistics) if the app needs those features. Check [required capabilities](#detect-required-capabilities) for held voices, musical transport and master processing.
 
 ```javascript
 var synth = require('ti.synthengine')
@@ -110,9 +110,9 @@ win.open()
 
 Use one owner for the engine. Start it once, pass a small audio service to the screens that need it, and call `shutdown()` from the owner. While the engine is running, another valid `start()` call returns `true` and leaves the existing options in effect. Changing voice capacity, profile or session policy requires `shutdown()` and a new start. This example selects `ambient` for game/UI audio; the default remains `playback`. Android validates the session policy and leaves output unchanged.
 
-## Detect optional beta capabilities
+## Detect required capabilities
 
-The current beta adds held voices, sample-clock sequences, stereo effects and two optional LFOs while retaining API version 1.0.0. Require the methods used by each feature instead of enabling everything from the version string:
+Release 1.0.0 includes held voices, sample-clock sequences, stereo effects and two optional LFOs. Require the methods used by each feature before enabling its controls:
 
 ```javascript
 function hasMethods (names) {
@@ -123,13 +123,13 @@ var supportsSequence = hasMethods(['playSequence', 'updateSequence', 'stopSequen
 var supportsProcessing = hasMethods(['setMasterProcessing'])
 ```
 
-Start the engine successfully before publishing held notes, sequence edits or processing. `getDefaults` and feature checks do not open the stream. Install matching packages for Android/iOS and rebuild the application when replacing a native beta. Additional LFOs require a binary implementing the current modulation contract; method presence alone cannot distinguish every intermediate beta field. Treat rejected configurations as unavailable rather than silently dropping their keys.
+Start the engine successfully before publishing held notes, sequence edits or processing. `getDefaults` and feature checks do not open the stream. Install matching packages for Android/iOS and rebuild the application when replacing a native module. Additional LFOs require the documented modulation contract; check acceptance of the complete configuration. Treat rejected configurations as unavailable rather than silently dropping their keys.
 
 ## Hold and edit a voice
 
 Use `noteOn({ voiceId, ... })` when duration follows interaction: a piano key, motor, beam, pad or the last chord of a ceremony. Allocate a unique positive integer ID per attack, and release only that ID with `noteOff`. No duration or sweep-end fields are accepted. A chord held this way consists of separate IDs; unlike one `playChord` or sequence chord, separate `noteOn` calls have independent gain and publication.
 
-`updateVoice` changes compatible pitch, volume, cutoff/Q, vibrato, PWM/FM and LFO targets with 10 ms ramps, without restarting oscillator/envelope phase. Source, table, filter type, noise clock, one-pole cutoff, ADSR and spatial position are fixed at attack. See [complete fields](api.md#updatevoiceoptions). A note that has ended or been stolen accepts updates as a no-op; there is no note-finished event or reserved slot. A `true` return means accepted publication, not proof that the sound is still active.
+`updateVoice` changes compatible pitch, volume, cutoff/Q, vibrato, PWM/FM, LFO targets, noise clock, one-pole cutoff, effect send and stereo/spatial position with 10 ms ramps, without restarting oscillator/envelope phase or clearing spatial history. Source, table, filter type and ADSR are fixed at attack. Spatial edits require a voice started spatially; stereo pan edits require a stereo voice. See [complete fields](api.md#updatevoiceoptions). A note that has ended or been stolen accepts updates as a no-op; there is no note-finished event or reserved slot. A `true` return means accepted publication, not proof that the sound is still active.
 
 Release on touch end and cancellation as well as ordinary key up. Retry a rejected release twice at 16 ms outside the audio callback, then shut down and report failure if publication remains blocked. Cancel retries during teardown. The [held motor example](advanced-examples.md#sustained-game-motor) implements this ownership policy. For pause/owner close, invalidate app scheduling and shut down; require a new start before future notes.
 
@@ -179,7 +179,7 @@ var accepted = synth.playTone({
 if (!accepted) Ti.API.warn('The tone was rejected')
 ```
 
-Calls that create or change sound return `true` when accepted and `false` when rejected. During development, handle that result and inspect logcat or the Xcode console for the structured validation warning.
+Timed and held sound calls and accepted edits return `true` when accepted and `false` when rejected. `playSequence` instead returns a positive sequence ID or `0`; state queries return their documented state or `null`, and lifecycle/cleanup methods follow their own return contracts. During development, handle the relevant result and inspect logcat or the Xcode console for the structured validation warning.
 
 ## Choose a pitch
 
@@ -394,7 +394,7 @@ synth.setVolume({ volume: 0.7 })
 synth.stopAll()
 ```
 
-Master volume is ramped to avoid a step in the output. `stopAll()` fades active voices, but it does not cancel future steps in the current pattern. Start a new pattern or call `shutdown()` when future scheduling must stop as well.
+Master volume is ramped to avoid a step in the output. `stopAll()` stops all native sequences, fades active voices and invalidates effect histories while leaving the engine available. Use `stopSequence({ sequenceId })` to stop only one owner and preserve unrelated sounds. `shutdown()` also stops the stream and releases its resources.
 
 ## Output route changes
 
@@ -410,7 +410,7 @@ Keep the synthesis recipe (pitch, waveform, duration, envelope, filters, FM and 
 
 ### Detect the installed feature
 
-During the unreleased 1.0.0 beta, the version string alone does not prove that an installed binary has binaural support. Check both coordinate limits before enabling the controls:
+Check both coordinate limits before enabling binaural controls to verify that the app loaded the expected native module:
 
 ```javascript
 var synth = require('ti.synthengine')
@@ -509,7 +509,7 @@ if (!playPositionedTone(explosion, 900, 100, 1000, 800)) {
 
 Connect a Titanium switch's `change` event to `audioSettings.binaural = event.value`; connect the two sliders' `change` events to `horizontalPercent` and `heightPercent`. Configure slider minimum 0 and maximum 100, and disable the height slider while the switch is off. Validate restored preference values as finite numbers within those ranges before using them. Do not pass these preference names to `playTone`: that would return `false` with `unsupported_option`.
 
-Supply the current position whenever an effect fires. A projectile launch cue can use the launch position; an impact uses the collision position. Repeated short motor events can use successive positions. A single active tone cannot move after submission because positions remain fixed, including on an identified sustained voice. Stereo `panEnd` movement cannot be combined with binaural; do not continually retrigger long sounds every frame to imitate movement.
+Supply the current position whenever an effect fires. A projectile launch cue can use the launch position; an impact uses the collision position. Timed event positions remain fixed after submission. An identified sustained voice started spatially can instead change `spatialX`/`spatialY` through `updateVoice`, with 10 ms ramps and retained spatial history. A stereo voice cannot become spatial through an update. Stereo `panEnd` movement cannot be combined with binaural; do not continually retrigger long sounds every frame to imitate movement.
 
 ### Chords and patterns
 

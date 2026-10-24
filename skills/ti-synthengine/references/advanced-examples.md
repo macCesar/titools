@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at reviewed local commit `7ab31107302d9b7027a6359ba1a6fdb49c250407` (2026-10-23); this synchronization does not publish that commit or a release. Upstream `documentation/examples.md` SHA-256: `eba45d9ba675190050f4bfb15873c1c0a9821d5bc034397dcd9bc51dcdbf1e48`.
+> Source snapshot: official TiSynthEngine 1.0.0 documentation at release source commit `e7cbbe8a6f9ab38088fd8029c7b43cef6501101f` (2026-10-24). Upstream `documentation/examples.md` SHA-256: `48104b9d413050d439ee605c92a2456a50b42c4c80e2d7c2c05706eecc7db215`.
 
 ## Sustained game motor
 
@@ -7,7 +7,7 @@ Assume one running engine owned by this service. The positive voice ID belongs t
 ```javascript
 if (!['noteOn', 'noteOff', 'updateVoice'].every(function (name) {
   return typeof synth[name] === 'function'
-})) throw new Error('Current held-voice beta APIs are required')
+})) throw new Error('Held-voice APIs are required')
 
 var nextMotorId = 1
 var motorId = null
@@ -96,7 +96,7 @@ This configures the selected share of a running engine; `applyTo` defaults to al
 
 ```javascript
 if (typeof synth.setMasterProcessing !== 'function') {
-  throw new Error('Current master-processing beta API is required')
+  throw new Error('Master-processing API is required')
 }
 if (!synth.setMasterProcessing({
   inputGain: 0.7,
@@ -129,7 +129,7 @@ This square voice modulates cutoff and PWM independently. The original `lfoFreq`
 
 ```javascript
 if (typeof synth.noteOn !== 'function' || typeof synth.updateVoice !== 'function') {
-  throw new Error('Current held-voice beta APIs are required')
+  throw new Error('Held-voice APIs are required')
 }
 var modulatedId = 100001 // Reserve an unused ID from the owner's counter in an app.
 if (!synth.noteOn({ voiceId: modulatedId, note: 'A3', waveType: WAVE.SQUARE,
@@ -171,4 +171,4 @@ function closeMixMeter () {
 }
 ```
 
-Call `closeMixMeter` when its owner hides or closes. The new fields may be absent on older beta packages; display that as unavailable. Reset deliberately before a comparison. These values measure digital peak protection, not speaker loudness, subjective quality or a guarantee that every audio deadline was met.
+Call `closeMixMeter` when its owner hides or closes. Display unavailable or unmeasured fields as unavailable. Reset deliberately before a comparison. These values measure digital peak protection, not speaker loudness, subjective quality or a guarantee that every audio deadline was met.

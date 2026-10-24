@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at reviewed local commit `7ab31107302d9b7027a6359ba1a6fdb49c250407` (2026-10-23); this synchronization does not publish that commit or a release. Upstream `documentation/audio-engine.md` SHA-256: `8b0ede7f5131c706cf0cfd5f9acbdb8cbcdcbc55e1a5a466f00264ef0f49540c`.
+> Source snapshot: official TiSynthEngine 1.0.0 documentation at release source commit `e7cbbe8a6f9ab38088fd8029c7b43cef6501101f` (2026-10-24). Upstream `documentation/audio-engine.md` SHA-256: `2299982e6949f6f2efe7ddad6cc4d28ea1b54e0f31fff36617e0528c5823ac4d`.
 
 # Audio engine
 
@@ -23,6 +23,7 @@ The native signal path explains how mixing profiles and voice capacity affect th
 - [Route behavior](#route-behavior)
 - [Regression coverage](#regression-coverage)
 - [Binaural front-plane renderer](#binaural-front-plane-renderer)
+- [Own-platform performance verification](#own-platform-performance-verification)
 - [Engine statistics](#engine-statistics)
 - [Sustained voices](#sustained-voices)
 - [Native transport and processing](#native-transport-and-processing)
@@ -88,11 +89,11 @@ The modulated sine has constant amplitude, so event gain is unchanged. Nothing b
 | `highpass` | 12 dB per octave, peak of about Q at the cutoff. |
 | `bandpass` | Unity gain at the center for every Q.            |
 
-The cutoff is held between 20 Hz and `sampleRate * 0.45`. With `filterHzEnd` the cutoff follows `from * (to / from) ^ t`, where `t` runs from 0 to 1 across the event, and coefficients are recomputed every eighth sample. Without a sweep they are computed once, when the note starts.
+The cutoff is held between 20 Hz and `sampleRate * 0.45`. For timed tones and chords, `filterHzEnd` follows `from * (to / from) ^ t`, where `t` runs from 0 to 1 across the event, and coefficients are recomputed every eighth sample. Native sequence cutoff sweeps instead use note length and then hold their target through release. The current Android renderer refreshes them every sixteenth sample, also forcing the target at the release deadline; the Apple renderer refreshes them every eighth sample. These renderer paths do not establish sample-identical platform output. Held live cutoff/Q and modulation updates have their own ramp/control paths. Without a sweep or live modulation, coefficients are computed once at note start.
 
 ## Envelope
 
-Each voice has a smoothstep attack, an optional smoothstep decay to `sustain`, a hold at that level and a smoothstep release. `duration` includes the whole envelope. Defaults are adjusted to fit a short event, while an explicit envelope that cannot fit is rejected by the contract.
+Each voice has a smoothstep attack, an optional smoothstep decay to `sustain`, a hold at that level and a smoothstep release. For timed tones and chords, `duration` includes the whole envelope: defaults are adjusted to fit a short event, while an explicit envelope that cannot fit is rejected. Held voices release on `noteOff`; sequence notes release at their gate/length deadline. Held/sequence ADSR has no timed-event duration budget, and their release may continue beyond the sequence interval.
 
 ```text
 base = attack ramp, then decay ramp from 1 to sustain, then sustain
@@ -262,13 +263,39 @@ clang -fobjc-arc -Wall -Wextra -framework Foundation \
 "$test_dir/contract_corpus_ios"
 ```
 
-The iOS renderer uses the same DSP header. Its output has no host-rendering test, so check it on a device.
+The iOS renderer uses the same DSP header. Its actual Objective-C render body has a host PCM/state comparison described below; device scheduling and audible output require separate checks.
 
 ## Binaural front-plane renderer
 
 `shared/synth_spatial.h` runs the same allocation-free FIR processor in both native ports, after each voice envelope and before summation/master/limiter. Nine stereo impulse responses from Gardner and Martin's MIT KEMAR measurements form a compact front-plane grid. The complete 128-sample source responses at 44.1 kHz are interpolated across direction and linearly resampled once at voice onset to the output rate. A single front-response energy calibration preserves directional differences. At 48 kHz the convolution uses 140 padded taps per ear. Buffers are reserved with the voice/tail pools; there are no runtime downloads, callback allocations, or additional callback locks.
 
 Spatial voice-steal and stop tails copy the filter history as well as oscillator state. After the source envelope or fade ends, both ports drain the FIR with zero input for `taps - 1` samples before freeing the voice; this preserves even 1 ms events. Ordinary voices bypass the FIR. CPU cost grows with spatial voices, including short replacement tails. Spatial held updates prepare coefficients outside audio, then ramp the FIR over 10 ms while retaining history. The intended output-rate range is 8 to 192 kHz. Interpolated generic HRTFs provide directional cues, but localization varies by listener.
+
+Android ARM64 reuses coefficients across eight consecutive samples, with four-sample and streaming fallbacks for partial blocks and position ramps. Tiles stop before native sequence attacks and retain per-sample clocks, gates, phase, history and mixing order. Apple retains its original streaming renderer. The proposed Apple adaptation was bit exact and faster in host/binaural tests but was removed after a reproducible physical stereo timing regression. Output buffers and lookahead latency are unchanged.
+
+## Own-platform performance verification
+
+The [performance review](performance-review.json) separates measured host improvements, exact compatibility checks and pending device acceptance. Its [raw evidence](performance-review-evidence.zip) retains rejected prototypes and the investigation of idle/stereo regressions. The Apple FIR, stable-control cache and exact idle-effects bypass were evaluated as one atomic candidate and then rejected after physical 32-stereo timing regressed. All three production changes were removed together; the full-score publication and control-memory fixes remain.
+
+Matched 48 kHz/1024-frame iPad full-load runs completed 600 audio seconds without callback deadline misses, with p95 load upper bounds 0.427 for the reference and 0.383 for the rejected initial candidate. The original Apple callback was restored because 32-stereo bypass p95 regressed reproducibly, including continuous-voice windows. Android Sim20/Sim80 frame presentation remains near 60 FPS, while occasional Sim80 output underruns persist in both versions. Compact 48 kHz iPad memory growth is about 18.2 MiB in both versions; no material RAM saving or physical 192 kHz acceptance is claimed. These results and qualified listening observations are recorded separately in the review.
+
+`tools/build_ios_render_host.py` compiles the actual Objective-C render-block body and voice/transport helpers on macOS. It replaces hardware/session/Titanium startup and fixes only the noise-seed/disabled-diagnostic clock. Output and semantic state are compared against a separately archived reference from the same platform. This is an Apple renderer test; it does not execute AVAudioEngine or establish iPad scheduling, route recovery, footprint or listening acceptance.
+
+```sh
+mkdir -p /tmp/synth-reference
+git archive 7ab3110 | tar -x -C /tmp/synth-reference
+python3 tools/build_ios_render_host.py --source /tmp/synth-reference --output /tmp/apple-reference
+python3 tools/build_ios_render_host.py --output /tmp/apple-candidate
+python3 tools/compare_ios_render.py /tmp/apple-reference /tmp/apple-candidate
+python3 tools/benchmark_performance_review.py --baseline /tmp/apple-reference --candidate /tmp/apple-candidate --output /tmp/apple-performance.json
+/tmp/apple-candidate --metadata
+```
+
+The build tool defaults to the module's Apple Release `-Os` optimization. The comparator streams PCM for every fixture block and full original voice/tail, FIR/filter, limiter, effect-buffer and transport state at fixture checkpoints. Cases include five engine rates, zero/short/irregular blocks, all sources, held updates, replacements, send and position ramps, four sequences, effects, panic, drain and later re-enabling. A deliberately changed phase increment was rejected as a negative control.
+
+Finish compilation and fidelity checks before timing. The benchmark uses fixed matched warmups and at least ten alternating pairs; CPU and elapsed totals, p95, maxima and process high-water memory remain separate. Investigate repeatable total regressions above 2% or p95 regressions above 5%. Short-process or single-kernel gains do not establish whole-app performance. The Android producer harness exercises the actual JNI publication with supplied JVM array accessors, so its numbers exclude Java validation and VM allocation time.
+
+Full-score producers reserve a free bank without copying the previous score. Generic partial-bank callers still inherit the latest accepted bank, and publication retains its ownership, validation and mailbox checks. The iOS producer commits an already prepared score once; Android prepares its complete packet at native publication. Empty completion polls and empty metadata pruning avoid transient objects. Accepted edits of unknown iOS IDs do not create retained spatial metadata. Sequence capacity, diagnostics, event delivery cadence and public defaults are unchanged.
 
 The shared processor check is `cc -std=c99 -O2 -Wall -Wextra -Wpedantic tests/spatial_regression.c -lm -o /tmp/spatial_regression` followed by `/tmp/spatial_regression`. `tests/spatial_engine_host.cpp` uses the same compile flags as `engine_render_host.cpp` and verifies native left/right rendering, elevation changes, stealing and stopping. Java spatial validation is checked by `SynthSpatialContractRegression`; the common Java/iOS corpus also covers spatial acceptance and conflicts.
 
@@ -335,4 +362,4 @@ The [Studio technical validation report](studio-validation.json) records the cal
 
 ## Unified transport acceptance boundaries
 
-The current beta contract uses one renderer, at most 32 voices and capacity for 1-4 sequences. `bus` categories and per-voice sends share one effects chain. No physical-device ten-minute maximum-load acceptance is claimed by these API changes. Host timing, bypass comparisons, memory accounting, actual Android/iOS builds and the remaining device/listening checks are separate evidence. Historical Studio benchmarks below predate these changes and remain historical observations. At 192 kHz, the revised effects buffers use approximately 13.1 MiB; the maximum sequence pool uses approximately 8.23 MiB before renderer voices/queues. Total native accounting must include those remaining structures and recovery peaks; the target is at most 32 MiB additional memory.
+The 1.0.0 contract uses one renderer, at most 32 voices and capacity for 1-4 sequences. `bus` categories and per-voice sends share one effects chain. These API changes do not establish complete multiplatform ten-minute maximum-load acceptance; the measured iPad result and Android limits are recorded separately in [physical validation](physical-validation.json) and [the performance summary](stats-performance.md). Host timing, bypass comparisons, memory accounting, actual Android/iOS builds and the remaining device/listening checks are separate evidence. Historical Studio benchmarks below predate these changes and remain historical observations. At 192 kHz, the revised effects buffers use approximately 13.1 MiB; the maximum sequence pool uses approximately 8.23 MiB before renderer voices/queues. Total native accounting must include those remaining structures and recovery peaks; the target is at most 32 MiB additional memory.

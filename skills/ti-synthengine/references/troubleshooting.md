@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at reviewed local commit `7ab31107302d9b7027a6359ba1a6fdb49c250407` (2026-10-23); this synchronization does not publish that commit or a release. Upstream `documentation/troubleshooting.md` SHA-256: `ed2a455e30326894087e393065d9a6f14d8edaf06cbeda5bf472252c38bfea7c`.
+> Source snapshot: official TiSynthEngine 1.0.0 documentation at release source commit `e7cbbe8a6f9ab38088fd8029c7b43cef6501101f` (2026-10-24). Upstream `documentation/troubleshooting.md` SHA-256: `939960cde5860569699916208c0d3b352e60ba2a7603b5046dcefa9970294b70`.
 
 # Troubleshooting
 
@@ -6,11 +6,13 @@ Start with the Boolean returned by the call and the native log. Most silent requ
 
 ## A call returns `false`
 
-Look for a structured warning in logcat or the Xcode console:
+For methods that emit structured validation warnings, inspect logcat or the Xcode console:
 
 ```text
-event=validation_warning method=playSequence key=steps reason=not_object action=rejected value=C4
+event=validation_warning method=playTone key=duraton reason=unsupported_option action=rejected value=200
 ```
+
+Always check the return value: `playSequence` rejects with 0, while Boolean methods reject with `false`. Some sequence/control rejection paths do not emit a structured warning; absence of a new log entry does not establish acceptance.
 
 Common fixes:
 
@@ -18,10 +20,10 @@ Common fixes:
 | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | `unsupported_option`                | Remove or correct the named key. Every options object is strict.                                                        |
 | `invalid_step_type`                 | Make every pattern step an object, not a number or string.                                                              |
-| `conflicting_pitch_fields`          | Send only one of `note`, `frequency` or `rest: true`.                                                                   |
+| `conflicting_pitch_fields`          | Timed/held calls use mutually exclusive `note`/`frequency`; each sequence step uses exactly one `notes` array, `frequencies` array or `rest: true`.                                                                   |
 | `missing_pitch_or_rest`             | Add one pitch field or an explicit rest.                                                                                |
 | `out_of_range`                      | Compare the value with `getDefaults().limits`.                                                                          |
-| `not_integer`                       | Use whole milliseconds and integer waveform values where required.                                                      |
+| `not_integer`                       | Use integer milliseconds for timed tone/chord envelope fields and integer waveform values; native sequence intervals and lengths may be fractional.                                                      |
 | `invalid_note`                      | Check spelling, accidental case and octave.                                                                             |
 | `invalid_sample_count`              | Supply 2 to 64 values in `waveTable`.                                                                                   |
 | `unsupported_value`                 | Use `none`, `lowpass`, `highpass` or `bandpass` for `filterType`.                                                       |
@@ -39,7 +41,7 @@ Warnings are deduplicated by method, key and reason. Repeating the same bad call
 
 An `overflow` warning means the command queue was full. Reduce the command burst or wait for the audio thread to consume queued work. A chord is either accepted in full or rejected; it cannot start partially.
 
-The envelope and filter rules apply to the final values of each sounding event. In a pattern that means the step over the pattern root, so a `sustain` on the root is fine when each step supplies a `decay`, and a root `filterHz` is rejected when no step has a `filterType`. A `detune` that pushes the pitch, or `frequencyEnd`, outside the frequency range is rejected with `out_of_range`.
+The envelope and filter rules apply to the final values of each sounding event. In a native sequence, each step's `overrides` merges over root `voice`: root `voice.sustain` is valid when every sounding step supplies compatible decay, and `voice.filterHz` needs a non-none filter type after merging. Timed tones/chords enforce their total-duration envelope budget; held and sequence ADSR has no sequence-interval budget. A `detune` that pushes the pitch, or `frequencyEnd`, outside the frequency range is rejected with `out_of_range`.
 
 `fmDepthEnd: 0` is valid. It sweeps the index down to nothing. Omit the key, rather than passing 0, when the index should not move.
 
@@ -63,7 +65,7 @@ modules/android/ti.synthengine/1.0.0/
 modules/iphone/ti.synthengine/1.0.0/
 ```
 
-For binaural, also inspect `getDefaults().limits.spatialX` and `.spatialY`. During the unreleased beta, two binaries can both report 1.0.0 while only one includes positioning. Copying the package does not update an already installed app: rebuild and reinstall it.
+For binaural, also inspect `getDefaults().limits.spatialX` and `.spatialY`. Use the official packages to avoid stale development binaries. Copying the package does not update an already installed app: rebuild and reinstall it.
 
 ## Binaural does not change the position
 
@@ -75,7 +77,7 @@ Inspect the options sent to the native method as well as the settings screen:
 - No stereo placement fields remain, even with value 0 or through pattern inheritance. Handle the Boolean return value.
 - The installed contract reports both spatial limits and the device has the rebuilt app.
 - Use headphones and one broadband event at a time; with binaural off, points with the same X use the same horizontal placement regardless of Y.
-- Positions are fixed for active voices. Later calls can use updated coordinates, but there is no method to move a voice already playing.
+- Timed tones/chords and each sequence attack keep their specified position. A spatial held voice can move through `updateVoice({ voiceId, spatialX, spatialY })`; omitted coordinates retain their previous value, and the FIR ramps over 10 ms without clearing history. A stereo voice cannot be converted to spatial by an update.
 
 The [integration guide](guide.md#integrate-binaural-in-a-2d-app) contains the JavaScript conversion and explains switch/slider behavior.
 
@@ -172,11 +174,11 @@ Include the platform, OS version, device model, Titanium SDK version, module ver
 
 ## Held notes, sequences or effects methods are missing
 
-The beta remains API version 1.0.0. Detect `noteOn`/`noteOff`/`updateVoice`, all four sequence methods and `setMasterProcessing` according to the feature needed. Install matching current Android/iOS packages, rebuild and reinstall the consumer app. Existing binary packages can share the same version without the same methods or accepted fields. See [capability detection](guide.md#detect-optional-beta-capabilities).
+The official release reports API version 1.0.0. Detect `noteOn`/`noteOff`/`updateVoice`, all four sequence methods and `setMasterProcessing` according to the feature needed. Install matching current Android/iOS packages, rebuild and reinstall the consumer app. A stale development binary may report the same version without the complete release API. See [capability detection](guide.md#detect-required-capabilities).
 
 ## A held voice does not release or update
 
-Use the original positive `voiceId`, not the pitch or an ID that has already been reused. `noteOn` does not accept `duration` or temporal `*End` fields. `updateVoice` cannot change source, filter type, table, noise clock, ADSR or spatial position; restart with a new ID when those attack-time settings must change. Compatible continuous edits ramp for 10 ms.
+Use the original positive `voiceId`, not the pitch or an ID that has already been reused. `noteOn` does not accept `duration` or temporal `*End` fields. Source, filter type, table, quantization and ADSR require a new attack. Compatible `updateVoice` controls include live noise clock, one-pole cutoff, spatial position for a spatial voice, stereo pan for a stereo voice, modulation and explicit effect send, in addition to pitch/volume/filter/vibrato/FM/pulse targets. Changed continuous controls ramp for 10 ms while retaining phase, envelope and spatial history; `noiseRate: 0` means white noise and `lowPassHz: 0` bypasses that filter.
 
 Check Boolean returns. A full public queue can reject `noteOff`; retry twice at 16 ms outside render, then shut down/report if still rejected. Cancel those retries on owner teardown. The [held motor example](advanced-examples.md#sustained-game-motor) implements this policy. Touch cancellation, pause and close need cleanup as well as normal key up.
 
@@ -197,3 +199,9 @@ Disabling effects closes input smoothly and lets bounded tails finish, then bypa
 Enable diagnostics, reset deliberately, then inspect `preLimiterPeakDb` and `maxLimiterReductionDb`. They retain the native pre-limiter peak and greatest attenuation since reset, including brief interventions between UI polls. `limiterReductionDb` is a window measurement and can return to zero sooner. Older packages may omit the accumulated fields; disabled/unmeasured diagnostics return `null`. See [measurement example](advanced-examples.md#measure-peaks-and-limiter-reduction).
 
 If accumulated attenuation remains near zero, investigate phase cancellation between repeated same-pitch oscillators, changing filters or the device speaker/protection path. Compatible released public held-note repetitions preserve predecessor phase; simultaneous unisons, timed calls and transport notes retain their existing phase behavior. Extra effects and resonance can consume headroom even when source gain is fixed. Compare matched levels through headphones and the physical speaker before changing the mix globally.
+
+## A wavetable sounds rough
+
+`WAVETABLE` repeats the supplied values using a stepped lookup. A short table can sound grainy or buzzy even when its values describe a sine wave and `bitDepth` is 0. Its harmonic character changes with pitch and filtering; this does not require reverb, an LFO or creative saturation to be enabled.
+
+Compare one note with `SINE`, at a comfortable matched level, to distinguish the source's texture from the combined sound of overlapping notes. Read `preLimiterPeakDb` and `maxLimiterReductionDb` with diagnostics enabled to investigate mix headroom. No limiter reduction does not prove that the physical speaker, headphones or output processing are clean. Keep a subjective listening observation separate from a confirmed clipping or buffer-loss diagnosis.

@@ -1,13 +1,23 @@
 ---
 name: ti-synthengine
-description: "Use when a Titanium app declares ti.synthengine in tiapp.xml, imports require('ti.synthengine'), or needs generated tones, chords, native sequences, sustained game motors, ADSR, sweeps, FM, resonant filters, noise, binaural spatialX/spatialY, held noteOn/noteOff/updateVoice, shared tempo, selective music/effects/ui/ambience processing, effectSend, priorities, chorus/delay/reverb/saturation, LFOs, sequenceend events, gain staging, statistics or render-load diagnosis. Covers the current Android/iOS 1.0.0 beta source contract. Not for audio-file decoding, sample streaming or unrelated synthesizers."
+description: "Use when a Titanium app declares ti.synthengine in tiapp.xml, imports require('ti.synthengine'), or needs generated tones, chords, native sequences, sustained game motors, ADSR, sweeps, FM, resonant filters, noise, binaural spatialX/spatialY, held noteOn/noteOff/updateVoice, shared tempo, selective music/effects/ui/ambience processing, effectSend, priorities, chorus/delay/reverb/saturation, LFOs, sequenceend events, gain staging, statistics or render-load diagnosis. Covers the published Android/iOS 1.0.0 contract. Not for audio-file decoding, sample streaming or unrelated synthesizers."
 ---
 
 # ti.synthengine — native sound synthesis for Titanium
 
 Act as an audio engineer and mobile sound designer. Translate the requested sound into acoustically reasoned JavaScript using the exact public contract.
 
-These references describe the reviewed **1.0.0 beta at local commit `7ab31107302d9b7027a6359ba1a6fdb49c250407` (2026-10-23)**. Source hashes and the clean worktree fingerprint are in [source-snapshot.json](references/source-snapshot.json). Current [interactive example assets](assets/example/README.md) are bundled with both JavaScript helpers. This synchronization does not publish the module commit or a TiTools release. Old 1.0.0 binaries may expose a different beta API: require the current methods and rebuild with matching packages, rather than maintaining aliases or a second timer-based audio implementation.
+These references describe the **public 1.0.0 release** at
+`e7cbbe8a6f9ab38088fd8029c7b43cef6501101f` (reviewed 2026-10-24).
+Download matching [Android](https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.0.0)
+and [iOS](https://github.com/macCesar/TiSynthEngine/releases/tag/ios-1.0.0)
+packages from the public [repository](https://github.com/macCesar/TiSynthEngine).
+Source/mirror hashes are in [source-snapshot.json](references/source-snapshot.json);
+artifact checksums and native findings are in [source notes](references/source-notes.md).
+The current [interactive example](assets/example/README.md) includes both helpers.
+Earlier private packages also used version 1.0.0: require current methods and
+install the official platform ZIPs rather than inferring capabilities from that
+version string or adding a second JavaScript audio scheduler.
 
 ## Required workflow
 
@@ -16,14 +26,17 @@ Read the relevant references before writing or reviewing code. When updating the
 | Task | Read first |
 | --- | --- |
 | Any public method, option, default, return value or limit | [API](references/api.md) |
-| Initialize, install, own or clean up an engine | [Guide](references/guide.md) |
+| Download public releases, install, initialize, own or clean up an engine | [Guide](references/guide.md) |
 | Design an effect, instrument, reward, alarm or game motor | [Sound design](references/sound-design.md), [recipes](references/recipes.md), [examples](references/examples.md) |
+| Xylophone, memory pads, layered chords, FM instruments and interaction ownership | [Interaction recipes](references/recipes-interaction.md) |
 | Hold, edit, release or position a sustained voice | [API](references/api.md#noteonoptions), [advanced examples](references/advanced-examples.md#sustained-game-motor) |
 | Schedule simultaneous sequences, tempo, swing, edits and cancellation | [API transport](references/api.md#native-sequence-transport), [advanced examples](references/advanced-examples.md#native-sequence-with-chords-and-edits) |
 | Select categories, sends, shared effects and synchronized LFOs | [Processing API](references/api.md#setmasterprocessingoptions), [engine](references/audio-engine.md), [advanced examples](references/advanced-examples.md) |
 | Map headphone coordinates and stereo bypass | [Guide](references/guide.md#integrate-binaural-in-a-2d-app), [API](references/api.md) |
 | Interpret gain, clipping, statistics or render performance | [Recommendations](references/recommendations.md), [statistics](references/stats-performance.md), [engine](references/audio-engine.md) |
 | Diagnose rejection, silence, interruptions or glitches | [Troubleshooting](references/troubleshooting.md), [source notes](references/source-notes.md) |
+| Accepted optimizations, rejected Apple runtime and physical performance limits | [Current performance review](references/performance-review.json), [engine](references/audio-engine.md), [source notes](references/source-notes.md) |
+| Android binaural performance correction and its listening/load limits | [Current Sim80 correction](references/android-sim80-correction.json), [source notes](references/source-notes.md), [unified host validation](references/unified-validation.json), [bypass comparison](references/unified-bypass-performance.json) |
 | Audit provenance and acceptance boundaries | [Snapshot](references/source-snapshot.json), [source notes](references/source-notes.md), [historical Studio report](references/studio-validation.json), [physical evidence](references/physical-validation.json), [Frontier measurements](references/frontier-physical-validation.json) |
 
 Cite factual guidance with `[source: references/<file>.md]`. If the relevant source cannot be read, prefix the claim with `FROM_MEMORY (unverified):`; do not invent Web Audio or other synthesizer option names.
@@ -41,6 +54,8 @@ if (!synth.start({maxVoices: 32, maxSequences: 4,
   throw new Error('Audio engine rejected startup')
 }
 ```
+
+The current iOS `getDefaults()` omits some capability and limit metadata reported by Android. Detect required methods and use the API ranges; a missing metadata flag is not proof of a missing method. [source: references/api.md]
 
 Choose the actual required sequence capacity, 1–4; the snippet's four slots suit games with simultaneous music, effects and cues. One engine and render callback share up to 32 voices. Start after screen layout settles; the owning service/window shuts down on teardown. On iOS, `ambient` respects silent mode and mixes with other apps; `playback` is the default and ignores silent mode. Profile, voice/sequence capacity and session require shutdown before changing them. [source: references/api.md]
 
@@ -79,6 +94,8 @@ Compatible `updateVoice` fields include frequency, volume, vibrato, resonant fil
 - Use noise for impacts/wind, square for retro rewards, triangle for bass/plucks, sine FM for bells/keys, and filtered saw/noise for moving textures. Keep gains modest enough for release overlap and coherent unison. Listen on the actual speaker/headphones before approving timbre.
 
 Binaural coordinates span a headphone front plane. Omit both spatial keys to bypass; two zeros still enable binaural center. Map app percentages explicitly and preserve pitch/envelope recipes. Height perception depends on the listener and sound spectrum; output remains stereo without rear sources, room reflections or head tracking. [source: references/api.md]
+
+Timed zero attack/release and rejection diagnostics currently differ between native platforms. Check API acceptance directly; do not infer sample-identical envelopes or a complete rejection tally from validator parity. Read [source notes](references/source-notes.md) for independently rechecked findings. [source: references/api.md]
 
 Diagnostics are opt-in. Preserve unavailable/null readings; poll UI slowly and clean up its timer. Render load is callback work divided by deadline, not app CPU. Historical host reports, validator parity and hash equality do not establish current physical real-time or listening acceptance. Keep technical results and César's auditory acceptance separate. [source: references/audio-engine.md] [source: references/source-notes.md]
 

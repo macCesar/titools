@@ -3,7 +3,8 @@ import { readFile } from 'node:fs/promises';
 import { describe, it } from 'node:test';
 import vm from 'node:vm';
 
-const recipes = await readFile(new URL('../skills/ti-synthengine/references/recipes.md', import.meta.url), 'utf8');
+const recipes = (await Promise.all(['recipes.md', 'recipes-interaction.md'].map(name =>
+  readFile(new URL(`../skills/ti-synthengine/references/${name}`, import.meta.url), 'utf8')))).join('\n');
 
 function snippet(heading) {
   const section = recipes.split(`### ${heading}\n`)[1];

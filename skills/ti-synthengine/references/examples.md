@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at reviewed local commit `7ab31107302d9b7027a6359ba1a6fdb49c250407` (2026-10-23); this synchronization does not publish that commit or a release. Upstream `documentation/examples.md` SHA-256: `eba45d9ba675190050f4bfb15873c1c0a9821d5bc034397dcd9bc51dcdbf1e48`.
+> Source snapshot: official TiSynthEngine 1.0.0 documentation at release source commit `e7cbbe8a6f9ab38088fd8029c7b43cef6501101f` (2026-10-24). Upstream `documentation/examples.md` SHA-256: `48104b9d413050d439ee605c92a2456a50b42c4c80e2d7c2c05706eecc7db215`.
 
 # Examples
 
@@ -6,7 +6,7 @@ Every snippet on this page uses the TiSynthEngine 1.0.0 contract. Unless a snipp
 
 Additional [curated recipes](recipes.md) provide application sound and interaction variants.
 
-For the newer beta capabilities, begin with [held motors](advanced-examples.md#sustained-game-motor), [native sequences](advanced-examples.md#native-sequence-with-chords-and-edits), [master processing](advanced-examples.md#chorus-delay-reverb-and-creative-saturation) or [two LFOs](advanced-examples.md#two-voice-lfos). Detect methods before use; the version string alone cannot identify an installed beta build.
+For interactive instruments and native processing, begin with [held motors](advanced-examples.md#sustained-game-motor), [native sequences](advanced-examples.md#native-sequence-with-chords-and-edits), [master processing](advanced-examples.md#chorus-delay-reverb-and-creative-saturation) or [two LFOs](advanced-examples.md#two-voice-lfos). Use matching official packages and check method availability before enabling a feature.
 
 ```javascript
 var synth = require('ti.synthengine')
@@ -568,7 +568,7 @@ synth.stopAll()
 synth.shutdown()
 ```
 
-`stopAll()` fades current voices but leaves pending pattern scheduling alone. `shutdown()` cancels the scheduler and releases the native stream.
+`stopAll()` stops all native sequences, fades current voices and invalidates effect histories. `shutdown()` also releases the native stream. To stop only one sequence owner, use `stopSequence({ sequenceId })`.
 
 Follow the [interactive demo setup and test checklist](../assets/example/README.md) to run [`example/app.js`](../assets/example/app.js). It includes headphone positioning, session selection, pattern completion/replacement and all three statistics methods. For a service-level statistics recipe, see [read engine statistics](guide.md#read-engine-statistics).
 

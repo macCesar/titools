@@ -1,0 +1,1146 @@
+{
+  "generatedAt": "2026-10-24T04:37:07.074803+00:00",
+  "baselineRevision": "7ab31107302d9b7027a6359ba1a6fdb49c250407",
+  "apiVersion": "1.0.0",
+  "stage": "Audit and accepted implementation verified. F01/F05 retained; Apple runtime F02/F03/F04 and F09 rejected. Final packages and Studio updated. Physical acceptance limits remain explicitly open.",
+  "sourceSha256": {
+    "android/jni/SynthOboeEngine.cpp": "d4a044949b9c1bbc54d023ddd70ec979572617448f317e1866598439818a602e",
+    "ios/Classes/TiSynthengineModule.m": "1e43e652fab3631b29af514f936a9b879bbf87e94792da0b420f62218c81b56e",
+    "shared/synth_sequence.h": "0730d785465b8dae87fc748b6f9126306735fe37f5b73271337f907e3ddb129f",
+    "shared/synth_transport.h": "c40f576861450ed1347a307422d76335dcd83d1f7a8b251f61898a29d25ab68e",
+    "shared/synth_spatial.h": "d628ef9c60776be463c5dc45a972c9f9bbb0d183656f0dc177211038ba39d75a"
+  },
+  "candidateCodeRevision": "f3fef34",
+  "postTimingNormalization": "Earlier runtime timing is retained as rejected-candidate evidence. Production fallback matches frozen Apple callback source exactly; F01/F05 control-thread changes remain.",
+  "constraints": {
+    "publicMethods": 19,
+    "maxVoices": 32,
+    "maxSequences": 4,
+    "sequenceBanksPerSlot": 3,
+    "maxSteps": 512,
+    "bufferSizeChanged": false,
+    "latencyAdded": false,
+    "qualityReduced": false,
+    "dependenciesChanged": false,
+    "productionCompilerFlagsChanged": false,
+    "consumersInstalled": true,
+    "devicesAccessed": true,
+    "pushOrReleasePublished": false
+  },
+  "acceptance": {
+    "ownAppleRendererCompared": true,
+    "byteExact": true,
+    "comparedTraceBytes": 27056104814,
+    "scenarios": 120,
+    "engineRatesHz": [
+      16000,
+      44100,
+      48000,
+      96000,
+      192000
+    ],
+    "firStandaloneAlsoCovers8000Hz": true,
+    "fixtureBlockFrames": [
+      0,
+      1,
+      3,
+      4,
+      7,
+      8,
+      9,
+      15,
+      16,
+      17,
+      23,
+      31,
+      256,
+      512,
+      1024
+    ],
+    "traceScope": "PCM from every fixture block; full original voice/tail, filter/FIR, limiter buffers and dynamics, effects buffers/configuration and transport state at fixture checkpoints. Pointers and optional diagnostic timing are excluded.",
+    "negativeControl": "A changed phase increment failed comparison. Android empty-JNI result and Apple unknown-ID metadata tests failed against baseline and passed after correction.",
+    "finalRenderAlarmsClear": true,
+    "atomicAppleRuntimeBundle": [
+      "F02",
+      "F03",
+      "F04"
+    ],
+    "firAloneAccepted": false,
+    "physicalAcceptance": false,
+    "globalAcceptance": false,
+    "appleRuntimeBundleAccepted": false,
+    "finalRenderAlarmScope": "Original callback restored exactly; final matched iPad bypass p95 shows no regression. No production Apple render speedup claimed."
+  },
+  "performance": {
+    "platform": "ARM64 macOS host; actual Apple Objective-C renderer and producer. This is not an iPad real-time or whole-app CPU measurement.",
+    "compiler": "Apple clang 21.0.0; Apple C99 -Os; Android JNI host probe C++17 -O3; production module builds retain their original options.",
+    "alarmThresholdsPercent": {
+      "total": 2,
+      "p95": 5
+    },
+    "producerScope": "Actual ObjC publishSequence including preflight/merge/banks; actual Android JNI/native publication with supplied array accessors, excluding Java validation/VM allocation time.",
+    "producers": {
+      "apple": [
+        {
+          "case": "final-publication",
+          "arguments": [
+            "-2",
+            "1",
+            "100"
+          ],
+          "median": {
+            "baseline": {
+              "cpuSeconds": 0.004669433000000001,
+              "wallSeconds": 0.004898000015,
+              "cpuP95": 0.0001029165,
+              "wallP95": 0.00010400000600000001,
+              "cpuMax": 0.000132688,
+              "wallMax": 0.0002044999855,
+              "peakRssBytes": 16023552.0
+            },
+            "candidate": {
+              "cpuSeconds": 0.0021192925,
+              "wallSeconds": 0.0021889999300000003,
+              "cpuP95": 3.51455e-05,
+              "wallP95": 3.59999831e-05,
+              "cpuMax": 4.71875e-05,
+              "wallMax": 7.500004700000001e-05,
+              "peakRssBytes": 16048128.0
+            }
+          },
+          "changePercent": {
+            "cpuSeconds": -54.613493758235755,
+            "wallSeconds": -55.30829066361282,
+            "cpuP95": -65.85047101290853,
+            "wallP95": -65.38463363165576,
+            "cpuMax": -64.43725129627397,
+            "wallMax": -63.32515779078135,
+            "peakRssBytes": 0.15337423312884457
+          },
+          "investigate": false,
+          "pairedCpuRatioMedianPercent": -51.66094862984389,
+          "candidateCpuFasterPairs": 9,
+          "timingConclusion": "Short-score reduction reproduced despite contention; exact magnitude is host-specific."
+        },
+        {
+          "case": "final-publication",
+          "arguments": [
+            "-2",
+            "512",
+            "100"
+          ],
+          "median": {
+            "baseline": {
+              "cpuSeconds": 0.6567894595,
+              "wallSeconds": 1.298268,
+              "cpuP95": 0.009254499999999999,
+              "wallP95": 0.0306255,
+              "cpuMax": 0.011186895499999999,
+              "wallMax": 0.11592849999999999,
+              "peakRssBytes": 16400384.0
+            },
+            "candidate": {
+              "cpuSeconds": 0.6717859825,
+              "wallSeconds": 1.439968,
+              "cpuP95": 0.0092341665,
+              "wallP95": 0.033029,
+              "cpuMax": 0.0105741875,
+              "wallMax": 0.100573,
+              "peakRssBytes": 16375808.0
+            }
+          },
+          "changePercent": {
+            "cpuSeconds": 2.283307501831189,
+            "wallSeconds": 10.914541527635269,
+            "cpuP95": -0.21971473337294434,
+            "wallP95": 7.848035134120268,
+            "cpuMax": -5.4770154954964845,
+            "wallMax": -13.24566435345924,
+            "peakRssBytes": -0.14985014985015033
+          },
+          "investigate": true,
+          "pairedCpuRatioMedianPercent": -1.4064706356759826,
+          "candidateCpuFasterPairs": 5,
+          "timingConclusion": "Inconclusive under host contention: ratios of separate medians and paired ratios disagree. Keep alarm visible; quiet-host bulk retiming pending."
+        }
+      ],
+      "androidJniNative": [
+        {
+          "case": "F01-android-producer",
+          "arguments": [
+            "1",
+            "100"
+          ],
+          "median": {
+            "baseline": {
+              "cpuSeconds": 0.0025908765,
+              "wallSeconds": 0.00281149987,
+              "cpuP95": 3.4666500000000004e-05,
+              "wallP95": 4.049998825e-05,
+              "cpuMax": 7.602100000000001e-05,
+              "wallMax": 0.0001195000075,
+              "peakRssBytes": 12599296.0
+            },
+            "candidate": {
+              "cpuSeconds": 5.3146500000000004e-05,
+              "wallSeconds": 3.8000027399999996e-05,
+              "cpuP95": 5.84e-07,
+              "wallP95": 1.00000761e-06,
+              "cpuMax": 6.46e-07,
+              "wallMax": 1.00000761e-06,
+              "peakRssBytes": 12591104.0
+            }
+          },
+          "changePercent": {
+            "cpuSeconds": -97.94870577582529,
+            "wallSeconds": -98.6484072858947,
+            "cpuP95": -98.31537651623326,
+            "wallP95": -97.53084469104753,
+            "cpuMax": -99.15023480354112,
+            "wallMax": -99.16317360063765,
+            "peakRssBytes": -0.06501950585175997
+          },
+          "investigate": false
+        },
+        {
+          "case": "F01-android-producer",
+          "arguments": [
+            "512",
+            "100"
+          ],
+          "median": {
+            "baseline": {
+              "cpuSeconds": 0.0268086315,
+              "wallSeconds": 0.03128149995,
+              "cpuP95": 0.0006086045,
+              "wallP95": 0.0006529999955,
+              "cpuMax": 0.000782792,
+              "wallMax": 0.0012635000155,
+              "peakRssBytes": 14925824.0
+            },
+            "candidate": {
+              "cpuSeconds": 0.0231681885,
+              "wallSeconds": 0.02590450005,
+              "cpuP95": 0.000434917,
+              "wallP95": 0.0006125000075,
+              "cpuMax": 0.0006801665,
+              "wallMax": 0.0009019999995,
+              "peakRssBytes": 14909440.0
+            }
+          },
+          "changePercent": {
+            "cpuSeconds": -13.579369017773246,
+            "wallSeconds": -17.18907312179574,
+            "cpuP95": -28.53864866263722,
+            "wallP95": -6.202142156063772,
+            "cpuMax": -13.110187636051474,
+            "wallMax": -28.61100210251639,
+            "peakRssBytes": -0.1097694840834218
+          },
+          "investigate": false
+        }
+      ]
+    },
+    "render": "Original7ab3110 Apple callback restored byte-for-byte; no production Apple render speedup claimed. Retained producer and control-memory improvements are independent.",
+    "finalIpadBypass": {
+      "rateHz": 48000,
+      "callbackFrames": 1024,
+      "route": "Headphones",
+      "systemVolume": 1,
+      "phaseOrder": [
+        "silence",
+        "one-stereo",
+        "32-stereo",
+        "32-binaural"
+      ],
+      "referenceP95UpperLoad": [
+        0.016,
+        0.06,
+        0.328,
+        0.424
+      ],
+      "finalP95UpperLoad": [
+        0.015,
+        0.061,
+        0.328,
+        0.395
+      ],
+      "finalDeadlineMisses": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "interpretation": "Callback elapsed/deadline load. Original renderer retained; timing differences are not claimed as optimization gains."
+    },
+    "earlierAppleProducerTrials": [
+      {
+        "case": "F01-ios-producer",
+        "arguments": [
+          "-2",
+          "1",
+          "100"
+        ],
+        "median": {
+          "baseline": {
+            "cpuSeconds": 0.004031877,
+            "wallSeconds": 0.004195999965000001,
+            "cpuP95": 5.9250000000000004e-05,
+            "wallP95": 8.499997775e-05,
+            "cpuMax": 0.00011156250000000001,
+            "wallMax": 0.0001485000245,
+            "peakRssBytes": 16064512.0
+          },
+          "candidate": {
+            "cpuSeconds": 0.0019919795000000002,
+            "wallSeconds": 0.0022105000099999998,
+            "cpuP95": 2.3604e-05,
+            "wallP95": 5.2499992299999995e-05,
+            "cpuMax": 5.90005e-05,
+            "wallMax": 0.000101999991,
+            "peakRssBytes": 16031744.0
+          }
+        },
+        "changePercent": {
+          "cpuSeconds": -50.59423935799627,
+          "wallSeconds": -47.318874441411026,
+          "cpuP95": -60.16202531645569,
+          "wallP95": -38.23528700864867,
+          "cpuMax": -47.114397759103646,
+          "wallMax": -31.313148705911487,
+          "peakRssBytes": -0.20397756246812726
+        },
+        "investigate": false
+      },
+      {
+        "case": "F01-ios-producer",
+        "arguments": [
+          "-2",
+          "512",
+          "100"
+        ],
+        "median": {
+          "baseline": {
+            "cpuSeconds": 0.545239295,
+            "wallSeconds": 0.684606,
+            "cpuP95": 0.007901749999999999,
+            "wallP95": 0.01036199998,
+            "cpuMax": 0.0094417085,
+            "wallMax": 0.03814950005,
+            "peakRssBytes": 16416768.0
+          },
+          "candidate": {
+            "cpuSeconds": 0.5160989380000001,
+            "wallSeconds": 0.5853425,
+            "cpuP95": 0.006639395500000001,
+            "wallP95": 0.008276999989999999,
+            "cpuMax": 0.008451479,
+            "wallMax": 0.0207985,
+            "peakRssBytes": 16384000.0
+          }
+        },
+        "changePercent": {
+          "cpuSeconds": -5.344507864202996,
+          "wallSeconds": -14.499361676643218,
+          "cpuP95": -15.975631980257521,
+          "wallP95": -20.12159808940669,
+          "cpuMax": -10.487821139574471,
+          "wallMax": -45.481592228624756,
+          "peakRssBytes": -0.1996007984031989
+        },
+        "investigate": false
+      }
+    ],
+    "appleProducerEnvironment": {
+      "sampledAt": "2026-10-24T04:27:42.497912+00:00",
+      "loadAverages": "{ 19.43 140.60 184.74 }",
+      "finding": "Other active CoreSimulator WebContent and diagnostic processes consume substantial host CPU. No compilers were running, but host was not quiet. Do not use this trial to establish a small bulk-producer timing change."
+    },
+    "rawProducerTrials": "Full unmodified per-pair trials are retained in the evidence archive; final Apple trial also records host contention and paired-ratio qualification."
+  },
+  "decisions": [
+    {
+      "id": "F01",
+      "status": "incorporated",
+      "finding": "Redundant complete-bank copying and repeated Apple preparation",
+      "implementation": "Reserve replacement storage without copying; initialize all live Android steps and header; Apple preflight resets/prepares once and commits prepared storage. Generic partial writers retain inheritance, validation and atomic failures.",
+      "compatibility": "Compatible; no public contract change",
+      "evidence": [
+        "sequence_replacement_regression",
+        "generic and replacement publication concurrency, 1000 cycles each",
+        "Java canonical-memory/corpus and Apple contracts",
+        "paired producer state equality"
+      ],
+      "measurementBoundary": "Short-score CPU benefit reproduced in the final own-Apple host. Bulk512 final retiming under active host simulators is inconclusive; preserve alarm and do not promise a bulk or whole-app percentage."
+    },
+    {
+      "id": "F02",
+      "status": "rejected after physical validation; production code removed",
+      "finding": "Apple per-sample FIR",
+      "compatibility": "Compatible under the frozen Release toolchain; other build modes retain streaming FIR",
+      "rejectedExperiments": "All-FMA at O3 and Android-style mixed accumulation at Apple -Os changed sample bits and were rejected. The first whole-callback helper prototype changed stereo timing by +206%/+20% and was rejected. Protected FIR alone still regresses idle CPU 20.13% and one stereo voice 2.89% in long warmed trials; it is not accepted independently. The final F02/F03/F04 bundle improves those cases by 29.51%/6.19% and clears every final alarm.",
+      "decisionReason": "Reproducible iPad32-stereo p95/elapsed regression, including continuous voices. Bit-exact compatibility and gains elsewhere do not resolve this timing regression.",
+      "rejectedImplementation": "ARM64 size-optimized Release time blocks reuse coefficients for eight/four samples and preserve the own-Apple fused lane accumulation. Stereo and other Apple build modes stream. Spatial tiles stop before native attacks and use saved sample clocks. Helpers stay on the stack and never escape.",
+      "implementation": "Removed together. Production retains original Apple processing."
+    },
+    {
+      "id": "F03",
+      "status": "rejected after physical validation; production code removed",
+      "finding": "Repeated stable held-control derivation",
+      "compatibility": "Compatible; original semantic voice state retained",
+      "decisionReason": "Reproducible iPad32-stereo p95/elapsed regression, including continuous voices. Bit-exact compatibility and gains elsewhere do not resolve this timing regression.",
+      "rejectedImplementation": "Skip unchanged derived held controls only after initialization and ramp completion; preserve sequence sweeps and the final ramp sample.",
+      "implementation": "Removed together. Production retains original Apple processing."
+    },
+    {
+      "id": "F04",
+      "status": "rejected after physical validation; production code removed",
+      "finding": "Idle effect-routing overhead",
+      "compatibility": "Compatible; fractional sends and complete hidden state compared byte-for-byte",
+      "decisionReason": "Reproducible iPad32-stereo p95/elapsed regression, including continuous voices. Bit-exact compatibility and gains elsewhere do not resolve this timing regression.",
+      "rejectedImplementation": "At a block boundary, bypass only a fully quiescent unity-gain effects state; keep the original separate selected/dry arithmetic and every send tick. Ramping, tails, processing changes and later enabling retain the full path.",
+      "implementation": "Removed together. Production retains original Apple processing."
+    },
+    {
+      "id": "F05",
+      "status": "incorporated",
+      "finding": "Empty poll/prune allocations and unknown-ID position retention",
+      "implementation": "Return null for empty JNI completion polls, already handled by Java; skip empty-generation pruning; never retain a position for an unknown generation. Keep the 10 ms event cadence and queued/active ownership.",
+      "compatibility": "Compatible; valid unknown edits remain queued accepted no-ops, including existing queue failure behavior",
+      "evidence": "Idle JNI regression observes zero NewDoubleArray calls and one durable stop delivery. Apple regression checks 1,000 unknown edits, queued/active retention and retirement. 100,000 empty prune calls use about 96% less CPU in the isolated host experiment; retained allocations are measured within one autorelease pool, not claimed as physical memory savings."
+    },
+    {
+      "id": "F06",
+      "status": "deferred",
+      "finding": "Fixed transport and effects reservation",
+      "reason": "Preserve callback preallocation and current layout; no physical whole-process memory evidence justifies dynamic capacity storage.",
+      "arm64HostBytes": {
+        "transport": 8627848,
+        "effectsHeap192k": 13741712
+      },
+      "followup": "Physical footprint/RSS peaks and recovery at supported device rates; any future capacity change must preserve 1\u20134 slots and all limits."
+    },
+    {
+      "id": "F07",
+      "status": "retain existing implementation",
+      "finding": "Onset, waveform/filter/modulation, limiter and diagnostic costs",
+      "reason": "No measured replacement justifies approximation or changing phases, RNG, coefficient cadence, limiting, gain, meters or buffers. Existing formulas and scheduling are preserved."
+    },
+    {
+      "id": "F08",
+      "status": "implemented",
+      "finding": "No own-Apple full-renderer comparison harness",
+      "implementation": "Extract actual production ObjC callback and helpers into an isolated macOS harness, with deterministic noise seed/disabled-diagnostic clock only, bounded byte-stream comparison and independent warmed CPU/wall benchmark. No AVAudioEngine/session/Titanium lifecycle is emulated as accepted."
+    },
+    {
+      "id": "F09",
+      "status": "rejected",
+      "finding": "Outlining spatial branch improved initial speaker stereo timings but did not resolve headphone32-stereo regression",
+      "implementation": "External nonescaping unsafe local block prototype only; never incorporated. Stack/code isolation checked; no direct callback allocations/ARC/locks.",
+      "evidence": "Speaker .275/.274 p95 vs .330 reference; headphone .407/.406 and ordered-window ~.405 vs .328 reference. CPU placement/frequency and compiler interactions remain hypotheses."
+    }
+  ],
+  "areaCoverage": [
+    {
+      "area": "bridge and validation",
+      "conclusion": "Closed option contracts preserved; Java/iOS corpora, API linkage, native packet/state equality and bounded memory regression pass. F01/F05."
+    },
+    {
+      "area": "publication, banks and transport",
+      "conclusion": "Full versus partial write paths, prepared commit, durable events, generic/full concurrent publication and ten-minute five-rate musical clock pass. F01."
+    },
+    {
+      "area": "voices, priorities, replacement and held controls",
+      "conclusion": "Original admission, priority, retrigger, phase/RNG and tail policy retained. Expanded own-Apple PCM/state traces match; final iPad bypass voice counts/formats/route and timing verified. F05 retained; F03 removed."
+    },
+    {
+      "area": "waveforms, envelopes, filters, vibrato, FM and modulation",
+      "conclusion": "Original formulas, per-sample control evaluation and cadence retained. Expanded own-Apple PCM/state traces match frozen reference across120scenarios/five rates/irregular and512/1024-frame blocks. F07."
+    },
+    {
+      "area": "binaural",
+      "conclusion": "Android SIMD/time-block implementation retained. Own-Apple time-block candidate was bit exact but rejected after physical stereo timing regression; original Apple streaming renderer restored. F02/F09 rejected; F08 host tools retained."
+    },
+    {
+      "area": "effects, mixing, limiter and output",
+      "conclusion": "Original Apple effects processing retained after rejecting runtime fast paths. PCM/state comparison covers routing, ramps, panic/drain/re-enable. Android extreme all-FX load fails feasibility in both revisions; no quality/buffer/latency change used to mask it."
+    },
+    {
+      "area": "statistics",
+      "conclusion": "Publication, reset and concurrency regression pass; timing is kept separate from sample/state comparison. Backend unknown fields and diagnostics cadence remain unchanged."
+    },
+    {
+      "area": "lifecycle and recovery",
+      "conclusion": "Control locking and callback stop/start/recovery policy unchanged. Original transport/end/reuse and metadata lifecycle checks pass; ten controlled software recoveries retain transports and effect allocation. Hardware route changes invalidate timing runs; full hardware recovery/listening acceptance remains separate."
+    },
+    {
+      "area": "memory and builds",
+      "conclusion": "Fixed native reservation retained; unnecessary transient objects and orphan metadata removed. Four Android ABI and device/simulator/Catalyst builds and binary/package matching verified. F05/F06."
+    }
+  ],
+  "verification": {
+    "recordedGroupCommandCount": 48,
+    "allCommandsExitZero": true,
+    "groups": [
+      "shared sequence/full-replacement/clock/concurrency/stats/held/routing/effects/modulation/spatial",
+      "API19 linkage, Java corpus/canonical memory, four Apple contract programs, Android native ends/publication/render/held"
+    ],
+    "independentReview": {
+      "findings": [],
+      "mode": "Read-only independent review of native diff and test/tools; reviewer did not execute builds or tests. Root executed verification separately.",
+      "fallback": "Read-only reviewer confirmed complete runtime rollback, original callback/header equality and retention of F01/F05; no Critical/Important findings."
+    },
+    "moduleBuilds": [
+      {
+        "platform": "android",
+        "sdk": "13.4.1.GA",
+        "exit": 0,
+        "reportedSeconds": 181.364,
+        "abis": [
+          "arm64-v8a",
+          "armeabi-v7a",
+          "x86",
+          "x86_64"
+        ],
+        "shippingPolicy": "Exact previously measured production AAR reused. Apple-only header rollback leaves Android preprocessing equivalent after trivial int declaration normalization; Java class bytes unchanged. All four ABIs also rebuilt successfully."
+      },
+      {
+        "platform": "ios",
+        "sdk": "13.4.1.GA",
+        "exit": 0,
+        "reportedSeconds": 179.829,
+        "variants": [
+          "device",
+          "simulator",
+          "Catalyst"
+        ]
+      }
+    ],
+    "nativeArtifacts": {
+      "sdk": "13.4.1.GA",
+      "android": [
+        {
+          "member": "jni/arm64-v8a/liboboe.so",
+          "elfClass": 2,
+          "machine": 183,
+          "sha256": "2696179a9e302f4047ce04146de39f64930bdfaa75d51da63bc7af1a228b8d73",
+          "matchesBuild": true,
+          "dependencyUnchanged": true
+        },
+        {
+          "member": "jni/arm64-v8a/libti.synthengine.so",
+          "elfClass": 2,
+          "machine": 183,
+          "sha256": "a450bccbccff6834fb2bca187591070c49f809d8358ae7e4386c6e5348984d94",
+          "matchesBuild": true,
+          "dependencyUnchanged": null
+        },
+        {
+          "member": "jni/armeabi-v7a/liboboe.so",
+          "elfClass": 1,
+          "machine": 40,
+          "sha256": "6eebcff8923f11f79d10bd3404afccab9c8d9ba629709334fc76663894b0e914",
+          "matchesBuild": true,
+          "dependencyUnchanged": true
+        },
+        {
+          "member": "jni/armeabi-v7a/libti.synthengine.so",
+          "elfClass": 1,
+          "machine": 40,
+          "sha256": "ea5e5949734ad2e89c999f75ccca7fc7d413687accf9dbf0b58f3ec5b8e4f58f",
+          "matchesBuild": true,
+          "dependencyUnchanged": null
+        },
+        {
+          "member": "jni/x86/liboboe.so",
+          "elfClass": 1,
+          "machine": 3,
+          "sha256": "8846bdc73a1ad884e017c7f3082042184bb8c9876651f48e77faef24f7c7eec4",
+          "matchesBuild": true,
+          "dependencyUnchanged": true
+        },
+        {
+          "member": "jni/x86/libti.synthengine.so",
+          "elfClass": 1,
+          "machine": 3,
+          "sha256": "79c1cfd65fb4b8cb63501730d591251eafa1800bbc2ded63dd886086655611aa",
+          "matchesBuild": true,
+          "dependencyUnchanged": null
+        },
+        {
+          "member": "jni/x86_64/liboboe.so",
+          "elfClass": 2,
+          "machine": 62,
+          "sha256": "f1168819d87b8571bb7c8147176854a2e5783bae6e35d2a420d99dc19692db94",
+          "matchesBuild": true,
+          "dependencyUnchanged": true
+        },
+        {
+          "member": "jni/x86_64/libti.synthengine.so",
+          "elfClass": 2,
+          "machine": 62,
+          "sha256": "d7ef67135e3740df9e5e2000d318739c9c10dcaa4e086ebae9edb912d9618297",
+          "matchesBuild": true,
+          "dependencyUnchanged": null
+        }
+      ],
+      "apple": [
+        {
+          "slice": "ios-arm64",
+          "member": "modules/iphone/ti.synthengine/1.0.0/ti.synthengine.xcframework/ios-arm64/libti.synthengine.a",
+          "sha256": "535fe6236ba418821cdd7a20a97c6d8a2ceb94865f378876c1c19734eac50818",
+          "matchesBuild": true,
+          "architectures": [
+            "arm64"
+          ]
+        },
+        {
+          "slice": "ios-arm64_x86_64-maccatalyst",
+          "member": "modules/iphone/ti.synthengine/1.0.0/ti.synthengine.xcframework/ios-arm64_x86_64-maccatalyst/libti.synthengine.a",
+          "sha256": "61878032b7f3fd6757aa90d54f0d878e3d15c0713180904e1219fd6cf112ee89",
+          "matchesBuild": true,
+          "architectures": [
+            "x86_64",
+            "arm64"
+          ]
+        },
+        {
+          "slice": "ios-arm64_x86_64-simulator",
+          "member": "modules/iphone/ti.synthengine/1.0.0/ti.synthengine.xcframework/ios-arm64_x86_64-simulator/libti.synthengine.a",
+          "sha256": "49dd17f9313454ac4b54348260f377195f9166d1ef4eee56b0f7f07b3be974c1",
+          "matchesBuild": true,
+          "architectures": [
+            "x86_64",
+            "arm64"
+          ]
+        }
+      ],
+      "physicalAcceptance": false,
+      "aarSha256": "93efaa0c9ce47a0da7901b9e01fe3f89364860c272e137d17b1c7687b70ef09b",
+      "androidAarSha256": "93efaa0c9ce47a0da7901b9e01fe3f89364860c272e137d17b1c7687b70ef09b",
+      "androidRebuildAndReuseProof": "physical/android-measured-artifact-reuse.json"
+    },
+    "productionCallback": {
+      "callbackAndLocalBlocks": [
+        {
+          "symbol": "___29-[TiSynthengineModule start:]_block_invoke.141",
+          "start": 21284,
+          "end": 41460
+        }
+      ],
+      "forbiddenRelocations": [],
+      "controlBlocksExcluded": [
+        {
+          "symbol": "___29-[TiSynthengineModule start:]_block_invoke",
+          "start": 21220,
+          "end": 21264
+        }
+      ]
+    },
+    "privateTelemetryExcludedFromProduction": true,
+    "originalGroupScope": "The48 recorded compile/correctness commands belong to the original offline audit, before physical rejection. Final rollback checks, builds and device results are recorded separately. Rejected timing experiments are not test passes.",
+    "finalRollback": {
+      "expandedApplePcmAndStateTrace": {
+        "scenarios": 120,
+        "bytes": 27056104814,
+        "byteExact": true
+      },
+      "originalRenderBodyByteIdentical": true,
+      "sharedSpatialRegressionOs": "pass",
+      "moduleBuilds": "Android4ABIs and iOS device/simulator/Catalyst passed",
+      "finalIpadBypass": "Four phases completed with unchanged route/volume/formats and0callback deadline misses",
+      "finalIpadGame": "Two complete eight-phase runs; overall presentation stable, strict matched comparison inconclusive",
+      "consumerBuilds": "Studio Android and iPad passed; actual linked/packaged native hashes verified",
+      "consumerData": "Installed in place; no source, presets, library or preference edits"
+    }
+  },
+  "physicalPending": [
+    "Physical output/memory at192k remains unverified;48k compact evidence and native projections are separate. No material whole-process RAM reduction claimed.",
+    "Strict iPad population-matched Sim20/Sim80 acceptance remains inconclusive after two runs:42.5\u201345.8% coverage below50%. Overall presentation stays~60FPS and thresholds pass; do not call it a strict matched pass.",
+    "Full listening acceptance, including the reported ripple texture and physical output-stage effects, remains separate from measured native headroom.",
+    "Quiet-host final Apple512-step producer retiming: contended sample is inconclusive. Short-score benefit reproduced, but no final bulk512 gain claimed.",
+    "Android extreme32-binaural/four-sequence/two-LFO/all-effects load fails30-second feasibility in both revisions; ten-minute criterion remains uncertified without lowering limits. Occasional Sim80 output underruns remain visible in both versions."
+  ],
+  "rollback": "F02/F03/F04 were removed together after physical regression. F01 publication and F05 control-memory fixes remain separate reversible changes. Native distribution builds must match current source. Frozen7ab3110 source/toolchain/binaries and rejected runtime measurements remain retained.",
+  "evidence": {
+    "archive": "performance-review-evidence.zip",
+    "sha256": "0539e799d66ed26ef5d64f727dd30bec55692bfd691584e25753999c545b8cf6",
+    "zipCRC": true,
+    "rawTrialsRetained": true,
+    "baselineSourcesBinariesAndFlagsFrozenSeparately": true,
+    "physicalRawReportsIncluded": true,
+    "deduplicatedPhysicalFiles": 115,
+    "identicalPayloadAliases": 11
+  },
+  "physical": {
+    "globalAcceptance": false,
+    "nativeCandidate": "f3fef34: F01/F05 retained, Apple runtime F02/F03/F04 removed; F09 external prototype rejected",
+    "ios": {
+      "device": "iPad9 (A13), iOS27.0.1",
+      "matchedFullStress": {
+        "rateHz": 48000,
+        "frames": 1024,
+        "audioSeconds": 600.0213333333334,
+        "baselineP95UpperLoad": 0.427,
+        "candidateP95UpperLoad": 0.383,
+        "deadlineMisses": {
+          "baseline": 0,
+          "candidate": 0
+        },
+        "outputUnderruns": null,
+        "interpretation": "Callback elapsed/deadline ratio, not whole-app/thread CPU. Native clock and four formats verified. This does not waive the stereo regression.",
+        "candidateStatus": "Rejected earlier runtime bundle; final callback is byte-identical to reference, not this candidate."
+      },
+      "compactMemory": {
+        "rateHz": 48000,
+        "baselineChargedGrowthMiB": 18.28118133544922,
+        "candidateChargedGrowthMiB": 18.171783447265625,
+        "baselineResidentHighwaterGrowthMiB": 17.75,
+        "candidateResidentHighwaterGrowthMiB": 18.015625,
+        "denseEditsPerRevision": 120,
+        "restartBothAccepted": true,
+        "interpretation": "Whole-process growth after requiring module, includes bridge/runtime/producer. No material RAM saving claimed.192k physical memory unverified."
+      },
+      "controlledRecovery": {
+        "cycles": 10,
+        "recovered": true,
+        "scope": "Software pause and unchanged production resume helper, not physical route-change simulation."
+      },
+      "bypassAlarm": {
+        "rateHz": 48000,
+        "frames": 1024,
+        "baseline32StereoP95Upper": 0.33,
+        "candidate32StereoP95Upper": 0.378,
+        "reproduced": true,
+        "outlinedSpeakerP95Upper": [
+          0.275,
+          0.274
+        ],
+        "outlinedHeadphoneP95Upper": [
+          0.407,
+          0.406
+        ],
+        "headphoneReferenceP95Upper": 0.328,
+        "decision": "Rejected both runtime variants; production original renderer restored and final four-phase bypass passed.",
+        "orderedABBA": [
+          {
+            "label": "A1",
+            "kind": "reference",
+            "callbacks": 5812,
+            "p95Upper": 0.328,
+            "windowP95": [
+              0.328,
+              0.328,
+              0.328,
+              0.328,
+              0.327,
+              0.328
+            ],
+            "deadlineMisses": 0,
+            "appZipSha256": "7c26202f63dfd9e428dfda545bde425e84a76624432ef4d49bb75da0223d7b4b"
+          },
+          {
+            "label": "B1",
+            "kind": "outlined",
+            "callbacks": 5812,
+            "p95Upper": 0.405,
+            "windowP95": [
+              0.405,
+              0.405,
+              0.406,
+              0.405,
+              0.405,
+              0.405
+            ],
+            "deadlineMisses": 0,
+            "appZipSha256": "cb35941a5841045320fe8ecb4b8a20cf58d3bbdc22487ed9e4b36511448ffd8b"
+          },
+          {
+            "label": "B2",
+            "kind": "outlined",
+            "callbacks": 5812,
+            "p95Upper": 0.406,
+            "windowP95": [
+              0.405,
+              0.406,
+              0.406,
+              0.406,
+              0.406,
+              0.405
+            ],
+            "deadlineMisses": 0,
+            "appZipSha256": "cb35941a5841045320fe8ecb4b8a20cf58d3bbdc22487ed9e4b36511448ffd8b"
+          },
+          {
+            "label": "A2",
+            "kind": "reference",
+            "callbacks": 5812,
+            "p95Upper": 0.328,
+            "windowP95": [
+              0.329,
+              0.328,
+              0.329,
+              0.328,
+              0.329,
+              0.328
+            ],
+            "deadlineMisses": 0,
+            "appZipSha256": "7c26202f63dfd9e428dfda545bde425e84a76624432ef4d49bb75da0223d7b4b"
+          }
+        ],
+        "finalBypassVerified": true
+      },
+      "game": {
+        "runs": 2,
+        "phases": 16,
+        "complete": true,
+        "errors": [],
+        "comparisons": [
+          {
+            "workload": "simulation20",
+            "overallPresentationAccepted": true,
+            "strictPopulationMatchedAccepted": false,
+            "presentation": {
+              "offP95Ms": 16.665771484375,
+              "onP95Ms": 16.666015625,
+              "changePercent": 0.0014649224323592946,
+              "investigate": false,
+              "offActualMeanFps": 60.01933349823698,
+              "onActualMeanFps": 60.01933667181973,
+              "actualFpsChangePercent": 5.287600779446677e-06,
+              "investigateActualFps": false
+            },
+            "matchedCoverage": {
+              "off": 0.42857142857142855,
+              "on": 0.425
+            },
+            "matchedPairs": 51,
+            "matchedP95ChangePercent": 0.0014649224323592946,
+            "matchedFpsChangePercent": -9.260544331368692e-06,
+            "matchedStatus": "inconclusive",
+            "rendererCpuP95AlarmPercent": 7.287461783767313,
+            "populationChangePercent": 3.052733430091936
+          },
+          {
+            "workload": "simulation80",
+            "overallPresentationAccepted": true,
+            "strictPopulationMatchedAccepted": false,
+            "presentation": {
+              "offP95Ms": 16.665771484375,
+              "onP95Ms": 16.666015625,
+              "changePercent": 0.0014649224323592946,
+              "investigate": false,
+              "offActualMeanFps": 60.019375119508666,
+              "onActualMeanFps": 60.019394206348096,
+              "actualFpsChangePercent": 3.180112986278516e-05,
+              "investigateActualFps": false
+            },
+            "matchedCoverage": {
+              "off": 0.4583333333333333,
+              "on": 0.4583333333333333
+            },
+            "matchedPairs": 55,
+            "matchedP95ChangePercent": 0.0014649224323592946,
+            "matchedFpsChangePercent": -4.884387696524328e-05,
+            "matchedStatus": "inconclusive",
+            "rendererCpuP95AlarmPercent": 15.713384815123742,
+            "populationChangePercent": -3.503562945368177
+          }
+        ],
+        "rendererSampleRateHz": 44100,
+        "nonzeroCallbackFrames": 1024,
+        "actualHardwareSessionFormat": "Not separately instrumented in production game app.",
+        "outputUnderruns": null,
+        "interpretation": "Actual presentation stays ~60FPS and overall thresholds pass. Strict matched comparison remains inconclusive: coverage42.5\u201345.8%<50%, even though matched framep95 is stable. Do not turn the analyzer overall acceptance flag into a strict matched pass. CPU proxy warnings remain separate; different populations and native update work prevent attributing them to synthesis."
+      }
+    },
+    "android": {
+      "device": "OPPO CPH2639, Android16",
+      "gameFramePresentation": {
+        "workloads": [
+          "Sim20",
+          "Sim80"
+        ],
+        "approximatelyFps": 60,
+        "strictMatchedWindowComparison": "within thresholds across two candidate runs",
+        "sim20P95FrameChangePercent": -0.3528,
+        "sim80P95FrameChangePercent": -0.1154
+      },
+      "sim80OutputUnderruns": "Occasional increases occur with both reference and candidate; not zero-underrun acceptance. Extreme supplemental game scenario.",
+      "sim20Cost": {
+        "matchedMeanElapsedChangePercent": -1.7070026265235683,
+        "meanWindowP95ElapsedChangePercent": 0.7541548393943165,
+        "interpretation": "New targeted sample did not reproduce the mean elapsed increase. Earlier alarms remain recorded; elapsed timing is not thread CPU/GPU."
+      },
+      "fullLoadFeasibility": {
+        "rateHz": 48000,
+        "frames": 256,
+        "bufferFrames": 512,
+        "durationSeconds": 30,
+        "baselineDeadlineMisses": 1287,
+        "candidateDeadlineMisses": 1269,
+        "passed": false,
+        "interpretation": "Both fail existing extreme32-binaural/four-sequence/two-LFO/all-effects gate. Ten-minute protocol not run after failed feasibility; thresholds unchanged."
+      },
+      "memoryAndRestart": {
+        "denseEditsPerRevision": 80,
+        "successfulRestartsPerRevision": 5
+      }
+    },
+    "listening": {
+      "android": "User reported very quiet notes, believed clean. Qualified short-phrase observation only.",
+      "ipad": "User reported generally good sound with slight oscillation. Beat interference is a hypothesis; agent cannot hear physical output. Binaural fixture deliberately points right.",
+      "fullAcceptance": false,
+      "studioAndroid": "App responds and notes sound. User reported saturation-like texture in factory ripple while playing single notes; improved at another octave. Saved factory state has no FX/LFO/saturation. Affected-preset Android-renderer host check shows0dB limiting across tested combinations; stepped32-sample wavetable explains possible texture, not a confirmed cause. Similar texture also reported on iPad; no sound/gain edits.",
+      "studioIpad": "User reports similar saturation-like texture in ripple, especially C3\u2013B4, and suspects intended timbre. Factory stepped wavetable and register dependence are consistent with that observation, but agent cannot directly hear physical output. No waveform/gain/preset edits."
+    },
+    "evidenceDirectory": "External durable ti-synthengine-performance-2026-10-23/physical; final archive update pending",
+    "studio": {
+      "android": "Updated, built, installed without clearing app data; eight packaged native members match measured AAR.",
+      "ios": "Updated, built, installed and launched without clearing app data; device native archive matches final production535fe623...; no application-source or preset edits.",
+      "applicationSourceOrPresetsChanged": false
+    }
+  },
+  "rejectedAppleRuntimeBundle": {
+    "renderConditions": "48kHz, 256-frame callbacks, diagnostics off, fixed identical per-case warmups, user-interactive QoS request without CPU affinity guarantee; ten alternating measured pairs after a discarded pair; independent thread CPU/monotonic wall clocks. No compilers or other suites ran during timing.",
+    "render": [
+      {
+        "scenario": "silence",
+        "changePercent": {
+          "wallSeconds": -32.20737576741877,
+          "cpuSeconds": -29.51357194867541,
+          "wallP95": -33.333333222223075,
+          "cpuP95": -29.82267598065558,
+          "wallMax": -79.31027914563276,
+          "cpuMax": -63.93448275862069,
+          "peakRssBytes": 0.0
+        },
+        "median": {
+          "baseline": {
+            "wallSeconds": 0.0025459998849999997,
+            "cpuSeconds": 0.002686276,
+            "wallP95": 3.00002284e-06,
+            "cpuP95": 2.7915000000000003e-06,
+            "wallMax": 2.8999988e-05,
+            "cpuMax": 1.45e-05,
+            "peakRssBytes": 15925248.0
+          },
+          "candidate": {
+            "wallSeconds": 0.001726000135,
+            "cpuSeconds": 0.00189346,
+            "wallP95": 2.00001523e-06,
+            "cpuP95": 1.959e-06,
+            "wallMax": 6.000016565e-06,
+            "cpuMax": 5.2295e-06,
+            "peakRssBytes": 15925248.0
+          }
+        },
+        "investigationAlarm": false
+      },
+      {
+        "scenario": "oneHeldStereo",
+        "changePercent": {
+          "wallSeconds": -5.810995956134257,
+          "cpuSeconds": -6.187380602852677,
+          "wallP95": -8.333373610999683,
+          "cpuP95": -6.870325770059582,
+          "wallMax": 21.176507579261038,
+          "cpuMax": 19.515000000000015,
+          "peakRssBytes": 0.0
+        },
+        "median": {
+          "baseline": {
+            "wallSeconds": 0.0112114998,
+            "cpuSeconds": 0.0113217215,
+            "wallP95": 1.20000332e-05,
+            "cpuP95": 1.1833500000000001e-05,
+            "wallMax": 4.24999744e-05,
+            "cpuMax": 2.9999999999999997e-05,
+            "peakRssBytes": 15958016.0
+          },
+          "candidate": {
+            "wallSeconds": 0.01056,
+            "cpuSeconds": 0.010621203499999999,
+            "wallP95": 1.10000256e-05,
+            "cpuP95": 1.10205e-05,
+            "wallMax": 5.14999847e-05,
+            "cpuMax": 3.58545e-05,
+            "peakRssBytes": 15958016.0
+          }
+        },
+        "investigationAlarm": false
+      },
+      {
+        "scenario": "oneHeldBinaural",
+        "changePercent": {
+          "wallSeconds": -60.119999369936835,
+          "cpuSeconds": -59.68433390269574,
+          "wallP95": -59.99995352002918,
+          "cpuP95": -59.734346105665026,
+          "wallMax": -48.484866346801844,
+          "cpuMax": -45.48897707896366,
+          "peakRssBytes": 0.10256410256410664
+        },
+        "median": {
+          "baseline": {
+            "wallSeconds": 0.0237499997,
+            "cpuSeconds": 0.023762545500000003,
+            "wallP95": 2.50000157e-05,
+            "cpuP95": 2.51455e-05,
+            "wallMax": 9.899999725e-05,
+            "cpuMax": 6.6271e-05,
+            "peakRssBytes": 15974400.0
+          },
+          "candidate": {
+            "wallSeconds": 0.00947150003,
+            "cpuSeconds": 0.0095800285,
+            "wallP95": 1.00000179e-05,
+            "cpuP95": 1.0125e-05,
+            "wallMax": 5.0999980899999996e-05,
+            "cpuMax": 3.6125e-05,
+            "peakRssBytes": 15990784.0
+          }
+        },
+        "investigationAlarm": false
+      },
+      {
+        "scenario": "32HeldStereo",
+        "changePercent": {
+          "wallSeconds": -9.605627306273078,
+          "cpuSeconds": -9.431025591277164,
+          "wallP95": -10.121418643144708,
+          "cpuP95": -9.841056910569112,
+          "wallMax": -10.591908427713237,
+          "cpuMax": -11.779799393515288,
+          "peakRssBytes": 0.1520527116066983
+        },
+        "median": {
+          "baseline": {
+            "wallSeconds": 0.11707200000000001,
+            "cpuSeconds": 0.116591641,
+            "wallP95": 0.00012349998,
+            "cpuP95": 0.000123,
+            "wallMax": 0.0003209999995,
+            "cpuMax": 0.0002679375,
+            "peakRssBytes": 16162816.0
+          },
+          "candidate": {
+            "wallSeconds": 0.10582649999999999,
+            "cpuSeconds": 0.1055958535,
+            "wallP95": 0.00011100003,
+            "cpuP95": 0.0001108955,
+            "wallMax": 0.00028699997350000003,
+            "cpuMax": 0.00023637499999999999,
+            "peakRssBytes": 16187392.0
+          }
+        },
+        "investigationAlarm": false
+      },
+      {
+        "scenario": "32HeldBinaural",
+        "changePercent": {
+          "wallSeconds": -59.96380059332995,
+          "cpuSeconds": -59.93091130237678,
+          "wallP95": -60.93896557949263,
+          "cpuP95": -60.31436900155782,
+          "wallMax": -56.38075303626293,
+          "cpuMax": -56.78286040369087,
+          "peakRssBytes": -0.10040160642570406
+        },
+        "median": {
+          "baseline": {
+            "wallSeconds": 0.4936545,
+            "cpuSeconds": 0.4916118145,
+            "wallP95": 0.0005325000095,
+            "cpuP95": 0.0005209164999999999,
+            "wallMax": 0.0009560000035,
+            "cpuMax": 0.0008209994999999999,
+            "peakRssBytes": 16318464.0
+          },
+          "candidate": {
+            "wallSeconds": 0.1976405,
+            "cpuSeconds": 0.196984374,
+            "wallP95": 0.000208000012,
+            "cpuP95": 0.000206729,
+            "wallMax": 0.00041700000250000004,
+            "cpuMax": 0.0003548125,
+            "peakRssBytes": 16302080.0
+          }
+        },
+        "investigationAlarm": false
+      },
+      {
+        "scenario": "fourSequences32VoicesTwoLfosEffectsStereo",
+        "changePercent": {
+          "wallSeconds": 0.1593860422784532,
+          "cpuSeconds": -0.4916938178988861,
+          "wallP95": 2.9493098459513645,
+          "cpuP95": 1.3453353119418532,
+          "wallMax": 349.9211384063181,
+          "cpuMax": 25.5771240975228,
+          "peakRssBytes": -0.0849617672047609
+        },
+        "median": {
+          "baseline": {
+            "wallSeconds": 0.44389049999999997,
+            "cpuSeconds": 0.43955555700000004,
+            "wallP95": 0.0005424999689999999,
+            "cpuP95": 0.0005064164999999999,
+            "wallMax": 0.00126799999,
+            "cpuMax": 0.000986313,
+            "peakRssBytes": 19283968.0
+          },
+          "candidate": {
+            "wallSeconds": 0.4445979995,
+            "cpuSeconds": 0.43739428950000003,
+            "wallP95": 0.0005584999740000001,
+            "cpuP95": 0.0005132295,
+            "wallMax": 0.00570499999,
+            "cpuMax": 0.0012385834999999999,
+            "peakRssBytes": 19267584.0
+          }
+        },
+        "investigationAlarm": false
+      },
+      {
+        "scenario": "fourSequences32VoicesTwoLfosEffectsBinaural",
+        "changePercent": {
+          "wallSeconds": -47.80595154423101,
+          "cpuSeconds": -48.49513974364825,
+          "wallP95": -48.39826872035131,
+          "cpuP95": -47.89399492353785,
+          "wallMax": -18.721547401766426,
+          "cpuMax": -6.650274997745919,
+          "peakRssBytes": -0.08382229673092878
+        },
+        "median": {
+          "baseline": {
+            "wallSeconds": 1.4284780000000001,
+            "cpuSeconds": 1.364642525,
+            "wallP95": 0.001732500005,
+            "cpuP95": 0.0016099795,
+            "wallMax": 0.0238335,
+            "cpuMax": 0.00277275,
+            "peakRssBytes": 19546112.0
+          },
+          "candidate": {
+            "wallSeconds": 0.7455804994999999,
+            "cpuSeconds": 0.7028572255,
+            "wallP95": 0.0008939999970000001,
+            "cpuP95": 0.000838896,
+            "wallMax": 0.0193715,
+            "cpuMax": 0.0025883545,
+            "peakRssBytes": 19529728.0
+          }
+        },
+        "investigationAlarm": false
+      }
+    ],
+    "maximaAndMemory": "All raw maxima and per-process peak RSS are retained in the evidence. Host scheduling stalls remain visible; these measurements do not certify zero underruns, physical latency, battery, thermal behavior or whole-process memory bounds.",
+    "codeRevision": "b281772",
+    "productionActive": false,
+    "outlinedPrototypeProductionActive": false,
+    "laterOutlinedHostEvidence": "physical/spatial-block-final-host-performance.json (not production)",
+    "reason": "Despite exact audio/state and host gains, initial candidate and external outlined prototype reproduce32-stereo device elapsed/p95 regressions. No proven cause; reject instead of shipping a timing tradeoff."
+  }
+}

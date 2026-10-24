@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at reviewed local commit `7ab31107302d9b7027a6359ba1a6fdb49c250407` (2026-10-23); this synchronization does not publish that commit or a release. Upstream `documentation/recommendations.md` SHA-256: `62ea42f2d53eb8661c081a8ed19100db5590227f41fb8b110ee9450447e38289`.
+> Source snapshot: official TiSynthEngine 1.0.0 documentation at release source commit `e7cbbe8a6f9ab38088fd8029c7b43cef6501101f` (2026-10-24). Upstream `documentation/recommendations.md` SHA-256: `206593e03b860b2d1c39316bf286cd276307bdb0120be050c262b21749bcccd8`.
 
 # Recommendations
 
@@ -34,7 +34,7 @@ If a phone buzzes under `speakerSafe`, lower the event volume or raise the pitch
 | Chords, keys or long release tails |       16 to 24 |
 | Explicit stress testing            |             32 |
 
-Count release tails along with buttons pressed at the same instant. Timed-only events steal the slot with the least time remaining; sustained/transport voices prefer a releasing slot, then the oldest attack. The short fade avoids a hard click; the stolen note still ends early.
+Count release tails along with buttons pressed at the same instant. Replacement first selects the lowest eligible priority; higher-priority voices are protected. Among that priority, timed-only events steal the slot with the least time remaining; sustained/transport voices prefer a releasing slot, then the oldest attack. The short fade avoids a hard click; the stolen note still ends early.
 
 ## Keep one lifecycle owner
 
@@ -111,8 +111,8 @@ Use the [integration guide](guide.md#integrate-binaural-in-a-2d-app) to convert 
 
 ## Known limits
 
-- Use `noteOn` with app-supplied IDs for individual release and compatible live updates. Detect the methods in beta binaries; timed events do not return voice handles.
-- Timed tones, chords and pattern steps last at most 60 seconds. Sustained `noteOn` voices last until release, replacement or shutdown.
+- Use `noteOn` with app-supplied IDs for individual release and compatible live updates. Check the required methods before enabling controls; timed events do not return voice handles.
+- Timed tones and chords last at most 60 seconds including release. Sequence intervals and explicit note lengths use the sequence unit, at most 300 beats or 60,000 ms; sequence ADSR remains in milliseconds and release may extend beyond the interval. Sustained `noteOn` voices last until release, replacement or shutdown.
 - The module synthesizes waveforms and does not play audio files.
 - One native transport supports up to four independent sequences, preallocated by `maxSequences`. All share at most 32 voices.
 - A single tone or chord has no completion event. Sequences emit `sequenceend` with their identifier and completed/stopped reason.
@@ -130,7 +130,7 @@ Use a sample player or a dedicated music engine when a product needs streaming, 
 
 Use `noteOn` for a sound whose duration follows interaction, such as a key, motor or beam; release its ID on touch end, cancellation, pause or scene teardown. Use `playSequence` for a finite musical cue or repeating grid. Neither needs JavaScript to keep an already accepted note alive. Both share the same 32-slot maximum with collision and interface tones; held notes can be stolen, and an accepted `updateVoice` on a stolen ID is a no-op. Optional priority 0-3 affects stealing; it reserves no voices. There is no voice-finished event.
 
-Keep chorus/delay/reverb mixes modest when dialogue or short game feedback must remain distinct. They process the whole mix, so enabling reverb for a victory chord also affects simultaneous shots and collisions. Use an isolated presentation context, or close effect input before returning to gameplay. Disabling effects lets tails drain for at most 30 seconds; use panic when immediate history invalidation is required. Start with saturation disabled and compare creative drive at matched levels. Do not use saturation as an automatic substitute for the final limiter.
+Keep chorus/delay/reverb mixes modest when dialogue or short game feedback must remain distinct. One shared chain processes selected categories, not necessarily the whole mix. Select `applyTo` categories and each event's `bus`; an explicit `effectSend` overrides category selection. For example, select `music` for a victory sequence and leave `effects` dry, or set an individual shot's send to 0. Input/master gains and the final limiter remain global. Disabling effects lets tails drain for at most 30 seconds; use panic when immediate history invalidation is required. Start with saturation disabled and compare creative drive at matched levels. Do not use saturation as an automatic substitute for the final limiter.
 
 Fixed input/event gain does not decrease when unrelated voices start. If level dips, inspect `maxLimiterReductionDb` and `preLimiterPeakDb`, then consider same-pitch phase cancellation or the device's speaker protection. Eight coherent independent voices can still exceed the limiter threshold; module capacity is not a clean-mix loudness guarantee. See [measurement example](advanced-examples.md#measure-peaks-and-limiter-reduction).
 

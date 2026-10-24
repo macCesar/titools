@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 beta documentation at reviewed local commit `7ab31107302d9b7027a6359ba1a6fdb49c250407` (2026-10-23); this synchronization does not publish that commit or a release. Upstream `documentation/api.md` SHA-256: `887cd5e381a77ec58726c6ec51c628d1665dcd8d06a17f166b4a9481c0d30de2`.
+> Source snapshot: official TiSynthEngine 1.0.0 documentation at release source commit `e7cbbe8a6f9ab38088fd8029c7b43cef6501101f` (2026-10-24). Upstream `documentation/api.md` SHA-256: `698d272a85e71692eb5de30586556e53ba19aea88de3b0e583c2d720b150f24b`.
 
 # API reference
 
@@ -6,7 +6,7 @@ Module id: `ti.synthengine`
 
 Public API version: `1.0.0`
 
-Android and iOS expose the same nineteen methods, one event, defaults, limits, waveform values and validation behavior. Option objects are strict: an unknown key is rejected with `unsupported_option`.
+Android and iOS expose the same nineteen methods, one event and waveform values. Option objects are strict: an unknown key is rejected with `unsupported_option`. Reported metadata and rejection diagnostics have platform differences; this reference does not promise sample-identical rendering between Android and iOS.
 
 <!-- TOC-START -->
 ## Contents
@@ -41,7 +41,7 @@ Android and iOS expose the same nineteen methods, one event, defaults, limits, w
 
 `start`, `playTone`, `playChord`, `noteOn`, `noteOff`, `updateVoice`, `setVolume`, `setTempo`, `updateSequence`, `stopSequence` and `setMasterProcessing` return a Boolean. `playSequence` returns a positive sequence identifier, or 0 when rejected. `true` means the request was accepted. `false` means validation failed, the engine was unavailable, or the native command queue was full.
 
-`setStatsEnabled` also returns Boolean acceptance. `stopAll`, `resetStats` and `shutdown` do not return a value. `getDefaults` returns the contract object described below. `getStats` returns a new statistics snapshot.
+`setStatsEnabled` also returns Boolean acceptance. `stopAll`, `resetStats` and `shutdown` do not return a value. `getDefaults` returns the contract object described below. `getStats` returns a new statistics snapshot. `getSequenceState` returns the applied sequence state or `null`.
 
 ## `getDefaults()`
 
@@ -51,7 +51,7 @@ Returns the installed contract without starting the audio stream.
 var contract = synth.getDefaults()
 ```
 
-The result has this shape:
+The shared result has this shape; Android adds the platform metadata described below:
 
 ```javascript
 {
@@ -101,6 +101,7 @@ The result has this shape:
   limits: { /* ranges listed below */ },
   mixingProfiles: ['conservative', 'raw', 'balanced', 'speakerSafe'],
   audioSessions: ['playback', 'ambient'],
+  buses: ['music', 'effects', 'ui', 'ambience'],
   filterTypes: ['none', 'lowpass', 'highpass', 'bandpass'],
   waveTypes: {
     SINE: 0,
@@ -114,6 +115,8 @@ The result has this shape:
 ```
 
 `fmDepthEnd`, `detunes`, `spatialX` and `spatialY` have no reported default: their presence changes how the call is interpreted. Supplying a spatial coordinate enables binaural; the other coordinate then defaults to 0 internally. The maximum frequency is `sampleRate * 0.45`. Before the stream opens, the reported fallback is 19,845 Hz. Read the object again after `start()` if the precise device limit matters.
+
+Android additionally reports `capabilities: { nativeSequence: true, masterProcessing: true, modulations: true }` and `limits.maxSequences`, `limits.priority`, `limits.effectSend` and `limits.stepDurationMs`. The reviewed iOS result omits those metadata keys while implementing the corresponding methods and option ranges. Detect the required methods instead of requiring an Android-only flag. `limits.stepDuration` is in beats on both platforms; for millisecond sequences the accepted range is `4000 / sampleRate` through 60,000.
 
 ## Limits
 
@@ -146,7 +149,8 @@ All ranges include their endpoints. `getDefaults().limits` uses `{ min, max }` o
 | `bitDepth`                  |    0 or 2 |                  16 | integer bits; 0 disables quantization                                     |
 | `bpm`                       |        20 |                 300 | beats per minute                                                          |
 | `swing`                     |     -0.75 |                0.75 | alternating timing offset                                                 |
-| `stepDuration`              |  0.000001 |              60,000 | sequence units                                                                        |
+| `stepDuration`              | `20 / sampleRate` | 300 | beats; returned by both platforms |
+| `stepDurationMs` | `4000 / sampleRate` | 60,000 | ms; returned by Android only, accepted in ms sequences on both |
 | `decay`                     |         0 |               4,000 | integer ms; `attack` plus `decay` must fit in the event                   |
 | `sustain`                   |         0 |                   1 | level held after the decay                                                |
 | `filterHz`                  |        20 | `sampleRate * 0.45` | Hz                                                                        |
@@ -175,7 +179,7 @@ On iOS, `playback` ignores the silent switch and interrupts other apps' audio. `
 
 ## `noteOn(options)`
 
-Starts a sustained native voice. Detect `typeof synth.noteOn === 'function'`, `noteOff` and `updateVoice` before using these beta capabilities; `apiVersion` remains `1.0.0`. There is no duration limit and no JavaScript timer holds the note.
+Starts a sustained native voice. Detect `typeof synth.noteOn === 'function'`, `noteOff` and `updateVoice` before enabling their controls; `apiVersion` is `1.0.0`. There is no duration limit and no JavaScript timer holds the note.
 
 | Field | Rule |
 | --- | --- |
@@ -194,7 +198,7 @@ Starts a sustained native voice. Detect `typeof synth.noteOn === 'function'`, `n
 | `filterHz`, `filterQ` | Initial cutoff and Q; a non-none filter type is required. |
 | `fmRatio`, `fmDepth` | Initial sine FM; same rules and ranges as playTone. |
 | `detune` | Initial pitch offset in cents, −1200…1200; default 0. |
-| `spatialX`, `spatialY` | Fixed binaural position in −1…1; omitted for stereo. |
+| `spatialX`, `spatialY` | Initial binaural position in −1…1; omitted for stereo. Compatible held-position updates are live. |
 | `modulations` | Up to two native LFOs; see Additional voice modulation. |
 | `bus` | Category: music, effects (default), ui or ambience. |
 | `effectSend` | Optional explicit processed share 0-1, replacing category selection. |
@@ -204,7 +208,7 @@ No `duration` or temporal `*End` targets are accepted. Source, table, filter typ
 
 Sustained voices apply a minimum 3 ms attack and release edge to prevent a hard gate when the requested time is 0-2 ms. Longer ADSR times are unchanged. Timed tones retain their duration-budget envelope behavior; sequence notes release from their current envelope level at their gate/length deadline.
 
-The app supplies IDs and should never reuse one during its session. Reusing an active ID explicitly replaces that attack, snapshots a 6 ms fade tail and uses at least 6 ms attack for the replacement. With a full pool, release voices are replaced first, then the oldest attack. Timed-only events retain their existing replacement policy and sound. A former ID cannot control its replacement.
+The app supplies IDs and should never reuse one during its session. Reusing an active ID explicitly replaces that attack, snapshots a 6 ms fade tail and uses at least 6 ms attack for the replacement. Within priority-eligible candidates in a full pool, release voices are replaced first, then the oldest attack. Timed-only events retain their existing replacement policy and sound. A former ID cannot control its replacement.
 
 Repeating a public sustained note can inherit the oscillator phase and pre-envelope filter history of the newest compatible note still releasing at the same pitch. This prevents a fresh phase reset from cancelling its release tail. Each note keeps its own ID, envelope, gain and release. Compatibility requires stable matching oscillator, vibrato and filter settings; changing parameters or the two optional LFOs retain independent starts. Simultaneously held unisons, native transport notes and timed calls retain their existing phase policy.
 
@@ -293,6 +297,11 @@ Plays one pitch. It uses 440 Hz when neither pitch field is present. Note names 
 | `priority` | integer | `0` | Admission priority 0-3; higher voices are protected. |
 
 Omitted attack/release values are shortened to fit an event smaller than the default envelope. Explicit values must satisfy the documented envelope rules. `getDefaults()` reports the baseline defaults, not these per-event adjustments.
+
+At this source pin, the iOS timed tone/chord command builder converts accepted
+zero attack/release values to at least one sample. Android retains zero samples.
+This differs from the shared validator accepting zero; do not promise identical
+zero-edge rendering. Held notes have the separately documented 3 ms minimum.
 
 The controls from `decay` to `detune` are described in [Expressive controls](#expressive-controls), including the rules that tie them together.
 
@@ -521,7 +530,7 @@ synth.removeEventListener('sequenceend', onSequenceEnd)
 
 ## Strict validation
 
-Unknown keys and invalid values return `false` and produce one deduplicated native log entry:
+Rejected Boolean calls return `false`; `playSequence` returns `0`. Where structured validation diagnostics are emitted, they follow this format:
 
 ```text
 event=validation_warning method=playTone key=duraton reason=unsupported_option action=rejected value=200
@@ -558,6 +567,8 @@ Common reasons include:
 
 Explicit values are not clamped. Read `getDefaults().limits` when accepting user input and decide in the app whether to reject or constrain it.
 
+Some transport and control rejection paths do not emit a structured warning. Check acceptance directly; absence of a log entry does not prove success.
+
 ## Binaural front-plane positioning
 
 `playTone`, `playChord`, `noteOn` and sequence voice/overrides accept `spatialX` and `spatialY`, finite numbers from -1 to 1. Supplying either enables headphone binaural processing for that event; the omitted coordinate is 0. Timed events keep a fixed position; spatial held voices support smooth updates. `spatialX: -1` is left, `1` is right, `spatialY: -1` is below, and `1` is above. The center is in front of the listener. The grid spans approximately 60 degrees horizontally and 40 degrees vertically, with interpolated diagonals. A chord shares one position across its voices; each voice is filtered separately.
@@ -579,7 +590,7 @@ Listen with stereo headphones. Height perception depends on the listener, headph
 
 ## `getStats()`
 
-Older beta 1.0.0 packages may lack these methods; use `typeof synth.getStats === 'function'` for feature detection when supporting earlier beta installations.
+Use `typeof synth.getStats === 'function'` to check that the expected module is installed before enabling a diagnostics panel.
 
 Returns a new snapshot without resetting counters. Available before start and after shutdown. Occupancy is the last completed render block; queued commands are read at query time. No audio-thread allocation, locks or waiting are added.
 
@@ -591,8 +602,8 @@ Returns a new snapshot without resetting counters. Available before start and af
 | `tailVoices`               | External fade tails from replacement or `stopAll`, excluding primary FIR drain.                                                         |
 | `spatialVoices`            | Spatial primary slots, including FIR draining; excludes external tails.                                                                 |
 | `voiceStealCount`          | Primary replacements while all slots are occupied.                                                                                      |
-| `rejectedRequestCount`     | Rejected Boolean API requests, counted once per call.                                                                                   |
-| `rejectedRequestsByReason` | `{ validation, engineStopped, queueFull }`; sum equals rejection total.                                                                 |
+| `rejectedRequestCount`     | Counted API rejections, including sequence-publication rejection; not a complete rejected-call tally on every native path. |
+| `rejectedRequestsByReason` | `{ validation, engineStopped, queueFull }`; sum equals the recorded rejection total. |
 | `priorityDropCount` | Events/chords dropped because eligible voices could not accommodate them. |
 | `rejectedPublicationCount` | Rejected sequence publications due to capacity or bank pressure. |
 | `pendingCommands`          | Published entries awaiting the renderer; chord notes count separately, future scheduler steps are excluded.                             |
@@ -608,6 +619,13 @@ Returns a new snapshot without resetting counters. Available before start and af
 | `underrunCount`            | Android Oboe accumulated backend xruns since reset/start when supported; otherwise `null`.                                              |
 | `bufferFrames`             | Android Oboe output buffer size; otherwise `null`. This is distinct from `callbackFrames`.                                              |
 | `estimatedOutputLatencyMs` | Android timestamp-based stream-to-DAC estimate plus module lookahead, when valid; otherwise `null` (always `null` on this iOS backend). |
+
+At this source pin, iOS early rejections in tempo/sequence operations and a
+stopped `setMasterProcessing` call can bypass rejection counters. Incompatible
+held spatial-mode or modulation updates also have uncounted iOS returns.
+Android counts more of these cases, but an unknown/retired `stopSequence` return
+can also be uncounted. The reason sum equals the recorded total, not every
+rejected request. These counters are diagnostics; the API return is authoritative.
 
 `renderLoad`, `peakRenderLoad`, `outputPeakDbFS`, `outputRmsDbFS`, `preLimiterPeakDb`, `maxLimiterReductionDb` and `limiterReductionDb` are `null` until enabled and measured, and after shutdown. Android backend metrics (`underrunCount`, `bufferFrames` and `estimatedOutputLatencyMs`) are best-effort readings independent of this diagnostic switch. Signal windows use the final output after master volume, limiter and clamping, with a silence floor of -120 dBFS. A query does not start or consume a window. iOS does not expose a trustworthy underrun count or hardware output buffer size through this source-node backend, so those fields are `null`. Android preserves supported xrun totals across stream recovery and resets the baseline with `resetStats()`. If a route makes xrun coverage unavailable, the count stays `null` until reset/start restores a measurable window. The latency estimate excludes command/scheduler delay and any external DAC/HDMI latency unknown to Android. Timestamp errors, unsupported backends and negative estimates return `null`. It is queried off the audio callback. A zero underrun count does not prove clean sound. Render load includes elapsed callback work, not total app CPU.
 

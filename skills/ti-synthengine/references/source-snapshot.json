@@ -1,36 +1,86 @@
 {
   "module": "ti.synthengine",
-  "version": "1.0.0 beta",
+  "version": "1.0.0",
   "repository": "https://github.com/macCesar/TiSynthEngine",
-  "commit": "7ab31107302d9b7027a6359ba1a6fdb49c250407",
-  "reviewed_on": "2026-10-23",
+  "commit": "e7cbbe8a6f9ab38088fd8029c7b43cef6501101f",
+  "reviewed_on": "2026-10-24",
   "files": [
     {
       "source": "documentation/api.md",
       "destination": "references/api.md",
-      "source_sha256": "887cd5e381a77ec58726c6ec51c628d1665dcd8d06a17f166b4a9481c0d30de2",
-      "mirrored_sha256": "02db751f60fa3fd386101d36b6b2a51462db3605cc1718c30d667224d20dacb1",
+      "source_sha256": "698d272a85e71692eb5de30586556e53ba19aea88de3b0e583c2d720b150f24b",
+      "mirrored_sha256": "f4d43d6e947ccfa5cd04f2f76b4b19a00372f9ce1045c155f8265867839bae34",
       "links": [],
-      "link_fixes": []
+      "link_fixes": [
+        {
+          "original_markdown": "`setStatsEnabled` also returns Boolean acceptance. `stopAll`, `resetStats` and `shutdown` do not return a value. `getDefaults` returns the contract object described below. `getStats` returns a new statistics snapshot.",
+          "mirrored_markdown": "`setStatsEnabled` also returns Boolean acceptance. `stopAll`, `resetStats` and `shutdown` do not return a value. `getDefaults` returns the contract object described below. `getStats` returns a new statistics snapshot. `getSequenceState` returns the applied sequence state or `null`."
+        },
+        {
+          "original_markdown": "Android additionally reports `capabilities` flags for native sequences, master processing and modulations, plus `limits.stepDurationMs`. The current iOS result omits those keys while implementing the corresponding methods and millisecond sequences. Detect a required method with `typeof synth.playSequence === 'function'` (and the other methods your feature needs); a missing capability flag is not proof that a method is unavailable. Both platforms report the `limits` object shown here.",
+          "mirrored_markdown": "Android additionally reports `capabilities: { nativeSequence: true, masterProcessing: true, modulations: true }` and `limits.maxSequences`, `limits.priority`, `limits.effectSend` and `limits.stepDurationMs`. The reviewed iOS result omits those metadata keys while implementing the corresponding methods and option ranges. Detect the required methods instead of requiring an Android-only flag. `limits.stepDuration` is in beats on both platforms; for millisecond sequences the accepted range is `4000 / sampleRate` through 60,000."
+        },
+        {
+          "original_markdown": "| `stepDuration`              |  0.000001 |              60,000 | sequence units                                                                        |",
+          "mirrored_markdown": "| `stepDuration`              | `20 / sampleRate` | 300 | beats; returned by both platforms |\n| `stepDurationMs` | `4000 / sampleRate` | 60,000 | ms; returned by Android only, accepted in ms sequences on both |"
+        },
+        {
+          "original_markdown": "| `spatialX`, `spatialY` | Fixed binaural position in \u22121\u20261; omitted for stereo. |",
+          "mirrored_markdown": "| `spatialX`, `spatialY` | Initial binaural position in \u22121\u20261; omitted for stereo. Compatible held-position updates are live. |"
+        },
+        {
+          "original_markdown": "Omitted attack/release values are shortened to fit an event smaller than the default envelope. Explicit values must satisfy the documented envelope rules. `getDefaults()` reports the baseline defaults, not these per-event adjustments.",
+          "mirrored_markdown": "Omitted attack/release values are shortened to fit an event smaller than the default envelope. Explicit values must satisfy the documented envelope rules. `getDefaults()` reports the baseline defaults, not these per-event adjustments.\n\nAt this source pin, the iOS timed tone/chord command builder converts accepted\nzero attack/release values to at least one sample. Android retains zero samples.\nThis differs from the shared validator accepting zero; do not promise identical\nzero-edge rendering. Held notes have the separately documented 3 ms minimum."
+        },
+        {
+          "original_markdown": "| `rejectedRequestCount`     | Rejected Boolean API requests, counted once per call.                                                                                   |",
+          "mirrored_markdown": "| `rejectedRequestCount`     | Counted API rejections, including sequence-publication rejection; not a complete rejected-call tally on every native path. |"
+        },
+        {
+          "original_markdown": "| `rejectedRequestsByReason` | `{ validation, engineStopped, queueFull }`; sum equals rejection total.                                                                 |",
+          "mirrored_markdown": "| `rejectedRequestsByReason` | `{ validation, engineStopped, queueFull }`; sum equals the recorded rejection total. |"
+        },
+        {
+          "original_markdown": "`renderLoad`, `peakRenderLoad`, `outputPeakDbFS`, `outputRmsDbFS`, `preLimiterPeakDb`, `maxLimiterReductionDb` and `limiterReductionDb` are `null` until enabled and measured, and after shutdown.",
+          "mirrored_markdown": "At this source pin, iOS early rejections in tempo/sequence operations and a\nstopped `setMasterProcessing` call can bypass rejection counters. Incompatible\nheld spatial-mode or modulation updates also have uncounted iOS returns.\nAndroid counts more of these cases, but an unknown/retired `stopSequence` return\ncan also be uncounted. The reason sum equals the recorded total, not every\nrejected request. These counters are diagnostics; the API return is authoritative.\n\n`renderLoad`, `peakRenderLoad`, `outputPeakDbFS`, `outputRmsDbFS`, `preLimiterPeakDb`, `maxLimiterReductionDb` and `limiterReductionDb` are `null` until enabled and measured, and after shutdown."
+        },
+        {
+          "original_markdown": "With a full pool, release voices are replaced first, then the oldest attack.",
+          "mirrored_markdown": "Within priority-eligible candidates in a full pool, release voices are replaced first, then the oldest attack."
+        }
+      ]
     },
     {
       "source": "documentation/audio-engine.md",
       "destination": "references/audio-engine.md",
-      "source_sha256": "8b0ede7f5131c706cf0cfd5f9acbdb8cbcdcbc55e1a5a466f00264ef0f49540c",
-      "mirrored_sha256": "5cc7daa056f54f83c54a5e0e5bc96fe50b9112f757b9bc32a9baefbb89e0c493",
+      "source_sha256": "2299982e6949f6f2efe7ddad6cc4d28ea1b54e0f31fff36617e0528c5823ac4d",
+      "mirrored_sha256": "1927993a7b8ebd5abc735d2cf124f45b96ae461e4fc3f9342ae5e62137d491fe",
       "links": [],
-      "link_fixes": []
+      "link_fixes": [
+        {
+          "original_markdown": "Each voice has a smoothstep attack, an optional smoothstep decay to `sustain`, a hold at that level and a smoothstep release. `duration` includes the whole envelope. Defaults are adjusted to fit a short event, while an explicit envelope that cannot fit is rejected by the contract.",
+          "mirrored_markdown": "Each voice has a smoothstep attack, an optional smoothstep decay to `sustain`, a hold at that level and a smoothstep release. For timed tones and chords, `duration` includes the whole envelope: defaults are adjusted to fit a short event, while an explicit envelope that cannot fit is rejected. Held voices release on `noteOff`; sequence notes release at their gate/length deadline. Held/sequence ADSR has no timed-event duration budget, and their release may continue beyond the sequence interval."
+        },
+        {
+          "original_markdown": "With `filterHzEnd` the cutoff follows `from * (to / from) ^ t`, where `t` runs from 0 to 1 across the event, and coefficients are recomputed every eighth sample. Without a sweep they are computed once, when the note starts.",
+          "mirrored_markdown": "For timed tones and chords, `filterHzEnd` follows `from * (to / from) ^ t`, where `t` runs from 0 to 1 across the event, and coefficients are recomputed every eighth sample. Native sequence cutoff sweeps instead use note length and then hold their target through release. The current Android renderer refreshes them every sixteenth sample, also forcing the target at the release deadline; the Apple renderer refreshes them every eighth sample. These renderer paths do not establish sample-identical platform output. Held live cutoff/Q and modulation updates have their own ramp/control paths. Without a sweep or live modulation, coefficients are computed once at note start."
+        },
+        {
+          "original_markdown": "No physical-device ten-minute maximum-load acceptance is claimed by these API changes.",
+          "mirrored_markdown": "These API changes do not establish complete multiplatform ten-minute maximum-load acceptance; the measured iPad result and Android limits are recorded separately in [physical validation](physical-validation.json) and [the performance summary](stats-performance.md)."
+        }
+      ]
     },
     {
       "source": "documentation/examples.md",
       "destination": "references/examples.md",
-      "source_sha256": "eba45d9ba675190050f4bfb15873c1c0a9821d5bc034397dcd9bc51dcdbf1e48",
-      "mirrored_sha256": "ceba73b1b4340feea6a71d469f889e7cfb07759190d3ad7d8a61767b39e9351c",
+      "source_sha256": "48104b9d413050d439ee605c92a2456a50b42c4c80e2d7c2c05706eecc7db215",
+      "mirrored_sha256": "100e1576be75f98201fea8ff0ba599a9582a98c8a3a1469aa2b206eeacfeafde",
       "links": [],
       "link_fixes": [
         {
-          "original_markdown": "For the newer beta capabilities, begin with [held motors](#sustained-game-motor), [native sequences](#native-sequence-with-chords-and-edits), [master processing](#chorus-delay-reverb-and-creative-saturation) or [two LFOs](#two-voice-lfos). Detect methods before use; the version string alone cannot identify an installed beta build.",
-          "mirrored_markdown": "For the newer beta capabilities, begin with [held motors](advanced-examples.md#sustained-game-motor), [native sequences](advanced-examples.md#native-sequence-with-chords-and-edits), [master processing](advanced-examples.md#chorus-delay-reverb-and-creative-saturation) or [two LFOs](advanced-examples.md#two-voice-lfos). Detect methods before use; the version string alone cannot identify an installed beta build."
+          "original_markdown": "For interactive instruments and native processing, begin with [held motors](#sustained-game-motor), [native sequences](#native-sequence-with-chords-and-edits), [master processing](#chorus-delay-reverb-and-creative-saturation) or [two LFOs](#two-voice-lfos). Use matching official packages and check method availability before enabling a feature.",
+          "mirrored_markdown": "For interactive instruments and native processing, begin with [held motors](advanced-examples.md#sustained-game-motor), [native sequences](advanced-examples.md#native-sequence-with-chords-and-edits), [master processing](advanced-examples.md#chorus-delay-reverb-and-creative-saturation) or [two LFOs](advanced-examples.md#two-voice-lfos). Use matching official packages and check method availability before enabling a feature."
         },
         {
           "original_markdown": "The startup example uses `ambient` for game/UI feedback. On iOS it respects silent mode and mixes with other apps. The module default is `playback`; Android validates either value without changing its output. Shut down before changing the policy. Use the [interactive session controls](../example/README.md#audio-session) to compare them.",
@@ -47,6 +97,10 @@
         {
           "original_markdown": "",
           "mirrored_markdown": "Continue with [advanced examples](advanced-examples.md).\n"
+        },
+        {
+          "original_markdown": "`stopAll()` fades current voices but leaves pending pattern scheduling alone. `shutdown()` cancels the scheduler and releases the native stream.",
+          "mirrored_markdown": "`stopAll()` stops all native sequences, fades current voices and invalidates effect histories. `shutdown()` also releases the native stream. To stop only one sequence owner, use `stopSequence({ sequenceId })`."
         }
       ],
       "source_parts": [
@@ -57,8 +111,8 @@
     {
       "source": "documentation/examples.md",
       "destination": "references/advanced-examples.md",
-      "source_sha256": "eba45d9ba675190050f4bfb15873c1c0a9821d5bc034397dcd9bc51dcdbf1e48",
-      "mirrored_sha256": "dd6ef20f40c894cd6b859ad2f0829a86853b5351b69b36662fe303c47838aece",
+      "source_sha256": "48104b9d413050d439ee605c92a2456a50b42c4c80e2d7c2c05706eecc7db215",
+      "mirrored_sha256": "3852693b9faa70d615d9cf0bd4720055532d850f55e1e7b9c6a1a31115dc0639",
       "links": [],
       "link_fixes": [],
       "source_parts": [
@@ -69,8 +123,8 @@
     {
       "source": "documentation/guide.md",
       "destination": "references/guide.md",
-      "source_sha256": "46f03434db01a82b3592073f3d984fd2c6988993d5bd316caf1e9fc05f2fc1c9",
-      "mirrored_sha256": "67434aef49290eb4f55f817e833066d74574c76aeb9ebb68b4e89cbfa96fdd81",
+      "source_sha256": "dd03392e1d5f89e520f4be70dab2fbad8e86776bf3a60d6af93f0dc0695c8c69",
+      "mirrored_sha256": "dd6a9ac277f22f965db20dbbd47c82a676600ceedc174cbe0c7dc4a6a0ca3152",
       "links": [],
       "link_fixes": [
         {
@@ -92,19 +146,47 @@
         {
           "original_markdown": "The current diagnostics add `preLimiterPeakDb` (maximum signal before final limiting, in dBFS) and `maxLimiterReductionDb` (greatest limiter attenuation in dB) accumulated since reset. Unlike the approximately 200 ms window reduction field, brief peaks remain visible between UI polls. Enable measurements, reset before the scenario and keep `null`/absent fields distinct from measured zero. The [measurement example](examples.md#measure-peaks-and-limiter-reduction) shows opt-in polling and cleanup.",
           "mirrored_markdown": "The current diagnostics add `preLimiterPeakDb` (maximum signal before final limiting, in dBFS) and `maxLimiterReductionDb` (greatest limiter attenuation in dB) accumulated since reset. Unlike the approximately 200 ms window reduction field, brief peaks remain visible between UI polls. Enable measurements, reset before the scenario and keep `null`/absent fields distinct from measured zero. The [measurement example](advanced-examples.md#measure-peaks-and-limiter-reduction) shows opt-in polling and cleanup."
+        },
+        {
+          "original_markdown": "`updateVoice` changes compatible pitch, volume, cutoff/Q, vibrato, PWM/FM and LFO targets with 10 ms ramps, without restarting oscillator/envelope phase. Source, table, filter type, noise clock, one-pole cutoff, ADSR and spatial position are fixed at attack. See [complete fields](api.md#updatevoiceoptions). A note that has ended or been stolen accepts updates as a no-op; there is no note-finished event or reserved slot. A `true` return means accepted publication, not proof that the sound is still active.",
+          "mirrored_markdown": "`updateVoice` changes compatible pitch, volume, cutoff/Q, vibrato, PWM/FM, LFO targets, noise clock, one-pole cutoff, effect send and stereo/spatial position with 10 ms ramps, without restarting oscillator/envelope phase or clearing spatial history. Source, table, filter type and ADSR are fixed at attack. Spatial edits require a voice started spatially; stereo pan edits require a stereo voice. See [complete fields](api.md#updatevoiceoptions). A note that has ended or been stolen accepts updates as a no-op; there is no note-finished event or reserved slot. A `true` return means accepted publication, not proof that the sound is still active."
+        },
+        {
+          "original_markdown": "Calls that create or change sound return `true` when accepted and `false` when rejected. During development, handle that result and inspect logcat or the Xcode console for the structured validation warning.",
+          "mirrored_markdown": "Timed and held sound calls and accepted edits return `true` when accepted and `false` when rejected. `playSequence` instead returns a positive sequence ID or `0`; state queries return their documented state or `null`, and lifecycle/cleanup methods follow their own return contracts. During development, handle the relevant result and inspect logcat or the Xcode console for the structured validation warning."
+        },
+        {
+          "original_markdown": "Master volume is ramped to avoid a step in the output. `stopAll()` fades active voices, but it does not cancel future steps in the current pattern. Start a new pattern or call `shutdown()` when future scheduling must stop as well.",
+          "mirrored_markdown": "Master volume is ramped to avoid a step in the output. `stopAll()` stops all native sequences, fades active voices and invalidates effect histories while leaving the engine available. Use `stopSequence({ sequenceId })` to stop only one owner and preserve unrelated sounds. `shutdown()` also stops the stream and releases its resources."
+        },
+        {
+          "original_markdown": "Supply the current position whenever an effect fires. A projectile launch cue can use the launch position; an impact uses the collision position. Repeated short motor events can use successive positions. A single active tone cannot move after submission because positions remain fixed, including on an identified sustained voice. Stereo `panEnd` movement cannot be combined with binaural; do not continually retrigger long sounds every frame to imitate movement.",
+          "mirrored_markdown": "Supply the current position whenever an effect fires. A projectile launch cue can use the launch position; an impact uses the collision position. Timed event positions remain fixed after submission. An identified sustained voice started spatially can instead change `spatialX`/`spatialY` through `updateVoice`, with 10 ms ramps and retained spatial history. A stereo voice cannot become spatial through an update. Stereo `panEnd` movement cannot be combined with binaural; do not continually retrigger long sounds every frame to imitate movement."
         }
       ]
     },
     {
       "source": "documentation/recommendations.md",
       "destination": "references/recommendations.md",
-      "source_sha256": "62ea42f2d53eb8661c081a8ed19100db5590227f41fb8b110ee9450447e38289",
-      "mirrored_sha256": "575feede272aa4ddea4a2719ab2936c2908f6058ab2bc6fbcff77fcebfba138e",
+      "source_sha256": "206593e03b860b2d1c39316bf286cd276307bdb0120be050c262b21749bcccd8",
+      "mirrored_sha256": "d574b349ab54e4e176f24075e1a04b826784c1908ab69db6d7b8725b5ceae431",
       "links": [],
       "link_fixes": [
         {
           "original_markdown": "Fixed input/event gain does not decrease when unrelated voices start. If level dips, inspect `maxLimiterReductionDb` and `preLimiterPeakDb`, then consider same-pitch phase cancellation or the device's speaker protection. Eight coherent independent voices can still exceed the limiter threshold; module capacity is not a clean-mix loudness guarantee. See [measurement example](examples.md#measure-peaks-and-limiter-reduction).",
           "mirrored_markdown": "Fixed input/event gain does not decrease when unrelated voices start. If level dips, inspect `maxLimiterReductionDb` and `preLimiterPeakDb`, then consider same-pitch phase cancellation or the device's speaker protection. Eight coherent independent voices can still exceed the limiter threshold; module capacity is not a clean-mix loudness guarantee. See [measurement example](advanced-examples.md#measure-peaks-and-limiter-reduction)."
+        },
+        {
+          "original_markdown": "Count release tails along with buttons pressed at the same instant. Timed-only events steal the slot with the least time remaining; sustained/transport voices prefer a releasing slot, then the oldest attack.",
+          "mirrored_markdown": "Count release tails along with buttons pressed at the same instant. Replacement first selects the lowest eligible priority; higher-priority voices are protected. Among that priority, timed-only events steal the slot with the least time remaining; sustained/transport voices prefer a releasing slot, then the oldest attack."
+        },
+        {
+          "original_markdown": "- Timed tones, chords and pattern steps last at most 60 seconds. Sustained `noteOn` voices last until release, replacement or shutdown.",
+          "mirrored_markdown": "- Timed tones and chords last at most 60 seconds including release. Sequence intervals and explicit note lengths use the sequence unit, at most 300 beats or 60,000 ms; sequence ADSR remains in milliseconds and release may extend beyond the interval. Sustained `noteOn` voices last until release, replacement or shutdown."
+        },
+        {
+          "original_markdown": "Keep chorus/delay/reverb mixes modest when dialogue or short game feedback must remain distinct. They process the whole mix, so enabling reverb for a victory chord also affects simultaneous shots and collisions. Use an isolated presentation context, or close effect input before returning to gameplay.",
+          "mirrored_markdown": "Keep chorus/delay/reverb mixes modest when dialogue or short game feedback must remain distinct. One shared chain processes selected categories, not necessarily the whole mix. Select `applyTo` categories and each event's `bus`; an explicit `effectSend` overrides category selection. For example, select `music` for a victory sequence and leave `effects` dry, or set an individual shot's send to 0. Input/master gains and the final limiter remain global."
         }
       ]
     },
@@ -112,7 +194,7 @@
       "source": "documentation/sound-design.md",
       "destination": "references/sound-design.md",
       "source_sha256": "dd543e07c825aaf67a0a5f85619088a8d02721a9d33dbf4579edf760dad3e262",
-      "mirrored_sha256": "3600d21778e2fe897ea903230657e15f1bbbb4ad21a1ff8a20c071a6f94fbe02",
+      "mirrored_sha256": "f2e2207eeaae5e8061b37dfb5fac98ef9b9c050845b23a547b468ceba718e740",
       "links": [],
       "link_fixes": [
         {
@@ -136,8 +218,8 @@
     {
       "source": "documentation/troubleshooting.md",
       "destination": "references/troubleshooting.md",
-      "source_sha256": "ed2a455e30326894087e393065d9a6f14d8edaf06cbeda5bf472252c38bfea7c",
-      "mirrored_sha256": "811f59e01833fb0043fc2122cfcadb87bc2dd29569008db7726b00b1bc9fd192",
+      "source_sha256": "939960cde5860569699916208c0d3b352e60ba2a7603b5046dcefa9970294b70",
+      "mirrored_sha256": "70ee69508273b3c89d52a8c8feb6c58400433a5a50e298e38da5076ded19a8a8",
       "links": [],
       "link_fixes": [
         {
@@ -147,14 +229,38 @@
         {
           "original_markdown": "Enable diagnostics, reset deliberately, then inspect `preLimiterPeakDb` and `maxLimiterReductionDb`. They retain the native pre-limiter peak and greatest attenuation since reset, including brief interventions between UI polls. `limiterReductionDb` is a window measurement and can return to zero sooner. Older packages may omit the accumulated fields; disabled/unmeasured diagnostics return `null`. See [measurement example](examples.md#measure-peaks-and-limiter-reduction).",
           "mirrored_markdown": "Enable diagnostics, reset deliberately, then inspect `preLimiterPeakDb` and `maxLimiterReductionDb`. They retain the native pre-limiter peak and greatest attenuation since reset, including brief interventions between UI polls. `limiterReductionDb` is a window measurement and can return to zero sooner. Older packages may omit the accumulated fields; disabled/unmeasured diagnostics return `null`. See [measurement example](advanced-examples.md#measure-peaks-and-limiter-reduction)."
+        },
+        {
+          "original_markdown": "| `conflicting_pitch_fields`          | Send only one of `note`, `frequency` or `rest: true`.",
+          "mirrored_markdown": "| `conflicting_pitch_fields`          | Timed/held calls use mutually exclusive `note`/`frequency`; each sequence step uses exactly one `notes` array, `frequencies` array or `rest: true`."
+        },
+        {
+          "original_markdown": "The envelope and filter rules apply to the final values of each sounding event. In a pattern that means the step over the pattern root, so a `sustain` on the root is fine when each step supplies a `decay`, and a root `filterHz` is rejected when no step has a `filterType`.",
+          "mirrored_markdown": "The envelope and filter rules apply to the final values of each sounding event. In a native sequence, each step's `overrides` merges over root `voice`: root `voice.sustain` is valid when every sounding step supplies compatible decay, and `voice.filterHz` needs a non-none filter type after merging. Timed tones/chords enforce their total-duration envelope budget; held and sequence ADSR has no sequence-interval budget."
+        },
+        {
+          "original_markdown": "- Positions are fixed for active voices. Later calls can use updated coordinates, but there is no method to move a voice already playing.",
+          "mirrored_markdown": "- Timed tones/chords and each sequence attack keep their specified position. A spatial held voice can move through `updateVoice({ voiceId, spatialX, spatialY })`; omitted coordinates retain their previous value, and the FIR ramps over 10 ms without clearing history. A stereo voice cannot be converted to spatial by an update."
+        },
+        {
+          "original_markdown": "Use the original positive `voiceId`, not the pitch or an ID that has already been reused. `noteOn` does not accept `duration` or temporal `*End` fields. `updateVoice` cannot change source, filter type, table, noise clock, ADSR or spatial position; restart with a new ID when those attack-time settings must change. Compatible continuous edits ramp for 10 ms.",
+          "mirrored_markdown": "Use the original positive `voiceId`, not the pitch or an ID that has already been reused. `noteOn` does not accept `duration` or temporal `*End` fields. Source, filter type, table, quantization and ADSR require a new attack. Compatible `updateVoice` controls include live noise clock, one-pole cutoff, spatial position for a spatial voice, stereo pan for a stereo voice, modulation and explicit effect send, in addition to pitch/volume/filter/vibrato/FM/pulse targets. Changed continuous controls ramp for 10 ms while retaining phase, envelope and spatial history; `noiseRate: 0` means white noise and `lowPassHz: 0` bypasses that filter."
+        },
+        {
+          "original_markdown": "Look for a structured warning in logcat or the Xcode console:\n\n```text\nevent=validation_warning method=playSequence key=steps reason=not_object action=rejected value=C4\n```",
+          "mirrored_markdown": "For methods that emit structured validation warnings, inspect logcat or the Xcode console:\n\n```text\nevent=validation_warning method=playTone key=duraton reason=unsupported_option action=rejected value=200\n```\n\nAlways check the return value: `playSequence` rejects with 0, while Boolean methods reject with `false`. Some sequence/control rejection paths do not emit a structured warning; absence of a new log entry does not establish acceptance."
+        },
+        {
+          "original_markdown": "Use whole milliseconds and integer waveform values where required.",
+          "mirrored_markdown": "Use integer milliseconds for timed tone/chord envelope fields and integer waveform values; native sequence intervals and lengths may be fractional."
         }
       ]
     },
     {
       "source": "documentation/stats-performance.md",
       "destination": "references/stats-performance.md",
-      "source_sha256": "4b2d798501822eb2a8ef8047b73d8d464622cafbdb2a2cf4dd76d94e96d9e890",
-      "mirrored_sha256": "81d91dbd9110495c27b0e7ebf0f00f2237efb9a141d0c6bfa245d23be17ef9d7",
+      "source_sha256": "3d6d35b9e0e49a778777d406418eaba04ebd57da871a322da28fae0190c5cb17",
+      "mirrored_sha256": "576910d2ee7e3026b083136713e8ceba0b4cbb774958bd65f3751612d9360467",
       "links": [],
       "link_fixes": []
     },
@@ -231,10 +337,14 @@
         {
           "original_markdown": "The panel shows active/peak/spatial/tail voices, pending commands, replacements, request/publication rejections, priority drops, callback load, stereo output peak and backend underruns. It displays `n/a` for unmeasured or unavailable values, keeping them distinct from zero. Signal windows need about 200 ms of output after enabling. Native snapshots also include RMS, limiter reduction, sample rate, buffer and latency fields; consult the [complete field reference](../documentation/api.md#getstats) when integrating a full diagnostic view.",
           "mirrored_markdown": "The panel shows active/peak/spatial/tail voices, pending commands, replacements, request/publication rejections, priority drops, callback load, stereo output peak and backend underruns. It displays `n/a` for unmeasured or unavailable values, keeping them distinct from zero. Signal windows need about 200 ms of output after enabling. Native snapshots also include RMS, limiter reduction, sample rate, buffer and latency fields; consult the [complete field reference](../../references/api.md#getstats) when integrating a full diagnostic view."
+        },
+        {
+          "original_markdown": "2. Build the current module source, or use the matching packages supplied with the public release when available. Development archives are `android/dist/ti.synthengine-android-1.0.0.zip` and `ios/dist/ti.synthengine-iphone-1.0.0.zip`. The existing private release is a separate snapshot and may lack current features.",
+          "mirrored_markdown": "2. Download matching official [Android 1.0.0](https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.0.0) and [iOS 1.0.0](https://github.com/macCesar/TiSynthEngine/releases/tag/ios-1.0.0) packages, or build the matching module source. Source builds produce `android/dist/ti.synthengine-android-1.0.0.zip` and `ios/dist/ti.synthengine-iphone-1.0.0.zip`."
         }
       ],
       "source_sha256": "c3c5041be11c3addfab7fb1248c0aaba81b311c1720c2861e47974412d743bcf",
-      "mirrored_sha256": "8077a1d946c42dcbe48cee82da12998f729e7deb6d3560a10ad91cbaafa029d0"
+      "mirrored_sha256": "e7c522bc9a9ca52d4d103125226491c04d4a6bfab8433192a5a0dbfaef94428e"
     },
     {
       "source": "example/app.js",
@@ -306,12 +416,29 @@
       "source_sha256": "faff448de458ef0cb5299e234177f17a914f7801c27581ab969a9010a68c3c5f",
       "mirrored_sha256": "faff448de458ef0cb5299e234177f17a914f7801c27581ab969a9010a68c3c5f",
       "kind": "evidence-archive"
+    },
+    {
+      "source": "documentation/performance-review.json",
+      "destination": "references/performance-review.json",
+      "links": [],
+      "link_fixes": [],
+      "source_sha256": "e822b3361bb5cdb31e635863d84b179ef41edfe6a1214ae99ca3a9d327d21d3a",
+      "mirrored_sha256": "e822b3361bb5cdb31e635863d84b179ef41edfe6a1214ae99ca3a9d327d21d3a"
+    },
+    {
+      "source": "documentation/performance-review-evidence.zip",
+      "destination": "references/performance-review-evidence.zip",
+      "links": [],
+      "link_fixes": [],
+      "kind": "evidence-archive",
+      "source_sha256": "0539e799d66ed26ef5d64f727dd30bec55692bfd691584e25753999c545b8cf6",
+      "mirrored_sha256": "0539e799d66ed26ef5d64f727dd30bec55692bfd691584e25753999c545b8cf6"
     }
   ],
   "excluded_documents": [
     {
       "source": "documentation/index.md",
-      "source_sha256": "0347cecf5b31a5356151353ce00b68ee32f7295728855bf694d7300cab964df4",
+      "source_sha256": "7bdbf702ce26903d7a68e267d3451ec0bb728c822ad576393727daf4be9e039f",
       "reason": "Upstream documentation index; SKILL.md is the distributed navigation entry point."
     },
     {
