@@ -6,7 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [5.2.1] - 2026-10-24
+
 ### Changed
+
+- Updated `ti-admob-unified` to public Android/iOS 1.0.0 source `0348432`: official downloads and SDK requirements, refreshed complete docs/library/assets, rewarded interstitial and production guides, mediation parity and current native lifecycle/ATT contracts. Preserved copy-ready JavaScript and scoped provider/device acceptance.
 
 - Separated public product/contributor documentation from private assistant workspaces, session records and personal scratch material. Retired the obsolete shell installer, moved public examples/index guidance under docs, narrowed npm documentation entries and added repository/package privacy guards.
 

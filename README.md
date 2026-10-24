@@ -517,11 +517,32 @@ Raster drawing generation/editing uses integrated `image_gen`. Authored SVG/proc
 
 ### ti-admob-unified
 
-Integrate the `ti.admob.unified` module in Alloy or Classic using its official documentation for installation, API, UMP/ATT, privacy options, banner layout, fullscreen lifecycle and mediation. The skill includes the official copy-ready application library and guides for AppLovin, Meta, InMobi, Unity and Liftoff. The module's first public 1.0.0 release is under preparation at this snapshot.
+Integrate public **ti.admob.unified 1.0.0** in Alloy or Classic with its official
+[repository](https://github.com/macCesar/ti.admob.unified),
+[Android downloads](https://github.com/macCesar/ti.admob.unified/releases/tag/android-1.0.0)
+and [iOS downloads](https://github.com/macCesar/ti.admob.unified/releases/tag/ios-1.0.0).
+Install the core ZIP for each target and only the mediation complements you use.
+Requires Titanium SDK 13.4.1.GA, iOS 15+, Android API 24+ and compile SDK 36;
+this Apple module does not support Mac Catalyst.
 
-Source commit, per-file hashes and rebased links are recorded. Future updates use the maintainer auditor's source map and the read-only check `node scripts/verify-module-snapshot.mjs --source /path/to/ti.admob.unified`; new, changed or removed docs are reported before updating. Community guidance remains separate from official mirrors.
+The skill covers consent-first UMP/ATT, synchronous tracking-status queries,
+standard/adaptive banners, interstitial, rewarded, rewarded interstitial and
+app-open ads. It includes the unchanged copy-ready integration library and
+AppLovin, Meta, InMobi, Unity and Liftoff setup/dependency/parity guides.
+Rewarded interstitial guidance includes an accurate reward introduction,
+visible Skip, SDK-reported rewards and cancellation tied to the presentation
+context. Loading an ad alone does not authorize showing it.
 
-Installing an adapter does not configure a publisher account or prove delivery. The skill distinguishes build/linking, Google test ads, each provider's test delivery and physical-device acceptance; it preserves the game's selected frequency policy instead of enabling every format.
+The [skill entry point](skills/ti-admob-unified/SKILL.md) routes exact API,
+installation, lifecycle and [production guidance](skills/ti-admob-unified/references/production.md)
+for app IDs, units, app-ads.txt, privacy options and AdMob/store readiness.
+[Source notes](skills/ti-admob-unified/references/source-notes.md) record reviewed
+source `0348432`, platform ZIP hashes and native-backed corrections.
+
+A packaged adapter or Google test ad does not prove provider delivery or
+production eligibility. Keep configuration/linking, each selected provider's
+test delivery and physical-device visual/lifecycle acceptance separate. Game
+frequency and pause/audio/input ownership remain application policies.
 
 ### ti-synthengine
 
@@ -531,7 +552,7 @@ Public repository: [macCesar/TiSynthEngine](https://github.com/macCesar/TiSynthE
 Download [Android 1.0.0](https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.0.0)
 and [iOS 1.0.0](https://github.com/macCesar/TiSynthEngine/releases/tag/ios-1.0.0),
 copy the ZIPs into the Titanium app root and follow the [installation guide](skills/ti-synthengine/references/guide.md).
-Requires Titanium SDK 13.2.0.GA+, Android compile API35+, and iOS15+; the Apple package also supports Mac Catalyst.
+Requires Titanium SDK 13.2.0.GA+, Android compile API35+, and iOS 15+; the Apple package also supports Mac Catalyst.
 
 When it activates:
 - `tiapp.xml` declares `ti.synthengine`, or code calls `require('ti.synthengine')`
@@ -869,7 +890,7 @@ This pattern is documented across four bundled TiTools skills: `ti-ui`, `ti-expe
 | ti-ui     | UI Rules + Platform Diffs     | 14 files (layouts, lists, gestures, etc.)             |
 | ti-game   | Native 2D Game Workflow       | 12 files (API, input, source notes, setup, physics, patterns, recipes, tile maps, debugging, roadmap) |
 | ti-game-assets | Visual and Sound Assets | 10 guides and a manifest example; alpha and contract validation scripts |
-| ti-admob-unified | Unified Advertising | 17 Markdown references including official guides, integration library guidance, provenance and game monetization; source/hash checks and official example assets |
+| ti-admob-unified | Unified Advertising | 20 Markdown references including production, rewarded interstitial, mediation parity, integration library guidance, provenance and game monetization; source/hash checks and official example assets |
 | ti-synthengine | Native Sound Synthesis   | 12 Markdown references (9 official parts, 2 curated recipe guides, maintenance notes), complete validation reports/evidence and a reversible source hash manifest |
 | ti-api | Titanium API | 20 references for core/platform APIs and native modules |
 | ti-guides | SDK Fundamentals | 16 references for setup, configuration, CLI and distribution |
