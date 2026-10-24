@@ -12,7 +12,7 @@ The reference files are maintained against official documentation whenever an of
 
 Without TiTools, assistants rely on general training data. That data can be outdated or too generic for Titanium work. With TiTools, the assistant can look up Alloy architecture, memory cleanup patterns, PurgeTSS utility classes, and platform-specific APIs.
 
-Vercel's AGENTS.md evaluation reports a 100% pass rate for the knowledge index approach, compared to 53-79% using skills alone.
+The optional knowledge index helps assistants discover the installed reference documents. See [skills and the knowledge index](docs/knowledge-index.md).
 
 ---
 
@@ -115,20 +115,12 @@ All three platforms use the Agent Skills open standard: a `SKILL.md` file with Y
 
 The knowledge index is a compressed documentation map that gets injected into your project's instruction files. It tells the AI where Titanium reference docs are, so it can pull accurate information from the installed references instead of relying on general training data.
 
-### Why it works
+### Reference discovery
 
-| Approach         | Reported Pass Rate |
-| ---------------- | ------------------ |
-| No documentation | 53%                |
-| Skills only      | 53-79%             |
-| Knowledge index  | 100%               |
-
-Per Vercel's evaluation:
-- No decision point: information is present without needing to invoke skills
-- Consistent availability: available in every turn, not async-loaded
-- No ordering issues: avoids "read docs first vs explore project first"
-
-For details, see `AGENTS-VERCEL-RESEARCH.md`.
+Skills provide task-specific workflows; the knowledge index makes their reference
+locations discoverable from your project's instruction files. Load the relevant
+references before relying on an API, platform requirement or module contract.
+See [how the index works](docs/knowledge-index.md).
 
 ### What gets generated
 
@@ -525,7 +517,7 @@ Raster drawing generation/editing uses integrated `image_gen`. Authored SVG/proc
 
 ### ti-admob-unified
 
-Integrate César's `ti.admob.unified` module in Alloy or Classic using its official documentation for installation, API, UMP/ATT, privacy options, banner layout, fullscreen lifecycle and mediation. The skill includes the official copy-ready application library and guides for AppLovin, Meta, InMobi, Unity and Liftoff. The module's first public 1.0.0 release is under preparation at this snapshot.
+Integrate the `ti.admob.unified` module in Alloy or Classic using its official documentation for installation, API, UMP/ATT, privacy options, banner layout, fullscreen lifecycle and mediation. The skill includes the official copy-ready application library and guides for AppLovin, Meta, InMobi, Unity and Liftoff. The module's first public 1.0.0 release is under preparation at this snapshot.
 
 Source commit, per-file hashes and rebased links are recorded. Future updates use the maintainer auditor's source map and the read-only check `node scripts/verify-module-snapshot.mjs --source /path/to/ti.admob.unified`; new, changed or removed docs are reported before updating. Community guidance remains separate from official mirrors.
 
@@ -637,7 +629,7 @@ Codebase analysis (using agent):
 4. Mention constraints. "Build a settings screen. Must work offline and sync when connected."
 5. Reference existing code. "Here's my current controller. How can I improve memory management?"
 
-More examples: See [Example Prompts](EXAMPLE-PROMPTS.md) for detailed prompts that test each skill's capabilities.
+See [example prompts](docs/examples.md) for requests covering every public skill.
 
 ---
 
@@ -967,28 +959,8 @@ Note: `titools remove` can remove the knowledge index blocks from your project f
 
 ## Contributing
 
-1. Fork the repository
-2. Improve SKILL.md or reference files
-3. Test with your preferred AI coding assistant
-4. Submit a pull request
-
-### Guidelines
-- Keep SKILL.md concise (<500 lines)
-- Use progressive disclosure (details in references)
-- Include concrete examples
-- Test with real sessions
-
----
-
-## Legacy installation (not recommended)
-
-The bash installer is maintained for backward compatibility but NPM installation is recommended.
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/macCesar/titools/main/install.sh | bash
-```
-
-Use this only if you cannot use NPM for any reason.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development, skill registration,
+public repository boundaries and the release workflow.
 
 ---
 

@@ -1,15 +1,28 @@
-.claude/*
-!.claude/skills/
-docs/*
-!docs/project/
+# Private assistant/editor workspace (kept locally, never published)
+/.agents/
+/.claude/
+/.codex/
+/.gemini/
+/.codebase-memory/
+/AGENTS.md
+/CLAUDE.md
+/por-hacer.md
+/EXAMPLE-PROMPTS.md
+/AGENTS-VERCEL-RESEARCH.md
+/install.sh
+
+# Public documentation is explicit; session notes and archives remain private.
+/docs/*
+!/docs/examples.md
+!/docs/knowledge-index.md
 
 # Upstream docs cache used by the titools-skill-auditor skill
-.titanium-docs
-.titanium-sdk
-.titaniumsdk-site
-.purgetss-docs
-.purgetss-source
-.ti-admob-unified
+/.titanium-docs
+/.titanium-sdk
+/.titaniumsdk-site
+/.purgetss-docs
+/.purgetss-source
+/.ti-admob-unified
 
 # Node.js
 node_modules/

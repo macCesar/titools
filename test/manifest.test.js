@@ -340,3 +340,32 @@ describe('bundled JSON parses', () => {
     });
   }
 });
+
+
+describe('public repository boundaries', () => {
+  const privateRoots = ['docs/project/', '.agents/', '.claude/', '.codex/', '.gemini/', '.vscode/', '.idea/', '.codebase-memory/', '.purgetss-docs/', '.purgetss-source/', '.titanium-docs/', '.titanium-sdk/', '.titaniumsdk-site/', '.ti-admob-unified/'];
+  const publicRootDocs = ['README.md', 'CHANGELOG.md', 'CONTRIBUTING.md'];
+  const privateFiles = ['por-hacer.md', 'AGENTS.md', 'CLAUDE.md', 'EXAMPLE-PROMPTS.md', 'AGENTS-VERCEL-RESEARCH.md', 'install.sh', '.purgetss-docs', '.purgetss-source', '.titanium-docs', '.titanium-sdk', '.titaniumsdk-site', '.ti-admob-unified'];
+
+  test('personal workspace files are not tracked', async () => {
+    const { stdout } = await run('git', ['ls-files', '-z'], { cwd: ROOT });
+    const leaks = stdout.split('\0').filter(file => file &&
+      (privateFiles.includes(file) || privateRoots.some(prefix => file.startsWith(prefix)) ||
+        (!file.includes('/') && file.endsWith('.md') && !publicRootDocs.includes(file))));
+    assert.deepEqual(leaks, [], `Private workspace files are tracked: ${leaks.join(', ')}`);
+  });
+
+  test('the npm payload excludes private workspace files and includes public guides', async () => {
+    const { stdout } = await run('npm', ['pack', '--dry-run', '--json'], {
+      cwd: ROOT, maxBuffer: 10 * 1024 * 1024,
+    });
+    const [packed] = Object.values(JSON.parse(stdout));
+    const files = packed.files.map(entry => entry.path);
+    const leaks = files.filter(file => privateFiles.includes(file) ||
+      privateRoots.some(prefix => file.startsWith(prefix)));
+    assert.deepEqual(leaks, [], `Private workspace files would ship: ${leaks.join(', ')}`);
+    for (const guide of ['CONTRIBUTING.md', 'docs/examples.md', 'docs/knowledge-index.md']) {
+      assert.ok(files.includes(guide), `${guide} must be available with the README`);
+    }
+  });
+});

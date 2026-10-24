@@ -63,7 +63,9 @@
     "skills/",
     "agents/",
     "commands/",
-    "AGENTS-VERCEL-RESEARCH.md"
+    "CONTRIBUTING.md",
+    "docs/examples.md",
+    "docs/knowledge-index.md"
   ],
   "publishConfig": {
     "access": "public"

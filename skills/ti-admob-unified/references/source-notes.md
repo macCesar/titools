@@ -4,7 +4,7 @@ The native module is `ti.admob.unified`; this skill is `ti-admob-unified`. It wo
 
 ## Provenance
 
-Copied from César's module repository `macCesar/ti.admob.unified`, at clean commit `5b4cbf9347a51c4f959dc262ac1500f82f28b4a0` on 2026-10-11. The source checkout in this workspace is `/Users/cesar/Developer/openSource/TiAdmobUnified/ti.admob.unified`; use the installed package's documentation or the module's actual repository in other environments, not that machine-specific path as a dependency. The 1.0.0 first public release remains under preparation according to this session; re-check its release status when installing later.
+Copied from the official module repository `macCesar/ti.admob.unified`, at clean commit `5b4cbf9347a51c4f959dc262ac1500f82f28b4a0` on 2026-10-11. Use the installed package documentation or a checkout of that repository. Commands below use `/path/to/ti.admob.unified` as a placeholder, not a required machine path. The 1.0.0 first public release remains under preparation according to this session; re-check its release status when installing later.
 
 `source-snapshot.json` records original paths, source SHA-256, destination hashes and rebased Markdown links. Eleven official `documentation/*.md` guides are preserved, with dependency inventory, roadmap, contributing guide, upstream changelog and module license. Each Markdown file adds a source line and rewrites relative links (with any separately recorded broken-anchor correction) so they resolve inside the skill. Long API/banner references add generated TOCs. This provenance applies to the copied references, not to TiTools' curated `game-monetization.md` or this note.
 

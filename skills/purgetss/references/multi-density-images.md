@@ -360,7 +360,7 @@ If your source images live elsewhere (e.g. next to your design files in `docs/sc
 
 ```bash
 purgetss images ./docs/screenshots/home-hero.png
-purgetss images /Users/cesar/Design/banner.svg
+purgetss images /path/to/design/banner.svg
 ```
 
 When the source is outside `purgetss/images/`, subdirectory preservation uses the directory of the source file as the root instead. Processing that external source in Classic does not bootstrap unrelated PurgeTSS folders or config.

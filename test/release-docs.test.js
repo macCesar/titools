@@ -1,30 +1,7 @@
 /**
- * Release-docs consistency tests.
- *
- * How this repo publishes is a fact with one source of truth — `.github/workflows/`
- * — and five hand-written copies: the checklist in CLAUDE.md, the checklist in
- * AGENTS.md, and the notes under docs/project/. Prose has no way of noticing when
- * the workflow changes underneath it.
- *
- * It already happened. Trusted publishing (OIDC) landed on 2026-08-14 in dc4c527,
- * and for a week afterwards CLAUDE.md still listed `npm publish --access public`
- * as step 8 of the release and AGENTS.md still explained how to pass an `--otp`.
- * Both were wrong, both read as authoritative, and nothing failed.
- *
- * So these tests do not assert what the docs say. They *derive* how publishing
- * works from the workflow files and then require the docs to agree:
- *
- *   - the workflow publishes on a tag  → no doc may order a manual `npm publish`,
- *                                        and every doc must name the workflow
- *   - no workflow publishes at all     → some doc had better order it by hand,
- *                                        or nobody is publishing anything
- *
- * That second branch is the point. A test that only knows today's answer is not an
- * instrument, it is a snapshot: deleting publish.yml would leave it green while the
- * release silently stopped shipping. The derivation helpers below are themselves
- * checked against synthetic inputs, both the case they must accept and the case
- * they must reject, so a helper that always answers the same thing fails here
- * rather than in a release.
+ * Public release instructions must agree with the publishing workflow.
+ * Derive tag publication from .github/workflows rather than assuming that
+ * a copied checklist or local assistant instruction file remains current.
  */
 
 import { test, describe } from 'node:test';
@@ -37,7 +14,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const WORKFLOWS_DIR = path.join(ROOT, '.github', 'workflows');
 
 /** Docs that carry a release checklist a human or an agent follows. */
-const DOC_FILES = ['CLAUDE.md', 'AGENTS.md'];
+const DOC_FILES = ['CONTRIBUTING.md'];
 
 /**
  * Does this workflow publish to npm when a version tag is pushed?
@@ -112,6 +89,10 @@ describe('release docs: the derivation helpers can tell the cases apart', () => 
 });
 
 describe('release docs match how the repo actually publishes', () => {
+  test('the public contribution guide exists', () => {
+    assert.ok(existsSync(path.join(ROOT, 'CONTRIBUTING.md')));
+  });
+
   test('the publishing mechanism is discoverable from .github/workflows', () => {
     assert.ok(
       workflows.length > 0,

@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- Separated public product/contributor documentation from private assistant workspaces, session records and personal scratch material. Retired the obsolete shell installer, moved public examples/index guidance under docs, narrowed npm documentation entries and added repository/package privacy guards.
+
 - Updated `ti-synthengine` for the public Android/iOS 1.0.0 releases at `e7cbbe8`: official download/setup links, refreshed documentation and complete performance evidence, current accepted control-thread optimizations versus rejected Apple runtime, and rechecked native/recipe contracts. ti.admob.unified availability remains independently tracked.
 
 - Reconciled all 13 public skills across the CLI, README, shipped research overview, audit routing and agent catalog. Restored the three omitted specialist entries in the overview, refreshed reference counts and aligned synthesis help/examples with native sequence ownership and selective live controls.
