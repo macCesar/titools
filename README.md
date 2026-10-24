@@ -192,7 +192,7 @@ Notes:
 - The first eight (`ti-reuse-first`, `ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-game-assets`, `ti-synthengine`, `ti-admob-unified`) are specialist workflow skills reflecting TiTools' Titanium conventions and native-module contracts.
 - `ti-reuse-first` runs before the others. It asks whether a thing needs to exist and what already does it — a search order that stops at the first rung that holds — and sweeps an existing `app/` for near-identical controllers, single-listener events, wrappers around one call, and layout recomputed in JavaScript. It is deliberately two-sided: it says when adding a module or a Widget is the right answer, so the bias does not simply invert.
 - `ti-game` documents the `ti.game` native module (2D sprite engine using OpenGL ES 2.0 on Android and Metal on iPhone, iPad and Mac Catalyst). Its API reference was verified against the module source and records the reviewed upstream commit and fork documentation snapshot; it applies to Alloy and Classic projects alike and does not depend on PurgeTSS.
-- `ti-synthengine` translates aesthetic sound requests into strict, production-ready JavaScript for the cross-platform `ti.synthengine` 1.0.0 beta module. Official references preserve documentation and raw statistics/Studio validation reports; curated recipes add retro effects, xylophone interaction, memory pads, polyphony and timer ownership. The reviewed source includes nineteen public methods, including held voices, native sequence transport, master effects and optional diagnostics; feature detection remains necessary for older beta binaries. Maintenance notes and a hash manifest distinguish the reviewed working tree from its base commit and published packages, track preserved navigation and state audit limits.
+- `ti-synthengine` translates sound requests into checked JavaScript for the public Android/iOS `ti.synthengine` 1.0.0 release. Its nineteen-method contract covers timed/held voices, identified native sequences, global tempo, selective categories/sends, master effects, live spatial/noise/filter controls and diagnostics. Two curated recipe guides cover retro cues and interactive instruments. Complete official-source mirrors, validation reports, bundled examples and raw evidence retain provenance; reversible errata correct source prose against native behavior. The clean reviewed commit, platform differences and scoped listening/performance acceptance are explicit in source notes.
 - `ti-game-assets` treats images and sounds as essential game assets. It coordinates integrated `image_gen` artwork with `ti-synthengine` sound design, variants and stereo placement, and ships Pillow helpers for conservative alpha cleanup and per-world visual/audio manifests.
 - The latter five are documentation-mirror skills, audited against official sources via the internal `titools-skill-auditor`. See [Where the references come from](#where-the-references-come-from).
 - `purgetss` reference files are audited against the official PurgeTSS documentation and against the package source (the CLI and the generated `utilities.tss`), but its workflow conventions are opinionated.
@@ -228,14 +228,14 @@ In addition to skills, this repository includes sub-agents for Claude Code. Sub-
 
 ### ti-pro
 
-Deep-dive research specialist that can combine the complete 10-skill TiTools catalog.
+Deep-dive research specialist that can combine the complete 13-skill TiTools catalog.
 
 | Aspect           | Details                                          |
 | ---------------- | ------------------------------------------------ |
 | Location         | `~/.claude/agents/ti-pro.md`                     |
 | Model            | Sonnet (comprehensive analysis)                  |
-| Tools            | Read-only (Read, Grep, Glob)                     |
-| Preloaded Skills | All 10 skills registered in `lib/config.js`      |
+| Tools            | Read, Grep, Glob, Bash                           |
+| Preloaded Skills | All 13 skills registered in `lib/config.js`      |
 
 When to use the agent vs skills:
 
@@ -533,33 +533,42 @@ Installing an adapter does not configure a publisher account or prove delivery. 
 
 ### ti-synthengine
 
-Cross-platform sound design and synthesis with the native `ti.synthengine` 1.0.0 beta module for Android and iOS.
+Sound design and synthesis with the public native `ti.synthengine` 1.0.0 release for Android and iOS. Read the [skill entry point](skills/ti-synthengine/SKILL.md) for task routing, exact API references and current source provenance.
+
+Public repository: [macCesar/TiSynthEngine](https://github.com/macCesar/TiSynthEngine).
+Download [Android 1.0.0](https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.0.0)
+and [iOS 1.0.0](https://github.com/macCesar/TiSynthEngine/releases/tag/ios-1.0.0),
+copy the ZIPs into the Titanium app root and follow the [installation guide](skills/ti-synthengine/references/guide.md).
+Requires Titanium SDK 13.2.0.GA+, Android compile API35+, and iOS15+; the Apple package also supports Mac Catalyst.
 
 When it activates:
 - `tiapp.xml` declares `ti.synthengine`, or code calls `require('ti.synthengine')`
-- The app needs generated UI feedback, game cues, retro/chiptune effects, alarms, chords, pads, noise percussion, sweeps, panning, or vibrato
-- A synth call returns `false`, the first sound glitches, a pattern stops, a chord pumps, or output changes after a route switch
-- The app needs held notes, sample-clock sequences, master chorus/delay/reverb/saturation, extra voice LFOs, or voice/queue/rejection counters, optional render-load/output meters, or help interpreting host benchmark evidence
+- Generated UI/game cues, instruments, alarms, chords, percussion, sweeps or binaural headphone placement
+- Sustained voices, simultaneous native sequences, shared tempo, selective effects/sends, priorities or live voice controls
+- Rejected calls, startup glitches, voice/queue diagnostics, render-load measurements or source/artifact compatibility questions
 
 Example prompts:
 ```
 "Create a short sci-fi laser that sweeps left to right with ti.synthengine."
-"Design a clean two-note success cue for a Titanium button."
-"Build a playable xylophone that can glide across bars without retriggering the same note on every touchmove."
-"Create a layered 12-voice chord and stop its repeating pulse cleanly when the window closes."
-"Why does playTone return false when the object looks valid?"
-"Start the engine safely after my Alloy window lays out and clean it up on close."
+"Build a playable xylophone without retriggering a bar on every touchmove."
+"Move a held spatial motor and change its noise clock and low-pass cutoff without restarting it."
+"Run music and a victory cue as independent native sequences, then cancel only the cue."
+"Apply reverb to music while keeping UI dry, and change the global tempo."
+"Explain what the Android Sim80 headphone result proves about performance."
 ```
 
 Key rules:
-- Option objects are closed contracts. Unsupported keys, invalid types, non-finite values, or broken envelopes reject the whole call
-- Read waveform constants from `synth.getDefaults().waveTypes`; never guess numeric values or option names
-- `playTone` accepts `note` or `frequency`, never both; `playChord` accepts `notes` or `frequencies`, never both
-- `duration` includes attack, the full-level middle, and release, so explicit envelope times must intersect correctly
-- Use `frequencyEnd` for sweeps, `panEnd` for stereo movement, and `lfoFreq`/`lfoDepth` for pitch vibrato
-- Binaural headphone positioning uses `spatialX`/`spatialY` from -1 to 1, without pan fields. Omit both to keep stereo; check installed coordinate limits because older 1.0.0 builds lack this beta addition
-- Curated recipes cover retro effects, playable xylophone gestures, four-pad memory cues, controlled waveform comparisons, layered chords and cancellable repetition
-- Start after the first layout settles, keep one lifecycle owner, check Boolean returns, and call `shutdown()` on cleanup
+- Read constants and exact ranges from the API; strict option dictionaries reject invalid fields or conflicting pitch sources
+- Timed tone/chord `duration` includes release. Native sequence intervals and note lengths are separate; held voices release through their IDs
+- Schedule successive sounds with `playSequence`, retain positive accepted IDs and cancel the owner's sequence. `stopAll()` is global panic
+- `setTempo` drives beat-based transport and synchronized modulation; millisecond sequences keep fixed timing
+- `bus`/`applyTo` select processed categories; explicit `effectSend` overrides that selection. One shared chain and final limiter remain global
+- Held spatial position, noise clock and one-pole cutoff support compatible 10 ms updates. A stereo voice cannot become spatial through an update
+- Omit both spatial coordinates for stereo; zero coordinates enable binaural center. Do not combine binaural coordinates with stereo pan fields
+- Start after layout, keep one lifecycle owner, handle Boolean acceptance and sequence IDs, release held notes on cancellation and shut down during teardown
+- Current platform metadata, zero-envelope and diagnostic differences are documented. Host checks and a short accepted listening scene do not establish complete physical maximum-load acceptance
+
+The [retro recipes](skills/ti-synthengine/references/recipes.md) and [interaction/instrument recipes](skills/ti-synthengine/references/recipes-interaction.md) preserve acoustic intent, overlap budgets and cleanup. [Source notes](skills/ti-synthengine/references/source-notes.md) identify the reviewed native commit and evidence limits.
 
 ---
 
@@ -863,13 +872,18 @@ This pattern is documented across four bundled TiTools skills: `ti-ui`, `ti-expe
 | Skill     | SKILL.md                      | References                                            |
 | --------- | ----------------------------- | ----------------------------------------------------- |
 | ti-reuse-first | Reuse Before You Write   | 5 files (the ladder, Alloy reuse, indirection, PurgeTSS reuse, diagnostics) |
-| ti-expert | Architecture + Implementation | 26 files (patterns, feedback surfaces, file type association, sharing, testing, security, etc.) |
-| purgetss  | Setup + Critical Rules        | 34 files (Classic compatibility, grid, animations, icons, class-index, SVG pipeline, etc.) |
+| ti-expert | Architecture + Implementation | 27 files (patterns, feedback surfaces, file type association, sharing, testing, security, etc.) |
+| purgetss  | Setup + Critical Rules        | 39 files (Classic compatibility, grid, animations, icons, class-index, SVG pipeline, etc.) |
 | ti-ui     | UI Rules + Platform Diffs     | 14 files (layouts, lists, gestures, etc.)             |
 | ti-game   | Native 2D Game Workflow       | 12 files (API, input, source notes, setup, physics, patterns, recipes, tile maps, debugging, roadmap) |
 | ti-game-assets | Visual and Sound Assets | 10 guides and a manifest example; alpha and contract validation scripts |
-| ti-admob-unified | Unified Advertising | 11 official module guides, source/hash update checks, official example library and game integration guidance |
-| ti-synthengine | Native Sound Synthesis   | 11 Markdown references (9 official parts, curated recipes, maintenance notes), raw statistics and Studio validation reports and a source hash manifest |
+| ti-admob-unified | Unified Advertising | 17 Markdown references including official guides, integration library guidance, provenance and game monetization; source/hash checks and official example assets |
+| ti-synthengine | Native Sound Synthesis   | 12 Markdown references (9 official parts, 2 curated recipe guides, maintenance notes), complete validation reports/evidence and a reversible source hash manifest |
+| ti-api | Titanium API | 20 references for core/platform APIs and native modules |
+| ti-guides | SDK Fundamentals | 16 references for setup, configuration, CLI and distribution |
+| ti-howtos | Native Integrations | 18 references for platform features and integration workflows |
+| alloy-guides | Alloy MVC | 11 references for controllers, views, models, styling and widgets |
+| alloy-howtos | Alloy CLI and Debugging | 6 references for commands, configuration and practical workflows |
 
 ---
 

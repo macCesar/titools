@@ -23,7 +23,7 @@ Project-type audit:
 Native-module audit:
 
 10. If the project declares `ti.game`, invoke `ti-game` — check for sprites moved from timers instead of native properties, levels sized from `Ti.Platform.displayCaps` instead of the `resize` event, sprites added one by one instead of in one array, and timers or sounds left running when the window closes.
-11. If the project declares `ti.synthengine`, invoke `ti-synthengine` — check strict option names and types, mutually exclusive pitch fields, valid envelope intersections, checked Boolean results, one clear lifecycle owner, delayed startup after layout, app-owned timer cancellation, and `shutdown()` cleanup.
+11. If the project declares `ti.synthengine`, invoke `ti-synthengine` — check exact option/pitch/envelope contracts, Boolean acceptance and positive sequence IDs, native successive-note scheduling, per-owner sequence cancellation, held-note release/cancellation and compatible live updates. Check shared tempo versus millisecond timing, category/send selection, overlap/priority budgets, one lifecycle owner, delayed startup and teardown. Consult current source notes before assuming platform metadata/envelopes or rejection diagnostics match; separate host/load reports from scoped physical listening acceptance.
 
 12. If the project has game art/sound inventories or asset-generation/export workflows, invoke `ti-game-assets` — check contracts per set, master provenance/transparency, protected alpha cleanup, frame/pivot alignment, complete derived exports, parallax layers, sound variants and semantic event bindings. Consult `ti-game` and `ti-synthengine` equally in their applicable domains; do not require module installation or new sounds for an image-only task.
 

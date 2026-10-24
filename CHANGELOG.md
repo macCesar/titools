@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Updated `ti-synthengine` for the public Android/iOS 1.0.0 releases at `e7cbbe8`: official download/setup links, refreshed documentation and complete performance evidence, current accepted control-thread optimizations versus rejected Apple runtime, and rechecked native/recipe contracts. ti.admob.unified availability remains independently tracked.
 
+- Reconciled all 13 public skills across the CLI, README, shipped research overview, audit routing and agent catalog. Restored the three omitted specialist entries in the overview, refreshed reference counts and aligned synthesis help/examples with native sequence ownership and selective live controls.
+
 - Independently audited `ti-synthengine` at committed source `7ab3110`: corrected stale guide/API/processing claims with reversible native-backed errata, documented current platform metadata/envelope/diagnostic differences, preserved all validation reports and split oversized curated recipes into retro and interaction guides.
 
 - Audited `ti-game` against upstream `88e181c` and fork documentation `2bf5f82`: current keyboard/mouse/gamepad actions and focus, Apple Metal/Catalyst builds and telemetry, shape-aware sweeps, damping/rest and rope-pause corrections, expanded bitmap glyphs, all 35 demos and lifecycle guidance. Added input and source-provenance references; preserved curated recipes and explicit hardware-validation limits.
