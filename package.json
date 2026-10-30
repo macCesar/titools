@@ -1,6 +1,6 @@
 {
   "name": "@maccesar/titools",
-  "version": "5.2.2",
+  "version": "5.2.3",
   "description": "Titanium SDK skills and agents for AI coding assistants, including native game and sound synthesis modules",
   "main": "lib/index.js",
   "type": "module",
@@ -30,7 +30,7 @@
     "sound-design",
     "synthesizer"
   ],
-  "author": "César Estrada <maccesar@gmail.com> (https://github.com/macCesar)",
+  "author": "C\u00e9sar Estrada <maccesar@gmail.com> (https://github.com/macCesar)",
   "license": "MIT",
   "repository": {
     "type": "git",

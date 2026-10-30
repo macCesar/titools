@@ -1,7 +1,7 @@
 {
   "name": "titools",
   "description": "Opinionated Titanium SDK toolkit: API reference, native how-tos, Alloy MVC, PurgeTSS, architecture, UI/UX, 2D games, and sound synthesis. Auto-detects Titanium projects.",
-  "version": "5.2.2",
+  "version": "5.2.3",
   "keywords": [
     "titanium",
     "titanium-sdk",
@@ -16,7 +16,7 @@
     "sound-synthesis"
   ],
   "author": {
-    "name": "César Estrada",
+    "name": "C\u00e9sar Estrada",
     "email": "maccesar@gmail.com"
   },
   "homepage": "https://github.com/macCesar/titools",
