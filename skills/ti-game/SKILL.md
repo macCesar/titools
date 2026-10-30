@@ -13,6 +13,8 @@ upstream `m1ga/ti.game@88e181c`. Both manifests declare **`1.0.0`** and
 minimum Titanium SDK **`13.4.0`**; documented builds use **`13.4.1.GA`**.
 The fork's documentation/build adjustments and upstream engine are recorded
 separately in [references/source-notes.md](references/source-notes.md).
+Upstream PR #39 was merged on **2026-10-29**; current upstream `db11980`
+has the same complete Git tree as the audited `2bf5f82` revision.
 Identify installed artifacts by source commit and ZIP hash; the version alone
 does not prove these capabilities or publication of the fork.
 

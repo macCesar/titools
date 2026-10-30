@@ -6,17 +6,18 @@ binary or an assertion that a fork build has been published.
 ## Reviewed sources
 
 - Upstream: `m1ga/ti.game@88e181cb85526d8146d0be6e09b2b90c2551baad`.
-  Remote `refs/heads/main` was checked with `git ls-remote` during this audit.
+  This was the upstream baseline at the October 23 audit. Current upstream
+  `main` was rechecked on October 29; see the integration record below.
 - Fork documentation snapshot: `macCesar/ti.game@2bf5f828a3bb8028eed20d6ba27b97dd3aa9a753`
-  (`docs/update-current-features`). Its source tree contains the current
+  (`docs/update-current-features`). Its source tree contains the audited
   upstream engine, not merely the older `3bea2f4` baseline.
-- Fork delta from upstream: README/tutorial/TODO/Apple build documentation,
+- Fork delta from the audited upstream baseline: README/tutorial/TODO/Apple build documentation,
   Xcode SDK selection, Camera example key binding, demo generation and
   example-input regression checks, plus maintainer instructions.
 - The documentation snapshot is the exact head of
   [upstream PR #39](https://github.com/m1ga/ti.game/pull/39), branch
   `docs/update-current-features`. PR metadata and the remote branch both matched
-  `2bf5f82` when checked. Its Camera Z/X binding correction and diagnostic
+  `2bf5f82` during the October 23 audit. Its Camera Z/X binding correction and diagnostic
   launcher discovery/SDK/indirect-input fixes were included in this audit.
 - Only `AGENTS.md` was dirty when the audit started; that instruction-file
   edit is not a native/API modification. Audited module documentation and
@@ -30,6 +31,21 @@ Sources are the root README, `tutorial.md`, `ios/README.md`, TODO, the complete
 input and renderer implementation where contracts require them. Maintainer
 plans, personal project state and issue drafts are excluded from public API
 requirements; they are not additional supported APIs.
+
+## Upstream integration verified October 29
+
+[PR #39](https://github.com/m1ga/ti.game/pull/39) was merged on
+2026-10-29 at 08:31:11 UTC. Current `m1ga/ti.game` main is merge commit
+`db11980af74b4ff5349df47ec25910486b39d2f4`. Its complete Git tree is identical
+to the audited documentation head `2bf5f828a3bb8028eed20d6ba27b97dd3aa9a753`:
+both resolve to `980fa0433019f31319d0e7cee5a51bdddd5576d3`.
+
+The current upstream comparison contains only the merge commit and no file
+differences. The audited Metal/Catalyst, configurable input and documentation
+clarifications are therefore integrated upstream. Keep the original audit pins
+and document fingerprints below; merging changes provenance, not their contents.
+This check does not establish which release/nightly ZIP includes the merge or
+extend any physical-device acceptance.
 
 ## Source fingerprints
 
