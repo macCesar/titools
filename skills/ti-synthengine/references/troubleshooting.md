@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 documentation at release source commit `e7cbbe8a6f9ab38088fd8029c7b43cef6501101f` (2026-10-24). Upstream `documentation/troubleshooting.md` SHA-256: `939960cde5860569699916208c0d3b352e60ba2a7603b5046dcefa9970294b70`.
+> Source snapshot: official TiSynthEngine 1.0.2 documentation from reviewed working-tree source based on `4a45f21230ffc5a8838fbd5fc108dd3ab470362a` (2026-10-29). Upstream `documentation/troubleshooting.md` SHA-256: `e2156e5dea77bda95d9f9305bf2c8c359d54d5832f56062cf2d2ebe6c2b583b9`.
 
 # Troubleshooting
 
@@ -58,11 +58,11 @@ if (actual !== '1.0.0') {
 }
 ```
 
-Confirm both entries in `tiapp.xml` pin 1.0.0. Then remove the application's build output and rebuild so Titanium does not reuse an archive from an earlier build. The module directories should be:
+`apiVersion` describes the unchanged 1.0.0 API contract; it is not the module package version. Confirm both entries in `tiapp.xml` pin module version 1.0.2. Then remove the application's build output and rebuild so Titanium does not reuse an archive from an earlier build. The module directories should be:
 
 ```text
-modules/android/ti.synthengine/1.0.0/
-modules/iphone/ti.synthengine/1.0.0/
+modules/android/ti.synthengine/1.0.2/
+modules/iphone/ti.synthengine/1.0.2/
 ```
 
 For binaural, also inspect `getDefaults().limits.spatialX` and `.spatialY`. Use the official packages to avoid stale development binaries. Copying the package does not update an already installed app: rebuild and reinstall it.
@@ -166,7 +166,7 @@ If later sounds remain silent, capture the Android or Xcode log around the route
 - Confirm the deployment target is iOS 15 or newer.
 - Check whether another module changes `AVAudioSession` after startup.
 - Test interruptions, phone calls, Bluetooth and route changes on hardware.
-- Use the matching device or simulator slice from the 1.0.0 archive.
+- Use the matching device or simulator slice from the 1.0.2 archive.
 
 ## What to include in a bug report
 
@@ -178,7 +178,7 @@ The official release reports API version 1.0.0. Detect `noteOn`/`noteOff`/`updat
 
 ## A held voice does not release or update
 
-Use the original positive `voiceId`, not the pitch or an ID that has already been reused. `noteOn` does not accept `duration` or temporal `*End` fields. Source, filter type, table, quantization and ADSR require a new attack. Compatible `updateVoice` controls include live noise clock, one-pole cutoff, spatial position for a spatial voice, stereo pan for a stereo voice, modulation and explicit effect send, in addition to pitch/volume/filter/vibrato/FM/pulse targets. Changed continuous controls ramp for 10 ms while retaining phase, envelope and spatial history; `noiseRate: 0` means white noise and `lowPassHz: 0` bypasses that filter.
+Use the original positive `voiceId`, not the pitch or an ID that has already been reused. `noteOn` does not accept `duration` or temporal `*End` fields. `updateVoice` cannot change source, filter type, table, quantization, ADSR or stereo-versus-spatial mode; restart with a new ID when those attack-time settings must change. Noise clock, one-pole cutoff, effect send and compatible stereo/spatial position support live edits. Changed continuous parameters ramp for 10 ms.
 
 Check Boolean returns. A full public queue can reject `noteOff`; retry twice at 16 ms outside render, then shut down/report if still rejected. Cancel those retries on owner teardown. The [held motor example](advanced-examples.md#sustained-game-motor) implements this policy. Touch cancellation, pause and close need cleanup as well as normal key up.
 

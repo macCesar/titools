@@ -1,15 +1,15 @@
 {
   "module": "ti.synthengine",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "repository": "https://github.com/macCesar/TiSynthEngine",
-  "commit": "e7cbbe8a6f9ab38088fd8029c7b43cef6501101f",
-  "reviewed_on": "2026-10-24",
+  "commit": "4a45f21230ffc5a8838fbd5fc108dd3ab470362a",
+  "reviewed_on": "2026-10-29",
   "files": [
     {
       "source": "documentation/api.md",
       "destination": "references/api.md",
-      "source_sha256": "698d272a85e71692eb5de30586556e53ba19aea88de3b0e583c2d720b150f24b",
-      "mirrored_sha256": "f4d43d6e947ccfa5cd04f2f76b4b19a00372f9ce1045c155f8265867839bae34",
+      "source_sha256": "0eae9bb5d07500fd33a9b767bd0036a491a2947954cd5c3b7fa51035ba375857",
+      "mirrored_sha256": "051a499208a68078f2cfb6e7293f8abfac539c6b0156d9d1291beedc0d341ae6",
       "links": [],
       "link_fixes": [
         {
@@ -18,15 +18,11 @@
         },
         {
           "original_markdown": "Android additionally reports `capabilities` flags for native sequences, master processing and modulations, plus `limits.stepDurationMs`. The current iOS result omits those keys while implementing the corresponding methods and millisecond sequences. Detect a required method with `typeof synth.playSequence === 'function'` (and the other methods your feature needs); a missing capability flag is not proof that a method is unavailable. Both platforms report the `limits` object shown here.",
-          "mirrored_markdown": "Android additionally reports `capabilities: { nativeSequence: true, masterProcessing: true, modulations: true }` and `limits.maxSequences`, `limits.priority`, `limits.effectSend` and `limits.stepDurationMs`. The reviewed iOS result omits those metadata keys while implementing the corresponding methods and option ranges. Detect the required methods instead of requiring an Android-only flag. `limits.stepDuration` is in beats on both platforms; for millisecond sequences the accepted range is `4000 / sampleRate` through 60,000."
+          "mirrored_markdown": "Android additionally reports `capabilities: { nativeSequence: true, masterProcessing: true, modulations: true }` and `limits.stepDurationMs`. The reviewed iOS result omits those two metadata entries while implementing the corresponding methods and millisecond sequences. Both platforms report `limits.maxSequences`, `limits.priority` and `limits.effectSend`. Detect the required methods instead of requiring an Android-only flag. `limits.stepDuration` is in beats on both platforms; for millisecond sequences the accepted range is `4000 / sampleRate` through 60,000."
         },
         {
           "original_markdown": "| `stepDuration`              |  0.000001 |              60,000 | sequence units                                                                        |",
           "mirrored_markdown": "| `stepDuration`              | `20 / sampleRate` | 300 | beats; returned by both platforms |\n| `stepDurationMs` | `4000 / sampleRate` | 60,000 | ms; returned by Android only, accepted in ms sequences on both |"
-        },
-        {
-          "original_markdown": "| `spatialX`, `spatialY` | Fixed binaural position in \u22121\u20261; omitted for stereo. |",
-          "mirrored_markdown": "| `spatialX`, `spatialY` | Initial binaural position in \u22121\u20261; omitted for stereo. Compatible held-position updates are live. |"
         },
         {
           "original_markdown": "Omitted attack/release values are shortened to fit an event smaller than the default envelope. Explicit values must satisfy the documented envelope rules. `getDefaults()` reports the baseline defaults, not these per-event adjustments.",
@@ -53,8 +49,8 @@
     {
       "source": "documentation/audio-engine.md",
       "destination": "references/audio-engine.md",
-      "source_sha256": "2299982e6949f6f2efe7ddad6cc4d28ea1b54e0f31fff36617e0528c5823ac4d",
-      "mirrored_sha256": "1927993a7b8ebd5abc735d2cf124f45b96ae461e4fc3f9342ae5e62137d491fe",
+      "source_sha256": "17fb01f7e32a91cc44a3b5c0f30efcd7b5c3d9ec6c49369f7c789e1f22a8b442",
+      "mirrored_sha256": "30f14c5cc7b296e708bdb06b84e6d32475abbf7827af587466b9fdaf86bc8547",
       "links": [],
       "link_fixes": [
         {
@@ -68,6 +64,10 @@
         {
           "original_markdown": "No physical-device ten-minute maximum-load acceptance is claimed by these API changes.",
           "mirrored_markdown": "These API changes do not establish complete multiplatform ten-minute maximum-load acceptance; the measured iPad result and Android limits are recorded separately in [physical validation](physical-validation.json) and [the performance summary](stats-performance.md)."
+        },
+        {
+          "original_markdown": "`tools/build_ios_render_host.py` compiles the actual Objective-C render-block body and voice/transport helpers on macOS. It replaces hardware/session/Titanium startup and fixes only the noise-seed/disabled-diagnostic clock. Output and semantic state are compared against a separately archived reference from the same platform. This is an Apple renderer test; it does not execute AVAudioEngine or establish iPad scheduling, route recovery, footprint or listening acceptance.",
+          "mirrored_markdown": "`tools/build_ios_render_host.py` compiles the actual Objective-C render-block body and voice/transport helpers on macOS. It replaces hardware/session/Titanium startup and fixes only the noise-seed/disabled-diagnostic clock. Output and semantic state are compared against a separately archived reference from the same platform. This is an Apple renderer test; it does not execute AVAudioEngine or establish iPad scheduling, route recovery, footprint or listening acceptance.\n\nThe commands below reproduce the historical pre-pipeline performance review. Use its archived candidate source when requiring exact PCM/state equality with `7ab3110`; the current 1.0.2 renderer intentionally removes the old final-output delay and changes overload behavior, so it cannot satisfy that earlier exact-output comparison. For the later correction, use the [audio pipeline validation](audio-pipeline-validation.md) protocol: align only the former output delay, compare no-overload PCM within the declared tolerance, and retain overload differences separately. The module's `tools/compare_output_pcm.py` checks the corresponding matched Android/Apple capture sets; host comparisons do not establish physical output latency."
         }
       ]
     },
@@ -75,7 +75,7 @@
       "source": "documentation/examples.md",
       "destination": "references/examples.md",
       "source_sha256": "48104b9d413050d439ee605c92a2456a50b42c4c80e2d7c2c05706eecc7db215",
-      "mirrored_sha256": "100e1576be75f98201fea8ff0ba599a9582a98c8a3a1469aa2b206eeacfeafde",
+      "mirrored_sha256": "cda3b082a746230ed7f48b5a9ccef62c24f2b9a5ecf2fe848ac97000dad3eb6f",
       "links": [],
       "link_fixes": [
         {
@@ -112,7 +112,7 @@
       "source": "documentation/examples.md",
       "destination": "references/advanced-examples.md",
       "source_sha256": "48104b9d413050d439ee605c92a2456a50b42c4c80e2d7c2c05706eecc7db215",
-      "mirrored_sha256": "3852693b9faa70d615d9cf0bd4720055532d850f55e1e7b9c6a1a31115dc0639",
+      "mirrored_sha256": "f515e00d2dfa7cb984158f03f435b5b370cdcddf6f32305172e9a38843c300c2",
       "links": [],
       "link_fixes": [],
       "source_parts": [
@@ -123,8 +123,8 @@
     {
       "source": "documentation/guide.md",
       "destination": "references/guide.md",
-      "source_sha256": "dd03392e1d5f89e520f4be70dab2fbad8e86776bf3a60d6af93f0dc0695c8c69",
-      "mirrored_sha256": "dd6a9ac277f22f965db20dbbd47c82a676600ceedc174cbe0c7dc4a6a0ca3152",
+      "source_sha256": "6241f84ba84e20c0516bf01bc0850f9625d2b41f0bef39289c056e687b21ee37",
+      "mirrored_sha256": "be2c4e48d4be645fc716fcb610aead2c2849f04fdaa6763ac073266673309aa6",
       "links": [],
       "link_fixes": [
         {
@@ -132,8 +132,8 @@
           "mirrored_markdown": "Release on touch end and cancellation as well as ordinary key up. Retry a rejected release twice at 16 ms outside the audio callback, then shut down and report failure if publication remains blocked. Cancel retries during teardown. The [held motor example](advanced-examples.md#sustained-game-motor) implements this ownership policy. For pause/owner close, invalidate app scheduling and shut down; require a new start before future notes."
         },
         {
-          "original_markdown": "`setMasterProcessing` merges partial updates, validates the entire result and returns publication acceptance. Continuous controls ramp over 10 ms. Disabling an effect closes input gradually and keeps its tail, bounded to 30 seconds with a final fade, then restores exact bypass. It does not undo a non-unity input gain. `stopAll` invalidates histories and stops the native sequence; `shutdown` stops the stream and frees its buffers. See the [processing example](examples.md#chorus-delay-reverb-and-creative-saturation) and [field ranges](api.md#setmasterprocessingoptions).",
-          "mirrored_markdown": "`setMasterProcessing` merges partial updates, validates the entire result and returns publication acceptance. Continuous controls ramp over 10 ms. Disabling an effect closes input gradually and keeps its tail, bounded to 30 seconds with a final fade, then restores exact bypass. It does not undo a non-unity input gain. `stopAll` invalidates histories and stops the native sequence; `shutdown` stops the stream and frees its buffers. See the [processing example](advanced-examples.md#chorus-delay-reverb-and-creative-saturation) and [field ranges](api.md#setmasterprocessingoptions)."
+          "original_markdown": "`setMasterProcessing` merges partial updates, validates the entire result and returns publication acceptance. Continuous controls ramp over 10 ms. Disabling an effect closes input gradually and keeps its tail, bounded to 30 seconds with a final fade, then restores exact bypass. It does not undo a non-unity input gain. `stopAll` invalidates histories and stops every native sequence; `shutdown` stops the stream and frees its buffers. See the [processing example](examples.md#chorus-delay-reverb-and-creative-saturation) and [field ranges](api.md#setmasterprocessingoptions).",
+          "mirrored_markdown": "`setMasterProcessing` merges partial updates, validates the entire result and returns publication acceptance. Continuous controls ramp over 10 ms. Disabling an effect closes input gradually and keeps its tail, bounded to 30 seconds with a final fade, then restores exact bypass. It does not undo a non-unity input gain. `stopAll` invalidates histories and stops every native sequence; `shutdown` stops the stream and frees its buffers. See the [processing example](advanced-examples.md#chorus-delay-reverb-and-creative-saturation) and [field ranges](api.md#setmasterprocessingoptions)."
         },
         {
           "original_markdown": "Delay and LFO sync follow global `setTempo` (initially 120); free settings retain milliseconds or hertz. The two extra voice LFOs target filter cutoff, square PWM or sine FM, with sine/triangle waves. They are independent of `lfoFreq`/`lfoDepth` pitch vibrato. See [two LFOs](examples.md#two-voice-lfos).",
@@ -148,16 +148,8 @@
           "mirrored_markdown": "The current diagnostics add `preLimiterPeakDb` (maximum signal before final limiting, in dBFS) and `maxLimiterReductionDb` (greatest limiter attenuation in dB) accumulated since reset. Unlike the approximately 200 ms window reduction field, brief peaks remain visible between UI polls. Enable measurements, reset before the scenario and keep `null`/absent fields distinct from measured zero. The [measurement example](advanced-examples.md#measure-peaks-and-limiter-reduction) shows opt-in polling and cleanup."
         },
         {
-          "original_markdown": "`updateVoice` changes compatible pitch, volume, cutoff/Q, vibrato, PWM/FM and LFO targets with 10 ms ramps, without restarting oscillator/envelope phase. Source, table, filter type, noise clock, one-pole cutoff, ADSR and spatial position are fixed at attack. See [complete fields](api.md#updatevoiceoptions). A note that has ended or been stolen accepts updates as a no-op; there is no note-finished event or reserved slot. A `true` return means accepted publication, not proof that the sound is still active.",
-          "mirrored_markdown": "`updateVoice` changes compatible pitch, volume, cutoff/Q, vibrato, PWM/FM, LFO targets, noise clock, one-pole cutoff, effect send and stereo/spatial position with 10 ms ramps, without restarting oscillator/envelope phase or clearing spatial history. Source, table, filter type and ADSR are fixed at attack. Spatial edits require a voice started spatially; stereo pan edits require a stereo voice. See [complete fields](api.md#updatevoiceoptions). A note that has ended or been stolen accepts updates as a no-op; there is no note-finished event or reserved slot. A `true` return means accepted publication, not proof that the sound is still active."
-        },
-        {
           "original_markdown": "Calls that create or change sound return `true` when accepted and `false` when rejected. During development, handle that result and inspect logcat or the Xcode console for the structured validation warning.",
           "mirrored_markdown": "Timed and held sound calls and accepted edits return `true` when accepted and `false` when rejected. `playSequence` instead returns a positive sequence ID or `0`; state queries return their documented state or `null`, and lifecycle/cleanup methods follow their own return contracts. During development, handle the relevant result and inspect logcat or the Xcode console for the structured validation warning."
-        },
-        {
-          "original_markdown": "Master volume is ramped to avoid a step in the output. `stopAll()` fades active voices, but it does not cancel future steps in the current pattern. Start a new pattern or call `shutdown()` when future scheduling must stop as well.",
-          "mirrored_markdown": "Master volume is ramped to avoid a step in the output. `stopAll()` stops all native sequences, fades active voices and invalidates effect histories while leaving the engine available. Use `stopSequence({ sequenceId })` to stop only one owner and preserve unrelated sounds. `shutdown()` also stops the stream and releases its resources."
         },
         {
           "original_markdown": "Supply the current position whenever an effect fires. A projectile launch cue can use the launch position; an impact uses the collision position. Repeated short motor events can use successive positions. A single active tone cannot move after submission because positions remain fixed, including on an identified sustained voice. Stereo `panEnd` movement cannot be combined with binaural; do not continually retrigger long sounds every frame to imitate movement.",
@@ -168,8 +160,8 @@
     {
       "source": "documentation/recommendations.md",
       "destination": "references/recommendations.md",
-      "source_sha256": "206593e03b860b2d1c39316bf286cd276307bdb0120be050c262b21749bcccd8",
-      "mirrored_sha256": "d574b349ab54e4e176f24075e1a04b826784c1908ab69db6d7b8725b5ceae431",
+      "source_sha256": "de212dae8b2b362c241cc2b63c7e11cad9db1ff758fd52ffba4fd26ac66bf794",
+      "mirrored_sha256": "58d9dd491ac63ad60fb48551fa7c558682fd4f5cd4403cf03d72c4ef7ebf794c",
       "links": [],
       "link_fixes": [
         {
@@ -183,18 +175,14 @@
         {
           "original_markdown": "- Timed tones, chords and pattern steps last at most 60 seconds. Sustained `noteOn` voices last until release, replacement or shutdown.",
           "mirrored_markdown": "- Timed tones and chords last at most 60 seconds including release. Sequence intervals and explicit note lengths use the sequence unit, at most 300 beats or 60,000 ms; sequence ADSR remains in milliseconds and release may extend beyond the interval. Sustained `noteOn` voices last until release, replacement or shutdown."
-        },
-        {
-          "original_markdown": "Keep chorus/delay/reverb mixes modest when dialogue or short game feedback must remain distinct. They process the whole mix, so enabling reverb for a victory chord also affects simultaneous shots and collisions. Use an isolated presentation context, or close effect input before returning to gameplay.",
-          "mirrored_markdown": "Keep chorus/delay/reverb mixes modest when dialogue or short game feedback must remain distinct. One shared chain processes selected categories, not necessarily the whole mix. Select `applyTo` categories and each event's `bus`; an explicit `effectSend` overrides category selection. For example, select `music` for a victory sequence and leave `effects` dry, or set an individual shot's send to 0. Input/master gains and the final limiter remain global."
         }
       ]
     },
     {
       "source": "documentation/sound-design.md",
       "destination": "references/sound-design.md",
-      "source_sha256": "dd543e07c825aaf67a0a5f85619088a8d02721a9d33dbf4579edf760dad3e262",
-      "mirrored_sha256": "f2e2207eeaae5e8061b37dfb5fac98ef9b9c050845b23a547b468ceba718e740",
+      "source_sha256": "d7dbf023a72b2baaf726c20f6e240795f25095e63124264d8a13d9202b42e1d0",
+      "mirrored_sha256": "96514d9bbbbb3e3cf9d8940edab961c6c6a0268979dc16204528fde28d7db9dd",
       "links": [],
       "link_fixes": [
         {
@@ -218,8 +206,8 @@
     {
       "source": "documentation/troubleshooting.md",
       "destination": "references/troubleshooting.md",
-      "source_sha256": "939960cde5860569699916208c0d3b352e60ba2a7603b5046dcefa9970294b70",
-      "mirrored_sha256": "70ee69508273b3c89d52a8c8feb6c58400433a5a50e298e38da5076ded19a8a8",
+      "source_sha256": "e2156e5dea77bda95d9f9305bf2c8c359d54d5832f56062cf2d2ebe6c2b583b9",
+      "mirrored_sha256": "183a99e6b37427bd7c85e234706daf38c9feacfe4e796a6aba0ffbf9b54d9144",
       "links": [],
       "link_fixes": [
         {
@@ -243,16 +231,16 @@
           "mirrored_markdown": "- Timed tones/chords and each sequence attack keep their specified position. A spatial held voice can move through `updateVoice({ voiceId, spatialX, spatialY })`; omitted coordinates retain their previous value, and the FIR ramps over 10 ms without clearing history. A stereo voice cannot be converted to spatial by an update."
         },
         {
-          "original_markdown": "Use the original positive `voiceId`, not the pitch or an ID that has already been reused. `noteOn` does not accept `duration` or temporal `*End` fields. `updateVoice` cannot change source, filter type, table, noise clock, ADSR or spatial position; restart with a new ID when those attack-time settings must change. Compatible continuous edits ramp for 10 ms.",
-          "mirrored_markdown": "Use the original positive `voiceId`, not the pitch or an ID that has already been reused. `noteOn` does not accept `duration` or temporal `*End` fields. Source, filter type, table, quantization and ADSR require a new attack. Compatible `updateVoice` controls include live noise clock, one-pole cutoff, spatial position for a spatial voice, stereo pan for a stereo voice, modulation and explicit effect send, in addition to pitch/volume/filter/vibrato/FM/pulse targets. Changed continuous controls ramp for 10 ms while retaining phase, envelope and spatial history; `noiseRate: 0` means white noise and `lowPassHz: 0` bypasses that filter."
-        },
-        {
           "original_markdown": "Look for a structured warning in logcat or the Xcode console:\n\n```text\nevent=validation_warning method=playSequence key=steps reason=not_object action=rejected value=C4\n```",
           "mirrored_markdown": "For methods that emit structured validation warnings, inspect logcat or the Xcode console:\n\n```text\nevent=validation_warning method=playTone key=duraton reason=unsupported_option action=rejected value=200\n```\n\nAlways check the return value: `playSequence` rejects with 0, while Boolean methods reject with `false`. Some sequence/control rejection paths do not emit a structured warning; absence of a new log entry does not establish acceptance."
         },
         {
           "original_markdown": "Use whole milliseconds and integer waveform values where required.",
           "mirrored_markdown": "Use integer milliseconds for timed tone/chord envelope fields and integer waveform values; native sequence intervals and lengths may be fractional."
+        },
+        {
+          "original_markdown": "Confirm both entries in `tiapp.xml` pin 1.0.0. Then remove the application's build output and rebuild so Titanium does not reuse an archive from an earlier build. The module directories should be:\n\n```text\nmodules/android/ti.synthengine/1.0.0/\nmodules/iphone/ti.synthengine/1.0.0/\n```",
+          "mirrored_markdown": "`apiVersion` describes the unchanged 1.0.0 API contract; it is not the module package version. Confirm both entries in `tiapp.xml` pin module version 1.0.2. Then remove the application's build output and rebuild so Titanium does not reuse an archive from an earlier build. The module directories should be:\n\n```text\nmodules/android/ti.synthengine/1.0.2/\nmodules/iphone/ti.synthengine/1.0.2/\n```"
         }
       ]
     },
@@ -260,7 +248,7 @@
       "source": "documentation/stats-performance.md",
       "destination": "references/stats-performance.md",
       "source_sha256": "3d6d35b9e0e49a778777d406418eaba04ebd57da871a322da28fae0190c5cb17",
-      "mirrored_sha256": "576910d2ee7e3026b083136713e8ceba0b4cbb774958bd65f3751612d9360467",
+      "mirrored_sha256": "4dbd8a85cbce7c08369c4c9b5d4d2c0cf6a8e0dd0fa508b9c6aaf95774f7be12",
       "links": [],
       "link_fixes": []
     },
@@ -319,8 +307,8 @@
       "links": [],
       "link_fixes": [
         {
-          "original_markdown": "The Classic Titanium app in [app.js](app.js) demonstrates the timed sounds, native sequences and statistics with the `sequenceend` event on Android and iOS. It uses the current 1.0.0 module packages, including binaural and statistics support. Held voices, master processing and voice LFOs have copyable examples in the [advanced documentation](../documentation/examples.md#sustained-game-motor); this reference app does not expose those newer controls. The default engine configuration is 16 voices, `conservative` mixing and the `playback` session; master volume starts at 100% and optional diagnostics start off.",
-          "mirrored_markdown": "The Classic Titanium app in [app.js](app.js) demonstrates the timed sounds, native sequences and statistics with the `sequenceend` event on Android and iOS. It uses the current 1.0.0 module packages, including binaural and statistics support. Held voices, master processing and voice LFOs have copyable examples in the [advanced documentation](../../references/advanced-examples.md#sustained-game-motor); this reference app does not expose those newer controls. The default engine configuration is 16 voices, `conservative` mixing and the `playback` session; master volume starts at 100% and optional diagnostics start off."
+          "original_markdown": "The Classic Titanium app in [app.js](app.js) demonstrates the timed sounds, native sequences and statistics with the `sequenceend` event on Android and iOS. It uses the current 1.0.2 module packages, including binaural and statistics support. Held voices, master processing and voice LFOs have copyable examples in the [advanced documentation](../documentation/examples.md#sustained-game-motor); this reference app does not expose those newer controls. The default engine configuration is 16 voices, `conservative` mixing and the `playback` session; master volume starts at 100% and optional diagnostics start off.",
+          "mirrored_markdown": "The Classic Titanium app in [app.js](app.js) demonstrates the timed sounds, native sequences and statistics with the `sequenceend` event on Android and iOS. It uses the current 1.0.2 module packages, including binaural and statistics support. Held voices, master processing and voice LFOs have copyable examples in the [advanced documentation](../../references/advanced-examples.md#sustained-game-motor); this reference app does not expose those newer controls. The default engine configuration is 16 voices, `conservative` mixing and the `playback` session; master volume starts at 100% and optional diagnostics start off."
         },
         {
           "original_markdown": "5. Build and run the test app with the Titanium CLI or your existing Titanium launch configuration. Use Titanium SDK 13.2.0.GA or newer, Android compile API 35 or newer, and iOS 15 or newer. See the [module installation guide](../documentation/guide.md#install-the-module).",
@@ -337,14 +325,10 @@
         {
           "original_markdown": "The panel shows active/peak/spatial/tail voices, pending commands, replacements, request/publication rejections, priority drops, callback load, stereo output peak and backend underruns. It displays `n/a` for unmeasured or unavailable values, keeping them distinct from zero. Signal windows need about 200 ms of output after enabling. Native snapshots also include RMS, limiter reduction, sample rate, buffer and latency fields; consult the [complete field reference](../documentation/api.md#getstats) when integrating a full diagnostic view.",
           "mirrored_markdown": "The panel shows active/peak/spatial/tail voices, pending commands, replacements, request/publication rejections, priority drops, callback load, stereo output peak and backend underruns. It displays `n/a` for unmeasured or unavailable values, keeping them distinct from zero. Signal windows need about 200 ms of output after enabling. Native snapshots also include RMS, limiter reduction, sample rate, buffer and latency fields; consult the [complete field reference](../../references/api.md#getstats) when integrating a full diagnostic view."
-        },
-        {
-          "original_markdown": "2. Build the current module source, or use the matching packages supplied with the public release when available. Development archives are `android/dist/ti.synthengine-android-1.0.0.zip` and `ios/dist/ti.synthengine-iphone-1.0.0.zip`. The existing private release is a separate snapshot and may lack current features.",
-          "mirrored_markdown": "2. Download matching official [Android 1.0.0](https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.0.0) and [iOS 1.0.0](https://github.com/macCesar/TiSynthEngine/releases/tag/ios-1.0.0) packages, or build the matching module source. Source builds produce `android/dist/ti.synthengine-android-1.0.0.zip` and `ios/dist/ti.synthengine-iphone-1.0.0.zip`."
         }
       ],
-      "source_sha256": "c3c5041be11c3addfab7fb1248c0aaba81b311c1720c2861e47974412d743bcf",
-      "mirrored_sha256": "e7c522bc9a9ca52d4d103125226491c04d4a6bfab8433192a5a0dbfaef94428e"
+      "source_sha256": "80f2a69a634453e974281cbdac17e97fbc713a228e79379e8cea592c366bb9be",
+      "mirrored_sha256": "f036b0ca42b118a9c807324464b1dceda76eb94cab60450f7d3b3822e7f8cfdc"
     },
     {
       "source": "example/app.js",
@@ -433,20 +417,82 @@
       "kind": "evidence-archive",
       "source_sha256": "0539e799d66ed26ef5d64f727dd30bec55692bfd691584e25753999c545b8cf6",
       "mirrored_sha256": "0539e799d66ed26ef5d64f727dd30bec55692bfd691584e25753999c545b8cf6"
+    },
+    {
+      "source": "documentation/audio-pipeline-validation.md",
+      "destination": "references/audio-pipeline-validation.md",
+      "source_sha256": "7359d85de63e9fe94f85477e03a22fc1531c8acaabe30333e7ff2515cc5ec3e9",
+      "mirrored_sha256": "f2a90a8423a3761664ca2957f3ce3ccb2792e1b090c2b7a011709689b12a588d",
+      "links": [],
+      "link_fixes": []
     }
   ],
   "excluded_documents": [
     {
       "source": "documentation/index.md",
-      "source_sha256": "7bdbf702ce26903d7a68e267d3451ec0bb728c822ad576393727daf4be9e039f",
+      "source_sha256": "9c9cab76618b15e77b8de43dd7bd33cd35be0fe50ad4fb28d5e1a71fe0708fa2",
       "reason": "Upstream documentation index; SKILL.md is the distributed navigation entry point."
     },
     {
       "source": "documentation/third-party-notices.md",
-      "source_sha256": "1ff6f3082dec146feb00d790a2abc6f1f97e2f455b2a31c0152a6faae578ddb9",
+      "source_sha256": "ed444257505f503d0ba3076bb14e6af251305b84b8d2832f433fd6db06ccff37",
       "reason": "Dependency and KEMAR notices remain with the official module and its binary packages; this skill redistributes documentation, not the native code or HRTF data. Re-review attribution when the source notice changes."
     }
   ],
-  "source_state": "committed",
-  "reviewed_worktree_sha256": "e4f60d0aa6d7f3d3b6a6494b1c861b99f649c6f9ec51abaf201b20f297327c95"
+  "source_state": "working-tree",
+  "reviewed_worktree_sha256": "0226827bb8c35cf62435f0d7b64d2a3f02427417c9084f2bddfdadb0a90b68d3",
+  "api_version": "1.0.0",
+  "public_packages": [
+    {
+      "platform": "android",
+      "version": "1.0.2",
+      "release_url": "https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.0.2",
+      "download_url": "https://github.com/macCesar/TiSynthEngine/releases/download/android-1.0.2/ti.synthengine-android-1.0.2.zip",
+      "asset_id": 690484566,
+      "filename": "ti.synthengine-android-1.0.2.zip",
+      "sha256": "8698104f188782a77699fbd6308a779ca0b190833ceebf398557b628af1b8bbe",
+      "downloaded_on_utc": "2026-10-30",
+      "crc_verified": true,
+      "native_unchanged_from_original_1_0_2": true,
+      "native_sha256": {
+        "modules/android/ti.synthengine/1.0.2/m2repository/ti/synthengine/1.0.2/synthengine-1.0.2.aar!jni/arm64-v8a/liboboe.so": "3f026ef84e9ca978723af18bd2b3bba2518579c1a8783358a0cb0c6d8373ad02",
+        "modules/android/ti.synthengine/1.0.2/m2repository/ti/synthengine/1.0.2/synthengine-1.0.2.aar!jni/arm64-v8a/libti.synthengine.so": "0c8f265ca8766df105105c709b45327214d2d71078bfad3410a753901dc63e1f",
+        "modules/android/ti.synthengine/1.0.2/m2repository/ti/synthengine/1.0.2/synthengine-1.0.2.aar!jni/armeabi-v7a/liboboe.so": "87f30f27fbe6a25fa58f33c0194b61a793922f2aaaa7dec654553b91cc1eedcd",
+        "modules/android/ti.synthengine/1.0.2/m2repository/ti/synthengine/1.0.2/synthengine-1.0.2.aar!jni/armeabi-v7a/libti.synthengine.so": "44290bab45d92c7fd04f660462c41c5ee4cb336380fc328f0d7fbb6bf3d5aa22",
+        "modules/android/ti.synthengine/1.0.2/m2repository/ti/synthengine/1.0.2/synthengine-1.0.2.aar!jni/x86/liboboe.so": "8c71a055a21e7a343e559d86ffed24132bd5b12a9fb2d2e510b884137980058b",
+        "modules/android/ti.synthengine/1.0.2/m2repository/ti/synthengine/1.0.2/synthengine-1.0.2.aar!jni/x86/libti.synthengine.so": "63b18692617296e2f39ce0c776a3c4e0599fee0329cf2793ea0c3f36de3056f3",
+        "modules/android/ti.synthengine/1.0.2/m2repository/ti/synthengine/1.0.2/synthengine-1.0.2.aar!jni/x86_64/liboboe.so": "590508f0697893c62def4e5223379e225dd8866c7569c56f51ecc949eab9dd06",
+        "modules/android/ti.synthengine/1.0.2/m2repository/ti/synthengine/1.0.2/synthengine-1.0.2.aar!jni/x86_64/libti.synthengine.so": "9f297fa73883bfdb69c0231cbc370053e1c6d9ea9daf86c4ef765da08d9e0151"
+      },
+      "corrected_html_sha256": {
+        "documentation/guide.html": "08a1e29461f802ff9104d7a1bd9120ce8302ce7d4ef47b5c0205a34d9e56fa7b",
+        "example/README.html": "32ab1906ea7de38bb3ad9eb756c75ea33c664963ac6fc5ec9fcbf22585a96ff5",
+        "android/README.html": "a67b18c9a2ee62ca771aae21e6f0650825ad1d0e724cf3f9a59cec09aa3d9ba6",
+        "ios/README.html": "b3ed190cbb3ca9022943f2f71d5e927fde7f8d8a75c2a23ab3aa51324a07a5dc"
+      }
+    },
+    {
+      "platform": "iphone",
+      "version": "1.0.2",
+      "release_url": "https://github.com/macCesar/TiSynthEngine/releases/tag/ios-1.0.2",
+      "download_url": "https://github.com/macCesar/TiSynthEngine/releases/download/ios-1.0.2/ti.synthengine-iphone-1.0.2.zip",
+      "asset_id": 690484747,
+      "filename": "ti.synthengine-iphone-1.0.2.zip",
+      "sha256": "779e77d018d5b3f686d69cb1b4b0162281803ea12691487df565c1fd15175c58",
+      "downloaded_on_utc": "2026-10-30",
+      "crc_verified": true,
+      "native_unchanged_from_original_1_0_2": true,
+      "native_sha256": {
+        "modules/iphone/ti.synthengine/1.0.2/ti.synthengine.xcframework/ios-arm64/libti.synthengine.a": "d1629580f952189e67976d57364370c712a63932ef04ddd0e7a8587d29e9fd15",
+        "modules/iphone/ti.synthengine/1.0.2/ti.synthengine.xcframework/ios-arm64_x86_64-maccatalyst/libti.synthengine.a": "1d1523a71159d85e5c1db95ced29f94c7d11b323cf0bf062a50d850954e77b56",
+        "modules/iphone/ti.synthengine/1.0.2/ti.synthengine.xcframework/ios-arm64_x86_64-simulator/libti.synthengine.a": "8ae3e920fd0be1e34fc444adc04e51537b225270df2cb4c48115695661ded4e1"
+      },
+      "corrected_html_sha256": {
+        "documentation/guide.html": "08a1e29461f802ff9104d7a1bd9120ce8302ce7d4ef47b5c0205a34d9e56fa7b",
+        "example/README.html": "32ab1906ea7de38bb3ad9eb756c75ea33c664963ac6fc5ec9fcbf22585a96ff5",
+        "android/README.html": "a67b18c9a2ee62ca771aae21e6f0650825ad1d0e724cf3f9a59cec09aa3d9ba6",
+        "ios/README.html": "b3ed190cbb3ca9022943f2f71d5e927fde7f8d8a75c2a23ab3aa51324a07a5dc"
+      }
+    }
+  ]
 }

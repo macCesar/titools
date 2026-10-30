@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 documentation at release source commit `e7cbbe8a6f9ab38088fd8029c7b43cef6501101f` (2026-10-24). Upstream `documentation/sound-design.md` SHA-256: `dd543e07c825aaf67a0a5f85619088a8d02721a9d33dbf4579edf760dad3e262`.
+> Source snapshot: official TiSynthEngine 1.0.2 documentation from reviewed working-tree based on commit `4a45f21230ffc5a8838fbd5fc108dd3ab470362a` (2026-10-29). Upstream `documentation/sound-design.md` SHA-256: `d7dbf023a72b2baaf726c20f6e240795f25095e63124264d8a13d9202b42e1d0`.
 
 # Sound design with TiSynthEngine
 
@@ -319,7 +319,7 @@ Choose the profile once in `start()`:
 | `speakerSafe`  | Lower source gain and a 0.70 ceiling for small speakers.          |
 | `raw`          | Full source gain; useful only when the app owns all gain staging. |
 
-Protected profiles calibrate source gain by waveform and event voice count. The final stereo-linked limiter catches exceptional peaks with 10 ms of lookahead and a 100 ms release. Its ceiling is 0.85, or 0.70 for `speakerSafe`.
+Protected profiles calibrate source gain by waveform and event voice count. The final stereo-linked sample protector applies immediate reduction with no retained samples and a 100 ms exponential recovery. Overload changes the waveform; fixed per-event gain and chord compensation remain unchanged. Its ceiling is 0.85, or 0.70 for `speakerSafe`.
 
 The limiter protects against peaks. If it engages on every note, lower event volume or choose a more conservative profile instead of using it to raise loudness. Repeatedly starting the same long sound before its previous release ends raises and lowers the sum, which can produce audible pumping. That overlap is useful as a stress test, but it is a poor reference for the tone's normal quality.
 

@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Refresh `ti-synthengine` for corrected Android/iOS 1.0.2 documentation and freshly downloaded replacement ZIPs, retaining public API 1.0.0. Document immediate stereo peak protection, zero output retention, exact master ramps, lifecycle recovery, native CI and scoped calibration evidence; reconcile official stopAll/live-update/selective-effects corrections and preserve curated recipes and historical reports.
+
 ## [5.2.2] - 2026-10-24
 
 ### Fixed

@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 documentation at release source commit `e7cbbe8a6f9ab38088fd8029c7b43cef6501101f` (2026-10-24). Upstream `documentation/api.md` SHA-256: `698d272a85e71692eb5de30586556e53ba19aea88de3b0e583c2d720b150f24b`.
+> Source snapshot: official TiSynthEngine 1.0.2 documentation from the reviewed working-tree based on `4a45f21230ffc5a8838fbd5fc108dd3ab470362a` (2026-10-29). Upstream `documentation/api.md` SHA-256: `0eae9bb5d07500fd33a9b767bd0036a491a2947954cd5c3b7fa51035ba375857`.
 
 # API reference
 
@@ -116,7 +116,7 @@ The shared result has this shape; Android adds the platform metadata described b
 
 `fmDepthEnd`, `detunes`, `spatialX` and `spatialY` have no reported default: their presence changes how the call is interpreted. Supplying a spatial coordinate enables binaural; the other coordinate then defaults to 0 internally. The maximum frequency is `sampleRate * 0.45`. Before the stream opens, the reported fallback is 19,845 Hz. Read the object again after `start()` if the precise device limit matters.
 
-Android additionally reports `capabilities: { nativeSequence: true, masterProcessing: true, modulations: true }` and `limits.maxSequences`, `limits.priority`, `limits.effectSend` and `limits.stepDurationMs`. The reviewed iOS result omits those metadata keys while implementing the corresponding methods and option ranges. Detect the required methods instead of requiring an Android-only flag. `limits.stepDuration` is in beats on both platforms; for millisecond sequences the accepted range is `4000 / sampleRate` through 60,000.
+Android additionally reports `capabilities: { nativeSequence: true, masterProcessing: true, modulations: true }` and `limits.stepDurationMs`. The reviewed iOS result omits those two metadata entries while implementing the corresponding methods and millisecond sequences. Both platforms report `limits.maxSequences`, `limits.priority` and `limits.effectSend`. Detect the required methods instead of requiring an Android-only flag. `limits.stepDuration` is in beats on both platforms; for millisecond sequences the accepted range is `4000 / sampleRate` through 60,000.
 
 ## Limits
 
@@ -198,7 +198,7 @@ Starts a sustained native voice. Detect `typeof synth.noteOn === 'function'`, `n
 | `filterHz`, `filterQ` | Initial cutoff and Q; a non-none filter type is required. |
 | `fmRatio`, `fmDepth` | Initial sine FM; same rules and ranges as playTone. |
 | `detune` | Initial pitch offset in cents, −1200…1200; default 0. |
-| `spatialX`, `spatialY` | Initial binaural position in −1…1; omitted for stereo. Compatible held-position updates are live. |
+| `spatialX`, `spatialY` | Initial binaural position in −1…1; omitted for stereo. |
 | `modulations` | Up to two native LFOs; see Additional voice modulation. |
 | `bus` | Category: music, effects (default), ui or ambience. |
 | `effectSend` | Optional explicit processed share 0-1, replacing category selection. |
@@ -362,7 +362,7 @@ synth.stopSequence({ sequenceId: musicId })
 
 ## `setMasterProcessing(options)`
 
-Selected audio follows fixed input gain → chorus → ping-pong delay → reverb → master volume → optional saturation. Dry audio receives the same global input/master gains, then recombines before one final lookahead limiter. Independent notes never trigger voice-count normalization. The limiter remains the final protection.
+Selected audio follows fixed input gain → chorus → ping-pong delay → reverb → master volume → optional saturation. Dry audio receives the same global input/master gains, then recombines before one final sample-peak protector with no retained samples. Independent notes never trigger voice-count normalization. The limiter remains the final protection.
 
 Requires a running engine and returns Boolean acceptance. Partial updates merge into the last accepted processing configuration, validate the complete result and publish atomically. Continuous controls ramp over 10 ms. Unknown fields, numeric booleans and non-finite values reject the whole edit. Detect method presence before use.
 
@@ -618,7 +618,7 @@ Returns a new snapshot without resetting counters. Available before start and af
 | `limiterReductionDb`       | Maximum limiter attenuation in that window, as a positive dB magnitude.                                                                 |
 | `underrunCount`            | Android Oboe accumulated backend xruns since reset/start when supported; otherwise `null`.                                              |
 | `bufferFrames`             | Android Oboe output buffer size; otherwise `null`. This is distinct from `callbackFrames`.                                              |
-| `estimatedOutputLatencyMs` | Android timestamp-based stream-to-DAC estimate plus module lookahead, when valid; otherwise `null` (always `null` on this iOS backend). |
+| `estimatedOutputLatencyMs` | Android timestamp-based stream-to-DAC estimate, when valid; otherwise `null` (always `null` on this iOS backend). |
 
 At this source pin, iOS early rejections in tempo/sequence operations and a
 stopped `setMasterProcessing` call can bypass rejection counters. Incompatible

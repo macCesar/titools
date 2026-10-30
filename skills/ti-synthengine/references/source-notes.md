@@ -1,30 +1,38 @@
 # Maintaining the synthesis snapshot
 
-These references mirror the **public TiSynthEngine 1.0.0 release** at
-`e7cbbe8a6f9ab38088fd8029c7b43cef6501101f`, recorded in
-[source-snapshot.json](source-snapshot.json). The clean local checkout and remote
-main matched that commit on 2026-10-24. The repository is public; the Android
-and iOS releases are published, neither draft nor prerelease. Module availability
-is independent of publishing a new TiTools version.
+These references describe **TiSynthEngine module 1.0.2, public API 1.0.0**.
+The corrected official documentation is a reviewed working tree based on
+`4a45f21230ffc5a8838fbd5fc108dd3ab470362a`, recorded with its exact fingerprint in
+[source-snapshot.json](source-snapshot.json). The documentation corrections are
+not represented as committed by that base revision. Review date: 2026-10-29.
 
 ## Public downloads and artifact provenance
 
-| Platform | Published release | Package SHA-256 |
-| --- | --- | --- |
-| Android | [android-1.0.0](https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.0.0) | `cf3510f290eca6dd00e8e0742a7db4f09dd2b8c4ef9270ed1f34d30eb32389cf` |
-| iOS / Mac Catalyst | [ios-1.0.0](https://github.com/macCesar/TiSynthEngine/releases/tag/ios-1.0.0) | `bc2e3f88c2945df721dd2196dfbb852c64aa98954b04460adf56ca41c75e6e91` |
+The replacement packages were freshly downloaded from the existing public URLs
+on 2026-10-30 UTC (2026-10-29 locally), rather than reusing cached 1.0.2 files.
 
-Both platform tags and `v1.0.0` point at the reviewed commit; only the two
-platform tags have GitHub release pages. Downloaded ZIPs were independently
-hashed and inspected: module ID `ti.synthengine`, version `1.0.0`, minimum
-Titanium `13.2.0.GA`; Android includes four ABIs and the Apple manifest enables
-Mac Catalyst. See the [guide](guide.md) for Android API35 and iOS15 requirements,
-app-root ZIP installation and both `tiapp.xml` declarations. These checks do not
-constitute a fresh device installation or audio acceptance run.
+| Platform | Published release | Replacement package SHA-256 |
+| --- | --- | --- |
+| Android | [android-1.0.2](https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.0.2) | `8698104f188782a77699fbd6308a779ca0b190833ceebf398557b628af1b8bbe` |
+| iOS / Mac Catalyst | [ios-1.0.2](https://github.com/macCesar/TiSynthEngine/releases/tag/ios-1.0.2) | `779e77d018d5b3f686d69cb1b4b0162281803ea12691487df565c1fd15175c58` |
+
+Both ZIPs passed full CRC checks and match the current GitHub asset SHA-256
+digests. These hashes replace the original 1.0.2 packages' hashes; filenames and
+release URLs did not change. Manifests report module `ti.synthengine`, version
+`1.0.2`, minimum Titanium `13.2.0.GA`, four Android ABIs and Apple Mac Catalyst
+support. The manifest's native `apiversion` field is distinct from the JavaScript
+contract's `apiVersion: '1.0.0'`, which remains unchanged.
+
+All eight Android native libraries (inside the AAR) and three Apple static
+libraries match the preserved original 1.0.2 release packages byte for byte.
+Corrected guide, example and platform README HTML was inspected in both new
+packages. Source/package checks do not constitute a fresh device installation or
+listening acceptance. See the [guide](guide.md) for API35/iOS15 requirements,
+app-root ZIP installation and both `tiapp.xml` declarations.
 
 ## Sources and permitted transformations
 
-Eight official Markdown documents are mirrored into nine parts, including the
+Nine official Markdown documents are mirrored into ten parts, including the
 ordered examples/advanced-examples split. The current snapshot inventories all
 complete JSON reports, bundled example assets and linked raw-evidence archives.
 The new [performance review](performance-review.json) and its raw archive are
@@ -32,7 +40,7 @@ preserved alongside historical reports; none is replaced by a favorable summary.
 Read snapshot records for exact counts and hashes. Example JavaScript and raw
 reports/archives remain byte-identical to source.
 
-Each Markdown part and the example README have a local-commit provenance header and recorded navigation transformations. Native-backed corrections to stale official prose are also declared as reversible `link_fixes`; the source hash still identifies the original official text, not the corrected mirror. Reversible `link_fixes` rebase links into the split advanced examples, preserve [curated recipes](recipes.md), and resolve current example links to bundled assets. The example README points back to this skill's current API and guides. All three example JavaScript files remain byte-identical to source; none requires a historical GitHub snapshot.
+Each Markdown part and the example README have a reviewed working-tree provenance header and recorded navigation transformations. Native-backed corrections to stale official prose are also declared as reversible `link_fixes`; the source hash still identifies the original official text, not the corrected mirror. Reversible `link_fixes` rebase links into the split advanced examples, preserve [curated recipes](recipes.md), and resolve current example links to bundled assets. The example README points back to this skill's current API and guides. All three example JavaScript files remain byte-identical to source; none requires a historical GitHub snapshot.
 
 The fidelity regression strips provenance/navigation, concatenates example parts, reverses declared transformations and compares the complete source hash. Raw records must remain byte-identical. Update transformations intentionally; never change hashes merely to hide unexplained source drift.
 
@@ -47,6 +55,43 @@ Focused executable recipe tests inspect submitted intervals, envelope lengths, p
 `start` configures one engine, up to 32 shared voices and one to four preallocated sequence slots. `playSequence` is the only successive-sound scheduler and returns a positive ID or zero. Sequence edits, state queries and cancellation name that ID. Global `setTempo` governs beat timing and synchronized modulation; millisecond sequences retain fixed times. Finite playback is the default, and circular patterns explicitly opt into looping.
 
 Selective `music`, `effects`, `ui` and `ambience` categories feed one shared effect chain; an explicit per-voice send overrides category selection. Live spatial position, noise clock, low-pass cutoff and compatible continuous voice controls ramp over 10 ms while preserving history. Priorities protect higher-priority voices without reserved quotas. See the [API](api.md) for exact limits, source compatibility, return values and event delivery.
+
+### Module 1.0.1 and 1.0.2 corrections
+
+Michael Gangolf's [Android PR #1](https://github.com/macCesar/TiSynthEngine/pull/1)
+updates Oboe to 1.11.0, recovers closed streams after all stream errors, keeps a
+single demand-driven sequence-event poll chain and shuts down on root activity
+destruction. Removing the unused Java Thread inheritance changes no public API.
+The subsequent Apple correction polls only while sequence events or held-voice
+metadata need retirement and guards shutdown/restart reentry. Neither poller is
+a musical scheduler; explicit engine ownership/teardown remains required.
+
+Module 1.0.2 shares final output processing in `shared/synth_output.h`: zero
+retained samples, immediate stereo-linked sample protection, ceilings 0.85/0.70,
+100 ms exponential recovery and reset after two consecutive quiet stereo frames.
+Master volume ramps linearly over 10 ms on both platforms, independently of the
+protector. The iOS `raw` startup correction now applies its documented gain;
+existing raw mixes need review. Overload changes the waveform, and sample
+ceilings do not certify inter-sample peaks or speaker behavior.
+
+[Pipeline validation](audio-pipeline-validation.md) preserves the new production
+callback/CI checks, five-rate output comparisons and physical scope. Preset
+calibration measures both renderers and six scenarios at 1/2/4/8/16/32 voices;
+fixed-gain recommendations target the measured 1–8-voice configuration, with
+16/32 kept as stress diagnostics. It never edits Studio. The Android startup
+underrun remains unresolved, including independent silent Oboe reproduction.
+Route-wide latency, Bluetooth and extended maximum-load acceptance remain open.
+
+Official corrections now preserve panic cancellation (`stopAll` stops every
+sequence and invalidates effect histories), compatible live `updateVoice`
+noise/low-pass/spatial/send edits, and category selection with `applyTo` plus
+explicit `effectSend` overrides. Their superseded mirror errata were removed;
+remaining native-backed errata and curated recipe navigation stay reversible.
+Android and Apple production callback tests now run in CI; the historical Java
+DSP model is not the production audio oracle. No native binaries were installed
+or device/listening tests rerun during this skill update.
+
+### Historical evidence
 
 The [performance review](performance-review.json) documents the accepted
 control-thread changes: partial sequence-bank preparation and removal of idle
@@ -65,8 +110,8 @@ bypass, memory and strict Frontier presentation criteria. Current evidence and
 rejected candidates must not be combined into a general pass. This skill update
 did not rerun devices, install binaries or alter native source.
 
-The October 23 native findings were independently rechecked against the
-published source on October 24. These current differences remain explicit;
+The earlier native findings were independently rechecked against the
+1.0.2 source on October 29. These current differences remain explicit;
 hash fidelity alone cannot establish them:
 
 - iOS timed tone/chord command construction still rounds accepted zero attack
@@ -79,9 +124,10 @@ hash fidelity alone cannot establish them:
 - Sequence cutoff coefficients currently refresh every 16 samples on Android
   and every 8 samples on Apple; both use note length but do not promise identical
   sample output. See [engine details](audio-engine.md).
-- Android `getDefaults()` includes capabilities and additional limit metadata
-  that the current iOS dictionary omits. Both expose the corresponding APIs;
-  detect methods rather than requiring Android-only metadata flags. Sequence
+- Android `getDefaults()` additionally returns `capabilities` and
+  `limits.stepDurationMs`; iOS omits those keys. Both platforms return
+  `limits.maxSequences`, `limits.priority` and `limits.effectSend`. Detect
+  required methods rather than requiring Android-only metadata flags. Sequence
   intervals use different beat and millisecond ranges; see [API](api.md).
 - Remaining stale official claims are corrected only where verified against
   current native behavior, with exact reversible transformations. Corrections

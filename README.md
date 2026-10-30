@@ -546,11 +546,11 @@ frequency and pause/audio/input ownership remain application policies.
 
 ### ti-synthengine
 
-Sound design and synthesis with the public native `ti.synthengine` 1.0.0 release for Android and iOS. Read the [skill entry point](skills/ti-synthengine/SKILL.md) for task routing, exact API references and current source provenance.
+Sound design and synthesis with the public native `ti.synthengine` 1.0.2 release (public API 1.0.0) for Android and iOS. Read the [skill entry point](skills/ti-synthengine/SKILL.md) for task routing, exact API references and current source provenance.
 
 Public repository: [macCesar/TiSynthEngine](https://github.com/macCesar/TiSynthEngine).
-Download [Android 1.0.0](https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.0.0)
-and [iOS 1.0.0](https://github.com/macCesar/TiSynthEngine/releases/tag/ios-1.0.0),
+Download [Android 1.0.2](https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.0.2)
+and [iOS 1.0.2](https://github.com/macCesar/TiSynthEngine/releases/tag/ios-1.0.2),
 copy the ZIPs into the Titanium app root and follow the [installation guide](skills/ti-synthengine/references/guide.md).
 Requires Titanium SDK 13.2.0.GA+, Android compile API35+, and iOS 15+; the Apple package also supports Mac Catalyst.
 
@@ -894,7 +894,7 @@ This pattern is documented across four bundled TiTools skills: `ti-ui`, `ti-expe
 | ti-game   | Native 2D Game Workflow       | 12 files (API, input, source notes, setup, physics, patterns, recipes, tile maps, debugging, roadmap) |
 | ti-game-assets | Visual and Sound Assets | 10 guides and a manifest example; alpha and contract validation scripts |
 | ti-admob-unified | Unified Advertising | 20 Markdown references including production, rewarded interstitial, mediation parity, integration library guidance, provenance and game monetization; source/hash checks and official example assets |
-| ti-synthengine | Native Sound Synthesis   | 12 Markdown references (9 official parts, 2 curated recipe guides, maintenance notes), complete validation reports/evidence and a reversible source hash manifest |
+| ti-synthengine | Native Sound Synthesis   | 13 Markdown references (10 official parts, 2 curated recipe guides, maintenance notes), complete validation reports/evidence and a reversible source hash manifest |
 | ti-api | Titanium API | 20 references for core/platform APIs and native modules |
 | ti-guides | SDK Fundamentals | 16 references for setup, configuration, CLI and distribution |
 | ti-howtos | Native Integrations | 18 references for platform features and integration workflows |

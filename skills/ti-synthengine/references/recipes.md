@@ -403,8 +403,7 @@ if (!sequenceId) throw new Error('Sequence rejected')
 
 ### Hovering craft
 
-A large triangle-wave LFO is no longer subtle vibrato: it becomes a cyclical
-engine wobble. Slow stereo travel adds movement on headphones while pitch
+A triangle voice with strong sine vibrato creates a cyclical engine wobble. Slow stereo travel adds movement on headphones while pitch
 remains the primary cue on mono speakers.
 
 ```javascript

@@ -1,19 +1,19 @@
-> Source snapshot: official TiSynthEngine 1.0.0 documentation at release source commit `e7cbbe8a6f9ab38088fd8029c7b43cef6501101f` (2026-10-24). Upstream `example/README.md` SHA-256: `c3c5041be11c3addfab7fb1248c0aaba81b311c1720c2861e47974412d743bcf`.
+> Source snapshot: official TiSynthEngine 1.0.2 documentation from reviewed working-tree based on commit `4a45f21230ffc5a8838fbd5fc108dd3ab470362a` (2026-10-29). Upstream `example/README.md` SHA-256: `80f2a69a634453e974281cbdac17e97fbc713a228e79379e8cea592c366bb9be`.
 
 # Interactive example
 
-The Classic Titanium app in [app.js](app.js) demonstrates the timed sounds, native sequences and statistics with the `sequenceend` event on Android and iOS. It uses the current 1.0.0 module packages, including binaural and statistics support. Held voices, master processing and voice LFOs have copyable examples in the [advanced documentation](../../references/advanced-examples.md#sustained-game-motor); this reference app does not expose those newer controls. The default engine configuration is 16 voices, `conservative` mixing and the `playback` session; master volume starts at 100% and optional diagnostics start off.
+The Classic Titanium app in [app.js](app.js) demonstrates the timed sounds, native sequences and statistics with the `sequenceend` event on Android and iOS. It uses the current 1.0.2 module packages, including binaural and statistics support. Held voices, master processing and voice LFOs have copyable examples in the [advanced documentation](../../references/advanced-examples.md#sustained-game-motor); this reference app does not expose those newer controls. The default engine configuration is 16 voices, `conservative` mixing and the `playback` session; master volume starts at 100% and optional diagnostics start off.
 
 ## Run it
 
 1. Create a Classic Titanium application with Android and/or iOS support. If the app uses Alloy, create a separate Classic test project and leave the Alloy-generated files in place.
-2. Download matching official [Android 1.0.0](https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.0.0) and [iOS 1.0.0](https://github.com/macCesar/TiSynthEngine/releases/tag/ios-1.0.0) packages, or build the matching module source. Source builds produce `android/dist/ti.synthengine-android-1.0.0.zip` and `ios/dist/ti.synthengine-iphone-1.0.0.zip`.
+2. Download the official [Android 1.0.2](https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.0.2) and [iOS 1.0.2](https://github.com/macCesar/TiSynthEngine/releases/tag/ios-1.0.2) packages, or build the current module source. Source builds produce `android/dist/ti.synthengine-android-1.0.2.zip` and `ios/dist/ti.synthengine-iphone-1.0.2.zip`.
 3. Put the archive for each target platform in the test app root. Add these entries inside its `tiapp.xml`:
 
 ```xml
 <modules>
-  <module platform="android" version="1.0.0">ti.synthengine</module>
-  <module platform="iphone" version="1.0.0">ti.synthengine</module>
+  <module platform="android" version="1.0.2">ti.synthengine</module>
+  <module platform="iphone" version="1.0.2">ti.synthengine</module>
 </modules>
 ```
 
@@ -68,7 +68,7 @@ The panel shows active/peak/spatial/tail voices, pending commands, replacements,
 
 Render load divides callback elapsed time by the audio budget for that block; it does not measure total app CPU. The panel multiplies the native fraction by 100, so a reading of 1.20% means that fraction of the block budget, not 120%.
 
-Even with zero voices, the stream renders silent blocks and runs the output/limiter and any enabled diagnostics. Expect a small, changing baseline. The two decimal places are display formatting and do not guarantee that precision.
+The shared final output stage retains zero samples. Master volume changes use a linear 10 ms ramp; overload can audibly change the mix. Even with zero voices, the stream renders silent blocks and runs output protection and any enabled diagnostics. Expect a small, changing baseline. The two decimal places are display formatting and do not guarantee that precision.
 
 Compare readings on the same device with the same configuration and load; simulator and phone readings are not equivalent. Android backend metrics are best-effort. This iOS backend has no underrun/buffer/latency measurement, and a clean counter cannot establish sound quality.
 

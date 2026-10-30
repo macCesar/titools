@@ -19,8 +19,8 @@ const run = promisify(execFile);
 
 test('synthesis mirrors reconstruct their pinned official sources with recorded navigation fixes', () => {
   const snapshot = JSON.parse(read(snapshotPath));
-  assert.equal(snapshot.files.length, 26);
-  assert.equal(snapshot.files.filter(record => record.destination.startsWith('references/') && record.destination.endsWith('.md')).length, 9);
+  assert.equal(snapshot.files.length, 27);
+  assert.equal(snapshot.files.filter(record => record.destination.startsWith('references/') && record.destination.endsWith('.md')).length, 10);
   assert.equal(snapshot.files.filter(record => record.destination.endsWith('.json')).length, 8);
   assert.equal(snapshot.files.filter(record => record.kind === 'example-asset').length, 4);
   assert.equal(snapshot.files.filter(record => record.kind === 'evidence-archive').length, 5);

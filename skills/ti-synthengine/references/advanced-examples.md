@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.0 documentation at release source commit `e7cbbe8a6f9ab38088fd8029c7b43cef6501101f` (2026-10-24). Upstream `documentation/examples.md` SHA-256: `48104b9d413050d439ee605c92a2456a50b42c4c80e2d7c2c05706eecc7db215`.
+> Source snapshot: official TiSynthEngine 1.0.2 documentation from reviewed working-tree based on commit `4a45f21230ffc5a8838fbd5fc108dd3ab470362a` (2026-10-29). Upstream `documentation/examples.md` SHA-256: `48104b9d413050d439ee605c92a2456a50b42c4c80e2d7c2c05706eecc7db215`.
 
 ## Sustained game motor
 

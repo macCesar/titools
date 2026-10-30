@@ -1,16 +1,17 @@
 ---
 name: ti-synthengine
-description: "Use when a Titanium app declares ti.synthengine in tiapp.xml, imports require('ti.synthengine'), or needs generated tones, chords, native sequences, sustained game motors, ADSR, sweeps, FM, resonant filters, noise, binaural spatialX/spatialY, held noteOn/noteOff/updateVoice, shared tempo, selective music/effects/ui/ambience processing, effectSend, priorities, chorus/delay/reverb/saturation, LFOs, sequenceend events, gain staging, statistics or render-load diagnosis. Covers the published Android/iOS 1.0.0 contract. Not for audio-file decoding, sample streaming or unrelated synthesizers."
+description: "Use when a Titanium app declares ti.synthengine in tiapp.xml, imports require('ti.synthengine'), or needs generated tones, chords, native sequences, sustained game motors, ADSR, sweeps, FM, resonant filters, noise, binaural spatialX/spatialY, held noteOn/noteOff/updateVoice, shared tempo, selective music/effects/ui/ambience processing, effectSend, priorities, chorus/delay/reverb/saturation, LFOs, sequenceend events, gain staging, statistics or render-load diagnosis. Covers Android/iOS module 1.0.2 with public API 1.0.0. Not for audio-file decoding, sample streaming or unrelated synthesizers."
 ---
 
 # ti.synthengine — native sound synthesis for Titanium
 
 Act as an audio engineer and mobile sound designer. Translate the requested sound into acoustically reasoned JavaScript using the exact public contract.
 
-These references describe the **public 1.0.0 release** at
-`e7cbbe8a6f9ab38088fd8029c7b43cef6501101f` (reviewed 2026-10-24).
-Download matching [Android](https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.0.0)
-and [iOS](https://github.com/macCesar/TiSynthEngine/releases/tag/ios-1.0.0)
+These references describe **module 1.0.2 with public API 1.0.0**, using the
+corrected documentation working tree based on
+`4a45f21230ffc5a8838fbd5fc108dd3ab470362a` (reviewed 2026-10-29).
+Download matching [Android](https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.0.2)
+and [iOS](https://github.com/macCesar/TiSynthEngine/releases/tag/ios-1.0.2)
 packages from the public [repository](https://github.com/macCesar/TiSynthEngine).
 Source/mirror hashes are in [source-snapshot.json](references/source-snapshot.json);
 artifact checksums and native findings are in [source notes](references/source-notes.md).
@@ -35,6 +36,7 @@ Read the relevant references before writing or reviewing code. When updating the
 | Map headphone coordinates and stereo bypass | [Guide](references/guide.md#integrate-binaural-in-a-2d-app), [API](references/api.md) |
 | Interpret gain, clipping, statistics or render performance | [Recommendations](references/recommendations.md), [statistics](references/stats-performance.md), [engine](references/audio-engine.md) |
 | Diagnose rejection, silence, interruptions or glitches | [Troubleshooting](references/troubleshooting.md), [source notes](references/source-notes.md) |
+| Module 1.0.2 output, raw-profile migration, calibration, native CI and startup underrun limits | [Pipeline validation](references/audio-pipeline-validation.md), [engine](references/audio-engine.md), [source notes](references/source-notes.md) |
 | Accepted optimizations, rejected Apple runtime and physical performance limits | [Current performance review](references/performance-review.json), [engine](references/audio-engine.md), [source notes](references/source-notes.md) |
 | Android binaural performance correction and its listening/load limits | [Current Sim80 correction](references/android-sim80-correction.json), [source notes](references/source-notes.md), [unified host validation](references/unified-validation.json), [bypass comparison](references/unified-bypass-performance.json) |
 | Audit provenance and acceptance boundaries | [Snapshot](references/source-snapshot.json), [source notes](references/source-notes.md), [historical Studio report](references/studio-validation.json), [physical evidence](references/physical-validation.json), [Frontier measurements](references/frontier-physical-validation.json) |
@@ -55,7 +57,7 @@ if (!synth.start({maxVoices: 32, maxSequences: 4,
 }
 ```
 
-The current iOS `getDefaults()` omits some capability and limit metadata reported by Android. Detect required methods and use the API ranges; a missing metadata flag is not proof of a missing method. [source: references/api.md]
+The current iOS `getDefaults()` omits Android’s `capabilities` and `limits.stepDurationMs`; both platforms report `limits.maxSequences`, `limits.priority` and `limits.effectSend`. Detect required methods and use the API ranges; a missing metadata flag is not proof of a missing method. [source: references/api.md]
 
 Choose the actual required sequence capacity, 1–4; the snippet's four slots suit games with simultaneous music, effects and cues. One engine and render callback share up to 32 voices. Start after screen layout settles; the owning service/window shuts down on teardown. On iOS, `ambient` respects silent mode and mixes with other apps; `playback` is the default and ignores silent mode. Profile, voice/sequence capacity and session require shutdown before changing them. [source: references/api.md]
 
@@ -75,13 +77,17 @@ Preserve migrated score timing deliberately: a former total envelope of 150 ms w
 
 ## Voices, routes and continuous controls
 
-`bus` selects `music`, `effects` (default), `ui` or `ambience`. `setMasterProcessing({applyTo:[...]})` selects processed categories, initially all four; an empty array selects none. An explicit `effectSend:0…1` overrides the category selection for that voice. There is one shared chorus/delay/reverb/saturation chain. Input gain and master volume remain global. Selected audio receives processing, rejoins dry audio, and passes one final limiter. Effects and saturation start disabled. Disable closes input and retains bounded tails up to 30 seconds; panic invalidates histories. [source: references/api.md]
+`bus` selects `music`, `effects` (default), `ui` or `ambience`. `setMasterProcessing({applyTo:[...]})` selects processed categories, initially all four; an empty array selects none. An explicit `effectSend:0…1` overrides the category selection for that voice. There is one shared chorus/delay/reverb/saturation chain. Input gain and master volume remain global. Selected audio receives processing, rejoins dry audio, and passes one final stereo sample-peak protector. Effects and saturation start disabled. Disable closes input and retains bounded tails up to 30 seconds; panic invalidates histories. [source: references/api.md]
 
 Sustained IDs are positive app-owned integers. Release on key up, touch cancellation, pause and teardown. Handle rejected release by retrying twice at 16 ms, then shut down/report if it still fails. These retry timers are lifecycle/error recovery, not a musical clock. Ended/stolen IDs accept edits as no-ops. [source: references/api.md]
 
 Compatible `updateVoice` fields include frequency, volume, vibrato, resonant filter targets, pulse width, FM, modulations, `noiseRate`, `lowPassHz`, stereo/spatial position and `effectSend`. Transitions take 10 ms and preserve phase, spatial history and the current envelope. `noiseRate:0` is white noise; `lowPassHz:0` bypasses its one-pole filter. Spatial updates require a voice started spatially; stereo `pan` applies to a stereo voice. Do not combine spatial coordinates with stereo pan fields. [source: references/api.md]
 
 `priority:0…3`, initially 0, controls eligible replacement under the shared voice pool. Higher priorities remain protected. Chords are admitted or discarded completely; there are no reserved per-category quotas. Gain is fixed per event, with initial chord compensation. Starting unrelated voices does not normalize earlier voices. [source: references/api.md]
+
+Module 1.0.2 retains zero samples at final output: stereo-linked peak protection acts immediately, recovers exponentially with a 100 ms time constant and uses ceilings of 0.85, or 0.70 for `speakerSafe`. These are sample ceilings, not speaker or inter-sample guarantees; overload changes waveform shape. Master volume uses an independent linear 10 ms ramp on both platforms. iOS now applies the documented `raw` gain, so review existing raw mixes when upgrading. Native Android and Apple callback checks run in CI; device latency, listening and extended maximum-load acceptance remain separate. [source: references/audio-pipeline-validation.md]
+
+`stopAll()` stops every native sequence, cancels future attacks, fades voices and invalidates effect histories. Use `stopSequence({sequenceId})` for one owner’s sequence. Android closes the engine on root activity destruction; explicit owner teardown remains required. Idle event polling stops when no control work remains and does not schedule musical attacks. [source: references/api.md] [source: references/guide.md] [source: references/audio-engine.md]
 
 ## Sound and validation rules
 
