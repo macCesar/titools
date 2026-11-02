@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [5.2.4] - 2026-11-02
+
+### Changed
+
+- Audit and synchronize every ti-synthengine document with corrected TiSynthEngine sources: distinguish published 1.0.2 from local 1.1.0, add complete native-variation contract/design/validation and instrument/effect guidance, update the demo and retrieval routes, preserve curated recipes and historical evidence, and track the relocated validation archives. Correct official-source API, lifecycle, spatial, sequence and diagnostic discrepancies against both native platforms before mirroring them.
+
 ## [5.2.3] - 2026-10-29
 
 ### Changed

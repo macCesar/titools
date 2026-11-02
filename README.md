@@ -83,15 +83,15 @@ Why NPM?
 
 ### Which option should I use?
 
-|                     | Plugin (Option A)                          | CLI (Option B)            |
-| ------------------- | ------------------------------------------ | ------------------------- |
-| **Claude Code**     | Recommended                                | Supported                 |
-| **Gemini CLI**      | Not available                              | Supported                 |
-| **Codex CLI**       | Not available                              | Supported                 |
-| **Knowledge Index** | Not included                               | Included (`titools sync`) |
-| **Auto-updates**    | Marketplace (opt-in, enable in `/plugin`)  | SessionStart hook (daily) |
-| **Slash commands**  | `/ti-check`, `/ti-new-screen`, `/ti-audit` | Same three (`~/.claude/commands/`) |
-| **Session hook**    | Auto-detects Titanium projects (Alloy/Classic, PurgeTSS, `ti.game`, `ti.synthengine`) | Auto-update only          |
+|                     | Plugin (Option A)                                                                     | CLI (Option B)                     |
+| ------------------- | ------------------------------------------------------------------------------------- | ---------------------------------- |
+| **Claude Code**     | Recommended                                                                           | Supported                          |
+| **Gemini CLI**      | Not available                                                                         | Supported                          |
+| **Codex CLI**       | Not available                                                                         | Supported                          |
+| **Knowledge Index** | Not included                                                                          | Included (`titools sync`)          |
+| **Auto-updates**    | Marketplace (opt-in, enable in `/plugin`)                                             | SessionStart hook (daily)          |
+| **Slash commands**  | `/ti-check`, `/ti-new-screen`, `/ti-audit`                                            | Same three (`~/.claude/commands/`) |
+| **Session hook**    | Auto-detects Titanium projects (Alloy/Classic, PurgeTSS, `ti.game`, `ti.synthengine`) | Auto-update only                   |
 
 Having both installed is fine: the CLI detects an enabled marketplace plugin and skips its own skill symlinks and command copies, so nothing shows up twice. `titools doctor` reports which channel is serving Claude Code.
 
@@ -148,11 +148,11 @@ The knowledge index provides always-available context (the documentation map). S
 
 Together they work like this:
 
-| Your Question                   | Knowledge Index Provides        | Skills Activate               |
-| ------------------------------- | ------------------------------- | ----------------------------- |
-| "Create a login screen"         | Context about project structure | `ti-expert`, `ti-ui`          |
-| "Optimize ListView performance" | Points to docs location         | `ti-ui` reads specific files  |
-| "Implement push notifications"  | API reference paths             | `ti-expert`, `ti-howtos`      |
+| Your Question                   | Knowledge Index Provides        | Skills Activate              |
+| ------------------------------- | ------------------------------- | ---------------------------- |
+| "Create a login screen"         | Context about project structure | `ti-expert`, `ti-ui`         |
+| "Optimize ListView performance" | Points to docs location         | `ti-ui` reads specific files |
+| "Implement push notifications"  | API reference paths             | `ti-expert`, `ti-howtos`     |
 
 You do not need to explicitly invoke skills. The AI detects when to use them based on your question.
 
@@ -164,27 +164,27 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 
 ## Skills overview
 
-| Skill        | Purpose                             | Best For                                |
-| ------------ | ----------------------------------- | --------------------------------------- |
-| ti-reuse-first | Reuse before writing new code     | Whether it should exist and what already does it; duplication sweeps |
-| ti-expert    | Architecture and implementation     | Starting point for most tasks           |
-| purgetss     | Alloy styling + asset automation    | Utility classes; Alloy/Classic branding, images, colors, fonts and modules |
-| ti-ui        | UI/UX patterns                      | Complex layouts, ListViews, platform UI |
-| ti-game      | 2D games with the `ti.game` module  | Sprites, physics, tile maps, HUDs, camera, focused keyboard/mouse/gamepad actions, Apple Metal/Catalyst |
-| ti-game-assets | Visual and sound assets | Image generation/editing, synthesis variants, stereo placement, alpha cleanup, manifests, parallax and complete exports |
-| ti-synthengine | Sound design with `ti.synthengine` | Tones, chords, retro/UI effects, alarms, sweeps, patterns, ADSR envelopes, resonant filters, FM, detune, binaural positioning, held voices, native sequences, master effects, voice LFOs, engine statistics, mixing and troubleshooting |
-| ti-admob-unified | Advertising, privacy and mediation | Official `ti.admob.unified` guides, copy-ready library, banners/fullscreen, UMP/ATT and selected-provider configuration |
-| ti-api       | Complete Titanium API reference     | Looking up properties, methods, events  |
-| ti-guides    | SDK fundamentals                    | tiapp.xml, Hyperloop, distribution, JDK/Xcode compatibility, release notes |
-| ti-howtos    | Native feature integration          | Location, push, media, platform APIs    |
-| alloy-guides | Alloy MVC framework reference       | Controllers, models, views, widgets     |
-| alloy-howtos | Alloy CLI, configuration, debugging | alloy.jmk, config.json, custom XML tags |
+| Skill            | Purpose                             | Best For                                                                                                                                                                                                                                                                                             |
+| ---------------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ti-reuse-first   | Reuse before writing new code       | Whether it should exist and what already does it; duplication sweeps                                                                                                                                                                                                                                 |
+| ti-expert        | Architecture and implementation     | Starting point for most tasks                                                                                                                                                                                                                                                                        |
+| purgetss         | Alloy styling + asset automation    | Utility classes; Alloy/Classic branding, images, colors, fonts and modules                                                                                                                                                                                                                           |
+| ti-ui            | UI/UX patterns                      | Complex layouts, ListViews, platform UI                                                                                                                                                                                                                                                              |
+| ti-game          | 2D games with the `ti.game` module  | Sprites, physics, tile maps, HUDs, camera, focused keyboard/mouse/gamepad actions, Apple Metal/Catalyst                                                                                                                                                                                              |
+| ti-game-assets   | Visual and sound assets             | Image generation/editing, synthesis variants, stereo placement, alpha cleanup, manifests, parallax and complete exports                                                                                                                                                                              |
+| ti-synthengine   | Sound design with `ti.synthengine`  | Tones, chords, retro/UI effects, alarms, sweeps, patterns, ADSR envelopes, resonant filters, FM, detune, binaural positioning, held voices, native sequences, master effects, voice LFOs, engine statistics, bounded attack variation, seeds, instrument/effect fidelity, mixing and troubleshooting |
+| ti-admob-unified | Advertising, privacy and mediation  | Official `ti.admob.unified` guides, copy-ready library, banners/fullscreen, UMP/ATT and selected-provider configuration                                                                                                                                                                              |
+| ti-api           | Complete Titanium API reference     | Looking up properties, methods, events                                                                                                                                                                                                                                                               |
+| ti-guides        | SDK fundamentals                    | tiapp.xml, Hyperloop, distribution, JDK/Xcode compatibility, release notes                                                                                                                                                                                                                           |
+| ti-howtos        | Native feature integration          | Location, push, media, platform APIs                                                                                                                                                                                                                                                                 |
+| alloy-guides     | Alloy MVC framework reference       | Controllers, models, views, widgets                                                                                                                                                                                                                                                                  |
+| alloy-howtos     | Alloy CLI, configuration, debugging | alloy.jmk, config.json, custom XML tags                                                                                                                                                                                                                                                              |
 
 Notes:
 - The first eight (`ti-reuse-first`, `ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-game-assets`, `ti-synthengine`, `ti-admob-unified`) are specialist workflow skills reflecting TiTools' Titanium conventions and native-module contracts.
 - `ti-reuse-first` runs before the others. It asks whether a thing needs to exist and what already does it — a search order that stops at the first rung that holds — and sweeps an existing `app/` for near-identical controllers, single-listener events, wrappers around one call, and layout recomputed in JavaScript. It is deliberately two-sided: it says when adding a module or a Widget is the right answer, so the bias does not simply invert.
 - `ti-game` documents the `ti.game` native module (2D sprite engine using OpenGL ES 2.0 on Android and Metal on iPhone, iPad and Mac Catalyst). Its API reference was verified against the module source and records the reviewed upstream commit and fork documentation snapshot; it applies to Alloy and Classic projects alike and does not depend on PurgeTSS.
-- `ti-synthengine` translates sound requests into checked JavaScript for the public Android/iOS `ti.synthengine` 1.0.0 release. Its nineteen-method contract covers timed/held voices, identified native sequences, global tempo, selective categories/sends, master effects, live spatial/noise/filter controls and diagnostics. Two curated recipe guides cover retro cues and interactive instruments. Complete official-source mirrors, validation reports, bundled examples and raw evidence retain provenance; reversible errata correct source prose against native behavior. The clean reviewed commit, platform differences and scoped listening/performance acceptance are explicit in source notes.
+- `ti-synthengine` translates sound requests into checked JavaScript for published Android/iOS `ti.synthengine` 1.0.2 and local 1.1.0 candidates (public API 1.0.0). Its nineteen-method contract covers timed/held voices, identified native sequences, global tempo, selective categories/sends, master effects, live spatial/noise/filter controls and diagnostics. Two curated recipe guides cover retro cues and interactive instruments. Complete official-source mirrors, validation reports, bundled examples and raw evidence retain provenance; verified corrections are applied to official source prose before mirroring. The reviewed source commit/worktree, platform differences and scoped listening/performance acceptance are explicit in source notes.
 - `ti-game-assets` treats images and sounds as essential game assets. It coordinates integrated `image_gen` artwork with `ti-synthengine` sound design, variants and stereo placement, and ships Pillow helpers for conservative alpha cleanup and per-world visual/audio manifests.
 - The latter five are documentation-mirror skills, audited against official sources via the internal `titools-skill-auditor`. See [Where the references come from](#where-the-references-come-from).
 - `purgetss` reference files are audited against the official PurgeTSS documentation and against the package source (the CLI and the generated `utilities.tss`), but its workflow conventions are opinionated.
@@ -195,12 +195,12 @@ Notes:
 
 The Titanium documentation was rewritten during 2026, and v5.0.0 moved TiTools onto the new sources. No skill, command or flag was renamed and the references answer the same questions. What changed is what they are checked against.
 
-| Source | Feeds | Why it is the one |
-|---|---|---|
-| [`tidev/titanium-sdk`](https://github.com/tidev/titanium-sdk) → `apidoc/*.yml` | `ti-api` | The API definitions the SDK team edits. Every other copy of the API is compiled from these. |
-| [`tidev/titaniumsdk.com`](https://github.com/tidev/titaniumsdk.com) → `content/docs/` | `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos` | The rewritten guides, and what [titaniumsdk.com](https://titaniumsdk.com) serves. |
-| `tidev/titaniumsdk.com` → `registry/sdk/<version>/` | `ti-api`, as a cross-check | The API compiled per published release. It answers which version actually shipped an API, which the YAML alone cannot. |
-| [`tidev/titanium-docs`](https://github.com/tidev/titanium-docs) | all five, as an archive | The previous corpus, now frozen. Kept for what the rewrite left out. |
+| Source                                                                                | Feeds                                                    | Why it is the one                                                                                                      |
+| ------------------------------------------------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| [`tidev/titanium-sdk`](https://github.com/tidev/titanium-sdk) → `apidoc/*.yml`        | `ti-api`                                                 | The API definitions the SDK team edits. Every other copy of the API is compiled from these.                            |
+| [`tidev/titaniumsdk.com`](https://github.com/tidev/titaniumsdk.com) → `content/docs/` | `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos` | The rewritten guides, and what [titaniumsdk.com](https://titaniumsdk.com) serves.                                      |
+| `tidev/titaniumsdk.com` → `registry/sdk/<version>/`                                   | `ti-api`, as a cross-check                               | The API compiled per published release. It answers which version actually shipped an API, which the YAML alone cannot. |
+| [`tidev/titanium-docs`](https://github.com/tidev/titanium-docs)                       | all five, as an archive                                  | The previous corpus, now frozen. Kept for what the rewrite left out.                                                   |
 
 ### Why the API comes from the SDK
 
@@ -222,12 +222,12 @@ In addition to skills, this repository includes sub-agents for Claude Code. Sub-
 
 Deep-dive research specialist that can combine the complete 13-skill TiTools catalog.
 
-| Aspect           | Details                                          |
-| ---------------- | ------------------------------------------------ |
-| Location         | `~/.claude/agents/ti-pro.md`                     |
-| Model            | Sonnet (comprehensive analysis)                  |
-| Tools            | Read, Grep, Glob, Bash                           |
-| Preloaded Skills | All 13 skills registered in `lib/config.js`      |
+| Aspect           | Details                                     |
+| ---------------- | ------------------------------------------- |
+| Location         | `~/.claude/agents/ti-pro.md`                |
+| Model            | Sonnet (comprehensive analysis)             |
+| Tools            | Read, Grep, Glob, Bash                      |
+| Preloaded Skills | All 13 skills registered in `lib/config.js` |
 
 When to use the agent vs skills:
 
@@ -306,16 +306,16 @@ You do not need to call skills explicitly. The AI reads skill descriptions and l
 
 All skills include automatic project detection to ensure compatibility:
 
-| Skill     | What It Detects       | How It Works                                                  |
-| --------- | --------------------- | ------------------------------------------------------------- |
-| purgetss  | PurgeTSS mode and project type | Checks PurgeTSS markers, then separates Alloy utilities from Classic standalone commands |
-| ti-reuse-first | Existing app structure | Searches `app/lib/`, `app/controllers/`, `app/widgets/`, `purgetss/config.cjs` before proposing anything new |
-| ti-expert | Alloy vs Classic      | Checks for `app/` (Alloy) vs `Resources/` (Classic) structure |
-| ti-ui     | Titanium projects     | Checks for `tiapp.xml` (both Alloy and Classic)               |
-| ti-game   | ti.game module        | Checks for `<module>ti.game</module>` in `tiapp.xml` or `require('ti.game')` |
-| ti-game-assets | Game art/sound workflows | Reads asset inventories, generation/export workflows and requested visual or sound assets; no module install required for drawings |
-| ti-admob-unified | ti.admob.unified and mediation | Declared core/complement modules or requested ad/privacy/provider integration |
-| ti-synthengine | ti.synthengine module | Checks for `<module>ti.synthengine</module>` in `tiapp.xml` or `require('ti.synthengine')` |
+| Skill            | What It Detects                | How It Works                                                                                                                       |
+| ---------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| purgetss         | PurgeTSS mode and project type | Checks PurgeTSS markers, then separates Alloy utilities from Classic standalone commands                                           |
+| ti-reuse-first   | Existing app structure         | Searches `app/lib/`, `app/controllers/`, `app/widgets/`, `purgetss/config.cjs` before proposing anything new                       |
+| ti-expert        | Alloy vs Classic               | Checks for `app/` (Alloy) vs `Resources/` (Classic) structure                                                                      |
+| ti-ui            | Titanium projects              | Checks for `tiapp.xml` (both Alloy and Classic)                                                                                    |
+| ti-game          | ti.game module                 | Checks for `<module>ti.game</module>` in `tiapp.xml` or `require('ti.game')`                                                       |
+| ti-game-assets   | Game art/sound workflows       | Reads asset inventories, generation/export workflows and requested visual or sound assets; no module install required for drawings |
+| ti-admob-unified | ti.admob.unified and mediation | Declared core/complement modules or requested ad/privacy/provider integration                                                      |
+| ti-synthengine   | ti.synthengine module          | Checks for `<module>ti.synthengine</module>` in `tiapp.xml` or `require('ti.synthengine')`                                         |
 
 Why this matters:
 - PurgeTSS suggestions are provided when its project markers are detected or the user explicitly requests a standalone command
@@ -326,14 +326,14 @@ Why this matters:
 
 `ti-reuse-first` runs first — it decides whether there is anything to build — and `ti-expert` is the architectural starting point for what survives that question. Together they coordinate the rest of the bundled catalog:
 
-| Scope | Skills |
-| --- | --- |
-| Whether to build it at all | `ti-reuse-first`, first |
-| Architecture and UI | `ti-expert`, `ti-ui`, `purgetss` when configured |
-| Game assets | `ti-game-assets` for visual and sound creation, preparation and integration |
-| Native modules | `ti-game`, `ti-synthengine`, `ti-admob-unified` when declared or requested |
-| Exact SDK/API guidance | `ti-api`, `ti-guides`, `ti-howtos` |
-| Alloy MVC and tooling | `alloy-guides`, `alloy-howtos` for Alloy projects |
+| Scope                      | Skills                                                                      |
+| -------------------------- | --------------------------------------------------------------------------- |
+| Whether to build it at all | `ti-reuse-first`, first                                                     |
+| Architecture and UI        | `ti-expert`, `ti-ui`, `purgetss` when configured                            |
+| Game assets                | `ti-game-assets` for visual and sound creation, preparation and integration |
+| Native modules             | `ti-game`, `ti-synthengine`, `ti-admob-unified` when declared or requested  |
+| Exact SDK/API guidance     | `ti-api`, `ti-guides`, `ti-howtos`                                          |
+| Alloy MVC and tooling      | `alloy-guides`, `alloy-howtos` for Alloy projects                           |
 
 All thirteen ship with TiTools; no second skill package is required.
 
@@ -546,7 +546,7 @@ frequency and pause/audio/input ownership remain application policies.
 
 ### ti-synthengine
 
-Sound design and synthesis with the public native `ti.synthengine` 1.0.2 release (public API 1.0.0) for Android and iOS. Read the [skill entry point](skills/ti-synthengine/SKILL.md) for task routing, exact API references and current source provenance.
+Sound design and synthesis with the public native `ti.synthengine` 1.0.2 release (public API 1.0.0) for Android and iOS. Local 1.1.0 candidates add capability-gated native per-attack variation while keeping API 1.0.0; they have not been published as releases. Read the [skill entry point](skills/ti-synthengine/SKILL.md) for task routing, exact API references and current source provenance.
 
 Public repository: [macCesar/TiSynthEngine](https://github.com/macCesar/TiSynthEngine).
 Download [Android 1.0.2](https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.0.2)
@@ -558,6 +558,7 @@ When it activates:
 - `tiapp.xml` declares `ti.synthengine`, or code calls `require('ti.synthengine')`
 - Generated UI/game cues, instruments, alarms, chords, percussion, sweeps or binaural headphone placement
 - Sustained voices, simultaneous native sequences, shared tempo, selective effects/sends, priorities or live voice controls
+- Bounded native attack variation, deterministic seeds, complete effect playback or playable instrument adaptations
 - Rejected calls, startup glitches, voice/queue diagnostics, render-load measurements or source/artifact compatibility questions
 
 Example prompts:
@@ -568,9 +569,12 @@ Example prompts:
 "Run music and a victory cue as independent native sequences, then cancel only the cue."
 "Apply reverb to music while keeping UI dry, and change the global tempo."
 "Explain what the Android Sim80 headphone result proves about performance."
+"Vary repeated impacts natively on local 1.1.0 and retain a clean fallback on published 1.0.2."
 ```
 
 Key rules:
+- Native variation requires both capability and schema announcements; [ranges, seeds and loop behavior](skills/ti-synthengine/references/native-variation.md) are distinct from live edits
+- Preserve complete effects and layer gains when adapting or repeating them; read [instruments and effects](skills/ti-synthengine/references/instruments-and-effects.md)
 - Read constants and exact ranges from the API; strict option dictionaries reject invalid fields or conflicting pitch sources
 - Timed tone/chord `duration` includes release. Native sequence intervals and note lengths are separate; held voices release through their IDs
 - Schedule successive sounds with `playSequence`, retain positive accepted IDs and cancel the owner's sequence. `stopAll()` is global panic
@@ -736,11 +740,11 @@ Checks: skill directories exist, symlinks are valid (not broken), agent is insta
 
 It also reports the marketplace plugin's state, which changes what "healthy" means:
 
-| Plugin state                       | What doctor reports                                                     |
-| ---------------------------------- | ----------------------------------------------------------------------- |
-| Enabled                            | Claude Code is served by the plugin — missing mirrors are correct        |
-| Not installed                      | Skills reach Claude Code through npm mirrors — mirrors must be present   |
-| Uninstalled, cache directory left  | Warns and prints the `rm -rf` that clears the leftover                   |
+| Plugin state                      | What doctor reports                                                    |
+| --------------------------------- | ---------------------------------------------------------------------- |
+| Enabled                           | Claude Code is served by the plugin — missing mirrors are correct      |
+| Not installed                     | Skills reach Claude Code through npm mirrors — mirrors must be present |
+| Uninstalled, cache directory left | Warns and prints the `rm -rf` that clears the leftover                 |
 
 ### titools sync
 
@@ -885,21 +889,21 @@ This pattern is documented across four bundled TiTools skills: `ti-ui`, `ti-expe
 
 ## Skill contents summary
 
-| Skill     | SKILL.md                      | References                                            |
-| --------- | ----------------------------- | ----------------------------------------------------- |
-| ti-reuse-first | Reuse Before You Write   | 5 files (the ladder, Alloy reuse, indirection, PurgeTSS reuse, diagnostics) |
-| ti-expert | Architecture + Implementation | 27 files (patterns, feedback surfaces, file type association, sharing, testing, security, etc.) |
-| purgetss  | Setup + Critical Rules        | 39 files (Classic compatibility, grid, animations, icons, class-index, SVG pipeline, etc.) |
-| ti-ui     | UI Rules + Platform Diffs     | 14 files (layouts, lists, gestures, etc.)             |
-| ti-game   | Native 2D Game Workflow       | 12 files (API, input, source notes, setup, physics, patterns, recipes, tile maps, debugging, roadmap) |
-| ti-game-assets | Visual and Sound Assets | 10 guides and a manifest example; alpha and contract validation scripts |
-| ti-admob-unified | Unified Advertising | 20 Markdown references including production, rewarded interstitial, mediation parity, integration library guidance, provenance and game monetization; source/hash checks and official example assets |
-| ti-synthengine | Native Sound Synthesis   | 13 Markdown references (10 official parts, 2 curated recipe guides, maintenance notes), complete validation reports/evidence and a reversible source hash manifest |
-| ti-api | Titanium API | 20 references for core/platform APIs and native modules |
-| ti-guides | SDK Fundamentals | 16 references for setup, configuration, CLI and distribution |
-| ti-howtos | Native Integrations | 18 references for platform features and integration workflows |
-| alloy-guides | Alloy MVC | 11 references for controllers, views, models, styling and widgets |
-| alloy-howtos | Alloy CLI and Debugging | 6 references for commands, configuration and practical workflows |
+| Skill            | SKILL.md                      | References                                                                                                                                                                                           |
+| ---------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ti-reuse-first   | Reuse Before You Write        | 5 files (the ladder, Alloy reuse, indirection, PurgeTSS reuse, diagnostics)                                                                                                                          |
+| ti-expert        | Architecture + Implementation | 27 files (patterns, feedback surfaces, file type association, sharing, testing, security, etc.)                                                                                                      |
+| purgetss         | Setup + Critical Rules        | 39 files (Classic compatibility, grid, animations, icons, class-index, SVG pipeline, etc.)                                                                                                           |
+| ti-ui            | UI Rules + Platform Diffs     | 14 files (layouts, lists, gestures, etc.)                                                                                                                                                            |
+| ti-game          | Native 2D Game Workflow       | 12 files (API, input, source notes, setup, physics, patterns, recipes, tile maps, debugging, roadmap)                                                                                                |
+| ti-game-assets   | Visual and Sound Assets       | 10 guides and a manifest example; alpha and contract validation scripts                                                                                                                              |
+| ti-admob-unified | Unified Advertising           | 20 Markdown references including production, rewarded interstitial, mediation parity, integration library guidance, provenance and game monetization; source/hash checks and official example assets |
+| ti-synthengine   | Native Sound Synthesis        | 17 Markdown references (14 official parts, 2 curated recipe guides, maintenance notes), complete validation reports/evidence and a reversible source hash manifest                                   |
+| ti-api           | Titanium API                  | 20 references for core/platform APIs and native modules                                                                                                                                              |
+| ti-guides        | SDK Fundamentals              | 16 references for setup, configuration, CLI and distribution                                                                                                                                         |
+| ti-howtos        | Native Integrations           | 18 references for platform features and integration workflows                                                                                                                                        |
+| alloy-guides     | Alloy MVC                     | 11 references for controllers, views, models, styling and widgets                                                                                                                                    |
+| alloy-howtos     | Alloy CLI and Debugging       | 6 references for commands, configuration and practical workflows                                                                                                                                     |
 
 ---
 
