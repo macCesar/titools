@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [5.2.5] - 2026-11-02
+
+### Changed
+
+- Synchronize ti-synthengine with published module/API 1.1.0, native tone repetition, current note/statistics methods and 1.0.2 compatibility.
+- Bundle current examples, official TypeScript declarations and repetition validation with committed source provenance.
+- Correct official documentation and disclose the Apple near-integer interval discrepancy without native changes.
+
 ## [5.2.4] - 2026-11-02
 
 ### Changed
