@@ -1,27 +1,30 @@
 ---
 name: ti-synthengine
-description: "Use when a Titanium app declares ti.synthengine in tiapp.xml, imports require('ti.synthengine'), or needs generated tones, chords, native sequences, sustained game motors, ADSR, sweeps, FM, resonant filters, noise, binaural spatialX/spatialY, held noteOn/noteOff/updateVoice, shared tempo, selective music/effects/ui/ambience processing, effectSend, priorities, chorus/delay/reverb/saturation, LFOs, sequenceend events, gain staging, statistics, bounded native per-attack variation, seeds or render-load diagnosis. Covers published Android/iOS 1.0.2 and local 1.1.0 candidates with public API 1.0.0. Not for audio-file decoding, sample streaming or unrelated synthesizers."
+description: "Use when a Titanium app declares ti.synthengine in tiapp.xml, imports require('ti.synthengine'), or needs generated tones, chords, repeatTone/updateTone/stopTone, native sequences, held noteOn/noteOff/updateNote, ADSR, sweeps, FM, resonant filters, noise, binaural spatialX/spatialY, shared tempo, selective music/effects/ui/ambience processing, effectSend, priorities, chorus/delay/reverb/saturation, LFOs, sequenceend events, gain staging, statistics with enableStats/disableStats, bounded native per-attack variation, seeds, TypeScript declarations or render-load diagnosis. Not for audio-file decoding, sample streaming or unrelated synthesizers."
 ---
 
 # ti.synthengine — native sound synthesis for Titanium
 
 Act as an audio engineer and mobile sound designer. Translate the requested sound into acoustically reasoned JavaScript using the exact public contract.
 
-These references cover **published module 1.0.2 and local 1.1.0 candidates**,
-both with public API 1.0.0. They mirror the corrected official documentation
-at commit `b07c97c762be5905f132cecf33e9d60ea0c21316` (reviewed 2026-11-02).
-Native attack variation requires the local 1.1.0 packages; it is unavailable in
-the public 1.0.2 downloads. Read the [variation guide](references/native-variation.md)
-for both platform declarations, rebuilding and feature detection.
-Download matching [Android](https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.0.2)
-and [iOS](https://github.com/macCesar/TiSynthEngine/releases/tag/ios-1.0.2)
+These references cover **published Android/iOS module 1.1.0 with public API
+1.1.0**, retaining compatibility guidance for published 1.0.2 / API 1.0.0.
+Version 1.1.0 adds native finite-tone repetition, attack variation and the
+recommended held-note/statistics method names. Version 1.0.2 supports the older
+core methods and aliases but lacks repetition and rejects variation options.
+Download matching [Android](https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.1.0)
+and [iOS](https://github.com/macCesar/TiSynthEngine/releases/tag/ios-1.1.0)
 packages from the public [repository](https://github.com/macCesar/TiSynthEngine).
-Source/mirror hashes are in [source-snapshot.json](references/source-snapshot.json);
-artifact checksums and native findings are in [source notes](references/source-notes.md).
-The current [interactive example](assets/example/README.md) includes both helpers.
-Earlier private packages also used version 1.0.0: require current methods and
-install the official platform ZIPs rather than inferring capabilities from that
-version string or adding a second JavaScript audio scheduler.
+Read the [guide](references/guide.md) for both platform declarations, rebuilding
+and installation; check the actual methods and feature metadata your app needs.
+The reviewed source commit/state, reversible source/mirror hashes and release
+artifact checksums are recorded in [source-snapshot.json](references/source-snapshot.json)
+and [source notes](references/source-notes.md).
+The current [interactive example](assets/example/README.md) includes both helpers
+and native repetition controls. The bundled [TypeScript declarations](assets/index.d.ts)
+mirror the official module types; read them with the API rather than substituting
+type-checking for runtime acceptance. Earlier development packages reused API
+version strings, so version checks alone do not establish every capability.
 
 ## Required workflow
 
@@ -32,7 +35,10 @@ Read the relevant references before writing or reviewing code. When updating the
 | Any public method, option, default, return value or limit | [API](references/api.md) |
 | Download public releases, install, initialize, own or clean up an engine | [Guide](references/guide.md) |
 | Design an effect, instrument, reward, alarm or game motor | [Sound design](references/sound-design.md), [recipes](references/recipes.md), [examples](references/examples.md) |
-| Complete effect playback, playable adaptations, native repetition, importing layers and audition fidelity | [Instruments and effects](references/instruments-and-effects.md) |
+| Complete effect playback, playable adaptations, importing layers and audition fidelity | [Instruments and effects](references/instruments-and-effects.md) |
+| Repeat an original finite tone, edit its next attacks or cancel while sounding attacks finish | [Repetition API](references/api.md#finite-tone-repetition), [instruments and effects](references/instruments-and-effects.md#repeated-firing-uses-the-native-clock) |
+| Repetition test coverage, transport memory and scoped host measurements | [Repetition verification](references/native-tone-repetition-validation.md) |
+| TypeScript signatures, option dictionaries and return types | [Official declarations](assets/index.d.ts), [API](references/api.md) |
 | Native per-attack variation, ranges, amount, seeds, chords, held starts and loop/revision behavior | [Variation](references/native-variation.md), [API](references/api.md) |
 | Variation memory/callback measurements, package scope and listening follow-up | [Variation verification](references/native-variation-validation.md) |
 | Historical variation design, feasibility and deferred API questions | [Historical proposal](references/native-variation-proposal.md); current behavior comes from the implemented guide |
@@ -64,13 +70,16 @@ if (!synth.start({maxVoices: 32, maxSequences: 4,
 }
 ```
 
-Both local 1.1.0 platforms announce `capabilities.variation === true` and `variationSchemaVersion === 1`; require both before sending `variation`, even for amount zero. Published 1.0.2 does not accept that key. Android also announces native-sequence/processing/modulation flags and `limits.stepDurationMs`; iOS implements those operations without those Android-only metadata entries. Both return the sequence-capacity, priority and send limits. [source: references/api.md] [source: references/native-variation.md]
+Both 1.1.0 platforms announce `capabilities.variation === true` and `variationSchemaVersion === 1`; require both before sending `variation`, even for amount zero. Published 1.0.2 does not accept that key. Android also announces native-sequence/processing/modulation flags and `limits.stepDurationMs`; iOS implements those operations without those Android-only metadata entries. Both return the sequence-capacity, priority and send limits. [source: references/api.md] [source: references/native-variation.md]
+
+Use `updateNote` for held-note edits and `enableStats()` / `disableStats()` for diagnostics in new 1.1.0 code. `updateVoice` and `setStatsEnabled(Boolean)` remain deprecated equivalent aliases, without repeated warnings or a scheduled removal date. For 1.0.2 compatibility, detect and use its aliases; detect repetition and variation separately before enabling those features. [source: references/api.md]
 
 Choose the actual required sequence capacity, 1–4; the snippet's four slots suit games with simultaneous music, effects and cues. One engine and render callback share up to 32 voices. Start after screen layout settles; the owning service/window shuts down on teardown. On iOS, `ambient` respects silent mode and mixes with other apps; `playback` is the default and ignores silent mode. Profile, voice/sequence capacity and session require shutdown before changing them. [source: references/api.md]
 
 ## Scheduling contract
 
-- `playTone` is one timed event, `playChord` one simultaneous atomic chord, and `noteOn`/`noteOff`/`updateVoice` own sustained voices. `playSequence` is the only successive-sound scheduler. Do not add aliases or JavaScript note timers.
+- `playTone` plays one finite event and returns Boolean acceptance; it rejects `intervalMs`. `playChord` plays one simultaneous atomic chord. Use `repeatTone` for ongoing native repetition of the original finite-tone recipe, `playSequence` for ordered scores, and `noteOn`/`noteOff`/`updateNote` for interaction-owned held voices.
+- Independent gameplay calls and intentionally JavaScript-timed finite bursts remain supported. Keep their Boolean `playTone` returns and cancel app-owned timers on teardown. Native repetition and sequences own their ongoing sample-clock attacks; UI polling does not drive them.
 - `playSequence(options)` returns a positive identifier or `0`. `updateSequence({sequenceId,...changes})`, `stopSequence({sequenceId})` and `setTempo({bpm})` return Boolean acceptance. `getSequenceState({sequenceId})` returns applied revision/position or `null` for unknown/retired IDs. Acceptance can precede callback application.
 - Sequence IDs do not repeat over module lifetime, including shutdown/start. Keep the accepted ID and cancel only the owner's sequence. An accepted stop does not immediately free capacity: coalesce replacement requests and publish the latest complete score after its matching `sequenceend`. A delayed event for an old ID must not change the new owner.
 - `setTempo({bpm})` accepts 20–300, initially 120. It changes on the next block while conserving musical position. Synced delays/LFOs follow this tempo; free controls keep milliseconds/hertz.
@@ -82,11 +91,21 @@ Choose the actual required sequence capacity, 1–4; the snippet's four slots su
 
 Preserve migrated score timing deliberately: a former total envelope of 150 ms with 25 ms release becomes `length:125` in a millisecond sequence, with `release:25`. Keep onset intervals separate. [source: references/api.md]
 
+## Native finite-tone repetition
+
+Require a present `contract.capabilities` map with `toneRepetition === true` and the presence of `repeatTone`, `updateTone` and `stopTone` before enabling native repetition. Published 1.0.2 lacks it. Keep an existing independent-event path or disable the unavailable control; converting a timed recipe to sequence length/sweeps changes its rendering interpretation. [source: references/api.md] [source: references/instruments-and-effects.md]
+
+`repeatTone({intervalMs,...recipe})` requires an integer interval of 1–60,000 ms and returns a positive `toneId` or numeric `0`. It preserves the finite-tone envelope, endpoint sweeps, gain, routes and optional variation. The first attack starts at the first render opportunity; later deadlines preserve fractional samples across blocks and ignore tempo changes. There are 32 repetition slots independent of the 1–4 sequence slots, sharing the configured pool of at most 32 voices. Reserve capacity for overlaps, prior attacks after edits and other owners; publication does not guarantee admission of every future attack.
+
+`updateTone({toneId,...changes})` requires a live ID and at least one change. It merges with the last accepted recipe and validates the complete result; `note` and `frequency` replace one another, while supplying both rejects the edit. Invalid edits retain the accepted recipe. Edits affect the next scheduled attack without moving its deadline; the new interval controls the following gap. Sounding attacks retain their original configuration. A supplied variation dictionary replaces the previous dictionary; `{amount:0}` disables future variation. The native stream/counter survives edits unless the seed identity changes. Dropped attacks consume no variation selection and produce no catch-up work.
+
+`stopTone({toneId})` returns Boolean acceptance and cancels future attacks at the next block, including before the first attack. Already admitted finite voices finish their original lifetimes. Stop remains publishable when the ordinary command queue is full. Unknown/retired IDs reject edits and stops; IDs never repeat during module lifetime, including shutdown/start. There is no `toneend` event. Retain each layer's ID and cancel it on release, cancellation, preset change, pause and owner close. Global `stopAll`, shutdown and destruction invalidate repetitions and pending edits. [source: references/api.md] [source: references/native-variation.md]
+
 ## Native attack variation
 
 Variation samples compatible bounded parameters once per admitted attack, preserving authored envelopes, cadence, routes and voice counts. Read all eight source-dependent bounds before constructing ranges. Amount interpolates linearly from the authored value; pitch uses cents. Keep application gain consistent in authored volume and volume-range endpoints.
 
-An explicit seed repeats standalone selections; native loops advance their stream across attacks. Chords sample independently by voice ordinal. Sustained voices retain their selection through release; `updateVoice` rejects `variation`. Step dictionaries replace the whole inherited dictionary. Sequence revisions affect future attacks; root omission retains variation, and disabling inherited and explicit-step variation requires appropriate amount-zero replacements. Never add a JavaScript random sampler or note timer. Seeds reproduce parameters, not cross-platform noise PCM. [source: references/native-variation.md]
+An explicit seed repeats standalone selections; native loops advance their stream across attacks. Chords sample independently by voice ordinal. Sustained voices retain their selection through release; `updateNote` rejects `variation`. Step dictionaries replace the whole inherited dictionary. Sequence revisions affect future attacks; root omission retains variation, and disabling inherited and explicit-step variation requires appropriate amount-zero replacements. Use the native sampler for this variation dictionary. Seeds reproduce parameters, not cross-platform noise PCM. [source: references/native-variation.md]
 
 ## Voices, routes and continuous controls
 
@@ -94,13 +113,13 @@ An explicit seed repeats standalone selections; native loops advance their strea
 
 Sustained IDs are positive app-owned integers. Release on key up, touch cancellation, pause and teardown. Handle rejected release by retrying twice at 16 ms, then shut down/report if it still fails. These retry timers are lifecycle/error recovery, not a musical clock. Ended/stolen IDs accept edits as no-ops. [source: references/api.md]
 
-Compatible `updateVoice` fields include frequency, volume, vibrato, resonant filter targets, pulse width, FM, modulations, `noiseRate`, `lowPassHz`, stereo/spatial position and `effectSend`. Transitions take 10 ms and preserve phase, spatial history and the current envelope. `noiseRate:0` is white noise; `lowPassHz:0` bypasses its one-pole filter. Spatial updates require a voice started spatially; stereo `pan` applies to a stereo voice. Do not combine spatial coordinates with stereo pan fields. [source: references/api.md]
+Compatible `updateNote` fields include frequency, volume, vibrato, resonant filter targets, pulse width, FM, modulations, `noiseRate`, `lowPassHz`, stereo/spatial position and `effectSend`. Transitions take 10 ms and preserve phase, spatial history and the current envelope. `noiseRate:0` is white noise; `lowPassHz:0` bypasses its one-pole filter. Spatial updates require a voice started spatially; stereo `pan` applies to a stereo voice. Do not combine spatial coordinates with stereo pan fields. [source: references/api.md]
 
 `priority:0…3`, initially 0, controls eligible replacement under the shared voice pool. Higher priorities remain protected. Chords are admitted or discarded completely; there are no reserved per-category quotas. Gain is fixed per event, with initial chord compensation. Starting unrelated voices does not normalize earlier voices. [source: references/api.md]
 
 Module 1.0.2 retains zero samples at final output: stereo-linked peak protection acts immediately, recovers exponentially with a 100 ms time constant and uses ceilings of 0.85, or 0.70 for `speakerSafe`. These are sample ceilings, not speaker or inter-sample guarantees; overload changes waveform shape. Master volume uses an independent linear 10 ms ramp on both platforms. iOS now applies the documented `raw` gain, so review existing raw mixes when upgrading. Native Android and Apple callback checks run in CI; device latency, listening and extended maximum-load acceptance remain separate. [source: references/audio-pipeline-validation.md]
 
-`stopAll()` stops every native sequence, cancels future attacks, fades voices and invalidates effect histories. Use `stopSequence({sequenceId})` for one owner’s sequence. Android closes the engine on root activity destruction; explicit owner teardown remains required. Idle event polling stops when no control work remains and does not schedule musical attacks. [source: references/api.md] [source: references/guide.md] [source: references/audio-engine.md]
+`stopAll()` stops every native sequence and finite-tone repetition, cancels future attacks, fades voices and invalidates effect histories. Use `stopSequence({sequenceId})` for one owner’s sequence or `stopTone({toneId})` for its finite repetition. Android closes the engine on root activity destruction; explicit owner teardown remains required. Idle event polling stops when no control work remains and does not schedule musical attacks. [source: references/api.md] [source: references/guide.md] [source: references/audio-engine.md]
 
 ## Sound and validation rules
 
@@ -114,8 +133,8 @@ Module 1.0.2 retains zero samples at final output: stereo-linked peak protection
 
 Binaural coordinates span a headphone front plane. Omit both spatial keys to bypass; two zeros still enable binaural center. Map app percentages explicitly and preserve pitch/envelope recipes. Height perception depends on the listener and sound spectrum; output remains stereo without rear sources, room reflections or head tracking. [source: references/api.md]
 
-Timed zero attack/release and rejection diagnostics currently differ between native platforms. Check API acceptance directly; do not infer sample-identical envelopes or a complete rejection tally from validator parity. Read [source notes](references/source-notes.md) for independently rechecked findings. [source: references/api.md]
+Timed zero attack/release and rejection diagnostics currently differ between native platforms. Submit exact integer repetition intervals: Apple currently tolerates and truncates extremely near-integer values that Android rejects; see the documented [native interval edge](references/source-notes.md#known-native-interval-edge). Check API acceptance directly; do not infer sample-identical envelopes or a complete rejection tally from validator parity. Read [source notes](references/source-notes.md) for independently rechecked findings. [source: references/api.md]
 
-Diagnostics are opt-in. Preserve unavailable/null readings; poll UI slowly and clean up its timer. Render load is callback work divided by deadline, not app CPU. Historical host reports, validator parity and hash equality do not establish current physical real-time or listening acceptance. Keep technical results and César's auditory acceptance separate. [source: references/audio-engine.md] [source: references/source-notes.md]
+Diagnostics are opt-in through `enableStats()` / `disableStats()`. Preserve unavailable/null readings; poll UI slowly and clean up its timer. Render load is callback work divided by deadline, not app CPU. Historical host reports, validator parity and hash equality do not establish current physical real-time or listening acceptance. Keep technical results and César's auditory acceptance separate. [source: references/audio-engine.md] [source: references/source-notes.md]
 
 Use `ti-game` for native movement/physics and `ti-game-assets` for related visual/audio asset production. Audio scheduling remains in TiSynthEngine; do not change gameplay or install on physical devices without the task's authorization.

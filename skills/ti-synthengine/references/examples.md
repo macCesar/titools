@@ -1,8 +1,8 @@
-> Source snapshot: official TiSynthEngine documentation at commit `b07c97c762be5905f132cecf33e9d60ea0c21316` (2026-11-02). Published 1.0.2; local 1.1.0 candidates; public API 1.0.0. Upstream `documentation/examples.md` SHA-256: `637806516d2804c43427d187a37786cfcf2f0d28758762f01a570ba15194bae3`.
+> Source snapshot: official TiSynthEngine documentation at commit `ec04f4e634075c41b55f66279eabcd78b9652d58` (2026-11-02). Published module 1.1.0; public API 1.1.0. Upstream `documentation/examples.md` SHA-256: `1b3be798d8f606381696d9e00cda330c11475402397e4760dcbc3041a39ef404`.
 
 # Examples
 
-Every snippet on this page uses the TiSynthEngine 1.0.0 contract. Unless a snippet includes startup code, it assumes the engine is already running.
+Every snippet on this page uses the TiSynthEngine 1.1.0 contract. Unless a snippet includes startup code, it assumes the engine is already running.
 
 Additional [curated recipes](recipes.md) provide application sound and interaction variants.
 
@@ -13,8 +13,8 @@ var synth = require('ti.synthengine')
 var contract = synth.getDefaults()
 var WAVE = contract.waveTypes
 
-if (contract.apiVersion !== '1.0.0') {
-  throw new Error('TiSynthEngine 1.0.0 is required')
+if (contract.apiVersion !== '1.1.0') {
+  throw new Error('TiSynthEngine 1.1.0 is required')
 }
 ```
 
@@ -570,7 +570,7 @@ synth.shutdown()
 
 `stopAll()` stops all native sequences, fades current voices and invalidates effect histories. `shutdown()` also releases the native stream. To stop only one sequence owner, use `stopSequence({ sequenceId })`.
 
-Follow the [interactive demo setup and test checklist](../assets/example/README.md) to run [`example/app.js`](../assets/example/app.js). It includes headphone positioning, session selection, pattern completion/replacement and all three statistics methods. For a service-level statistics recipe, see [read engine statistics](guide.md#read-engine-statistics).
+Follow the [interactive demo setup and test checklist](../assets/example/README.md) to run [`example/app.js`](../assets/example/app.js). It includes headphone positioning, session selection, pattern completion/replacement and the statistics methods `getStats`, `enableStats`, `disableStats` and `resetStats`. For a service-level statistics recipe, see [read engine statistics](guide.md#read-engine-statistics).
 
 ## Positioned headphone effect
 

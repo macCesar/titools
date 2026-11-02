@@ -1,22 +1,23 @@
-> Source snapshot: official TiSynthEngine documentation at commit `b07c97c762be5905f132cecf33e9d60ea0c21316` (2026-11-02). Published 1.0.2; local 1.1.0 candidates; public API 1.0.0. Upstream `documentation/instruments-and-effects.md` SHA-256: `bcd7c2191bfae2b07688c9dbe19d813fe4eb8fcc45ab38d49b29dff7bdc2981c`.
+> Source snapshot: official TiSynthEngine documentation at commit `ec04f4e634075c41b55f66279eabcd78b9652d58` (2026-11-02). Published module 1.1.0; public API 1.1.0. Upstream `documentation/instruments-and-effects.md` SHA-256: `6c9b96c406c54426a1d37a85b42909a50621cc647d08d37fa89c19283b3acfa0`.
 
 # Instruments, sound effects and complete sequences
 
-A playable instrument and a missile sound can use the same oscillator. What makes them behave differently is the complete recipe: pitch, envelope, pitch/filter movement, layers, timing, and how the app starts and ends it. This guide explains which public API to use and how to preserve that recipe.
+A playable instrument and a missile sound can use the same oscillator. Their behavior depends on the complete recipe: pitch, envelope, pitch/filter movement, layers, timing, and how the app starts and ends it. This guide explains which public API to use and how to preserve that recipe.
 
 These are application roles built on the same native synthesizer and output chain. They are not different audio engines, quality modes, or guarantees against distortion. An instrument can be noisy or inharmonic; an effect can be a single pitched tone, a chord, or a musical phrase.
 
 ## Choose the playback contract
 
-| Intention                                                        | Native methods                              | Who ends the sound?                                      | What to preserve                                                             |
-| ---------------------------------------------------------------- | ------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| Play a key until the finger lifts                                | `noteOn`, `updateVoice`, `noteOff`          | The app releases its unique voice ID                     | Timbre, tuning, envelope, contact ownership                                  |
-| Fire one finite sound                                            | `playTone`                                  | Native duration and release                              | Original frequency, endpoints, duration, envelope, gain                      |
-| Fire a simultaneous chord with shared shaping                    | `playChord`                                 | Native duration and release                              | All pitches, per-note pan/detune, shared envelope, native chord compensation |
-| Play a melody, alarm, layered effect, or repeated firing pattern | `playSequence`, optionally `updateSequence` | Native step clock; `stopSequence` cancels future attacks | Complete ordered steps, rests, lengths, overrides and independent layers     |
-| Add chorus, delay, reverb or creative saturation                 | `setMasterProcessing`                       | The shared processor owns its tails                      | Routing, sends, input gain, effect settings and output headroom              |
+| Intention                                                         | Native methods                                              | Who ends the sound?                                      | What to preserve                                                             |
+| ----------------------------------------------------------------- | ----------------------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Play a key until the finger lifts                                 | `noteOn`, `updateNote`, `noteOff`                           | The app releases its unique voice ID                     | Timbre, tuning, envelope, contact ownership                                  |
+| Fire one finite sound                                             | `playTone`                                                  | Native duration and release                              | Original frequency, endpoints, duration, envelope, gain                      |
+| Repeat one finite tone, including simultaneous independent layers | `repeatTone({ intervalMs, ... })`, `updateTone`, `stopTone` | Native audio clock; stop cancels future attacks only     | Original finite-tone recipe, interval, overlap budget and each tone ID       |
+| Fire a simultaneous chord with shared shaping                     | `playChord`                                                 | Native duration and release                              | All pitches, per-note pan/detune, shared envelope, native chord compensation |
+| Play a melody, alarm, layered effect, or repeated firing pattern  | `playSequence`, optionally `updateSequence`                 | Native step clock; `stopSequence` cancels future attacks | Complete ordered steps, rests, lengths, overrides and independent layers     |
+| Add chorus, delay, reverb or creative saturation                  | `setMasterProcessing`                                       | The shared processor owns its tails                      | Routing, sends, input gain, effect settings and output headroom              |
 
-The last row describes **audio processing effects**. Those processors are different from an authored **sound effect**, such as a laser or an explosion. A laser may use no reverb or delay at all.
+The last row describes audio processing effects. Those processors are different from an authored sound effect, such as a laser or an explosion. A laser may use no reverb or delay at all.
 
 All examples below assume successful startup. Use constants from the installed module and check native acceptance:
 
@@ -53,7 +54,7 @@ function releaseKey(voiceId) {
 
 Store the returned ID with that contact. Sliding to another key must release the old owner and admit the new attack; do not release another finger's voice. An app-level Hold control retains selected IDs until explicitly released. If `noteOff` is rejected, keep ownership and follow a bounded retry/error policy; silently forgetting the ID can leave a stuck voice. The [held voice guide](guide.md#hold-and-edit-a-voice) covers lifecycle and compatible live edits.
 
-`noteOn` does not accept timed-event endpoint sweeps such as `frequencyEnd`. A held voice can use its supported vibrato/LFOs and compatible `updateVoice` edits. Removing a timed sweep, replacing the original frequency with the key's pitch, and holding indefinitely changes the sound's meaning: that is a new playable timbre, not an exact audition of the original effect.
+`noteOn` does not accept timed-event endpoint sweeps such as `frequencyEnd`. A held voice can use its supported vibrato/LFOs and compatible `updateNote` edits. Removing a timed sweep, replacing the original frequency with the key's pitch, and holding indefinitely changes the sound's meaning: that is a new playable timbre, not an exact audition of the original effect.
 
 A short envelope also does not automatically make a held voice finite. With `sustain: 0`, it can become silent while still requiring release of its ID. Choose a timed event for a self-contained strike when contact ownership is unnecessary.
 
@@ -88,7 +89,7 @@ This event completes natively. Repeated independent calls can overlap naturally.
 
 A keyboard adapter that keeps only the square wave and envelope, starts at C7, and omits `frequencyEnd` will sound very different. Neither result establishes an engine fault: the adapter has selected a different pitch, duration model and motion. An effect audition should execute the whole recipe. Label a separately offered playable adaptation clearly.
 
-Use `playChord` when its contract exactly represents the intended chord. It applies its own chord compensation. Independent layers authored with distinct levels, envelopes or waves are not automatically equivalent to one chord call. Preserve those layers rather than normalizing them again or flattening them into one source.
+Use `playChord` when its contract exactly represents the intended chord. It applies its own chord compensation. Independent layers authored with distinct levels, envelopes or waves are not automatically equivalent to one chord call. Preserve those layers without normalizing them again or flattening them into one source.
 
 ## 3. Complete sound sequences and layered effects
 
@@ -109,9 +110,9 @@ function missileSequence() {
 
 `duration` on a sequence step is the interval until the next attack. `length` is how long that note runs before release starts. Both use the sequence's time unit; attack, decay and release remain milliseconds. A note can extend beyond its step and overlap later attacks. In a timed `playTone` call, `duration` includes release. These values cannot be copied interchangeably without accounting for release.
 
-**Timed and sequence routes are not automatically interchangeable.** In the current native implementation, a `playTone` endpoint sweep progresses across the total timed duration, including release. A sequence endpoint sweep progresses across its explicit `length`, then holds the endpoint during release. Thus the timed 350 ms example and the sequence with `length: 300` do not have the same pitch trajectory, even though both finish after 350 ms and use the same endpoints. Sequence voices also use the held envelope's minimum 3 ms attack/release edges; very short or zero timed edges can differ. This matters most for short weapon/noise effects and is not corrected by merely copying the option names.
+Timed and sequence routes are not automatically interchangeable. In the current native implementation, a `playTone` endpoint sweep progresses across the total timed duration, including release. A sequence endpoint sweep progresses across its explicit `length`, then holds the endpoint during release. Thus the timed 350 ms example and the sequence with `length: 300` do not have the same pitch trajectory, even though both finish after 350 ms and use the same endpoints. Sequence voices also use the held envelope's minimum 3 ms attack/release edges; very short or zero timed edges can differ. This matters most for short weapon/noise effects and is not corrected by merely copying the option names.
 
-For consistent manual and repeated auditions, use the same native interpretation for both. Preserve the original attack length when changing only the repetition interval; each new attack may overlap the prior voice. Do not claim exact timed-to-sequence fidelity from field equality or validator acceptance. Preserving the exact timed renderer inside a native repetition would require native support for that rendering contract; it cannot be obtained by a JavaScript adapter that simply renames `duration` to `length`.
+For consistent manual and repeated auditions, use the same native interpretation for both. Preserve the original attack length when changing only the repetition interval; each new attack may overlap the prior voice. Do not claim exact timed-to-sequence fidelity from field equality or validator acceptance. Use API 1.1.0 `repeatTone({ intervalMs, ... })` to repeat the original finite-tone renderer directly. A JavaScript adapter that simply renames `duration` to `length` does not preserve that rendering contract.
 
 For a sequence-owned burst, `stopSequence` also releases emitted voices. To stop repetitions while preserving those attacks, publish a finite traversal with `loop: false`, retain its current effect steps and suppress later variant attacks as appropriate. Natural completion leaves emitted voices to their own lengths/releases. Retain the first attack in an update that can arrive before the initial callback. Handle publication rejection explicitly, with bounded control retries if necessary; those retries must not trigger notes or queue new sound requests.
 
@@ -119,24 +120,30 @@ Use complete step dictionaries and their required overrides. Do not identify var
 
 ### Repeated firing uses the native clock
 
+For effects whose complete recipe consists of finite tone calls, pass each original recipe to `repeatTone` with `intervalMs`. Retain every returned tone ID for independent layers. Compound ordered patterns and chords keep their existing sequence/chord interpretation.
+
 ```javascript
 function repeatShortShots(intervalMs) {
-  return synth.playSequence({ timeUnit: 'ms', loop: true,
-    voice: { waveType: WAVE.SQUARE, attack: 2,
-      decay: 0, sustain: 1, release: 40, volume: 0.1,
-      bus: 'effects' },
-    steps: [{ frequencies: [1380], duration: intervalMs, length: 65,
-      overrides: { frequencyEnd: 340 } }] })
+  return synth.repeatTone({ frequency: 1380, frequencyEnd: 340,
+    duration: 105, waveType: WAVE.SQUARE, attack: 2,
+    decay: 0, sustain: 1, release: 40, volume: 0.1,
+    bus: 'effects', intervalMs: intervalMs })
 }
+var shotId = repeatShortShots(150)
+if (!shotId) throw new Error('Repeating shot rejected')
+// Keep the next attack deadline; use the new interval after it.
+synth.updateTone({ toneId: shotId, intervalMs: 120 })
+// Current 105 ms attacks finish; future attacks are cancelled.
+synth.stopTone({ toneId: shotId })
 ```
 
-Validate `intervalMs` against native limits and the application's voice budget. This example has a 105 ms event (65 ms plus 40 ms release). At a shorter interval, tails overlap; at 150 ms they have room to finish. A compound multi-attack effect also needs enough interval for its complete pattern if the app promises complete repetitions.
+Validate the integer interval against the native 1-60,000 ms limits and the application's overlap budget. This recipe retains the 105 ms timed attack, including its 40 ms release; shortening only the interval can overlap voices. The first attack starts at the first render opportunity. The native sample clock preserves fractional samples and is independent of tempo. This native repetition needs no JavaScript attack timer. Independent calls remain supported for gameplay events or an explicitly scheduled finite burst; `playTone` always returns Boolean acceptance. See [the standalone burst example](api.md#finite-tone-repetition).
 
-The app can begin an independent first attack immediately and publish delayed native repetitions, or publish a complete native repeating score with its first attack at time zero. Avoid emitting the same initial attack through both `touchstart` and `click`. JavaScript polling may display transport position, but `setInterval`/`setTimeout` should not schedule individual musical attacks.
+Each layer consumes one of 32 repetition slots, independently of the four sequence slots. Each admitted attack still consumes shared voice capacity. Preserve headroom for old attacks after edits and for other owners. Rejected attacks are skipped without catch-up or variation consumption. Releasing a momentary pad, disabling fixed repetition, switching presets, backgrounding and owner close should call `stopTone` for all owned IDs. Stop remains publishable with a full ordinary queue; it cancels at the next block, including before the first attack. Global `stopAll` and shutdown also invalidate those IDs and pending edits.
 
-Keep every positive sequence ID. Releasing a momentary pad, disabling a fixed burst, switching presets, backgrounding the app, and pressing Stop should cancel the sequences owned by that panel. `stopSequence` releases that sequence's voices and cancels future attacks; independent timed calls already emitted are separate and finish naturally. Stop is different from global `stopAll`/shutdown panic.
+`updateTone` merges changes with the last accepted recipe and validates it as a whole. It changes the next scheduled attack without advancing it. `note` and `frequency` replace each other. A supplied variation dictionary replaces the previous one, and `{ amount: 0 }` disables future variation. Each repetition advances its reproducible native stream only for admitted attacks; parameter edits retain its counter, while changing seed restarts the succession. Sounding attacks keep their original recipe. See [the complete repetition contract](api.md#finite-tone-repetition).
 
-A successful stop request does not mean the native slot is already reusable. Wait for the matching `sequenceend` retirement when replacing a sequence; do not poll and enqueue a backlog of missed firing requests. Keep authored variant order explicit and advance it only for accepted work. Application recipe functions are ordinary JavaScript; there is no built-in public named-recipe registry. Local 1.1.0 candidates support optional [native per-attack variation](native-variation.md), which chooses once at each admitted attack, including native loop attacks. It does not continuously resample an already sounding voice, and `updateVoice` rejects the variation dictionary. Published 1.0.2 packages reject it entirely; require both the variation capability and schema announcement before adding that property.
+Native sequences remain appropriate for complete ordered scores. Keep every positive sequence ID and wait for matching `sequenceend` retirement when replacing a sequence. `stopSequence` releases that sequence's emitted voices, whereas `stopTone` lets admitted finite attacks finish. Application recipe functions remain ordinary JavaScript; there is no built-in named-recipe registry. Published 1.0.2 packages do not provide finite-tone repetition or variation.
 
 ## 4. Polyphony, gain and output protection
 

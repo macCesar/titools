@@ -1,14 +1,14 @@
-> Source snapshot: official TiSynthEngine documentation at commit `b07c97c762be5905f132cecf33e9d60ea0c21316` (2026-11-02). Published 1.0.2; local 1.1.0 candidates; public API 1.0.0. Upstream `documentation/native-variation.md` SHA-256: `30bbf837a163372aa0d369c6c8e267dc8fc2d3349e8ae30c51d13d20c88cb7eb`.
+> Source snapshot: official TiSynthEngine documentation at commit `ec04f4e634075c41b55f66279eabcd78b9652d58` (2026-11-02). Published module 1.1.0; public API 1.1.0. Upstream `documentation/native-variation.md` SHA-256: `650d2c675dc4b4e09a85521812b7fedd3b02cb993a451378a8082e2b7782303a`.
 
 # Native per-attack variation
 
 `variation` lets the engine choose bounded parameter values when it admits an attack. Repeated shots can have different pitch, noise color or filter settings without JavaScript randomization. Each voice keeps the chosen values for its lifetime; existing envelopes, sweeps and LFOs continue from that starting configuration.
 
-Android and iOS support this dictionary in the local 1.1.0 packages, with public API version `1.0.0` and variation schema version `1`. The published 1.0.2 packages do not accept it. The local packages have not been published as a release.
+Android and iOS support this dictionary in the 1.1.0 packages, with public API version `1.1.0` and variation schema version `1`. The published 1.0.2 packages do not accept it.
 
-## Select the local package
+## Select version 1.1.0
 
-Install the matching locally built Android and iOS 1.1.0 archives in the app and select them in `tiapp.xml`:
+Install the matching Android and iOS 1.1.0 archives in the app and select them in `tiapp.xml`:
 
 ```xml
 <modules>
@@ -17,7 +17,7 @@ Install the matching locally built Android and iOS 1.1.0 archives in the app and
 </modules>
 ```
 
-Rebuild and reinstall the application after replacing native modules. Copying module files alone does not update an installed app. Keep the published 1.0.2 archives separate; the new property does not change the reported public API version.
+Rebuild and reinstall the application after replacing native modules. Copying module files alone does not update an installed app. Keep the published 1.0.2 archives separate; version 1.1.0 reports API `1.1.0`.
 
 ## Detect support and start playback
 
@@ -35,19 +35,21 @@ synth.start({ maxVoices: 8, maxSequences: 1 })
 synth.setVolume({ volume: 0.6 })
 ```
 
-The following examples use those variables. Handle rejected publications through the normal [return values and diagnostics](api.md#return-values). For rapid effects, size the shared voice pool for overlapping durations and releases.
+The examples below use those variables. Handle rejected publications through the normal [return values and diagnostics](api.md#return-values). For rapid effects, size the shared voice pool for overlapping durations and releases.
 
 ## Supported locations
 
-| Call or score field | Behavior |
-| --- | --- |
-| `playTone({ variation, ... })` | Chooses once for an admitted timed tone |
-| `playChord({ variation, ... })` | Admits the whole chord atomically and chooses independent values for each voice |
-| `noteOn({ variation, ... })` | Chooses at the held voice's attack; sustain and release keep that configuration |
-| `playSequence({ voice: { variation, ... }, ... })` | Supplies the default for sounding steps on every native loop |
-| `steps[i].overrides.variation` | Replaces the entire dictionary inherited from the sequence voice |
-| `updateSequence({ voice, steps, ... })` | Changes future attacks when the revision applies |
-| `updateVoice({ variation, ... })` | Rejected; live edits must name the parameters they change |
+| Call or score field                                | Behavior                                                                                         |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `playTone({ variation, ... })`                     | Chooses once for an admitted timed tone                                                          |
+| `repeatTone({ variation, intervalMs, ... })`       | Retains a stream/counter and chooses once per admitted repeated finite attack                    |
+| `updateTone({ toneId, variation, ... })`           | Replaces the whole future-attack dictionary; amount zero disables; seed change resets the stream |
+| `playChord({ variation, ... })`                    | Admits the whole chord atomically and chooses independent values for each voice                  |
+| `noteOn({ variation, ... })`                       | Chooses at the held voice's attack; sustain and release keep that configuration                  |
+| `playSequence({ voice: { variation, ... }, ... })` | Supplies the default for sounding steps on every native loop                                     |
+| `steps[i].overrides.variation`                     | Replaces the entire dictionary inherited from the sequence voice                                 |
+| `updateSequence({ voice, steps, ... })`            | Changes future attacks when the revision applies                                                 |
+| `updateNote({ variation, ... })`                   | Rejected; live edits must name the parameters they change                                        |
 
 Schema 1 varies `volume`, `filterHz`, `filterQ`, `fmDepth`, `noiseRate`, `lowPassHz`, `pulseWidth` and `pitchCents`. Waveform, table contents, ADSR, duration, cadence, FM ratio, routing, priority and voice count retain their authored values.
 
@@ -64,26 +66,26 @@ var variation = {
 }
 ```
 
-| Field | Default | Accepted values |
-| --- | --- | --- |
-| `amount` | `1` | Finite number from `0` to `1` |
-| `seed` | Omitted; engine selects a native stream | Integer from `0` to `4294967295`; `0` is an explicit deterministic seed |
-| `ranges` | Empty dictionary | Any subset of the eight range names below |
+| Field    | Default                                 | Accepted values                                                         |
+| -------- | --------------------------------------- | ----------------------------------------------------------------------- |
+| `amount` | `1`                                     | Finite number from `0` to `1`                                           |
+| `seed`   | Omitted; engine selects a native stream | Integer from `0` to `4294967295`; `0` is an explicit deterministic seed |
+| `ranges` | Empty dictionary                        | Any subset of the eight range names below                               |
 
 Only these keys are accepted. A range must contain exactly two finite numbers in ascending order. Equal endpoints are valid. Strings, booleans, `null`, `NaN`, infinity, reversed bounds and unknown names are rejected. An empty range dictionary makes no parameter changes and consumes no variation event.
 
 The frequency ceiling is the active engine's `limits.frequency.max` value from `getDefaults()`. The maximum is `sampleRate * 0.45`, with a 19,845 Hz fallback before startup. Read `getDefaults()` again after `start()` when preparing device-specific ranges.
 
-| Range | Inclusive validation bounds | Required source or setting |
-| --- | --- | --- |
-| `volume` | `0` to `2` | Any source; existing chord compensation follows selection |
-| `filterHz` | `20` Hz to the active frequency ceiling | Enabled resonant filter: `lowpass`, `highpass` or `bandpass` |
-| `filterQ` | `0.5` to `10` | Enabled resonant filter |
-| `fmDepth` | `0` to `10` | `SINE`, with the normal FM ratio/depth rules |
-| `noiseRate` | `1` Hz to the active frequency ceiling | `NOISE` with authored `noiseRate >= 1` |
-| `lowPassHz` | `20` Hz to the active frequency ceiling | One-pole low-pass already enabled with authored `lowPassHz >= 20` |
-| `pulseWidth` | `0.05` to `0.95` | `SQUARE` |
-| `pitchCents` | `-1200` to `1200` cents | Resulting tuned frequencies and active pitch endpoints must remain within engine limits |
+| Range        | Inclusive validation bounds             | Required source or setting                                                              |
+| ------------ | --------------------------------------- | --------------------------------------------------------------------------------------- |
+| `volume`     | `0` to `2`                              | Any source; existing chord compensation follows selection                               |
+| `filterHz`   | `20` Hz to the active frequency ceiling | Enabled resonant filter: `lowpass`, `highpass` or `bandpass`                            |
+| `filterQ`    | `0.5` to `10`                           | Enabled resonant filter                                                                 |
+| `fmDepth`    | `0` to `10`                             | `SINE`, with the normal FM ratio/depth rules                                            |
+| `noiseRate`  | `1` Hz to the active frequency ceiling  | `NOISE` with authored `noiseRate >= 1`                                                  |
+| `lowPassHz`  | `20` Hz to the active frequency ceiling | One-pole low-pass already enabled with authored `lowPassHz >= 20`                       |
+| `pulseWidth` | `0.05` to `0.95`                        | `SQUARE`                                                                                |
+| `pitchCents` | `-1200` to `1200` cents                 | Resulting tuned frequencies and active pitch endpoints must remain within engine limits |
 
 `filterHz` controls the resonant filter; `lowPassHz` controls the separate one-pole low-pass. A range cannot enable a bypassed filter or turn white noise into colored noise. Pitch cents change oscillator pitch; use `noiseRate` to change a noise source's clock. A zero-depth sine can start with an active FM-depth range when the remaining FM configuration is valid.
 
@@ -112,7 +114,7 @@ Validation checks the complete reachable configuration before admission, includi
 
 ## Repeated independent effects
 
-Leave out `seed` to obtain successive native selections. Call `playTone` for each actual shot; keep the application's existing firing clock.
+Leave out `seed` to obtain successive native selections. Call `playTone` for each actual gameplay event. For periodic repetition of that finite recipe, call `repeatTone` with `intervalMs` once and retain its `toneId`; the renderer then owns the repeated deadlines. Standalone calls, including intentionally timed finite bursts, remain supported and return Boolean acceptance. `updateTone` changes future attacks, preserving the current deadline and variation counter. A changed seed restarts the stream, and dropped attacks consume no selection.
 
 ```javascript
 function fireLaser() {
@@ -171,11 +173,11 @@ if (supportsVariation) held.variation = {
   ranges: { fmDepth: [1.1, 1.7], pitchCents: [-10, 10] }
 }
 synth.noteOn(held)
-synth.updateVoice({ voiceId: 71, volume: 0.12 })
+synth.updateNote({ voiceId: 71, volume: 0.12 })
 synth.noteOff({ voiceId: 71 })
 ```
 
-`updateVoice` rejects `variation`. To obtain another varied attack, release the owned voice and start another through the normal ownership path. A sustained motor stays steady under a single held attack. Release owned IDs on cancellation, pause and teardown; keep the usual bounded handling of rejected releases.
+`updateNote` rejects `variation`. To obtain another varied attack, release the owned voice and start another through the normal ownership path. A sustained motor stays steady under a single held attack. Release owned IDs on cancellation, pause and teardown; keep the usual bounded handling of rejected releases.
 
 ## Native loops and dictionary inheritance
 
@@ -236,18 +238,18 @@ Stop the owned sequence through the normal lifecycle when it is no longer needed
 
 ## Seeds and reproducibility
 
-| Usage | Reproducibility |
-| --- | --- |
+| Usage                                                            | Reproducibility                                                           |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------- |
 | Repeated standalone calls with the same recipe and explicit seed | Reproduce the selected parameter values, starting at event zero each time |
-| Standalone calls without a seed | Use successive native selections |
-| Seeded native loop | Advances its attack counter across loop iterations |
-| Revision with unchanged seed identity | Retains that counter |
-| Revision that changes the root seed | Resets the counter when the revision applies |
-| Stop followed by a new sequence | Starts a new counter |
+| Standalone calls without a seed                                  | Use successive native selections                                          |
+| Seeded native loop                                               | Advances its attack counter across loop iterations                        |
+| Revision with unchanged seed identity                            | Retains that counter                                                      |
+| Revision that changes the root seed                              | Resets the counter when the revision applies                              |
+| Stop followed by a new sequence                                  | Starts a new counter                                                      |
 
 Seed identity includes whether the root seed was declared and its value, plus the sorted multiset of explicit step seed declarations. Moving steps, swapping existing declarations or inserting inherited rests preserves that identity. Adding, removing or changing an explicit step seed declaration changes it and resets the counter. Prefer a root seed for comparisons of a complete score.
 
-The counter is an unsigned 64-bit value and wraps modulo `2^64`. Admitted attack, voice ordinal and field slot determine each sample through the shared integer helper. Field slots are stable, so changing dictionary property order or adding an unrelated range does not shift existing field samples. Variation state is separate from the noise generator. A reproducible seed promises selected parameters, not identical noise PCM or identical DSP output across platforms.
+The counter is an unsigned 64-bit value and wraps modulo `2^64`. Admitted attack, voice ordinal and field slot determine each sample through the shared integer helper. Field slots are stable, so changing dictionary property order or adding an unrelated range does not shift existing field samples. Variation state is separate from the noise generator. A reproducible seed reproduces selected parameters. It does not promise identical noise PCM or identical DSP output across platforms.
 
 ## Rejected configurations
 
@@ -264,7 +266,7 @@ synth.playTone({ variation: {
 } })
 
 // Live updates do not accept an attack-only dictionary.
-synth.updateVoice({ voiceId: 71,
+synth.updateNote({ voiceId: 71,
   variation: { ranges: { pitchCents: [-10, 10] } } })
 ```
 
@@ -278,6 +280,6 @@ Frontier automatically applies authored ranges only to its eligible destruction 
 
 ## Implementation and verification
 
-Both renderers use [`shared/synth_variation.h`](https://github.com/macCesar/TiSynthEngine/blob/433d7884800f70fb4803dbfe2e0e869cd5411889/shared/synth_variation.h): stable schema slots, integer-defined SplitMix64 finalization and exact uint32-to-uniform conversion. Parsing prepares a fixed 144-byte configuration outside the audio callback. The callback performs bounded arithmetic without allocation, locks, JavaScript calls or entropy services.
+Both renderers use [`shared/synth_variation.h`](https://github.com/macCesar/TiSynthEngine/blob/7cd035409453b01df2736aef56f2316d94ca019c/shared/synth_variation.h): stable schema slots, integer-defined SplitMix64 finalization and exact uint32-to-uniform conversion. Parsing prepares a fixed 144-byte configuration outside the audio callback. The callback performs bounded arithmetic without allocation, locks, JavaScript calls or entropy services.
 
 Focused checks cover known vectors, both native validators, attack admission, chord ordinals, sustained stability, loops, revisions, rejection and old-renderer compatibility with controlled noise initialization. [Technical verification](native-variation-validation.md) records the measured memory/callback cost and its limits. Host results do not certify physical latency or listening quality on every device.

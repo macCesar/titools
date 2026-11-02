@@ -1,7 +1,8 @@
 # Curated sound and interaction recipes
 
-These recipes are tuned starting points for `ti.synthengine` 1.0.0. They use
-only public option keys, keep every explicit envelope valid, and obtain
+These recipes use the core public contract shared by `ti.synthengine`
+1.0.2 / API 1.0.0 and 1.1.0 / API 1.1.0. They use only public option keys,
+keep every explicit envelope valid, and obtain
 waveforms from the runtime contract instead of hardcoding integers. Install the
 matching official Android/iOS packages and follow the owning-engine
 [installation and lifecycle guide](guide.md) before using them.

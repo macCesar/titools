@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine documentation at commit `b07c97c762be5905f132cecf33e9d60ea0c21316` (2026-11-02). Published 1.0.2; local 1.1.0 candidates; public API 1.0.0. Upstream `documentation/audio-engine.md` SHA-256: `a3231af42efb2e3bf0ec457083f4c1128728f09c4b2f52d1cbf1df1e76b04886`.
+> Source snapshot: official TiSynthEngine documentation at commit `ec04f4e634075c41b55f66279eabcd78b9652d58` (2026-11-02). Published module 1.1.0; public API 1.1.0. Upstream `documentation/audio-engine.md` SHA-256: `3e7728703a9f82631f5c4ba2641b1a9735c0d3988ef9001b8e4a4f5e47d1818d`.
 
 # Audio engine
 
@@ -29,6 +29,7 @@ The native signal path explains how mixing profiles and voice capacity affect th
 - [Sustained voices](#sustained-voices)
 - [Native transport and processing](#native-transport-and-processing)
 - [Unified transport acceptance boundaries](#unified-transport-acceptance-boundaries)
+- [Native finite-tone repetition (API 1.1.0)](#native-finite-tone-repetition-api-110)
 
 <!-- TOC-END -->
 
@@ -68,7 +69,7 @@ The engine has six sources:
 | `NOISE`     | White or variable-rate sample-and-hold pseudo-random generator. |
 | `WAVETABLE` | Caller-supplied 2 to 64-sample stepped cycle.                   |
 
-Pitch can move linearly from `frequency` to `frequencyEnd`. A sine LFO adds `lfoDepth * sin(lfoPhase)` in hertz before the oscillator advances. This makes vibrato depth absolute in hertz rather than cents.
+Pitch can move linearly from `frequency` to `frequencyEnd`. A sine LFO adds `lfoDepth * sin(lfoPhase)` in hertz before the oscillator advances. Vibrato depth is therefore an absolute value in hertz, rather than a value in cents.
 
 Noise rate advances an independent phase accumulator. A zero `noiseRate` uses one new pseudo-random value per output sample; a positive rate holds that value until the accumulator crosses the next update. `noiseRateEnd` changes the increment linearly over the event.
 
@@ -172,7 +173,7 @@ Both ports use a 128-slot single-consumer ring buffer. Producers are serialized 
 
 `playChord()` publishes its note data and advances the queue index once. The consumer receives the complete event or nothing. `stopAll` and `shutdown` have a control fallback so cleanup is not lost under queue pressure.
 
-`playSequence` runs inside the sample-clock callback; JavaScript publishes entire configurations rather than individual notes. Scheduled releases execute independently of public command-queue capacity. `sequenceend` records are delivered outside the callback and retain their sequence identifier when slots are reused.
+`playSequence` runs inside the sample-clock callback; JavaScript publishes entire configurations instead of individual notes. Scheduled releases execute independently of public command-queue capacity. `sequenceend` records are delivered outside the callback and retain their sequence identifier when slots are reused.
 
 ## Shared DSP core
 
@@ -180,7 +181,7 @@ The envelope, the state-variable filter, the sweep helpers, the FM sine and the 
 
 ## Native per-attack variation
 
-Local 1.1.0 candidates add optional `variation`; published 1.0.2 packages reject it. Check both `capabilities.variation === true` and `variationSchemaVersion === 1`, then select bounded values at admitted attacks. The chosen configuration stays stable during that voice; existing sweeps, envelopes and explicit live edits keep their normal roles. Parsing prepares fixed-size state outside audio; the callback uses bounded shared arithmetic without allocation or locks. See [native variation](native-variation.md) for supported locations, source constraints, inheritance and seeds, and [technical verification](native-variation-validation.md) for measured compatibility and limits.
+Version 1.1.0 supports optional `variation`; published 1.0.2 packages reject it. Check both `capabilities.variation === true` and `variationSchemaVersion === 1`, then select bounded values at admitted attacks. The chosen configuration stays stable during that voice; existing sweeps, envelopes and explicit live edits keep their normal roles. Parsing prepares fixed-size state outside audio; the callback uses bounded shared arithmetic without allocation or locks. See [native variation](native-variation.md) for supported locations, source constraints, inheritance and seeds, and [technical verification](native-variation-validation.md) for measured compatibility and limits.
 
 ## Android implementation
 
@@ -295,7 +296,7 @@ Android ARM64 reuses coefficients across eight consecutive samples, with four-sa
 
 ## Own-platform performance verification
 
-The measurements in this section predate native variation and describe the archived revisions in the cited reports. They do not measure the local 1.1.0 candidate. Its separate [variation verification](native-variation-validation.md) records compatibility, storage and callback checks.
+The measurements in this section predate native variation and describe the archived revisions in the cited reports. They do not measure version 1.1.0. Its separate [variation verification](native-variation-validation.md) records compatibility, storage and callback checks.
 
 The [performance review](performance-review.json) separates measured host improvements, exact compatibility checks and pending device acceptance. Its [raw evidence](performance-review-evidence.zip) retains rejected prototypes and the investigation of idle/stereo regressions. The Apple FIR, stable-control cache and exact idle-effects bypass were evaluated as one atomic candidate and then rejected after physical 32-stereo timing regressed. All three production changes were removed together; the full-score publication and control-memory fixes remain.
 
@@ -361,7 +362,7 @@ python3 tests/run_stats_java.py
 
 ## Sustained voices
 
-`noteOn`, `noteOff` and `updateVoice` use the existing bounded native command queue. Voice storage, smoothing ramps and identity snapshots are preallocated. The callback owns envelopes, oscillator/filter state and replacement decisions; it does not allocate or acquire producer locks. `shared/synth_held.h` supplies the same held ADSR, current-level release and independent 10 ms linear parameter ramps to both renderers. Held attack/decay counters stop advancing after those stages, avoiding sample-counter overflow on long notes.
+`noteOn`, `noteOff` and `updateNote` use the existing bounded native command queue. Voice storage, smoothing ramps and identity snapshots are preallocated. The callback owns envelopes, oscillator/filter state and replacement decisions; it does not allocate or acquire producer locks. `shared/synth_held.h` supplies the same held ADSR, current-level release and independent 10 ms linear parameter ramps to both renderers. Held attack/decay counters stop advancing after those stages, avoiding sample-counter overflow on long notes.
 
 IDs are app-supplied positive 32-bit integers. Atomic 32-bit identity snapshots and queued attacks let producers validate update source compatibility without reading mutable DSP state. The callback checks compatibility again. A full queue rejects note release with `false`; the caller owns its bounded retry and shutdown policy. See the [sustained contract](api.md#noteonoptions) for immutable configuration and supported updates.
 
@@ -372,13 +373,13 @@ Run `tests/held_core_regression.c` with C11 for shared envelope/ramp/identity ch
 
 `shared/synth_transport.h` owns up to four independent sequences and one global tempo/beat/millisecond clock; `shared/synth_sequence.h` advances each traversal with compensated sample increments. Beat lengths follow tempo changes; millisecond lengths remain constant. A serialized producer prepares sorted traversal and all pitches before publishing one of three immutable banks. The callback accepts tempo at the block boundary and structure at a step boundary; swing changes at a pair boundary. Transport voices share the sustained pool, retain owner identifiers and absolute note deadlines beyond internal slot reuse and release independently of the public command queue. See the [public transport contract](api.md#native-sequence-transport).
 
-`shared/synth_effects.h` supplies chorus, ping-pong delay, damped Schroeder reverb and optional saturation; `shared/synth_modulation.h` supplies two phase-preserving LFOs. Buffers allocate at engine initialization and free after the audio backend stops. Epoch tags on 16-sample pages invalidate histories during panic without walking delay memory; recovery clears at most one short page on a first write. Effects start disabled and default rendering follows exact bypass. Enabled effects drain on disable, bounded to 30 seconds. No new external DSP dependency is used.
+`shared/synth_effects.h` supplies chorus, ping-pong delay, damped Schroeder reverb and optional saturation; `shared/synth_modulation.h` supplies two phase-preserving LFOs. Buffers allocate at engine initialization and free after the audio backend stops. Epoch tags on 16-sample pages invalidate histories during panic without walking delay memory; recovery clears at most one short page on a first write. Effects start disabled and default rendering follows exact bypass. Enabled effects drain on disable, bounded to 30 seconds. The implementation uses no additional external DSP dependency.
 
 Pre-limiter peak and maximum limiter reduction accumulate natively until reset, so polling cannot miss a brief intervention. The callback tracks linear extrema and converts to decibels once per block. Existing output peak/RMS and reduction windows remain approximately 200 ms. Diagnostics are optional; host measurements do not establish device audio deadlines or listening acceptance.
 
-Portable checks: compile and run `tests/sequence_core_regression.c`, `tests/effects_core_regression.c` and `tests/modulation_core_regression.c` with C11, optimization and libm. The transport test checks ten minutes at five sample rates against calculated event times, plus edits, swing, rests, chords and publication pressure. Effects tests check bypass, tails, panic, automation, memory and stability at 16, 44.1, 48, 96 and 192 kHz. On macOS, `tests/studio_contract_ios.m` validates the new iOS configuration contract without Titanium.
+Portable checks: compile and run `tests/sequence_core_regression.c`, `tests/effects_core_regression.c` and `tests/modulation_core_regression.c` with C11, optimization and libm. The transport test checks ten minutes at five sample rates against calculated event times, plus edits, swing, rests, chords and publication pressure. Effects tests check bypass, tails, panic, automation, memory and stability at 16, 44.1, 48, 96 and 192 kHz. On macOS, `tests/studio_contract_ios.m` validates the iOS configuration contract without Titanium.
 
-`tools/calibrate_studio.py --studio-root PATH` measures the production Android callback; add `--platform ios` for the production Apple callback. The report covers each preset/scenario at 1, 2, 4, 8, 16 and 32 voices, including independent low/mid/high notes, grouped chords, coherent unisons and overlapping releases. Recommendations target −6 dBFS before protection (with 0.01 dB margin) using the maximum measured peak of the declared usual 1-8-voice configuration and the public voice-volume limit. Larger workloads are separate stress diagnostics. The tool reports fixed scalar recommendations and never edits Studio. Effects and new LFOs are disabled, so recommendations do not guarantee headroom for other configurations. See [audio pipeline validation](audio-pipeline-validation.md).
+`tools/calibrate_studio.py --studio-root PATH` measures the production Android callback; add `--platform ios` for the production Apple callback. The report covers each preset/scenario at 1, 2, 4, 8, 16 and 32 voices, including independent low/mid/high notes, grouped chords, coherent unisons and overlapping releases. Recommendations target −6 dBFS before protection (with 0.01 dB margin) using the maximum measured peak of the declared usual 1-8-voice configuration and the public voice-volume limit. Larger workloads are separate stress diagnostics. The tool reports fixed scalar recommendations and never edits Studio. Effects and additional LFOs are disabled, so recommendations do not guarantee headroom for other configurations. See [audio pipeline validation](audio-pipeline-validation.md).
 
 Device feedback superseded that headroom target for Studio's initial Cristal preset: its fixed gain is restored to 1 because the calibrated setting made a fresh Android installation barely audible. This adds 10.83 dB without saturation or voice-count normalization. Three coherent factory notes remain below the limiter ceiling at maximum master; eight independent coherent notes can require limiting. The calibration recommendations remain recorded separately from this active preset exception.
 
@@ -386,4 +387,10 @@ The [Studio technical validation report](studio-validation.json) records the cal
 
 ## Unified transport acceptance boundaries
 
-Public API 1.0.0 uses one renderer, at most 32 voices and capacity for 1-4 sequences. `bus` categories and per-voice sends share one effects chain. These API changes do not establish complete multiplatform ten-minute maximum-load acceptance; the measured iPad result and Android limits are recorded separately in [physical validation](physical-validation.json) and [the performance summary](stats-performance.md). Host timing, bypass comparisons, memory accounting, actual Android/iOS builds and the remaining device/listening checks are separate evidence. The cited Studio and unified-transport benchmarks are historical observations. In the pre-variation layout, effects buffers at 192 kHz used approximately 13.1 MiB and four maximum-size triple-bank transports used 8,627,712 bytes (8.23 MiB), excluding renderer voices and queues. The local 1.1.0 candidate grows those four transports to 9,537,152 bytes (9.10 MiB) on the measured 64-bit macOS layout, an increase of 909,440 bytes; see [variation storage measurements](native-variation-validation.md#storage-and-callback-work). These structure sizes are not a new whole-process or physical-device measurement. Total accounting must also include renderer voices/tails, command queues, effects, bridge/canonical options and recovery peaks. The 32 MiB additional-memory target remains a target, not a certified bound for the candidate.
+Public API 1.1.0 uses one renderer, at most 32 voices and capacity for 1-4 sequences. `bus` categories and per-voice sends share one effects chain. These API changes do not establish complete multiplatform ten-minute maximum-load acceptance; the measured iPad result and Android limits are recorded separately in [physical validation](physical-validation.json) and [the performance summary](stats-performance.md). Host timing, bypass comparisons, memory accounting, actual Android/iOS builds and the remaining device/listening checks are separate evidence. The cited Studio and unified-transport benchmarks are historical observations. In the pre-variation layout, effects buffers at 192 kHz used approximately 13.1 MiB and four maximum-size triple-bank transports used 8,627,712 bytes (8.23 MiB), excluding renderer voices and queues. Version 1.1.0 grows those four transports to 9,537,152 bytes (9.10 MiB) on the measured 64-bit macOS layout, an increase of 909,440 bytes; see [variation storage measurements](native-variation-validation.md#storage-and-callback-work). These structure sizes are not a new whole-process or physical-device measurement. Total accounting must also include renderer voices/tails, command queues, effects, bridge/canonical options and recovery peaks. The 32 MiB additional-memory target remains a target, not a certified bound for version 1.1.0.
+
+## Native finite-tone repetition (API 1.1.0)
+
+The shared C scheduler owns 32 repetition slots independently of sequence capacity. It retains fractional sample deadlines across normal and spatial render blocks. Each `repeatTone` attack emits the same finite-tone command used by a standalone `playTone`. The first attack starts at the first render opportunity, independent of tempo. Preallocated publication banks carry complete validated configurations; the callback allocates no memory, takes no producer locks and runs no JavaScript. Stop publication has a separate atomic path, so a full ordinary command queue cannot prevent cancellation at the next block.
+
+Each repetition owns its variation stream and admitted-attack counter. Admission failure skips that attack without advancing variation or queuing catch-up work. Updates preserve the pending deadline and affect its attack; a new interval controls the subsequent gap. `stopTone` cancels only future attacks, leaving admitted finite tones to complete. Global stop, shutdown and destruction invalidate slots and pending edits. These implementation guarantees require the updated 1.1.0 binaries; historical measurements elsewhere on this page do not measure this scheduler. See [the public contract](api.md#finite-tone-repetition).

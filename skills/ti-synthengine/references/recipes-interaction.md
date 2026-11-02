@@ -337,7 +337,9 @@ This repeated chord uses one centered native sequence. The one-off layered chord
 
 ### Cancellable repetition
 
-Every repeating sound has an identified native owner. Repeated start requests coalesce until the matching retirement event frees its slot. Stop its sequence ID and cancel pending restarts when its window closes; no JavaScript timer schedules subsequent notes.
+The chord pulse above has an identified sequence owner. Repeated start requests coalesce until its matching `sequenceend` retirement frees the slot. Stop its sequence ID and cancel pending restarts when its window closes; its native sequence schedules subsequent chord attacks.
+
+For repetition of an original finite tone in API 1.1.0, use `repeatTone({ intervalMs, ...recipe })`, retain its positive tone ID, edit future attacks with `updateTone`, and cancel with `stopTone`. Each independent layer retains its own tone ID and overlap budget. `stopTone` preserves admitted finite attacks; `stopSequence` releases its sequence's voices. Tone IDs have no completion event, so the sequence retirement/restart procedure above does not apply to them. Independent event calls and intentionally timed finite JavaScript bursts remain supported; cancel any app-owned timers at teardown. See [the repetition contract](api.md#finite-tone-repetition) and [complete effect fidelity](instruments-and-effects.md#repeated-firing-uses-the-native-clock).
 
 ```javascript
 function cleanupAudio () {

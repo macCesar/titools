@@ -1,10 +1,10 @@
-> Source snapshot: official TiSynthEngine documentation at commit `b07c97c762be5905f132cecf33e9d60ea0c21316` (2026-11-02). Published 1.0.2; local 1.1.0 candidates; public API 1.0.0. Upstream `documentation/sound-design.md` SHA-256: `3ad60c006e6ba296110b73362ebba74a30fd5e722fae6c5066cec815e500262a`.
+> Source snapshot: official TiSynthEngine documentation at commit `ec04f4e634075c41b55f66279eabcd78b9652d58` (2026-11-02). Published module 1.1.0; public API 1.1.0. Upstream `documentation/sound-design.md` SHA-256: `ac3f4552065051bc5291d8838945ed256ad3b0da7857e1f1cb5f54f5962ebfae`.
 
 # Sound design with TiSynthEngine
 
-TiSynthEngine generates sound with oscillators, without recorded samples. Pitch, waveform, envelope, movement and level define each sound, from interface feedback and musical cues to alarms, retro effects and simple percussion.
-
 Additional [curated recipes](recipes.md) provide application sound and interaction variants.
+
+TiSynthEngine generates sound with oscillators, without recorded samples. Pitch, waveform, envelope, movement and level define each sound, from interface feedback and musical cues to alarms, retro effects and simple percussion.
 
 For the distinction between a playable timbre and a complete effect recipe, start with [instruments, sound effects and complete sequences](instruments-and-effects.md). It covers held keys, independent shots, native sequences, layered effects, demonstrations and shared output headroom.
 
@@ -630,7 +630,7 @@ See [Examples](examples.md) for complete code and [Recommendations](recommendati
 
 ## Holding a sound and adding movement
 
-Choose a held voice when the ending follows a player action instead of a fixed duration: motor, charge beam, pad or the last chord of a ceremony. `noteOn` starts a positive app-owned ID; `noteOff` begins release from the current level, and compatible `updateVoice` edits ramp over 10 ms. Distinct IDs remain independent events with fixed gain. Reserve enough capacity for their releases and unrelated effects, and release on cancellation as well as ordinary key up. See the [held motor recipe](advanced-examples.md#sustained-game-motor) for retry/cleanup handling.
+Choose a held voice when the ending follows a player action instead of a fixed duration: motor, charge beam, pad or the last chord of a ceremony. `noteOn` starts a positive app-owned ID; `noteOff` begins release from the current level, and compatible `updateNote` edits ramp over 10 ms. Distinct IDs remain independent events with fixed gain. Reserve enough capacity for their releases and unrelated effects, and release on cancellation as well as ordinary key up. See the [held motor recipe](advanced-examples.md#sustained-game-motor) for retry/cleanup handling.
 
 A fanfare can use beat or millisecond sequences with native chords, rests, gate, independent length, swing and pitch-ordered arpeggios. A long release can ring over later steps. Use held voices when release follows presentation or interaction. See [transport usage](guide.md#choose-the-musical-transport).
 
@@ -647,4 +647,4 @@ The two additional voice LFOs move filter cutoff, square PWM or sine FM index us
 
 All processors are off initially, with input gain 1. Enable one shared chain through `setMasterProcessing`; select `applyTo` categories such as `music` and `ambience` to keep explosions dry. Per-voice `effectSend` overrides that category selection. [Configuration](advanced-examples.md#chorus-delay-reverb-and-creative-saturation) and [exact ranges](api.md#setmasterprocessingoptions) explain chorus, delay, reverb and optional saturation.
 
-Disabling an effect closes its input gradually and drains the tail before exact bypass; it does not immediately erase its history. Panic invalidates histories. Saturation is a creative choice rather than automatic gain protection; the final limiter stays in place. Match dry/wet comparison levels and watch accumulated limiter reduction so a louder version does not win an A/B comparison merely by level. None of these effects makes a small speaker reproduce missing bass.
+Disabling an effect closes its input gradually and drains the tail before exact bypass; it does not immediately erase its history. Panic invalidates histories. Saturation changes the sound and provides no automatic gain protection; the final limiter stays in place. Match dry/wet comparison levels and watch accumulated limiter reduction so a louder version does not win an A/B comparison merely by level. None of these effects makes a small speaker reproduce missing bass.

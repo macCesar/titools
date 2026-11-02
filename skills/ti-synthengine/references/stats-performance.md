@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine documentation at commit `b07c97c762be5905f132cecf33e9d60ea0c21316` (2026-11-02). Published 1.0.2; local 1.1.0 candidates; public API 1.0.0. Upstream `documentation/stats-performance.md` SHA-256: `085142b6ade7b4f7b5965f6a638f967fdceba5ab1f26fb85e8cb496d5b886b6a`.
+> Source snapshot: official TiSynthEngine documentation at commit `ec04f4e634075c41b55f66279eabcd78b9652d58` (2026-11-02). Published module 1.1.0; public API 1.1.0. Upstream `documentation/stats-performance.md` SHA-256: `085142b6ade7b4f7b5965f6a638f967fdceba5ab1f26fb85e8cb496d5b886b6a`.
 
 # Statistics host comparison
 

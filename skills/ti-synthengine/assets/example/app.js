@@ -7,14 +7,15 @@ var sequenceOwner = require('lib/sequenceOwner')(Synth, {
 function publishSequence(options) { return sequenceOwner.submit(options) }
 
 var defaults = Synth.getDefaults()
-if (!defaults || defaults.apiVersion !== '1.0.0') {
-  throw new Error('TiSynthEngine 1.0.0 is required')
+if (!defaults || defaults.apiVersion !== '1.1.0') {
+  throw new Error('TiSynthEngine 1.1.0 is required')
 }
 
 if (!defaults.limits || !defaults.limits.spatialX || !defaults.limits.spatialY
   || typeof Synth.getStats !== 'function' || typeof Synth.resetStats !== 'function'
-  || typeof Synth.setStatsEnabled !== 'function') {
-  throw new Error('Install the current TiSynthEngine 1.0.0 packages, then rebuild and reinstall this app')
+  || typeof Synth.enableStats !== 'function' || typeof Synth.disableStats !== 'function'
+  || typeof Synth.repeatTone !== 'function' || typeof Synth.updateTone !== 'function' || typeof Synth.stopTone !== 'function') {
+  throw new Error('Install the current TiSynthEngine 1.1.0 packages, then rebuild and reinstall this app')
 }
 
 var WAVE = defaults.waveTypes
@@ -23,6 +24,7 @@ var engineRunning = false
 var startTimer = null
 var statsTimer = null
 var diagnosticsEnabled = false
+var repeatingToneId = 0
 var selectedSession = 'playback'
 var masterVolume = 1
 var binauralEnabled = true
@@ -200,7 +202,7 @@ function makeHero() {
     height: Ti.UI.SIZE,
     top: dp(16)
   })
-  badgeRow.add(makeBadge('API 1.0.0', COLORS.indigo))
+  badgeRow.add(makeBadge('API 1.1.0', COLORS.indigo))
   badgeRow.add(makeBadge('ANDROID + iOS', COLORS.surfaceMuted))
   hero.add(badgeRow)
   hero.add(statusPill)
@@ -398,6 +400,40 @@ waveNames.forEach(function (name, index) {
 })
 waveSection.add(Ti.UI.createView({ height: dp(12) }))
 scrollView.add(waveSection)
+
+// A repeated finite recipe uses its native owner ID; there is no attack timer.
+function stopRepeatingTone() {
+  if (!repeatingToneId) return true
+  if (!Synth.stopTone({ toneId: repeatingToneId })) return false
+  repeatingToneId = 0
+  return true
+}
+var repeatSection = makeSection('Finite-tone repetition',
+  'The same complete 105 ms shot repeats every 200 ms. Edit its future attacks; stop lets current shots finish.',
+  COLORS.teal)
+repeatSection.add(makeAction({
+  title: 'START REPEATING', color: COLORS.teal, pressedColor: COLORS.tealPressed,
+  onPress: function () {
+    if (repeatingToneId) return true
+    var id = Synth.repeatTone({ frequency: 1380, frequencyEnd: 340,
+      duration: 105, attack: 2, release: 40, waveType: WAVE.SQUARE,
+      volume: 0.1, intervalMs: 200 })
+    if (!Number.isInteger(id) || id <= 0) return false
+    repeatingToneId = id
+    return true
+  }
+}))
+repeatSection.add(makeAction({
+  title: 'EDIT REPEATING', color: COLORS.teal, pressedColor: COLORS.tealPressed,
+  onPress: function () {
+    return !!repeatingToneId && Synth.updateTone({ toneId: repeatingToneId, intervalMs: 150, volume: 0.08 })
+  }
+}))
+repeatSection.add(makeAction({
+  title: 'STOP REPEATING', color: COLORS.surfaceMuted, pressedColor: COLORS.surfaceRaised,
+  onPress: stopRepeatingTone
+}))
+scrollView.add(repeatSection)
 
 // ---------------------------------------------------------------------------
 // 2. Note names
@@ -999,7 +1035,7 @@ var sessionLabel = makeText('Session: playback', { left: dp(16), right: dp(16), 
     color: COLORS.blueDark, pressedColor: COLORS.blue,
     accessibilityHint: 'Restarts the engine with this session policy',
     onPress: function () {
-      sequenceOwner.reset(); Synth.shutdown()
+      repeatingToneId = 0; sequenceOwner.reset(); Synth.shutdown()
       engineRunning = false
       selectedSession = session
       patternEndLabel.text = 'sequenceend: cancelled by shutdown (no event)'
@@ -1046,7 +1082,7 @@ statsSection.add(makeAction({
   title: 'TOGGLE DIAGNOSTICS', color: COLORS.orange, pressedColor: COLORS.orangePressed,
   accessibilityHint: 'Enables or disables timing and signal measurements',
   onPress: function () {
-    if (!Synth.setStatsEnabled(!diagnosticsEnabled)) return false
+    if (!(diagnosticsEnabled ? Synth.disableStats() : Synth.enableStats())) return false
     diagnosticsEnabled = !diagnosticsEnabled
     stopStatsPolling()
     if (diagnosticsEnabled) statsTimer = setInterval(refreshStats, 200)
@@ -1103,10 +1139,10 @@ boostRow.add(makeGridAction({
   title: 'STOP ALL\nRelease active voices',
   color: COLORS.redDark,
   pressedColor: COLORS.red,
-  status: 'Active voices fading; pending pattern steps remain',
-  accessibilityHint: 'Fades current voices without cancelling future pattern steps',
+  status: 'Future attacks cancelled; active voices fading',
+  accessibilityHint: 'Cancels future attacks and fades current voices',
   onPress: function () {
-    sequenceOwner.stop(); Synth.stopAll()
+    repeatingToneId = 0; sequenceOwner.stop(); Synth.stopAll()
   }
 }))
 controlSection.add(boostRow)
@@ -1170,8 +1206,9 @@ function hideAndroidActionBar() {
 }
 
 function cleanup() {
+  if (!stopRepeatingTone()) Ti.API.warn('Repeating tone stop rejected; shutting down owner')
   stopStatsPolling()
-  Synth.setStatsEnabled(false)
+  Synth.disableStats()
   diagnosticsEnabled = false
   Synth.removeEventListener('sequenceend', onSequenceEnd)
   win.removeEventListener('postlayout', onFirstPostLayout)
@@ -1184,7 +1221,7 @@ function cleanup() {
     startTimer = null
   }
   if (engineRunning) {
-    sequenceOwner.reset(); Synth.shutdown()
+    repeatingToneId = 0; sequenceOwner.reset(); Synth.shutdown()
     engineRunning = false
   }
 }

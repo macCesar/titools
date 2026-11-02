@@ -1,25 +1,28 @@
-> Source snapshot: official TiSynthEngine documentation at commit `b07c97c762be5905f132cecf33e9d60ea0c21316` (2026-11-02). Published 1.0.2; local 1.1.0 candidates; public API 1.0.0. Upstream `documentation/api.md` SHA-256: `fed350aedb50da41b303e8bb8129c6381285e1aa708c6a0a70d3a9b5f2994e44`.
+> Source snapshot: official TiSynthEngine documentation at commit `ec04f4e634075c41b55f66279eabcd78b9652d58` (2026-11-02). Published module 1.1.0; public API 1.1.0. Upstream `documentation/api.md` SHA-256: `b58d60cf38a96157e523722d1f9cb9508f785cc2de9c2c1ff306e328c77df9dc`.
 
 # API reference
 
 Module id: `ti.synthengine`
 
-Public API version: `1.0.0`
+Public API version: `1.1.0`
 
-Android and iOS expose the same nineteen methods, one event and waveform values. Option objects are strict: an unknown key is rejected with `unsupported_option`. Reported metadata and rejection diagnostics have platform differences; this reference does not promise sample-identical rendering between Android and iOS.
+Android and iOS expose the same public methods, one event and waveform values. Option objects are strict: an unknown key is rejected with `unsupported_option`. Reported metadata and rejection diagnostics have platform differences; this reference does not promise sample-identical rendering between Android and iOS.
 
 <!-- TOC-START -->
 ## Contents
 
-- [Native attack variation (local package 1.1.0)](#native-attack-variation-local-package-110)
+- [Native attack variation (package 1.1.0)](#native-attack-variation-package-110)
 - [Return values](#return-values)
 - [`getDefaults()`](#getdefaults)
 - [Limits](#limits)
 - [`start(options)`](#startoptions)
 - [`noteOn(options)`](#noteonoptions)
 - [`noteOff(options)`](#noteoffoptions)
-- [`updateVoice(options)`](#updatevoiceoptions)
+- [`updateNote(options)`](#updatenoteoptions)
+- [`updateVoice(options)` (deprecated)](#updatevoiceoptions-deprecated)
 - [`playTone(options)`](#playtoneoptions)
+- [`repeatTone(options)`](#repeattoneoptions)
+- [Finite-tone repetition](#finite-tone-repetition)
 - [Native sequence transport](#native-sequence-transport)
 - [`setMasterProcessing(options)`](#setmasterprocessingoptions)
 - [Additional voice modulation](#additional-voice-modulation)
@@ -32,21 +35,22 @@ Android and iOS expose the same nineteen methods, one event and waveform values.
 - [Strict validation](#strict-validation)
 - [Binaural front-plane positioning](#binaural-front-plane-positioning)
 - [`getStats()`](#getstats)
-- [`setStatsEnabled(enabled)`](#setstatsenabledenabled)
+- [`enableStats()` and `disableStats()`](#enablestats-and-disablestats)
+- [`setStatsEnabled(enabled)` (deprecated)](#setstatsenabledenabled-deprecated)
 - [`resetStats()`](#resetstats)
 - [Routing and voice priority](#routing-and-voice-priority)
 
 <!-- TOC-END -->
 
-## Native attack variation (local package 1.1.0)
+## Native attack variation (package 1.1.0)
 
-The optional `variation` dictionary is accepted by `playTone`, `playChord`, `noteOn`, sequence `voice` and step `overrides`. Public API compatibility remains `1.0.0`. Both platforms advertise `capabilities.variation: true` and `variationSchemaVersion: 1`; consumers must require both before sending the dictionary. The published 1.0.2 packages do not support it. See [native variation](native-variation.md) for fields, source restrictions, seeds and examples. Native `amount` is linear; Studio divides its displayed percentage by 100. `updateVoice` rejects the dictionary. An override replaces the whole inherited dictionary, and an amount-zero dictionary still validates its ranges.
+The optional `variation` dictionary is accepted by `playTone`, `repeatTone`, `playChord`, `noteOn`, sequence `voice` and step `overrides`. Version 1.1.0 reports public API `1.1.0`. Both platforms advertise `capabilities.variation: true` and `variationSchemaVersion: 1`; consumers must require both before sending the dictionary. The published 1.0.2 packages do not support it. See [native variation](native-variation.md) for fields, source restrictions, seeds and examples. Native `amount` is linear; Studio divides its displayed percentage by 100. `updateNote` rejects the dictionary. An override replaces the whole inherited dictionary, and an amount-zero dictionary still validates its ranges.
 
 ## Return values
 
-`start`, `playTone`, `playChord`, `noteOn`, `noteOff`, `updateVoice`, `setVolume`, `setTempo`, `updateSequence`, `stopSequence` and `setMasterProcessing` return a Boolean. `playSequence` returns a positive sequence identifier, or 0 when rejected. `true` means the request was accepted. `false` means validation failed, the engine was unavailable, or the native command queue was full.
+`start`, `playTone`, `playChord`, `noteOn`, `noteOff`, `updateNote`, `updateVoice`, `updateTone`, `stopTone`, `setVolume`, `setTempo`, `updateSequence`, `stopSequence` and `setMasterProcessing` return a Boolean. `repeatTone` returns a positive tone identifier, or 0 when rejected. Its required `intervalMs` is an integer from 1 to 60,000 ms. `playSequence` returns a positive sequence identifier, or 0 when rejected. `true` means the request was accepted. `false` means validation failed, the engine was unavailable, or the native command queue was full.
 
-`setStatsEnabled` also returns Boolean acceptance. `stopAll`, `resetStats` and `shutdown` do not return a value. `getDefaults` returns the contract object described below. `getStats` returns a new statistics snapshot. `getSequenceState` returns the applied sequence state or `null`.
+`enableStats`, `disableStats` and the deprecated `setStatsEnabled` also return Boolean acceptance. `stopAll`, `resetStats` and `shutdown` do not return a value. `getDefaults` returns the contract object described below. `getStats` returns a new statistics snapshot. `getSequenceState` returns the applied sequence state or `null`.
 
 ## `getDefaults()`
 
@@ -56,12 +60,12 @@ Returns the installed contract without starting the audio stream.
 var contract = synth.getDefaults()
 ```
 
-The shared result in the local 1.1.0 candidates has this shape; Android adds the platform metadata described below. Published 1.0.2 packages retain the core contract but omit the variation capability/schema fields:
+The shared result in version 1.1.0 has this shape; Android adds the platform metadata described below. Published 1.0.2 packages retain the core contract but omit the variation capability/schema fields:
 
 ```javascript
 {
-  apiVersion: '1.0.0',
-  capabilities: { variation: true },
+  apiVersion: '1.1.0',
+  capabilities: { variation: true, toneRepetition: true },
   variationSchemaVersion: 1,
   defaults: {
     maxVoices: 8,
@@ -123,7 +127,7 @@ The shared result in the local 1.1.0 candidates has this shape; Android adds the
 
 `fmDepthEnd`, `detunes`, `spatialX` and `spatialY` have no reported default: their presence changes how the call is interpreted. Supplying a spatial coordinate enables binaural; the other coordinate then defaults to 0 internally. The maximum frequency is `sampleRate * 0.45`. Before the stream opens, the reported fallback is 19,845 Hz. Read the object again after `start()` if the precise device limit matters.
 
-In the local 1.1.0 candidates, both platforms report `capabilities.variation: true` and `variationSchemaVersion: 1`. Android additionally reports `nativeSequence`, `masterProcessing` and `modulations` capability flags and `limits.stepDurationMs`. iOS omits those three older flags and `limits.stepDurationMs` while implementing the corresponding methods and millisecond sequences. Published 1.0.2 packages do not advertise variation; their iOS metadata has no `capabilities` map. Detect a required core method with `typeof synth.playSequence === 'function'` (and the other methods your feature needs); require the capability/schema pair specifically for variation. Both platforms report `limits.maxSequences`, `limits.priority` and `limits.effectSend`. `limits.stepDuration` is in beats on both platforms; millisecond sequences accept `4000 / sampleRate` through 60,000 even when `limits.stepDurationMs` is absent.
+In version 1.1.0, both platforms report `capabilities.variation: true` and `variationSchemaVersion: 1`. Android also reports `nativeSequence`, `masterProcessing` and `modulations` capability flags and `limits.stepDurationMs`. iOS omits those three older flags and `limits.stepDurationMs` while implementing the corresponding methods and millisecond sequences. Published 1.0.2 packages do not advertise variation; their iOS metadata has no `capabilities` map. Detect a required core method with `typeof synth.playSequence === 'function'` (and the other methods your feature needs); require the capability/schema pair specifically for variation. Both platforms report `limits.maxSequences`, `limits.priority` and `limits.effectSend`. `limits.stepDuration` is in beats on both platforms; millisecond sequences accept `4000 / sampleRate` through 60,000 even when `limits.stepDurationMs` is absent.
 
 ## Limits
 
@@ -131,6 +135,8 @@ All ranges include their endpoints. `getDefaults().limits` uses `{ min, max }` o
 
 | Field                       |             Minimum |             Maximum | Unit or rule                                                              |
 | --------------------------- | ------------------: | ------------------: | ------------------------------------------------------------------------- |
+| `maxToneRepetitions`        |                   1 |                  32 | fixed independent repetition capacity                                     |
+| `intervalMs`                |                   1 |              60,000 | integer milliseconds between finite-tone attacks                          |
 | `maxSequences`              |                   1 |                   4 | preallocated sequence capacity                                            |
 | `priority`                  |                   0 |                   3 | integer admission priority                                                |
 | `effectSend`                |                   0 |                   1 | explicit processed share                                                  |
@@ -186,7 +192,7 @@ On iOS, `playback` ignores the silent switch and interrupts other apps' audio. `
 
 ## `noteOn(options)`
 
-Starts a sustained native voice. Detect `typeof synth.noteOn === 'function'`, `noteOff` and `updateVoice` before enabling their controls; `apiVersion` is `1.0.0`. There is no duration limit and no JavaScript timer holds the note.
+Starts a sustained native voice. Detect `typeof synth.noteOn === 'function'`, `noteOff` and `updateNote` before enabling their controls; the current `apiVersion` is `1.1.0`. There is no duration limit and no JavaScript timer holds the note.
 
 | Field                                   | Rule                                                                                                                               |
 | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
@@ -228,7 +234,7 @@ Repeating a public sustained note can inherit the oscillator phase and pre-envel
 
 Begins release from the current level, including during attack or decay. Repeated release requests never restart or lengthen a release. An ended or stolen ID is a no-op. `true` reports validation and queue publication, not proof of an audible voice. On `false` from a full queue, an instrument should retry twice at 16 ms intervals, then shut down and report failure if release still cannot be published.
 
-## `updateVoice(options)`
+## `updateNote(options)`
 
 | Field                    | Rule                                                                             |
 | ------------------------ | -------------------------------------------------------------------------------- |
@@ -251,19 +257,25 @@ Pitch updates are absolute: an initial `detune` is already included in the note'
 
 ```javascript
 if (typeof synth.noteOn !== 'function' || typeof synth.noteOff !== 'function' ||
-    typeof synth.updateVoice !== 'function') throw new Error('Sustained voices unavailable')
+    typeof synth.updateNote !== 'function') throw new Error('Sustained voices unavailable')
 if (!synth.noteOn({ voiceId: 1, note: 'C4', attack: 8, decay: 180, sustain: 0.6,
   release: 300, filterType: 'lowpass', filterHz: 1200, volume: 0.25 })) {
   throw new Error('Note rejected')
 }
-synth.updateVoice({ voiceId: 1, filterHz: 3600 })
+synth.updateNote({ voiceId: 1, filterHz: 3600 })
 synth.noteOff({ voiceId: 1 })
 ```
 
-Use `stopAll()` for panic: it stops every sequence, fades sounding voices and invalidates effect histories. Owner close should call `shutdown()` after cancelling app-owned UI/retry timers.
+Use `stopAll()` for panic: it stops every sequence, cancels finite-tone repetitions, fades sounding voices and invalidates effect histories. Owner close should call `shutdown()` after cancelling app-owned UI/retry timers.
 
+
+## `updateVoice(options)` (deprecated)
+
+Compatibility alias of [`updateNote(options)`](#updatenoteoptions), with identical validation, partial updates, 10 ms transitions, `voiceId` ownership and ended/stolen-ID behavior. Use `updateNote` in new code. The alias remains available without repeated runtime warnings or a scheduled removal date.
 
 ## `playTone(options)`
+
+`playTone` always plays one finite pitch and returns Boolean acceptance. Its closed options reject `intervalMs` with `false`. Use `repeatTone` for native repetition.
 
 Plays one pitch. It uses 440 Hz when neither pitch field is present. Note names accept C through B or DO, RE, MI, FA, SOL, LA, SI and TI, followed by optional `#` or lowercase `b` and one octave digit from 0 to 9. Letters are case-insensitive, the omitted octave is 4, and A4 is 440 Hz. A valid named pitch is limited to the active frequency ceiling when rendered; an out-of-range numeric `frequency` is rejected.
 
@@ -314,6 +326,60 @@ Validator acceptance does not imply identical zero-edge rendering. Held notes
 have the separately documented 3 ms minimum.
 
 The controls from `decay` to `detune` are described in [Expressive controls](#expressive-controls), including the rules that tie them together.
+
+## `repeatTone(options)`
+
+Returns a positive `toneId`, or 0 on rejection. Requires integer `intervalMs` from 1 to 60,000 ms; missing or invalid intervals return 0. All remaining options use the same finite-tone contract as `playTone`, with the same admission, envelope, sweeps, gain and routes. Repetition uses neither sustained nor sequence voices.
+
+Always supply exact integer milliseconds. The current Apple validator tolerates extremely near-integer values: for example, `1.0000000001` is accepted and converted to `1`, while Android rejects it. This is a native validation discrepancy, not an additional supported interval format; do not rely on that tolerance.
+
+| Key               | Type     | Rule                                              |
+| ----------------- | -------- | ------------------------------------------------- |
+| `intervalMs`      | integer  | Required; 1-60,000 ms                             |
+| Other tone fields | as above | Same fields and validation as `playTone(options)` |
+
+## Finite-tone repetition
+
+Both platforms advertise `capabilities.toneRepetition: true`, `limits.maxToneRepetitions: { min: 1, max: 32 }` and `limits.intervalMs: { min: 1, max: 60000 }`. These 32 repetition slots are independent of the four sequence slots; attacks still share the configured voice pool. Reserve for overlaps, active voices and release tails if the application promises no stealing. Native priority policy remains in force. A positive `toneId` accepts the repeating recipe; it does not guarantee admission of every future attack.
+
+The first attack occurs at the first render opportunity. Later attacks use the audio sample clock, retain fractional samples across intervals and blocks, and do not follow `setTempo`. If voice capacity rejects an attack, it is dropped without catch-up and without consuming a variation selection. Every admitted attack finishes its original duration even after `stopTone`.
+
+```javascript
+var toneId = synth.repeatTone({ frequency: 1380, frequencyEnd: 340,
+  duration: 105, attack: 2, release: 40, waveType: synth.getDefaults().waveTypes.SQUARE,
+  volume: 0.1, intervalMs: 150 })
+if (!toneId) throw new Error('Repeating tone rejected')
+// Edits enter at the next scheduled attack, without adding an immediate attack.
+if (!synth.updateTone({ toneId: toneId, intervalMs: 120, volume: 0.08 })) {
+  throw new Error('Tone edit rejected')
+}
+// On release/cancel/preset change/owner close:
+if (!synth.stopTone({ toneId: toneId })) throw new Error('Tone stop rejected')
+```
+
+Independent JavaScript calls remain supported and always keep their Boolean return through `playTone`. A game can fire in response to events or deliberately schedule a fixed count of standalone calls, for example:
+
+```javascript
+var recipe = { frequency: 880, duration: 100, attack: 2, release: 30, volume: 0.1 }
+function fireStandalone() {
+  if (!synth.playTone(recipe)) Ti.API.warn('Independent tone rejected')
+}
+fireStandalone()
+setTimeout(fireStandalone, 200)
+setTimeout(fireStandalone, 400)
+```
+
+Those three calls use JavaScript timing and independent attack selection. For an ongoing native repetition, call `repeatTone` with `intervalMs` once and use its tone ID. Owner teardown must cancel any application timers it creates.
+
+### `updateTone({ toneId, ...changes })`
+
+Returns Boolean acceptance. Requires a known positive repetition identifier and at least one change. Accepts partial finite-tone options, including `intervalMs`, and merges them with the latest accepted recipe before validating the entire result. Supplying `note` replaces an earlier `frequency`; supplying `frequency` replaces an earlier `note`. Supplying both is invalid. Invalid edits leave the last accepted recipe intact.
+
+An accepted edit affects the next already scheduled attack, preserving its deadline. The new interval determines separation after that attack. Active attacks retain their original configuration. A supplied `variation` dictionary replaces the whole previous dictionary; `{ amount: 0 }` disables future variation. Each repetition retains its own seed and admitted-attack counter. Edits preserve the stream; changing its seed restarts that succession. Unknown or retired IDs reject edits.
+
+### `stopTone({ toneId })`
+
+Returns Boolean acceptance. Accepts only a known positive repetition identifier. Cancels future attacks at the next render block, including before the first attack, while admitted finite voices finish completely. Stop publication is independent of the ordinary command queue and remains available when that queue is full. Unknown or retired IDs return `false`. There is no `toneend` event. Identifiers are never reused during the module lifetime, including shutdown/start. `stopAll`, shutdown and destruction invalidate all repetitions and their pending edits.
 
 ## Native sequence transport
 
@@ -385,7 +451,7 @@ Requires a running engine and returns Boolean acceptance. Partial updates merge 
 | `reverb`     | `enabled`: false; `decay`: 0.2-8 seconds, initially 1.5; `damping`: 0-1, initially 0.5; `mix`: 0-1, initially 0.2. Stereo damped comb/allpass Schroeder network.                                                              |
 | `saturation` | `enabled`: false; `drive`: 1-4, initially 1; `mix`: 0-1, initially 1. Creative soft waveshaping that changes timbre.                                                                                                          |
 
-Delay sync accepts `off`, `quarter`, `eighth`, `sixteenth`, `quarterTriplet`, `eighthTriplet` or `sixteenthTriplet`. Sync follows the native transport BPM, initially 120. Disabling an effect gradually closes its input and drains its tail, then restores exact bypass. Tails are bounded to 30 seconds with a final fade. `stopAll()` performs panic: it fades voices, stops the new transport and invalidates effect histories in bounded work. `shutdown()` stops the stream and frees buffers outside the callback.
+Delay sync accepts `off`, `quarter`, `eighth`, `sixteenth`, `quarterTriplet`, `eighthTriplet` or `sixteenthTriplet`. Sync follows the native transport BPM, initially 120. Disabling an effect gradually closes its input and drains its tail, then restores exact bypass. Tails are bounded to 30 seconds with a final fade. `stopAll()` performs panic: it fades voices, stops the transport and invalidates effect histories in bounded work. `shutdown()` stops the stream and frees buffers outside the callback.
 
 Processing uses one shared chain for the selected categories. `applyTo` is an array drawn from `music`, `effects`, `ui` and `ambience`; default all four. Each event or held voice uses `bus: 'effects'` by default. Optional `effectSend: 0…1` overrides category selection for that voice. Input gain and master volume remain global. Selected audio receives chorus, delay, reverb and optional saturation, then recombines with dry audio before one final limiter. Send changes ramp over 10 ms.
 
@@ -393,7 +459,7 @@ Defaults keep all effects and saturation disabled, input gain at unity, and pres
 
 ## Additional voice modulation
 
-`noteOn` and `updateVoice` accept `modulations`, an array of up to two LFO objects. An empty array disables them. Omission on update preserves the previous configuration. Each object accepts only these fields:
+`noteOn` and `updateNote` accept `modulations`, an array of up to two LFO objects. An empty array disables them. Omission on update preserves the previous configuration. Each object accepts only these fields:
 
 | Field    | Rule                                                                                                                                                                                                                     |
 | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -642,9 +708,13 @@ rejected request. These counters are diagnostics; the API return is authoritativ
 
 Render load is a fraction: multiply by 100 for a percentage. For example, `0.012` is 1.2% of the block budget, while `1.0` is 100%. An open stream still renders silent blocks, including output/limiter work and enabled signal measurements, so no active voices does not imply zero load. Callback elapsed time varies with scheduling and system activity; displayed decimal places do not establish measurement accuracy. Compare the same configuration on the same device. Percentages from a simulator and a phone do not provide a direct performance comparison.
 
-## `setStatsEnabled(enabled)`
+## `enableStats()` and `disableStats()`
 
-Accepts a Boolean directly, returns Boolean acceptance. Default `false`. Enabling starts a new diagnostic window, without restarting audio. Calling it again with `true` also starts a fresh window. Disabling hides timing and signal fields immediately. Basic counters remain available in either mode. The setting persists across shutdown/start, while a new engine starts with fresh counters.
+Both return Boolean acceptance. `enableStats()` enables optional timing and signal measurements; `disableStats()` disables them. Default `false`. Enabling starts a new diagnostic window, without restarting audio. Calling `enableStats()` again also starts a fresh window. Disabling hides timing and signal fields immediately. Basic counters remain available in either mode. The setting persists across shutdown/start, while a new engine starts with fresh counters.
+
+## `setStatsEnabled(enabled)` (deprecated)
+
+Compatibility alias for the same statistics logic. Requires a Boolean and returns Boolean acceptance. Use `enableStats()` or `disableStats()` in new code. It remains available without repeated runtime deprecation warnings or a scheduled removal date.
 
 ## `resetStats()`
 
@@ -652,11 +722,11 @@ Returns nothing. Resets accumulated counters and maxima without stopping sounds,
 
 ```javascript
 // Optional diagnostics; poll at 5 Hz and stop the timer with the owner.
-if (synth.setStatsEnabled(true)) {
+if (synth.enableStats()) {
   var statsTimer = setInterval(function () {
     Ti.API.info(JSON.stringify(synth.getStats()))
   }, 200)
-  // Later: clearInterval(statsTimer); synth.setStatsEnabled(false)
+  // Later: clearInterval(statsTimer); synth.disableStats()
 }
 ```
 
@@ -664,4 +734,4 @@ if (synth.setStatsEnabled(true)) {
 
 `playTone`, `playChord`, `noteOn` and sequence voices accept `bus`, `effectSend` and `priority`. Categories are `music`, `effects` (default), `ui` and `ambience`. An omitted send follows `setMasterProcessing({ applyTo })`; an explicit 0-1 send replaces that selection. Priority is integer 0-3, default 0. When the pool fills, the lowest eligible priority is replaced first; a lower-priority event cannot steal a higher-priority voice. Existing release/age tie-breakers remain. Chords are admitted or dropped completely; no voices are reserved. `getStats().priorityDropCount` counts these drops; `rejectedPublicationCount` counts unavailable sequence capacity/banks separately from output diagnostics.
 
-`updateVoice` additionally accepts `noiseRate`, `lowPassHz`, `pan`, `spatialX`, `spatialY` and `effectSend`, with 10 ms transitions. Noise rate 0 means white noise; low-pass 0 means bypass. Noise phase, oscillator phase and spatial history survive compatible edits. Pan updates require a stereo voice; coordinates require a voice started with spatial coordinates. An omitted coordinate retains its previous value. The source/filter type still requires a new attack. Updates are generation-scoped so queued old commands cannot change a later attack sharing the public voice ID.
+`updateNote` also accepts `noiseRate`, `lowPassHz`, `pan`, `spatialX`, `spatialY` and `effectSend`, with 10 ms transitions. Noise rate 0 means white noise; low-pass 0 means bypass. Noise phase, oscillator phase and spatial history survive compatible edits. Pan updates require a stereo voice; coordinates require a voice started with spatial coordinates. An omitted coordinate retains its previous value. The source/filter type still requires a new attack. Updates are generation-scoped so queued old commands cannot change a later attack sharing the public voice ID.

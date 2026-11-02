@@ -37,14 +37,19 @@ an audio or advertising module.
 
 ## Native synthesis — ti-synthengine
 
-- "Install the public TiSynthEngine 1.0.2 Android/iOS packages and start audio after the window layout settles."
+- "Install the public TiSynthEngine 1.1.0 Android/iOS packages and start audio after the window layout settles."
 - "Move a held spatial motor, process only music with reverb, and stop one native sequence without cancelling unrelated sounds."
-- "Use native attack variation with local 1.1.0: bounded noise/filter ranges, deterministic seeds and an old-package fallback."
+- "Use native attack variation with public 1.1.0: bounded noise/filter ranges, deterministic seeds and an old-package fallback."
 - "Repeat this complete layered effect natively without changing its envelope, sweep timing or gains."
+- "Use repeatTone for this finite shot, edit its interval with updateTone, and stop future attacks with stopTone while sounding shots finish."
+- "Use updateNote and enableStats/disableStats, checking the bundled TypeScript declarations and a 1.0.2 alias fallback."
+- "Keep these three standalone playTone calls as an intentional finite JavaScript burst and cancel their timers when the owner closes."
 
 Use the [synthesis skill](../skills/ti-synthengine/SKILL.md) for exact options,
-public downloads and scoped performance evidence. Native sequence scheduling,
-held-voice ownership and historical/private artifacts have distinct contracts.
+public downloads, bundled TypeScript declarations and scoped performance evidence.
+Native finite-tone repetitions, ordered sequences, held voices and standalone
+JavaScript events have distinct ownership and timing contracts. Public 1.0.2 /
+API 1.0.0 lacks repetition and variation; detect support before enabling them.
 
 ## Advertising — ti-admob-unified
 

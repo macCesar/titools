@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine documentation at commit `b07c97c762be5905f132cecf33e9d60ea0c21316` (2026-11-02). Published 1.0.2; local 1.1.0 candidates; public API 1.0.0. Upstream `documentation/guide.md` SHA-256: `4da2d85f329a49a8b81a9c671c75051b41788371b2c00990fbd499176623894d`.
+> Source snapshot: official TiSynthEngine documentation at commit `ec04f4e634075c41b55f66279eabcd78b9652d58` (2026-11-02). Published module 1.1.0; public API 1.1.0. Upstream `documentation/guide.md` SHA-256: `0edc2fb8bccb4412d80e00d63a5a631b455d0ede6178c16642e63e37ce3dd77e`.
 
 # Guide
 
@@ -28,29 +28,29 @@ Install TiSynthEngine, start it after layout settles, and release its native aud
 - [Read engine statistics](#read-engine-statistics)
 - [Next steps](#next-steps)
 - [Diagnose mix headroom](#diagnose-mix-headroom)
-- [Local native-variation candidate](#local-native-variation-candidate)
+- [Variation support in version 1.1.0](#variation-support-in-version-110)
 
 <!-- TOC-END -->
 
 ## Install the module
 
-Download both official packages from [Android 1.0.2](https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.0.2) and [iOS 1.0.2](https://github.com/macCesar/TiSynthEngine/releases/tag/ios-1.0.2). For the published 1.0.2 revision, matching archives are produced under `android/dist` and `ios/dist`:
+Download both official packages from [Android 1.1.0](https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.1.0) and [iOS 1.1.0](https://github.com/macCesar/TiSynthEngine/releases/tag/ios-1.1.0). Matching archives are produced under `android/dist` and `ios/dist`:
 
-- `ti.synthengine-android-1.0.2.zip`
-- `ti.synthengine-iphone-1.0.2.zip`
+- `ti.synthengine-android-1.1.0.zip`
+- `ti.synthengine-iphone-1.1.0.zip`
 
 Put the archives in the Titanium project root or install them through the Titanium CLI. Pin the same version for both platforms:
 
 ```xml
 <modules>
-  <module platform="android" version="1.0.2">ti.synthengine</module>
-  <module platform="iphone" version="1.0.2">ti.synthengine</module>
+  <module platform="android" version="1.1.0">ti.synthengine</module>
+  <module platform="iphone" version="1.1.0">ti.synthengine</module>
 </modules>
 ```
 
 TiSynthEngine requires Titanium SDK 13.2.0.GA or newer. Android projects must compile against API 35 or newer. The iOS module requires iOS 15 or newer.
 
-These declarations select the published 1.0.2 packages. Current source builds produce unpublished local 1.1.0 candidates; use the separate [candidate setup](#local-native-variation-candidate) below when testing native attack variation.
+These declarations select version 1.1.0. Check the [variation metadata](#variation-support-in-version-110) before using native attack variation.
 
 ## Load and verify the contract
 
@@ -60,8 +60,8 @@ Require the module once in the code that owns audio. Check `apiVersion` before s
 var synth = require('ti.synthengine')
 var contract = synth.getDefaults()
 
-if (contract.apiVersion !== '1.0.0') {
-  throw new Error('TiSynthEngine 1.0.0 is required; found ' + contract.apiVersion)
+if (contract.apiVersion !== '1.1.0') {
+  throw new Error('TiSynthEngine 1.1.0 is required; found ' + contract.apiVersion)
 }
 ```
 
@@ -115,30 +115,30 @@ Use one owner for the engine. Start it once, pass a small audio service to the s
 
 ## Detect required capabilities
 
-Public API version 1.0.0 includes held voices, sample-clock sequences, stereo effects and two optional LFOs. Require the methods used by each feature before enabling its controls:
+Public API version 1.1.0 includes held voices, sample-clock sequences, stereo effects and two optional LFOs. Require the methods used by each feature before enabling its controls:
 
 ```javascript
 function hasMethods (names) {
   return names.every(function (name) { return typeof synth[name] === 'function' })
 }
-var supportsHeld = hasMethods(['noteOn', 'noteOff', 'updateVoice'])
+var supportsHeld = hasMethods(['noteOn', 'noteOff', 'updateNote'])
 var supportsSequence = hasMethods(['playSequence', 'updateSequence', 'stopSequence', 'getSequenceState'])
 var supportsProcessing = hasMethods(['setMasterProcessing'])
 ```
 
-Start the engine successfully before publishing held notes, sequence edits or processing. `getDefaults` and feature checks do not open the stream. Install matching packages for Android/iOS and rebuild the application when replacing a native module. Additional LFOs require the documented modulation contract; check acceptance of the complete configuration. Treat rejected configurations as unavailable rather than silently dropping their keys.
+Start the engine successfully before publishing held notes, sequence edits or processing. `getDefaults` and feature checks do not open the stream. Install matching packages for Android/iOS and rebuild the application when replacing a native module. Additional LFOs require the documented modulation contract; check acceptance of the complete configuration. Treat rejected configurations as unavailable. Do not silently drop their keys.
 
 ## Hold and edit a voice
 
 Use `noteOn({ voiceId, ... })` when duration follows interaction: a piano key, motor, beam, pad or the last chord of a ceremony. Allocate a unique positive integer ID per attack, and release only that ID with `noteOff`. No duration or sweep-end fields are accepted. A chord held this way consists of separate IDs; unlike one `playChord` or sequence chord, separate `noteOn` calls have independent gain and publication.
 
-`updateVoice` changes compatible pitch, volume, cutoff/Q, vibrato, PWM/FM, LFO targets, noise clock, one-pole cutoff, effect send and stereo/spatial position with 10 ms ramps, without restarting oscillator/envelope phase. Source, table, filter type, quantization, ADSR and stereo-versus-spatial mode are fixed at attack. See [complete fields](api.md#updatevoiceoptions). A note that has ended or been stolen accepts updates as a no-op; there is no note-finished event or reserved slot. A `true` return means accepted publication, not proof that the sound is still active.
+`updateNote` changes compatible pitch, volume, cutoff/Q, vibrato, PWM/FM, LFO targets, noise clock, one-pole cutoff, effect send and stereo/spatial position with 10 ms ramps, without restarting oscillator/envelope phase. Source, table, filter type, quantization, ADSR and stereo-versus-spatial mode are fixed at attack. See [complete fields](api.md#updatenoteoptions). A note that has ended or been stolen accepts updates as a no-op; there is no note-finished event or reserved slot. A `true` return means accepted publication, not proof that the sound is still active.
 
 Release on touch end and cancellation as well as ordinary key up. Retry a rejected release twice at 16 ms outside the audio callback, then shut down and report failure if publication remains blocked. Cancel retries during teardown. The [held motor example](advanced-examples.md#sustained-game-motor) implements this ownership policy. For pause/owner close, invalidate app scheduling and shut down; require a new start before future notes.
 
 ## Choose the musical transport
 
-Use `playSequence` for all successive native sounds. `playTone` and `playChord` handle independent timed events; `noteOn`/`noteOff` hold a sound for interaction. Start with `maxSequences: 1…4` to preallocate independent sequence capacity. All use the same pool of up to 32 voices.
+Use `repeatTone({ intervalMs, ...recipe })` for native repetition of an original finite tone, and `playSequence` for ordered native scores. Retain each positive tone ID, edit with `updateTone` and cancel future attacks with `stopTone`; see [finite-tone repetition](api.md#finite-tone-repetition). `playTone` and `playChord` handle independent timed events; `noteOn`/`noteOff` hold a sound for interaction. Start with `maxSequences: 1…4` to preallocate independent sequence capacity. All use the same pool of up to 32 voices.
 
 Store the positive identifier returned by `playSequence`, and include it in each update, stop or state query. 0 rejects publication. Three banks per sequence publish complete edits atomically. Structural edits enter at the next step; swing at the next pair. `setTempo({ bpm })` applies at the next block, preserving beat position. Beat sequences follow it; ms sequences keep fixed times. `stopSequence({ sequenceId })` releases only that owner's voices and leaves effect tails. A retired identifier returns null from `getSequenceState`.
 
@@ -397,7 +397,7 @@ synth.setVolume({ volume: 0.7 })
 synth.stopAll()
 ```
 
-Master volume changes use a linear 10 ms ramp. `stopAll()` stops every native sequence, cancels future attacks, fades active voices and invalidates effect histories. Call `stopSequence({ sequenceId })` to stop only one sequence, or `shutdown()` to close the stream and free resources.
+Master volume changes use a linear 10 ms ramp. `stopAll()` stops every native sequence and finite-tone repetition, cancels future attacks, fades active voices and invalidates effect histories. Call `stopSequence({ sequenceId })` to stop only one sequence, or `shutdown()` to close the stream and free resources.
 
 ## Output route changes
 
@@ -512,7 +512,7 @@ if (!playPositionedTone(explosion, 900, 100, 1000, 800)) {
 
 Connect a Titanium switch's `change` event to `audioSettings.binaural = event.value`; connect the two sliders' `change` events to `horizontalPercent` and `heightPercent`. Configure slider minimum 0 and maximum 100, and disable the height slider while the switch is off. Validate restored preference values as finite numbers within those ranges before using them. Do not pass these preference names to `playTone`: that would return `false` with `unsupported_option`.
 
-Supply the current position whenever an effect fires. A projectile launch cue can use the launch position; an impact uses the collision position. Timed event positions remain fixed after submission. An identified sustained voice started spatially can instead change `spatialX`/`spatialY` through `updateVoice`, with 10 ms ramps and retained spatial history. A stereo voice cannot become spatial through an update. Stereo `panEnd` movement cannot be combined with binaural; do not continually retrigger long sounds every frame to imitate movement.
+Supply the current position whenever an effect fires. A projectile launch cue can use the launch position; an impact uses the collision position. Timed event positions remain fixed after submission. An identified sustained voice started spatially can instead change `spatialX`/`spatialY` through `updateNote`, with 10 ms ramps and retained spatial history. A stereo voice cannot become spatial through an update. Stereo `panEnd` movement cannot be combined with binaural; do not continually retrigger long sounds every frame to imitate movement.
 
 ### Chords and patterns
 
@@ -557,7 +557,7 @@ Basic counters are available without enabling optional diagnostics. Reads do not
 ```javascript
 var statsTimer = null
 var statsSupported = typeof synth.getStats === 'function' &&
-  typeof synth.setStatsEnabled === 'function' && typeof synth.resetStats === 'function'
+  typeof synth.enableStats === 'function' && typeof synth.disableStats === 'function' && typeof synth.resetStats === 'function'
 
 function readStats () {
   var stats = synth.getStats()
@@ -568,7 +568,7 @@ function readStats () {
 
 function startDiagnostics () {
   if (!statsSupported || statsTimer !== null) return false
-  if (!synth.setStatsEnabled(true)) return false
+  if (!synth.enableStats()) return false
   statsTimer = setInterval(readStats, 200)
   return true
 }
@@ -576,7 +576,7 @@ function startDiagnostics () {
 function stopDiagnostics () {
   if (statsTimer !== null) clearInterval(statsTimer)
   statsTimer = null
-  if (statsSupported) synth.setStatsEnabled(false)
+  if (statsSupported) synth.disableStats()
 }
 
 // Read basic counters without enabling timing or signal meters:
@@ -601,14 +601,16 @@ See the [complete field contract](api.md#getstats), [measurement limits](stats-p
 
 ## Diagnose mix headroom
 
-The current diagnostics add `preLimiterPeakDb` (maximum signal before final limiting, in dBFS) and `maxLimiterReductionDb` (greatest limiter attenuation in dB) accumulated since reset. Unlike the approximately 200 ms window reduction field, brief peaks remain visible between UI polls. Enable measurements, reset before the scenario and keep `null`/absent fields distinct from measured zero. The [measurement example](advanced-examples.md#measure-peaks-and-limiter-reduction) shows opt-in polling and cleanup.
+The diagnostics include `preLimiterPeakDb` (maximum signal before final limiting, in dBFS) and `maxLimiterReductionDb` (greatest limiter attenuation in dB) accumulated since reset. Unlike the approximately 200 ms window reduction field, brief peaks remain visible between UI polls. Enable measurements, reset before the scenario and keep `null`/absent fields distinct from measured zero. The [measurement example](advanced-examples.md#measure-peaks-and-limiter-reduction) shows opt-in polling and cleanup.
 
 Fixed event/input gain does not normalize continuously by active voice count. Coherent overlapping notes, effects feedback or resonance can still exceed the ceiling; the limiter then acts on the whole stereo sum. Saturation is a separate creative processor, disabled initially. Physical loudness and small-speaker bass response are not measured by these digital meters.
 
 
-## Local native-variation candidate
+<a id="local-native-variation-candidate"></a>
 
-Current source builds unpublished local candidates at `android/dist/ti.synthengine-android-1.1.0.zip` and `ios/dist/ti.synthengine-iphone-1.1.0.zip`. Keep them separate from the published 1.0.2 packages. Install both matching candidates in the consumer app and select them explicitly:
+## Variation support in version 1.1.0
+
+Source builds produce archives at `android/dist/ti.synthengine-android-1.1.0.zip` and `ios/dist/ti.synthengine-iphone-1.1.0.zip`. Keep them separate from the published 1.0.2 packages. Install both matching 1.1.0 packages in the consumer app and select them explicitly:
 
 ```xml
 <modules>
@@ -617,4 +619,4 @@ Current source builds unpublished local candidates at `android/dist/ti.synthengi
 </modules>
 ```
 
-Rebuild and reinstall the application after replacing the native modules. Both package lines retain public API `1.0.0`; it does not identify variation support. Send a `variation` dictionary only when `getDefaults().capabilities.variation === true` and `getDefaults().variationSchemaVersion === 1`. If either announcement is absent, omit the property completely, including at amount zero. See [native attack variation](native-variation.md) for accepted locations, bounded ranges and seed behavior. The 1.1.0 candidates have not been published as a release.
+Rebuild and reinstall the application after replacing the native modules. Published 1.0.2 retains API `1.0.0`; version 1.1.0 reports API `1.1.0` and supports native finite-tone repetition. Check the variation announcements directly as well. Send a `variation` dictionary only when `getDefaults().capabilities.variation === true` and `getDefaults().variationSchemaVersion === 1`. If either announcement is absent, omit the property completely, including at amount zero. See [native attack variation](native-variation.md) for accepted locations, bounded ranges and seed behavior.

@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine documentation at commit `b07c97c762be5905f132cecf33e9d60ea0c21316` (2026-11-02). Published 1.0.2; local 1.1.0 candidates; public API 1.0.0. Upstream `documentation/troubleshooting.md` SHA-256: `bf70a08eee09033b5aaa8cf18b9ef97392f4e6ee318c595ef433a31e6baa33b8`.
+> Source snapshot: official TiSynthEngine documentation at commit `ec04f4e634075c41b55f66279eabcd78b9652d58` (2026-11-02). Published module 1.1.0; public API 1.1.0. Upstream `documentation/troubleshooting.md` SHA-256: `37fd3173ccfce393ab354713df66fbcc99c7281131ea45de1b3aae1e2d6f2160`.
 
 # Troubleshooting
 
@@ -43,7 +43,7 @@ An `overflow` warning means the command queue was full. Reduce the command burst
 
 The envelope and filter rules apply to the final values of each sounding event. In a native sequence, each step's `overrides` merges over root `voice`: root `voice.sustain` is valid when every sounding step supplies compatible decay, and `voice.filterHz` needs a non-none filter type after merging. Timed tones/chords enforce their total-duration envelope budget; held and sequence ADSR has no sequence-interval budget. A `detune` that pushes the pitch, or `frequencyEnd`, outside the frequency range is rejected with `out_of_range`.
 
-`fmDepthEnd: 0` is valid. It sweeps the index down to nothing. Omit the key, rather than passing 0, when the index should not move.
+`fmDepthEnd: 0` is valid. It sweeps the index down to nothing. Omit the key when the index should not move; passing 0 sets a sweep target.
 
 For the shaping controls, check the discontinuous disabled values as well as the numeric range: `bitDepth` accepts 0 or 2 through 16, and `pulseWidthEnd` accepts 0 or 0.05 through 0.95. A `waveTable` must contain only finite values from -1 to 1.
 
@@ -53,19 +53,19 @@ Check the native binary at startup:
 
 ```javascript
 var actual = synth.getDefaults().apiVersion
-if (actual !== '1.0.0') {
-  throw new Error('Expected TiSynthEngine 1.0.0, found ' + actual)
+if (actual !== '1.1.0') {
+  throw new Error('Expected TiSynthEngine 1.1.0, found ' + actual)
 }
 ```
 
-`apiVersion` describes the unchanged 1.0.0 API contract; it is not the module package version. Confirm both entries in `tiapp.xml` pin module version 1.0.2. Then remove the application's build output and rebuild so Titanium does not reuse an archive from an earlier build. The module directories should be:
+`apiVersion` describes the public contract, separately from the package version. Version 1.1.0 uses API 1.1.0; published 1.0.2 uses API 1.0.0. For version 1.1.0, confirm both entries in `tiapp.xml` pin module version 1.1.0. Then remove the application's build output and rebuild so Titanium does not reuse an archive from an earlier build. The module directories should be:
 
 ```text
-modules/android/ti.synthengine/1.0.2/
-modules/iphone/ti.synthengine/1.0.2/
+modules/android/ti.synthengine/1.1.0/
+modules/iphone/ti.synthengine/1.1.0/
 ```
 
-When testing local native-variation candidates, select module version `1.1.0` for both platforms instead; the corresponding directories end in `/1.1.0/`. The candidates are unpublished and still report API `1.0.0`. Check the capability/schema pair before using variation.
+Module version `1.1.0` reports API `1.1.0`. Check the capability/schema pair before using variation.
 
 For binaural, also inspect `getDefaults().limits.spatialX` and `.spatialY`. Use the official packages to avoid stale development binaries. Copying the package does not update an already installed app: rebuild and reinstall it.
 
@@ -79,15 +79,15 @@ Inspect the options sent to the native method as well as the settings screen:
 - No stereo placement fields remain, even with value 0 or through pattern inheritance. Handle the Boolean return value.
 - The installed contract reports both spatial limits and the device has the rebuilt app.
 - Use headphones and one broadband event at a time; with binaural off, points with the same X use the same horizontal placement regardless of Y.
-- Timed tones/chords and each sequence attack keep their specified position. A spatial held voice can move through `updateVoice({ voiceId, spatialX, spatialY })`; omitted coordinates retain their previous value, and the FIR ramps over 10 ms without clearing history. A stereo voice cannot be converted to spatial by an update.
+- Timed tones/chords and each sequence attack keep their specified position. A spatial held voice can move through `updateNote({ voiceId, spatialX, spatialY })`; omitted coordinates retain their previous value, and the FIR ramps over 10 ms without clearing history. A stereo voice cannot be converted to spatial by an update.
 
 The [integration guide](guide.md#integrate-binaural-in-a-2d-app) contains the JavaScript conversion and explains switch/slider behavior.
 
 ## Statistics are missing or show `null`
 
-Older development packages can report 1.0.0 without statistics methods. Check `typeof synth.getStats`, `typeof synth.setStatsEnabled` and `typeof synth.resetStats`; install the current packages, rebuild and reinstall the app if needed.
+Older development packages can report 1.0.0 without statistics methods. Check `typeof synth.getStats`, `typeof synth.enableStats`, `typeof synth.disableStats` and `typeof synth.resetStats`; install the current packages, rebuild and reinstall the app if needed.
 
-Basic voice/queue/rejection counters do not require diagnostics. Timing, output peak/RMS and limiter reduction require `setStatsEnabled(true)` and a measured callback/window. `null` means unmeasured or unavailable; keep it distinct from zero. The current iOS backend always reports `null` for underruns, output buffer size and estimated hardware latency. Android backend metrics are best-effort and independent of the diagnostic switch.
+Basic voice/queue/rejection counters do not require diagnostics. Timing, output peak/RMS and limiter reduction require `enableStats()` and a measured callback/window. `null` means unmeasured or unavailable; keep it distinct from zero. The current iOS backend always reports `null` for underruns, output buffer size and estimated hardware latency. Android backend metrics are best-effort and independent of the diagnostic switch.
 
 Read at a modest rate, such as 5 Hz, and stop polling and optional measurements when the diagnostic owner hides or closes. `getStats()` never resets counters; call `resetStats()` deliberately. See the [integration recipe](guide.md#read-engine-statistics).
 
@@ -168,7 +168,7 @@ If later sounds remain silent, capture the Android or Xcode log around the route
 - Confirm the deployment target is iOS 15 or newer.
 - Check whether another module changes `AVAudioSession` after startup.
 - Test interruptions, phone calls, Bluetooth and route changes on hardware.
-- Use the matching device or simulator slice from the 1.0.2 archive.
+- Use the matching device or simulator slice from the 1.1.0 archive.
 
 ## What to include in a bug report
 
@@ -176,11 +176,11 @@ Include the platform, OS version, device model, Titanium SDK version, module ver
 
 ## Held notes, sequences or effects methods are missing
 
-The official release reports API version 1.0.0. Detect `noteOn`/`noteOff`/`updateVoice`, all four sequence methods and `setMasterProcessing` according to the feature needed. Install matching current Android/iOS packages, rebuild and reinstall the consumer app. A stale development binary may report the same version without the complete release API. See [capability detection](guide.md#detect-required-capabilities).
+Published 1.0.2 reports API version 1.0.0 and provides `updateVoice`; version 1.1.0 reports API 1.1.0 and recommends `updateNote`. Detect `noteOn`/`noteOff`/`updateNote`, all four sequence methods and `setMasterProcessing` according to the feature needed. Install matching current Android/iOS packages, rebuild and reinstall the consumer app. A stale development binary may report the same version without the complete release API. See [capability detection](guide.md#detect-required-capabilities).
 
 ## A held voice does not release or update
 
-Use the original positive `voiceId`, not the pitch or an ID that has already been reused. `noteOn` does not accept `duration` or temporal `*End` fields. `updateVoice` cannot change source, filter type, table, quantization, ADSR or stereo-versus-spatial mode; restart with a new ID when those attack-time settings must change. Noise clock, one-pole cutoff, effect send and compatible stereo/spatial position support live edits. Changed continuous parameters ramp for 10 ms.
+Use the original positive `voiceId`, not the pitch or an ID that has already been reused. `noteOn` does not accept `duration` or temporal `*End` fields. `updateNote` cannot change source, filter type, table, quantization, ADSR or stereo-versus-spatial mode; restart with a new ID when those attack-time settings must change. Noise clock, one-pole cutoff, effect send and compatible stereo/spatial position support live edits. Changed continuous parameters ramp for 10 ms.
 
 Check Boolean returns. A full public queue can reject `noteOff`; retry twice at 16 ms outside render, then shut down/report if still rejected. Cancel those retries on owner teardown. The [held motor example](advanced-examples.md#sustained-game-motor) implements this policy. Touch cancellation, pause and close need cleanup as well as normal key up.
 
@@ -212,4 +212,4 @@ Compare one note with `SINE`, at a comfortable matched level, to distinguish the
 
 Check both `capabilities.variation === true` and `variationSchemaVersion === 1` before sending the property. Published 1.0.2 packages reject it. Source restrictions and range ordering still apply at amount zero; near the frequency ceiling, validate tuning, detune, every chord pitch and active pitch endpoints together.
 
-Repeated standalone calls with one explicit seed reproduce the selected parameters. Omit it for independent selections, or use a native sequence to retain an advancing stream across loops. A held voice samples only at attack, and `updateVoice` rejects `variation`. For a running sequence, clear an inherited root dictionary with a valid amount-zero replacement; omitting it from a revision retains the merged value. See the [complete examples and rules](native-variation.md).
+Repeated standalone calls with one explicit seed reproduce the selected parameters. Omit it for independent selections, or use a native sequence to retain an advancing stream across loops. A held voice samples only at attack, and `updateNote` rejects `variation`. For a running sequence, clear an inherited root dictionary with a valid amount-zero replacement; omitting it from a revision retains the merged value. See the [complete examples and rules](native-variation.md).

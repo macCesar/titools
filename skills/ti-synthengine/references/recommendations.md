@@ -1,8 +1,8 @@
-> Source snapshot: official TiSynthEngine documentation at commit `b07c97c762be5905f132cecf33e9d60ea0c21316` (2026-11-02). Published 1.0.2; local 1.1.0 candidates; public API 1.0.0. Upstream `documentation/recommendations.md` SHA-256: `d3d508efe07fce012baceb44285aa9ab4b850cc5c53a5d14c9b8d193e38ca8fb`.
+> Source snapshot: official TiSynthEngine documentation at commit `ec04f4e634075c41b55f66279eabcd78b9652d58` (2026-11-02). Published module 1.1.0; public API 1.1.0. Upstream `documentation/recommendations.md` SHA-256: `f72c3df9c36df0cbdb843bbe2c6799ae537324ece499fe6d1a2de80e43df5261`.
 
 # Recommendations
 
-The defaults work for ordinary tones and chords. The choices below matter when an app has dense overlap, user-controlled values, demanding speakers or several audio systems sharing one lifecycle.
+The defaults work for ordinary tones and chords. Use the guidance below when an app has dense overlap, user-controlled values, demanding speakers or several audio systems sharing one lifecycle.
 
 ## Group simultaneous notes
 
@@ -103,7 +103,7 @@ Exercise the real worst case:
 - a route change while a note is playing;
 - screen off, interruption and background transitions if the product depends on them.
 
-An underrun counter only describes transport. A clean counter cannot tell you whether a waveform, pitch or mix is pleasant.
+An underrun counter describes transport; it cannot tell you whether a waveform, pitch or mix is pleasant.
 
 ## Binaural placement
 
@@ -128,7 +128,7 @@ Use a sample player or a dedicated music engine when a product needs streaming, 
 
 ## Use effects and held voices deliberately
 
-Use `noteOn` for a sound whose duration follows interaction, such as a key, motor or beam; release its ID on touch end, cancellation, pause or scene teardown. Use `playSequence` for a finite musical cue or repeating grid. Neither needs JavaScript to keep an already accepted note alive. Both share the same 32-slot maximum with collision and interface tones; held notes can be stolen, and an accepted `updateVoice` on a stolen ID is a no-op. Optional priority 0-3 affects stealing; it reserves no voices. There is no voice-finished event.
+Use `noteOn` for a sound whose duration follows interaction, such as a key, motor or beam; release its ID on touch end, cancellation, pause or scene teardown. Use `playSequence` for a finite musical cue or repeating grid. Neither needs JavaScript to keep an already accepted note alive. Both share the same 32-slot maximum with collision and interface tones; held notes can be stolen, and an accepted `updateNote` on a stolen ID is a no-op. Optional priority 0-3 affects stealing; it reserves no voices. There is no voice-finished event.
 
 Keep chorus/delay/reverb mixes modest when dialogue or short game feedback must remain distinct. By default they process all four categories, so enabling reverb for a victory chord also affects simultaneous shots and collisions. Select categories with `applyTo` and assign each voice a `bus`, or use explicit `effectSend` values to choose the processed share. All selected voices share one effects chain. Disabling effects lets tails drain for at most 30 seconds; use panic when immediate history invalidation is required. Start with saturation disabled and compare creative drive at matched levels. Do not use saturation as an automatic substitute for the final limiter.
 

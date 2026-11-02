@@ -1,11 +1,11 @@
-> Source snapshot: official TiSynthEngine documentation at commit `b07c97c762be5905f132cecf33e9d60ea0c21316` (2026-11-02). Published 1.0.2; local 1.1.0 candidates; public API 1.0.0. Upstream `documentation/examples.md` SHA-256: `637806516d2804c43427d187a37786cfcf2f0d28758762f01a570ba15194bae3`.
+> Source snapshot: official TiSynthEngine documentation at commit `ec04f4e634075c41b55f66279eabcd78b9652d58` (2026-11-02). Published module 1.1.0; public API 1.1.0. Upstream `documentation/examples.md` SHA-256: `1b3be798d8f606381696d9e00cda330c11475402397e4760dcbc3041a39ef404`.
 
 ## Sustained game motor
 
 Assume one running engine owned by this service. The positive voice ID belongs to the app; do not reuse it during the session or share its counter with an independent audio owner. There is no `duration` or `*End` target on `noteOn`.
 
 ```javascript
-if (!['noteOn', 'noteOff', 'updateVoice'].every(function (name) {
+if (!['noteOn', 'noteOff', 'updateNote'].every(function (name) {
   return typeof synth[name] === 'function'
 })) throw new Error('Held-voice APIs are required')
 
@@ -25,7 +25,7 @@ function startMotor () {
 
 function changeMotor (boosted) {
   if (motorId === null) return false
-  return synth.updateVoice({ voiceId: motorId,
+  return synth.updateNote({ voiceId: motorId,
     filterHz: boosted ? 320 : 220, volume: boosted ? 0.18 : 0.15 })
 }
 
@@ -128,7 +128,7 @@ Call `setCreativeDrive(true)` only for a deliberate timbre change and check acce
 This square voice modulates cutoff and PWM independently. The original `lfoFreq`/`lfoDepth` pitch vibrato remains a separate control. All LFOs run natively; edits preserve their phases and ramp contributions over 10 ms.
 
 ```javascript
-if (typeof synth.noteOn !== 'function' || typeof synth.updateVoice !== 'function') {
+if (typeof synth.noteOn !== 'function' || typeof synth.updateNote !== 'function') {
   throw new Error('Held-voice APIs are required')
 }
 var modulatedId = 100001 // Reserve an unused ID from the owner's counter in an app.
@@ -141,23 +141,23 @@ if (!synth.noteOn({ voiceId: modulatedId, note: 'A3', waveType: WAVE.SQUARE,
   ] })) throw new Error('Modulated voice rejected')
 
 function disableVoiceLfos () {
-  return synth.updateVoice({ voiceId: modulatedId, modulations: [] })
+  return synth.updateNote({ voiceId: modulatedId, modulations: [] })
 }
 // Call disableVoiceLfos on the UI action and handle false.
 // Later release this ID with the bounded release policy above, or shut down its owner.
 ```
 
-Use `target: 'fmDepth'` only with `WAVE.SINE`; a filter target requires an active filter and PWM requires `WAVE.SQUARE`. Free rates are 0 to 20 Hz; synced subdivisions follow native transport BPM. Depth is normalized, with cutoff/PWM/FM contributions clamped to safe parameter ranges. `modulations: []` disables both slots; omitting the field on update preserves them. Copy the same initial `modulations` array into a sequence's `voice` or a step's `overrides` to modulate transport notes. Timed tones and chords do not accept the new array; native sequences accept it in `voice` or step `overrides`.
+Use `target: 'fmDepth'` only with `WAVE.SINE`; a filter target requires an active filter and PWM requires `WAVE.SQUARE`. Free rates are 0 to 20 Hz; synced subdivisions follow native transport BPM. Depth is normalized, with cutoff/PWM/FM contributions clamped to safe parameter ranges. `modulations: []` disables both slots; omitting the field on update preserves them. Copy the same initial `modulations` array into a sequence's `voice` or a step's `overrides` to modulate transport notes. Timed tones and chords do not accept this array; native sequences accept it in `voice` or step `overrides`.
 
 ## Measure peaks and limiter reduction
 
 Enable diagnostics only while measuring and keep unavailable readings distinct from zero. A brief overload can disappear from the window meter while remaining in the accumulated maximum.
 
 ```javascript
-if (!['setStatsEnabled', 'getStats', 'resetStats'].every(function (name) {
+if (!['enableStats', 'disableStats', 'getStats', 'resetStats'].every(function (name) {
   return typeof synth[name] === 'function'
 })) throw new Error('Statistics APIs are required')
-if (!synth.setStatsEnabled(true)) throw new Error('Diagnostics rejected')
+if (!synth.enableStats()) throw new Error('Diagnostics rejected')
 synth.resetStats()
 var mixTimer = setInterval(function () {
   var stats = synth.getStats()
@@ -167,7 +167,7 @@ var mixTimer = setInterval(function () {
 
 function closeMixMeter () {
   clearInterval(mixTimer)
-  if (!synth.setStatsEnabled(false)) Ti.API.warn('Diagnostics disable rejected')
+  if (!synth.disableStats()) Ti.API.warn('Diagnostics disable rejected')
 }
 ```
 
@@ -175,7 +175,7 @@ Call `closeMixMeter` when its owner hides or closes. Display unavailable or unme
 
 ## Bounded variation for repeated noise impacts
 
-The local 1.1.0 packages choose values once per admitted attack. This example keeps the noise source and envelope fixed, varies the initial noise/filter settings, and lets the authored sweep endpoints finish unchanged. Call it through the application's existing effect cadence after normal engine startup.
+The 1.1.0 packages choose values once per admitted attack. This example keeps the noise source and envelope fixed, varies the initial noise/filter settings, and lets the authored sweep endpoints finish unchanged. Call it for actual gameplay events after normal engine startup. For periodic repetition, pass the finite recipe to `repeatTone` with `intervalMs` and retain its positive tone ID; use `stopTone` on cancellation.
 
 ```javascript
 var synth = require('ti.synthengine')
