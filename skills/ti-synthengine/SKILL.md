@@ -1,15 +1,18 @@
 ---
 name: ti-synthengine
-description: "Use when a Titanium app declares ti.synthengine in tiapp.xml, imports require('ti.synthengine'), or needs generated tones, chords, native sequences, sustained game motors, ADSR, sweeps, FM, resonant filters, noise, binaural spatialX/spatialY, held noteOn/noteOff/updateVoice, shared tempo, selective music/effects/ui/ambience processing, effectSend, priorities, chorus/delay/reverb/saturation, LFOs, sequenceend events, gain staging, statistics or render-load diagnosis. Covers Android/iOS module 1.0.2 with public API 1.0.0. Not for audio-file decoding, sample streaming or unrelated synthesizers."
+description: "Use when a Titanium app declares ti.synthengine in tiapp.xml, imports require('ti.synthengine'), or needs generated tones, chords, native sequences, sustained game motors, ADSR, sweeps, FM, resonant filters, noise, binaural spatialX/spatialY, held noteOn/noteOff/updateVoice, shared tempo, selective music/effects/ui/ambience processing, effectSend, priorities, chorus/delay/reverb/saturation, LFOs, sequenceend events, gain staging, statistics, bounded native per-attack variation, seeds or render-load diagnosis. Covers published Android/iOS 1.0.2 and local 1.1.0 candidates with public API 1.0.0. Not for audio-file decoding, sample streaming or unrelated synthesizers."
 ---
 
 # ti.synthengine — native sound synthesis for Titanium
 
 Act as an audio engineer and mobile sound designer. Translate the requested sound into acoustically reasoned JavaScript using the exact public contract.
 
-These references describe **module 1.0.2 with public API 1.0.0**, using the
-corrected documentation working tree based on
-`4a45f21230ffc5a8838fbd5fc108dd3ab470362a` (reviewed 2026-10-29).
+These references cover **published module 1.0.2 and local 1.1.0 candidates**,
+both with public API 1.0.0. They mirror the corrected official documentation
+at commit `b07c97c762be5905f132cecf33e9d60ea0c21316` (reviewed 2026-11-02).
+Native attack variation requires the local 1.1.0 packages; it is unavailable in
+the public 1.0.2 downloads. Read the [variation guide](references/native-variation.md)
+for both platform declarations, rebuilding and feature detection.
 Download matching [Android](https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.0.2)
 and [iOS](https://github.com/macCesar/TiSynthEngine/releases/tag/ios-1.0.2)
 packages from the public [repository](https://github.com/macCesar/TiSynthEngine).
@@ -29,6 +32,10 @@ Read the relevant references before writing or reviewing code. When updating the
 | Any public method, option, default, return value or limit | [API](references/api.md) |
 | Download public releases, install, initialize, own or clean up an engine | [Guide](references/guide.md) |
 | Design an effect, instrument, reward, alarm or game motor | [Sound design](references/sound-design.md), [recipes](references/recipes.md), [examples](references/examples.md) |
+| Complete effect playback, playable adaptations, native repetition, importing layers and audition fidelity | [Instruments and effects](references/instruments-and-effects.md) |
+| Native per-attack variation, ranges, amount, seeds, chords, held starts and loop/revision behavior | [Variation](references/native-variation.md), [API](references/api.md) |
+| Variation memory/callback measurements, package scope and listening follow-up | [Variation verification](references/native-variation-validation.md) |
+| Historical variation design, feasibility and deferred API questions | [Historical proposal](references/native-variation-proposal.md); current behavior comes from the implemented guide |
 | Xylophone, memory pads, layered chords, FM instruments and interaction ownership | [Interaction recipes](references/recipes-interaction.md) |
 | Hold, edit, release or position a sustained voice | [API](references/api.md#noteonoptions), [advanced examples](references/advanced-examples.md#sustained-game-motor) |
 | Schedule simultaneous sequences, tempo, swing, edits and cancellation | [API transport](references/api.md#native-sequence-transport), [advanced examples](references/advanced-examples.md#native-sequence-with-chords-and-edits) |
@@ -57,7 +64,7 @@ if (!synth.start({maxVoices: 32, maxSequences: 4,
 }
 ```
 
-The current iOS `getDefaults()` omits Android’s `capabilities` and `limits.stepDurationMs`; both platforms report `limits.maxSequences`, `limits.priority` and `limits.effectSend`. Detect required methods and use the API ranges; a missing metadata flag is not proof of a missing method. [source: references/api.md]
+Both local 1.1.0 platforms announce `capabilities.variation === true` and `variationSchemaVersion === 1`; require both before sending `variation`, even for amount zero. Published 1.0.2 does not accept that key. Android also announces native-sequence/processing/modulation flags and `limits.stepDurationMs`; iOS implements those operations without those Android-only metadata entries. Both return the sequence-capacity, priority and send limits. [source: references/api.md] [source: references/native-variation.md]
 
 Choose the actual required sequence capacity, 1–4; the snippet's four slots suit games with simultaneous music, effects and cues. One engine and render callback share up to 32 voices. Start after screen layout settles; the owning service/window shuts down on teardown. On iOS, `ambient` respects silent mode and mixes with other apps; `playback` is the default and ignores silent mode. Profile, voice/sequence capacity and session require shutdown before changing them. [source: references/api.md]
 
@@ -74,6 +81,12 @@ Choose the actual required sequence capacity, 1–4; the snippet's four slots su
 - `sequenceend` carries `{sequenceId,reason:'completed'|'stopped'}` outside audio render. It does not establish audible silence: voice release and effect tails may remain.
 
 Preserve migrated score timing deliberately: a former total envelope of 150 ms with 25 ms release becomes `length:125` in a millisecond sequence, with `release:25`. Keep onset intervals separate. [source: references/api.md]
+
+## Native attack variation
+
+Variation samples compatible bounded parameters once per admitted attack, preserving authored envelopes, cadence, routes and voice counts. Read all eight source-dependent bounds before constructing ranges. Amount interpolates linearly from the authored value; pitch uses cents. Keep application gain consistent in authored volume and volume-range endpoints.
+
+An explicit seed repeats standalone selections; native loops advance their stream across attacks. Chords sample independently by voice ordinal. Sustained voices retain their selection through release; `updateVoice` rejects `variation`. Step dictionaries replace the whole inherited dictionary. Sequence revisions affect future attacks; root omission retains variation, and disabling inherited and explicit-step variation requires appropriate amount-zero replacements. Never add a JavaScript random sampler or note timer. Seeds reproduce parameters, not cross-platform noise PCM. [source: references/native-variation.md]
 
 ## Voices, routes and continuous controls
 

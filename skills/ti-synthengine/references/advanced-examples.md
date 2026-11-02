@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.2 documentation from reviewed working-tree based on commit `4a45f21230ffc5a8838fbd5fc108dd3ab470362a` (2026-10-29). Upstream `documentation/examples.md` SHA-256: `48104b9d413050d439ee605c92a2456a50b42c4c80e2d7c2c05706eecc7db215`.
+> Source snapshot: official TiSynthEngine documentation at commit `b07c97c762be5905f132cecf33e9d60ea0c21316` (2026-11-02). Published 1.0.2; local 1.1.0 candidates; public API 1.0.0. Upstream `documentation/examples.md` SHA-256: `637806516d2804c43427d187a37786cfcf2f0d28758762f01a570ba15194bae3`.
 
 ## Sustained game motor
 
@@ -147,7 +147,7 @@ function disableVoiceLfos () {
 // Later release this ID with the bounded release policy above, or shut down its owner.
 ```
 
-Use `target: 'fmDepth'` only with `WAVE.SINE`; a filter target requires an active filter and PWM requires `WAVE.SQUARE`. Free rates are 0 to 20 Hz; synced subdivisions follow native transport BPM. Depth is normalized, with cutoff/PWM/FM contributions clamped to safe parameter ranges. `modulations: []` disables both slots; omitting the field on update preserves them. Copy the same initial `modulations` array into a sequence's `voice` or a step's `overrides` to modulate transport notes. Timed tones/chords/patterns do not accept the new array.
+Use `target: 'fmDepth'` only with `WAVE.SINE`; a filter target requires an active filter and PWM requires `WAVE.SQUARE`. Free rates are 0 to 20 Hz; synced subdivisions follow native transport BPM. Depth is normalized, with cutoff/PWM/FM contributions clamped to safe parameter ranges. `modulations: []` disables both slots; omitting the field on update preserves them. Copy the same initial `modulations` array into a sequence's `voice` or a step's `overrides` to modulate transport notes. Timed tones and chords do not accept the new array; native sequences accept it in `voice` or step `overrides`.
 
 ## Measure peaks and limiter reduction
 
@@ -172,3 +172,28 @@ function closeMixMeter () {
 ```
 
 Call `closeMixMeter` when its owner hides or closes. Display unavailable or unmeasured fields as unavailable. Reset deliberately before a comparison. These values measure digital peak protection, not speaker loudness, subjective quality or a guarantee that every audio deadline was met.
+
+## Bounded variation for repeated noise impacts
+
+The local 1.1.0 packages choose values once per admitted attack. This example keeps the noise source and envelope fixed, varies the initial noise/filter settings, and lets the authored sweep endpoints finish unchanged. Call it through the application's existing effect cadence after normal engine startup.
+
+```javascript
+var synth = require('ti.synthengine')
+var contract = synth.getDefaults()
+var impact = {
+  waveType: contract.waveTypes.NOISE,
+  frequency: 200, duration: 240, attack: 2, release: 170,
+  volume: 0.20, noiseRate: 5000, noiseRateEnd: 900,
+  filterType: 'lowpass', filterHz: 2800, filterHzEnd: 500, filterQ: 0.8
+}
+if (contract.capabilities && contract.capabilities.variation === true
+    && contract.variationSchemaVersion === 1) {
+  impact.variation = {
+    amount: 0.6,
+    ranges: { noiseRate: [4200, 5800], filterHz: [2400, 3200] }
+  }
+}
+synth.playTone(impact)
+```
+
+Omit `seed` for successive native selections. An explicit seed repeats the selected parameters of standalone calls. The [variation reference](native-variation.md) includes chord gain, sustained ownership, native loop inheritance and revision examples. Its amount is linear; Studio divides the displayed percentage by 100 to obtain the same value.

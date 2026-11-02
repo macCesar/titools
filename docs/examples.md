@@ -37,8 +37,10 @@ an audio or advertising module.
 
 ## Native synthesis — ti-synthengine
 
-- "Install the public TiSynthEngine 1.0.0 Android/iOS packages and start audio after the window layout settles."
+- "Install the public TiSynthEngine 1.0.2 Android/iOS packages and start audio after the window layout settles."
 - "Move a held spatial motor, process only music with reverb, and stop one native sequence without cancelling unrelated sounds."
+- "Use native attack variation with local 1.1.0: bounded noise/filter ranges, deterministic seeds and an old-package fallback."
+- "Repeat this complete layered effect natively without changing its envelope, sweep timing or gains."
 
 Use the [synthesis skill](../skills/ti-synthengine/SKILL.md) for exact options,
 public downloads and scoped performance evidence. Native sequence scheduling,

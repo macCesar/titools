@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.2 documentation from reviewed working-tree source based on `4a45f21230ffc5a8838fbd5fc108dd3ab470362a` (2026-10-29). Upstream `documentation/audio-engine.md` SHA-256: `17fb01f7e32a91cc44a3b5c0f30efcd7b5c3d9ec6c49369f7c789e1f22a8b442`.
+> Source snapshot: official TiSynthEngine documentation at commit `b07c97c762be5905f132cecf33e9d60ea0c21316` (2026-11-02). Published 1.0.2; local 1.1.0 candidates; public API 1.0.0. Upstream `documentation/audio-engine.md` SHA-256: `a3231af42efb2e3bf0ec457083f4c1128728f09c4b2f52d1cbf1df1e76b04886`.
 
 # Audio engine
 
@@ -17,6 +17,7 @@ The native signal path explains how mixing profiles and voice capacity affect th
 - [Voice pool](#voice-pool)
 - [Command queue](#command-queue)
 - [Shared DSP core](#shared-dsp-core)
+- [Native per-attack variation](#native-per-attack-variation)
 - [Android implementation](#android-implementation)
 - [iOS implementation](#ios-implementation)
 - [Latency](#latency)
@@ -141,11 +142,11 @@ The profile is fixed when `start()` opens the stream.
 
 A single stereo-linked peak limiter sits after master volume and optional creative saturation. Linking preserves the stereo image when only one channel has the largest peak.
 
-| Parameter | Value                            |
-| --------- | -------------------------------- |
-| Retained samples | 0 (no lookahead)          |
-| Release   | 100 ms, exponential              |
-| Ceiling   | 0.85, or 0.70 with `speakerSafe` |
+| Parameter        | Value                            |
+| ---------------- | -------------------------------- |
+| Retained samples | 0 (no lookahead)                 |
+| Release          | 100 ms, exponential              |
+| Ceiling          | 0.85, or 0.70 with `speakerSafe` |
 
 The shared `synth_output.h` core finds the larger absolute channel value for each stereo frame and immediately applies any required reduction to both channels. Recovery toward unity uses a 100 ms exponential constant, bounded by the current frame's required gain; two consecutive quiet stereo frames (each channel ≤1e-12 in magnitude) reset reduction; an isolated zero crossing does not. There is no audio delay buffer. The ceilings bound sample values, not inter-sample peaks or loudspeaker excursion.
 
@@ -176,6 +177,10 @@ Both ports use a 128-slot single-consumer ring buffer. Producers are serialized 
 ## Shared DSP core
 
 The envelope, the state-variable filter, the sweep helpers, the FM sine and the cents conversion live once, in `shared/synth_core.h`. It is plain C, header-only and allocation-free. The Android renderer includes it from `android/jni/SynthOboeEngine.cpp` and the iOS renderer from `ios/Classes/TiSynthengineModule.m`, so both platforms run the same code. Backend voice integration and mixing remain separate per platform. Master ramps and final stereo protection share `shared/synth_output.h`. Held envelopes/ramps, transport, master effects, extra modulation and compatible retrigger support also have shared C cores.
+
+## Native per-attack variation
+
+Local 1.1.0 candidates add optional `variation`; published 1.0.2 packages reject it. Check both `capabilities.variation === true` and `variationSchemaVersion === 1`, then select bounded values at admitted attacks. The chosen configuration stays stable during that voice; existing sweeps, envelopes and explicit live edits keep their normal roles. Parsing prepares fixed-size state outside audio; the callback uses bounded shared arithmetic without allocation or locks. See [native variation](native-variation.md) for supported locations, source constraints, inheritance and seeds, and [technical verification](native-variation-validation.md) for measured compatibility and limits.
 
 ## Android implementation
 
@@ -290,13 +295,15 @@ Android ARM64 reuses coefficients across eight consecutive samples, with four-sa
 
 ## Own-platform performance verification
 
+The measurements in this section predate native variation and describe the archived revisions in the cited reports. They do not measure the local 1.1.0 candidate. Its separate [variation verification](native-variation-validation.md) records compatibility, storage and callback checks.
+
 The [performance review](performance-review.json) separates measured host improvements, exact compatibility checks and pending device acceptance. Its [raw evidence](performance-review-evidence.zip) retains rejected prototypes and the investigation of idle/stereo regressions. The Apple FIR, stable-control cache and exact idle-effects bypass were evaluated as one atomic candidate and then rejected after physical 32-stereo timing regressed. All three production changes were removed together; the full-score publication and control-memory fixes remain.
 
 Matched 48 kHz/1024-frame iPad full-load runs completed 600 audio seconds without callback deadline misses, with p95 load upper bounds 0.427 for the reference and 0.383 for the rejected initial candidate. The original Apple callback was restored because 32-stereo bypass p95 regressed reproducibly, including continuous-voice windows. Android Sim20/Sim80 frame presentation remains near 60 FPS, while occasional Sim80 output underruns persist in both versions. Compact 48 kHz iPad memory growth is about 18.2 MiB in both versions; no material RAM saving or physical 192 kHz acceptance is claimed. These results and qualified listening observations are recorded separately in the review.
 
 `tools/build_ios_render_host.py` compiles the actual Objective-C render-block body and voice/transport helpers on macOS. It replaces hardware/session/Titanium startup and fixes only the noise-seed/disabled-diagnostic clock. Output and semantic state are compared against a separately archived reference from the same platform. This is an Apple renderer test; it does not execute AVAudioEngine or establish iPad scheduling, route recovery, footprint or listening acceptance.
 
-The commands below reproduce the historical pre-pipeline performance review. Use its archived candidate source when requiring exact PCM/state equality with `7ab3110`; the current 1.0.2 renderer intentionally removes the old final-output delay and changes overload behavior, so it cannot satisfy that earlier exact-output comparison. For the later correction, use the [audio pipeline validation](audio-pipeline-validation.md) protocol: align only the former output delay, compare no-overload PCM within the declared tolerance, and retain overload differences separately. The module's `tools/compare_output_pcm.py` checks the corresponding matched Android/Apple capture sets; host comparisons do not establish physical output latency.
+The commands below reproduce the historical pre-pipeline performance review. Use its archived candidate source when requiring exact PCM/state equality with `7ab3110`; the renderer since 1.0.2 intentionally removes the old final-output delay and changes overload behavior, so it cannot satisfy that earlier exact-output comparison. For the later correction, use the [audio pipeline validation](audio-pipeline-validation.md) protocol: align only the former output delay, compare no-overload PCM within the declared tolerance, and retain overload differences separately. The module's `tools/compare_output_pcm.py` checks the corresponding matched Android/Apple capture sets; host comparisons do not establish physical output latency.
 
 ```sh
 mkdir -p /tmp/synth-reference
@@ -379,4 +386,4 @@ The [Studio technical validation report](studio-validation.json) records the cal
 
 ## Unified transport acceptance boundaries
 
-The 1.0.0 contract uses one renderer, at most 32 voices and capacity for 1-4 sequences. `bus` categories and per-voice sends share one effects chain. These API changes do not establish complete multiplatform ten-minute maximum-load acceptance; the measured iPad result and Android limits are recorded separately in [physical validation](physical-validation.json) and [the performance summary](stats-performance.md). Host timing, bypass comparisons, memory accounting, actual Android/iOS builds and the remaining device/listening checks are separate evidence. Historical Studio benchmarks below predate these changes and remain historical observations. At 192 kHz, the revised effects buffers use approximately 13.1 MiB; the maximum sequence pool uses approximately 8.23 MiB before renderer voices/queues. Total native accounting must include those remaining structures and recovery peaks; the target is at most 32 MiB additional memory.
+Public API 1.0.0 uses one renderer, at most 32 voices and capacity for 1-4 sequences. `bus` categories and per-voice sends share one effects chain. These API changes do not establish complete multiplatform ten-minute maximum-load acceptance; the measured iPad result and Android limits are recorded separately in [physical validation](physical-validation.json) and [the performance summary](stats-performance.md). Host timing, bypass comparisons, memory accounting, actual Android/iOS builds and the remaining device/listening checks are separate evidence. The cited Studio and unified-transport benchmarks are historical observations. In the pre-variation layout, effects buffers at 192 kHz used approximately 13.1 MiB and four maximum-size triple-bank transports used 8,627,712 bytes (8.23 MiB), excluding renderer voices and queues. The local 1.1.0 candidate grows those four transports to 9,537,152 bytes (9.10 MiB) on the measured 64-bit macOS layout, an increase of 909,440 bytes; see [variation storage measurements](native-variation-validation.md#storage-and-callback-work). These structure sizes are not a new whole-process or physical-device measurement. Total accounting must also include renderer voices/tails, command queues, effects, bridge/canonical options and recovery peaks. The 32 MiB additional-memory target remains a target, not a certified bound for the candidate.

@@ -1,8 +1,8 @@
-> Source snapshot: official TiSynthEngine 1.0.2 documentation from reviewed working-tree source based on `4a45f21230ffc5a8838fbd5fc108dd3ab470362a` (2026-10-29). Upstream `documentation/troubleshooting.md` SHA-256: `e2156e5dea77bda95d9f9305bf2c8c359d54d5832f56062cf2d2ebe6c2b583b9`.
+> Source snapshot: official TiSynthEngine documentation at commit `b07c97c762be5905f132cecf33e9d60ea0c21316` (2026-11-02). Published 1.0.2; local 1.1.0 candidates; public API 1.0.0. Upstream `documentation/troubleshooting.md` SHA-256: `bf70a08eee09033b5aaa8cf18b9ef97392f4e6ee318c595ef433a31e6baa33b8`.
 
 # Troubleshooting
 
-Start with the Boolean returned by the call and the native log. Most silent requests are contract rejections, a stale binary or an engine that never started.
+Start with the method's documented return value and the native log. Most silent requests are contract rejections, a stale binary or an engine that never started.
 
 ## A call returns `false`
 
@@ -16,26 +16,26 @@ Always check the return value: `playSequence` rejects with 0, while Boolean meth
 
 Common fixes:
 
-| Reason                              | Check                                                                                                                   |
-| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `unsupported_option`                | Remove or correct the named key. Every options object is strict.                                                        |
-| `invalid_step_type`                 | Make every pattern step an object, not a number or string.                                                              |
-| `conflicting_pitch_fields`          | Timed/held calls use mutually exclusive `note`/`frequency`; each sequence step uses exactly one `notes` array, `frequencies` array or `rest: true`.                                                                   |
-| `missing_pitch_or_rest`             | Add one pitch field or an explicit rest.                                                                                |
-| `out_of_range`                      | Compare the value with `getDefaults().limits`.                                                                          |
-| `not_integer`                       | Use integer milliseconds for timed tone/chord envelope fields and integer waveform values; native sequence intervals and lengths may be fractional.                                                      |
-| `invalid_note`                      | Check spelling, accidental case and octave.                                                                             |
-| `invalid_sample_count`              | Supply 2 to 64 values in `waveTable`.                                                                                   |
-| `unsupported_value`                 | Use `none`, `lowpass`, `highpass` or `bandpass` for `filterType`.                                                       |
-| `sustain_without_decay`             | Add a `decay` greater than 0, or remove `sustain`.                                                                      |
-| `decay_exceeds_remaining_duration`  | Shorten `attack` or `decay`, or lengthen `duration`. The default attack counts.                                         |
-| `filter_type_required`              | Set `filterType` to a filter, or remove `filterHz`, `filterHzEnd` and `filterQ`.                                        |
-| `fm_requires_sine`                  | Use `SINE` for FM, or set `fmDepth` to 0 and remove `fmDepthEnd`.                                                       |
-| `fm_depth_required`                 | Set `fmDepth` or `fmDepthEnd`, or remove `fmRatio`.                                                                     |
-| `conflicting_spatial_fields`        | Remove `pan`, `panEnd`, `pans` and `panSpread` whenever sending `spatialX` or `spatialY`; check pattern root and steps. |
-| `too_many_values`                   | Pass no more `pans` or `detunes` than the chord has pitches.                                                            |
-| `missing_required` with `waveTable` | Add a table whenever `waveType` is `WAVETABLE`.                                                                         |
-| envelope reason                     | Make attack and release fit inside total duration.                                                                      |
+| Reason                              | Check                                                                                                                                               |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `unsupported_option`                | Remove or correct the named key. Every options object is strict.                                                                                    |
+| `invalid_step_type`                 | Make every pattern step an object, not a number or string.                                                                                          |
+| `conflicting_pitch_fields`          | Timed/held calls use mutually exclusive `note`/`frequency`; each sequence step uses exactly one `notes` array, `frequencies` array or `rest: true`. |
+| `missing_pitch_or_rest`             | Add one pitch field or an explicit rest.                                                                                                            |
+| `out_of_range`                      | Compare the value with `getDefaults().limits`.                                                                                                      |
+| `not_integer`                       | Use integer milliseconds for timed tone/chord envelope fields and integer waveform values; native sequence intervals and lengths may be fractional. |
+| `invalid_note`                      | Check spelling, accidental case and octave.                                                                                                         |
+| `invalid_sample_count`              | Supply 2 to 64 values in `waveTable`.                                                                                                               |
+| `unsupported_value`                 | Use `none`, `lowpass`, `highpass` or `bandpass` for `filterType`.                                                                                   |
+| `sustain_without_decay`             | Add a `decay` greater than 0, or remove `sustain`.                                                                                                  |
+| `decay_exceeds_remaining_duration`  | Shorten `attack` or `decay`, or lengthen `duration`. The default attack counts.                                                                     |
+| `filter_type_required`              | Set `filterType` to a filter, or remove `filterHz`, `filterHzEnd` and `filterQ`.                                                                    |
+| `fm_requires_sine`                  | Use `SINE` for FM, or set `fmDepth` to 0 and remove `fmDepthEnd`.                                                                                   |
+| `fm_depth_required`                 | Set `fmDepth` or `fmDepthEnd`, or remove `fmRatio`.                                                                                                 |
+| `conflicting_spatial_fields`        | Remove `pan`, `panEnd`, `pans` and `panSpread` whenever sending `spatialX` or `spatialY`; check pattern root and steps.                             |
+| `too_many_values`                   | Pass no more `pans` or `detunes` than the chord has pitches.                                                                                        |
+| `missing_required` with `waveTable` | Add a table whenever `waveType` is `WAVETABLE`.                                                                                                     |
+| envelope reason                     | Make attack and release fit inside total duration.                                                                                                  |
 
 Warnings are deduplicated by method, key and reason. Repeating the same bad call may return `false` without printing a new line each time.
 
@@ -64,6 +64,8 @@ if (actual !== '1.0.0') {
 modules/android/ti.synthengine/1.0.2/
 modules/iphone/ti.synthengine/1.0.2/
 ```
+
+When testing local native-variation candidates, select module version `1.1.0` for both platforms instead; the corresponding directories end in `/1.1.0/`. The candidates are unpublished and still report API `1.0.0`. Check the capability/schema pair before using variation.
 
 For binaural, also inspect `getDefaults().limits.spatialX` and `.spatialY`. Use the official packages to avoid stale development binaries. Copying the package does not update an already installed app: rebuild and reinstall it.
 
@@ -110,7 +112,7 @@ If startup remains noisy, temporarily remove other launch work and increase the 
 Check these in order:
 
 1. `start()` returned `true`.
-2. The tone, chord or pattern call returned `true`.
+2. A timed tone/chord or held-note call returned `true`, or `playSequence` returned a positive sequence ID.
 3. Master and event `volume` are above zero.
 4. The device media volume is up and the expected route is selected.
 5. `shutdown()` was not called by another owner.
@@ -205,3 +207,9 @@ If accumulated attenuation remains near zero, investigate phase cancellation bet
 `WAVETABLE` repeats the supplied values using a stepped lookup. A short table can sound grainy or buzzy even when its values describe a sine wave and `bitDepth` is 0. Its harmonic character changes with pitch and filtering; this does not require reverb, an LFO or creative saturation to be enabled.
 
 Compare one note with `SINE`, at a comfortable matched level, to distinguish the source's texture from the combined sound of overlapping notes. Read `preLimiterPeakDb` and `maxLimiterReductionDb` with diagnostics enabled to investigate mix headroom. No limiter reduction does not prove that the physical speaker, headphones or output processing are clean. Keep a subjective listening observation separate from a confirmed clipping or buffer-loss diagnosis.
+
+## A variation dictionary is rejected or repeats the same sound
+
+Check both `capabilities.variation === true` and `variationSchemaVersion === 1` before sending the property. Published 1.0.2 packages reject it. Source restrictions and range ordering still apply at amount zero; near the frequency ceiling, validate tuning, detune, every chord pitch and active pitch endpoints together.
+
+Repeated standalone calls with one explicit seed reproduce the selected parameters. Omit it for independent selections, or use a native sequence to retain an advancing stream across loops. A held voice samples only at attack, and `updateVoice` rejects `variation`. For a running sequence, clear an inherited root dictionary with a valid amount-zero replacement; omitting it from a revision retains the merged value. See the [complete examples and rules](native-variation.md).

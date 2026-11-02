@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.2 documentation from reviewed working-tree source based on `4a45f21230ffc5a8838fbd5fc108dd3ab470362a` (2026-10-29). Upstream `documentation/recommendations.md` SHA-256: `de212dae8b2b362c241cc2b63c7e11cad9db1ff758fd52ffba4fd26ac66bf794`.
+> Source snapshot: official TiSynthEngine documentation at commit `b07c97c762be5905f132cecf33e9d60ea0c21316` (2026-11-02). Published 1.0.2; local 1.1.0 candidates; public API 1.0.0. Upstream `documentation/recommendations.md` SHA-256: `d3d508efe07fce012baceb44285aa9ab4b850cc5c53a5d14c9b8d193e38ca8fb`.
 
 # Recommendations
 
@@ -87,7 +87,7 @@ Do not copy the frequency maximum into application code. It depends on the activ
 
 The same rule applies to `noiseRate`, `lowPassHz` and `filterHz`. Validate a custom `waveTable` as 2 to 64 finite values from -1 to 1, and remember that `bitDepth` accepts zero or an integer from 2 to 16. For `detune`, check the resulting pitch too: a shifted pitch that leaves the frequency range is rejected even when the cents value is in range.
 
-Check Boolean return values during development. A rejected call includes the method, key and reason in the native log. Logging that result at the caller is often enough to identify a stale preset or misspelled field.
+Check each method's documented return value during development: Boolean publication acceptance or a positive sequence ID, with 0 rejecting a sequence. Methods that emit structured validation warnings include the method, key and reason in the native log, but some sequence/control rejection paths do not log. Logging the return at the caller helps identify a stale preset or misspelled field without treating silence in the native log as acceptance.
 
 ## Test the intended sound
 

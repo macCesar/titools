@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.2 documentation from reviewed working-tree based on commit `4a45f21230ffc5a8838fbd5fc108dd3ab470362a` (2026-10-29). Upstream `documentation/examples.md` SHA-256: `48104b9d413050d439ee605c92a2456a50b42c4c80e2d7c2c05706eecc7db215`.
+> Source snapshot: official TiSynthEngine documentation at commit `b07c97c762be5905f132cecf33e9d60ea0c21316` (2026-11-02). Published 1.0.2; local 1.1.0 candidates; public API 1.0.0. Upstream `documentation/examples.md` SHA-256: `637806516d2804c43427d187a37786cfcf2f0d28758762f01a570ba15194bae3`.
 
 # Examples
 

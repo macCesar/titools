@@ -1,23 +1,17 @@
 # Maintaining the synthesis snapshot
 
-These references describe **TiSynthEngine module 1.0.2, public API 1.0.0**.
-The corrected official documentation is a reviewed working tree based on
-`4a45f21230ffc5a8838fbd5fc108dd3ab470362a`, recorded with its exact fingerprint in
-[source-snapshot.json](source-snapshot.json). The documentation corrections are
-not represented as committed by that base revision. Review date: 2026-10-29.
+These references cover **published module 1.0.2 and local 1.1.0 candidates**, both with public API 1.0.0. All fifteen official Markdown documents were reviewed against the native module. Thirteen are mirrored into fourteen parts; the index and notices retain explicit reviewed exclusions. The official documentation corrections are committed at `b07c97c762be5905f132cecf33e9d60ea0c21316`. Complete source/mirror hashes are recorded in [source-snapshot.json](source-snapshot.json). Review date: 2026-11-02.
 
 ## Public downloads and artifact provenance
 
-The replacement packages were freshly downloaded from the existing public URLs
-on 2026-10-30 UTC (2026-10-29 locally), rather than reusing cached 1.0.2 files.
+The published replacement packages were downloaded and verified on 2026-10-30 UTC (2026-10-29 locally). The following records are that historical artifact verification, not new downloads during this audit. GitHub release metadata was checked on 2026-11-02: public platform releases remain 1.0.2; local 1.1.0 candidates have no published release.
 
 | Platform | Published release | Replacement package SHA-256 |
 | --- | --- | --- |
 | Android | [android-1.0.2](https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.0.2) | `8698104f188782a77699fbd6308a779ca0b190833ceebf398557b628af1b8bbe` |
 | iOS / Mac Catalyst | [ios-1.0.2](https://github.com/macCesar/TiSynthEngine/releases/tag/ios-1.0.2) | `779e77d018d5b3f686d69cb1b4b0162281803ea12691487df565c1fd15175c58` |
 
-Both ZIPs passed full CRC checks and match the current GitHub asset SHA-256
-digests. These hashes replace the original 1.0.2 packages' hashes; filenames and
+Both ZIPs passed full CRC checks and matched the GitHub asset SHA-256 digests at that verification. These hashes replace the original 1.0.2 packages' hashes; filenames and
 release URLs did not change. Manifests report module `ti.synthengine`, version
 `1.0.2`, minimum Titanium `13.2.0.GA`, four Android ABIs and Apple Mac Catalyst
 support. The manifest's native `apiversion` field is distinct from the JavaScript
@@ -32,15 +26,14 @@ app-root ZIP installation and both `tiapp.xml` declarations.
 
 ## Sources and permitted transformations
 
-Nine official Markdown documents are mirrored into ten parts, including the
-ordered examples/advanced-examples split. The current snapshot inventories all
+Thirteen official Markdown documents are mirrored into fourteen parts, including the ordered examples/advanced-examples split. New references preserve the complete [instruments/effects guide](instruments-and-effects.md), [implemented variation contract](native-variation.md), [historical proposal](native-variation-proposal.md) and [variation verification](native-variation-validation.md). The proposal is historical design context, not an outstanding implementation plan. The current snapshot inventories all
 complete JSON reports, bundled example assets and linked raw-evidence archives.
-The new [performance review](performance-review.json) and its raw archive are
+The historical [performance review](performance-review.json) and its raw archive are
 preserved alongside historical reports; none is replaced by a favorable summary.
 Read snapshot records for exact counts and hashes. Example JavaScript and raw
 reports/archives remain byte-identical to source.
 
-Each Markdown part and the example README have a reviewed working-tree provenance header and recorded navigation transformations. Native-backed corrections to stale official prose are also declared as reversible `link_fixes`; the source hash still identifies the original official text, not the corrected mirror. Reversible `link_fixes` rebase links into the split advanced examples, preserve [curated recipes](recipes.md), and resolve current example links to bundled assets. The example README points back to this skill's current API and guides. All three example JavaScript files remain byte-identical to source; none requires a historical GitHub snapshot.
+Each Markdown part and the example README have a committed-source provenance header and recorded navigation transformations. Verified API, timing, spatial, panic, processing and diagnostic corrections were applied to the official module documentation before synchronization. They are shared source content, not mirror-only errata. Remaining `link_fixes` record navigation and curated entry points; the source hash identifies the corrected official committed text. Reversible `link_fixes` rebase links into the split advanced examples, preserve [curated recipes](recipes.md), and resolve current example links to bundled assets. The example README points back to this skill's current API and guides. All three example JavaScript files remain byte-identical to source; none requires a historical GitHub snapshot.
 
 The fidelity regression strips provenance/navigation, concatenates example parts, reverses declared transformations and compares the complete source hash. Raw records must remain byte-identical. Update transformations intentionally; never change hashes merely to hide unexplained source drift.
 
@@ -82,11 +75,10 @@ fixed-gain recommendations target the measured 1–8-voice configuration, with
 underrun remains unresolved, including independent silent Oboe reproduction.
 Route-wide latency, Bluetooth and extended maximum-load acceptance remain open.
 
-Official corrections now preserve panic cancellation (`stopAll` stops every
+Official documentation corrections preserve panic cancellation (`stopAll` stops every
 sequence and invalidates effect histories), compatible live `updateVoice`
 noise/low-pass/spatial/send edits, and category selection with `applyTo` plus
-explicit `effectSend` overrides. Their superseded mirror errata were removed;
-remaining native-backed errata and curated recipe navigation stay reversible.
+explicit `effectSend` overrides. The matching mirror-only errata were removed from the transformation list; curated recipe navigation remains reversible.
 Android and Apple production callback tests now run in CI; the historical Java
 DSP model is not the production audio oracle. No native binaries were installed
 or device/listening tests rerun during this skill update.
@@ -110,12 +102,10 @@ bypass, memory and strict Frontier presentation criteria. Current evidence and
 rejected candidates must not be combined into a general pass. This skill update
 did not rerun devices, install binaries or alter native source.
 
-The earlier native findings were independently rechecked against the
-1.0.2 source on October 29. These current differences remain explicit;
-hash fidelity alone cannot establish them:
+The native differences below were rechecked against current sources on November 2 and are now documented accurately in the official API/engine guides as well as the mirrors. They describe implementation differences, not unresolved documentation contradictions:
 
-- iOS timed tone/chord command construction still rounds accepted zero attack
-  and release to at least one sample; Android preserves zero. Validator
+- iOS timed tone/chord command construction initially rounds accepted zero attack
+  and release to one sample before duration-budget trimming; Android preserves zero. Validator
   acceptance does not establish identical sample envelopes.
 - iOS early tempo/sequence/processing rejections and incompatible held spatial/
   modulation edits can bypass rejection counters. Android also leaves some
@@ -124,21 +114,23 @@ hash fidelity alone cannot establish them:
 - Sequence cutoff coefficients currently refresh every 16 samples on Android
   and every 8 samples on Apple; both use note length but do not promise identical
   sample output. See [engine details](audio-engine.md).
-- Android `getDefaults()` additionally returns `capabilities` and
-  `limits.stepDurationMs`; iOS omits those keys. Both platforms return
-  `limits.maxSequences`, `limits.priority` and `limits.effectSend`. Detect
-  required methods rather than requiring Android-only metadata flags. Sequence
-  intervals use different beat and millisecond ranges; see [API](api.md).
-- Remaining stale official claims are corrected only where verified against
-  current native behavior, with exact reversible transformations. Corrections
-  already adopted upstream are removed from the transformation list.
+- Local 1.1.0 returns `capabilities.variation: true` and `variationSchemaVersion: 1` on both platforms. Android also reports native sequence/master processing/modulation flags and `limits.stepDurationMs`; iOS omits those additional entries. Published 1.0.2 does not accept variation. Both platforms return sequence-capacity, priority and send limits; use the [API](api.md) for exact beat/millisecond ranges.
+- Official examples now bind their waveform constants and document native sequence modulation, complete effect fidelity and publication ownership correctly. The mirrors preserve the same facts.
 
 
-These findings are skill corrections and module implementation findings, not
-native fixes. No module code, public range or hardware acceptance was changed.
+These are official-documentation and skill corrections, not native implementation fixes. No module code, public range or hardware acceptance was changed.
 A validator corpus establishes accepted/rejected dictionaries, not sample-identical
-rendering on a physical device. Consumer scenarios and exact native locators
-are recorded in the maintainer's October 23 audit evidence.
+rendering on a physical device. Current source-first coverage ledgers and native locators are recorded in the maintainer's November 2 audit evidence.
+
+## Local 1.1.0 attack variation
+
+Both platforms validate eight bounded parameter ranges and select once per admitted attack. Require the capability/schema pair and omit the property entirely on published 1.0.2, including amount zero. The [variation guide](native-variation.md) preserves exact bounds, linear amount, pitch ratio, source prerequisites, per-chord ordinals, held stability, whole-dictionary step replacement, revision merging and deterministic seed identity. `updateVoice` rejects the attack dictionary. Preserve all of the authored envelope, cadence, routing and layer gains.
+
+The [verification report](native-variation-validation.md) separates initial host/build checks from later consumer installations and scoped listening feedback. It records the 144-byte configuration and four-transport growth from 8,627,712 to 9,537,152 bytes, excluding other engine/bridge/process storage. Earlier 1.0.2 memory reports remain historical. Host callback timings do not prove device overhead or sustained acceptance.
+
+This audit reran the paired production validators (156 cases per platform), the affected documentation checks and TiTools mirror/recipe checks. New source inspection verified sampling/admission and sequence seed identity. Historical renderer PCM, native build, consumer install and listening results were read with their original boundaries; they were not repeated or expanded into general device acceptance. No native source or binary was changed.
+
+All thirteen raw JSON/ZIP records moved upstream from `documentation/` to `docs/validation/` without changing bytes. Their distributed skill paths are preserved; the snapshot now records their actual upstream locations. All five ZIPs passed CRC checks. The three example JavaScript assets remain byte-identical; `app.js` now includes the capability-gated attack-variation action.
 
 ## Upstream documents outside the mirror set
 

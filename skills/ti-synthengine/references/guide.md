@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine 1.0.2 documentation from the reviewed working-tree based on `4a45f21230ffc5a8838fbd5fc108dd3ab470362a` (2026-10-29). Upstream `documentation/guide.md` SHA-256: `6241f84ba84e20c0516bf01bc0850f9625d2b41f0bef39289c056e687b21ee37`.
+> Source snapshot: official TiSynthEngine documentation at commit `b07c97c762be5905f132cecf33e9d60ea0c21316` (2026-11-02). Published 1.0.2; local 1.1.0 candidates; public API 1.0.0. Upstream `documentation/guide.md` SHA-256: `4da2d85f329a49a8b81a9c671c75051b41788371b2c00990fbd499176623894d`.
 
 # Guide
 
@@ -28,12 +28,13 @@ Install TiSynthEngine, start it after layout settles, and release its native aud
 - [Read engine statistics](#read-engine-statistics)
 - [Next steps](#next-steps)
 - [Diagnose mix headroom](#diagnose-mix-headroom)
+- [Local native-variation candidate](#local-native-variation-candidate)
 
 <!-- TOC-END -->
 
 ## Install the module
 
-Download both official packages from [Android 1.0.2](https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.0.2) and [iOS 1.0.2](https://github.com/macCesar/TiSynthEngine/releases/tag/ios-1.0.2). For source builds, the matching archives are produced under `android/dist` and `ios/dist`:
+Download both official packages from [Android 1.0.2](https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.0.2) and [iOS 1.0.2](https://github.com/macCesar/TiSynthEngine/releases/tag/ios-1.0.2). For the published 1.0.2 revision, matching archives are produced under `android/dist` and `ios/dist`:
 
 - `ti.synthengine-android-1.0.2.zip`
 - `ti.synthengine-iphone-1.0.2.zip`
@@ -48,6 +49,8 @@ Put the archives in the Titanium project root or install them through the Titani
 ```
 
 TiSynthEngine requires Titanium SDK 13.2.0.GA or newer. Android projects must compile against API 35 or newer. The iOS module requires iOS 15 or newer.
+
+These declarations select the published 1.0.2 packages. Current source builds produce unpublished local 1.1.0 candidates; use the separate [candidate setup](#local-native-variation-candidate) below when testing native attack variation.
 
 ## Load and verify the contract
 
@@ -143,7 +146,7 @@ Store the positive identifier returned by `playSequence`, and include it in each
 synth.setTempo({ bpm: 112 })
 var sequenceId = synth.playSequence({
   stepDuration: 0.5, swing: 0.12, bus: 'music',
-  voice: { waveType: WAVE.SQUARE, volume: 0.55 },
+  voice: { waveType: contract.waveTypes.SQUARE, volume: 0.55 },
   steps: [{ notes: [60] }, { notes: [64], overrides: { pan: -0.4, panEnd: 0.4 } },
     { rest: true }, { notes: [67], duration: 1, length: 0.8 }]
 })
@@ -365,7 +368,7 @@ synth.playChord({
 synth.setTempo({ bpm: 112 })
 var sequenceId = synth.playSequence({
   stepDuration: 0.5, swing: 0.12, bus: 'music',
-  voice: { waveType: WAVE.SQUARE, volume: 0.55 },
+  voice: { waveType: contract.waveTypes.SQUARE, volume: 0.55 },
   steps: [{ notes: [60] }, { notes: [64], overrides: { pan: -0.4, panEnd: 0.4 } },
     { rest: true }, { notes: [67], duration: 1, length: 0.8 }]
 })
@@ -601,3 +604,17 @@ See the [complete field contract](api.md#getstats), [measurement limits](stats-p
 The current diagnostics add `preLimiterPeakDb` (maximum signal before final limiting, in dBFS) and `maxLimiterReductionDb` (greatest limiter attenuation in dB) accumulated since reset. Unlike the approximately 200 ms window reduction field, brief peaks remain visible between UI polls. Enable measurements, reset before the scenario and keep `null`/absent fields distinct from measured zero. The [measurement example](advanced-examples.md#measure-peaks-and-limiter-reduction) shows opt-in polling and cleanup.
 
 Fixed event/input gain does not normalize continuously by active voice count. Coherent overlapping notes, effects feedback or resonance can still exceed the ceiling; the limiter then acts on the whole stereo sum. Saturation is a separate creative processor, disabled initially. Physical loudness and small-speaker bass response are not measured by these digital meters.
+
+
+## Local native-variation candidate
+
+Current source builds unpublished local candidates at `android/dist/ti.synthengine-android-1.1.0.zip` and `ios/dist/ti.synthengine-iphone-1.1.0.zip`. Keep them separate from the published 1.0.2 packages. Install both matching candidates in the consumer app and select them explicitly:
+
+```xml
+<modules>
+  <module platform="android" version="1.1.0">ti.synthengine</module>
+  <module platform="iphone" version="1.1.0">ti.synthengine</module>
+</modules>
+```
+
+Rebuild and reinstall the application after replacing the native modules. Both package lines retain public API `1.0.0`; it does not identify variation support. Send a `variation` dictionary only when `getDefaults().capabilities.variation === true` and `getDefaults().variationSchemaVersion === 1`. If either announcement is absent, omit the property completely, including at amount zero. See [native attack variation](native-variation.md) for accepted locations, bounded ranges and seed behavior. The 1.1.0 candidates have not been published as a release.

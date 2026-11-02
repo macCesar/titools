@@ -1,14 +1,14 @@
-> Source snapshot: official TiSynthEngine 1.0.2 documentation from reviewed working-tree based on commit `4a45f21230ffc5a8838fbd5fc108dd3ab470362a` (2026-10-29). Upstream `example/README.md` SHA-256: `80f2a69a634453e974281cbdac17e97fbc713a228e79379e8cea592c366bb9be`.
+> Source snapshot: official TiSynthEngine documentation at commit `b07c97c762be5905f132cecf33e9d60ea0c21316` (2026-11-02). Published 1.0.2; local 1.1.0 candidates; public API 1.0.0. Upstream `example/README.md` SHA-256: `7906f208b287d31ac400f407f4f3509b7a12041274a4629ab287eea235954518`.
 
 # Interactive example
 
-The Classic Titanium app in [app.js](app.js) demonstrates the timed sounds, native sequences and statistics with the `sequenceend` event on Android and iOS. It uses the current 1.0.2 module packages, including binaural and statistics support. Held voices, master processing and voice LFOs have copyable examples in the [advanced documentation](../../references/advanced-examples.md#sustained-game-motor); this reference app does not expose those newer controls. The default engine configuration is 16 voices, `conservative` mixing and the `playback` session; master volume starts at 100% and optional diagnostics start off.
+The Classic Titanium app in [app.js](app.js) demonstrates the timed sounds, native sequences and statistics with the `sequenceend` event on Android and iOS. It runs with the published 1.0.2 module packages, including binaural and statistics support, or the unpublished local 1.1.0 candidates for native attack variation. Held voices, master processing and voice LFOs have copyable examples in the [advanced documentation](../../references/advanced-examples.md#sustained-game-motor); this reference app does not expose those newer controls. The default engine configuration is 16 voices, `conservative` mixing and the `playback` session; master volume starts at 100% and optional diagnostics start off.
 
 ## Run it
 
 1. Create a Classic Titanium application with Android and/or iOS support. If the app uses Alloy, create a separate Classic test project and leave the Alloy-generated files in place.
-2. Download the official [Android 1.0.2](https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.0.2) and [iOS 1.0.2](https://github.com/macCesar/TiSynthEngine/releases/tag/ios-1.0.2) packages, or build the current module source. Source builds produce `android/dist/ti.synthengine-android-1.0.2.zip` and `ios/dist/ti.synthengine-iphone-1.0.2.zip`.
-3. Put the archive for each target platform in the test app root. Add these entries inside its `tiapp.xml`:
+2. Download the official [Android 1.0.2](https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.0.2) and [iOS 1.0.2](https://github.com/macCesar/TiSynthEngine/releases/tag/ios-1.0.2) packages, or build the current module source. Source builds now produce local `android/dist/ti.synthengine-android-1.1.0.zip` and `ios/dist/ti.synthengine-iphone-1.1.0.zip` candidates; select version `1.1.0` in both module entries when using them.
+3. Put the archive for each target platform in the test app root. For the published packages, add these entries inside its `tiapp.xml`:
 
 ```xml
 <modules>
@@ -16,6 +16,8 @@ The Classic Titanium app in [app.js](app.js) demonstrates the timed sounds, nati
   <module platform="iphone" version="1.0.2">ti.synthengine</module>
 </modules>
 ```
+
+For the local candidates, replace both `version="1.0.2"` declarations above with `version="1.1.0"`. They still report public API `1.0.0`; detect variation through both capability/schema announcements. Rebuild and reinstall after switching packages.
 
 4. Copy the entire `example/` folder into the test app's `Resources/`, including [app.js](app.js), [sequenceScore.js](lib/sequenceScore.js) and [sequenceOwner.js](lib/sequenceOwner.js). It needs no images or audio files.
 5. Build and run the test app with the Titanium CLI or your existing Titanium launch configuration. Use Titanium SDK 13.2.0.GA or newer, Android compile API 35 or newer, and iOS 15 or newer. See the [module installation guide](../../references/guide.md#install-the-module).
@@ -82,3 +84,8 @@ node --test tests/example_app_regression.js
 ```
 
 The example regression executes its real action callbacks with simulated Titanium UI/audio boundaries. It covers rejection feedback, placement/bypass, session restart and gain preservation, diagnostic cleanup and close-before-start. It does not render native audio or establish layout, perceived elevation, silent-mode behavior or sound quality. Use the device checklist above, including headphones and an output-route change, before claiming those results.
+
+
+## Native attack variation
+
+The **ATTACK VARIATION** button submits the same metal-strike recipe on each press. With `capabilities.variation === true` and `variationSchemaVersion === 1`, the renderer chooses pitch, FM depth and level once per admitted attack. Older packages receive the original recipe without the dictionary. This button uses independent timed events; the [variation guide](../../references/native-variation.md) separately demonstrates sustained ownership and native sequence retriggers. Physical listening acceptance remains separate from host correctness checks.

@@ -835,6 +835,26 @@ expressiveSection.add(makeAction({
   }
 }))
 
+// Every press is a fresh native attack. Older packages receive the authored recipe.
+expressiveSection.add(makeAction({
+  title: 'ATTACK VARIATION\nMetal strike · native ranges',
+  color: COLORS.teal,
+  pressedColor: COLORS.tealPressed,
+  status: 'Metal strike · a new native selection on each attack',
+  onPress: function () {
+    var options = { frequency: 620, duration: 180, attack: 1, decay: 65,
+      sustain: 0.12, release: 110, waveType: WAVE.SINE,
+      fmRatio: 2.7, fmDepth: 3.2, fmDepthEnd: 0.4, volume: 0.3 }
+    if (defaults.capabilities && defaults.capabilities.variation === true
+      && defaults.variationSchemaVersion === 1) {
+      options.variation = { amount: 1, ranges: {
+        volume: [0.291, 0.3], fmDepth: [2.944, 3.456], pitchCents: [-12, 12]
+      } }
+    }
+    return Synth.playTone(options)
+  }
+}))
+
 var patternEndLabel = makeText('sequenceend: no pattern yet', {
   top: dp(8),
   left: dp(16),
