@@ -60,7 +60,7 @@ Rebuild and reinstall the application after replacing native modules. Copying mo
 
 ## Detect support and start playback
 
-Check both capability/schema fields. The module version alone is not a substitute for checking the feature needed. Omit the property completely when either announcement is missing, including when the requested amount is zero.
+Check both capability/schema fields, even when the module version matches the one you expect. Omit the property completely if either field is missing, including when the requested amount is zero.
 
 ```javascript
 var synth = require('ti.synthengine')
@@ -172,11 +172,11 @@ function fireLaser() {
 fireLaser()
 ```
 
-The engine samples after admission and before initializing filters, smoothing controls and trajectories. Rejected attacks do not consume a selection. Existing release tails, capacity policy and voice replacement still apply.
+The engine samples after admitting an attack, before initializing its filters, smoothing controls and trajectories. Rejected attacks consume no selection. Release tails, capacity policy and voice replacement remain unchanged.
 
 ## Chords and application gain
 
-One chord is one atomic publication. Each voice uses its position within that attack to obtain independent field samples; it does not reuse the first voice's result. If the chord cannot be admitted, none of its voices starts and no event is consumed.
+A chord is published atomically. Each voice's position within the attack determines its independent field samples, so later voices do not reuse the first voice's result. If the chord cannot be admitted, none of its voices starts and no event is consumed.
 
 Scale a volume range with the same application gain as the authored volume. Let the engine apply its existing chord compensation once.
 
@@ -273,7 +273,7 @@ if (supportsVariation && sequenceId > 0) {
 }
 ```
 
-Stop the owned sequence through the normal lifecycle when it is no longer needed. Stop/new play starts a new stream.
+Stop the owned sequence during normal lifecycle cleanup when it is no longer needed. Stopping and starting playback again creates a new stream.
 
 ## Seeds and reproducibility
 

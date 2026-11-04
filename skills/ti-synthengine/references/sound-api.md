@@ -26,7 +26,7 @@ synth.setVolume(0.8)
 synth.setTempo(110)
 ```
 
-Run startup after the owning screen has settled, and call `shutdown()` when its audio owner closes. Keep the [lifecycle guidance](guide.md#lifecycle) and [voice budget](recommendations.md). A finite event's acceptance does not guarantee that a later higher-priority event will leave it sounding.
+Start the engine after the owning screen has settled, and call `shutdown()` when its audio owner closes. Follow the [lifecycle guidance](guide.md#lifecycle) and plan the [voice budget](recommendations.md). A later higher-priority event can replace a finite event that was accepted earlier.
 
 ## Stored definitions and temporary overrides
 
@@ -67,7 +67,7 @@ All executions can return `false` on operational rejection. Finite tones and cho
 
 Use either `notes` as note names or integer MIDI notes 12 through 119, or `frequencies` in hertz. Tone, held and repetition use one-element arrays. Chords use 1 through 32 pitches. Numeric pitches in finite/held calls convert to native note names; pattern pitches remain MIDI integers. Keep duplicate pitches when unison is intentional.
 
-The shared sound-property allowlist below is not a promise that every field works for every interpretation. For example, finite-tone endpoints do not become held live controls; chord sweeps and chord modulations are rejected by their native validator. Source rules still require sine for FM, square for PWM, an active filter for filter targets, and compatible stereo or spatial controls. Use explicit `type: 'held'` when a definition contains held-only modulation or envelopes, so construction validates the intended native path.
+Each interpretation has restrictions beyond the shared sound-property allowlist below. Finite-tone endpoints cannot be used as held live controls, and the native chord validator rejects sweeps and modulations. Source rules require sine for FM, square for PWM, an active filter for filter targets, and compatible stereo or spatial controls. Use explicit `type: 'held'` when a definition contains held-only modulation or envelopes so construction validates the intended native path.
 
 ## Held notes
 
@@ -175,7 +175,7 @@ The [TypeScript declarations](../assets/index.d.ts) describe Sound definitions, 
 
 ## Property allowlists
 
-These are the shared structural allowlists reported by `getContract()`. Native interpretation-specific validators apply afterward; this table does not widen their compatibility rules.
+`getContract()` reports these shared structural allowlists. Native validators then apply each interpretation's compatibility rules.
 
 ### Sound properties
 

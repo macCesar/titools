@@ -67,7 +67,7 @@ Equal temperament keeps intervals consistent in every key. It also means a major
 
 ## Waveform and timbre
 
-Pitch says how fast the oscillator repeats. Waveform says how it moves within each cycle, which determines the harmonic content and perceived timbre.
+Pitch describes how fast the oscillator repeats. Waveform describes its motion within each cycle, which determines the harmonic content and perceived timbre.
 
 ### Sine
 
@@ -79,7 +79,7 @@ Pitch says how fast the oscillator repeats. Waveform says how it moves within ea
 
 ### Sawtooth
 
-`SAWTOOTH` contains both even and odd harmonics. It is the densest pitched waveform in the module and reads as buzzy or brassy. Use it for alarms, arcade leads and short sweeps. Square and sawtooth are band-limited with PolyBLEP to reduce aliasing at discontinuities.
+`SAWTOOTH` contains both even and odd harmonics. It is the densest pitched waveform in the module and sounds buzzy or brassy. Use it for alarms, arcade leads and short sweeps. Square and sawtooth are band-limited with PolyBLEP to reduce aliasing at discontinuities.
 
 ### Triangle
 
@@ -235,7 +235,7 @@ A rate around 4 to 7 Hz with a small depth sounds like musical vibrato. A fast r
 
 `filterType` adds a filter that removes or emphasizes part of the spectrum. It has 12 dB per octave of slope, twice as steep as the one-pole `lowPassHz` filter, and can be combined with it (`lowPassHz` runs first).
 
-- `lowpass` darkens the sound. A sawtooth through a closing low-pass reads as a zap or a sound moving away; an opening one reads as a swell.
+- `lowpass` darkens the sound. A sawtooth through a closing low-pass sounds like a zap or a sound moving away; an opening one sounds like a swell.
 - `highpass` thins the sound by removing body. It makes hats, hiss and tinny effects out of noise.
 - `bandpass` keeps one band around `filterHz`, which gives vocal, nasal and wah-like colors.
 
@@ -264,7 +264,7 @@ synth.playTone({
 
 FM makes rich, bright and metallic sounds from a plain sine. A second sine, the modulator, bends the pitch of the first one, the carrier. Turn it on with `fmDepth` or `fmDepthEnd`, on a `SINE` voice.
 
-- `fmRatio` is the modulator frequency as a multiple of the carrier's. Whole numbers (1, 2, 3) keep the added overtones on the harmonic series, so the pitch stays clear and the sound reads as organ- or piano-like. Fractional ratios such as 1.4142 or 3.5 put the overtones between harmonics, which reads as bells, glass and metal.
+- `fmRatio` is the modulator frequency as a multiple of the carrier's. Whole numbers (1, 2, 3) keep the added overtones on the harmonic series, so the pitch stays clear and the sound resembles an organ or piano. Fractional ratios such as 1.4142 or 3.5 put the overtones between harmonics, giving the sound the character of bells, glass and metal.
 - `fmDepth` is the modulation index and works like a brightness control. Around 0.5 to 1.5 it warms a sine, 2 to 5 makes it bright and rich, and values near 10 get harsh.
 - `fmDepthEnd` moves the index over the event. Starting high and ending low gives a bright attack that mellows, which is the signature of electric pianos, bells and mallets. Pair it with `decay` so the level falls with the brightness.
 
@@ -593,7 +593,7 @@ synth.playTone({
 })
 ```
 
-The pitch drop is the punch and the decay is the thump. A phone speaker cannot reproduce 42 Hz, so raise `frequencyEnd` toward 70 for speaker playback.
+The pitch drop creates the punch, while the decay shapes the thump. A phone speaker cannot reproduce 42 Hz, so raise `frequencyEnd` toward 70 for speaker playback.
 
 ### Simon-style cues
 

@@ -107,7 +107,7 @@ The native clock schedules attacks. `stop()` cancels future attacks; admitted 10
 
 ## Direct native parameter examples
 
-The remaining recipes exercise the supported direct methods and their precise native parameter dictionaries. For reusable application sounds, store synthesis fields under `sound`, pitches/timing under `playback`, and use the controls above. The [Sound reference](sound-api.md) lists interpretation-specific restrictions; the [upgrade guide](upgrade-2.0.0.md) maps direct names and units.
+The remaining recipes use the supported direct methods and their native parameter dictionaries. For reusable application sounds, store synthesis fields under `sound`, pitches/timing under `playback`, and use the controls above. The [Sound reference](sound-api.md) lists interpretation-specific restrictions; the [upgrade guide](upgrade-2.0.0.md) maps direct names and units.
 
 ## Start once after layout
 
@@ -487,7 +487,7 @@ synth.playTone({
 })
 ```
 
-A fractional `fmRatio` puts the overtones between harmonics, which reads as metal. `fmDepthEnd: 0` lets the brightness die away completely.
+A fractional `fmRatio` puts the overtones between harmonics, giving the sound a metallic timbre. `fmDepthEnd: 0` lets the brightness die away completely.
 
 ## Wah and filtered laser
 

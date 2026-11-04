@@ -2,7 +2,7 @@
 
 # Troubleshooting
 
-Start with the method's documented return value and the native log. Most silent requests are contract rejections, a stale binary or an engine that never started.
+Start with the method's documented return value and the native log. Most requests that produce no sound are contract rejections or involve a stale binary or an engine that never started.
 
 ## A call returns `false`
 
@@ -12,7 +12,7 @@ For methods that emit structured validation warnings, inspect logcat or the Xcod
 event=validation_warning method=playTone key=duraton reason=unsupported_option action=rejected value=200
 ```
 
-Always check the return value: `playSequence` rejects with 0, while Boolean methods reject with `false`. Some sequence/control rejection paths do not emit a structured warning; absence of a new log entry does not establish acceptance.
+Always check the return value: `playSequence` rejects with 0, while Boolean methods reject with `false`. Some sequence/control rejection paths do not emit a structured warning. The absence of a new log entry does not establish acceptance.
 
 Common fixes:
 
@@ -149,7 +149,7 @@ Compare several devices before changing the synthesis globally. A resonance on o
 
 ## Audio changes after connecting headphones
 
-Route recovery is automatic, but the sound crossing the hardware transition may end early. The operating system can also mute or fade the new route for a brief device-dependent interval. Wait for the route to settle and play a new sound; do not restart the app.
+The engine recovers routes automatically, but the sound crossing the hardware transition may end early. The operating system can also mute or fade the new route for a brief device-dependent interval. Wait for the route to settle and play a new sound; do not restart the app.
 
 If later sounds remain silent, capture the Android or Xcode log around the route change. Confirm that no screen lifecycle handler called `shutdown()` at the same time.
 

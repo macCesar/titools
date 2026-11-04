@@ -4,7 +4,7 @@
 
 Module id: `ti.synthengine`
 
-Module version: `2.0.0`. Start with the [Sound object reference](sound-api.md) for reusable definitions, playback controls and property units. This page supplies the global controls and direct native parameter reference used by those interpretations.
+Module version: `2.0.0`. Read the [Sound object reference](sound-api.md) for reusable definitions, playback controls and property units. This page documents the global controls and direct native parameters behind those interpretations.
 
 Android and iOS expose the same public methods and waveform values. Pattern controls emit `end`; direct native sequences emit `sequenceend`. Option objects are strict: an unknown key is rejected with `unsupported_option`. Reported metadata and rejection diagnostics have platform differences; this reference does not promise sample-identical rendering between Android and iOS.
 
@@ -214,7 +214,7 @@ On iOS, `playback` ignores the silent switch and interrupts other apps' audio. `
 
 ## `noteOn(options)`
 
-Starts a sustained native voice. Detect `typeof synth.noteOn === 'function'`, `noteOff` and `updateNote` before enabling their controls; the installed module is identified by `getDefaults().version`. There is no duration limit and no JavaScript timer holds the note.
+Starts a sustained native voice. Check `typeof synth.noteOn === 'function'`, `noteOff` and `updateNote` before enabling their controls. Read the installed module version from `getDefaults().version`. The note has no duration limit and needs no JavaScript timer to remain held.
 
 | Field                                   | Rule                                                                                                                               |
 | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
@@ -273,7 +273,7 @@ Begins release from the current level, including during attack or decay. Repeate
 | `spatialX`, `spatialY`   | Target position for a spatial held voice; omitted coordinate stays unchanged.    |
 | `effectSend`             | Explicit processed share, 0-1, overriding category selection.                    |
 
-At least one change is required. An incompatible change rejects the entire request when the ID is known; unknown/ended IDs accept publication as a no-op. The callback also checks source compatibility before applying a command. Changed continuous parameters ramp linearly from their current values over 10 ms. New targets retarget that ramp without restarting oscillator phase or the envelope. Unchanged parameters retain their current ramps. This also works during release.
+Supply at least one change. An incompatible change rejects the entire request when the ID is known; unknown/ended IDs accept publication as a no-op. The callback also checks source compatibility before applying a command. Changed continuous parameters ramp linearly from their current values over 10 ms. A new target redirects the ramp without restarting oscillator phase or the envelope. Unchanged parameters keep their current ramps. These edits also work during release.
 
 Pitch updates are absolute: an initial `detune` is already included in the note's starting frequency. To edit tuning later, compute the desired effective frequency in the app and send `frequency`. There is no `detune` update field. Filter type, ADSR, quantization and wavetable require a new attack. Noise clock, low-pass cutoff, send and compatible stereo/spatial position support live 10 ms updates.
 
@@ -397,7 +397,7 @@ Those three calls use JavaScript timing and independent attack selection. For an
 
 Returns Boolean acceptance. Requires a known positive repetition identifier and at least one change. Accepts partial finite-tone options, including `intervalMs`, and merges them with the latest accepted recipe before validating the entire result. Supplying `note` replaces an earlier `frequency`; supplying `frequency` replaces an earlier `note`. Supplying both is invalid. Invalid edits leave the last accepted recipe intact.
 
-An accepted edit affects the next already scheduled attack, preserving its deadline. The new interval determines separation after that attack. Active attacks retain their original configuration. A supplied `variation` dictionary replaces the whole previous dictionary; `{ amount: 0 }` disables future variation. Each repetition retains its own seed and admitted-attack counter. Edits preserve the stream; changing its seed restarts that succession. Unknown or retired IDs reject edits.
+An accepted edit affects the next scheduled attack without moving its deadline. The new interval sets the gap after that attack. Active attacks keep their original configuration. A supplied `variation` dictionary replaces the whole previous dictionary; `{ amount: 0 }` disables future variation. Each repetition keeps its own seed and admitted-attack counter. Edits preserve the stream unless the seed changes, which restarts it. Unknown or retired IDs reject edits.
 
 ### `stopTone({ toneId })`
 
@@ -462,7 +462,7 @@ synth.stopSequence({ sequenceId: musicId })
 
 Selected audio follows fixed input gain → chorus → ping-pong delay → reverb → master volume → optional saturation. Dry audio receives the same global input/master gains, then recombines before one final sample-peak protector with no retained samples. Independent notes never trigger voice-count normalization. The limiter remains the final protection.
 
-Requires a running engine and returns Boolean acceptance. Partial updates merge into the last accepted processing configuration, validate the complete result and publish atomically. Continuous controls ramp over 10 ms. Unknown fields, numeric booleans and non-finite values reject the whole edit. Detect method presence before use.
+This method requires a running engine and returns Boolean acceptance. It merges partial updates into the last accepted processing configuration, validates the complete result and publishes it atomically. Continuous controls ramp over 10 ms. Unknown fields, numeric booleans and non-finite values reject the whole edit. Check that the method exists before calling it.
 
 | Section      | Fields and initial values                                                                                                                                                                                                     |
 | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -491,7 +491,7 @@ Defaults keep all effects and saturation disabled, input gain at unity, and rout
 | `depth`  | 0-1, default 0; scales up to four cutoff octaves, 0.45 PWM offset or ten FM-index units. Two contributions sum with safe clamping.                                                                                       |
 | `sync`   | Same musical values as delay; default off. Synced rates follow native tempo (up to 30 Hz at 300 BPM in sixteenth-note triplets).                                                                                         |
 
-Edits preserve oscillator/LFO phases. Continuous modulation contributions ramp over 10 ms; cutoff stays within 20 Hz and the frequency maximum, PWM within 0.05-0.95, FM index within 0-10. Initial modulations may also be inherited by sequence voices and overridden per step. These two slots coexist with the independent `lfoFreq`/`lfoDepth` pitch vibrato; they are not accepted by timed tones, chords .
+Edits preserve oscillator/LFO phases. Continuous modulation contributions ramp over 10 ms; cutoff stays within 20 Hz and the frequency maximum, PWM within 0.05-0.95, FM index within 0-10. Sequence voices can inherit initial modulations, and steps can override them. These two slots coexist with the independent `lfoFreq`/`lfoDepth` pitch vibrato. Timed tones and chords reject them.
 
 ## `playChord(options)`
 
@@ -691,7 +691,7 @@ Listen with stereo headphones. Height perception depends on the listener, headph
 
 Use `typeof synth.getStats === 'function'` to check that the expected module is installed before enabling a diagnostics panel.
 
-Returns a new snapshot without resetting counters. Available before start and after shutdown. Occupancy is the last completed render block; queued commands are read at query time. No audio-thread allocation, locks or waiting are added.
+This method returns a new snapshot without resetting counters and is available before start and after shutdown. Occupancy comes from the last completed render block; queued commands are read at query time. The query adds no audio-thread allocation, locks or waiting.
 
 | Field                      | Meaning                                                                                                                     |
 | -------------------------- | --------------------------------------------------------------------------------------------------------------------------- |

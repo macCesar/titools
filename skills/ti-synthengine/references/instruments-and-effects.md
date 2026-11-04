@@ -2,7 +2,7 @@
 
 # Instruments, sound effects and complete sequences
 
-A playable instrument and a missile sound can use the same oscillator. Their behavior depends on the complete recipe: pitch, envelope, pitch/filter movement, layers, timing, and how the app starts and ends it. This guide explains which public API to use and how to preserve that recipe.
+A playable instrument and a missile sound can use the same oscillator. Their behavior depends on the complete recipe: pitch, envelope, pitch/filter movement, layers, timing and how the app starts and ends the sound. This guide explains which public API to use and how to preserve that recipe.
 
 These are application roles built on the same native synthesizer and output chain. They are not different audio engines, quality modes, or guarantees against distortion. An instrument can be noisy or inharmonic; an effect can be a single pitched tone, a chord, or a musical phrase.
 
@@ -19,7 +19,7 @@ These are application roles built on the same native synthesizer and output chai
 
 The last row describes audio processing effects. Those processors are different from an authored sound effect, such as a laser or an explosion. A laser may use no reverb or delay at all.
 
-The detailed recipes below also show supported direct native calls to explain their rendering parameters. Reusable application code uses the Sound controls above; see the [Sound reference](sound-api.md). All examples assume successful startup:
+The detailed recipes below use supported direct native calls to explain the rendering parameters. Reusable application code uses the Sound controls above; see the [Sound reference](sound-api.md). All examples assume successful startup:
 
 ```javascript
 var synth = require('ti.synthengine')
@@ -56,7 +56,7 @@ Store the returned ID with that contact. Sliding to another key must release the
 
 `noteOn` does not accept timed-event endpoint sweeps such as `frequencyEnd`. A held voice can use its supported vibrato/LFOs and compatible `updateNote` edits. Removing a timed sweep, replacing the original frequency with the key's pitch, and holding indefinitely changes the sound's meaning: that is a new playable timbre, not an exact audition of the original effect.
 
-A short envelope also does not automatically make a held voice finite. With `sustain: 0`, it can become silent while still requiring release of its ID. Choose a timed event for a self-contained strike when contact ownership is unnecessary.
+A short envelope does not automatically end a held voice. With `sustain: 0`, it can become silent while still requiring release of its ID. Choose a timed event for a self-contained strike when contact ownership is unnecessary.
 
 ### Instrument demonstrations are musical performances
 

@@ -2,7 +2,7 @@
 
 ## Sustained game motor
 
-Assume one running engine owned by this service. The positive voice ID belongs to the app; do not reuse it during the session or share its counter with an independent audio owner. There is no `duration` or `*End` target on `noteOn`.
+This example assumes the service owns one running engine. The positive voice ID belongs to the app; do not reuse it during the session or share its counter with an independent audio owner. There is no `duration` or `*End` target on `noteOn`.
 
 ```javascript
 if (!['noteOn', 'noteOff', 'updateNote'].every(function (name) {
@@ -92,7 +92,7 @@ The UI timer presents state; native audio schedules every attack/release. For fi
 
 ## Chorus, delay, reverb and creative saturation
 
-This configures the selected share of a running engine; `applyTo` defaults to all categories. Check method presence and Boolean acceptance; partial section updates merge with the last accepted settings. Effects start disabled, input gain starts at 1, and no LFOs are added to voices implicitly.
+The example below configures the selected share of a running engine; `applyTo` defaults to all categories. Check method presence and Boolean acceptance; partial section updates merge with the last accepted settings. Effects start disabled, input gain starts at 1, and no LFOs are added to voices implicitly.
 
 ```javascript
 if (typeof synth.setMasterProcessing !== 'function') {

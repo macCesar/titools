@@ -54,7 +54,7 @@ These declarations select version 2.0.0. Check the [variation metadata](#variati
 
 ## Load and verify the contract
 
-Require the module once in the code that owns audio. Check the installed module `version` before starting. Also check the [spatial limits](#detect-the-installed-feature) and [statistics methods](#read-engine-statistics) if the app needs those features. Check [required capabilities](#detect-required-capabilities) for held voices, musical transport and master processing.
+Require the module once in the code that owns audio, and check the installed module `version` before starting. Check the [spatial limits](#detect-the-installed-feature) if the app needs spatial audio, and the [statistics methods](#read-engine-statistics) if it needs statistics. For held voices, musical transport and master processing, check [required capabilities](#detect-required-capabilities).
 
 ```javascript
 var synth = require('ti.synthengine')
@@ -327,7 +327,7 @@ synth.playTone({
 })
 ```
 
-For a caller-defined repeating shape, select `WAVETABLE` and provide 2 to 64 samples from -1 to 1. The table is stepped rather than interpolated.
+For a caller-defined repeating shape, select `WAVETABLE` and provide 2 to 64 samples from -1 to 1. The table uses stepped lookup without interpolation.
 
 ```javascript
 synth.playTone({

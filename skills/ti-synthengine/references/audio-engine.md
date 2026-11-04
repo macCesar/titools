@@ -2,7 +2,7 @@
 
 # Audio engine
 
-The native signal path explains how mixing profiles and voice capacity affect the output. Use this reference when choosing those settings or investigating device behavior; it is optional for basic playback.
+This reference explains how the native signal path, mixing profiles and voice capacity affect the output. Use it to choose those settings or investigate device behavior. It is optional for basic playback.
 
 <!-- TOC-START -->
 ## Contents
@@ -79,7 +79,7 @@ The source is optionally quantized to the selected `bitDepth` (2 to 16 bits) and
 
 A `SINE` voice with a positive `fmDepth`, or with `fmDepthEnd`, is phase modulated: the carrier computes `sin(2 * pi * phase + depth * sin(2 * pi * modPhase))`. The modulator phase advances by the carrier's instantaneous phase increment times `fmRatio`, so pitch sweeps and vibrato keep the ratio. The index moves linearly from `fmDepth` to `fmDepthEnd` over the event. With a depth of exactly 0 and no end, the voice takes the plain sine path.
 
-The modulated sine has constant amplitude, so event gain is unchanged. Nothing band-limits the sidebands, so a high carrier with a large index aliases.
+The modulated sine has constant amplitude, so event gain is unchanged. The sidebands are not band-limited; a high carrier with a large index aliases.
 
 ### State-variable filter
 
@@ -177,7 +177,7 @@ Both ports use a 128-slot single-consumer ring buffer. Producers are serialized 
 
 ## Shared DSP core
 
-The envelope, the state-variable filter, the sweep helpers, the FM sine and the cents conversion live once, in `shared/synth_core.h`. It is plain C, header-only and allocation-free. The Android renderer includes it from `android/jni/SynthOboeEngine.cpp` and the iOS renderer from `ios/Classes/TiSynthengineModule.m`, so both platforms run the same code. Backend voice integration and mixing remain separate per platform. Master ramps and final stereo protection share `shared/synth_output.h`. Held envelopes/ramps, transport, master effects, extra modulation and compatible retrigger support also have shared C cores.
+The envelope, state-variable filter, sweep helpers, FM sine and cents conversion share one implementation in `shared/synth_core.h`. It is plain C, header-only and allocation-free. The Android renderer includes it from `android/jni/SynthOboeEngine.cpp` and the iOS renderer from `ios/Classes/TiSynthengineModule.m`, so both platforms run the same code. Backend voice integration and mixing remain separate per platform. Master ramps and final stereo protection share `shared/synth_output.h`. Held envelopes/ramps, transport, master effects, extra modulation and compatible retrigger support also have shared C cores.
 
 ## Native per-attack variation
 
@@ -300,7 +300,7 @@ Source-specific measurements and reproduction commands are preserved in the [his
 
 ## Engine statistics
 
-The [statistics API](api.md#getstats) has the same shape on both platforms. `shared/synth_stats.h` owns telemetry math and publication. Voice transitions update render-owned occupancy and maxima, including primary FIR draining and external replacement/stop tails. Whole empty groups can then be skipped without changing the signal. Producers are serialized separately from the renderer; querying queue depth does not include future scheduled pattern steps.
+The [statistics API](api.md#getstats) has the same shape on both platforms. `shared/synth_stats.h` owns telemetry math and publication. Voice transitions update render-owned occupancy and maxima, including primary FIR draining and external replacement/stop tails. The renderer can then skip whole empty groups without changing the signal. Producers are serialized separately from the renderer; querying queue depth does not include future scheduled pattern steps.
 
 The callback publishes atomic words behind a sequence counter. Readers retry a snapshot if publication overlaps their read; the callback never waits for them. Eight-byte alignment and a compile-time lock-free assertion also cover Android's 32-bit ABIs. Reset/enable requests are consumed at callback boundaries. A new control generation hides stale optional measurements immediately. Shutdown waits for the backend callback to stop before clearing occupancy. Queries allocate result objects on the calling thread. Pattern publication and shutdown share a control monitor; that monitor is never taken by the audio callback.
 

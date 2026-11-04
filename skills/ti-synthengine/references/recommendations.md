@@ -8,7 +8,7 @@ The defaults work for ordinary tones and chords. Use the guidance below when an 
 
 Declare `playback.type: 'chord'` when pitches form one known simultaneous event. The chord is atomic. Protected profiles normalize per-voice source gain by the square root of the event voice count; `raw` bypasses that normalization. Separate tone executions suit independent effects, but their start times and gain are independent too.
 
-For keys or pads a user can trigger freely, keep each event around 0.4 to 0.7 until you have listened to the worst overlap. If every event needs gain above 1, consider `balanced` for the session before raising individual notes further.
+For freely triggered keys or pads, keep each event around 0.4 to 0.7 until you have listened to the worst overlap. If every event needs gain above 1, consider `balanced` for the session before raising individual notes further.
 
 ## Choose the mixing profile once
 
@@ -34,7 +34,7 @@ If a phone buzzes under `speakerSafe`, lower the event volume or raise the pitch
 | Chords, keys or long release tails |       16 to 24 |
 | Explicit stress testing            |             32 |
 
-Count release tails along with buttons pressed at the same instant. Replacement first selects the lowest eligible priority; higher-priority voices are protected. Among that priority, timed-only events steal the slot with the least time remaining; sustained/transport voices prefer a releasing slot, then the oldest attack. The short fade avoids a hard click; the stolen note still ends early.
+Count release tails as well as buttons pressed at the same instant. Replacement first selects the lowest eligible priority; higher-priority voices are protected. Among that priority, timed-only events steal the slot with the least time remaining; sustained/transport voices prefer a releasing slot, then the oldest attack. The short fade avoids a hard click; the stolen note still ends early.
 
 ## Keep one lifecycle owner
 
@@ -87,7 +87,7 @@ Do not copy the frequency maximum into application code. It depends on the activ
 
 The same rule applies to `noiseRate`, `lowPassHz` and `filterHz`. Validate a custom `waveTable` as 2 to 64 finite values from -1 to 1, and remember that `bitDepth` accepts zero or an integer from 2 to 16. For `detune`, check the resulting pitch too: a shifted pitch that leaves the frequency range is rejected even when the cents value is in range.
 
-Check each method's documented return value during development. Sound playback returns finite acceptance, a playback control, or `false` on operational rejection; invalid Sound configurations throw. Direct native methods keep their documented Boolean or identifier returns. Methods that emit structured validation warnings include the method, key and reason in the native log, but some sequence/control rejection paths do not log. Logging the return at the caller helps identify a stale preset or misspelled field without treating silence in the native log as acceptance.
+Check each method's documented return value during development. Sound playback returns finite acceptance, a playback control, or `false` on operational rejection; invalid Sound configurations throw. Direct native methods keep their documented Boolean or identifier returns. Methods that emit structured validation warnings include the method, key and reason in the native log, but some sequence/control rejection paths do not log. Logging the return at the caller helps identify a stale preset or misspelled field. A silent native log does not establish acceptance.
 
 ## Test the intended sound
 

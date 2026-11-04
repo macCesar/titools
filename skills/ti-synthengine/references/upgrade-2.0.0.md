@@ -16,7 +16,7 @@ TiSynth 2.0.0 separates reusable sound definitions from playback. Existing direc
 | `setMasterProcessing(options)` | `setProcessing(options)` with the units below |
 | `setVolume({ volume })`, `setTempo({ bpm })` | `setVolume(number)`, `setTempo(number)` |
 
-Put synthesis fields in `sound`. Put pitch arrays, type and timing in `playback`. Direct `note` and `frequency` become one-element `notes` and `frequencies` arrays. Execution overrides are flat; stored revisions use nested `{ sound, playback }` dictionaries.
+Put synthesis fields in `sound` and pitch arrays, type and timing in `playback`. Direct `note` and `frequency` become one-element `notes` and `frequencies` arrays. Use flat execution overrides and nested `{ sound, playback }` dictionaries for stored revisions.
 
 ## Names and units
 
@@ -31,7 +31,7 @@ Put synthesis fields in `sound`. Put pitch arrays, type and timing in `playback`
 
 ## Ownership and errors
 
-Sound controls hide native playback identifiers. Keep each control with its owning interaction. Shutdown invalidates controls; reusable definitions survive it. Finite tones and chords return acceptance without a stop control.
+Keep each Sound control with the interaction that owns it. Controls hide native playback identifiers and become invalid on shutdown; reusable definitions survive. Finite tones and chords return acceptance without a stop control.
 
 Sound validation throws descriptive errors. Operational playback rejection returns `false`. Direct methods keep their existing return contracts. `Sound.set()` validates an atomic revision for future executions and leaves active executions unchanged.
 
