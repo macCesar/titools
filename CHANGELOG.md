@@ -6,10 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [5.3.0] - 2026-11-03
+
 ### Changed
 
 - Update ti-synthengine for published TiSynthEngine 2.0.0: reusable Sound definitions, owned playback controls, migration, current metadata, processing units, examples and official TypeScript declarations.
 - Keep synthesis references focused on using the module. Remove raw report JSON, ZIP evidence and historical validation/proposal documents from the distributed skill; retain practical platform caveats and keep source-verification metadata in maintainer scripts.
+- Apply Humanizer to the skill entry point and all synthesis references, preserving code, contracts, units, examples and source provenance.
 
 ## [5.2.5] - 2026-11-02
 
