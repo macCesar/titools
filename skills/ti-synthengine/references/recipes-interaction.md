@@ -1,11 +1,13 @@
 # Instrument, polyphony and expressive recipes
 
-These curated TiTools recipes use the supported direct interface in 2.0.0,
-the same running engine and runtime `WAVE`
-constants as [the arcade recipes](recipes.md). Keep one owner, check native
-acceptance and use their [verification checklist](recipes.md#recipe-verification-checklist).
-The expressive envelope/filter/FM ranges are starting points verified against
-the public contract, not device-auditioned presets. Listen before shipping.
+These TiTools recipes use the supported direct interface in 2.0.0 and share
+the running engine and runtime `WAVE` constants from
+[the arcade recipes](recipes.md). Keep one engine owner, check native acceptance
+and follow the [verification checklist](recipes.md#recipe-verification-checklist).
+
+The envelope, filter and FM ranges are starting points checked against the
+public contract. They have not been auditioned on a device, so listen before
+shipping.
 
 For new reusable instruments, read [Sound definitions and controls](sound-api.md).
 Keep these recipes' gains, pitch arrays, envelopes and ownership when adapting them.
@@ -118,9 +120,8 @@ In a Titanium view:
 - call `gesture.finish()` on both `touchend` and `touchcancel`;
 - keep visual pressed-state counts separate if multiple touches are supported.
 
-The audio release may continue after the finger leaves a bar. That is desired
-for a xylophone. `stopAll()` is a global panic: it also cancels every native
-sequence and invalidates shared effect histories. Use an owner's
+For a xylophone, let the audio release continue after the finger leaves a bar.
+`stopAll()` is a global panic: it also cancels every native sequence and invalidates shared effect histories. Use an owner's
 `stopSequence({ sequenceId })` when only that sequence should stop.
 
 ## Four-pad memory cues
@@ -173,8 +174,8 @@ function playMemoryBank (bankName) {
 
 ### Controlled timbre comparison
 
-For an honest A/B test, hold pitches, duration, envelope and pan constant.
-Change only waveform and its comparison level. Never pass a profile object
+For an A/B test, hold pitches, duration, envelope and pan constant. Change
+only the waveform and its comparison level. Never pass a profile object
 containing labels or other app metadata directly to `playChord()` because its
 options dictionary is closed.
 
@@ -206,8 +207,8 @@ function auditionTimbre (profileName) {
 
 ### Convert MIDI pitch to hertz
 
-The standard A4 = 440 Hz formula makes it easy to build interval recipes
-without embedding a long frequency table.
+Use the standard A4 = 440 Hz formula to build interval recipes without
+embedding a long frequency table.
 
 ```javascript
 function midiToHz (midi) {
@@ -341,7 +342,7 @@ This repeated chord uses one centered native sequence. The one-off layered chord
 
 ### Cancellable repetition
 
-The chord pulse above has an identified sequence owner. Repeated start requests coalesce until its matching `sequenceend` retirement frees the slot. Stop its sequence ID and cancel pending restarts when its window closes; its native sequence schedules subsequent chord attacks.
+The chord pulse above belongs to one identified sequence owner. Repeated start requests coalesce until the matching `sequenceend` event retires it and frees the slot. When its window closes, stop that sequence ID and cancel pending restarts. The native sequence schedules subsequent chord attacks.
 
 For direct repetition of an original finite tone, use `repeatTone({ intervalMs, ...recipe })`, retain its positive tone ID, edit future attacks with `updateTone`, and cancel with `stopTone`. Each independent layer retains its own tone ID and overlap budget. `stopTone` preserves admitted finite attacks; `stopSequence` releases its sequence's voices. Tone IDs have no completion event, so the sequence retirement/restart procedure above does not apply to them. Independent event calls and intentionally timed finite JavaScript bursts remain supported; cancel any app-owned timers at teardown. See [the repetition contract](api.md#finite-tone-repetition) and [complete effect fidelity](instruments-and-effects.md#repeated-firing-uses-the-native-clock).
 
@@ -360,9 +361,9 @@ Call `shutdown()` only from the screen or service that owns the shared engine.
 
 ### Plucked marimba note
 
-A short attack, a decay that falls to a low sustain and a release that fits
-give the struck-and-ring shape of a mallet or plucked string. A sustain below 1
-needs a decay, and `attack + decay` must fit inside `duration`.
+A short attack followed by decay to a low sustain gives the strike and ring
+of a mallet or plucked string. Keep the release within the available duration.
+A sustain below 1 needs a decay, and `attack + decay` must fit inside `duration`.
 
 ```javascript
 synth.playTone({
@@ -416,9 +417,9 @@ synth.playTone({
 
 ### Electric piano
 
-Frequency modulation with a 1:1 ratio gives a tine-like tone. Letting the
-modulation index fall through `fmDepthEnd` makes the note mellow as it rings,
-which is what the ear expects from a struck tine. FM needs a sine carrier.
+Frequency modulation with a 1:1 ratio gives a tine-like tone. Reduce the
+modulation index through `fmDepthEnd` so the note mellows as it rings, as a
+struck tine does. FM needs a sine carrier.
 
 ```javascript
 synth.playTone({

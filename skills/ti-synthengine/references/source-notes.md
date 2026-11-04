@@ -1,6 +1,6 @@
 # Source and platform caveats
 
-The current references describe published TiSynthEngine **2.0.0**, reviewed at
+These references cover published TiSynthEngine 2.0.0, reviewed at
 `9d74aa45f84d3f2822d4aab76874efe37d81257f` on 2026-11-03. Both platform
 release ZIPs declare 2.0.0 and their packaged declarations match the bundled
 [TypeScript asset](../assets/index.d.ts). Read the [guide](guide.md) for
@@ -10,9 +10,10 @@ installation and the [upgrade guide](upgrade-2.0.0.md) for migration.
 
 Use [Sound objects](sound-api.md) for new code. The [direct API](api.md) remains
 supported, including its Boolean/ID return contracts and original option names.
-The curated [sound](recipes.md) and [interaction](recipes-interaction.md) recipes
-use that direct interface; preserve their pitch, envelope, gain and timing when
-adapting them. A Sound definition survives shutdown; its playback controls do not.
+The [sound](recipes.md) and [interaction](recipes-interaction.md) recipes use
+that direct interface. Preserve their pitch, envelope, gain and timing when
+adapting them. A Sound definition survives shutdown, but its playback controls
+become invalid.
 Do not combine `sound`/`playback` presets with direct native dictionaries.
 
 Runtime metadata uses `version`, not `apiVersion`. Native module manifest
@@ -37,10 +38,10 @@ reverb decay remains seconds. See the [unit mapping](upgrade-2.0.0.md#names-and-
   rejection counters. Recorded reason totals describe recorded failures, not
   every rejected API call.
 - Sequence filter sweeps refresh every 16 samples on Android and every 8 on Apple.
-  Both use note length; do not promise identical platform PCM.
+  Both use note length, but their PCM output is not guaranteed to match.
 
 Exact constraints and platform differences are in the [API](api.md) and
-[engine](audio-engine.md). Sound wrapping does not widen native source compatibility.
+[engine](audio-engine.md). Sound objects follow the same native source-compatibility rules.
 
 ## Diagnose audio without overstating evidence
 
@@ -57,5 +58,5 @@ physical evidence. Host dispatch timings are not Titanium bridge/device latency;
 byte-identical PCM comparisons are within each platform, not across platforms.
 Historical measurements retain their original revision and acceptance limits,
 including failed or inconclusive results. They do not certify every workload.
-The native module repository retains raw reports and reproduction tools; they
-are maintenance evidence rather than resources needed to implement sounds.
+Raw reports and reproduction tools remain in the native module repository
+for maintenance. You do not need those files to implement sounds.

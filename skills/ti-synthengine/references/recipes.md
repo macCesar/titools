@@ -1,13 +1,13 @@
 # Curated sound and interaction recipes
 
-These recipes use the supported direct native interface in `ti.synthengine` 2.0.0,
-also available in earlier 1.x modules. For reusable definitions in new code, use
-[Sound objects](sound-api.md) and preserve each recipe's original rendering interpretation.
-The recipes use only public option keys,
-keep every explicit envelope valid, and obtain
-waveforms from the runtime contract instead of hardcoding integers. Install the
-matching official Android/iOS packages and follow the owning-engine
-[installation and lifecycle guide](guide.md) before using them.
+These recipes use the supported direct native interface in `ti.synthengine` 2.0.0
+and earlier 1.x modules. For reusable definitions in new code, use
+[Sound objects](sound-api.md) while preserving how each recipe renders.
+
+The examples use public option keys and valid explicit envelopes. They read
+waveforms from the runtime contract instead of hardcoding integers. Install
+matching official Android/iOS packages and follow the
+[installation and lifecycle guide](guide.md) to set up the engine owner.
 
 Unless a section says otherwise, the snippets assume one owner has already
 started the engine:
@@ -18,13 +18,13 @@ const contract = synth.getDefaults()
 const WAVE = contract.waveTypes
 ```
 
-Treat levels as starting points, not mastering targets. Test on the actual
-phone speaker and leave headroom when release tails or independent events can
-overlap.
+Use the levels as starting points for listening tests, rather than final
+mastering targets. Test on the actual phone speaker and leave headroom for
+overlapping release tails or independent events.
 
-Instrument interactions, layered chords and expressive synthesis are in
-[the interaction recipes](recipes-interaction.md). Their standard synthesis
-starting ranges require listening on the target device before shipping.
+For instrument interactions, layered chords and expressive synthesis, see
+[the interaction recipes](recipes-interaction.md). Listen to those starting
+ranges on the target device before shipping.
 
 <!-- TOC-START -->
 ## Contents
@@ -168,8 +168,8 @@ if (!sequenceId) throw new Error('Sequence rejected')
 
 ### Fast four-note arpeggio
 
-Very short square notes with a small attack retain the hard cartridge-era
-edge while reducing uncontrolled clicks. The 10 ms rests keep the first three
+Very short square notes with a small attack keep the hard cartridge-era
+edge and reduce uncontrolled clicks. The 10 ms rests keep the first three
 40 ms notes on a 50 ms grid; the final note rings for 80 ms.
 
 ```javascript
@@ -406,8 +406,9 @@ if (!sequenceId) throw new Error('Sequence rejected')
 
 ### Hovering craft
 
-A triangle voice with strong sine vibrato creates a cyclical engine wobble. Slow stereo travel adds movement on headphones while pitch
-remains the primary cue on mono speakers.
+A triangle voice with strong sine vibrato creates a repeating engine wobble.
+Slow stereo travel adds movement on headphones; pitch remains the primary cue
+on mono speakers.
 
 ```javascript
 synth.playTone({
