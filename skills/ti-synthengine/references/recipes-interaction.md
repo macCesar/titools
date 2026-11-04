@@ -1,10 +1,14 @@
 # Instrument, polyphony and expressive recipes
 
-These curated TiTools recipes use the same running engine and runtime `WAVE`
+These curated TiTools recipes use the supported direct interface in 2.0.0,
+the same running engine and runtime `WAVE`
 constants as [the arcade recipes](recipes.md). Keep one owner, check native
 acceptance and use their [verification checklist](recipes.md#recipe-verification-checklist).
 The expressive envelope/filter/FM ranges are starting points verified against
 the public contract, not device-auditioned presets. Listen before shipping.
+
+For new reusable instruments, read [Sound definitions and controls](sound-api.md).
+Keep these recipes' gains, pitch arrays, envelopes and ownership when adapting them.
 
 ```javascript
 const synth = require('ti.synthengine')
@@ -339,7 +343,7 @@ This repeated chord uses one centered native sequence. The one-off layered chord
 
 The chord pulse above has an identified sequence owner. Repeated start requests coalesce until its matching `sequenceend` retirement frees the slot. Stop its sequence ID and cancel pending restarts when its window closes; its native sequence schedules subsequent chord attacks.
 
-For repetition of an original finite tone in API 1.1.0, use `repeatTone({ intervalMs, ...recipe })`, retain its positive tone ID, edit future attacks with `updateTone`, and cancel with `stopTone`. Each independent layer retains its own tone ID and overlap budget. `stopTone` preserves admitted finite attacks; `stopSequence` releases its sequence's voices. Tone IDs have no completion event, so the sequence retirement/restart procedure above does not apply to them. Independent event calls and intentionally timed finite JavaScript bursts remain supported; cancel any app-owned timers at teardown. See [the repetition contract](api.md#finite-tone-repetition) and [complete effect fidelity](instruments-and-effects.md#repeated-firing-uses-the-native-clock).
+For direct repetition of an original finite tone, use `repeatTone({ intervalMs, ...recipe })`, retain its positive tone ID, edit future attacks with `updateTone`, and cancel with `stopTone`. Each independent layer retains its own tone ID and overlap budget. `stopTone` preserves admitted finite attacks; `stopSequence` releases its sequence's voices. Tone IDs have no completion event, so the sequence retirement/restart procedure above does not apply to them. Independent event calls and intentionally timed finite JavaScript bursts remain supported; cancel any app-owned timers at teardown. See [the repetition contract](api.md#finite-tone-repetition) and [complete effect fidelity](instruments-and-effects.md#repeated-firing-uses-the-native-clock).
 
 ```javascript
 function cleanupAudio () {

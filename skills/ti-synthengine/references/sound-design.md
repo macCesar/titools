@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine documentation at commit `ec04f4e634075c41b55f66279eabcd78b9652d58` (2026-11-02). Published module 1.1.0; public API 1.1.0. Upstream `documentation/sound-design.md` SHA-256: `ac3f4552065051bc5291d8838945ed256ad3b0da7857e1f1cb5f54f5962ebfae`.
+> Source snapshot: official TiSynthEngine documentation at commit `9d74aa45f84d3f2822d4aab76874efe37d81257f` (2026-11-03). Published module 2.0.0. Upstream `documentation/sound-design.md` SHA-256: `41f294143b8a4bb8cbee550a66b51768c13a583c94e1f7f810dfdeb471f14922`.
 
 # Sound design with TiSynthEngine
 
@@ -341,7 +341,7 @@ Different phones have different sample rates, speaker protection and acoustic re
 
 ## Recipes
 
-These recipes use only the 1.0.0 contract and keep explicit envelopes valid. Adjust pitch and volume to fit the app's other audio; the recipe values are starting points, not mastering targets.
+These recipes use the supported direct native parameter contract and keep explicit envelopes valid. Reusable definitions put synthesis fields in `sound` and pitches/timing in `playback`; see the [Sound interface](sound-api.md). Adjust pitch and volume to fit the app's other audio; the recipe values are starting points, not mastering targets.
 
 ### Interface click
 

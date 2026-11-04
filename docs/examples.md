@@ -37,19 +37,21 @@ an audio or advertising module.
 
 ## Native synthesis — ti-synthengine
 
-- "Install the public TiSynthEngine 1.1.0 Android/iOS packages and start audio after the window layout settles."
-- "Move a held spatial motor, process only music with reverb, and stop one native sequence without cancelling unrelated sounds."
-- "Use native attack variation with public 1.1.0: bounded noise/filter ranges, deterministic seeds and an old-package fallback."
-- "Repeat this complete layered effect natively without changing its envelope, sweep timing or gains."
-- "Use repeatTone for this finite shot, edit its interval with updateTone, and stop future attacks with stopTone while sounding shots finish."
-- "Use updateNote and enableStats/disableStats, checking the bundled TypeScript declarations and a 1.0.2 alias fallback."
-- "Keep these three standalone playTone calls as an intentional finite JavaScript burst and cancel their timers when the owner closes."
+- "Install the public TiSynthEngine 2.0.0 Android/iOS packages and start audio after the window layout settles."
+- "Create a reusable laser Sound with flat per-shot pitch and position overrides."
+- "Move a held spatial motor through its note control, then release it on touch cancellation."
+- "Play music and a victory pattern independently; stop only the cue and wait for its end event before replacing it."
+- "Repeat this complete layered effect natively without changing envelopes, sweep timing or gains."
+- "Change a reusable preset with set(), reset an optional leaf with null and keep active executions unchanged."
+- "Migrate playTone and setMasterProcessing to Sound objects and setProcessing, preserving timing and reverb units."
+- "Add bounded native attack variation and diagnose voice pressure with enableStats/disableStats."
 
-Use the [synthesis skill](../skills/ti-synthengine/SKILL.md) for exact options,
-public downloads, bundled TypeScript declarations and scoped performance evidence.
-Native finite-tone repetitions, ordered sequences, held voices and standalone
-JavaScript events have distinct ownership and timing contracts. Public 1.0.2 /
-API 1.0.0 lacks repetition and variation; detect support before enabling them.
+Use the [synthesis skill](../skills/ti-synthengine/SKILL.md) for checked Sound
+presets, controls, public downloads and TypeScript declarations. Finite events,
+held notes, native repetitions and patterns have distinct returns and cleanup.
+The [upgrade guide](../skills/ti-synthengine/references/upgrade-2.0.0.md) maps
+supported direct methods to the Sound interface and explains `version` metadata
+and processing units.
 
 ## Advertising — ti-admob-unified
 

@@ -1,7 +1,9 @@
 # Curated sound and interaction recipes
 
-These recipes use the core public contract shared by `ti.synthengine`
-1.0.2 / API 1.0.0 and 1.1.0 / API 1.1.0. They use only public option keys,
+These recipes use the supported direct native interface in `ti.synthengine` 2.0.0,
+also available in earlier 1.x modules. For reusable definitions in new code, use
+[Sound objects](sound-api.md) and preserve each recipe's original rendering interpretation.
+The recipes use only public option keys,
 keep every explicit envelope valid, and obtain
 waveforms from the runtime contract instead of hardcoding integers. Install the
 matching official Android/iOS packages and follow the owning-engine

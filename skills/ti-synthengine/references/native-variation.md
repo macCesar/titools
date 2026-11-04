@@ -1,27 +1,66 @@
-> Source snapshot: official TiSynthEngine documentation at commit `ec04f4e634075c41b55f66279eabcd78b9652d58` (2026-11-02). Published module 1.1.0; public API 1.1.0. Upstream `documentation/native-variation.md` SHA-256: `650d2c675dc4b4e09a85521812b7fedd3b02cb993a451378a8082e2b7782303a`.
+> Source snapshot: official TiSynthEngine documentation at commit `9d74aa45f84d3f2822d4aab76874efe37d81257f` (2026-11-03). Published module 2.0.0. Upstream `documentation/native-variation.md` SHA-256: `6cfd65b0741dea79d37bb5eee14d1bcb98445ee6b5db14a8c00e3ccfd00a5190`.
 
 # Native per-attack variation
 
 `variation` lets the engine choose bounded parameter values when it admits an attack. Repeated shots can have different pitch, noise color or filter settings without JavaScript randomization. Each voice keeps the chosen values for its lifetime; existing envelopes, sweeps and LFOs continue from that starting configuration.
 
-Android and iOS support this dictionary in the 1.1.0 packages, with public API version `1.1.0` and variation schema version `1`. The published 1.0.2 packages do not accept it.
+Android and iOS support this dictionary in TiSynth 2.0.0. The variation data schema is `1`. Store it in `sound.variation`; a pattern step can supply `steps[i].sound.variation`.
 
-## Select version 1.1.0
+<!-- TOC-START -->
+## Contents
 
-Install the matching Android and iOS 1.1.0 archives in the app and select them in `tiapp.xml`:
+- [Reuse a sound with variation](#reuse-a-sound-with-variation)
+- [Select the module version](#select-the-module-version)
+- [Detect support and start playback](#detect-support-and-start-playback)
+- [Supported locations](#supported-locations)
+- [Dictionary reference](#dictionary-reference)
+- [What amount means](#what-amount-means)
+- [Repeated independent effects](#repeated-independent-effects)
+- [Chords and application gain](#chords-and-application-gain)
+- [Sustained voices and explicit live edits](#sustained-voices-and-explicit-live-edits)
+- [Native loops and dictionary inheritance](#native-loops-and-dictionary-inheritance)
+- [Seeds and reproducibility](#seeds-and-reproducibility)
+- [Rejected configurations](#rejected-configurations)
+- [Studio and game integration](#studio-and-game-integration)
+- [Implementation and verification](#implementation-and-verification)
+
+<!-- TOC-END -->
+
+## Reuse a sound with variation
+
+```javascript
+var synth = require('ti.synthengine')
+var bell = synth.createSound({
+  sound: {
+    waveType: synth.getContract().waveTypes.SINE,
+    volume: 0.25, attack: 5, release: 120,
+    variation: { amount: 0.6, ranges: { volume: [0.18, 0.25], pitchCents: [-8, 8] } }
+  },
+  playback: { type: 'tone', notes: ['A4'], duration: 400 }
+})
+
+bell.play()
+bell.play({ notes: ['C5'] })
+```
+
+Call playback after engine startup. The detailed native dictionaries below explain source restrictions and inheritance. For Sound patterns, root variation belongs in `sound.variation` and a step replacement belongs in `steps[i].sound.variation`.
+
+## Select the module version
+
+Install the matching Android and iOS 2.0.0 archives in the app and select them in `tiapp.xml`:
 
 ```xml
 <modules>
-  <module platform="android" version="1.1.0">ti.synthengine</module>
-  <module platform="iphone" version="1.1.0">ti.synthengine</module>
+  <module platform="android" version="2.0.0">ti.synthengine</module>
+  <module platform="iphone" version="2.0.0">ti.synthengine</module>
 </modules>
 ```
 
-Rebuild and reinstall the application after replacing native modules. Copying module files alone does not update an installed app. Keep the published 1.0.2 archives separate; version 1.1.0 reports API `1.1.0`.
+Rebuild and reinstall the application after replacing native modules. Copying module files alone does not update an installed app. Keep historical released archives separate. The installed module version is available as `getDefaults().version`.
 
 ## Detect support and start playback
 
-Check both metadata fields. API version alone does not identify variation support. Omit the property completely when either announcement is missing, including when the requested amount is zero.
+Check both capability/schema fields. The module version alone is not a substitute for checking the feature needed. Omit the property completely when either announcement is missing, including when the requested amount is zero.
 
 ```javascript
 var synth = require('ti.synthengine')
@@ -276,10 +315,10 @@ Also check pitch corners near 1 Hz or the reported ceiling. A valid base pitch c
 
 Studio calls this control Variantes. Its displayed percentage maps linearly: 25% sends native amount `0.25`, 50% sends `0.5`, and 100% sends `1`. Studio prepares broader ranges for its editor. The games retain their authored range profiles.
 
-Frontier automatically applies authored ranges only to its eligible destruction sounds; Guardian applies them only to its two lasers. Both require the capability/schema pair and keep their existing recipes on older modules. Studio allows any source to opt in through compatible parameter ranges. See [Studio's control and preset guide](https://github.com/macCesar/TiSynth-Studio/blob/main/documentation/variation.md); the native contract in this document does not depend on a consumer app.
+Frontier automatically applies authored ranges only to its eligible destruction sounds; Guardian applies them only to its two lasers. Both require the capability/schema pair. Studio allows any source to opt in through compatible parameter ranges. See [Studio's control and preset guide](https://github.com/macCesar/TiSynth-Studio/blob/main/documentation/variation.md); the native contract in this document does not depend on a consumer app.
 
 ## Implementation and verification
 
-Both renderers use [`shared/synth_variation.h`](https://github.com/macCesar/TiSynthEngine/blob/7cd035409453b01df2736aef56f2316d94ca019c/shared/synth_variation.h): stable schema slots, integer-defined SplitMix64 finalization and exact uint32-to-uniform conversion. Parsing prepares a fixed 144-byte configuration outside the audio callback. The callback performs bounded arithmetic without allocation, locks, JavaScript calls or entropy services.
+Both renderers use [`shared/synth_variation.h`](https://github.com/macCesar/TiSynthEngine/blob/9d74aa45f84d3f2822d4aab76874efe37d81257f/shared/synth_variation.h): stable schema slots, integer-defined SplitMix64 finalization and exact uint32-to-uniform conversion. Parsing prepares a fixed 144-byte configuration outside the audio callback. The callback performs bounded arithmetic without allocation, locks, JavaScript calls or entropy services.
 
-Focused checks cover known vectors, both native validators, attack admission, chord ordinals, sustained stability, loops, revisions, rejection and old-renderer compatibility with controlled noise initialization. [Technical verification](native-variation-validation.md) records the measured memory/callback cost and its limits. Host results do not certify physical latency or listening quality on every device.
+Focused checks cover known vectors, both native validators, attack admission, chord ordinals, sustained stability, loops, revisions, rejection and old-renderer compatibility with controlled noise initialization. [Technical verification](https://github.com/macCesar/TiSynthEngine/blob/9d74aa45f84d3f2822d4aab76874efe37d81257f/documentation/native-variation-validation.md) records the measured memory/callback cost and its limits. Host results do not certify physical latency or listening quality on every device.

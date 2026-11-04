@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine documentation at commit `ec04f4e634075c41b55f66279eabcd78b9652d58` (2026-11-02). Published module 1.1.0; public API 1.1.0. Upstream `documentation/instruments-and-effects.md` SHA-256: `6c9b96c406c54426a1d37a85b42909a50621cc647d08d37fa89c19283b3acfa0`.
+> Source snapshot: official TiSynthEngine documentation at commit `9d74aa45f84d3f2822d4aab76874efe37d81257f` (2026-11-03). Published module 2.0.0. Upstream `documentation/instruments-and-effects.md` SHA-256: `3796589dd6b3ac23ad1b9808a17bc1302187b5de980b5b234521246bba745b3c`.
 
 # Instruments, sound effects and complete sequences
 
@@ -8,18 +8,18 @@ These are application roles built on the same native synthesizer and output chai
 
 ## Choose the playback contract
 
-| Intention                                                         | Native methods                                              | Who ends the sound?                                      | What to preserve                                                             |
-| ----------------------------------------------------------------- | ----------------------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| Play a key until the finger lifts                                 | `noteOn`, `updateNote`, `noteOff`                           | The app releases its unique voice ID                     | Timbre, tuning, envelope, contact ownership                                  |
-| Fire one finite sound                                             | `playTone`                                                  | Native duration and release                              | Original frequency, endpoints, duration, envelope, gain                      |
-| Repeat one finite tone, including simultaneous independent layers | `repeatTone({ intervalMs, ... })`, `updateTone`, `stopTone` | Native audio clock; stop cancels future attacks only     | Original finite-tone recipe, interval, overlap budget and each tone ID       |
-| Fire a simultaneous chord with shared shaping                     | `playChord`                                                 | Native duration and release                              | All pitches, per-note pan/detune, shared envelope, native chord compensation |
-| Play a melody, alarm, layered effect, or repeated firing pattern  | `playSequence`, optionally `updateSequence`                 | Native step clock; `stopSequence` cancels future attacks | Complete ordered steps, rests, lengths, overrides and independent layers     |
-| Add chorus, delay, reverb or creative saturation                  | `setMasterProcessing`                                       | The shared processor owns its tails                      | Routing, sends, input gain, effect settings and output headroom              |
+| Intention | Sound interface | Who ends the sound? |
+| --- | --- | --- |
+| Play a key until the finger lifts | Held definition's `play()` or `sound.noteOn()` | The owner calls its note control's `noteOff()` |
+| Fire one finite sound | Tone definition's `play()` | Finite duration includes release |
+| Repeat one finite tone or independent layer | Repeat definition's `play()` | Control `stop()` cancels future attacks; admitted attacks finish |
+| Fire a simultaneous chord | Chord definition's `play()` | Native duration and release |
+| Play an ordered score, alarm or pattern | Pattern definition's `play()` | Native clock; control `stop()` releases its voices |
+| Add chorus, delay, reverb or saturation | `synth.setProcessing()` | Shared processor retains bounded tails |
 
 The last row describes audio processing effects. Those processors are different from an authored sound effect, such as a laser or an explosion. A laser may use no reverb or delay at all.
 
-All examples below assume successful startup. Use constants from the installed module and check native acceptance:
+The detailed recipes below also show supported direct native calls to explain their rendering parameters. Reusable application code uses the Sound controls above; see the [Sound reference](sound-api.md). All examples assume successful startup:
 
 ```javascript
 var synth = require('ti.synthengine')
@@ -112,7 +112,7 @@ function missileSequence() {
 
 Timed and sequence routes are not automatically interchangeable. In the current native implementation, a `playTone` endpoint sweep progresses across the total timed duration, including release. A sequence endpoint sweep progresses across its explicit `length`, then holds the endpoint during release. Thus the timed 350 ms example and the sequence with `length: 300` do not have the same pitch trajectory, even though both finish after 350 ms and use the same endpoints. Sequence voices also use the held envelope's minimum 3 ms attack/release edges; very short or zero timed edges can differ. This matters most for short weapon/noise effects and is not corrected by merely copying the option names.
 
-For consistent manual and repeated auditions, use the same native interpretation for both. Preserve the original attack length when changing only the repetition interval; each new attack may overlap the prior voice. Do not claim exact timed-to-sequence fidelity from field equality or validator acceptance. Use API 1.1.0 `repeatTone({ intervalMs, ... })` to repeat the original finite-tone renderer directly. A JavaScript adapter that simply renames `duration` to `length` does not preserve that rendering contract.
+For consistent manual and repeated auditions, use the same native interpretation for both. Preserve the original attack length when changing only the repetition interval; each new attack may overlap the prior voice. Do not claim exact timed-to-sequence fidelity from field equality or validator acceptance. Use the retained `repeatTone({ intervalMs, ... })` method to repeat the original finite-tone renderer directly. A JavaScript adapter that simply renames `duration` to `length` does not preserve that rendering contract.
 
 For a sequence-owned burst, `stopSequence` also releases emitted voices. To stop repetitions while preserving those attacks, publish a finite traversal with `loop: false`, retain its current effect steps and suppress later variant attacks as appropriate. Natural completion leaves emitted voices to their own lengths/releases. Retain the first attack in an update that can arrive before the initial callback. Handle publication rejection explicitly, with bounded control retries if necessary; those retries must not trigger notes or queue new sound requests.
 
@@ -143,7 +143,7 @@ Each layer consumes one of 32 repetition slots, independently of the four sequen
 
 `updateTone` merges changes with the last accepted recipe and validates it as a whole. It changes the next scheduled attack without advancing it. `note` and `frequency` replace each other. A supplied variation dictionary replaces the previous one, and `{ amount: 0 }` disables future variation. Each repetition advances its reproducible native stream only for admitted attacks; parameter edits retain its counter, while changing seed restarts the succession. Sounding attacks keep their original recipe. See [the complete repetition contract](api.md#finite-tone-repetition).
 
-Native sequences remain appropriate for complete ordered scores. Keep every positive sequence ID and wait for matching `sequenceend` retirement when replacing a sequence. `stopSequence` releases that sequence's emitted voices, whereas `stopTone` lets admitted finite attacks finish. Application recipe functions remain ordinary JavaScript; there is no built-in named-recipe registry. Published 1.0.2 packages do not provide finite-tone repetition or variation.
+Native sequences remain appropriate for complete ordered scores. Keep every positive sequence ID and wait for matching `sequenceend` retirement when replacing a sequence. `stopSequence` releases that sequence's emitted voices, whereas `stopTone` lets admitted finite attacks finish. Application recipe functions remain ordinary JavaScript; there is no built-in named-recipe registry.
 
 ## 4. Polyphony, gain and output protection
 
@@ -157,7 +157,7 @@ Both musical notes and effects share the voice pool and output chain. Either can
 - Keep headroom at voice, processor input and master stages. Preserve source gains when importing a known recipe; changing the overlap pattern still needs new validation.
 - Creative `saturation` intentionally changes timbre. Final output limiting protects peaks but is not proof that the earlier mix is clean.
 
-Use `getStats` to inspect active/tail voices, pending commands, rejected publications, priority drops and voice steals. Enable diagnostics for `preLimiterPeakDb`, `maxLimiterReductionDb`, output peaks and callback load. See [gain staging](sound-design.md#chords-polyphony-and-gain), [processing](api.md#setmasterprocessingoptions), [statistics](stats-performance.md), and [troubleshooting](troubleshooting.md). Host measurements and successful validation do not replace listening on the target speaker/headphones at the intended overlap and physical volume.
+Use `getStats` to inspect active/tail voices, pending commands, rejected publications, priority drops and voice steals. Enable diagnostics for `preLimiterPeakDb`, `maxLimiterReductionDb`, output peaks and callback load. See [gain staging](sound-design.md#chords-polyphony-and-gain), [processing](api.md#setmasterprocessingoptions), [statistics](https://github.com/macCesar/TiSynthEngine/blob/9d74aa45f84d3f2822d4aab76874efe37d81257f/documentation/stats-performance.md), and [troubleshooting](troubleshooting.md). Host measurements and successful validation do not replace listening on the target speaker/headphones at the intended overlap and physical volume.
 
 ## Verify the route you actually ship
 

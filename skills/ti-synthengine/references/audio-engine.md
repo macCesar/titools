@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine documentation at commit `ec04f4e634075c41b55f66279eabcd78b9652d58` (2026-11-02). Published module 1.1.0; public API 1.1.0. Upstream `documentation/audio-engine.md` SHA-256: `3e7728703a9f82631f5c4ba2641b1a9735c0d3988ef9001b8e4a4f5e47d1818d`.
+> Source snapshot: official TiSynthEngine documentation at commit `9d74aa45f84d3f2822d4aab76874efe37d81257f` (2026-11-03). Module 2.0.0. Upstream `documentation/audio-engine.md` SHA-256: `d5cabb81a1f36d4f32d13d8a03bd492a73c3e34c1c0888bb8af9dfa15a4e4d41`.
 
 # Audio engine
 
@@ -29,7 +29,7 @@ The native signal path explains how mixing profiles and voice capacity affect th
 - [Sustained voices](#sustained-voices)
 - [Native transport and processing](#native-transport-and-processing)
 - [Unified transport acceptance boundaries](#unified-transport-acceptance-boundaries)
-- [Native finite-tone repetition (API 1.1.0)](#native-finite-tone-repetition-api-110)
+- [Native finite-tone repetition](#native-finite-tone-repetition)
 
 <!-- TOC-END -->
 
@@ -181,7 +181,7 @@ The envelope, the state-variable filter, the sweep helpers, the FM sine and the 
 
 ## Native per-attack variation
 
-Version 1.1.0 supports optional `variation`; published 1.0.2 packages reject it. Check both `capabilities.variation === true` and `variationSchemaVersion === 1`, then select bounded values at admitted attacks. The chosen configuration stays stable during that voice; existing sweeps, envelopes and explicit live edits keep their normal roles. Parsing prepares fixed-size state outside audio; the callback uses bounded shared arithmetic without allocation or locks. See [native variation](native-variation.md) for supported locations, source constraints, inheritance and seeds, and [technical verification](native-variation-validation.md) for measured compatibility and limits.
+TiSynth supports optional `sound.variation` on new attacks. Check both `capabilities.variation === true` and `variationSchemaVersion === 1`, then select bounded values at admitted attacks. The chosen configuration stays stable during that voice; existing sweeps, envelopes and explicit live edits keep their normal roles. Parsing prepares fixed-size state outside audio; the callback uses bounded shared arithmetic without allocation or locks. See [native variation](native-variation.md) for supported locations, source constraints, inheritance and seeds, and [technical verification](https://github.com/macCesar/TiSynthEngine/blob/9d74aa45f84d3f2822d4aab76874efe37d81257f/documentation/native-variation-validation.md) for measured compatibility and limits.
 
 ## Android implementation
 
@@ -201,7 +201,7 @@ The module targets iOS 15 or newer. The module archive contains device, simulato
 
 ## Latency
 
-The final output stage retains zero samples, removing the previous mandatory 10 ms lookahead. End-to-end latency still includes the hardware and operating-system output buffers, route transport (including Bluetooth), and JavaScript publication plus callback-boundary latency for a newly submitted event. Accepted sequence steps then follow the sample clock. Attack envelopes and spatial/effect processing retain their existing timing.
+The final output stage retains zero samples. End-to-end latency still includes the hardware and operating-system output buffers, route transport (including Bluetooth), and JavaScript publication plus callback-boundary latency for a newly submitted event. Accepted sequence steps then follow the sample clock. Attack envelopes and spatial/effect processing retain their existing timing.
 
 Android reports a valid timestamp-based stream-to-DAC estimate without adding the former lookahead. Unavailable estimates remain `null`; this iOS backend continues to report `null`.
 
@@ -296,49 +296,7 @@ Android ARM64 reuses coefficients across eight consecutive samples, with four-sa
 
 ## Own-platform performance verification
 
-The measurements in this section predate native variation and describe the archived revisions in the cited reports. They do not measure version 1.1.0. Its separate [variation verification](native-variation-validation.md) records compatibility, storage and callback checks.
-
-The [performance review](performance-review.json) separates measured host improvements, exact compatibility checks and pending device acceptance. Its [raw evidence](performance-review-evidence.zip) retains rejected prototypes and the investigation of idle/stereo regressions. The Apple FIR, stable-control cache and exact idle-effects bypass were evaluated as one atomic candidate and then rejected after physical 32-stereo timing regressed. All three production changes were removed together; the full-score publication and control-memory fixes remain.
-
-Matched 48 kHz/1024-frame iPad full-load runs completed 600 audio seconds without callback deadline misses, with p95 load upper bounds 0.427 for the reference and 0.383 for the rejected initial candidate. The original Apple callback was restored because 32-stereo bypass p95 regressed reproducibly, including continuous-voice windows. Android Sim20/Sim80 frame presentation remains near 60 FPS, while occasional Sim80 output underruns persist in both versions. Compact 48 kHz iPad memory growth is about 18.2 MiB in both versions; no material RAM saving or physical 192 kHz acceptance is claimed. These results and qualified listening observations are recorded separately in the review.
-
-`tools/build_ios_render_host.py` compiles the actual Objective-C render-block body and voice/transport helpers on macOS. It replaces hardware/session/Titanium startup and fixes only the noise-seed/disabled-diagnostic clock. Output and semantic state are compared against a separately archived reference from the same platform. This is an Apple renderer test; it does not execute AVAudioEngine or establish iPad scheduling, route recovery, footprint or listening acceptance.
-
-The commands below reproduce the historical pre-pipeline performance review. Use its archived candidate source when requiring exact PCM/state equality with `7ab3110`; the renderer since 1.0.2 intentionally removes the old final-output delay and changes overload behavior, so it cannot satisfy that earlier exact-output comparison. For the later correction, use the [audio pipeline validation](audio-pipeline-validation.md) protocol: align only the former output delay, compare no-overload PCM within the declared tolerance, and retain overload differences separately. The module's `tools/compare_output_pcm.py` checks the corresponding matched Android/Apple capture sets; host comparisons do not establish physical output latency.
-
-```sh
-mkdir -p /tmp/synth-reference
-git archive 7ab3110 | tar -x -C /tmp/synth-reference
-python3 tools/build_ios_render_host.py --source /tmp/synth-reference --output /tmp/apple-reference
-python3 tools/build_ios_render_host.py --output /tmp/apple-candidate
-python3 tools/compare_ios_render.py /tmp/apple-reference /tmp/apple-candidate
-python3 tools/benchmark_performance_review.py --baseline /tmp/apple-reference --candidate /tmp/apple-candidate --output /tmp/apple-performance.json
-/tmp/apple-candidate --metadata
-```
-
-The build tool defaults to the module's Apple Release `-Os` optimization. The comparator streams PCM for every fixture block and full original voice/tail, FIR/filter, limiter, effect-buffer and transport state at fixture checkpoints. Cases include five engine rates, zero/short/irregular blocks, all sources, held updates, replacements, send and position ramps, four sequences, effects, panic, drain and later re-enabling. A deliberately changed phase increment was rejected as a negative control.
-
-Finish compilation and fidelity checks before timing. The benchmark uses fixed matched warmups and at least ten alternating pairs; CPU and elapsed totals, p95, maxima and process high-water memory remain separate. Investigate repeatable total regressions above 2% or p95 regressions above 5%. Short-process or single-kernel gains do not establish whole-app performance. The Android producer harness exercises the actual JNI publication with supplied JVM array accessors, so its numbers exclude Java validation and VM allocation time.
-
-Full-score producers reserve a free bank without copying the previous score. Generic partial-bank callers still inherit the latest accepted bank, and publication retains its ownership, validation and mailbox checks. The iOS producer commits an already prepared score once; Android prepares its complete packet at native publication. Empty completion polls and empty metadata pruning avoid transient objects. Accepted edits of unknown iOS IDs do not create retained spatial metadata. Sequence capacity, diagnostics, event delivery cadence and public defaults are unchanged.
-
-The shared processor check is `cc -std=c99 -O2 -Wall -Wextra -Wpedantic tests/spatial_regression.c -lm -o /tmp/spatial_regression` followed by `/tmp/spatial_regression`. `tests/spatial_engine_host.cpp` uses the same compile flags as `engine_render_host.cpp` and verifies native left/right rendering, elevation changes, stealing and stopping. Java spatial validation is checked by `SynthSpatialContractRegression`; the common Java/iOS corpus also covers spatial acceptance and conflicts.
-
-### Reproduce a host CPU comparison
-
-Compile `tests/spatial_benchmark_host.cpp` with the same Oboe/JDK includes and definitions as `engine_render_host.cpp` above, replacing the source filename and choosing an output such as `/tmp/spatial_benchmark`. Supply a whitespace-separated timeline, one event per line, with these 25 columns in order:
-
-```text
-timeMs frequency frequencyEnd durationMs attackMs releaseMs decayMs sustain waveType volume noiseRate noiseRateEnd lowPassHz pulseWidth lfoFreq lfoDepth filterTypeIndex filterHz filterHzEnd filterQ fmRatio fmDepth fmDepthEnd pan panEnd
-```
-
-The filter indices are 0=none, 1=lowpass, 2=highpass and 3=bandpass. This internal harness bypasses public contract validation, so only feed valid event recipes. In binaural mode every event uses its `pan` column as spatialX and a synthetic moving elevation `0.8 * sin(timeMs / 1000)`; the other pan column is irrelevant to that mode. This tests CPU, not the localization of the original timeline.
-
-```sh
-python3 tools/benchmark_spatial.py /tmp/spatial_benchmark /path/to/timeline.txt
-```
-
-The script compares stereo and binaural using a warmup and five measured trials, reporting the median by audio processing time. There is no hardware stream or JavaScript bridge. Results include peak level, non-finite/clipped frames, voice replacements and processing time; they do not measure device CPU, latency, underruns, heat or battery.
+Source-specific measurements and reproduction commands are preserved in the [historical engine validation record](https://github.com/macCesar/TiSynthEngine/blob/9d74aa45f84d3f2822d4aab76874efe37d81257f/documentation/audio-engine-validation.md). Current Sound-interface acoustic and runtime checks are recorded in [Sound validation](https://github.com/macCesar/TiSynthEngine/blob/9d74aa45f84d3f2822d4aab76874efe37d81257f/documentation/sound-api-validation.md).
 
 ## Engine statistics
 
@@ -358,7 +316,7 @@ python3 tests/run_stats_java.py
 
 `tests/stats_engine_host.cpp` uses the Oboe/JDK host flags shown above. It tests native occupancy, reset while playing, saturated queues, binaural drain, shutdown and exact output equality with diagnostics enabled/disabled. CI obtains Oboe 1.11.0 headers and runs this native integration harness alongside the portable shared tests and stopped-engine Java API tests. iOS builds use the same telemetry core, but host Android renders do not execute the iOS audio callback.
 
-`tests/stats_benchmark_host.cpp` extends the spatial replay harness with silence, one/32 voices, replacement pressure, chords, scheduled note publications and short FIR drains in stereo/binaural. Build it twice with identical `-O3` flags: once against the previous engine using `-DSTATS_BASELINE`, and once against the current engine. Run `python3 tools/benchmark_stats.py BASELINE CURRENT` for one warmup and ten alternating trials/configuration, including current snapshots at 5 Hz. The harness verifies identical output hashes across all modes. The [measured comparison and limitations](stats-performance.md) explain what the host percentages establish and which results still require device tests.
+`tests/stats_benchmark_host.cpp` extends the spatial replay harness with silence, one/32 voices, replacement pressure, chords, scheduled note publications and short FIR drains in stereo/binaural. Build it twice with identical `-O3` flags: once against the previous engine using `-DSTATS_BASELINE`, and once against the current engine. Run `python3 tools/benchmark_stats.py BASELINE CURRENT` for one warmup and ten alternating trials/configuration, including current snapshots at 5 Hz. The harness verifies identical output hashes across all modes. The [measured comparison and limitations](https://github.com/macCesar/TiSynthEngine/blob/9d74aa45f84d3f2822d4aab76874efe37d81257f/documentation/stats-performance.md) explain what the host percentages establish and which results still require device tests.
 
 ## Sustained voices
 
@@ -379,18 +337,18 @@ Pre-limiter peak and maximum limiter reduction accumulate natively until reset, 
 
 Portable checks: compile and run `tests/sequence_core_regression.c`, `tests/effects_core_regression.c` and `tests/modulation_core_regression.c` with C11, optimization and libm. The transport test checks ten minutes at five sample rates against calculated event times, plus edits, swing, rests, chords and publication pressure. Effects tests check bypass, tails, panic, automation, memory and stability at 16, 44.1, 48, 96 and 192 kHz. On macOS, `tests/studio_contract_ios.m` validates the iOS configuration contract without Titanium.
 
-`tools/calibrate_studio.py --studio-root PATH` measures the production Android callback; add `--platform ios` for the production Apple callback. The report covers each preset/scenario at 1, 2, 4, 8, 16 and 32 voices, including independent low/mid/high notes, grouped chords, coherent unisons and overlapping releases. Recommendations target −6 dBFS before protection (with 0.01 dB margin) using the maximum measured peak of the declared usual 1-8-voice configuration and the public voice-volume limit. Larger workloads are separate stress diagnostics. The tool reports fixed scalar recommendations and never edits Studio. Effects and additional LFOs are disabled, so recommendations do not guarantee headroom for other configurations. See [audio pipeline validation](audio-pipeline-validation.md).
+`tools/calibrate_studio.py --studio-root PATH` measures the production Android callback; add `--platform ios` for the production Apple callback. The report covers each preset/scenario at 1, 2, 4, 8, 16 and 32 voices, including independent low/mid/high notes, grouped chords, coherent unisons and overlapping releases. Recommendations target −6 dBFS before protection (with 0.01 dB margin) using the maximum measured peak of the declared usual 1-8-voice configuration and the public voice-volume limit. Larger workloads are separate stress diagnostics. The tool reports fixed scalar recommendations and never edits Studio. Effects and additional LFOs are disabled, so recommendations do not guarantee headroom for other configurations. See [audio pipeline validation](https://github.com/macCesar/TiSynthEngine/blob/9d74aa45f84d3f2822d4aab76874efe37d81257f/documentation/audio-pipeline-validation.md).
 
 Device feedback superseded that headroom target for Studio's initial Cristal preset: its fixed gain is restored to 1 because the calibrated setting made a fresh Android installation barely audible. This adds 10.83 dB without saturation or voice-count normalization. Three coherent factory notes remain below the limiter ceiling at maximum master; eight independent coherent notes can require limiting. The calibration recommendations remain recorded separately from this active preset exception.
 
-The [Studio technical validation report](studio-validation.json) records the calibration and corrected full-chain host benchmark, including failed deadline acceptance and pending device checks. Its host performance result must not be presented as hardware realtime acceptance.
+The [Studio technical validation report](https://github.com/macCesar/TiSynthEngine/blob/9d74aa45f84d3f2822d4aab76874efe37d81257f/docs/validation/studio-validation.json) records the calibration and corrected full-chain host benchmark, including failed deadline acceptance and pending device checks. Its host performance result must not be presented as hardware realtime acceptance.
 
 ## Unified transport acceptance boundaries
 
-Public API 1.1.0 uses one renderer, at most 32 voices and capacity for 1-4 sequences. `bus` categories and per-voice sends share one effects chain. These API changes do not establish complete multiplatform ten-minute maximum-load acceptance; the measured iPad result and Android limits are recorded separately in [physical validation](physical-validation.json) and [the performance summary](stats-performance.md). Host timing, bypass comparisons, memory accounting, actual Android/iOS builds and the remaining device/listening checks are separate evidence. The cited Studio and unified-transport benchmarks are historical observations. In the pre-variation layout, effects buffers at 192 kHz used approximately 13.1 MiB and four maximum-size triple-bank transports used 8,627,712 bytes (8.23 MiB), excluding renderer voices and queues. Version 1.1.0 grows those four transports to 9,537,152 bytes (9.10 MiB) on the measured 64-bit macOS layout, an increase of 909,440 bytes; see [variation storage measurements](native-variation-validation.md#storage-and-callback-work). These structure sizes are not a new whole-process or physical-device measurement. Total accounting must also include renderer voices/tails, command queues, effects, bridge/canonical options and recovery peaks. The 32 MiB additional-memory target remains a target, not a certified bound for version 1.1.0.
+Source-specific measurements and reproduction commands are preserved in the [historical engine validation record](https://github.com/macCesar/TiSynthEngine/blob/9d74aa45f84d3f2822d4aab76874efe37d81257f/documentation/audio-engine-validation.md). Current Sound-interface acoustic and runtime checks are recorded in [Sound validation](https://github.com/macCesar/TiSynthEngine/blob/9d74aa45f84d3f2822d4aab76874efe37d81257f/documentation/sound-api-validation.md).
 
-## Native finite-tone repetition (API 1.1.0)
+## Native finite-tone repetition
 
 The shared C scheduler owns 32 repetition slots independently of sequence capacity. It retains fractional sample deadlines across normal and spatial render blocks. Each `repeatTone` attack emits the same finite-tone command used by a standalone `playTone`. The first attack starts at the first render opportunity, independent of tempo. Preallocated publication banks carry complete validated configurations; the callback allocates no memory, takes no producer locks and runs no JavaScript. Stop publication has a separate atomic path, so a full ordinary command queue cannot prevent cancellation at the next block.
 
-Each repetition owns its variation stream and admitted-attack counter. Admission failure skips that attack without advancing variation or queuing catch-up work. Updates preserve the pending deadline and affect its attack; a new interval controls the subsequent gap. `stopTone` cancels only future attacks, leaving admitted finite tones to complete. Global stop, shutdown and destruction invalidate slots and pending edits. These implementation guarantees require the updated 1.1.0 binaries; historical measurements elsewhere on this page do not measure this scheduler. See [the public contract](api.md#finite-tone-repetition).
+Each repetition owns its variation stream and admitted-attack counter. Admission failure skips that attack without advancing variation or queuing catch-up work. Updates preserve the pending deadline and affect its attack; a new interval controls the subsequent gap. `stopTone` cancels only future attacks, leaving admitted finite tones to complete. Global stop, shutdown and destruction invalidate slots and pending edits. Historical measurements elsewhere on this page do not measure this scheduler. See [the public contract](api.md#finite-tone-repetition).

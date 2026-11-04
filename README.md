@@ -172,7 +172,7 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 | ti-ui            | UI/UX patterns                      | Complex layouts, ListViews, platform UI                                                                                                                                                                                                                                                              |
 | ti-game          | 2D games with the `ti.game` module  | Sprites, physics, tile maps, HUDs, camera, focused keyboard/mouse/gamepad actions, Apple Metal/Catalyst                                                                                                                                                                                              |
 | ti-game-assets   | Visual and sound assets             | Image generation/editing, synthesis variants, stereo placement, alpha cleanup, manifests, parallax and complete exports                                                                                                                                                                              |
-| ti-synthengine   | Sound design with `ti.synthengine`  | Tones, finite-tone repetition, chords, retro/UI effects, alarms, sweeps, ADSR, filters, FM, binaural positioning, held voices, native sequences, master effects, LFOs, statistics, bounded attack variation, seeds, TypeScript declarations, instrument/effect fidelity and troubleshooting |
+| ti-synthengine   | Sound design with `ti.synthengine`  | TiSynth 2.0 reusable Sound presets, independent playback controls, tones/chords, held notes, native repetitions/patterns, ADSR, FM, filters, binaural positioning, shared effects, variation, TypeScript and troubleshooting |
 | ti-admob-unified | Advertising, privacy and mediation  | Official `ti.admob.unified` guides, copy-ready library, banners/fullscreen, UMP/ATT and selected-provider configuration                                                                                                                                                                              |
 | ti-api           | Complete Titanium API reference     | Looking up properties, methods, events                                                                                                                                                                                                                                                               |
 | ti-guides        | SDK fundamentals                    | tiapp.xml, Hyperloop, distribution, JDK/Xcode compatibility, release notes                                                                                                                                                                                                                           |
@@ -184,7 +184,7 @@ Notes:
 - The first eight (`ti-reuse-first`, `ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-game-assets`, `ti-synthengine`, `ti-admob-unified`) are specialist workflow skills reflecting TiTools' Titanium conventions and native-module contracts.
 - `ti-reuse-first` runs before the others. It asks whether a thing needs to exist and what already does it — a search order that stops at the first rung that holds — and sweeps an existing `app/` for near-identical controllers, single-listener events, wrappers around one call, and layout recomputed in JavaScript. It is deliberately two-sided: it says when adding a module or a Widget is the right answer, so the bias does not simply invert.
 - `ti-game` documents the `ti.game` native module (2D sprite engine using OpenGL ES 2.0 on Android and Metal on iPhone, iPad and Mac Catalyst). Its API reference was verified against the module source and records the reviewed upstream commit and fork documentation snapshot; it applies to Alloy and Classic projects alike and does not depend on PurgeTSS.
-- `ti-synthengine` translates sound requests into checked JavaScript for published Android/iOS `ti.synthengine` 1.1.0 / API 1.1.0, with compatibility guidance for 1.0.2 / API 1.0.0. Its 25-method surface includes finite-tone repetition, held voices, identified native sequences, tempo, categories/sends, master effects, live controls and diagnostics. Two curated recipe guides cover retro cues and interactive instruments. Official-source mirrors, validation reports, bundled examples, TypeScript declarations and raw evidence retain provenance; verified corrections are applied to official source prose before mirroring. Source notes distinguish reviewed source commits, published artifacts, platform differences and scoped listening/performance evidence.
+- `ti-synthengine` translates sound requests into checked JavaScript for published Android/iOS `ti.synthengine` 2.0.0. It covers reusable Sound definitions, independent held/repetition/pattern controls, atomic preset edits, temporary overrides, processing units and migration from supported direct methods. Practical references, curated recipes, runnable examples and TypeScript declarations support implementation and troubleshooting.
 - `ti-game-assets` treats images and sounds as essential game assets. It coordinates integrated `image_gen` artwork with `ti-synthengine` sound design, variants and stereo placement, and ships Pillow helpers for conservative alpha cleanup and per-world visual/audio manifests.
 - The latter five are documentation-mirror skills, audited against official sources via the internal `titools-skill-auditor`. See [Where the references come from](#where-the-references-come-from).
 - `purgetss` reference files are audited against the official PurgeTSS documentation and against the package source (the CLI and the generated `utilities.tss`), but its workflow conventions are opinionated.
@@ -546,51 +546,41 @@ frequency and pause/audio/input ownership remain application policies.
 
 ### ti-synthengine
 
-Sound design and synthesis with the public native `ti.synthengine` 1.1.0 release (public API 1.1.0) for Android and iOS. It adds `repeatTone`, `updateTone`, `stopTone`, `updateNote`, `enableStats` and `disableStats`, plus capability-gated native attack variation. Published 1.0.2 / API 1.0.0 remains documented for compatibility; it does not support repetition or variation. Read the [skill entry point](skills/ti-synthengine/SKILL.md) for task routing, exact API references and source provenance.
+Sound design with public **TiSynth 2.0.0** for Android and iOS. Create reusable definitions with `createSound()`, then play finite effects, chords, held instruments, native repetitions or patterns. Returned controls own live edits and cancellation; definitions survive engine shutdown/start. Existing direct methods remain supported. Read the [skill entry point](skills/ti-synthengine/SKILL.md), [Sound interface](skills/ti-synthengine/references/sound-api.md) and [upgrade guide](skills/ti-synthengine/references/upgrade-2.0.0.md).
 
-Public repository: [macCesar/TiSynthEngine](https://github.com/macCesar/TiSynthEngine).
-Download [Android 1.1.0](https://github.com/macCesar/TiSynthEngine/releases/tag/android-1.1.0)
-and [iOS 1.1.0](https://github.com/macCesar/TiSynthEngine/releases/tag/ios-1.1.0),
+Download [Android 2.0.0](https://github.com/macCesar/TiSynthEngine/releases/tag/android-2.0.0)
+and [iOS 2.0.0](https://github.com/macCesar/TiSynthEngine/releases/tag/ios-2.0.0)
+from [macCesar/TiSynthEngine](https://github.com/macCesar/TiSynthEngine),
 copy the ZIPs into the Titanium app root and follow the [installation guide](skills/ti-synthengine/references/guide.md).
-Requires Titanium SDK 13.2.0.GA+, Android compile API35+, and iOS 15+; the Apple package also supports Mac Catalyst.
+Requires Titanium SDK 13.2.0.GA+, Android compile API 35+, and iOS 15+; the Apple package includes Mac Catalyst.
 
 When it activates:
+
 - `tiapp.xml` declares `ti.synthengine`, or code calls `require('ti.synthengine')`
-- Generated UI/game cues, instruments, alarms, chords, percussion, sweeps or binaural headphone placement
-- Finite-tone repetition and future-attack edits, held voices, simultaneous native sequences, shared tempo, selective effects/sends, priorities or live voice controls
-- Bounded native attack variation, deterministic seeds, complete effect playback or playable instrument adaptations
-- Rejected calls, startup glitches, voice/queue diagnostics, render-load measurements or source/artifact compatibility questions
+- UI/game cues, instruments, alarms, chords, percussion, ADSR, sweeps, FM, filters or binaural placement
+- Reusable Sound presets, atomic edits, native repetition/patterns, held-note controls or migration from direct methods
+- Shared effects, routing/sends, native attack variation, gain staging or audio diagnostics
 
 Example prompts:
+
 ```
-"Create a short sci-fi laser that sweeps left to right with ti.synthengine."
-"Build a playable xylophone without retriggering a bar on every touchmove."
-"Move a held spatial motor and change its noise clock and low-pass cutoff without restarting it."
-"Run music and a victory cue as independent native sequences, then cancel only the cue."
-"Apply reverb to music while keeping UI dry, and change the global tempo."
-"Explain what the Android Sim80 headphone result proves about performance."
-"Vary repeated impacts natively on public 1.1.0 and retain a clean fallback on published 1.0.2."
-"Repeat the original swept shot with repeatTone, edit its interval and stop future attacks without truncating sounding shots."
-"Use updateNote and enableStats/disableStats, and check this recipe against the bundled TypeScript declarations."
+"Create one reusable laser Sound and play it at each projectile's position."
+"Build a playable xylophone with independent note controls and touch-cancellation cleanup."
+"Repeat this complete swept shot natively, edit its interval and stop future attacks while sounding shots finish."
+"Run music and a victory pattern independently, then cancel only the victory control."
+"Migrate this app to createSound, getContract().version and setProcessing without changing envelopes or reverb time."
+"Change future preset executions with set(), and update only this playing repetition."
 ```
 
 Key rules:
-- Native variation requires both capability and schema announcements; [ranges, seeds and loop behavior](skills/ti-synthengine/references/native-variation.md) are distinct from live edits
-- Preserve complete effects and layer gains when adapting or repeating them; read [instruments and effects](skills/ti-synthengine/references/instruments-and-effects.md)
-- Read constants and exact ranges from the API; strict option dictionaries reject invalid fields or conflicting pitch sources
-- Timed tone/chord `duration` includes release. Native sequence intervals and note lengths are separate; held voices release through their IDs
-- Use `repeatTone` for the original finite-tone renderer and `playSequence` for ordered scores; retain each accepted ID. `stopTone` preserves admitted finite attacks, while `stopSequence` releases its emitted voices. `stopAll()` is global panic
-- Native repetition requires its capability and methods, integer `intervalMs` 1–60,000, and capacity for overlaps. Its 32 slots are independent of sequence capacity; all attacks share the voice pool
-- `updateTone` preserves the next deadline, validates merged recipes and changes future attacks. Independent gameplay calls and intentionally JavaScript-timed finite bursts remain supported; clear app-owned timers during teardown
-- Use `updateNote`, `enableStats` and `disableStats` in new 1.1.0 code. `updateVoice` and `setStatsEnabled(Boolean)` remain deprecated equivalent aliases; feature-detect the aliases when supporting 1.0.2
-- `setTempo` drives beat-based transport and synchronized modulation; millisecond sequences keep fixed timing
-- `bus`/`applyTo` select processed categories; explicit `effectSend` overrides that selection. One shared chain and final limiter remain global
-- Held spatial position, noise clock and one-pole cutoff support compatible 10 ms updates. A stereo voice cannot become spatial through an update
-- Omit both spatial coordinates for stereo; zero coordinates enable binaural center. Do not combine binaural coordinates with stereo pan fields
-- Start after layout, keep one lifecycle owner, handle Boolean acceptance and tone/sequence IDs, release held notes and owned repetitions on cancellation, and shut down during teardown
-- Current platform metadata, zero-envelope and diagnostic differences are documented. Host checks and a short accepted listening scene do not establish complete physical maximum-load acceptance
 
-The [retro recipes](skills/ti-synthengine/references/recipes.md) and [interaction/instrument recipes](skills/ti-synthengine/references/recipes-interaction.md) preserve acoustic intent, overlap budgets and cleanup. The [official declarations](skills/ti-synthengine/assets/index.d.ts) provide TypeScript signatures alongside the runtime API. [Repetition validation](skills/ti-synthengine/references/native-tone-repetition-validation.md) separates native checks, transport storage and bounded host measurements from device/listening acceptance. [Source notes](skills/ti-synthengine/references/source-notes.md) identify the reviewed native commit and evidence limits.
+- Put synthesis/routing in `sound` and pitch/type/timing in `playback`; execution overrides are flat. `set()` validates atomic future revisions and replaces arrays completely.
+- Tone/chord playback returns Boolean acceptance; held, repeat and pattern playback return controls or `false`. Invalid Sound configurations throw descriptive errors. Keep controls with their interaction owners.
+- Finite `duration` includes release. Pattern `interval` and `length` remain separate; repetitions preserve finite-envelope interpretation and use integer millisecond intervals.
+- `setProcessing()` uses milliseconds for delay `time` and reverb `decay`. Direct `setMasterProcessing()` retains its original units. Runtime metadata uses `version`.
+- Preserve grouped chord gains, layer levels, overlap budgets, stereo/spatial rules and native variation bounds. Use one engine owner and clean up notes, controls, listeners and polling during teardown.
+
+The [retro recipes](skills/ti-synthengine/references/recipes.md) and [interaction recipes](skills/ti-synthengine/references/recipes-interaction.md) preserve acoustic intent and cleanup. [Instruments and effects](skills/ti-synthengine/references/instruments-and-effects.md) explains complete playback and adaptations. The [TypeScript declarations](skills/ti-synthengine/assets/index.d.ts) complement runtime validation. [Source notes](skills/ti-synthengine/references/source-notes.md) retain practical platform caveats; diagnose performance on the intended device and keep technical measurements separate from listening acceptance.
 
 ---
 
@@ -903,7 +893,7 @@ This pattern is documented across four bundled TiTools skills: `ti-ui`, `ti-expe
 | ti-game          | Native 2D Game Workflow       | 12 files (API, input, source notes, setup, physics, patterns, recipes, tile maps, debugging, roadmap)                                                                                                |
 | ti-game-assets   | Visual and Sound Assets       | 10 guides and a manifest example; alpha and contract validation scripts                                                                                                                              |
 | ti-admob-unified | Unified Advertising           | 20 Markdown references including production, rewarded interstitial, mediation parity, integration library guidance, provenance and game monetization; source/hash checks and official example assets |
-| ti-synthengine   | Native Sound Synthesis        | 18 Markdown references (15 official parts, 2 curated recipe guides, maintenance notes), official TypeScript declarations, complete validation reports/evidence and a reversible source hash manifest                                   |
+| ti-synthengine   | Native Sound Synthesis        | TiSynth 2.0 Sound interface and migration, native parameter reference, practical sound design/recipes, runnable example and TypeScript declarations |
 | ti-api           | Titanium API                  | 20 references for core/platform APIs and native modules                                                                                                                                              |
 | ti-guides        | SDK Fundamentals              | 16 references for setup, configuration, CLI and distribution                                                                                                                                         |
 | ti-howtos        | Native Integrations           | 18 references for platform features and integration workflows                                                                                                                                        |

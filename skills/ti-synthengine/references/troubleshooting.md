@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine documentation at commit `ec04f4e634075c41b55f66279eabcd78b9652d58` (2026-11-02). Published module 1.1.0; public API 1.1.0. Upstream `documentation/troubleshooting.md` SHA-256: `37fd3173ccfce393ab354713df66fbcc99c7281131ea45de1b3aae1e2d6f2160`.
+> Source snapshot: official TiSynthEngine documentation at commit `9d74aa45f84d3f2822d4aab76874efe37d81257f` (2026-11-03). Published module 2.0.0. Upstream `documentation/troubleshooting.md` SHA-256: `edf85de5fa08ead37820264f8381e1ef6e72d67c274fac0650dda723446dedbc`.
 
 # Troubleshooting
 
@@ -47,27 +47,25 @@ The envelope and filter rules apply to the final values of each sounding event. 
 
 For the shaping controls, check the discontinuous disabled values as well as the numeric range: `bitDepth` accepts 0 or 2 through 16, and `pulseWidthEnd` accepts 0 or 0.05 through 0.95. A `waveTable` must contain only finite values from -1 to 1.
 
-## The installed contract is wrong
+## The installed module version is wrong
 
 Check the native binary at startup:
 
 ```javascript
-var actual = synth.getDefaults().apiVersion
-if (actual !== '1.1.0') {
-  throw new Error('Expected TiSynthEngine 1.1.0, found ' + actual)
+var actual = synth.getDefaults().version
+if (actual !== '2.0.0') {
+  throw new Error('Expected TiSynthEngine 2.0.0, found ' + actual)
 }
 ```
 
-`apiVersion` describes the public contract, separately from the package version. Version 1.1.0 uses API 1.1.0; published 1.0.2 uses API 1.0.0. For version 1.1.0, confirm both entries in `tiapp.xml` pin module version 1.1.0. Then remove the application's build output and rebuild so Titanium does not reuse an archive from an earlier build. The module directories should be:
+`version` is the installed module version in both `getDefaults()` and `getContract()`. TiSynth has no independent API version. Pin both entries in `tiapp.xml` to the intended module version and rebuild the app so Titanium includes the new archive. For 2.0.0, the directories are:
 
 ```text
-modules/android/ti.synthengine/1.1.0/
-modules/iphone/ti.synthengine/1.1.0/
+modules/android/ti.synthengine/2.0.0/
+modules/iphone/ti.synthengine/2.0.0/
 ```
 
-Module version `1.1.0` reports API `1.1.0`. Check the capability/schema pair before using variation.
-
-For binaural, also inspect `getDefaults().limits.spatialX` and `.spatialY`. Use the official packages to avoid stale development binaries. Copying the package does not update an already installed app: rebuild and reinstall it.
+Check the required methods and capability/schema pair before using variation. For binaural, inspect `getDefaults().limits.spatialX` and `.spatialY`. Copying a package does not update an installed app: rebuild and reinstall it.
 
 ## Binaural does not change the position
 
@@ -85,7 +83,7 @@ The [integration guide](guide.md#integrate-binaural-in-a-2d-app) contains the Ja
 
 ## Statistics are missing or show `null`
 
-Older development packages can report 1.0.0 without statistics methods. Check `typeof synth.getStats`, `typeof synth.enableStats`, `typeof synth.disableStats` and `typeof synth.resetStats`; install the current packages, rebuild and reinstall the app if needed.
+The 2.0.0 module includes statistics methods. Check `typeof synth.getStats`, `typeof synth.enableStats`, `typeof synth.disableStats` and `typeof synth.resetStats`; install the current packages, rebuild and reinstall the app if needed.
 
 Basic voice/queue/rejection counters do not require diagnostics. Timing, output peak/RMS and limiter reduction require `enableStats()` and a measured callback/window. `null` means unmeasured or unavailable; keep it distinct from zero. The current iOS backend always reports `null` for underruns, output buffer size and estimated hardware latency. Android backend metrics are best-effort and independent of the diagnostic switch.
 
@@ -168,7 +166,7 @@ If later sounds remain silent, capture the Android or Xcode log around the route
 - Confirm the deployment target is iOS 15 or newer.
 - Check whether another module changes `AVAudioSession` after startup.
 - Test interruptions, phone calls, Bluetooth and route changes on hardware.
-- Use the matching device or simulator slice from the 1.1.0 archive.
+- Use the matching device or simulator slice from the 2.0.0 archive.
 
 ## What to include in a bug report
 
@@ -176,7 +174,7 @@ Include the platform, OS version, device model, Titanium SDK version, module ver
 
 ## Held notes, sequences or effects methods are missing
 
-Published 1.0.2 reports API version 1.0.0 and provides `updateVoice`; version 1.1.0 reports API 1.1.0 and recommends `updateNote`. Detect `noteOn`/`noteOff`/`updateNote`, all four sequence methods and `setMasterProcessing` according to the feature needed. Install matching current Android/iOS packages, rebuild and reinstall the consumer app. A stale development binary may report the same version without the complete release API. See [capability detection](guide.md#detect-required-capabilities).
+Use `createSound()` and its returned playback controls for held notes, repetitions and patterns. Detect `noteOn`/`noteOff`/`updateNote`, all four sequence methods and `setMasterProcessing` according to the feature needed. Install matching current Android/iOS packages, rebuild and reinstall the consumer app. A stale development binary may report the same version without the complete release API. See [capability detection](guide.md#detect-required-capabilities).
 
 ## A held voice does not release or update
 
@@ -198,7 +196,7 @@ Disabling effects closes input smoothly and lets bounded tails finish, then bypa
 
 ## A brief level dip is gone before the meter refreshes
 
-Enable diagnostics, reset deliberately, then inspect `preLimiterPeakDb` and `maxLimiterReductionDb`. They retain the native pre-limiter peak and greatest attenuation since reset, including brief interventions between UI polls. `limiterReductionDb` is a window measurement and can return to zero sooner. Older packages may omit the accumulated fields; disabled/unmeasured diagnostics return `null`. See [measurement example](advanced-examples.md#measure-peaks-and-limiter-reduction).
+Enable diagnostics, reset deliberately, then inspect `preLimiterPeakDb` and `maxLimiterReductionDb`. They retain the native pre-limiter peak and greatest attenuation since reset, including brief interventions between UI polls. `limiterReductionDb` is a window measurement and can return to zero sooner. Disabled or unmeasured diagnostics return `null`. See [measurement example](advanced-examples.md#measure-peaks-and-limiter-reduction).
 
 If accumulated attenuation remains near zero, investigate phase cancellation between repeated same-pitch oscillators, changing filters or the device speaker/protection path. Compatible released public held-note repetitions preserve predecessor phase; simultaneous unisons, timed calls and transport notes retain their existing phase behavior. Extra effects and resonance can consume headroom even when source gain is fixed. Compare matched levels through headphones and the physical speaker before changing the mix globally.
 
@@ -210,6 +208,6 @@ Compare one note with `SINE`, at a comfortable matched level, to distinguish the
 
 ## A variation dictionary is rejected or repeats the same sound
 
-Check both `capabilities.variation === true` and `variationSchemaVersion === 1` before sending the property. Published 1.0.2 packages reject it. Source restrictions and range ordering still apply at amount zero; near the frequency ceiling, validate tuning, detune, every chord pitch and active pitch endpoints together.
+Check both `capabilities.variation === true` and `variationSchemaVersion === 1` before sending the property. Source restrictions and range ordering still apply at amount zero; near the frequency ceiling, validate tuning, detune, every chord pitch and active pitch endpoints together.
 
 Repeated standalone calls with one explicit seed reproduce the selected parameters. Omit it for independent selections, or use a native sequence to retain an advancing stream across loops. A held voice samples only at attack, and `updateNote` rejects `variation`. For a running sequence, clear an inherited root dictionary with a valid amount-zero replacement; omitting it from a revision retains the merged value. See the [complete examples and rules](native-variation.md).

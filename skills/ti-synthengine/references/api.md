@@ -1,17 +1,18 @@
-> Source snapshot: official TiSynthEngine documentation at commit `ec04f4e634075c41b55f66279eabcd78b9652d58` (2026-11-02). Published module 1.1.0; public API 1.1.0. Upstream `documentation/api.md` SHA-256: `b58d60cf38a96157e523722d1f9cb9508f785cc2de9c2c1ff306e328c77df9dc`.
+> Source snapshot: official TiSynthEngine documentation at commit `9d74aa45f84d3f2822d4aab76874efe37d81257f` (2026-11-03). Published module 2.0.0. Upstream `documentation/api.md` SHA-256: `ca5b7f1a44ef79543399fd1a40fa83024c190c086b6412fb79dc54de91a2a329`.
 
 # API reference
 
 Module id: `ti.synthengine`
 
-Public API version: `1.1.0`
+Module version: `2.0.0`. Start with the [Sound object reference](sound-api.md) for reusable definitions, playback controls and property units. This page supplies the global controls and direct native parameter reference used by those interpretations.
 
-Android and iOS expose the same public methods, one event and waveform values. Option objects are strict: an unknown key is rejected with `unsupported_option`. Reported metadata and rejection diagnostics have platform differences; this reference does not promise sample-identical rendering between Android and iOS.
+Android and iOS expose the same public methods and waveform values. Pattern controls emit `end`; direct native sequences emit `sequenceend`. Option objects are strict: an unknown key is rejected with `unsupported_option`. Reported metadata and rejection diagnostics have platform differences; this reference does not promise sample-identical rendering between Android and iOS.
 
 <!-- TOC-START -->
 ## Contents
 
-- [Native attack variation (package 1.1.0)](#native-attack-variation-package-110)
+- [Sound interface](#sound-interface)
+- [Native attack variation](#native-attack-variation)
 - [Return values](#return-values)
 - [`getDefaults()`](#getdefaults)
 - [Limits](#limits)
@@ -42,9 +43,30 @@ Android and iOS expose the same public methods, one event and waveform values. O
 
 <!-- TOC-END -->
 
-## Native attack variation (package 1.1.0)
+## Sound interface
 
-The optional `variation` dictionary is accepted by `playTone`, `repeatTone`, `playChord`, `noteOn`, sequence `voice` and step `overrides`. Version 1.1.0 reports public API `1.1.0`. Both platforms advertise `capabilities.variation: true` and `variationSchemaVersion: 1`; consumers must require both before sending the dictionary. The published 1.0.2 packages do not support it. See [native variation](native-variation.md) for fields, source restrictions, seeds and examples. Native `amount` is linear; Studio divides its displayed percentage by 100. `updateNote` rejects the dictionary. An override replaces the whole inherited dictionary, and an amount-zero dictionary still validates its ranges.
+| Method | Result |
+| --- | --- |
+| `getContract()` | Installed module version, capabilities, units and structural property allowlists |
+| `createSound({ name?, sound?, playback? })` | A reusable validated Sound; no audio starts |
+| `Sound.play(changes?)` | Finite acceptance or an independent note/repetition/pattern control |
+| `Sound.noteOn(changes?)` | One held-note control, or `false` on operational rejection |
+| `Sound.set({ sound?, playback? })` | Atomic stored revision for future executions |
+| `Sound.getPreset()` | Detached authored definition |
+| Note `update(changes)`, `noteOff()` | Edit or release that held note |
+| Repetition `update(changes)`, `stop()` | Edit future finite attacks or cancel repetition |
+| Pattern `update(changes)`, `stop()`, `getState()` | Edit, stop or inspect that pattern |
+| Pattern `addEventListener('end', fn)`, `removeEventListener('end', fn)` | Subscribe to that pattern's completion or stopping |
+| `setProcessing(options)` | Shared effects with delay `time` and reverb `decay` in milliseconds |
+| `setVolume(number)`, `setTempo(number)` | Global gain and beats per minute |
+
+Sound definitions split synthesis into `sound` and execution defaults into `playback`. `play()` and `noteOn()` accept flat temporary overrides. Invalid configurations throw before publication; operational playback rejection returns `false`. Finite events end naturally without individual controls. Shutdown invalidates controls while definitions remain reusable.
+
+The [Sound reference](sound-api.md) supplies all properties, defaults, units and interpretation restrictions. The direct native methods below remain supported and document the validators and rendering parameters behind each interpretation. Use the [upgrade guide](upgrade-2.0.0.md) for method mappings.
+
+## Native attack variation
+
+The optional `variation` dictionary is accepted by `playTone`, `repeatTone`, `playChord`, `noteOn`, sequence `voice` and step `overrides`. Both platforms advertise `capabilities.variation: true` and `variationSchemaVersion: 1`; consumers must require both before sending the dictionary. See [native variation](native-variation.md) for fields, source restrictions, seeds and examples. Native `amount` is linear; Studio divides its displayed percentage by 100. `updateNote` rejects the dictionary. An override replaces the whole inherited dictionary, and an amount-zero dictionary still validates its ranges.
 
 ## Return values
 
@@ -60,11 +82,11 @@ Returns the installed contract without starting the audio stream.
 var contract = synth.getDefaults()
 ```
 
-The shared result in version 1.1.0 has this shape; Android adds the platform metadata described below. Published 1.0.2 packages retain the core contract but omit the variation capability/schema fields:
+The shared result in TiSynth 2.0.0 has this shape; Android adds the platform metadata described below. `version` identifies the installed module, with no independent API version:
 
 ```javascript
 {
-  apiVersion: '1.1.0',
+  version: '2.0.0',
   capabilities: { variation: true, toneRepetition: true },
   variationSchemaVersion: 1,
   defaults: {
@@ -127,7 +149,7 @@ The shared result in version 1.1.0 has this shape; Android adds the platform met
 
 `fmDepthEnd`, `detunes`, `spatialX` and `spatialY` have no reported default: their presence changes how the call is interpreted. Supplying a spatial coordinate enables binaural; the other coordinate then defaults to 0 internally. The maximum frequency is `sampleRate * 0.45`. Before the stream opens, the reported fallback is 19,845 Hz. Read the object again after `start()` if the precise device limit matters.
 
-In version 1.1.0, both platforms report `capabilities.variation: true` and `variationSchemaVersion: 1`. Android also reports `nativeSequence`, `masterProcessing` and `modulations` capability flags and `limits.stepDurationMs`. iOS omits those three older flags and `limits.stepDurationMs` while implementing the corresponding methods and millisecond sequences. Published 1.0.2 packages do not advertise variation; their iOS metadata has no `capabilities` map. Detect a required core method with `typeof synth.playSequence === 'function'` (and the other methods your feature needs); require the capability/schema pair specifically for variation. Both platforms report `limits.maxSequences`, `limits.priority` and `limits.effectSend`. `limits.stepDuration` is in beats on both platforms; millisecond sequences accept `4000 / sampleRate` through 60,000 even when `limits.stepDurationMs` is absent.
+Both platforms report `capabilities.variation: true` and `variationSchemaVersion: 1`. Android also reports `nativeSequence`, `masterProcessing` and `modulations` capability flags and `limits.stepDurationMs`. iOS omits those three flags and `limits.stepDurationMs` while implementing the corresponding methods and millisecond sequences. Detect a required core method with `typeof synth.playSequence === 'function'` (and the other methods your feature needs); require the capability/schema pair specifically for variation. Both platforms report `limits.maxSequences`, `limits.priority` and `limits.effectSend`. `limits.stepDuration` is in beats on both platforms; millisecond sequences accept `4000 / sampleRate` through 60,000 even when `limits.stepDurationMs` is absent.
 
 ## Limits
 
@@ -192,7 +214,7 @@ On iOS, `playback` ignores the silent switch and interrupts other apps' audio. `
 
 ## `noteOn(options)`
 
-Starts a sustained native voice. Detect `typeof synth.noteOn === 'function'`, `noteOff` and `updateNote` before enabling their controls; the current `apiVersion` is `1.1.0`. There is no duration limit and no JavaScript timer holds the note.
+Starts a sustained native voice. Detect `typeof synth.noteOn === 'function'`, `noteOff` and `updateNote` before enabling their controls; the installed module is identified by `getDefaults().version`. There is no duration limit and no JavaScript timer holds the note.
 
 | Field                                   | Rule                                                                                                                               |
 | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
@@ -319,7 +341,7 @@ Plays one pitch. It uses 440 Hz when neither pitch field is present. Note names 
 
 Omitted attack/release values are shortened to fit an event smaller than the default envelope. Explicit values must satisfy the documented envelope rules. `getDefaults()` reports the baseline defaults, not these per-event adjustments.
 
-In the current 1.0.2/1.1.0 implementations, the iOS timed tone/chord command builder
+In the native implementation, the iOS timed tone/chord command builder
 initially rounds accepted zero attack/release values to one sample, before
 trimming them to the event duration budget. Android retains zero samples.
 Validator acceptance does not imply identical zero-edge rendering. Held notes
@@ -455,7 +477,7 @@ Delay sync accepts `off`, `quarter`, `eighth`, `sixteenth`, `quarterTriplet`, `e
 
 Processing uses one shared chain for the selected categories. `applyTo` is an array drawn from `music`, `effects`, `ui` and `ambience`; default all four. Each event or held voice uses `bus: 'effects'` by default. Optional `effectSend: 0…1` overrides category selection for that voice. Input gain and master volume remain global. Selected audio receives chorus, delay, reverb and optional saturation, then recombines with dry audio before one final limiter. Send changes ramp over 10 ms.
 
-Defaults keep all effects and saturation disabled, input gain at unity, and preserve the earlier render exactly. Enabling saturation is an explicit sound-design choice. Output protection is still required with dense voices and effect feedback.
+Defaults keep all effects and saturation disabled, input gain at unity, and route audio through the unprocessed path. Enabling saturation is an explicit sound-design choice. Output protection is still required with dense voices and effect feedback.
 
 ## Additional voice modulation
 
@@ -697,7 +719,7 @@ Returns a new snapshot without resetting counters. Available before start and af
 | `bufferFrames`             | Android Oboe output buffer size; otherwise `null`. This is distinct from `callbackFrames`.                                  |
 | `estimatedOutputLatencyMs` | Android timestamp-based stream-to-DAC estimate, when valid; otherwise `null` (always `null` on this iOS backend).           |
 
-In the current 1.0.2/1.1.0 implementations, iOS early rejections in tempo/sequence operations and a
+In the native implementation, iOS early rejections in tempo/sequence operations and a
 stopped `setMasterProcessing` call can bypass rejection counters. Incompatible
 held spatial-mode or modulation updates also have uncounted iOS returns.
 Android counts more of these cases, but an unknown/retired `stopSequence` return

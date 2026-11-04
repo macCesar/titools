@@ -1,10 +1,10 @@
-> Source snapshot: official TiSynthEngine documentation at commit `ec04f4e634075c41b55f66279eabcd78b9652d58` (2026-11-02). Published module 1.1.0; public API 1.1.0. Upstream `documentation/examples.md` SHA-256: `1b3be798d8f606381696d9e00cda330c11475402397e4760dcbc3041a39ef404`.
+> Source snapshot: official TiSynthEngine documentation at commit `9d74aa45f84d3f2822d4aab76874efe37d81257f` (2026-11-03). Published module 2.0.0. Upstream `documentation/examples.md` SHA-256: `ee8aed566a63062ae63ae78f0b96fa8d73c70ab2f50aed81081c26acc24718af`.
 
 # Examples
 
-Every snippet on this page uses the TiSynthEngine 1.1.0 contract. Unless a snippet includes startup code, it assumes the engine is already running.
-
 Additional [curated recipes](recipes.md) provide application sound and interaction variants.
+
+Every snippet on this page uses TiSynthEngine 2.0.0 (including its retained direct playback methods). Unless a snippet includes startup code, it assumes the engine is already running.
 
 For interactive instruments and native processing, begin with [held motors](advanced-examples.md#sustained-game-motor), [native sequences](advanced-examples.md#native-sequence-with-chords-and-edits), [master processing](advanced-examples.md#chorus-delay-reverb-and-creative-saturation) or [two LFOs](advanced-examples.md#two-voice-lfos). Use matching official packages and check method availability before enabling a feature.
 
@@ -13,14 +13,18 @@ var synth = require('ti.synthengine')
 var contract = synth.getDefaults()
 var WAVE = contract.waveTypes
 
-if (contract.apiVersion !== '1.1.0') {
-  throw new Error('TiSynthEngine 1.1.0 is required')
+if (contract.version !== '2.0.0') {
+  throw new Error('TiSynthEngine 2.0.0 is required')
 }
 ```
 
 <!-- TOC-START -->
 ## Contents
 
+- [Reuse a sound with different notes](#reuse-a-sound-with-different-notes)
+- [Hold a note and release its control](#hold-a-note-and-release-its-control)
+- [Repeat finite attacks](#repeat-finite-attacks)
+- [Direct native parameter examples](#direct-native-parameter-examples)
 - [Start once after layout](#start-once-after-layout)
 - [Built-in waveforms](#built-in-waveforms)
 - [Variable-rate filtered noise](#variable-rate-filtered-noise)
@@ -51,6 +55,59 @@ if (contract.apiVersion !== '1.1.0') {
 - [Positioned headphone effect](#positioned-headphone-effect)
 
 <!-- TOC-END -->
+
+## Reuse a sound with different notes
+
+```javascript
+var bell = synth.createSound({
+  sound: { waveType: WAVE.SINE, volume: 0.25, attack: 5, release: 120 },
+  playback: { type: 'tone', notes: ['A4'], duration: 400 }
+})
+
+bell.play()
+bell.play({ notes: ['C5'], volume: 0.15 })
+bell.set({ sound: { volume: 0.2 } })
+```
+
+Execution overrides leave the stored definition unchanged. `set()` validates an atomic revision for future executions. For an atomic chord, declare `playback.type: 'chord'` and supply a pitch array.
+
+## Hold a note and release its control
+
+```javascript
+var instrument = synth.createSound({
+  sound: { waveType: WAVE.TRIANGLE, volume: 0.2, attack: 8, release: 180 },
+  playback: { type: 'held', notes: ['C4'] }
+})
+
+var note = instrument.noteOn({ notes: ['E4'] })
+if (note) {
+  note.update({ notes: ['G4'], volume: 0.15 })
+  note.noteOff()
+}
+```
+
+Keep each note control with its interaction owner. On a rejected release, retain it for bounded retry or owner shutdown. A control cannot act on a restarted engine.
+
+## Repeat finite attacks
+
+```javascript
+var shot = synth.createSound({
+  sound: { waveType: WAVE.SQUARE, volume: 0.1, attack: 2, release: 40 },
+  playback: { type: 'repeat', frequencies: [880], duration: 105, interval: 150 }
+})
+
+var firing = shot.play()
+if (firing) {
+  firing.update({ interval: 120 })
+  firing.stop()
+}
+```
+
+The native clock schedules attacks. `stop()` cancels future attacks; admitted 105 ms attacks finish naturally. See [patterns](sound-api.md#patterns) for ordered scores, chords and rests, and [processing](sound-api.md#units-and-processing) for shared effects in milliseconds.
+
+## Direct native parameter examples
+
+The remaining recipes exercise the supported direct methods and their precise native parameter dictionaries. For reusable application sounds, store synthesis fields under `sound`, pitches/timing under `playback`, and use the controls above. The [Sound reference](sound-api.md) lists interpretation-specific restrictions; the [upgrade guide](upgrade-2.0.0.md) maps direct names and units.
 
 ## Start once after layout
 

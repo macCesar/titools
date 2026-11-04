@@ -1,21 +1,23 @@
+var SoundPreset = require('lib/soundPreset')
 var sequenceScore = require('lib/sequenceScore')
 var Synth = require('ti.synthengine')
 
 var sequenceOwner = require('lib/sequenceOwner')(Synth, {
-  rejected: function() { setStatus('Request rejected · sequence publication', COLORS.red) }
+  rejected: function() { setStatus('Request rejected · sequence publication', COLORS.red) },
+  ended: onSequenceEnd
 })
 function publishSequence(options) { return sequenceOwner.submit(options) }
 
-var defaults = Synth.getDefaults()
-if (!defaults || defaults.apiVersion !== '1.1.0') {
-  throw new Error('TiSynthEngine 1.1.0 is required')
+var defaults = Synth.getContract()
+if (!defaults || defaults.version !== '2.0.0') {
+  throw new Error('TiSynthEngine 2.0.0 is required')
 }
 
 if (!defaults.limits || !defaults.limits.spatialX || !defaults.limits.spatialY
   || typeof Synth.getStats !== 'function' || typeof Synth.resetStats !== 'function'
   || typeof Synth.enableStats !== 'function' || typeof Synth.disableStats !== 'function'
-  || typeof Synth.repeatTone !== 'function' || typeof Synth.updateTone !== 'function' || typeof Synth.stopTone !== 'function') {
-  throw new Error('Install the current TiSynthEngine 1.1.0 packages, then rebuild and reinstall this app')
+  || typeof Synth.createSound !== 'function') {
+  throw new Error('Install the current TiSynthEngine Sound API packages, then rebuild and reinstall this app')
 }
 
 var WAVE = defaults.waveTypes
@@ -24,7 +26,11 @@ var engineRunning = false
 var startTimer = null
 var statsTimer = null
 var diagnosticsEnabled = false
-var repeatingToneId = 0
+var repeatingTone = null
+var repeatingSound = Synth.createSound({
+  sound: { attack: 2, release: 40, waveType: WAVE.SQUARE, volume: 0.1 },
+  playback: { type: 'repeat', frequencies: [1380], frequencyEnd: 340, duration: 105, interval: 200 }
+})
 var selectedSession = 'playback'
 var masterVolume = 1
 var binauralEnabled = true
@@ -202,7 +208,7 @@ function makeHero() {
     height: Ti.UI.SIZE,
     top: dp(16)
   })
-  badgeRow.add(makeBadge('API 1.1.0', COLORS.indigo))
+  badgeRow.add(makeBadge('API 2.0.0', COLORS.indigo))
   badgeRow.add(makeBadge('ANDROID + iOS', COLORS.surfaceMuted))
   hero.add(badgeRow)
   hero.add(statusPill)
@@ -327,14 +333,14 @@ function makeCompactAction(options) {
 }
 
 function playMatchedSine(note) {
-  return Synth.playTone({
+  return Synth.createSound(SoundPreset.fromRecipe('tone', {
     note: note,
     duration: 600,
     attack: 10,
     release: 80,
     volume: 0.7,
     waveType: WAVE.SINE
-  })
+  })).play()
 }
 
 function playMatchedArpeggio(pitchKey, pitches) {
@@ -394,18 +400,18 @@ waveNames.forEach(function (name, index) {
         waveType: waveTypes[index]
       }
       if (waveTypes[index] === WAVE.WAVETABLE) options.waveTable = STEPPED_WAVE
-      return Synth.playTone(options)
+      return Synth.createSound(SoundPreset.fromRecipe('tone', options)).play()
     }
   }))
 })
 waveSection.add(Ti.UI.createView({ height: dp(12) }))
 scrollView.add(waveSection)
 
-// A repeated finite recipe uses its native owner ID; there is no attack timer.
+// A repeated finite recipe retains its own control; there is no attack timer.
 function stopRepeatingTone() {
-  if (!repeatingToneId) return true
-  if (!Synth.stopTone({ toneId: repeatingToneId })) return false
-  repeatingToneId = 0
+  if (!repeatingTone) return true
+  if (!repeatingTone.stop()) return false
+  repeatingTone = null
   return true
 }
 var repeatSection = makeSection('Finite-tone repetition',
@@ -414,19 +420,17 @@ var repeatSection = makeSection('Finite-tone repetition',
 repeatSection.add(makeAction({
   title: 'START REPEATING', color: COLORS.teal, pressedColor: COLORS.tealPressed,
   onPress: function () {
-    if (repeatingToneId) return true
-    var id = Synth.repeatTone({ frequency: 1380, frequencyEnd: 340,
-      duration: 105, attack: 2, release: 40, waveType: WAVE.SQUARE,
-      volume: 0.1, intervalMs: 200 })
-    if (!Number.isInteger(id) || id <= 0) return false
-    repeatingToneId = id
+    if (repeatingTone) return true
+    var control = repeatingSound.play()
+    if (!control) return false
+    repeatingTone = control
     return true
   }
 }))
 repeatSection.add(makeAction({
   title: 'EDIT REPEATING', color: COLORS.teal, pressedColor: COLORS.tealPressed,
   onPress: function () {
-    return !!repeatingToneId && Synth.updateTone({ toneId: repeatingToneId, intervalMs: 150, volume: 0.08 })
+    return !!repeatingTone && repeatingTone.update({ interval: 150, volume: 0.08 })
   }
 }))
 repeatSection.add(makeAction({
@@ -488,7 +492,7 @@ motionSection.add(makeAction({
   pressedColor: COLORS.tealPressed,
   status: 'Pan sweep · left to right',
   onPress: function () {
-    return Synth.playTone({
+    return Synth.createSound(SoundPreset.fromRecipe('tone', {
       frequency: 440,
       duration: 2000,
       attack: 20,
@@ -496,7 +500,7 @@ motionSection.add(makeAction({
       volume: 0.8,
       pan: -1.0,
       panEnd: 1.0
-    })
+    })).play()
   }
 }))
 motionSection.add(makeAction({
@@ -505,7 +509,7 @@ motionSection.add(makeAction({
   pressedColor: COLORS.pinkPressed,
   status: 'Pitch sweep · 200 to 900 Hz',
   onPress: function () {
-    return Synth.playTone({
+    return Synth.createSound(SoundPreset.fromRecipe('tone', {
       frequency: 200,
       frequencyEnd: 900,
       duration: 400,
@@ -513,7 +517,7 @@ motionSection.add(makeAction({
       release: 40,
       volume: 0.7,
       waveType: WAVE.SAWTOOTH
-    })
+    })).play()
   }
 }))
 motionSection.add(makeAction({
@@ -522,7 +526,7 @@ motionSection.add(makeAction({
   pressedColor: COLORS.orangePressed,
   status: 'LFO vibrato · 5 Hz',
   onPress: function () {
-    return Synth.playTone({
+    return Synth.createSound(SoundPreset.fromRecipe('tone', {
       frequency: 440,
       duration: 2000,
       attack: 20,
@@ -530,7 +534,7 @@ motionSection.add(makeAction({
       volume: 0.7,
       lfoFreq: 5,
       lfoDepth: 30
-    })
+    })).play()
   }
 }))
 motionSection.add(Ti.UI.createView({ height: dp(16) }))
@@ -551,7 +555,7 @@ retroSection.add(makeAction({
   pressedColor: COLORS.brownPressed,
   status: 'Filtered sample-and-hold noise sweep',
   onPress: function () {
-    return Synth.playTone({
+    return Synth.createSound(SoundPreset.fromRecipe('tone', {
       frequency: 120,
       duration: 760,
       attack: 1,
@@ -562,7 +566,7 @@ retroSection.add(makeAction({
       noiseRateEnd: 650,
       lowPassHz: 2500,
       bitDepth: 8
-    })
+    })).play()
   }
 }))
 retroSection.add(makeAction({
@@ -571,7 +575,7 @@ retroSection.add(makeAction({
   pressedColor: COLORS.orangePressed,
   status: 'Square pulse-width sweep',
   onPress: function () {
-    return Synth.playTone({
+    return Synth.createSound(SoundPreset.fromRecipe('tone', {
       note: 'A3',
       duration: 700,
       attack: 3,
@@ -580,7 +584,7 @@ retroSection.add(makeAction({
       waveType: WAVE.SQUARE,
       pulseWidth: 0.1,
       pulseWidthEnd: 0.86
-    })
+    })).play()
   }
 }))
 retroSection.add(makeAction({
@@ -589,7 +593,7 @@ retroSection.add(makeAction({
   pressedColor: COLORS.tealPressed,
   status: 'Custom stepped wavetable',
   onPress: function () {
-    return Synth.playTone({
+    return Synth.createSound(SoundPreset.fromRecipe('tone', {
       note: 'D4',
       duration: 680,
       attack: 4,
@@ -598,7 +602,7 @@ retroSection.add(makeAction({
       waveType: WAVE.WAVETABLE,
       waveTable: STEPPED_WAVE,
       bitDepth: 8
-    })
+    })).play()
   }
 }))
 retroSection.add(makeAction({
@@ -658,14 +662,14 @@ harmonySection.add(makeAction({
   pressedColor: COLORS.blue,
   status: 'C major triad · sine',
   onPress: function () {
-    return Synth.playChord({
+    return Synth.createSound(SoundPreset.fromRecipe('chord', {
       frequencies: [261.63, 329.63, 392.0],
       duration: 1200,
       attack: 20,
       release: 300,
       volume: 0.7,
       panSpread: 0.8
-    })
+    })).play()
   }
 }))
 harmonySection.add(makeAction({
@@ -674,7 +678,7 @@ harmonySection.add(makeAction({
   pressedColor: COLORS.indigoPressed,
   status: 'C major chord · square and wide',
   onPress: function () {
-    return Synth.playChord({
+    return Synth.createSound(SoundPreset.fromRecipe('chord', {
       notes: ['C4', 'E4', 'G4', 'C5'],
       duration: 1000,
       attack: 10,
@@ -682,7 +686,7 @@ harmonySection.add(makeAction({
       volume: 0.6,
       waveType: WAVE.SQUARE,
       pans: [-0.9, -0.3, 0.3, 0.9]
-    })
+    })).play()
   }
 }))
 harmonySection.add(Ti.UI.createView({ height: dp(16) }))
@@ -776,7 +780,7 @@ expressiveSection.add(makeAction({
   pressedColor: COLORS.greenPressed,
   status: 'Pluck · decay and sustain',
   onPress: function () {
-    return Synth.playTone({
+    return Synth.createSound(SoundPreset.fromRecipe('tone', {
       note: 'E4',
       duration: 900,
       attack: 2,
@@ -785,7 +789,7 @@ expressiveSection.add(makeAction({
       release: 380,
       volume: 0.6,
       waveType: WAVE.TRIANGLE
-    })
+    })).play()
   }
 }))
 expressiveSection.add(makeAction({
@@ -794,7 +798,7 @@ expressiveSection.add(makeAction({
   pressedColor: COLORS.orangePressed,
   status: 'Wah · band-pass cutoff sweep',
   onPress: function () {
-    return Synth.playTone({
+    return Synth.createSound(SoundPreset.fromRecipe('tone', {
       note: 'A2',
       duration: 1000,
       attack: 10,
@@ -805,7 +809,7 @@ expressiveSection.add(makeAction({
       filterHz: 350,
       filterHzEnd: 2400,
       filterQ: 5
-    })
+    })).play()
   }
 }))
 expressiveSection.add(makeAction({
@@ -814,7 +818,7 @@ expressiveSection.add(makeAction({
   pressedColor: COLORS.indigoPressed,
   status: 'Bell · FM index decays',
   onPress: function () {
-    return Synth.playTone({
+    return Synth.createSound(SoundPreset.fromRecipe('tone', {
       note: 'C5',
       duration: 2600,
       attack: 1,
@@ -826,7 +830,7 @@ expressiveSection.add(makeAction({
       fmRatio: 3.5,
       fmDepth: 4,
       fmDepthEnd: 0
-    })
+    })).play()
   }
 }))
 expressiveSection.add(makeAction({
@@ -835,7 +839,7 @@ expressiveSection.add(makeAction({
   pressedColor: COLORS.blue,
   status: 'Electric piano · FM index mellows',
   onPress: function () {
-    return Synth.playTone({
+    return Synth.createSound(SoundPreset.fromRecipe('tone', {
       note: 'E3',
       duration: 1800,
       attack: 3,
@@ -847,7 +851,7 @@ expressiveSection.add(makeAction({
       fmRatio: 1,
       fmDepth: 2.2,
       fmDepthEnd: 0.25
-    })
+    })).play()
   }
 }))
 expressiveSection.add(makeAction({
@@ -856,7 +860,7 @@ expressiveSection.add(makeAction({
   pressedColor: COLORS.pinkPressed,
   status: 'Thick chord · detuned voices',
   onPress: function () {
-    return Synth.playChord({
+    return Synth.createSound(SoundPreset.fromRecipe('chord', {
       notes: ['A3', 'E4', 'A3', 'E4', 'A3', 'E4'],
       detunes: [-9, -9, 0, 0, 9, 9],
       duration: 3200,
@@ -867,7 +871,7 @@ expressiveSection.add(makeAction({
       filterType: 'lowpass',
       filterHz: 1500,
       panSpread: 0.8
-    })
+    })).play()
   }
 }))
 
@@ -887,11 +891,11 @@ expressiveSection.add(makeAction({
         volume: [0.291, 0.3], fmDepth: [2.944, 3.456], pitchCents: [-12, 12]
       } }
     }
-    return Synth.playTone(options)
+    return Synth.createSound(SoundPreset.fromRecipe('tone', options)).play()
   }
 }))
 
-var patternEndLabel = makeText('sequenceend: no pattern yet', {
+var patternEndLabel = makeText('end: no pattern yet', {
   top: dp(8),
   left: dp(16),
   right: dp(16),
@@ -901,21 +905,20 @@ var patternEndLabel = makeText('sequenceend: no pattern yet', {
 
 function onSequenceEnd(event) {
   patternEndLabel.text = event.reason === 'completed'
-    ? 'sequenceend: completed'
-    : 'sequenceend: stopped'
+    ? 'end: completed'
+    : 'end: stopped'
   setStatus(patternEndLabel.text, event.reason === 'completed' ? COLORS.green : COLORS.yellow)
 }
 
-Synth.addEventListener('sequenceend', onSequenceEnd)
 
 expressiveSection.add(makeAction({
   title: 'PATTERN END\nTap once to finish; tap again quickly to replace',
   color: COLORS.yellow,
   pressedColor: COLORS.yellowPressed,
   textColor: COLORS.canvas,
-  status: 'Pattern running · waiting for sequenceend',
+  status: 'Pattern running · waiting for end',
   onPress: function () {
-    patternEndLabel.text = 'sequenceend: pattern running'
+    patternEndLabel.text = 'end: pattern running'
     return publishSequence(sequenceScore({
       bpm: 132,
       noteValue: '8n',
@@ -984,10 +987,10 @@ spatialPoints.forEach(function (point, index) {
     title: point[0] + '\nNoise burst',
     fontSize: 11, color: COLORS.teal, pressedColor: COLORS.tealPressed,
     onPress: function () {
-      return Synth.playTone(Object.assign({
+      return Synth.createSound(SoundPreset.fromRecipe('tone', Object.assign({
         frequency: 200, waveType: WAVE.NOISE, duration: 550,
         attack: 5, release: 200, volume: 0.3
-      }, placement(point[1], point[2])))
+      }, placement(point[1], point[2])))).play()
     }
   }))
 })
@@ -996,10 +999,10 @@ spatialSection.add(makeAction({
   color: COLORS.blueDark, pressedColor: COLORS.blue,
   onPress: function () {
     var position = binauralEnabled ? { spatialX: 0.7, spatialY: 1 } : { panSpread: 0, pans: [0.7, 0.7, 0.7] }
-    return Synth.playChord(Object.assign({
+    return Synth.createSound(SoundPreset.fromRecipe('chord', Object.assign({
       notes: ['C4', 'E4', 'G4'], duration: 1200, attack: 15, release: 300,
       volume: 0.4, waveType: WAVE.SAWTOOTH
-    }, position))
+    }, position))).play()
   }
 }))
 spatialSection.add(makeAction({
@@ -1035,10 +1038,10 @@ var sessionLabel = makeText('Session: playback', { left: dp(16), right: dp(16), 
     color: COLORS.blueDark, pressedColor: COLORS.blue,
     accessibilityHint: 'Restarts the engine with this session policy',
     onPress: function () {
-      repeatingToneId = 0; sequenceOwner.reset(); Synth.shutdown()
+      repeatingTone = null; sequenceOwner.reset(); Synth.shutdown()
       engineRunning = false
       selectedSession = session
-      patternEndLabel.text = 'sequenceend: cancelled by shutdown (no event)'
+      patternEndLabel.text = 'end: cancelled by shutdown (no event)'
       return startAppCycles()
     }
   }))
@@ -1142,7 +1145,7 @@ boostRow.add(makeGridAction({
   status: 'Future attacks cancelled; active voices fading',
   accessibilityHint: 'Cancels future attacks and fades current voices',
   onPress: function () {
-    repeatingToneId = 0; sequenceOwner.stop(); Synth.stopAll()
+    repeatingTone = null; sequenceOwner.stop(); Synth.stopAll()
   }
 }))
 controlSection.add(boostRow)
@@ -1164,7 +1167,7 @@ win.add(scrollView)
 // ---------------------------------------------------------------------------
 
 function setMasterVolume(volume) {
-  if (!Synth.setVolume({ volume: volume })) return false
+  if (!Synth.setVolume(volume)) return false
   masterVolume = volume
   return true
 }
@@ -1210,7 +1213,6 @@ function cleanup() {
   stopStatsPolling()
   Synth.disableStats()
   diagnosticsEnabled = false
-  Synth.removeEventListener('sequenceend', onSequenceEnd)
   win.removeEventListener('postlayout', onFirstPostLayout)
   win.removeEventListener('open', hideAndroidActionBar)
   win.removeEventListener('focus', hideAndroidActionBar)
@@ -1221,7 +1223,7 @@ function cleanup() {
     startTimer = null
   }
   if (engineRunning) {
-    repeatingToneId = 0; sequenceOwner.reset(); Synth.shutdown()
+    repeatingTone = null; sequenceOwner.reset(); Synth.shutdown()
     engineRunning = false
   }
 }

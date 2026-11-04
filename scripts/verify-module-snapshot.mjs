@@ -46,8 +46,8 @@ function markdownFiles(dir, base, found = []) {
   return found;
 }
 
-export async function verifySnapshot(source, skill) {
-  const snapshot = JSON.parse(readFileSync(path.join(skill, 'references/source-snapshot.json'), 'utf8'));
+export async function verifySnapshot(source, skill, metadata = path.join(skill, 'references/source-snapshot.json')) {
+  const snapshot = JSON.parse(readFileSync(metadata, 'utf8'));
   const changed = [];
   const missing = [];
   const modifiedMirror = [];
@@ -123,7 +123,9 @@ async function main() {
   }
   if (!source) throw new Error('--source is required; this tool does not fetch, pull or write files');
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(name)) throw new Error('Invalid skill name');
-  const report = await verifySnapshot(source, path.join(root, 'skills', name));
+  // Native-module audit metadata is maintainer input, not consumer guidance.
+  const metadata = path.join(root, 'scripts/snapshots', name + '.json');
+  const report = await verifySnapshot(source, path.join(root, 'skills', name), existsSync(metadata) ? metadata : undefined);
   console.log(JSON.stringify(report, null, 2));
   process.exitCode = report.valid ? 0 : 1;
 }

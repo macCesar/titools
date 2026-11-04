@@ -7,6 +7,7 @@ import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
+import vm from 'node:vm';
 import { fingerprintWorktree, verifySnapshot } from '../scripts/verify-module-snapshot.mjs';
 import { slugify, extractHeadings } from '../scripts/generate-toc.mjs';
 
@@ -14,16 +15,13 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 const skill = path.join(root, 'skills/ti-synthengine');
 const read = file => readFileSync(file, 'utf8');
 const hash = body => createHash('sha256').update(body).digest('hex');
-const snapshotPath = path.join(skill, 'references/source-snapshot.json');
+const snapshotPath = path.join(root, 'scripts/snapshots/ti-synthengine.json');
 const run = promisify(execFile);
 
 test('synthesis mirrors reconstruct their pinned official sources with recorded navigation fixes', () => {
   const snapshot = JSON.parse(read(snapshotPath));
-  assert.equal(snapshot.files.length, 33);
-  assert.equal(snapshot.files.filter(record => record.destination.startsWith('references/') && record.destination.endsWith('.md')).length, 15);
-  assert.equal(snapshot.files.filter(record => record.destination.endsWith('.json')).length, 8);
-  assert.equal(snapshot.files.filter(record => record.kind === 'example-asset').length, 4);
-  assert.equal(snapshot.files.filter(record => record.kind === 'evidence-archive').length, 5);
+  assert.ok(snapshot.files.some(record => record.source === 'documentation/sound-api.md'));
+  assert.ok(snapshot.files.some(record => record.source === 'documentation/upgrade-2.0.0.md'));
   assert.equal(snapshot.files.filter(record => record.kind === 'declaration-asset').length, 1);
   assert.match(snapshot.commit, /^[a-f0-9]{40}$/);
   for (const record of snapshot.files) {
@@ -52,6 +50,37 @@ test('synthesis mirrors reconstruct their pinned official sources with recorded 
     }
     assert.equal(hash(body), record.source_sha256, record.destination + ' has unrecorded source changes');
   }
+});
+
+test('distributed synthesis resources omit maintainer reports and contain every demo dependency', () => {
+  function files(dir) {
+    return readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
+      const target = path.join(dir, entry.name);
+      return entry.isDirectory() ? files(target) : [target];
+    });
+  }
+  const resources = files(skill);
+  assert.deepEqual(resources.filter(file => /\.(?:zip|json)$/i.test(file)), [],
+    'raw evidence and snapshot metadata belong outside the distributed skill');
+  for (const file of resources.filter(file => file.endsWith('.js'))) {
+    for (const [, dependency] of read(file).matchAll(/require\(['"](lib\/[^'"]+)['"]\)/g)) {
+      assert.ok(existsSync(path.join(skill, 'assets/example', dependency + '.js')), dependency + ' required by ' + file);
+    }
+  }
+});
+
+test('bundled synthesis demo accepts the published 2.0 metadata before building its UI', () => {
+  const synth = {
+    getContract: () => ({ version: '2.0.0', limits: { spatialX: {}, spatialY: {} }, waveTypes: {} }),
+    getDefaults: () => ({ version: '2.0.0', limits: { spatialX: {}, spatialY: {} }, waveTypes: {} }),
+  };
+  for (const name of ['getStats', 'resetStats', 'enableStats', 'disableStats', 'createSound']) synth[name] = () => {};
+  const app = read(path.join(skill, 'assets/example/app.js'));
+  const setup = app.slice(0, app.indexOf('var WAVE ='));
+  assert.doesNotThrow(() => vm.runInNewContext(setup, {
+    require: name => name === 'ti.synthengine' ? synth : () => ({}),
+    onSequenceEnd() {}, // Declared later and hoisted when the complete app runs.
+  }));
 });
 
 test('synthesis links resolve in the distributed skill and curated recipes retain their entry points', () => {
@@ -91,24 +120,26 @@ test('reviewed upstream exclusions detect changes, missing files and newly added
     mkdirSync(path.join(mirror, 'references'), { recursive: true });
     const guide = '# Guide\n';
     const notice = '# Notices\n';
+    const metadata = path.join(temp, 'snapshot.json');
+    const check = () => verifySnapshot(source, mirror, metadata);
     writeFileSync(path.join(source, 'documentation/guide.md'), guide);
     writeFileSync(path.join(mirror, 'references/guide.md'), guide);
     const excluded = path.join(source, 'documentation/third-party-notices.md');
     writeFileSync(excluded, notice);
-    writeFileSync(path.join(mirror, 'references/source-snapshot.json'), JSON.stringify({
+    writeFileSync(metadata, JSON.stringify({
       module: 'ti.synthengine', commit: 'test-pin', files: [{
         source: 'documentation/guide.md', destination: 'references/guide.md',
         source_sha256: hash(guide), mirrored_sha256: hash(guide),
       }], excluded_documents: [{ source: 'documentation/third-party-notices.md',
         source_sha256: hash(notice), reason: 'License text remains in the official module.' }],
     }));
-    assert.equal((await verifySnapshot(source, mirror)).valid, true);
+    assert.equal((await check()).valid, true);
     writeFileSync(excluded, '# Changed notices\n');
-    assert.deepEqual((await verifySnapshot(source, mirror)).changed, ['documentation/third-party-notices.md']);
+    assert.deepEqual((await check()).changed, ['documentation/third-party-notices.md']);
     rmSync(excluded);
-    assert.deepEqual((await verifySnapshot(source, mirror)).missing, ['documentation/third-party-notices.md']);
+    assert.deepEqual((await check()).missing, ['documentation/third-party-notices.md']);
     writeFileSync(path.join(source, 'documentation/new.md'), '# New\n');
-    assert.deepEqual((await verifySnapshot(source, mirror)).newDocuments, ['documentation/new.md']);
+    assert.deepEqual((await check()).newDocuments, ['documentation/new.md']);
   } finally {
     rmSync(temp, { recursive: true, force: true });
   }

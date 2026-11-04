@@ -1,4 +1,4 @@
-> Source snapshot: official TiSynthEngine documentation at commit `ec04f4e634075c41b55f66279eabcd78b9652d58` (2026-11-02). Published module 1.1.0; public API 1.1.0. Upstream `documentation/examples.md` SHA-256: `1b3be798d8f606381696d9e00cda330c11475402397e4760dcbc3041a39ef404`.
+> Source snapshot: official TiSynthEngine documentation at commit `9d74aa45f84d3f2822d4aab76874efe37d81257f` (2026-11-03). Published module 2.0.0. Upstream `documentation/examples.md` SHA-256: `ee8aed566a63062ae63ae78f0b96fa8d73c70ab2f50aed81081c26acc24718af`.
 
 ## Sustained game motor
 
@@ -175,7 +175,7 @@ Call `closeMixMeter` when its owner hides or closes. Display unavailable or unme
 
 ## Bounded variation for repeated noise impacts
 
-The 1.1.0 packages choose values once per admitted attack. This example keeps the noise source and envelope fixed, varies the initial noise/filter settings, and lets the authored sweep endpoints finish unchanged. Call it for actual gameplay events after normal engine startup. For periodic repetition, pass the finite recipe to `repeatTone` with `intervalMs` and retain its positive tone ID; use `stopTone` on cancellation.
+The native engine chooses values once per admitted attack. This example keeps the noise source and envelope fixed, varies the initial noise/filter settings, and lets the authored sweep endpoints finish unchanged. Call it for actual gameplay events after normal engine startup. For periodic repetition, pass the finite recipe to `repeatTone` with `intervalMs` and retain its positive tone ID; use `stopTone` on cancellation.
 
 ```javascript
 var synth = require('ti.synthengine')
