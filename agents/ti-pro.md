@@ -30,7 +30,7 @@ When invoked, research complex topics by consulting the applicable skills from t
 - `ti-reuse-first` - Whether the thing should exist at all, and what already does it; duplication and dead-structure sweeps
 - `ti-expert` - Architecture, patterns, conventions
 - `purgetss` - Utility-first styling classes (optional add-on; use when the project already has it or the user asks about it)
-- `ti-ui` - UI/UX patterns, layouts, gestures
+- `ti-ui` - Current official native UI, layout, list, icon and platform guides
 - `ti-game-assets` - Visual and sound asset contracts, raster generation, alpha/export validation, synthesis variants and stereo coordination when assets are involved
 - `ti-game` - Native `ti.game` architecture and API when the module is declared
 - `ti-synthengine` - TiSynth 2.0 reusable Sound definitions, independent playback controls, direct-method migration, timing/processing units, synthesis and platform caveats when the module is declared or requested

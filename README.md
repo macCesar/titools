@@ -178,7 +178,7 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 | ti-guides        | SDK fundamentals                    | tiapp.xml, Hyperloop, distribution, JDK/Xcode compatibility, release notes                                                                                                                                                                                                                           |
 | ti-howtos        | Native feature integration          | Location, push, media, platform APIs                                                                                                                                                                                                                                                                 |
 | alloy-guides     | Alloy MVC framework reference       | Controllers, models, views, widgets                                                                                                                                                                                                                                                                  |
-| alloy-howtos     | Alloy CLI, configuration, debugging | alloy.jmk, config.json, custom XML tags                                                                                                                                                                                                                                                              |
+| alloy-howtos     | Alloy CLI, configuration, debugging | alloy.jmk, config.json, build constants and debugging                                                                                                                                                                                                                                                              |
 
 Notes:
 - The first eight (`ti-reuse-first`, `ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-game-assets`, `ti-synthengine`, `ti-admob-unified`) are specialist workflow skills reflecting TiTools' Titanium conventions and native-module contracts.
@@ -193,24 +193,28 @@ Notes:
 
 ## Where the references come from
 
-The Titanium documentation was rewritten during 2026, and v5.0.0 moved TiTools onto the new sources. No skill, command or flag was renamed and the references answer the same questions. What changed is what they are checked against.
+The Titanium documentation was rewritten during 2026, and v5.0.0 moved TiTools onto the new sources. The current guide and UI skills follow what the new official site publishes. Historical recipes that have not been ported are excluded from these skills.
 
 | Source                                                                                | Feeds                                                    | Why it is the one                                                                                                      |
 | ------------------------------------------------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | [`tidev/titanium-sdk`](https://github.com/tidev/titanium-sdk) → `apidoc/*.yml`        | `ti-api`                                                 | The API definitions the SDK team edits. Every other copy of the API is compiled from these.                            |
-| [`tidev/titaniumsdk.com`](https://github.com/tidev/titaniumsdk.com) → `content/docs/` | `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos` | The rewritten guides, and what [titaniumsdk.com](https://titaniumsdk.com) serves.                                      |
+| [`tidev/titaniumsdk.com`](https://github.com/tidev/titaniumsdk.com) → `content/docs/` | `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`, `ti-ui` | The rewritten guides, and what [titaniumsdk.com](https://titaniumsdk.com) serves.                                      |
 | `tidev/titaniumsdk.com` → `registry/sdk/<version>/`                                   | `ti-api`, as a cross-check                               | The API compiled per published release. It answers which version actually shipped an API, which the YAML alone cannot. |
-| [`tidev/titanium-docs`](https://github.com/tidev/titanium-docs)                       | all five, as an archive                                  | The previous corpus, now frozen. Kept for what the rewrite left out.                                                   |
+| [`tidev/titanium-docs`](https://github.com/tidev/titanium-docs)                       | historical provenance only                              | The previous corpus; excluded from current guide/UI content.                                                   |
 
 ### Why the API comes from the SDK
 
 The website does not write API documentation. It compiles it from `apidoc/*.yml` and commits the result, so it trails the SDK by construction. `ti-api` reads the YAML for what exists and the compiled registry for which release shipped it, and documents the newest GA rather than `main`. An API merged into the SDK today reaches these references when the release carrying it ships, because until then you cannot call it.
 
-### The archive is additive
+### Current guides and API verification
 
-`tidev/titanium-docs` is frozen and being archived upstream. TiDev's own migration audit classifies its 336 guide pages as 121 rewritten, 121 merged, 2 kept and 92 archived. Of those 92, 91 are release notes and the last is the discontinued Atom package, so no guide topic was dropped. The difference is density: 1390 KB of legacy prose became 219 KB.
+Use [llms.txt](https://titaniumsdk.com/llms.txt) to discover official routes and append `.md` to a guide URL to read its Markdown representation. The new documentation source is `tidev/titaniumsdk.com`.
 
-TiTools keeps the full corpus. The archive never overrides a live source on a question of fact, and nothing is deleted from a reference merely because the rewritten site no longer covers it. These skills still answer questions the official guides have not been rewritten to cover yet, such as the conditional `if=` attribute in Alloy XML and TSS, custom XML tags via `app/lib/`, and `alloy compile`.
+`ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos` and `ti-ui` include current official guide topics. They do not supplement missing sections with the old `titanium-docs` corpus or unpublished community recipes. Topics can return when the official site publishes them.
+
+A guide's scope does not guarantee every example is correct. References identify verified conflicts with released API/compiler contracts, including Alloy configuration precedence and hooks, notification registration and safe-area defaults. The core API baseline is SDK 13.4.1.GA, with explicit version links; unreleased SDK 14 features remain excluded. Native modules have independent versions and authorities.
+
+PurgeTSS and the native-module skills retain their own official sources and declared curated resources. Their source policies are independent of the website migration.
 
 ---
 
@@ -840,45 +844,9 @@ titools --version # CLI version only
 
 ---
 
-## Community-Discovered Patterns
+## Curated resources
 
-The TiTools skills include **Community-Discovered Patterns** — verified iOS behaviors not present in the official Titanium documentation. These sections are protected from removal during skill audits.
-
-### Large Title + ScrollView (iOS)
-
-When using Large Titles with a ScrollView inside NavigationWindow or TabGroup, three Window properties must be set together. Without all three, the ScrollView content overlaps behind the navigation bar — or the large title renders with a visible delay.
-
-| Class                            | Property                     | Purpose                                               |
-| -------------------------------- | ---------------------------- | ----------------------------------------------------- |
-| `auto-adjust-scroll-view-insets` | `autoAdjustScrollViewInsets` | Adjusts ScrollView insets to prevent content overlap  |
-| `extend-edges-all`               | `extendEdges`                | Content extends behind bars (blur/translucent effect) |
-| `large-title-enabled`            | `largeTitleEnabled`          | Large title that collapses on scroll                  |
-
-**Recommended:** set the base properties as global Window defaults in `config.cjs`:
-
-```js
-module.exports = {
-  theme: {
-    Window: {
-      ios: {
-        apply: 'auto-adjust-scroll-view-insets extend-edges-all status-bar-style-light-content'
-      }
-    }
-  }
-};
-```
-
-Then only add `large-title-enabled` per-window as needed:
-
-```xml
-<Window title="Home" class="large-title-enabled">
-  <ScrollView class="vertical w-screen" contentHeight="Ti.UI.SIZE">
-    <!-- Content starts below the nav bar automatically -->
-  </ScrollView>
-</Window>
-```
-
-This pattern is documented across four bundled TiTools skills: `ti-ui`, `ti-expert`, `purgetss`, and `ti-api`, which covers the underlying Window properties.
+Specialist skills such as PurgeTSS, native games and synthesis retain their declared practical resources and their own source authorities. The website-based guide/UI skills follow current official documentation only; they do not carry archived-only or community-only sections.
 
 ---
 
@@ -889,16 +857,16 @@ This pattern is documented across four bundled TiTools skills: `ti-ui`, `ti-expe
 | ti-reuse-first   | Reuse Before You Write        | 5 files (the ladder, Alloy reuse, indirection, PurgeTSS reuse, diagnostics)                                                                                                                          |
 | ti-expert        | Architecture + Implementation | 27 files (patterns, feedback surfaces, file type association, sharing, testing, security, etc.)                                                                                                      |
 | purgetss         | Setup + Critical Rules        | 39 files (Classic compatibility, grid, animations, icons, class-index, SVG pipeline, etc.)                                                                                                           |
-| ti-ui            | UI Rules + Platform Diffs     | 14 files (layouts, lists, gestures, etc.)                                                                                                                                                            |
+| ti-ui            | UI Rules + Platform Diffs     | 5 current official guides (native UI, layouts, lists, icons and platform conventions)                                                                                                                                                            |
 | ti-game          | Native 2D Game Workflow       | 12 files (API, input, source notes, setup, physics, patterns, recipes, tile maps, debugging, roadmap)                                                                                                |
 | ti-game-assets   | Visual and Sound Assets       | 10 guides and a manifest example; alpha and contract validation scripts                                                                                                                              |
 | ti-admob-unified | Unified Advertising           | 20 Markdown references including production, rewarded interstitial, mediation parity, integration library guidance, provenance and game monetization; source/hash checks and official example assets |
 | ti-synthengine   | Native Sound Synthesis        | TiSynth 2.0 Sound interface and migration, native parameter reference, practical sound design/recipes, runnable example and TypeScript declarations |
 | ti-api           | Titanium API                  | 20 references for core/platform APIs and native modules                                                                                                                                              |
-| ti-guides        | SDK Fundamentals              | 16 references for setup, configuration, CLI and distribution                                                                                                                                         |
-| ti-howtos        | Native Integrations           | 18 references for platform features and integration workflows                                                                                                                                        |
-| alloy-guides     | Alloy MVC                     | 11 references for controllers, views, models, styling and widgets                                                                                                                                    |
-| alloy-howtos     | Alloy CLI and Debugging       | 6 references for commands, configuration and practical workflows                                                                                                                                     |
+| ti-guides        | SDK Fundamentals              | 12 current references for setup, configuration, CLI and distribution                                                                                                                                         |
+| ti-howtos        | Native Integrations           | 9 current references for platform features and integration workflows                                                                                                                                        |
+| alloy-guides     | Alloy MVC                     | 10 references for current Alloy guides and independently sourced PurgeTSS integration                                                                                                                                    |
+| alloy-howtos     | Alloy CLI and Debugging       | 5 current references for app workflows, configuration and debugging                                                                                                                                     |
 
 ---
 
