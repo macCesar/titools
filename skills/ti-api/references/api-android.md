@@ -24,6 +24,8 @@
 <!-- TOC-END -->
 
 ## Ti.Android
+> Full released contract: [Titanium.Android](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android)
+
 > The top-level Android module.
 > Extends Ti.Module
 > Platforms: android
@@ -181,6 +183,8 @@
 ---
 
 ## Ti.Android.ActionBar
+> Full released contract: [Titanium.Android.ActionBar](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.ActionBar)
+
 > An action bar is a window feature that identifies the application and user location, and provides user actions and navigation modes.
 > Extends Ti.Proxy
 > Platforms: android
@@ -214,6 +218,8 @@
 ---
 
 ## Ti.Android.Activity
+> Full released contract: [Titanium.Android.Activity](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.Activity)
+
 > The Titanium binding of an Android Activity.
 > Extends Ti.Proxy
 > Platforms: android
@@ -262,6 +268,8 @@
 ---
 
 ## Ti.Android.BigPictureStyle
+> Full released contract: [Titanium.Android.BigPictureStyle](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.BigPictureStyle)
+
 > Helper object for generating large-format notifications that include a large image attachment.
 > Extends Ti.Proxy
 > Platforms: android
@@ -281,6 +289,8 @@
 ---
 
 ## Ti.Android.BigTextStyle
+> Full released contract: [Titanium.Android.BigTextStyle](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.BigTextStyle)
+
 > Helper object for generating large-format notifications that include a lot of text.
 > Extends Ti.Proxy
 > Platforms: android
@@ -298,6 +308,8 @@
 ---
 
 ## Ti.Android.BroadcastReceiver
+> Full released contract: [Titanium.Android.BroadcastReceiver](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.BroadcastReceiver)
+
 > Monitor and handle Android system broadcasts.
 > Extends Ti.Proxy
 > Platforms: android
@@ -314,6 +326,8 @@
 ---
 
 ## Ti.Android.Intent
+> Full released contract: [Titanium.Android.Intent](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.Intent)
+
 > Message objects passed between Android application components.
 > Extends Ti.Proxy
 > Platforms: android
@@ -350,6 +364,8 @@
 ---
 
 ## Ti.Android.Menu
+> Full released contract: [Titanium.Android.Menu](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.Menu)
+
 > The Titanium binding of an Android Options Menu.
 > Extends Ti.Proxy
 > Platforms: android
@@ -366,8 +382,8 @@
 | add(options) | Ti.Android.MenuItem | android | Creates a <Titanium.Android.MenuItem> from the pa… |
 | clear(—) | void | android | Clears all items from this menu. |
 | close(—) | void | android | Closes the menu, if visible. |
-| findItem(item) | Ti.Android.MenuItem | android | Locates a [MenuItem](Titanium.Android.MenuItem) i… |
-| getItem(index) | Ti.Android.MenuItem | android | Returns the [MenuItem](Titanium.Android.MenuItem)… |
+| findItem(item) | Ti.Android.MenuItem | android | Locates a [MenuItem](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.MenuItem) i… |
+| getItem(index) | Ti.Android.MenuItem | android | Returns the [MenuItem](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.MenuItem)… |
 | hasVisibleItems(—) | Boolean | android | Returns `true` if this menu has visible items. |
 | removeGroup(groupId) | void | android | Removes all menu items with the specified [groupI… |
 | removeItem(itemId) | void | android | Removes a specific [MenuItem](Titanium.Android.Me… |
@@ -379,6 +395,8 @@
 ---
 
 ## Ti.Android.MenuItem
+> Full released contract: [Titanium.Android.MenuItem](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.MenuItem)
+
 > The Titanium binding of an Android menu item.
 > Extends Ti.Proxy
 > Platforms: android
@@ -429,6 +447,8 @@
 ---
 
 ## Ti.Android.Notification
+> Full released contract: [Titanium.Android.Notification](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.Notification)
+
 > UI notifications that can be sent while the application is in the background.
 > Extends Ti.Proxy
 > Platforms: android
@@ -475,6 +495,8 @@
 ---
 
 ## Ti.Android.NotificationChannel
+> Full released contract: [Titanium.Android.NotificationChannel](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.NotificationChannel)
+
 > Module for notification channels.
 > Extends Ti.Proxy
 > Platforms: android
@@ -502,6 +524,8 @@
 ---
 
 ## Ti.Android.NotificationManager
+> Full released contract: [Titanium.Android.NotificationManager](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.NotificationManager)
+
 > Module for managing notifications.
 > Extends Ti.Module
 > Platforms: android
@@ -537,6 +561,8 @@
 ---
 
 ## Ti.Android.PendingIntent
+> Full released contract: [Titanium.Android.PendingIntent](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.PendingIntent)
+
 > The Titanium binding of an Android `PendingIntent`.
 > Extends Ti.Proxy
 > Platforms: android
@@ -554,6 +580,8 @@
 ---
 
 ## Ti.Android.QuickSettingsService
+> Full released contract: [Titanium.Android.QuickSettingsService](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.QuickSettingsService)
+
 > Android service for creating custom quick settings tiles and handling user's interaction with them.
 > Extends Ti.Android.Service
 > Platforms: android
@@ -598,6 +626,8 @@
 ---
 
 ## Ti.Android.R
+> Full released contract: [Titanium.Android.R](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.R)
+
 > The Titanium binding of the native Android `R` class, giving access to Android system-wide resources or application resources.
 > Extends Ti.Proxy
 > Platforms: android
@@ -634,6 +664,8 @@
 ---
 
 ## Ti.Android.RemoteViews
+> Full released contract: [Titanium.Android.RemoteViews](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.RemoteViews)
+
 > The Titanium binding of [Android RemoteViews](https://developer.android.com/reference/android/widget/RemoteViews.html).
 > Extends Ti.Proxy
 > Platforms: android
@@ -666,6 +698,8 @@
 ---
 
 ## Ti.Android.Service
+> Full released contract: [Titanium.Android.Service](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.Service)
+
 > Android application component that executes in the background.
 > Extends Ti.Proxy
 > Platforms: android

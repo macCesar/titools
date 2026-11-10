@@ -25,6 +25,8 @@
 <!-- TOC-END -->
 
 ## Ti.App
+> Full released contract: [Titanium.App](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App)
+
 > The top-level App module is mainly used for accessing information about the application at runtime, and for sending or listening for system events.
 > Extends Ti.Module
 > Platforms: both
@@ -87,6 +89,8 @@
 ---
 
 ## Ti.App.Android
+> Full released contract: [Titanium.App.Android](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.Android)
+
 > A module used to access Android application resources.
 > Extends Ti.Module
 > Platforms: android
@@ -114,6 +118,8 @@
 ---
 
 ## Ti.App.Properties
+> Full released contract: [Titanium.App.Properties](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.Properties)
+
 > The App Properties module is used for storing application-related data in property/value pairs  that persist beyond application sessions and device power cycles.
 > Extends Ti.Module
 > Platforms: both
@@ -148,6 +154,8 @@
 ---
 
 ## Ti.App.iOS
+> Full released contract: [Titanium.App.iOS](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.iOS)
+
 > The top-level App iOS module, available only to iOS devices, that includes the facilities to create and manage local notifications and background services.
 > Extends Ti.Module
 > Platforms: ios
@@ -217,11 +225,11 @@
 | remotenotificationaction | ios | Fired when a user selects an action for an interactive remote notification. |
 | backgroundfetch | ios | Fired when the application is woken up for a fetch operation. Available only on… |
 | silentpush | ios | Fired when the application is woken up by a silent remote notification. Availab… |
-| backgroundtransfer | ios | Fired when the events related to a [urlSession](Modules.URLSession) are waiting… |
+| backgroundtransfer | ios | Fired when the events related to a [urlSession](api-modules-coremotion-urlsession.md#modulesurlsession) are waiting… |
 | downloadprogress | ios | Fired periodically to inform the app about the download's progress of a [urlSes… |
 | uploadprogress | ios | Fired periodically to inform the app about the upload's progress of a [urlSessi… |
-| downloadcompleted | ios | Fired to indicate that a [urlSession's](Modules.URLSession) download task has f… |
-| sessioncompleted | ios | Fired to indicate that a [urlSession](Modules.URLSession) task finished transfe… |
+| downloadcompleted | ios | Fired to indicate that a [urlSession's](api-modules-coremotion-urlsession.md#modulesurlsession) download task has f… |
+| sessioncompleted | ios | Fired to indicate that a [urlSession](api-modules-coremotion-urlsession.md#modulesurlsession) task finished transfe… |
 | sessioneventscompleted | ios | Fired to indicate that all messages enqueued for a [urlSession](Modules.URLSess… |
 | usernotificationsettings | ios | Fired when the user notification settings are registered. |
 | watchkitextensionrequest | ios | Fired when openParentApplication:reply is called from a WatchKit extension. Ava… |
@@ -234,6 +242,8 @@
 ---
 
 ## Ti.App.iOS.BackgroundService
+> Full released contract: [Titanium.App.iOS.BackgroundService](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.iOS.BackgroundService)
+
 > A service that runs when the application is placed in the background.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -254,6 +264,8 @@
 ---
 
 ## Ti.App.iOS.LocalNotification
+> Full released contract: [Titanium.App.iOS.LocalNotification](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.iOS.LocalNotification)
+
 > A local notification to alert the user of new or pending application information.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -268,6 +280,8 @@
 ---
 
 ## Ti.App.iOS.SearchQuery
+> Full released contract: [Titanium.App.iOS.SearchQuery](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.iOS.SearchQuery)
+
 > A search query object manages the criteria to apply when searching app content that you have previously  indexed by using the Core Spotlight APIs.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -295,6 +309,8 @@
 ---
 
 ## Ti.App.iOS.SearchableIndex
+> Full released contract: [Titanium.App.iOS.SearchableIndex](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.iOS.SearchableIndex)
+
 > The SearchableIndex module is used to add or remove Ti.App.iOS.SearchableItem objects from the device search index.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -313,6 +329,8 @@
 ---
 
 ## Ti.App.iOS.SearchableItem
+> Full released contract: [Titanium.App.iOS.SearchableItem](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.iOS.SearchableItem)
+
 > Used to create a unique object containing all of the search information that will appear in the device search index.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -331,6 +349,8 @@
 ---
 
 ## Ti.App.iOS.SearchableItemAttributeSet
+> Full released contract: [Titanium.App.iOS.SearchableItemAttributeSet](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.iOS.SearchableItemAttributeSet)
+
 > The SearchableItemAttributeSet module defines metadata properties for SearchItem and UserActivity objects.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -439,6 +459,8 @@
 ---
 
 ## Ti.App.iOS.UserActivity
+> Full released contract: [Titanium.App.iOS.UserActivity](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.iOS.UserActivity)
+
 > The UserActivity module is used to enable device Handoff and to create User Activities.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -483,6 +505,8 @@
 ---
 
 ## Ti.App.iOS.UserDefaults
+> Full released contract: [Titanium.App.iOS.UserDefaults](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.iOS.UserDefaults)
+
 > The UserDefaults module is used for storing application-related data in property/value pairs  that persist beyond application sessions and device power cycles. UserDefaults allows the suiteName of the UserDefaults to be specified at creation time.  **Important**: Using this API requires the `NSPrivacyAccessedAPICategoryUserDefaults` property set in the privacy manifest that was introduced in iOS 17. You can learn more about it [here](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files/describing_use_of_required_reason_api).
 > Extends Ti.App.Properties
 > Platforms: ios
@@ -499,6 +523,8 @@
 ---
 
 ## Ti.App.iOS.UserNotificationAction
+> Full released contract: [Titanium.App.iOS.UserNotificationAction](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.iOS.UserNotificationAction)
+
 > An action the user selects in response to an interactive notification.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -519,6 +545,8 @@
 ---
 
 ## Ti.App.iOS.UserNotificationCategory
+> Full released contract: [Titanium.App.iOS.UserNotificationCategory](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.iOS.UserNotificationCategory)
+
 > A set of notification actions to associate with a notification.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -540,6 +568,8 @@
 ---
 
 ## Ti.App.iOS.UserNotificationCenter
+> Full released contract: [Titanium.App.iOS.UserNotificationCenter](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.iOS.UserNotificationCenter)
+
 > The top-level App iOS Notification Center module. It is used to control scheduled notifications and receive details about the system-wide notification settings.
 > Extends Ti.Module
 > Platforms: ios
@@ -559,6 +589,8 @@
 ---
 
 ## Ti.Platform
+> Full released contract: [Titanium.Platform](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Platform)
+
 > The top-level Platform module.  The Platform module is used to access the device's platform-related functionality.
 > Extends Ti.Module
 > Platforms: both
@@ -618,6 +650,8 @@
 ---
 
 ## Ti.Platform.Android
+> Full released contract: [Titanium.Platform.Android](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Platform.Android)
+
 > The Android-specific Platform module, used to access the device's platform-related functionality.
 > Extends Ti.Module
 > Platforms: android
@@ -638,6 +672,8 @@
 ---
 
 ## Ti.Platform.DisplayCaps
+> Full released contract: [Titanium.Platform.DisplayCaps](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Platform.DisplayCaps)
+
 > The Display Caps object returned by the <Titanium.Platform.displayCaps> property.
 > Extends Ti.Proxy
 > Platforms: both

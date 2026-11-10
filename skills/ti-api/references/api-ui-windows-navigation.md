@@ -14,6 +14,8 @@
 <!-- TOC-END -->
 
 ## Ti.UI.Window
+> Full released contract: [Titanium.UI.Window](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Window)
+
 > The Window is an empty drawing surface or container.
 > Extends Ti.UI.View
 > Platforms: both
@@ -24,13 +26,13 @@ A window is a top-level container which can contain other views. Windows can be 
 
 Windows *contain* other views, but in general they are not *contained* inside other views. There are a few specialized views that manage windows:
 
-* [NavigationWindow](Titanium.UI.NavigationWindow)
-* [SplitWindow](Titanium.UI.iOS.SplitWindow)
-* [TabGroup](Titanium.UI.TabGroup)
-* [Tab](Titanium.UI.Tab)
+* [NavigationWindow](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.NavigationWindow)
+* [SplitWindow](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.SplitWindow)
+* [TabGroup](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.TabGroup)
+* [Tab](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Tab)
 
 
-*(See full overview in titanium-docs)*
+Complete overview, setup, examples and version restrictions: [official Titanium.UI.Window API](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Window).
 
 ### Properties (unique: 72/138)
 | Property | Type | Default | Platform | Description |
@@ -222,6 +224,8 @@ Also referenced by this API, documented elsewhere: `Dictionary`, [Font](api-ui-l
 ---
 
 ## Ti.UI.NavigationWindow
+> Full released contract: [Titanium.UI.NavigationWindow](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.NavigationWindow)
+
 > A `NavigationWindow` implements a specialized view that manages the navigation of hierarchical content.
 > Extends Ti.UI.Window
 > Platforms: both
@@ -262,24 +266,26 @@ This object is not meant to be added to other windows. However, it can be used w
 ---
 
 ## Ti.UI.TabGroup
+> Full released contract: [Titanium.UI.TabGroup](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.TabGroup)
+
 > A tabbed group of windows.
 > Extends Ti.UI.Window
 > Platforms: both
 
 | Android | iOS |
 | ------- | --- |
-| ![Android](./tabgroup_android.png) |  |
+| [Android API reference](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.TabGroup) |  |
 
-A tab group can contain one or more [Tab](Titanium.UI.Tab) objects, each of which has an associated tab control that is used to bring it into focus.
+A tab group can contain one or more [Tab](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Tab) objects, each of which has an associated tab control that is used to bring it into focus.
 
 Use the <Titanium.UI.createTabGroup> method or **`<TabGroup>`** Alloy element to create a tab group that, in turn, contains one or more `<Tab>` elements.
 
-You can add tabs to the group using [addTab](Titanium.UI.TabGroup.addTab), and programmatically switch to a specific tab using [setActiveTab](Titanium.UI.TabGroup.setActiveTab).
+You can add tabs to the group using [addTab](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.TabGroup), and programmatically switch to a specific tab using [setActiveTab](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.TabGroup).
 
 ### Platform Implementation Notes
 
 
-*(See full overview in titanium-docs)*
+Complete overview, setup, examples and version restrictions: [official Titanium.UI.TabGroup API](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.TabGroup).
 
 ### Properties (unique: 43/136)
 | Property | Type | Default | Platform | Description |
@@ -405,7 +411,9 @@ Also referenced by this API, documented elsewhere: `Dictionary`, [Font](api-ui-l
 ---
 
 ## Ti.UI.Tab
-> A tab instance for a [TabGroup](Titanium.UI.TabGroup).
+> Full released contract: [Titanium.UI.Tab](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Tab)
+
+> A tab instance for a [TabGroup](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.TabGroup).
 > Extends Ti.UI.View
 > Platforms: both
 
@@ -413,7 +421,7 @@ A `TabGroup` tab instance. Each tab includes a button and one or more windows, w
 
 Use the <Titanium.UI.createTab> method or **`<Tab>`** Alloy element to create a tab.
 
-Use [TabGroup.setActiveTab](Titanium.UI.TabGroup.setActiveTab) to switch between tabs in a tab group.
+Use [TabGroup.setActiveTab](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.TabGroup) to switch between tabs in a tab group.
 
 The behavior of tabs and tab groups follows the platform's native navigation style, which varies significantly between platforms.
 
@@ -421,7 +429,7 @@ The behavior of tabs and tab groups follows the platform's native navigation sty
 
 On iOS, the tab maintains a stack of windows. Windows on top of the stack can partially or totally obscure windows lower in the stack.  Calling
 
-*(See full overview in titanium-docs)*
+Complete overview, setup, examples and version restrictions: [official Titanium.UI.Tab API](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Tab).
 
 ### Properties (unique: 20/57)
 | Property | Type | Default | Platform | Description |
@@ -459,7 +467,7 @@ On iOS, the tab maintains a stack of windows. Windows on top of the stack can pa
 ### Events (3)
 | Event | Platform | Description |
 |-------|----------|-------------|
-| click | both | Fired when this tab is clicked in the tab group. |
+| click | android | Fired when this tab is clicked in the tab group. |
 | unselected | both | Fired when the tab is no longer selected. |
 | selected | both | Fired when the tab is selected. |
 
@@ -505,13 +513,15 @@ On iOS, the tab maintains a stack of windows. Windows on top of the stack can pa
 ---
 
 ## Ti.UI.AlertDialog
+> Full released contract: [Titanium.UI.AlertDialog](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.AlertDialog)
+
 > An alert dialog is a modal view that includes an optional title, a message and buttons, positioned in the middle of the display.
 > Extends Ti.UI.View
 > Platforms: both
 
 | Android | iOS |
 | ------- | --- |
-| ![Android](./alertdialog_android.png) | ![iOS](./alertdialog_ios.png) |
+| [Android API reference](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.AlertDialog) | [iOS API reference](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.AlertDialog) |
 
 An alert dialog is created using <Titanium.UI.createAlertDialog> or **`<AlertDialog>`** Alloy element.
 
@@ -521,7 +531,7 @@ Although this dialog always appears in the middle of the display (not touching t
 
 On Android, the default alert dialog displays text information, via a title and message, without any buttons. As the user can use the system hardware `back` button to dismiss it, a button is optional.
 
-*(See full overview in titanium-docs)*
+Complete overview, setup, examples and version restrictions: [official Titanium.UI.AlertDialog API](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.AlertDialog).
 
 ### Properties (unique: 36/60)
 | Property | Type | Default | Platform | Description |
@@ -587,13 +597,15 @@ On Android, the default alert dialog displays text information, via a title and 
 ---
 
 ## Ti.UI.OptionDialog
+> Full released contract: [Titanium.UI.OptionDialog](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.OptionDialog)
+
 > An option dialog is a modal view that includes a message and one or more option items positioned in the middle of the display on Android and at the bottom edge on iOS. On Android, buttons may be added below the options.
 > Extends Ti.UI.View
 > Platforms: both
 
 | Android | iPhone | iPad |
 | ------- | ------ | ---- |
-| ![Android](./optiondialog_android.png) | ![iPhone](./optiondialog_iphone.png) | ![iPad](./optiondialog_ipad.png) |
+| [Android API reference](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.OptionDialog) | [iPhone API reference](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.OptionDialog) | [iPad API reference](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.OptionDialog) |
 
 An option dialog is created using <Titanium.UI.createOptionDialog> or Alloy `<OptionDialog>` element. See Examples below for usage.
 
@@ -604,7 +616,7 @@ This dialog is presented differently on each platform, as described below.
 On Android, the dialog is shown in the middle of the display (not touching the edges), with the option items represented in a picker. The previously-selected, or default, item can be set on creation.
 
 
-*(See full overview in titanium-docs)*
+Complete overview, setup, examples and version restrictions: [official Titanium.UI.OptionDialog API](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.OptionDialog).
 
 ### Properties (unique: 10/35)
 | Property | Type | Default | Platform | Description |
@@ -657,13 +669,15 @@ On Android, the dialog is shown in the middle of the display (not touching the e
 ---
 
 ## Ti.UI.Notification
+> Full released contract: [Titanium.UI.Notification](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Notification)
+
 > A toast notification.
 > Extends Ti.Proxy
 > Platforms: android
 
 | Android | iOS |
 | ------- | --- |
-| ![Android](./toast_android.png) |  |
+| [Android API reference](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Notification) |  |
 
 A toast notification is an unobtrusive, pop-up notification that does not block the UI. Use the <Titanium.UI.createNotification> method or **`<Notification>`** Alloy element to create a Toast notification.
 

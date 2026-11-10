@@ -16,6 +16,8 @@
 <!-- TOC-END -->
 
 ## Ti.Media
+> Full released contract: [Titanium.Media](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media)
+
 > The top-level Media module.
 > Extends Ti.Module
 > Platforms: both
@@ -170,7 +172,7 @@ The Media module is used to access the device's media-related functionality, suc
 | success | Boolean | both | Indicates if the operation succeeded. Returns `true`. |
 | error | String | both | Error message, if any returned. |
 | code | Number | both | Error code. Returns 0. |
-| media | Ti.Blob | both | The media object, as a [Blob](Titanium.Blob). |
+| media | Ti.Blob | both | The media object, as a [Blob](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Blob). |
 | path | String | android | The path of the image when returning data from the gallery. |
 | mediaType | String | both | The type of media, either `MEDIA_TYPE_PHOTO`, `MEDIA_TYPE_LIVEPHOTO` or `MEDIA_… |
 | cropRect | Dimension | both | Simple object defining the user's selected crop rectangle, or `null` if the use… |
@@ -198,7 +200,7 @@ The Media module is used to access the device's media-related functionality, suc
 | height | Number | android | Height of the preview camera image |
 
 #### CameraOptionsType
-> Simple object for specifying options to [showCamera](Titanium.Media.showCamera).
+> Simple object for specifying options to [showCamera](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media).
 
 | Property | Type | Platform | Description |
 |----------|------|----------|-------------|
@@ -287,7 +289,7 @@ The Media module is used to access the device's media-related functionality, suc
 | podcastPersistentID | MediaQueryInfoType \| Number | ios | The podcast persistent ID to filter on. Value should be a Number. |
 
 #### MusicLibraryOptionsType
-> Simple object for specifying options to [openMusicLibrary](Titanium.Media.openMusicLibrary).
+> Simple object for specifying options to [openMusicLibrary](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media).
 
 | Property | Type | Platform | Description |
 |----------|------|----------|-------------|
@@ -300,7 +302,7 @@ The Media module is used to access the device's media-related functionality, suc
 | allowMultipleSelections | Boolean | ios | Set to `true` to allow the user to select multiple items from the library. |
 
 #### MusicLibraryResponseType
-> Simple object passed to the [openMusicLibrary](Titanium.Media.openMusicLibrary) `success` callback function.
+> Simple object passed to the [openMusicLibrary](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media) `success` callback function.
 
 | Property | Type | Platform | Description |
 |----------|------|----------|-------------|
@@ -309,7 +311,7 @@ The Media module is used to access the device's media-related functionality, suc
 | types | Number | both | Media types in this collection, represented as the bitwise OR of the media type… |
 
 #### PhotoGalleryOptionsType
-> Simple object for specifying options to [openPhotoGallery](Titanium.Media.openPhotoGallery).
+> Simple object for specifying options to [openPhotoGallery](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media).
 
 | Property | Type | Platform | Description |
 |----------|------|----------|-------------|
@@ -385,6 +387,8 @@ Also referenced by this API, documented elsewhere: `Dictionary`.
 ---
 
 ## Ti.Media.Android
+> Full released contract: [Titanium.Media.Android](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.Android)
+
 > Android-specific media-related functionality.
 > Extends Ti.Module
 > Platforms: android
@@ -401,11 +405,13 @@ Also referenced by this API, documented elsewhere: `Dictionary`.
 ---
 
 ## Ti.Media.AudioPlayer
+> Full released contract: [Titanium.Media.AudioPlayer](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.AudioPlayer)
+
 > An audio player object used for streaming audio to the device, and low-level control of the audio playback.
 > Extends Ti.Proxy
 > Platforms: both
 
-On Android, when you are done playing a given audio file, you must call the [release](Titanium.Media.AudioPlayer.release) method to stop buffering audio data and release associated system resources. Since 7.5.0, this method is available on iOS as well and will release all audio-player related resources. After this method has been called, the object should not be accessed anymore.
+On Android, when you are done playing a given audio file, you must call the [release](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.AudioPlayer) method to stop buffering audio data and release associated system resources. Since 7.5.0, this method is available on iOS as well and will release all audio-player related resources. After this method has been called, the object should not be accessed anymore.
 
 On iOS, you can control how the audio stream interacts with other system sounds by setting <Titanium.Media.audioSessionCategory>. Since Titanium 7.5.0, this API uses the [AVPlayer API](https://developer.apple.com/documentation/avfoundation/avplayer) for a more modern and performant audio playback.
 
@@ -444,19 +450,19 @@ Use the <Titanium.Media.createAudioPlayer> method to create an audio player.
 ### Methods (14)
 | Method | Returns | Platform | Description |
 |--------|---------|----------|-------------|
-| getPaused(—) | Boolean | ios | Returns the value of the [paused](Titanium.Media.AudioPlayer.paused) property. |
-| isPaused(—) | Boolean | android | Returns the value of the [paused](Titanium.Media.AudioPlayer.paused) property. |
-| getPlaying(—) | Boolean | ios | Returns the value of the [playing](Titanium.Media.AudioPlayer.playing) property. |
-| isPlaying(—) | Boolean | android | Returns the value of the [playing](Titanium.Media.AudioPlayer.playing) property. |
+| getPaused(—) | Boolean | ios | Returns the value of the [paused](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.AudioPlayer) property. |
+| isPaused(—) | Boolean | android | Returns the value of the [paused](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.AudioPlayer) property. |
+| getPlaying(—) | Boolean | ios | Returns the value of the [playing](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.AudioPlayer) property. |
+| isPlaying(—) | Boolean | android | Returns the value of the [playing](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.AudioPlayer) property. |
 | pause(—) | void | both | Pauses audio playback. |
 | play(—) | void | android | Starts or resumes audio playback. |
-| setPaused(paused) | void | ios | Sets the value of the [paused](Titanium.Media.AudioPlayer.paused) property. |
+| setPaused(paused) | void | ios | Sets the value of the [paused](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.AudioPlayer) property. |
 | seekToTime(time) | void | ios | Moves the playback cursor and invokes the specified block when the seek operati… |
 | release(—) | void | both | Stops buffering audio data and releases audio resources. |
 | getAudioSessionId(—) | Number | android | Returns the audio session id. |
 | start(—) | void | both | Starts or resumes audio playback. |
 | restart(—) | void | both | Restarts (stops and stars) audio playback. |
-| stateDescription(state) | String | ios | Converts a [state](Titanium.Media.AudioPlayer.state) value into a text descript… |
+| stateDescription(state) | String | ios | Converts a [state](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.AudioPlayer) value into a text descript… |
 | stop(—) | void | both | Stops audio playback. |
 
 ### Events (6)
@@ -467,11 +473,13 @@ Use the <Titanium.Media.createAudioPlayer> method to create an audio player.
 | metadata | ios | Fired when the timed metadata was encountered most recently within the media as… |
 | error | both | Fired when there's an error. |
 | progress | both | Fired once per second with the current progress during playback. |
-| seek | ios | Fired once the [seekToTime](Titanium.Media.AudioPlayer.seek) method completes. |
+| seek | ios | Fired once the [seekToTime](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.AudioPlayer) method completes. |
 
 ---
 
 ## Ti.Media.AudioRecorder
+> Full released contract: [Titanium.Media.AudioRecorder](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.AudioRecorder)
+
 > An audio recorder object used for recording audio from the device microphone.
 > Extends Ti.Proxy
 > Platforms: both
@@ -505,13 +513,15 @@ Ensure to request the permissions for audio-recording before starting a new reco
 ---
 
 ## Ti.Media.Item
-> A representation of a media item returned by [openMusicLibrary](Titanium.Media.openMusicLibrary) or [queryMusicLibrary](Titanium.Media.queryMusicLibrary).
+> Full released contract: [Titanium.Media.Item](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.Item)
+
+> A representation of a media item returned by [openMusicLibrary](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media) or [queryMusicLibrary](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media).
 > Extends Ti.Proxy
 > Platforms: ios
 
 This is a read-only object that describes a single media item, not a playlist. Titanium does not support access to playlists.
 
-`Item` objects cannot be created explicitly.  The [openMusicLibrary](Titanium.Media.openMusicLibrary) returns `Item` objects in its `success` callback function, while [queryMusicLibrary](Titanium.Media.queryMusicLibrary) returns an array of `Item` objects.
+`Item` objects cannot be created explicitly.  The [openMusicLibrary](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media) returns `Item` objects in its `success` callback function, while [queryMusicLibrary](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media) returns an array of `Item` objects.
 
 ### Properties (unique: 36/38)
 | Property | Type | Default | Platform | Description |
@@ -559,11 +569,13 @@ This is a read-only object that describes a single media item, not a playlist. T
 ---
 
 ## Ti.Media.MusicPlayer
+> Full released contract: [Titanium.Media.MusicPlayer](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.MusicPlayer)
+
 > This object represents a music controller.
 > Extends Ti.Proxy
 > Platforms: ios
 
-A `MusicPlayer` lets you manage and playback a queue of media [Item](Titanium.Media.Item) objects.
+A `MusicPlayer` lets you manage and playback a queue of media [Item](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.Item) objects.
 
 To retrieve an instance of a MusicPlayer object, use either the
 
@@ -600,11 +612,13 @@ To retrieve an instance of a MusicPlayer object, use either the
 ---
 
 ## Ti.Media.Sound
+> Full released contract: [Titanium.Media.Sound](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.Sound)
+
 > An object for playing basic audio resources.
 > Extends Ti.Proxy
 > Platforms: both
 
-The `Sound` object loads the entire media resource in memory before playing.  If you need to support streaming, use the [AudioPlayer](Titanium.Media.AudioPlayer) API.
+The `Sound` object loads the entire media resource in memory before playing.  If you need to support streaming, use the [AudioPlayer](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.AudioPlayer) API.
 
 You can control how the sound interacts with other system sounds by setting <Titanium.Media.audioSessionCategory>.
 
@@ -635,15 +649,15 @@ Use the <Titanium.Media.createSound> method to create a `Sound` object. You can 
 ### Methods (10)
 | Method | Returns | Platform | Description |
 |--------|---------|----------|-------------|
-| isLooping(—) | Boolean | both | Returns the value of the [looping](Titanium.Media.Sound.looping) property. |
-| isPaused(—) | Boolean | both | Returns the value of the [paused](Titanium.Media.Sound.paused) property. |
-| isPlaying(—) | Boolean | both | Returns the value of the [playing](Titanium.Media.Sound.playing) property. |
+| isLooping(—) | Boolean | both | Returns the value of the [looping](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.Sound) property. |
+| isPaused(—) | Boolean | both | Returns the value of the [paused](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.Sound) property. |
+| isPlaying(—) | Boolean | both | Returns the value of the [playing](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.Sound) property. |
 | pause(—) | void | both | Pauses the audio. |
 | play(—) | void | both | Starting playing the sound, or resume playing a paused sound. |
 | release(—) | void | both | Releases all internal resources. |
 | reset(—) | void | both | Resets the audio playback position to the beginning. |
-| setLooping(looping) | void | both | Sets the value of the [looping](Titanium.Media.Sound.looping) property. |
-| setPaused(paused) | void | ios | Sets the value of the [paused](Titanium.Media.Sound.paused) property. |
+| setLooping(looping) | void | both | Sets the value of the [looping](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.Sound) property. |
+| setPaused(paused) | void | ios | Sets the value of the [paused](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.Sound) property. |
 | stop(—) | void | both | Stops playing the audio and resets the playback position to the beginning of th… |
 
 ### Events (5)
@@ -658,6 +672,8 @@ Use the <Titanium.Media.createSound> method to create a `Sound` object. You can 
 ---
 
 ## Ti.Media.SystemAlert
+> Full released contract: [Titanium.Media.SystemAlert](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.SystemAlert)
+
 > An object for playing system sounds.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -687,6 +703,8 @@ Know more about [System Sound Services](https://developer.apple.com/reference/au
 ---
 
 ## Ti.Media.VideoPlayer
+> Full released contract: [Titanium.Media.VideoPlayer](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.VideoPlayer)
+
 > A native control for playing videos.
 > Extends Ti.UI.View
 > Platforms: both
@@ -695,14 +713,14 @@ The video player is a native view that can be used to play videos, either stored
 
 Use the <Titanium.Media.createVideoPlayer> method to create a video player.
 
-All platforms support specifying the video content as a URL, either to a local file or a remote stream. This is done by setting the [url](Titanium.Media.VideoPlayer.url) property.
+All platforms support specifying the video content as a URL, either to a local file or a remote stream. This is done by setting the [url](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.VideoPlayer) property.
 
 ### iOS Implementation Notes
 
-On iOS, video content can also be specified as a [Blob](Titanium.Blob) or [File](Titanium.Filesystem.File) object using the [media](Titanium.Media.VideoPlayer.media) property.
+On iOS, video content can also be specified as a [Blob](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Blob) or [File](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Filesystem.File) object using the [media](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.VideoPlayer) property.
 
 
-*(See full overview in titanium-docs)*
+Complete overview, setup, examples and version restrictions: [official Titanium.Media.VideoPlayer API](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.VideoPlayer).
 
 ### Properties (unique: 27/99)
 | Property | Type | Default | Platform | Description |
@@ -758,9 +776,9 @@ On iOS, video content can also be specified as a [Blob](Titanium.Blob) or [File]
 | durationavailable | both | Fired when the video duration is available. |
 | error | both | Fired when movie playback encounters an error. |
 | load | both | Fired when the movie play loads. |
-| loadstate | both | Fired when the network [loadState](Titanium.Media.VideoPlayer.loadState) change… |
+| loadstate | both | Fired when the network [loadState](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.VideoPlayer) change… |
 | naturalsizeavailable | ios | Fired when the natural size of the current movie is determined. |
-| playbackstate | both | Fired when the [playbackState](Titanium.Media.VideoPlayer.playbackState) change… |
+| playbackstate | both | Fired when the [playbackState](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Media.VideoPlayer) change… |
 | playing | both | Fired when the currently playing movie changes. |
 | preload | android | Fired when the movie has preloaded and is ready to play. |
 | resize | ios | Fired when the movie player is resized. |

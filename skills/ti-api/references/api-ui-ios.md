@@ -43,6 +43,8 @@
 <!-- TOC-END -->
 
 ## Ti.UI.iOS
+> Full released contract: [Titanium.UI.iOS](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS)
+
 > Apple iOS specific UI capabilities.  All properties, methods and events in this namespace will only work on Apple iOS devices.
 > Extends Ti.Module
 > Platforms: ios
@@ -154,6 +156,8 @@
 ---
 
 ## Ti.UI.iOS.AlertDialogStyle
+> Full released contract: [Titanium.UI.iOS.AlertDialogStyle](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.AlertDialogStyle)
+
 > A set of constants for the style that can be used for the `style` property of  <Titanium.UI.AlertDialog>.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -170,7 +174,9 @@
 ---
 
 ## Ti.UI.iOS.AnimationStyle
-> A set of constants for the animation styles used for view transitions.  One of the group of animation style constants    * [CURL_DOWN](Titanium.UI.iOS.AnimationStyle.CURL_DOWN)   * [CURL_UP](Titanium.UI.iOS.AnimationStyle.CURL_UP)   * [FLIP_FROM_LEFT](Titanium.UI.iOS.AnimationStyle.FLIP_FROM_LEFT)   * [FLIP_FROM_RIGHT](Titanium.UI.iOS.AnimationStyle.FLIP_FROM_RIGHT)   * [FLIP_FROM_TOP](Titanium.UI.iOS.AnimationStyle.FLIP_FROM_TOP)   * [FLIP_FROM_BOTTOM](Titanium.UI.iOS.AnimationStyle.FLIP_FROM_BOTTOM)   * [CROSS_DISSOLVE](Titanium.UI.iOS.AnimationStyle.CROSS_DISSOLVE)   * [NONE](Titanium.UI.iOS.AnimationStyle.NONE)
+> Full released contract: [Titanium.UI.iOS.AnimationStyle](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.AnimationStyle)
+
+> A set of constants for the animation styles used for view transitions.  One of the group of animation style constants    * [CURL_DOWN](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.AnimationStyle)   * [CURL_UP](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.AnimationStyle)   * [FLIP_FROM_LEFT](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.AnimationStyle)   * [FLIP_FROM_RIGHT](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.AnimationStyle)   * [FLIP_FROM_TOP](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.AnimationStyle)   * [FLIP_FROM_BOTTOM](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.AnimationStyle)   * [CROSS_DISSOLVE](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.AnimationStyle)   * [NONE](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.AnimationStyle)
 > Extends Ti.Proxy
 > Platforms: ios
 
@@ -186,6 +192,8 @@
 ---
 
 ## Ti.UI.iOS.ApplicationShortcuts
+> Full released contract: [Titanium.UI.iOS.ApplicationShortcuts](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.ApplicationShortcuts)
+
 > The Home screen quick actions API is for adding shortcuts to your app icon that anticipate and accelerate a  user's interaction with your app.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -206,6 +214,8 @@
 ---
 
 ## Ti.UI.iOS.BlurView
+> Full released contract: [Titanium.UI.iOS.BlurView](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.BlurView)
+
 > A <Titanium.UI.iOS.BlurView> object gives you an easy way implement some complex visual effects.  The blur effect is applied to every view the blur view is added to by default. You can also place the  blur view above other views and all visible views layered under the blur view are blurred as well.  For more information on BlurView, please refer to the official [Apple documentation](https://developer.apple.com/documentation/uikit/uivisualeffectview).  Note: In iOS 26, Apple introduced the `UIGlassEffectView`, an alternative to classic blur views. See the <Titanium.UI.iOS.BlurView.glassEffect> property for more details.
 > Extends Ti.UI.View
 > Platforms: ios
@@ -222,6 +232,8 @@
 ---
 
 ## Ti.UI.iOS.ButtonConfiguration
+> Full released contract: [Titanium.UI.iOS.ButtonConfiguration](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.ButtonConfiguration)
+
 > A configuration object for customizing the appearance and behavior of a button.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -251,6 +263,8 @@
 ---
 
 ## Ti.UI.iOS.CoverFlowView
+> Full released contract: [Titanium.UI.iOS.CoverFlowView](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.CoverFlowView)
+
 > The cover flow view is a container showing animated three-dimensional images in a style  consistent with the former cover flow presentation style used for iPod, iTunes, and Finder.
 > Extends Ti.UI.View
 > Platforms: ios
@@ -276,6 +290,8 @@
 ---
 
 ## Ti.UI.iOS.DocumentViewer
+> Full released contract: [Titanium.UI.iOS.DocumentViewer](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.DocumentViewer)
+
 > A DocumentViewer provides in-app support for managing user interactions with files on the local system.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -305,6 +321,8 @@
 ---
 
 ## Ti.UI.iOS.FeedbackGenerator
+> Full released contract: [Titanium.UI.iOS.FeedbackGenerator](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.FeedbackGenerator)
+
 > The feedback generator API is introduced in iOS 10 to handle the haptic feedback when using an iPhone 7 or  later devices.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -328,6 +346,8 @@
 ---
 
 ## Ti.UI.iOS.ListViewCellSelectionStyle
+> Full released contract: [Titanium.UI.iOS.ListViewCellSelectionStyle](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.ListViewCellSelectionStyle)
+
 > A set of constants for the style that can be used for the `selectionStyle` property of a ListItem, which is set in the `properties` dictionary of either the <ListDataItem> or <ItemTemplate>.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -341,6 +361,8 @@
 ---
 
 ## Ti.UI.iOS.ListViewScrollPosition
+> Full released contract: [Titanium.UI.iOS.ListViewScrollPosition](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.ListViewScrollPosition)
+
 > A set of constants for the position value that can be used for the `position` property of <ListViewAnimationProperties> when invoking the ListView's `scrollToItem`, `appendSection`, `deleteSectionAt`, `insertSectionAt` and `replaceSectionAt` methods.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -354,6 +376,8 @@
 ---
 
 ## Ti.UI.iOS.ListViewStyle
+> Full released contract: [Titanium.UI.iOS.ListViewStyle](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.ListViewStyle)
+
 > A set of constants for the style that can be used for the `style` property of  <Titanium.UI.ListView>.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -368,6 +392,8 @@
 ---
 
 ## Ti.UI.iOS.LivePhoto
+> Full released contract: [Titanium.UI.iOS.LivePhoto](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.LivePhoto)
+
 > Abstract object representing a live photo used in <Titanium.UI.iOS.LivePhotoView>.
 > Extends Ti.Proxy
 > Platforms: both
@@ -378,6 +404,8 @@
 ---
 
 ## Ti.UI.iOS.LivePhotoView
+> Full released contract: [Titanium.UI.iOS.LivePhotoView](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.LivePhotoView)
+
 > A view to display a <Titanium.UI.iOS.LivePhoto> object introduced in iOS 9.1.
 > Extends Ti.UI.View
 > Platforms: ios
@@ -404,6 +432,8 @@
 ---
 
 ## Ti.UI.iOS.MenuPopup
+> Full released contract: [Titanium.UI.iOS.MenuPopup](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.MenuPopup)
+
 > A menu popup provides the ability to create custom tooltip options using the `items` property covering the native `UIMenuController` class.  See also:  * [iOS Developer Library: UIMenuController](https://developer.apple.com/documentation/uikit/uimenucontroller)
 > Extends Ti.Proxy
 > Platforms: ios
@@ -429,6 +459,8 @@
 ---
 
 ## Ti.UI.iOS.NavigationWindow
+> Full released contract: [Titanium.UI.iOS.NavigationWindow](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.NavigationWindow)
+
 > A `NavigationWindow` implements a specialized view that manages the navigation of hierarchical content.
 > Extends Ti.UI.Window
 > Platforms: ios
@@ -450,6 +482,8 @@
 ---
 
 ## Ti.UI.iOS.PreviewAction
+> Full released contract: [Titanium.UI.iOS.PreviewAction](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.PreviewAction)
+
 > A PreviewAction provides options to configure actions used by the iOS 9 3D-Touch "Peek and Pop" feature.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -470,6 +504,8 @@
 ---
 
 ## Ti.UI.iOS.PreviewActionGroup
+> Full released contract: [Titanium.UI.iOS.PreviewActionGroup](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.PreviewActionGroup)
+
 > A PreviewActionGroup provides options to configure a group of actions used by the iOS 9 3D-Touch feature "Peek and Pop".
 > Extends Ti.Proxy
 > Platforms: ios
@@ -487,6 +523,8 @@
 ---
 
 ## Ti.UI.iOS.PreviewContext
+> Full released contract: [Titanium.UI.iOS.PreviewContext](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.PreviewContext)
+
 > A PreviewContext provides options to configure the iOS 9 3D-Touch "Peek and Pop" feature.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -509,6 +547,8 @@
 ---
 
 ## Ti.UI.iOS.ProgressBarStyle
+> Full released contract: [Titanium.UI.iOS.ProgressBarStyle](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.ProgressBarStyle)
+
 > A set of constants for the bar styles used on the `style` property of <Titanium.UI.ProgressBar>.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -522,6 +562,8 @@
 ---
 
 ## Ti.UI.iOS.RowAnimationStyle
+> Full released contract: [Titanium.UI.iOS.RowAnimationStyle](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.RowAnimationStyle)
+
 > A set of constants for the Animation Styles used for transition on table view rows.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -535,6 +577,8 @@
 ---
 
 ## Ti.UI.iOS.ScrollIndicatorStyle
+> Full released contract: [Titanium.UI.iOS.ScrollIndicatorStyle](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.ScrollIndicatorStyle)
+
 > A set of constants for the styles available for scrollbars used with <Titanium.UI.ScrollView.scrollIndicatorStyle> and <Titanium.UI.TableView.scrollIndicatorStyle> properties.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -548,6 +592,8 @@
 ---
 
 ## Ti.UI.iOS.SplitWindow
+> Full released contract: [Titanium.UI.iOS.SplitWindow](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.SplitWindow)
+
 > A SplitWindow is a window that manages the presentation of two side-by-side view controllers.
 > Extends Ti.UI.Window
 > Platforms: ios
@@ -574,6 +620,8 @@
 ---
 
 ## Ti.UI.iOS.StatusBar
+> Full released contract: [Titanium.UI.iOS.StatusBar](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.StatusBar)
+
 > A set of constants for the status bar style.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -590,6 +638,8 @@
 ---
 
 ## Ti.UI.iOS.Stepper
+> Full released contract: [Titanium.UI.iOS.Stepper](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.Stepper)
+
 > A widget used to increment and decrement a value.
 > Extends Ti.UI.View
 > Platforms: ios
@@ -622,6 +672,8 @@
 ---
 
 ## Ti.UI.iOS.SystemButton
+> Full released contract: [Titanium.UI.iOS.SystemButton](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.SystemButton)
+
 > A set of constants for creating standard iOS system buttons.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -640,6 +692,8 @@
 ---
 
 ## Ti.UI.iOS.SystemIcon
+> Full released contract: [Titanium.UI.iOS.SystemIcon](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.SystemIcon)
+
 > A set of constants for the system icon styles that can be used on a tab group tab.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -655,6 +709,8 @@
 ---
 
 ## Ti.UI.iOS.TabbedBar
+> Full released contract: [Titanium.UI.iOS.TabbedBar](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.TabbedBar)
+
 > A button bar that maintains a selected state.
 > Extends Ti.UI.View
 > Platforms: ios
@@ -676,6 +732,8 @@
 ---
 
 ## Ti.UI.iOS.TableViewCellSelectionStyle
+> Full released contract: [Titanium.UI.iOS.TableViewCellSelectionStyle](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.TableViewCellSelectionStyle)
+
 > A set of constants for the style that can be used for the `selectionStyle` property of  <Titanium.UI.TableViewRow>.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -689,6 +747,8 @@
 ---
 
 ## Ti.UI.iOS.TableViewScrollPosition
+> Full released contract: [Titanium.UI.iOS.TableViewScrollPosition](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.TableViewScrollPosition)
+
 > A set of constants for the position value that can be used for the `position` property of <Titanium.UI.TableView> when invoking `scrollToIndex`.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -702,6 +762,8 @@
 ---
 
 ## Ti.UI.iOS.TableViewStyle
+> Full released contract: [Titanium.UI.iOS.TableViewStyle](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.TableViewStyle)
+
 > A set of constants for the style that can be used for the `style` property of  <Titanium.UI.TableView> and <Titanium.UI.ListView>.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -716,6 +778,8 @@
 ---
 
 ## Ti.UI.iOS.Toolbar
+> Full released contract: [Titanium.UI.iOS.Toolbar](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.Toolbar)
+
 > An iOS toolbar, which can contain buttons and certain other controls.
 > Extends Ti.UI.View
 > Platforms: ios
@@ -734,7 +798,9 @@
 ---
 
 ## Ti.UI.iOS.TransitionAnimation
-> A transition animation when opening or closing windows in a <Titanium.UI.NavigationWindow> or <Titanium.UI.Tab>.  Use this proxy with the Window's [transitionAnimation](Titanium.UI.Window.transitionAnimation) property.
+> Full released contract: [Titanium.UI.iOS.TransitionAnimation](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.TransitionAnimation)
+
+> A transition animation when opening or closing windows in a <Titanium.UI.NavigationWindow> or <Titanium.UI.Tab>.  Use this proxy with the Window's [transitionAnimation](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Window) property.
 > Extends Ti.Proxy
 > Platforms: ios
 
@@ -751,6 +817,8 @@
 ---
 
 ## Ti.UI.iOS.WebViewConfiguration
+> Full released contract: [Titanium.UI.iOS.WebViewConfiguration](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.WebViewConfiguration)
+
 > A collection of properties used to initialize a web view.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -773,6 +841,8 @@
 ---
 
 ## Ti.UI.iOS.WebViewDecisionHandler
+> Full released contract: [Titanium.UI.iOS.WebViewDecisionHandler](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.WebViewDecisionHandler)
+
 > It represents the decision handler to tell to webview, whether allow or cancel the navigation.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -787,6 +857,8 @@
 ---
 
 ## Ti.UI.iOS.WebViewProcessPool
+> Full released contract: [Titanium.UI.iOS.WebViewProcessPool](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.WebViewProcessPool)
+
 > It represents a pool of Web Content processes.
 > Extends Ti.Proxy
 > Platforms: ios

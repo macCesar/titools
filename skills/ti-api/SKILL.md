@@ -7,7 +7,7 @@ description: 'Use when looking up properties, methods, events, constants, or typ
 
 ## Overview
 
-API reference for the Titanium SDK and TiDev-maintained modules. Use it to look up properties, methods, events, constants, and type signatures across ~360 APIs grouped into 20 reference files.
+API reference for the Titanium SDK and TiDev-maintained modules. Use it to look up properties, methods, events, constants, and type signatures across 305 types grouped into 20 reference files.
 
 ## When to use
 
@@ -30,7 +30,15 @@ Do NOT use for:
 
 1. Identify which namespace the API belongs to.
 2. Look up the matching reference file in the table below.
-3. Read the reference file for full property / method / event tables.
+3. Read the reference file for condensed property / method / event tables. Read the complete release-specific API contract when an example or platform behavior depends on details the table abbreviates.
+
+## Release scope and authoritative contracts
+
+The core SDK tables are anchored to **13.4.1.GA**. Match the app's selected SDK before using a contract: `/docs/sdk` is the general API index, while [the 13.4.1 API index](https://titaniumsdk.com/docs/sdk/13.4.1) is explicitly release-scoped. Do not treat the general index or an unreleased `main` API as a feature of the installed GA.
+
+For a core type, use its complete name in the release URL, for example [Titanium.UI.Window in 13.4.1](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Window). The canonical source is the matching YAML under [tidev/titanium-sdk, tag 13_4_1_GA, apidoc](https://github.com/tidev/titanium-sdk/tree/13_4_1_GA/apidoc). Complete descriptions, examples, inherited contracts, permission/setup requirements and version restrictions take precedence over a shortened table summary. A table's em dash does not by itself distinguish a null default from an undocumented one. Method rows abbreviate parameter names; optionality, parameter types/defaults and event payload fields require the complete contract. Generated factory methods accept an optional creation dictionary.
+
+`Modules.*` types belong to independently versioned native modules. Verify their own module release and documentation; the core SDK's version does not establish a Map, BLE, NFC or other module's behavior. For guide material use [tidev/titaniumsdk.com](https://github.com/tidev/titaniumsdk.com), which owns the current website. The old titanium-docs repository is historical provenance only, excluded from the current guide content.
 
 ## Namespace lookup
 

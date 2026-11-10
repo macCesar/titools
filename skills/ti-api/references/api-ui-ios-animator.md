@@ -15,6 +15,8 @@
 <!-- TOC-END -->
 
 ## Ti.UI.iOS.AnchorAttachmentBehavior
+> Full released contract: [Titanium.UI.iOS.AnchorAttachmentBehavior](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.AnchorAttachmentBehavior)
+
 > Dynamic behavior to support connections between an anchor point and an item.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -23,9 +25,9 @@ An anchor attachment behavior creates a dynamic connection between an anchor poi
 To define an anchor attachment behavior:
 
   1. Use the <Titanium.UI.iOS.createAnchorAttachmentBehavior> method to create a behavior.
-  2. Set the [anchor](Titanium.UI.iOS.AnchorAttachmentBehavior.anchor) and
-     [item](Titanium.UI.iOS.AnchorAttachmentBehavior.item) properties.
-  3. Add the behavior to the [Animator object](Titanium.UI.iOS.Animator).
+  2. Set the [anchor](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.AnchorAttachmentBehavior) and
+     [item](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.AnchorAttachmentBehavior) properties.
+  3. Add the behavior to the [Animator object](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.Animator).
 
 To create a dynamic connection between two items, use <Titanium.UI.iOS.ViewAttachmentBehavior>.
 
@@ -55,6 +57,8 @@ To create a dynamic connection between two items, use <Titanium.UI.iOS.ViewAttac
 ---
 
 ## Ti.UI.iOS.Animator
+> Full released contract: [Titanium.UI.iOS.Animator](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.Animator)
+
 > Provides support for the built-in iOS dynamic animations
 > Extends Ti.Proxy
 > Platforms: ios
@@ -69,13 +73,13 @@ To use these dynamic animations, first create the items to animate, then:
 
 **1.** Create an animator using the <Titanium.UI.iOS.createAnimator> method. 
 
-**2.** Set the [referenceView](Titanium.UI.iOS.Animator.referenceView) property to establish the
+**2.** Set the [referenceView](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.Animator) property to establish the
    coordinate system for the animations.
 
 **3.** Create and add items to one or more of the following behaviors:
 
 
-*(See full overview in titanium-docs)*
+Complete overview, setup, examples and version restrictions: [official Titanium.UI.iOS.Animator API](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.Animator).
 
 ### Properties (unique: 3/5)
 | Property | Type | Default | Platform | Description |
@@ -104,6 +108,8 @@ To use these dynamic animations, first create the items to animate, then:
 ---
 
 ## Ti.UI.iOS.CollisionBehavior
+> Full released contract: [Titanium.UI.iOS.CollisionBehavior](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.CollisionBehavior)
+
 > Dynamic behavior to support collisions between items and boundaries.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -112,11 +118,11 @@ A collision behavior specifies the behavior when items collide with each other a
 To define a collision behavior:
 
   1. Use the <Titanium.UI.iOS.createCollisionBehavior> method to create and define the behavior.
-  2. Use the [addItem](Titanium.UI.iOS.CollisionBehavior.addItem) method to add items to the behavior.
-  3. Use the [addBoundary](Titanium.UI.iOS.CollisionBehavior.addBoundary) method to add custom
+  2. Use the [addItem](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.CollisionBehavior) method to add items to the behavior.
+  3. Use the [addBoundary](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.CollisionBehavior) method to add custom
      boundaries for the item to collide with. By default, the behavior uses the Animator
      object's reference view as the boundary.
-  4. Add the behavior to an [Animator object](Titanium.UI.iOS.Animator).
+  4. Add the behavior to an [Animator object](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.Animator).
 
 ### Properties (unique: 5/7)
 | Property | Type | Default | Platform | Description |
@@ -175,6 +181,8 @@ To define a collision behavior:
 ---
 
 ## Ti.UI.iOS.DynamicItemBehavior
+> Full released contract: [Titanium.UI.iOS.DynamicItemBehavior](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.DynamicItemBehavior)
+
 > Base dynamic configuration for an item.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -184,8 +192,8 @@ attributes, such as density and resistance, affects the behavior of the object w
 such as push forces or collisions, are applied to it.  To define a dynamic behavior for an item:
 
   1. Use the <Titanium.UI.iOS.createDynamicItemBehavior> method to create and define the behavior.
-  2. Use the [addItem](Titanium.UI.iOS.DynamicItemBehavior.addItem) method to add items to the behavior.
-  3. Add the behavior to an [Animator object](Titanium.UI.iOS.Animator).
+  2. Use the [addItem](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.DynamicItemBehavior) method to add items to the behavior.
+  3. Add the behavior to an [Animator object](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.Animator).
 
 ### Properties (unique: 7/9)
 | Property | Type | Default | Platform | Description |
@@ -223,6 +231,8 @@ such as push forces or collisions, are applied to it.  To define a dynamic behav
 ---
 
 ## Ti.UI.iOS.GravityBehavior
+> Full released contract: [Titanium.UI.iOS.GravityBehavior](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.GravityBehavior)
+
 > Gravitational force to apply to an item.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -232,11 +242,11 @@ behavior:
 
   1. Use the <Titanium.UI.iOS.createGravityBehavior> method to create and define the behavior.
   2. To define a gravity vector, either set the
-     [angle](Titanium.UI.iOS.GravityBehavior.angle) and
-     [magnitude](Titanium.UI.iOS.GravityBehavior.magnitude) properties, or set the
-     [gravityDirection](Titanium.UI.iOS.GravityBehavior.gravityDirection) property.
-  3. Use the [addItem](Titanium.UI.iOS.GravityBehavior.addItem) method to add items to the behavior.
-  4. Add the behavior to an [Animator object](Titanium.UI.iOS.Animator).
+     [angle](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.GravityBehavior) and
+     [magnitude](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.GravityBehavior) properties, or set the
+     [gravityDirection](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.GravityBehavior) property.
+  3. Use the [addItem](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.GravityBehavior) method to add items to the behavior.
+  4. Add the behavior to an [Animator object](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.Animator).
 
 You can only define one gravity behavior per animator.
 
@@ -269,6 +279,8 @@ You can only define one gravity behavior per animator.
 ---
 
 ## Ti.UI.iOS.PushBehavior
+> Full released contract: [Titanium.UI.iOS.PushBehavior](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.PushBehavior)
+
 > Continuous or instantaneous force to apply to an item.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -278,11 +290,11 @@ define a push behavior:
 
   1. Use the <Titanium.UI.iOS.createPushBehavior> method to create and define the behavior.
   2. To define a force vector, either set the
-     [angle](Titanium.UI.iOS.PushBehavior.angle) and
-     [magnitude](Titanium.UI.iOS.PushBehavior.magnitude) properties, or set the
-     [pushDirection](Titanium.UI.iOS.PushBehavior.pushDirection) property.
-  3. Use the [addItem](Titanium.UI.iOS.PushBehavior.addItem) method to add items to the behavior.
-  4. Add the behavior to an [Animator object](Titanium.UI.iOS.Animator).
+     [angle](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.PushBehavior) and
+     [magnitude](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.PushBehavior) properties, or set the
+     [pushDirection](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.PushBehavior) property.
+  3. Use the [addItem](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.PushBehavior) method to add items to the behavior.
+  4. Add the behavior to an [Animator object](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.Animator).
 
 ### Properties (unique: 6/8)
 | Property | Type | Default | Platform | Description |
@@ -315,6 +327,8 @@ define a push behavior:
 ---
 
 ## Ti.UI.iOS.SnapBehavior
+> Full released contract: [Titanium.UI.iOS.SnapBehavior](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.SnapBehavior)
+
 > Dynamic behavior defining an item's movement to a specific point.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -323,9 +337,9 @@ A snap behavior specifies how an item moves towards a specified point with a spr
 effect, ending with an oscillation.
 
   1. Use the <Titanium.UI.iOS.createSnapBehavior> method to create the behavior.
-  2. Set the [item](Titanium.UI.iOS.SnapBehavior.item) and
-     [snapPoint](Titanium.UI.iOS.SnapBehavior.snapPoint) properties.
-  3. Add the behavior to an [Animator object](Titanium.UI.iOS.Animator).
+  2. Set the [item](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.SnapBehavior) and
+     [snapPoint](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.SnapBehavior) properties.
+  3. Add the behavior to an [Animator object](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.Animator).
 
 ### Properties (unique: 3/5)
 | Property | Type | Default | Platform | Description |
@@ -350,6 +364,8 @@ effect, ending with an oscillation.
 ---
 
 ## Ti.UI.iOS.ViewAttachmentBehavior
+> Full released contract: [Titanium.UI.iOS.ViewAttachmentBehavior](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.ViewAttachmentBehavior)
+
 > Dynamic behavior to support connections between two items.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -358,9 +374,9 @@ A view attachment behavior creates a dynamic connection between two items. To de
 attachment behavior:
 
   1. Use the <Titanium.UI.iOS.createViewAttachmentBehavior> method to create and define a behavior.
-  2. Set the [anchorItem](Titanium.UI.iOS.ViewAttachmentBehavior.anchorItem) and
-     [item](Titanium.UI.iOS.ViewAttachmentBehavior.item) properties.
-  3. Add the behavior to the [Animator object](Titanium.UI.iOS.Animator).
+  2. Set the [anchorItem](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.ViewAttachmentBehavior) and
+     [item](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.ViewAttachmentBehavior) properties.
+  3. Add the behavior to the [Animator object](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.Animator).
 
 To create a dynamic connection between an item and anchor point, use <Titanium.UI.iOS.AnchorAttachmentBehavior>.
 

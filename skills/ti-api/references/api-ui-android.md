@@ -18,6 +18,8 @@
 <!-- TOC-END -->
 
 ## Ti.UI.Android
+> Full released contract: [Titanium.UI.Android](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Android)
+
 > The Android-specific UI capabilities. All properties, methods and events in this namespace will only work on Android systems.  #### Drawer Layout  The drawer-layout components acts as a top-level container for window content that allows for interactive "drawer" views to be pulled out from one or both vertical edges of the window. It is represented by a `centerView` and optional `leftView` and `rightView` components that can be swiped in and out with additional configuration and transitions. Learn more about drawer-layouts in it's dedicated <Titanium.UI.Android.DrawerLayout> docs.
 > Extends Ti.Module
 > Platforms: android
@@ -40,7 +42,7 @@ button.addEventListener('click', function() {
 });
 ```
 
-*(See full overview in titanium-docs)*
+Complete overview, setup, examples and version restrictions: [official Titanium.UI.Android API](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Android).
 
 ### Constants (101)
 - **FLAG_LAYOUT_NO_\***: FLAG_LAYOUT_NO_LIMITS
@@ -123,13 +125,15 @@ button.addEventListener('click', function() {
 ---
 
 ## Ti.UI.Android.CardView
+> Full released contract: [Titanium.UI.Android.CardView](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Android.CardView)
+
 > CardView provides a layout container with rounded corners and a shadow indicating the view is elevated.
 > Extends Ti.UI.View
 > Platforms: android
 
 | Android |
 | ------- |
-| ![Android](./cardview_android.png) |
+| [Android API reference](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Android.CardView) |
 
 Use a CardView to layout content that:
 
@@ -138,11 +142,11 @@ Use a CardView to layout content that:
   * Supports variable length content or displays more than three lines of text
   * Contains rich content or interactive elements, such as comments or a favorite button
 
-If you are displaying a collection of the same type in a uniform layout without many actions, use a [ListView](Titanium.UI.ListView) or [TableView](Titanium.UI.TableView) instead.
+If you are displaying a collection of the same type in a uniform layout without many actions, use a [ListView](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.ListView) or [TableView](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.TableView) instead.
 
 For design guidelines, see
 
-*(See full overview in titanium-docs)*
+Complete overview, setup, examples and version restrictions: [official Titanium.UI.Android.CardView API](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Android.CardView).
 
 ### Properties (unique: 11/65)
 | Property | Type | Default | Platform | Description |
@@ -165,13 +169,15 @@ For design guidelines, see
 ---
 
 ## Ti.UI.Android.CollapseToolbar
+> Full released contract: [Titanium.UI.Android.CollapseToolbar](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Android.CollapseToolbar)
+
 > A collapsing toolbar layout.
 > Extends Ti.UI.View
 > Platforms: android
 
 | Android |
 | ------- |
-| ![Android](./collpasetoolbar_android.jpg) |
+| [Android API reference](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Android.CollapseToolbar) |
 
 CollapseToolbar acts as a top-level container for window content that allows to set a parallax image and title in the toolbar. The main content goes into `centerView` and will automatically be scrollable.
 
@@ -196,13 +202,15 @@ CollapseToolbar acts as a top-level container for window content that allows to 
 ---
 
 ## Ti.UI.Android.DrawerLayout
+> Full released contract: [Titanium.UI.Android.DrawerLayout](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Android.DrawerLayout)
+
 > A panel that displays the app's main navigation options on the left edge of the screen.
 > Extends Ti.UI.View
 > Platforms: android
 
 | Android |
 | ------- |
-| ![Android](./drawerlayout_android.png) |
+| [Android API reference](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Android.DrawerLayout) |
 
 DrawerLayout acts as a top-level container for window content that allows for interactive "drawer" views to be pulled out from one or both vertical edges of the window.
 
@@ -256,6 +264,8 @@ For design guidelines, see [Google Design Guidelines: DrawerLayout](https://deve
 ---
 
 ## Ti.UI.Android.FloatingActionButton
+> Full released contract: [Titanium.UI.Android.FloatingActionButton](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Android.FloatingActionButton)
+
 > A floating action button (FAB) is a circular button that triggers the primary action in your app's UI.
 > Extends Ti.UI.View
 > Platforms: android
@@ -280,13 +290,15 @@ For design guidelines, see [Material design: Snackbars](https://material.io/comp
 ---
 
 ## Ti.UI.Android.ProgressIndicator
+> Full released contract: [Titanium.UI.Android.ProgressIndicator](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Android.ProgressIndicator)
+
 > A progress dialog or a horizontal progress bar in the title of the window.
 > Extends Ti.UI.View
 > Platforms: android
 
 | Android |
 | ------- |
-| ![Android](./progressindicator_android.png) |
+| [Android API reference](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Android.ProgressIndicator) |
 
 A progress indicator can be used to show the progress of an operation in the UI to let the user know that some action is taking place. It is used to indicate an ongoing activity of determinate or indeterminate length.
 
@@ -330,24 +342,26 @@ A progress indicator can be either a progress dialog or a horizontal progress ba
 ---
 
 ## Ti.UI.Android.SearchView
+> Full released contract: [Titanium.UI.Android.SearchView](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Android.SearchView)
+
 > A specialized text field for entering search text.
 > Extends Ti.UI.View
 > Platforms: android
 
 | Android |
 | ------- |
-| ![Android](./searchview_android.png) |
+| [Android API reference](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Android.SearchView) |
 
 `SearchView` provides a user interface to enter a search query and submit a request to a search provider.
 
-Search views are most commonly used for filtering the rows in a [TableView](Titanium.UI.TableView). Similar to [SearchBar](Titanium.UI.SearchBar), you can add a search view to a table view by setting the table view's [search](Titanium.UI.TableView.search) property. A search view can be used without a `TableView`.
+Search views are most commonly used for filtering the rows in a [TableView](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.TableView). Similar to [SearchBar](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.SearchBar), you can add a search view to a table view by setting the table view's [search](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.TableView) property. A search view can be used without a `TableView`.
 
-You can also use a `SearchView` object as the <Titanium.UI.ListView.searchView> property of a [ListView](Titanium.UI.ListView) object.
+You can also use a `SearchView` object as the <Titanium.UI.ListView.searchView> property of a [ListView](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.ListView) object.
 
 You can also add `SearchView` to an `ActionBar` as a view (see example below).
 
 
-*(See full overview in titanium-docs)*
+Complete overview, setup, examples and version restrictions: [official Titanium.UI.Android.SearchView API](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Android.SearchView).
 
 ### Properties (unique: 7/68)
 | Property | Type | Default | Platform | Description |
@@ -379,13 +393,15 @@ You can also add `SearchView` to an `ActionBar` as a view (see example below).
 ---
 
 ## Ti.UI.Android.Snackbar
+> Full released contract: [Titanium.UI.Android.Snackbar](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Android.Snackbar)
+
 > Snackbars provide brief messages about app processes at the bottom of the screen.
 > Extends Ti.UI.View
 > Platforms: android
 
 | Android |
 | ------- |
-| ![Android](./snackbar_android.png) |
+| [Android API reference](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Android.Snackbar) |
 
 For design guidelines, see [Material design: Snackbars](https://material.io/components/snackbars)
 
@@ -422,6 +438,8 @@ For design guidelines, see [Material design: Snackbars](https://material.io/comp
 ---
 
 ## Ti.UI.iPad.Popover
+> Full released contract: [Titanium.UI.iPad.Popover](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iPad.Popover)
+
 > A Popover is used to manage the presentation of content in a popover.
 > Extends Ti.UI.View
 > Platforms: ios
@@ -430,7 +448,7 @@ A popover is created using the <Titanium.UI.iPad.createPopover> method or **`<Po
 
 Popovers are used to present information temporarily, but in a way that does not take over the entire screen in the way that a modal view does. The popover content is layered on top of the existing content in a special type of window. The popover remains visible until the user taps outside of the popover window or it is explicitly dismissed.
 
-Do not add top-level view containers, such as a `SplitWindow` or `TabGroup`, to a popover. Adding top-level view containers may have unintended side effects. See the [contentView](Titanium.UI.iPad.Popover.contentView) property for more information.
+Do not add top-level view containers, such as a `SplitWindow` or `TabGroup`, to a popover. Adding top-level view containers may have unintended side effects. See the [contentView](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iPad.Popover) property for more information.
 
 ### Properties (unique: 4/13)
 | Property | Type | Default | Platform | Description |
@@ -473,6 +491,8 @@ Do not add top-level view containers, such as a `SplitWindow` or `TabGroup`, to 
 ---
 
 ## Ti.UI.iPad
+> Full released contract: [Titanium.UI.iPad](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iPad)
+
 > iPad specific UI capabilities.
 > Extends Ti.Module
 > Platforms: ios

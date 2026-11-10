@@ -20,19 +20,21 @@
 <!-- TOC-END -->
 
 ## Ti.UI.Animation
+> Full released contract: [Titanium.UI.Animation](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Animation)
+
 > The `Animation` object defines an animation that can be applied to a view.
 > Extends Ti.Proxy
 > Platforms: both
 
 An animation object describes the properties of an animation. At its most basic, an animation object represents a single-phase animation with an end state and a duration.
 
-When [animate](Titanium.UI.View.animate) is called on a [View](Titanium.UI.View), the view is animated from its current state to the state described by the animation object. The properties that can be animated include the view's position, size, colors, transformation matrix and opacity.
+When [animate](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.View) is called on a [View](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.View), the view is animated from its current state to the state described by the animation object. The properties that can be animated include the view's position, size, colors, transformation matrix and opacity.
 
-You can also specify an animation curve or *easing function* to control the pace of the animation. To use an easing function, set the animation's `curve` property to one of the `ANIMATION_CURVE` constants defined in <Titanium.UI>. For example, [ANIMATION_CURVE_EASE_IN](Titanium.UI.ANIMATION_CURVE_EASE_IN) specifies an animation that starts slowly and then speeds up.
+You can also specify an animation curve or *easing function* to control the pace of the animation. To use an easing function, set the animation's `curve` property to one of the `ANIMATION_CURVE` constants defined in <Titanium.UI>. For example, [ANIMATION_CURVE_EASE_IN](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI) specifies an animation that starts slowly and then speeds up.
 
 Animations can be set to reverse themselves automatically on completion, and to repeat a given number of times. For more complicated effects, multiple animations can be combined in sequence,
 
-*(See full overview in titanium-docs)*
+Complete overview, setup, examples and version restrictions: [official Titanium.UI.Animation API](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Animation).
 
 ### Properties (unique: 28/31)
 | Property | Type | Default | Platform | Description |
@@ -88,6 +90,8 @@ Animations can be set to reverse themselves automatically on completion, and to 
 ---
 
 ## Ti.UI.Matrix2D
+> Full released contract: [Titanium.UI.Matrix2D](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Matrix2D)
+
 > The 2D Matrix is an object for holding values for an affine transformation matrix.
 > Extends Ti.Proxy
 > Platforms: both
@@ -118,6 +122,8 @@ A 2D matrix is used to rotate, scale, translate, or skew the objects in a two-di
 ---
 
 ## Ti.UI.Matrix3D
+> Full released contract: [Titanium.UI.Matrix3D](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Matrix3D)
+
 > The 3D Matrix is an object for holding values for a 3D affine transform.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -160,6 +166,8 @@ You create an `identity matrix` by creating a 3D Matrix with an empty constructo
 ---
 
 ## Ti.UI.WebView
+> Full released contract: [Titanium.UI.WebView](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.WebView)
+
 > The web view allows you to open an HTML5 based view which can load either local or remote content.
 > Extends Ti.UI.View
 > Platforms: both
@@ -177,7 +185,7 @@ JavaScript in the web view executes in its own context.  The web view can intera
 **Local Scripts**
 
 
-*(See full overview in titanium-docs)*
+Complete overview, setup, examples and version restrictions: [official Titanium.UI.WebView API](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.WebView).
 
 ### Properties (unique: 44/123)
 | Property | Type | Default | Platform | Description |
@@ -235,7 +243,7 @@ JavaScript in the web view executes in its own context.  The web view can intera
 ### Methods (24)
 | Method | Returns | Platform | Description |
 |--------|---------|----------|-------------|
-| setHtml(html, options) | void | both | Sets the value of [html](Titanium.UI.WebView.html) property. |
+| setHtml(html, options) | void | both | Sets the value of [html](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.WebView) property. |
 | canGoBack(—) | Boolean | both | Returns `true` if the web view can go back in its history list. |
 | canGoForward(—) | Boolean | both | Returns `true` if the web view can go forward in its history list. |
 | evalJS(code, callback) | String | both | Evaluates a JavaScript expression inside the context of the web view and option… |
@@ -368,13 +376,15 @@ Also referenced by this API, documented elsewhere: `Dictionary`.
 ---
 
 ## Ti.UI.Toolbar
+> Full released contract: [Titanium.UI.Toolbar](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Toolbar)
+
 > A Toolbar can contain buttons, as well as certain other widgets, including text fields and labels.
 > Extends Ti.UI.View
 > Platforms: both
 
 A `Toolbar` is created by the <Titanium.UI.createToolbar> factory method or **`<Toolbar>`** Alloy element.
 
-To provide spacing between items in the toolbar, on iOS you can use the special system button types, [FIXED_SPACE](Titanium.UI.iOS.SystemButton.FIXED_SPACE) and [FLEXIBLE_SPACE](Titanium.UI.iOS.SystemButton.FLEXIBLE_SPACE).
+To provide spacing between items in the toolbar, on iOS you can use the special system button types, [FIXED_SPACE](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.SystemButton) and [FLEXIBLE_SPACE](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.SystemButton).
 
 Note that toolbars are positioned like other views (using the `top` and `bottom` properties, for example), but the [iOS Human Interface Guidelines](https://developer.apple.com/ios/human-interface-guidelines/overview/themes/#//apple_ref/doc/uid/TP40006556-CH12-SW4) have specific requirements for placing toolbars, specifically:
 
@@ -383,7 +393,7 @@ Note that toolbars are positioned like other views (using the `top` and `bottom`
 
 Due to an iOS limitation, the buttons in the toolbar only support the `click` event. The native object underlying a toolbar button does not generate standard view events,
 
-*(See full overview in titanium-docs)*
+Complete overview, setup, examples and version restrictions: [official Titanium.UI.Toolbar API](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Toolbar).
 
 ### Properties (unique: 14/73)
 | Property | Type | Default | Platform | Description |
@@ -428,19 +438,21 @@ Due to an iOS limitation, the buttons in the toolbar only support the `click` ev
 ---
 
 ## Ti.UI.ButtonBar
+> Full released contract: [Titanium.UI.ButtonBar](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.ButtonBar)
+
 > An iOS button bar component.
 > Extends Ti.UI.View
 > Platforms: both
 
 | Android | iOS |
 | ------- | --- |
-| ![Android](./buttonbar_android.png) |  |
+| [Android API reference](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.ButtonBar) |  |
 
 The button bar is a set of buttons joined into a single control. On iOS, you can set up the buttons with either a title or image, but not both. On Android, you can set up the buttons with a title, image, or both.
 
 Use the <Titanium.UI.createButtonBar> method or **`<ButtonBar>`** Alloy element to create a button bar.
 
-The [TabbedBar](Titanium.UI.iOS.TabbedBar) control is a button bar where the last selected button maintains a pressed or selected state. The following discussion applies to both button bar and tabbed bar.
+The [TabbedBar](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.TabbedBar) control is a button bar where the last selected button maintains a pressed or selected state. The following discussion applies to both button bar and tabbed bar.
 
 ### Properties (unique: 5/76)
 | Property | Type | Default | Platform | Description |
@@ -461,11 +473,13 @@ The [TabbedBar](Titanium.UI.iOS.TabbedBar) control is a button bar where the las
 ---
 
 ## Ti.UI.TabbedBar
+> Full released contract: [Titanium.UI.TabbedBar](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.TabbedBar)
+
 > A button bar that maintains a selected state.
 > Extends Ti.UI.View
 > Platforms: both
 
-A tabbed bar is a button bar that maintains a state (visually distinguished as a pressed or selected look). It is closely related to the `ButtonBar` control. See the description of [ButtonBar](Titanium.UI.ButtonBar) for information on styling tabbed bars and buttons bars.
+A tabbed bar is a button bar that maintains a state (visually distinguished as a pressed or selected look). It is closely related to the `ButtonBar` control. See the description of [ButtonBar](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.ButtonBar) for information on styling tabbed bars and buttons bars.
 
 Use the <Titanium.UI.createTabbedBar> method to create a Tabbed Bar.
 
@@ -490,13 +504,15 @@ Use the <Titanium.UI.createTabbedBar> method to create a Tabbed Bar.
 ---
 
 ## Ti.UI.OptionBar
+> Full released contract: [Titanium.UI.OptionBar](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.OptionBar)
+
 > A bar of selectable buttons where only 1 can be selected at a time.
 > Extends Ti.UI.View
 > Platforms: both
 
 | Android | iOS |
 | ------- | --- |
-| ![Android](./optionbar_android.png) |  |
+| [Android API reference](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.OptionBar) |  |
 
 This is a view which shows a list of options where only 1 option is selectable by the user.
 
@@ -527,6 +543,8 @@ Use the <Titanium.UI.createOptionBar> method to create a Option Bar.
 ---
 
 ## Ti.UI.Shortcut
+> Full released contract: [Titanium.UI.Shortcut](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Shortcut)
+
 > Manage application shortcuts.
 > Extends Ti.Proxy
 > Platforms: both
@@ -558,6 +576,8 @@ On iOS, shortcuts are only supported on a 3D Touch compatible device. Use the <T
 ---
 
 ## Ti.UI.ShortcutItem
+> Full released contract: [Titanium.UI.ShortcutItem](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.ShortcutItem)
+
 > An application shortcut item.
 > Extends Ti.Proxy
 > Platforms: both
@@ -593,13 +613,15 @@ In the `tiapp.xml` file, you will need to add a shortcuts `<meta-data/>` element
 ---
 
 ## Ti.UI.EmailDialog
+> Full released contract: [Titanium.UI.EmailDialog](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.EmailDialog)
+
 > An email dialog is a modal window that allows users to compose and send an email.
 > Extends Ti.UI.View
 > Platforms: both
 
 | Android | iOS |
 | ------- | --- |
-| ![Android](./emaildialog_android.png) | ![iOS](./emaildialog_ios.png) |
+| [Android API reference](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.EmailDialog) | [iOS API reference](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.EmailDialog) |
 
 The Email Dialog is created with the <Titanium.UI.createEmailDialog> method. The user needs to register an e-mail account on the device in order to open the dialog.  The dialog will not open when there is not a registered e-mail account.
 
@@ -646,20 +668,22 @@ On iOS, you cannot test the e-mail dialog on the iOS Simulator. Test the email d
 ---
 
 ## Ti.UI.DashboardView
+> Full released contract: [Titanium.UI.DashboardView](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.DashboardView)
+
 > A dashboard view is an iOS Springboard-like view of <Titanium.UI.DashboardItem> items that may  be deleted and reordered by the user using its built-in edit mode.
 > Extends Ti.UI.View
 > Platforms: ios
 
 The DashboardView is created using the <Titanium.UI.createDashboardView> method or **`<DashboardView>`** Alloy element.
 
-Dashboard view's edit mode may be activated by a longpress of a <Titanium.UI.DashboardItem> item, unless this behavior has been disabled by the [editable](Titanium.UI.DashboardView.editable) property. As a dashboard view does not inherently provide a way to exit edit mode, this must be explicitly defined.
+Dashboard view's edit mode may be activated by a longpress of a <Titanium.UI.DashboardItem> item, unless this behavior has been disabled by the [editable](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.DashboardView) property. As a dashboard view does not inherently provide a way to exit edit mode, this must be explicitly defined.
 
-When edit mode has been activated, the item icons wobble by default to act as a visual cue. This behavior may be disabled using the [wobble](Titanium.UI.DashboardView.wobble) property.
+When edit mode has been activated, the item icons wobble by default to act as a visual cue. This behavior may be disabled using the [wobble](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.DashboardView) property.
 
 If a dashboard contains more than 9 items, it will be paged into screens in a 3 x 3 formation using its built-in scrollable view. A paging control is added to the bottom of the view to indicate the active page.
 
 
-*(See full overview in titanium-docs)*
+Complete overview, setup, examples and version restrictions: [official Titanium.UI.DashboardView API](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.DashboardView).
 
 ### Properties (unique: 5/51)
 | Property | Type | Default | Platform | Description |
@@ -702,6 +726,8 @@ If a dashboard contains more than 9 items, it will be paged into screens in a 3 
 ---
 
 ## Ti.UI.DashboardItem
+> Full released contract: [Titanium.UI.DashboardItem](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.DashboardItem)
+
 > A dashboard item is a view that is displayed as an icon in a <Titanium.UI.DashboardView>.
 > Extends Ti.Proxy
 > Platforms: ios

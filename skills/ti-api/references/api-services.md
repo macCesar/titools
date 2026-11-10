@@ -22,6 +22,8 @@
 <!-- TOC-END -->
 
 ## Ti.Calendar
+> Full released contract: [Titanium.Calendar](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Calendar)
+
 > The Calendar module provides an API for accessing the native calendar functionality.
 > Extends Ti.Module
 > Platforms: both
@@ -32,7 +34,7 @@ Modifying or deleting existing events and creating recurring events are only sup
 
 ### Android
 On Android, calendar permissions must be explicitly configured in `tiapp.xml` in order to access the
-calendar and you have to use [requestCalendarPermissions](Titanium.Calendar.requestCalendarPermissions)
+calendar and you have to use [requestCalendarPermissions](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Calendar)
 to request runtime permissions.
 
 
@@ -79,6 +81,8 @@ to request runtime permissions.
 ---
 
 ## Ti.Calendar.Alert
+> Full released contract: [Titanium.Calendar.Alert](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Calendar.Alert)
+
 > An object that represents a single alert for an event in an calendar.
 > Extends Ti.Proxy
 > Platforms: both
@@ -102,6 +106,8 @@ to request runtime permissions.
 ---
 
 ## Ti.Calendar.Attendee
+> Full released contract: [Titanium.Calendar.Attendee](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Calendar.Attendee)
+
 > An object that represents a single attendee of an event.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -127,6 +133,8 @@ The type declares `platforms: [iphone, ipad, macos]`, but four of its properties
 ---
 
 ## Ti.Calendar.Calendar
+> Full released contract: [Titanium.Calendar.Calendar](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Calendar.Calendar)
+
 > An object that represents a single calendar.
 > Extends Ti.Proxy
 > Platforms: both
@@ -160,6 +168,8 @@ The type declares `platforms: [iphone, ipad, macos]`, but four of its properties
 ---
 
 ## Ti.Calendar.Event
+> Full released contract: [Titanium.Calendar.Event](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Calendar.Event)
+
 > An object that represents a single event in a calendar.
 > Extends Ti.Proxy
 > Platforms: both
@@ -216,15 +226,17 @@ See <Titanium.Calendar> for examples of retrieving event information and creatin
 ---
 
 ## Ti.Calendar.RecurrenceRule
+> Full released contract: [Titanium.Calendar.RecurrenceRule](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Calendar.RecurrenceRule)
+
 > An object that is used to describe the recurrence pattern for a recurring event.
 > Extends Ti.Proxy
 > Platforms: both
 
 On Android there is no option to have multiple recurrence rules set for the same event.
-Android always uses only the first element in the array passed to [recurrenceRules](Titanium.Calendar.Event.recurrenceRules).
+Android always uses only the first element in the array passed to [recurrenceRules](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Calendar.Event).
 
-In case of having [daysOfTheWeek](Titanium.Calendar.RecurrenceRule.daysOfTheWeek) and [daysOfTheMonth](Titanium.Calendar.RecurrenceRule.daysOfTheWeek)
-for an event with a recurrence rule of type [RECURRENCEFREQUENCY_MONTHLY](Titanium.Calendar.RECURRENCEFREQUENCY_MONTHLY) only
+In case of having [daysOfTheWeek](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Calendar.RecurrenceRule) and [daysOfTheMonth](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Calendar.RecurrenceRule)
+for an event with a recurrence rule of type [RECURRENCEFREQUENCY_MONTHLY](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Calendar) only
 [daysOfTheWeek] will be used.
 
 ### Properties (unique: 10/13)
@@ -257,6 +269,8 @@ for an event with a recurrence rule of type [RECURRENCEFREQUENCY_MONTHLY](Titani
 ---
 
 ## Ti.Calendar.Reminder
+> Full released contract: [Titanium.Calendar.Reminder](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Calendar.Reminder)
+
 > An object that represents a single reminder for an event in a calendar.
 > Extends Ti.Proxy
 > Platforms: android
@@ -280,6 +294,8 @@ reminders for events.
 ---
 
 ## Ti.Contacts
+> Full released contract: [Titanium.Contacts](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Contacts)
+
 > The top-level Contacts module, used for accessing and modifying the system contacts address book.
 > Extends Ti.Module
 > Platforms: both
@@ -294,14 +310,14 @@ On iOS, the contacts database may be modified by an external application, causin
 not guaranteed to remain the same, so updating an object when it is out of sync may have
 unpredictable results.
 
-To avoid this, listen for the [reload](Titanium.Contacts.reload) event. When you receive a
+To avoid this, listen for the [reload](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Contacts) event. When you receive a
 `reload` event, you should assume that any existing `Person` or `Group` objects are invalid and
 reload them from the `Contacts` module before modifying them.
 
 See the examples for a sample use of the `reload` event.
 
 
-*(See full overview in titanium-docs)*
+Complete overview, setup, examples and version restrictions: [official Titanium.Contacts API](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Contacts).
 
 ### Properties (unique: 2/12)
 | Property | Type | Default | Platform | Description |
@@ -354,6 +370,8 @@ See the examples for a sample use of the `reload` event.
 ---
 
 ## Ti.Contacts.Group
+> Full released contract: [Titanium.Contacts.Group](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Contacts.Group)
+
 > An object which represents a group in the system contacts address book.
 > Extends Ti.Proxy
 > Platforms: ios
@@ -381,6 +399,8 @@ These APIs are unavailable on macOS if the app is built on a version of Xcode < 
 ---
 
 ## Ti.Contacts.Person
+> Full released contract: [Titanium.Contacts.Person](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Contacts.Person)
+
 > An object that represents a contact record for a person or organization in the system contacts  address book.
 > Extends Ti.Proxy
 > Platforms: both
@@ -401,7 +421,7 @@ Support for adding and modifying properties is currently supported on iOS and An
 
 ### Keys as Address Book UI Labels
 
-*(See full overview in titanium-docs)*
+Complete overview, setup, examples and version restrictions: [official Titanium.Contacts.Person API](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Contacts.Person).
 
 ### Properties (unique: 29/32)
 | Property | Type | Default | Platform | Description |
@@ -447,6 +467,8 @@ Support for adding and modifying properties is currently supported on iOS and An
 ---
 
 ## Ti.Geolocation
+> Full released contract: [Titanium.Geolocation](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Geolocation)
+
 > The top level Geolocation module. The Geolocation module is used for accessing device location based information.
 > Extends Ti.Module
 > Platforms: both
@@ -468,7 +490,7 @@ The location services systems of the underlying platforms are very different, so
 are significant implementation differences between the platforms.
 
 
-*(See full overview in titanium-docs)*
+Complete overview, setup, examples and version restrictions: [official Titanium.Geolocation API](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Geolocation).
 
 ### Properties (unique: 15/46)
 | Property | Type | Default | Platform | Description |
@@ -570,6 +592,8 @@ are significant implementation differences between the platforms.
 ---
 
 ## Ti.Geolocation.Android
+> Full released contract: [Titanium.Geolocation.Android](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Geolocation.Android)
+
 > Module for Android-specific geolocation functionality.
 > Extends Ti.Module
 > Platforms: android
@@ -591,7 +615,7 @@ Manual configuration involves managing *providers* and *rules*:
 Configuring geolocation manually involves three steps:
 
 
-*(See full overview in titanium-docs)*
+Complete overview, setup, examples and version restrictions: [official Titanium.Geolocation.Android API](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Geolocation.Android).
 
 ### Properties (unique: 1/7)
 | Property | Type | Default | Platform | Description |
@@ -616,6 +640,8 @@ Configuring geolocation manually involves three steps:
 ---
 
 ## Ti.Geolocation.Android.LocationProvider
+> Full released contract: [Titanium.Geolocation.Android.LocationProvider](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Geolocation.Android.LocationProvider)
+
 > Represents a source of location information, such as GPS.
 > Extends Ti.Proxy
 > Platforms: android
@@ -636,6 +662,8 @@ manually configure location updates.
 ---
 
 ## Ti.Geolocation.Android.LocationRule
+> Full released contract: [Titanium.Geolocation.Android.LocationRule](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Geolocation.Android.LocationRule)
+
 > A location rule to filter the results returned by location providers.
 > Extends Ti.Proxy
 > Platforms: android
@@ -659,6 +687,8 @@ manually configure location updates.
 ---
 
 ## Ti.WatchSession
+> Full released contract: [Titanium.WatchSession](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.WatchSession)
+
 > Used to enable data and file transfers between a watchOS and iOS application.
 > Extends Ti.Module
 > Platforms: ios

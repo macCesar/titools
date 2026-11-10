@@ -20,6 +20,8 @@
 <!-- TOC-END -->
 
 ## Ti.UI.View
+> Full released contract: [Titanium.UI.View](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.View)
+
 > An empty drawing surface or container
 > Extends Ti.Proxy
 > Platforms: both
@@ -139,6 +141,8 @@
 ---
 
 ## Ti.UI.Label
+> Full released contract: [Titanium.UI.Label](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Label)
+
 > A text label, with an optional background image.
 > Extends Ti.UI.View
 > Platforms: both
@@ -188,6 +192,8 @@
 ---
 
 ## Ti.UI.Button
+> Full released contract: [Titanium.UI.Button](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Button)
+
 > A button widget that has four states: normal, disabled, focused and selected.
 > Extends Ti.UI.View
 > Platforms: both
@@ -231,6 +237,8 @@
 ---
 
 ## Ti.UI.ImageView
+> Full released contract: [Titanium.UI.ImageView](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.ImageView)
+
 > A view to display a single image or series of animated images.
 > Extends Ti.UI.View
 > Platforms: both
@@ -280,6 +288,8 @@
 ---
 
 ## Ti.UI.ScrollView
+> Full released contract: [Titanium.UI.ScrollView](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.ScrollView)
+
 > A view that contains a horizontally and/or vertically-scrollable region of content.
 > Extends Ti.UI.View
 > Platforms: both
@@ -332,6 +342,8 @@
 ---
 
 ## Ti.UI.ScrollableView
+> Full released contract: [Titanium.UI.ScrollableView](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.ScrollableView)
+
 > A view that encapsulates a horizontally-scrolling set of child views, known as pages, navigable using its built-in horizontal swipe gestures.
 > Extends Ti.UI.View
 > Platforms: both
@@ -389,6 +401,8 @@
 ---
 
 ## Ti.UI.ActivityIndicator
+> Full released contract: [Titanium.UI.ActivityIndicator](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.ActivityIndicator)
+
 > An activity indicator that lets the user know an action is taking place.
 > Extends Ti.UI.View
 > Platforms: both
@@ -420,6 +434,8 @@
 ---
 
 ## Ti.UI.ActivityIndicatorStyle
+> Full released contract: [Titanium.UI.ActivityIndicatorStyle](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.ActivityIndicatorStyle)
+
 > A set of constants for the styles available for <Titanium.UI.ActivityIndicator> objects.
 > Extends Ti.Module
 > Platforms: both
@@ -435,6 +451,8 @@
 ---
 
 ## Ti.UI.ProgressBar
+> Full released contract: [Titanium.UI.ProgressBar](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.ProgressBar)
+
 > A progress bar.
 > Extends Ti.UI.View
 > Platforms: both
@@ -459,6 +477,8 @@
 ---
 
 ## Ti.UI.Slider
+> Full released contract: [Titanium.UI.Slider](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Slider)
+
 > A slider component with a draggable thumb.
 > Extends Ti.UI.View
 > Platforms: both
@@ -496,7 +516,7 @@
 ### Methods (1)
 | Method | Returns | Platform | Description |
 |--------|---------|----------|-------------|
-| setValue(value, options) | void | ios | Sets the [value](Titanium.UI.Slider.value) proper… |
+| setValue(value, options) | void | ios | Sets the [value](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Slider) proper… |
 
 ### Events (4)
 | Event | Platform | Description |
@@ -509,6 +529,8 @@
 ---
 
 ## Ti.UI.Switch
+> Full released contract: [Titanium.UI.Switch](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Switch)
+
 > An on/off switch control.
 > Extends Ti.UI.View
 > Platforms: both
@@ -544,6 +566,8 @@
 ---
 
 ## Ti.UI.MaskedImage
+> Full released contract: [Titanium.UI.MaskedImage](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.MaskedImage)
+
 > A control that displays an image composited with a background image or color.
 > Extends Ti.UI.View
 > Platforms: both
@@ -562,6 +586,8 @@
 ---
 
 ## Ti.UI.RefreshControl
+> Full released contract: [Titanium.UI.RefreshControl](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.RefreshControl)
+
 > The RefreshControl is a representation of the native iOS [UIRefreshControl](https://developer.apple.com/documentation/uikit/uirefreshcontrol) and Android [SwipeRefreshLayout](https://developer.android.com/reference/android/support/v4/widget/SwipeRefreshLayout.html).
 > Extends Ti.Proxy
 > Platforms: both
