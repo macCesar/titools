@@ -1,342 +1,129 @@
-# Local data sources
+# Working with data
 
-<!-- TOC-START -->
-## Contents
+Based on the [current official guide](https://titaniumsdk.com/docs/build/data.md). Examples target released SDK 13.4.1; verify the selected SDK before adopting version-specific behavior.
 
-- [1. Filesystem access and storage](#1-filesystem-access-and-storage)
-  - [Modules overview](#modules-overview)
-  - [Storage locations](#storage-locations)
-  - [File operations](#file-operations)
-  - [Directory operations](#directory-operations)
-  - [Case sensitivity warning](#case-sensitivity-warning)
-- [2. SQLite database](#2-sqlite-database)
-  - [Installing a pre-populated database](#installing-a-pre-populated-database)
-  - [Opening databases](#opening-databases)
-  - [Querying data](#querying-data)
-  - [Parameterized queries](#parameterized-queries)
-  - [Data modification](#data-modification)
-  - [Transactions for batch operations](#transactions-for-batch-operations)
-  - [SQLite limitations](#sqlite-limitations)
-  - [Disable iCloud backup for databases (iOS)](#disable-icloud-backup-for-databases-ios)
-  - [Always close connections](#always-close-connections)
-- [3. Properties API (Ti.App.Properties)](#3-properties-api-tiappproperties)
-  - [Overview](#overview)
-  - [Data type methods](#data-type-methods)
-  - [Usage examples](#usage-examples)
-  - [Storing complex objects as JSON](#storing-complex-objects-as-json)
-  - [Platform storage](#platform-storage)
-- [4. Advanced data manipulation (Buffer, Codec, and Streams)](#4-advanced-data-manipulation-buffer-codec-and-streams)
-- [5. Choosing a persistence strategy](#5-choosing-a-persistence-strategy)
-  - [Decision guide](#decision-guide)
-  - [Best practices](#best-practices)
+Titanium gives you three places to keep data on the device, and the whole
+decision is how much of it there is and what shape it has.
 
-<!-- TOC-END -->
+| Store | For | Survives an uninstall |
+| ----- | --- | --------------------- |
+| `Ti.App.Properties` | Settings and small values | No |
+| `Ti.Filesystem` | Files, downloads, generated content | No |
+| `Ti.Database` | Rows you query | No |
 
-## 1. Filesystem access and storage
+None of them survive an uninstall. Anything that must is on a server, and
+[networking](https://titaniumsdk.com/docs/build/data/networking.md) is how it gets there.
 
-### Modules overview
-- `Ti.Filesystem` - top-level module for file/directory operations
-- `Ti.Filesystem.File` - file object with read/write methods
-- `Ti.Filesystem.FileStream` - stream wrapper implementing `Ti.IOStream`
+## Properties
 
-### Storage locations
+Key-value storage for small things: the last tab, a token, whether the user has
+seen the tour. It is backed by `NSUserDefaults` on iOS and `SharedPreferences`
+on Android, and it is read synchronously.
 
-| Location                    | Read/Write | Persistence      | Notes                                  |
-| --------------------------- | ---------- | ---------------- | -------------------------------------- |
-| `applicationDataDirectory`  | R/W        | Until uninstall  | Primary app data location              |
-| `resourcesDirectory`        | R-only     | Until uninstall  | App resources (R/W in simulator only)  |
-| `tempDirectory`             | R/W        | Until app closes | OS may delete anytime                  |
-| `applicationCacheDirectory` | R/W        | OS may clean     | For cached data                        |
-| `externalCacheDirectory`    | R/W        | OS may clean     | Android SD card cache                  |
-| `externalStorageDirectory`  | R/W        | Until uninstall  | Android SD card storage                |
+```js
+Ti.App.Properties.setString('lastTab', 'inbox');
+Ti.App.Properties.setBool('seenTour', true);
 
-Always check `Ti.Filesystem.isExternalStoragePresent()` before using external storage on Android.
-
-### File operations
-
-#### Getting a file handle
-```javascript
-const f = Ti.Filesystem.getFile(
-  Ti.Filesystem.applicationDataDirectory,
-  'myfile.txt'
-);
+const tab = Ti.App.Properties.getString('lastTab', 'inbox');
+const seen = Ti.App.Properties.getBool('seenTour', false);
 ```
 
-#### Writing files
-```javascript
-f.write('Content here'); // Overwrites or creates
-```
+Every getter takes a default as its second argument. Use it rather than
+checking `hasProperty` first, which is a second lookup for the same answer.
 
-#### Reading files
-```javascript
-const contents = f.read(); // Returns Blob
-Ti.API.info(contents.text); // Text content
-Ti.API.info(contents.mimeType); // MIME type
-```
+There is a setter and getter per type - `setString`, `setInt`, `setBool`,
+`setDouble`, `setList`, `setObject` - and reading with the wrong one does not
+convert. Store with `setInt` and read with `getString` and you get the default
+back.
 
-#### Appending
-```javascript
-f.append('More content\n'); // String, Blob, or File
-```
+`setObject` and `setList` serialise to JSON, so they are for a handful of
+values, not a collection you keep adding to.
 
-#### Creating/copying
-```javascript
-// Auto-creates on write, but explicit option exists:
-if (!f.exists()) {
-  f.createFile();
-}
+> [!WARNING]
+> Properties are not secure storage. They are plain preferences, readable on a
+> rooted or jailbroken device and included in an unencrypted device backup. A
+> token you would mind losing belongs in the keychain or keystore, which is a
+> native module rather than a core API.
 
-// Android copy method:
-const oldFile = Ti.Filesystem.getFile(applicationDataDirectory, 'old.txt');
-oldFile.copy(`${applicationDataDirectory}new.txt`);
+## Files
 
-// iOS (no copy method):
-const newFile = Ti.Filesystem.getFile(applicationDataDirectory, 'new.txt');
-newFile.write(oldFile.read());
-```
+`Ti.Filesystem` addresses directories by purpose, and the purpose decides
+whether the operating system may delete what you put there.
 
-#### Renaming
-Important: the file handle still points to the old name after rename.
+| Directory | Use for | Backed up |
+| --------- | ------- | --------- |
+| `applicationDataDirectory` | Content the app created and needs | Yes |
+| `applicationCacheDirectory` | Anything re-downloadable | No, and may be purged |
+| `tempDirectory` | Working files for right now | No |
+| `resourcesDirectory` | What you shipped. **Read-only** | n/a |
 
-```javascript
-const f = Ti.Filesystem.getFile(applicationDataDirectory, 'old.txt');
-f.rename('new.txt');
-// f still references 'old.txt' (now non-existent)
-const newf = Ti.Filesystem.getFile(applicationDataDirectory, 'new.txt');
-```
+```js
+const file = Ti.Filesystem.getFile(Ti.Filesystem.applicationDataDirectory, 'notes.txt');
+file.write('written on ' + new Date().toISOString());
 
-#### Deleting
-```javascript
-if (f.exists() && f.writable) {
-  const success = f.deleteFile(); // Returns Boolean, no error thrown
+if (file.exists()) {
+  Ti.API.info(file.read().text);
 }
 ```
 
-### Directory operations
+`getFile` takes path segments and joins them, so pass the directory and the
+name rather than concatenating with a separator yourself.
 
-```javascript
-// Create directory
-const dir = Ti.Filesystem.getFile(applicationDataDirectory, 'mysubdir');
-dir.createDirectory();
+Putting a cache in `applicationDataDirectory` is the common mistake: it is
+backed up, so a 200MB image cache goes into the user's iCloud backup.
 
-// List contents
-const listing = dir.getDirectoryListing();
+## A database
 
-// Move file into directory
-const file = Ti.Filesystem.getFile(applicationDataDirectory, 'file.txt');
-file.move('mysubdir/file.txt');
+`Ti.Database` is SQLite. Open a database by name and it is created on first
+use.
 
-// Delete directory (must be empty or force recursive)
-dir.deleteDirectory(false); // Fails if not empty
-dir.deleteDirectory(true); // Recursive delete
-```
+```js
+const db = Ti.Database.open('notes');
 
-### Case sensitivity warning
-Android and Mobile Web use case-sensitive filesystems. File names referenced in code must match actual file names exactly. Recommendation: use lowercase file names.
+db.execute(`
+  CREATE TABLE IF NOT EXISTS notes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    body TEXT NOT NULL,
+    created TEXT NOT NULL
+  )
+`);
 
-## 2. SQLite database
+db.execute('INSERT INTO notes (body, created) VALUES (?, ?)', 'First note', new Date().toISOString());
+Ti.API.info(`inserted row ${db.lastInsertRowId}`);
 
-### Installing a pre-populated database
-Ship a database with your app and install it on first launch:
-```javascript
-// Copies db from Resources/ (or app/assets/) to applicationDataDirectory
-const db = Ti.Database.install('seeds/mydata.sqlite', 'mydata');
-// On subsequent launches, install() just opens the existing database
-```
-
-### Opening databases
-
-```javascript
-// Install (copies from Resources if first time)
-const db = Ti.Database.install('mydb.sqlite', 'myInstalledDB');
-
-// Or open existing database in applicationDataDirectory
-const db = Ti.Database.open('myDatabase');
-
-// For app data directory location:
-const dbFile = Ti.Filesystem.getFile(
-  Ti.Filesystem.applicationDataDirectory,
-  'mydb.sqlite'
-);
-const db = Ti.Database.open(dbFile.nativePath);
-```
-
-### Querying data
-
-```javascript
-const rows = db.execute('SELECT * FROM users WHERE age > ?', [18]);
-
+const rows = db.execute('SELECT id, body FROM notes ORDER BY id DESC');
 while (rows.isValidRow()) {
-  Ti.API.info(rows.fieldByName('name'));
-  Ti.API.info(rows.field(0)); // First column by index
+  Ti.API.info(`${rows.fieldByName('id')}: ${rows.fieldByName('body')}`);
   rows.next();
 }
-
-// Always close result set
 rows.close();
-```
-
-### Parameterized queries
-Always use parameters to prevent SQL injection:
-
-```javascript
-// Safe - parameterized
-db.execute('INSERT INTO users (name, age) VALUES (?, ?)', ['John', 25]);
-
-// Unsafe - never do this
-db.execute(`INSERT INTO users (name, age) VALUES ('${name}', ${age})`);
-```
-
-### Data modification
-
-```javascript
-// INSERT
-db.execute('INSERT INTO users (name, age) VALUES (?, ?)', ['Jane', 30]);
-const lastId = db.lastInsertRowId; // ID of the last inserted row
-const affected = db.rowsAffected; // number of rows changed by last statement
-
-// UPDATE
-db.execute('UPDATE users SET age = ? WHERE name = ?', [31, 'Jane']);
-const rowsAffected = db.rowsAffected;
-
-// DELETE
-db.execute('DELETE FROM users WHERE age < ?', [18]);
-```
-
-### Transactions for batch operations
-Use transactions to speed up multiple inserts or updates:
-```javascript
-const db = Ti.Database.open('mydb');
-db.execute('BEGIN');
-try {
-  for (let i = 0; i < items.length; i++) {
-    db.execute('INSERT INTO products (name, price) VALUES (?, ?)', items[i].name, items[i].price);
-  }
-  db.execute('COMMIT');
-} catch (e) {
-  db.execute('ROLLBACK');
-  Ti.API.error(`Transaction failed: ${e.message}`);
-}
 db.close();
 ```
 
-Performance: wrapping 1000 inserts in a transaction can be 10-100x faster than individual inserts.
+**Pass values as arguments, never by building the SQL string.** The `?`
+placeholders are escaped for you; string concatenation is how an apostrophe in
+a note becomes a syntax error and how a hostile value becomes an injection.
 
-### SQLite limitations
-- No `FULL OUTER JOIN` support. Use `LEFT JOIN` with `UNION`.
-- Limited `ALTER TABLE`. You can only `ADD COLUMN` or `RENAME TABLE`.
-- No built-in referential integrity (foreign keys). Enable with `PRAGMA foreign_keys = ON`.
-- No native boolean type. Use INTEGER (0/1).
+A result set is a cursor, not an array: walk it with `isValidRow()` and
+`next()`, and close it. Close the database when you are done with it.
 
-### Disable iCloud backup for databases (iOS)
+`executeAsync` and `executeAllAsync` run off the main thread and take a
+callback. Use them for anything large enough to be noticeable, which on a
+phone is sooner than you would guess.
 
-iOS backs up databases to iCloud by default. For large or recreatable databases, disable this:
-```javascript
-const db = Ti.Database.open('mydb');
-db.file.setRemoteBackup(false);
-db.close();
+### Shipping a prepared database
+
+`Ti.Database.install` copies a `.sqlite` file out of your resources on first
+run and opens it, so an app can ship with data already in it.
+
+```js
+const db = Ti.Database.install('/data/seed.sqlite', 'notes');
 ```
 
-Important: Apple may reject apps that back up large recreatable data to iCloud.
+The copy happens once. Changing the shipped file in a later release does not
+replace a database the user already has, so version your schema and migrate.
 
-### Always close connections
+## Next
 
-```javascript
-try {
-  // Database operations
-} finally {
-  // Always close, even on error
-  if (rows) rows.close();
-  if (db) db.close();
-}
-```
-
-## 3. Properties API (Ti.App.Properties)
-
-### Overview
-Lightweight key-value storage for simple data types. Loaded into memory at launch for fast access.
-
-Warning: there is no hard limit, but all properties load into memory. Avoid storing large data.
-
-### Data type methods
-
-| Type   | Get method                 | Set method               |
-| ------ | -------------------------- | ------------------------ |
-| String | `getString(name, default)` | `setString(name, value)` |
-| Int    | `getInt(name, default)`    | `setInt(name, value)`    |
-| Double | `getDouble(name, default)` | `setDouble(name, value)` |
-| Bool   | `getBool(name, default)`   | `setBool(name, value)`   |
-| List   | `getList(name, default)`   | `setList(name, value)`   |
-
-### Usage examples
-
-```javascript
-// Set values
-Ti.App.Properties.setString('username', 'john');
-Ti.App.Properties.setInt('loginCount', 5);
-Ti.App.Properties.setBool('isLoggedIn', true);
-Ti.App.Properties.setDouble('price', 19.99);
-Ti.App.Properties.setList('favorites', ['item1', 'item2']);
-
-// Get values (with defaults)
-const username = Ti.App.Properties.getString('username', 'guest');
-const count = Ti.App.Properties.getInt('loginCount', 0);
-
-// Check if property exists
-if (Ti.App.Properties.hasProperty('username')) {
-  // ...
-}
-
-// Remove property
-Ti.App.Properties.removeProperty('username');
-
-// List all properties
-const allProps = Ti.App.Properties.listProperties();
-```
-
-### Storing complex objects as JSON
-
-```javascript
-// Store object as JSON string
-const data = { city: 'Mountain View', temp: 72 };
-Ti.App.Properties.setString('weatherData', JSON.stringify(data));
-
-// Retrieve and parse
-const stored = Ti.App.Properties.getString('weatherData', '{}');
-const weather = JSON.parse(stored);
-Ti.API.info(weather.city); // 'Mountain View'
-```
-
-### Platform storage
-- iOS: `NSUserDefaults` in a `.plist` file
-- Android: XML file at `/data/data/com.domain.app/shared_prefs/titanium.xml`
-
-## 4. Advanced data manipulation (Buffer, Codec, and Streams)
-
-For binary data handling, character encoding, and large file streams, see:
-
-- Buffer, Codec, and Streams: `buffer-codec-streams.md`
-
-## 5. Choosing a persistence strategy
-
-### Decision guide
-
-| Scenario                           | Recommended approach                     |
-| ---------------------------------- | ---------------------------------------- |
-| User settings/preferences          | `Ti.App.Properties`                      |
-| Small config data (< 100KB)        | `Ti.App.Properties` with JSON            |
-| Structured relational data         | SQLite                                   |
-| Large binary data (images, videos) | Filesystem                               |
-| Downloaded content cache           | Filesystem (`applicationCacheDirectory`) |
-| Temporary processing data          | Filesystem (`tempDirectory`)             |
-| User-generated files               | Filesystem (`applicationDataDirectory`)  |
-| Offline-first app data             | SQLite + Filesystem combo                |
-
-### Best practices
-
-1. Properties API: use only for small, frequently accessed config data.
-2. SQLite: always close connections and result sets; use parameterized queries.
-3. Filesystem: check external storage availability on Android; handle case sensitivity.
-4. Streams: use for large file operations to avoid memory issues.
-5. Hybrid approach: store metadata in SQLite, file paths in records, actual files on filesystem.
-6. Cleanup: implement cleanup for temp files and cache; do not let them accumulate.
+[Networking and remote data](https://titaniumsdk.com/docs/build/data/networking.md) is the other half:
+getting data in and out over HTTP.

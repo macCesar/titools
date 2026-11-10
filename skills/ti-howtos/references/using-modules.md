@@ -1,181 +1,125 @@
 # Using modules
 
-Guide to obtaining, installing, and using Titanium modules to extend app functionality.
+Based on the [current official guide](https://titaniumsdk.com/docs/build/modules.md). Examples target released SDK 13.4.1; verify the selected SDK before adopting version-specific behavior.
 
-## Obtaining modules
+Two different things get added to a Titanium project and both are called
+dependencies.
 
-### Sources of modules
+A **native module** wraps platform code the core SDK does not expose: Bluetooth,
+maps, barcodes. It ships as a built binary per platform.
 
-Official modules:
-- Enterprise Extensions
-  - InAppBilling (Android)
-  - StoreKit (iOS)
-  - Barcode (iOS/Android)
-  - Compression (iOS/Android)
-  - OpenGL (iOS)
-  - AirPrint (iOS)
+An **npm package** is JavaScript. If it runs without Node's built-ins and
+without a browser, it will probably run here.
 
-Open-source modules:
-- GitHub: tidev
-  - https://github.com/tidev/ti.admob - AdMob ads
-  - https://github.com/tidev/ti.map - Native maps
-  - And more in the org
+## Native modules
 
-Community modules:
-- From Zero To App list: https://fromzerotoapp.com/modules/
-- Curated list of modules maintained by Michael Gangolf
+The [modules directory](https://titaniumsdk.com/modules.md) lists what TiDev maintains. Installing one is
+three steps: unpack it, declare it, require it.
 
-Marketplace: The original Appcelerator Marketplace is no longer available. Find community modules on GitHub and npm. A curated list is at https://fromzerotoapp.com/modules/.
+> [!NOTE]
+> There is no install command yet. `ti module` has one subcommand, `list`, so
+> unpacking is done by hand. `ti module install` and `ti module search` are
+> planned; until they ship, this is the path.
 
-### Pre-installed modules
-Some modules ship with the SDK and do not need separate installation: `ti.map`, `ti.identity`, `ti.webdialog`, `ti.applesignin`.
+Download the release archive for the module and extract it beside `tiapp.xml`, preserving its directory prefix. If it already contains `modules/`, do not create a second `modules/modules` level. The resulting layout is:
 
-## Installing modules
-
-### Single project installation
-1. Copy the module ZIP to your app root folder.
-2. Add the module to `tiapp.xml` (see configuration below).
-3. Build the project. The ZIP is extracted automatically.
-
-### Global installation (all projects)
-Modules install to platform-specific locations:
-
-| Operating system | Path                                     |
-| ---------------- | ---------------------------------------- |
-| macOS            | `~/Library/Application Support/Titanium` |
-| Windows          | `%ProgramData%\Titanium\mobilesdk\win32` |
-
-Show hidden Library folder on macOS:
-
-```bash
-# Permanently show
-chflags nohidden ~/Library/
-
-# Open once
-open ~/Library
+```
+modules/
+  android/ti.map/5.7.0/
+  iphone/ti.map/7.3.1/
 ```
 
-## Configuring your app
+That is `modules/<platform>/<id>/<version>/`, and the platform directory is
+`android`, `iphone` or `commonjs` - `iphone` covers iPad and macOS too.
 
-### Updating tiapp.xml
+Check the CLI can see it:
 
-Using Studio/IDE:
-1. Open `tiapp.xml`.
-2. Go to the Overview tab.
-3. Click the plus button in Modules.
-4. Select module and version.
-5. Save.
+```sh
+ti module list
+```
 
-Manually (XML):
+It reports three scopes - project, configured paths, and global - so the output
+also tells you which copy a build will pick up.
+
+Then declare it in `tiapp.xml`, per platform:
 
 ```xml
 <modules>
-  <module version="3.0.2" platform="ios">ti.map</module>
-  <module version="5.0.0" platform="android">ti.admob</module>
+  <module platform="android">ti.map</module>
+  <module platform="iphone">ti.map</module>
 </modules>
 ```
 
-Attributes:
-- `version`: must match the module manifest
-- `platform`: "ios" or "android"
+Both steps are needed. A module on disk that `tiapp.xml` does not name is not
+built in, and missing/incompatible modules can fail at build time or during `require`; inspect the actual diagnostic.
 
-### Selecting module versions
-If multiple versions are installed, select specific versions per platform and build type (development/production).
+Then require it by id:
 
-In Studio, double-click the module to open the Module Properties dialog.
+```js
+const Map = require('ti.map');
+```
 
-### Enable debugger (for native modules)
-Required for debugging native modules:
+Pin a version when more than one is unpacked and you care which one you get:
 
 ```xml
-<ti:app>
-  <android xmlns:android="http://schemas.android.com/apk/res/android">
-    <manifest>
-      <application android:debuggable="true">
-      </application>
-    </manifest>
-  </android>
-</ti:app>
+<module platform="android" version="5.7.0">ti.map</module>
 ```
 
-## Using a module
+Without a version the newest installed copy wins, which means a machine with
+two versions in `modules/` and a colleague's machine with one can produce
+different builds from the same commit.
 
-### Loading the module (ES5)
+> [!IMPORTANT]
+> A module is native code, so it is built for specific platforms and against a
+> range of SDK versions. A module that has not been rebuilt for a newer Titanium
+> SDK may fail at build time with a linker error rather than anything that names
+> the module. Check the module's own page for the versions it supports.
 
-```javascript
-const Module = require('module.id');
-// Example: const Map = require('ti.map');
+### Where modules live
+
+`modules/<platform>/<moduleid>/<version>/` in the project, which is committed
+like any other source. Some teams keep them out of version control and install
+in CI instead; either works, as long as the whole team does the same thing.
+
+Unpacking into the global directory instead makes the module available to every
+project on that machine and to nobody else's, which makes a build depend on the
+machine it runs on. Prefer the project-local copy. On macOS the global one is
+`~/Library/Application Support/Titanium/modules`, and `ti module list` prints
+the full path of everything it finds.
+
+## npm packages
+
+`package.json` in the project root, and `npm install` as normal:
+
+```sh
+npm install lodash
 ```
 
-### Loading the module (ES6+)
-
-```javascript
-import Module from 'module.id'
-// Example: import Map from 'ti.map'
+```js
+const _ = require('lodash');
 ```
 
-Important: do not include the `.js` extension in the module ID.
+Titanium bundles what is in `node_modules` at build time. Production dependencies are copied from the installed tree. Development dependencies and packages marked `titanium.ignore` or `titanium.type: native-module` are excluded; optional and peer dependencies are included by default. Runtime compatibility still needs checking.
 
-### Using module functionality
-After requiring, use the module's API:
+**What will not work:** anything that needs Node's built-ins (`fs`, `net`,
+`child_process`), anything that needs a DOM, and anything shipping native
+bindings. A package that only touches `Ti.*` and plain JavaScript is fine.
+Check before adopting a large dependency; the failure arrives at runtime as an
+undefined require.
 
-```javascript
-// ES6+ example with ti.admob
-const Admob = require('ti.admob');
+Keep `node_modules` out of version control as you would anywhere else.
 
-const adview = Admob.createView({
-  top: 0,
-  testing: true,
-  adBackgroundColor: 'black',
-  primaryTextColor: 'blue',
-  publisherId: 'YOUR_PUBLISHER_ID'
-});
+## Which one do I need
 
-win.add(adview);
-```
+If it talks to hardware, the operating system, or a platform SDK, it is a
+native module and somebody has to have written it. If it is an algorithm, a
+parser, or a client for an HTTP API, it is probably an npm package.
 
-### Module patterns
+If neither exists, writing a native module is covered under Extending Titanium.
 
-Singleton pattern:
-```javascript
-const admob = require('ti.admob');
-admob.createView({ ... });
-```
+## Next
 
-Constructor pattern:
-```javascript
-const Map = require('ti.map');
-const view = Map.createView({ ... });
-```
+[Debugging and profiling](https://titaniumsdk.com/docs/build/debugging.md) covers finding out why the
+thing you just added is not working.
 
-Refer to module documentation for its specific API.
-
-## Troubleshooting
-
-### "Requested module not found"
-Solutions:
-1. Check module ID spelling in `require()`.
-2. Verify the module is added to `tiapp.xml`.
-3. Confirm the module is installed (global or local path).
-4. Remove the `version` attribute to use the latest version.
-
-### Version conflicts
-If multiple versions exist, specify the exact version in `tiapp.xml`, or remove the version attribute to use the latest.
-
-### Platform-specific issues
-- iOS: the module must support the iOS SDK version you are using.
-- Android: the module manifest `platform` must match the target.
-
-### Clean build
-Sometimes needed after installing modules:
-
-```bash
-# Clean and rebuild
-ti clean
-```
-
-## Best practices
-
-1. Pin versions for production.
-2. Check compatibility with your Titanium SDK version.
-3. Test on devices. Some modules behave differently on simulator vs device.
+Contract correction: [released module copier](https://github.com/tidev/titanium-sdk/blob/13_4_1_GA/cli/lib/module-copier.js).

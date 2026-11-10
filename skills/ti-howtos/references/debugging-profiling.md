@@ -1,487 +1,119 @@
-# Debugging and profiling
+# Debugging & profiling
 
-Guide to debugging Titanium apps, managing memory, finding leaks, and using native tools.
+Based on the [current official guide](https://titaniumsdk.com/docs/build/debugging.md). Examples target released SDK 13.4.1; verify the selected SDK before adopting version-specific behavior.
 
-<!-- TOC-START -->
-## Contents
+Most Titanium debugging is the log. The build streams it to your terminal until
+you stop it, and `Ti.API` is what writes to it.
 
-- [Debugging overview](#debugging-overview)
-- [Memory management](#memory-management)
-- [Memory leak detection](#memory-leak-detection)
-- [Android debugging tools](#android-debugging-tools)
-- [iOS debugging tools](#ios-debugging-tools)
-- [6. Automation and UI testing](#6-automation-and-ui-testing)
-- [Best practices](#best-practices)
-- [Platform-specific notes](#platform-specific-notes)
-- [Resources](#resources)
-
-<!-- TOC-END -->
-
-## Debugging overview
-
-### Essential elements of debugging
-
-1. Gather information: clear, accurate description of the problem
-2. Reproduce: consistent steps to recreate the issue
-3. Deduce: logical reasoning to isolate the cause
-4. Experiment: try fixes iteratively, track what works
-5. Be tenacious: methodical persistence wins
-6. Track work: document bugs and solutions
-
-### Debugging techniques
-
-1. Print tracing (logging)
-```javascript
-Ti.API.info(`Variable value: ${myVar}`);
-Ti.API.warn('Warning message');
-Ti.API.error('Error occurred');
-Ti.API.log('info', 'Custom level message');
-Ti.API.debug('Debug info'); // Only in dev mode
+```js
+Ti.API.info('loaded 12 notes');
+Ti.API.warn('no cached copy, fetching');
+Ti.API.error(`request failed: ${e.error}`);
 ```
 
-2. Crash log evaluation
-- Build logs (compilation errors)
-- Runtime logs (app crashes)
-- Simulator/Emulator logs
-- Device logs
+Six levels: `trace`, `debug`, `info`, `warn`, `error`, and `log` for an
+explicit one. Filter the build's output with `--log-level`:
 
-3. Interactive debugging
-- Breakpoints in Studio/IDE
-- Variable inspection
-- Step-through execution
-
-## Memory management
-
-### How JavaScript manages memory
-
-Garbage collection: JavaScript uses automatic mark-and-sweep.
-
-1. Interpreter scans memory periodically
-2. Marks objects with active references
-3. Destroys unmarked objects
-4. Frees their memory
-
-Implication: objects with no references are cleaned up automatically.
-
-### How Titanium manages memory
-
-Titanium bridges JavaScript and native OS objects:
-
-```javascript
-// JavaScript object + Native proxy
-const button = Ti.UI.createButton({ title: 'Click me' });
+```sh
+ti build --platform android --log-level warn
 ```
 
-Key rule: setting a JavaScript object to `null` destroys both the JavaScript object and the native proxy.
+`info` is the default. Drop to `warn` when the SDK's own chatter is burying
+yours, and raise to `trace` when the problem is in the build rather than the
+app.
 
-### Releasing memory properly
+> [!IMPORTANT]
+> Log statements ship. `Ti.API.info` in a release build still runs and still
+> writes, and anything you interpolated into it - a token, an email address - is
+> readable on a connected device. Strip them or guard them before you
+> distribute.
 
-Complete cleanup:
-```javascript
-let view = Ti.UI.createView({ backgroundColor: 'white' });
-win.add(view);
+## Breakpoints
 
-// Later: remove and nullify
-win.remove(view);
-view = null; // Destroys native proxy
+The [Visual Studio Code extension](https://titaniumsdk.com/docs/setup/ide-integration.md) contributes a
+`titanium` debug type, so you can set breakpoints in your JavaScript and step
+through a running app rather than reading log output. The JetBrains plugin
+debugs over the Chrome DevTools Protocol; on iOS it additionally needs
+`ios-webkit-debug-proxy`.
+
+Without an editor integration there are no breakpoints. That is the honest
+answer, and it is why the log matters as much as it does here.
+
+## LiveView
+
+`--liveview` reloads the running app when you save, instead of rebuilding:
+
+```sh
+ti build --platform android --liveview
 ```
 
-Incomplete cleanup (memory leak):
-```javascript
-let view = Ti.UI.createView({ backgroundColor: 'white' });
-win.add(view);
+It re-runs your JavaScript against the app already installed. That is a second
+or two rather than a minute, and it is the difference between iterating on a
+layout and giving up on it.
 
-// Later: only remove
-win.remove(view); // view object still exists in memory
-```
+It does not pick up everything. A change to `tiapp.xml`, a new module, a native
+dependency or anything in `platform/` needs a real build. When a change seems
+to have no effect, that is the first thing to rule out.
 
-### Parent-child relationships
+## Reading the platform's own logs
 
-```javascript
-// Good: children not referenced elsewhere
-let view = Ti.UI.createView({
-  backgroundColor: 'white'
-});
-view.add(Ti.UI.createButton({ title: 'Click' })); // Anonymous child
+Titanium's log is a filtered view. When the app dies without reaching your
+handler, go under it.
 
-win.remove(view);
-view = null; // Destroys view and button
+**Android**
 
-// Bad: children referenced separately
-const button = Ti.UI.createButton({ title: 'Click' });
-let view = Ti.UI.createView({ backgroundColor: 'white' });
-view.add(button);
-
-win.remove(view);
-view = null; // Destroys view, but button still exists
-button = null; // Now button is destroyed
-```
-
-### Platform memory limits
-
-| Platform | Memory limit                           |
-| -------- | -------------------------------------- |
-| iPhone   | ~10% of system memory                  |
-| iPad     | 30-50 MB (smaller is better)           |
-| Android  | 24-32 MB heap (128 MB with large heap) |
-
-Notes for iOS:
-- Apple does not publish exact limits
-- The jetsam process can terminate your app
-- "Jetsam" in crash logs often means a memory issue
-
-Important: memory is not storage. A 16GB device does not mean 16GB for your app. Limits may be higher on newer devices, but optimize for the lowest common denominator.
-
-## Memory leak detection
-
-### Common leak sources
-
-1. Global event listeners
-```javascript
-// Leak: listener keeps reference to window
-Ti.App.addEventListener('custom:event', (e) => {
-  // Uses window variables
-});
-```
-
-Fix: remove listeners when closing window
-```javascript
-const myHandler = (e) => {
-  // Handle event
-};
-
-Ti.App.addEventListener('custom:event', myHandler);
-
-win.addEventListener('close', () => {
-  Ti.App.removeEventListener('custom:event', myHandler);
-});
-```
-
-2. Objects in closures
-```javascript
-// Leak: closure retains object reference
-function createWindow() {
-  const data = []; // Large array
-  return Ti.UI.createWindow({
-    listener: () => {
-      data.push('more'); // Closure reference
-    }
-  });
-}
-```
-
-Fix: pass data as an argument instead of keeping it in a closure.
-
-3. Hidden views
-```javascript
-// Leak: hidden view still consumes memory
-view.visible = false; // Not enough
-```
-
-Fix: remove and nullify when not needed
-```javascript
-view.visible = false;
-parent.remove(view);
-view = null;
-```
-
-### Debugging memory on iOS (Instruments)
-
-Setup:
-1. Open app in iOS Simulator
-2. Xcode → Open Developer Tool → Instruments
-3. Choose Allocations template
-4. Choose Target → Your App
-5. Click Record
-
-Key columns:
-| Column                        | What it shows            |
-| ----------------------------- | ------------------------ |
-| Persistent Bytes (Live Bytes) | Memory currently in use  |
-| #Persistent (#Living)         | Active object count      |
-| #Transient (#Transitory)      | Ready to garbage collect |
-
-Identifying leaks:
-1. Filter for `Ti` prefix (Titanium objects)
-2. Watch #Living as you use the app
-3. If it grows continuously, you have a leak
-4. #Transitory growing is fine (will be GC'd)
-
-Example workflow:
-```
-1. Filter: "TiUITableView" (table views)
-2. Open/close a table view screen
-3. Click "Cause GC" (garbage collection)
-4. Check if #Living returns to previous value
-5. If not, the leak is in that screen
-```
-
-### Debugging memory on Android (DDMS)
-
-Setup:
-1. Add to `tiapp.xml`:
-```xml
-<android xmlns:android="http://schemas.android.com/apk/res/android">
-    <manifest>
-        <application android:debuggable="true">
-        </application>
-    </manifest>
-</android>
-```
-
-2. Build app for emulator
-3. Open DDMS (Android Device Monitor)
-
-Monitoring:
-1. Select your app process
-2. Click Update Heap
-3. Click Cause GC to force garbage collection
-4. Watch Allocated and # Objects values
-
-Identifying leaks:
-1. Note initial values after GC
-2. Exercise app (open/close screens)
-3. Click Cause GC again
-4. If values do not return to baseline, there is a leak
-
-## Android debugging tools
-
-### DDMS (Dalvik Debug Monitor Service)
-
-Features:
-- View log output
-- Explore file system
-- Simulate network conditions
-- Simulate calls/SMS
-- Set GPS coordinates
-- Monitor memory
-
-#### Log output with DDMS
-
-1. Open DDMS
-2. Select device/emulator
-3. View log in lower pane
-4. Add filter: Log Tag = `TiAPI`
-
-#### Simulate network conditions
-
-Emulator Control panel:
-- Voice/Data state (home, roaming)
-- Data speed and latency
-- Test app behavior in poor conditions
-
-#### Simulate calls/SMS
-
-Emulator Control → Telephony Actions:
-- Incoming voice call
-- Incoming SMS message
-- Test app interruption handling
-
-#### Set GPS coordinates
-
-Emulator Control → Location Controls:
-- Enter latitude/longitude
-- Click Send
-- Emulator uses these as current location
-
-#### File system exploration
-
-Device → File Explorer:
-- Browse entire file system
-- Pull files (copy to computer)
-- Push files (copy to device)
-- Delete files
-
-#### Memory monitoring
-
-Less useful for Titanium (JavaScript runs in one process), but it can show overall memory trends.
-
-### ADB (Android Debug Bridge)
-
-#### Log output
-
-```bash
-# View all logs
+```sh
 adb logcat
-
-# Device only
-adb -d logcat
-
-# Emulator only
-adb -e logcat
-
-# Specific device
-adb -s emulator-5556 logcat
-
-# Filter for Titanium
-adb logcat -s TiAPI
-# or
-adb logcat | grep TiAPI
 ```
 
-#### File system
+A crash in native code appears here and nowhere else. Filter to the app with
+`adb logcat --pid=$(adb shell pidof com.example.hello)`.
 
-```bash
-# Open shell
-adb shell
+**iOS**
 
-# List files
-ls -la
-cd /some/path
+Open **Console.app**, select the device in the sidebar, and filter by the app
+name. A crash also leaves a report under **Window, Devices and Simulators** in
+Xcode.
 
-# Exit shell
-exit
+## When the build fails, not the app
+
+A build failure and a runtime failure need different tools, and the first
+question is which one you have.
+
+**Rule out the environment first.** `ti info` reports what it found and what is
+wrong with it, and a build that broke without a source change is usually a
+toolchain that moved underneath it.
+
+**Force a clean build.** `build/` is generated, and a stale one produces errors
+that the source does not explain:
+
+```sh
+ti clean
 ```
 
-#### Transfer files
+**Read upward.** A Gradle or Xcode failure prints a great deal after the line
+that matters. The first error is the real one; everything below is consequence.
 
-```bash
-# Copy file TO device
-adb push local.txt /sdcard/local.txt
+**A linker error usually means a module.** See
+[using modules](https://titaniumsdk.com/docs/build/modules.md): a module built against an older SDK fails
+at link time with a message that never names it.
 
-# Copy file FROM device
-adb pull /sdcard/remote.txt local.txt
-```
+## Profiling
 
-#### Access SQLite databases
+There is no Titanium profiler. Use the platform's:
 
-```bash
-adb shell
+Android Studio's **Profiler** attaches to a running debug build for CPU, memory
+and energy. Xcode's **Instruments** does the same on iOS, and the Allocations
+and Leaks instruments are the ones worth learning.
 
-# List databases
-ls /data/data/com.example.app/databases/
+Both show you native frames. A JavaScript hot spot appears as time inside the
+bridge, which tells you where to look rather than which line.
 
-# Open database
-sqlite3 /data/data/com.example.app/databases/mydb.sqlite
+For the common Titanium performance problem, look first at lists: a
+`TableView` with hundreds of rows, or a `ListView` whose item template does
+work per row. [Lists and tables](https://titaniumsdk.com/docs/build/ui/lists.md) covers the difference.
 
-# Query
-SELECT * FROM tablename;
+## Next
 
-# Exit
-.exit
-```
-
-### Creating emulators
-
-> **⚠️ AVD Manager moved to Android Studio**
-> The legacy `android` CLI (`android create avd`, `android avd`) was removed in Android SDK Tools 25.3. Use Android Studio's built-in **AVD Manager** (Tools → Device Manager) or the command-line `avdmanager` tool instead.
-
-Command line (modern):
-```bash
-# List available system images
-sdkmanager --list | grep system-images
-
-# Create AVD with avdmanager
-avdmanager create avd -n my_emulator -k "system-images;android-34;google_apis;x86_64"
-
-# Launch emulator
-emulator -avd my_emulator
-```
-
-Android Studio (GUI): Tools → Device Manager → Create Device.
-
-### Modifying emulators
-
-Increase disk space: Edit `~/.android/avd/<NAME>.avd/config.ini`:
-```
-disk.dataPartition.size=1024m
-```
-
-Scale on-the-fly:
-```bash
-# Get emulator port
-adb devices
-# emulator-5560
-
-# Connect with telnet
-telnet localhost 5560
-
-# Scale to 75%
-window scale 0.75
-```
-
-## iOS debugging tools
-
-### Instruments
-
-Key templates for Titanium debugging:
-- Allocations: track object creation and live object counts. Look at Persistent Bytes (Live Bytes) and #Persistent (#Living).
-- Leaks: detect memory leaks in real time. Shows objects that are allocated but never released.
-- Time Profiler: identify CPU-intensive operations and bottlenecks.
-- System Trace: system-level events and thread activity.
-- Zombies: detect messages sent to deallocated objects (debug builds only). Useful for over-released objects.
-
-### Xcode build debugging
-
-For native debugging, open the Xcode project in `build/iphone`:
-1. Product → Profile
-2. Choose Instruments template
-3. More accurate than attaching to a running process
-
-### Console logs
-
-Viewing in Studio:
-- Console panel shows build/run output
-
-Viewing separately:
-```bash
-# For running apps
-tail -f ~/Library/Logs/CoreSimulator/<SIMULATOR_ID>/system.log
-```
-
-## 6. Automation and UI testing
-
-For CI/CD pipelines, automated deployment, and functional testing, see:
-
-- Automation with Fastlane and Appium: `automation-fastlane-appium.md`
-
-## Best practices
-
-### Memory management
-
-1. Always nullify objects after removing them from the view hierarchy.
-2. Remove event listeners when closing windows.
-3. Avoid global variables; use namespaces or CommonJS.
-4. Use a single execution context, not multiple URL-based windows.
-5. Be careful with closures; they retain references.
-6. Hide vs remove: hide for temporary, remove/nullify for permanent.
-
-### Debugging
-
-1. Log strategically and remove sensitive logs before production.
-2. Use descriptive log messages and include variable values.
-3. Test on real devices; simulators miss issues.
-4. Profile early and often; do not wait for crashes.
-5. Reproduce consistently; you cannot fix what you cannot reproduce.
-6. Keep track of bugs; use an issue tracker.
-
-### Performance
-
-1. Avoid excessive polling; use events when possible.
-2. Defer loading; load data as needed.
-3. Optimize images; compress and use appropriate sizes.
-4. Minimize bridge crossings; cache platform checks.
-5. Test on slow networks; simulate poor conditions.
-6. Profile before optimizing; measure first, then fix hotspots.
-
-## Platform-specific notes
-
-### Android
-
-- Debuggable flag: required for native debugging
-- Large heap: enable in `tiapp.xml` if needed
-- ProGuard: can obfuscate and optimize code
-- Multidex: may be needed for very large apps
-
-### iOS
-
-- Instruments: most powerful tool for iOS profiling
-- Zombies: Instruments tool to find over-released objects
-- Allocation tracker: shows object creation and lifecycle
-- Time Profiler: identifies CPU bottlenecks
-
-## Resources
-
-- Video: Your Apps are Leaking (Codestrong 2011)
-- Android DDMS docs: https://minimum-viable-product.github.io/marshmallow-docs/tools/debugging/ddms.html
-- iOS Instruments guide: Apple Developer Documentation
+[Distributing apps](https://titaniumsdk.com/docs/distribute.md) covers signing and getting a build to
+other people.
