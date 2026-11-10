@@ -1,379 +1,171 @@
-# Application frameworks
+# Project structure
 
-Framework options and architecture patterns for Titanium applications.
 
-<!-- TOC-START -->
-## Contents
+`ti create` writes about a dozen files, and which ones you edit depends on
+whether the project is Classic or Alloy. This page is the tour.
 
-- [Alloy framework](#alloy-framework)
-- [Classic Titanium](#classic-titanium)
-- [Choosing a framework](#choosing-a-framework)
-- [Architecture patterns](#architecture-patterns)
-- [Framework interoperability](#framework-interoperability)
-- [Best practices](#best-practices)
-- [Resources](#resources)
+## What ti create generates
 
-<!-- TOC-END -->
 
-## Alloy framework
-
-Alloy is the official MVC framework for Titanium. It was developed by Appcelerator and is now maintained by TiDev.
-
-### What Alloy provides
-
-- MVC structure with models, views, and controllers
-- Built-in libraries (Backbone.js, Underscore.js)
-- XML views for declarative UI
-- TSS for CSS-like styling
-- Data binding between views and models
-- Widgets for reusable UI components
-- Model and collection sync with REST and SQL adapters
-
-### Project structure
+### Classic
 
 ```
-app/
-├── controllers/     # UI logic
-├── models/          # Data models
-├── views/           # XML view definitions
-├── styles/          # TSS style sheets
-├── assets/          # Images, fonts
-├── lib/             # CommonJS libraries
-├── themes/          # Theming support
-├── config.json      # App configuration
-└── alloy.js         # Entry point
+Hello/
+  Resources/            your code and assets
+    app.js              the entry point
+    semantic.colors.json
+    assets/images/      shared images
+    android/            Android-only assets
+    iphone/             iOS-only assets
+  platform/
+    android/            files copied verbatim into the native build
+  DefaultIcon.png       source image for the generated iOS app icons
+  tiapp.xml             app configuration
+  LICENSE
+  README.md
+  .vscode/              recommended extensions and settings
 ```
 
-### Sample Alloy code
+Everything you write lives in `Resources`. `app.js` runs first, and anything it
+requires resolves relative to `Resources`.
 
-View (XML):
+### Alloy
+
+```
+Hello/
+  app/                  your code
+    views/              XML layouts
+      index.xml
+    styles/             TSS styles
+      app.tss           applies to the whole app
+      index.tss         applies to index.xml
+    controllers/        JavaScript behaviour
+      index.js
+    models/             data models and collections
+    assets/             images, and semantic.colors.json
+    platform/           files copied verbatim into the native build
+    alloy.js            runs before the first controller
+    config.json         per-environment and per-platform settings
+  plugins/ti.alloy/     the compiler hook, installed by alloy new
+  Resources/            generated at build time, not yours to edit
+  DefaultIcon.png       source image for the generated iOS app icons
+  tiapp.xml             app configuration
+  .gitignore
+```
+
+Everything you write lives in `app`. `Resources` is Alloy's output: each build
+compiles `app` into Classic JavaScript and writes it there, overwriting what was
+there before.
+
+`ti create --alloy` leaves the Classic template's `Resources/app.js` behind on
+first run. It is ignored from the next build onwards, and the generated
+`.gitignore` excludes the whole directory.
+
+
+Two files at the root exist for the app stores rather than the build:
+`MarketplaceArtwork.png` and `iTunesConnect.png`, both placeholders Alloy adds.
+
+## Where each kind of file goes
+
+**Code** goes in `Resources` (Classic) or `app` (Alloy).
+
+**Images and other assets** go under `Resources/` in Classic or `app/assets/` in Alloy. Runtime paths are relative to the resource root: `Resources/assets/images/logo.png` uses `assets/images/logo.png`, while `app/assets/images/logo.png` becomes `images/logo.png`.
+
+**Platform-specific assets** go in a directory named for the platform:
+`Resources/android`, `Resources/iphone`, `app/assets/android`,
+`app/assets/iphone`. Titanium picks the matching one at build time and leaves
+the rest out of the package, so an Android build does not carry iOS artwork.
+
+**Native project files** go in `platform` (Classic) or `app/platform` (Alloy).
+Contents are copied into the generated native project without being processed,
+which is how the template ships `platform/android/build.gradle` and the launcher
+icon resources. Use it when you need to reach the native build directly.
+
+**Icons** are not shared between the platforms, despite the name. iOS
+generates its whole icon set from `DefaultIcon.png` at the project root.
+Android never reads that file: its launcher icon is the adaptive-icon set under
+`platform/android/res/mipmap-*`, which `tiapp.xml` points at with
+`android:icon="@mipmap/ic_launcher"`. See
+[Icons and launch screens](https://titaniumsdk.com/docs/build/ui/icons-and-launch-screens).
+
+## tiapp.xml
+
+`tiapp.xml` is the app's configuration: identity, which platforms it targets,
+which SDK builds it, and the settings that end up in the native manifests. Both
+project types use it unchanged.
+
 ```xml
-<Alloy>
-    <Window class="container">
-        <Label id="title" onClick="doClick">Click Me</Label>
-    </Window>
-</Alloy>
+<ti:app xmlns:ti="http://ti.titaniumsdk.com">
+  <id>com.example.hello</id>
+  <name>Hello</name>
+  <version>1.0</version>
+  <guid>f0391a5d-2689-47cf-a6aa-df0f849fbe50</guid>
+  <icon>appicon.png</icon>
+  <property name="ti.ui.defaultunit" type="string">dp</property>
+  <deployment-targets>
+    <target device="android">true</target>
+    <target device="iphone">true</target>
+    <target device="ipad">false</target>
+  </deployment-targets>
+  <sdk-version>13.4.1.GA</sdk-version>
+</ti:app>
 ```
 
-Style (TSS):
-```css
-".container": {
-    backgroundColor: "#fff"
-}
-
-"#title": {
-    color: "#000",
-    font: { fontSize: 18 }
-}
-```
-
-Controller (JS):
-```javascript
-const doClick = (e) => {
-    alert('Clicked!');
-};
-
-$.index.open();
-```
-
-### Alloy resources
-
-- Alloy guides: see the `alloy-guides` skill
-- Alloy CLI: see `alloy-cli-advanced.md`
-- Alloy data: see `alloy-data-mastery.md`
-- Alloy widgets: see `alloy-widgets-and-themes.md`
-
-### Angular integration
-
-Angular integration with Titanium SDK was under development but is no longer maintained.
-
-### React community framework
-
-A community React integration exists at https://github.com/nicolomonili/react-titanium (experimental).
-
-### When to use Alloy
-
-Use Alloy for:
-- New projects (default choice)
-- Teams that want MVC structure
-- Projects that need data binding
-- Rapid development with XML views
-- Reusable components (widgets)
-
-Consider alternatives for:
-- Very simple apps
-- Teams that prefer pure JavaScript
-- Projects with unique architectural needs
-
----
-
-## Classic Titanium
-
-Classic Titanium means building apps without Alloy, using JavaScript and CommonJS modules.
-
-### Project structure
-
-```
-Resources/
-├── app.js           # Entry point
-├── ui/              # UI components
-│   ├── ApplicationWindow.js
-│   └── ...
-├── models/          # Data models
-├── lib/             # Utilities
-└── assets/          # Images, etc.
-```
-
-### Sample Classic code
-
-app.js:
-```javascript
-// Single namespace pattern
-const app = {};
+| Element | What it controls |
+| ------- | ---------------- |
+| `id` | The Android package name and the iOS bundle identifier |
+| `name` | The name under the app icon |
+| `version` | The version shown in the stores |
+| `guid` | Generated per project, and how tooling recognises this app |
+| `sdk-version` | Which installed SDK builds the project |
+| `deployment-targets` | Which platforms and device families to build for |
+| `property` | Values readable at runtime through `Ti.App.Properties` |
+| `modules` | Native modules the app uses |
+| `plugins` | Build-time plugins, which is how `ti.alloy` is wired in |
 
-// Load components via require (Ti.include is deprecated)
-const AppWindow = require('ui/ApplicationWindow');
-
-// Create and open window
-app.mainWindow = AppWindow.createApplicationWindow();
-app.mainWindow.open();
-```
-
-ui/ApplicationWindow.js:
-```javascript
-// Extend namespace
-app.ui = app.ui || {};
-
-app.ui.createApplicationWindow = () => {
-    const win = Ti.UI.createWindow({
-        backgroundColor: 'white',
-        title: 'My App'
-    });
-
-    const label = Ti.UI.createLabel({
-        text: 'Hello World',
-        color: '#000'
-    });
+> [!IMPORTANT]
+> Changing `id` after publishing means a new listing in both stores rather than
+> an update to the existing one. Set it to a domain you control when you create
+> the project.
 
-    win.add(label);
-    return win;
-};
-```
-
-### CommonJS pattern (recommended)
-
-myModule.js:
-```javascript
-// Private variables
-const privateData = 'secret';
-
-// Public API
-exports.createWindow = () => {
-    return Ti.UI.createWindow({
-        backgroundColor: 'white'
-    });
-};
-
-exports.getData = () => {
-    return privateData;
-};
-```
-
-app.js:
-```javascript
-const myModule = require('myModule');
-const win = myModule.createWindow();
-win.open();
-```
-
-### When to use Classic
-
-Use Classic for:
-- Simple projects
-- Developers who prefer pure JavaScript
-- Migrating from older Titanium projects
-- Fine-grained control over UI creation
-- Learning the Titanium API directly
-
-Consider Alloy for:
-- Large teams
-- Complex apps with many screens
-- Projects that need built-in MVC
-- Data-heavy applications
-
----
-
-## Choosing a framework
-
-### Comparison
-
-| Feature           | Alloy                   | Classic            |
-| ----------------- | ----------------------- | ------------------ |
-| Learning curve    | Steeper (XML, TSS, MVC) | Easier (just JS)   |
-| Boilerplate       | Less (declarative)      | More (imperative)  |
-| Structure         | Enforced (MVC)          | Manual             |
-| Data binding      | Built-in                | Manual             |
-| Styling           | TSS (CSS-like)          | Inline JS          |
-| Team size         | Better for large teams  | Flexible           |
-| Rapid development | Faster once learned     | Slower (more code) |
-
-### Recommendation
-
-Start with Alloy if you are building a new app or expect multiple contributors. If Alloy feels like overhead or the app is very small, Classic is fine.
-
----
-
-## Architecture patterns
-
-### Namespaced pattern
-
-Classic Titanium pattern with a single global namespace:
-
-```javascript
-const app = {
-    models: {},
-    views: {},
-    controllers: {},
-
-    init() {
-        // Initialize app
-    },
-
-    run() {
-        // Run app
-    }
-};
-
-app.init();
-app.run();
-```
-
-### CommonJS modules
-
-Modern JavaScript pattern for Titanium:
-
-models/user.js:
-```javascript
-exports.create = (attrs) => {
-    return {
-        name: attrs.name,
-        email: attrs.email,
-        save() {
-            // Save to database
-        }
-    };
-};
-```
-
-controllers/user.js:
-```javascript
-const User = require('models/user');
-
-exports.register = (data) => {
-    const user = User.create(data);
-    user.save();
-    return user;
-};
-```
-
-### MVC with Alloy (built-in)
-
-Alloy enforces MVC:
-
-```
-app/
-├── controllers/userController.js  # Logic
-├── models/userModel.js            # Data
-└── views/userView.xml             # Presentation
-```
-
-### Repository pattern
-
-Separate data access from business logic:
-
-repositories/userRepository.js:
-```javascript
-exports.findById = (id) => {
-    // Database call
-    return db.query('SELECT * FROM users WHERE id = ?', [id]);
-};
-
-exports.save = (user) => {
-    // Insert/update
-    return db.execute('INSERT INTO users ...');
-};
-```
-
-services/userService.js:
-```javascript
-const repo = require('repositories/userRepository');
-
-exports.register = (data) => {
-    // Business logic
-    if (!data.email) {
-        throw new Error('Email required');
-    }
-    return repo.save(data);
-};
-```
-
----
-
-## Framework interoperability
-
-### Mix Alloy and Classic
-
-You can use Alloy and include Classic CommonJS modules:
-
-```javascript
-// In Alloy controller
-var classicModule = require('lib/myClassicModule');
-var data = classicModule.getData();
-$.label.text = data;
-```
-
-### Migrate Classic to Alloy
-
-1. Create a new Alloy project.
-2. Move business logic to `controllers/` or `lib/`.
-3. Convert UI creation to `views/` (XML).
-4. Create `styles/` (TSS) from inline styles.
-5. Update data access to use `models/`.
-
----
-
-## Best practices
-
-### For Alloy projects
-
-1. Follow MVC strictly. Keep models in `models/`, views in `views/`, and controller logic in `controllers/`.
-2. Use data binding and avoid manual view updates.
-3. Use widgets for reusable UI.
-4. Use themes for styling variants.
-5. Keep controllers lean and move business logic to `lib/`.
-
-### For Classic projects
-
-1. Use CommonJS modules instead of `Ti.include()`.
-2. Keep a single global namespace.
-3. Protect global scope with IIFEs.
-4. Separate concerns with `models/`, `views/`, and `controllers/` folders.
-5. Document patterns so the team shares the same structure.
-
-### For both
-
-1. Clean up listeners and null heavy objects.
-2. Add try/catch around critical code paths.
-3. Use `Ti.API` for logging.
-4. Follow `style-and-conventions.md` for code style.
-5. Write unit tests for business logic.
-
----
-
-## Resources
-
-- Alloy guides: see the `alloy-guides` skill
-- CommonJS advanced: see `commonjs-advanced.md`
-- Coding best practices: see `coding-best-practices.md`
-- JavaScript primer: see `javascript-primer.md`
-- Alloy CLI: see `alloy-cli-advanced.md`
+`guid` is generated for each project. Copying a `tiapp.xml` from another app
+carries its guid along, so change it when you do that.
+
+Two elements hold native configuration directly. `<ios><plist>` takes `Info.plist`
+keys, which is where permission usage strings and supported orientations go.
+`<android><manifest>` takes `AndroidManifest.xml` fragments, for permissions,
+activities and services. Titanium merges both into the generated native project.
+
+Every element is documented in the
+[tiapp.xml reference](https://titaniumsdk.com/docs/reference/tiapp-xml).
+
+## Generated directories
+
+`build/` appears on the first build and holds the generated native project: an
+Xcode project for iOS, a Gradle project for Android, and the compiled output.
+Nothing in it is yours to edit, because the next build overwrites it.
+
+Deleting `build/` forces a full rebuild, which is the fix when a build fails in
+a way the source does not explain. `ti clean` does the same thing.
+
+In an Alloy project `Resources/` is generated too, from `app/`.
+
+## What to commit
+
+Commit `tiapp.xml`, your source, your assets, `DefaultIcon.png` and `platform/`.
+
+Do not commit `build/`, and in an Alloy project do not commit `Resources/` or
+the top-level `platform/` and `i18n/` directories, which Alloy moved under
+`app/`. The `.gitignore` that `alloy new` writes covers all of these. A Classic
+project gets no `.gitignore`, so add one with `build/` in it.
+
+Keystores and signing credentials do not belong in the repository at all.
+
+## Next
+
+[User interface](https://titaniumsdk.com/docs/build/ui) covers building screens: layout, lists, and
+where the platforms differ.
+
+## Framework choice
+
+Classic creates UI with JavaScript calls. Alloy compiles XML views, TSS styles and JavaScript controllers into the same runtime, with model/collection binding and widgets. For the complete current MVC workflow load `alloy-guides`; for creation and first run use [project creation](hello-world.md). `app/config.json` is the Alloy configuration file and `app/lib/foo.js` is required as `require('foo')`.

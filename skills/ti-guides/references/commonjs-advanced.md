@@ -1,279 +1,129 @@
-# CommonJS advanced patterns
+# Using modules
 
-For more on CommonJS in Titanium, see the official CommonJS Modules guide in the Titanium SDK documentation.
 
-## Definitions
+Two different things get added to a Titanium project and both are called
+dependencies.
 
-- Module: any CommonJS-compliant module used in a Titanium SDK application. This can be a JavaScript file bundled with the app or a native extension that exposes a JavaScript API.
-- Resources: the Resources directory of a Titanium application, where source code lives before the build system processes it. In Alloy, CommonJS modules live in `app/lib`.
-- `exports`: a free variable within a module. Add properties to expose a public API.
-- `module.exports`: an object you can replace to define the module's public API.
+A **native module** wraps platform code the core SDK does not expose: Bluetooth,
+maps, barcodes. It ships as a built binary per platform.
 
-## 1. Stateful modules (singleton pattern)
+An **npm package** is JavaScript. If it runs without Node's built-ins and
+without a browser, it will probably run here.
 
-Modules in Titanium are created once per JavaScript context and reused on subsequent `require()` calls. This makes them useful for shared state.
+## Native modules
 
-### Example: stateful counter module
+The [modules directory](https://titaniumsdk.com/modules) lists what TiDev maintains. Installing one is
+three steps: unpack it, declare it, require it.
 
-```javascript
-// app/lib/counter.js
-let _count = 0
+> [!NOTE]
+> There is no install command yet. `ti module` has one subcommand, `list`, so
+> unpacking is done by hand. `ti module install` and `ti module search` are
+> planned; until they ship, this is the path.
 
-exports.increment = () => {
-  _count++
-}
+Download the release archive for the module and unzip it into a `modules`
+directory beside `tiapp.xml`. The archive already carries the right shape, so
+unzipping it in place gives you:
 
-exports.getCount = () => {
-  return _count
-}
-
-exports.reset = () => {
-  _count = 0
-}
+```
+modules/
+  android/ti.map/5.7.0/
+  iphone/ti.map/7.3.1/
 ```
 
-Usage: multiple controllers that require this module share the same `_count` state.
+That is `modules/<platform>/<id>/<version>/`, and the platform directory is
+`android`, `iphone` or `commonjs` - `iphone` covers iPad and macOS too.
 
-A module is created once per Titanium JavaScript context. Additional contexts create new module instances.
+Check the CLI can see it:
 
-## 2. Native/compiled modules
+```sh
+ti module list
+```
 
-When `require()` is called, Titanium checks for a native/compiled module before it looks for a JavaScript module. Native modules take priority.
+It reports three scopes - project, configured paths, and global - so the output
+also tells you which copy a build will pick up.
 
-Native modules are identified by a single string and configured in `tiapp.xml`:
+Then declare it in `tiapp.xml`, per platform:
 
 ```xml
 <modules>
-  <module version="1.0">ti.paypal</module>
+  <module platform="android">ti.map</module>
+  <module platform="iphone">ti.map</module>
 </modules>
 ```
 
-```javascript
-const paypal = require('ti.paypal')
+Both steps are needed. A module on disk that `tiapp.xml` does not name is not
+built in, and the failure is a `require` that returns nothing rather than an
+error at build time.
+
+Then require it by id:
+
+```js
+const Map = require('ti.map');
 ```
 
-Titanium loads `ti.paypal` as a native module and will not look for a JavaScript file in Resources. If no native module matches, it falls back to JavaScript module resolution.
+Pin a version when more than one is unpacked and you care which one you get:
 
-## 3. Module path resolution
-
-The string passed to `require()` is treated as a path to a JavaScript file, without the `.js` extension.
-
-Resolution rules:
-- No prefix (`require('app/lib/myModule')`): resolved relative to the `Resources` directory (or `app/lib` in Alloy)
-- `/` prefix (`require('/app/lib/myModule')`): also resolved relative to the `Resources` directory
-- `./` or `../` prefix (`require('./widgets/SomeView')`): resolved relative to the current module file
-
-Example with relative paths:
-
-Given these files:
-- `Resources/app/ui/SomeCustomView.js`
-- `Resources/app/ui/widgets/SomeOtherCustomView.js`
-- `Resources/app/lib/myModule.js`
-
-Inside `SomeCustomView.js`:
-```javascript
-const myModule = require('../lib/myModule')
-const SomeOtherCustomView = require('./widgets/SomeOtherCustomView')
+```xml
+<module platform="android" version="5.7.0">ti.map</module>
 ```
 
-The `.js` extension is omitted in `require()` calls.
+Without a version the newest installed copy wins, which means a machine with
+two versions in `modules/` and a colleague's machine with one can produce
+different builds from the same commit.
 
-## 4. Caching behavior
+> [!IMPORTANT]
+> A module is native code, so it is built for specific platforms and against a
+> range of SDK versions. A module that has not been rebuilt for a newer Titanium
+> SDK may fail at build time with a linker error rather than anything that names
+> the module. Check the module's own page for the versions it supports.
 
-Titanium caches the object returned by `require()` and returns the same reference without re-evaluating the code.
+### Where modules live
 
-If you need code evaluated multiple times, export a function that creates what you need instead.
+`modules/<platform>/<moduleid>/<version>/` in the project, which is committed
+like any other source. Some teams keep them out of version control and install
+in CI instead; either works, as long as the whole team does the same thing.
 
-```javascript
-// Good: factory pattern
-exports.createView = (args) => {
-  return Ti.UI.createView(args)
-}
+Unpacking into the global directory instead makes the module available to every
+project on that machine and to nobody else's, which makes a build depend on the
+machine it runs on. Prefer the project-local copy. On macOS the global one is
+`~/Library/Application Support/Titanium/modules`, and `ti module list` prints
+the full path of everything it finds.
 
-// Bad: expecting re-evaluation
+## npm packages
+
+`package.json` in the project root, and `npm install` as normal:
+
+```sh
+npm install lodash
 ```
 
-## 5. ES6+ support (SDK 7.1.0+)
-
-Since Titanium SDK 7.1.0, you can use ES6+ module syntax. Code is transpiled to ES5 for all platforms.
-
-```javascript
-// MyClass.js
-export default class MyClass {
-  constructor(name) {
-    this.name = name
-  }
-
-  greet() {
-    return `Hello, ${this.name}`
-  }
-}
-
-// Usage in controller
-import MyClass from 'MyClass'
-const instance = new MyClass('World')
+```js
+const _ = require('lodash');
 ```
 
-## 6. Module composition patterns
+Titanium bundles what is in `node_modules` at build time. There is no
+resolution at runtime, so a package pulled in dynamically by name computed at
+runtime will not be there.
 
-### Exports object pattern
+**Check runtime dependencies:** Titanium is not a full Node.js or browser runtime. Some Node-compatible shims (`fs`, `path`, `os`, `buffer`, `events`, `process`) exist in the released API; verify the exact supported subset. Packages requiring unavailable Node APIs such as `child_process`, a DOM or Node native bindings do not work unchanged. A package that only touches `Ti.*` and plain JavaScript is fine.
+Check before adopting a large dependency; the failure arrives at runtime as an
+undefined require.
 
-```javascript
-exports.sayHello = (name) => {
-  Ti.API.info(`Hello ${name}`)
-}
+Keep `node_modules` out of version control as you would anywhere else.
 
-exports.version = 1.4
-```
+## Which one do I need
 
-### Constructor pattern (`module.exports`)
+If it talks to hardware, the operating system, or a platform SDK, it is a
+native module and somebody has to have written it. If it is an algorithm, a
+parser, or a client for an HTTP API, it is probably an npm package.
 
-```javascript
-class Person {
-  constructor(firstName, lastName) {
-    this.firstName = firstName
-    this.lastName = lastName
-  }
+If neither exists, writing a native module is covered under Extending Titanium.
 
-  fullName() {
-    return `${this.firstName} ${this.lastName}`
-  }
-}
+## Next
 
-module.exports = Person
-```
+[Debugging and profiling](https://titaniumsdk.com/docs/build/debugging) covers finding out why the
+thing you just added is not working.
 
-### Utility library pattern
+## Application CommonJS paths
 
-```javascript
-// app/lib/logger.js
-exports.info = (str) => {
-  Ti.API.info(`${new Date()}: ${str}`)
-}
-
-exports.debug = (str) => {
-  Ti.API.debug(`${new Date()}: ${str}`)
-}
-```
-
-Usage:
-```javascript
-const logger = require('logger')
-logger.info('some log statement with a timestamp')
-```
-
-## 7. Packages of related functionality
-
-Group related classes or helpers in a single module:
-
-```javascript
-// app/lib/geo.js
-class Point {
-  constructor(x, y) {
-    this.x = x
-    this.y = y
-  }
-}
-
-class Line {
-  constructor(start, end) {
-    this.start = start
-    this.end = end
-  }
-
-  slope() {
-    return (this.end.y - this.start.y) / (this.end.x - this.start.x)
-  }
-
-  yIntercept() {
-    return this.start.y - (this.slope() * this.start.x)
-  }
-}
-
-exports.Point = Point
-exports.Line = Line
-```
-
-Usage:
-```javascript
-const Geo = require('lib/geo')
-
-const start = new Geo.Point(1, -5)
-const end = new Geo.Point(10, 2)
-const line = new Geo.Line(start, end)
-Ti.API.info(line.slope())
-```
-
-## 8. Inter-module state sharing
-
-When a module assigns a primitive value to `exports`, the consumer gets a copy, not a live reference. Changes to the internal variable are not reflected in the exported property.
-
-```javascript
-// app/lib/statefulModule.js
-let _stepVal = 5
-
-exports.setPointStep = (value) => {
-  _stepVal = value
-}
-
-exports.getPointStep = () => {
-  return _stepVal
-}
-
-exports.stepVal = _stepVal // This is a copy of _stepVal (value: 5)
-```
-
-```javascript
-const stateful = require('statefulModule')
-stateful.setPointStep(10)
-Ti.API.info(stateful.getPointStep()) // 10 - correct, uses getter
-Ti.API.info(stateful.stepVal)        // 5  - still the original copy
-```
-
-Rule: use getter/setter functions for stateful values. Direct property exports of primitives are snapshots at module load time.
-
-## 9. Antipatterns to avoid
-
-### Do not assign directly to `exports`
-
-```javascript
-// Wrong
-function Person() {}
-exports = Person
-
-// Correct
-module.exports = Person
-```
-
-### Do not mix `module.exports` and `exports.*`
-
-```javascript
-// Discouraged
-module.exports = Person
-exports.foo = 'bar'
-
-// Use one consistently
-```
-
-### Avoid globals across modules
-
-Any data a module needs should be passed during construction or initialization. Avoid globals shared across modules.
-
-## 10. Security and scope
-
-All modules have private scope. Variables declared within the module are private unless added to `exports`.
-
-```javascript
-const _privateVar = 'secret' // Not accessible outside
-
-exports.publicMethod = () => {
-  // Can access _privateVar
-  return _privateVar
-}
-```
-
-## 11. Node.js compatibility
-
-Titanium supports Node.js module patterns and `require()` resolution. Node.js modules can often be used directly.
-
-For details, refer to the official Titanium Node.js guide.
+Classic `Resources/myModule.js` and Alloy `app/lib/myModule.js` are required as `require('myModule')`; the Alloy source prefix `app/lib/` is not a runtime module prefix. Use literal native requires by ID and declare the module first. Check the selected SDK's versioned API for Node-compatible shims rather than assuming full Node behavior.

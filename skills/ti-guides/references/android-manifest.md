@@ -1,97 +1,38 @@
-# Custom AndroidManifest.xml
+# Android manifest configuration
 
-For most Android manifest settings, use `tiapp.xml`. Only create a custom manifest when you really need it.
+## Android
 
-## Preferred method: tiapp.xml
+Children of `<android>`. As with `<ios>`, anything else is discarded. The
+`xmlns:android` declaration belongs on the `<android>` element.
 
-Add manifest entries in `tiapp.xml` inside the `<android>` section:
+| Element          | Value           | Effect                                                              |
+| ---------------- | --------------- | ------------------------------------------------------------------- |
+| `manifest`       | XML             | Merged into the generated `AndroidManifest.xml`                     |
+| `tool-api-level` | int             | The API level the app is compiled against                           |
+| `abi`            | comma-separated | Which ABIs to package. `all` packages every one                     |
+| `activities`     | element         | Extra activities, each keyed by the JavaScript file it opens        |
+| `services`       | element         | Extra services. `type="quicksettings"` builds a quick settings tile |
 
 ```xml
 <android xmlns:android="http://schemas.android.com/apk/res/android">
-    <manifest>
-        <!-- SDK version -->
-        <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="34" />
-
-        <!-- Screen support -->
-        <supports-screens
-            android:smallScreens="false"
-            android:normalScreens="true"
-            android:largeScreens="true"
-            android:xlargeScreens="true"
-        />
-
-        <!-- Permissions -->
-        <uses-permission android:name="android.permission.CAMERA" />
-        <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
-        <!-- Application attributes (merged, not replaced) -->
-        <application android:debuggable="true" />
-    </manifest>
+  <manifest android:versionCode="1">
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <application android:icon="@mipmap/ic_launcher"/>
+  </manifest>
+  <abi>arm64-v8a,x86_64</abi>
 </android>
 ```
 
-## How merging works
+`android:versionCode` is the integer Google Play orders releases by, and it has
+to increase on every upload. `<version>` above is the human one; these are
+separate numbers and both matter.
 
-- Most elements are replaced by your entry.
-- The `<application>` element is merged additively by attribute.
-- Activities and services are added to existing ones.
+Restricting `abi` shrinks the APK and is the usual reason to set it. An ABI you
+drop is a device the app will not install on.
 
-## Custom manifest (rare cases)
 
-If you need full control, create `platform/android/AndroidManifest.xml`:
+## Merge and inspect the release variant
 
-```
-MyApp/
-├── app/
-├── platform/
-│   └── android/
-│       └── AndroidManifest.xml  # Custom manifest
-└── tiapp.xml
-```
+SDK 13.4.1 generates a base `src/main/AndroidManifest.xml` plus variant overlays below `build/android/`; Gradle merges app, library and module manifests. Use Android manifest-merger rules and `tools:remove` when needed, then inspect the actual merged release manifest. The legacy `android.mergeCustomAndroidManifest=false` switch is unsupported and does not restore replacement mode. A declared permission still needs its runtime permission workflow where the OS requires it.
 
-Warning: you must maintain this file manually through SDK updates.
-
-## Common use cases
-
-### Camera permission
-```xml
-<uses-permission android:name="android.permission.CAMERA" />
-```
-
-### Hardware requirements
-```xml
-<uses-feature android:name="android.hardware.camera" android:required="false" />
-```
-
-### Launch mode
-```xml
-<application android:launchMode="singleTask" />
-```
-
-### Deep links
-```xml
-<intent-filter>
-    <action android:name="android.intent.action.VIEW" />
-    <category android:name="android.intent.category.DEFAULT" />
-    <category android:name="android.intent.category.BROWSABLE" />
-    <data android:scheme="myapp" android:host="path" />
-</intent-filter>
-```
-
-## Debugging
-
-To see the generated manifest:
-```bash
-ti build -p android
-# Check: build/android/AndroidManifest.xml.gen
-```
-
-## Enable manifest merge (CLI 7.0+)
-
-If you use a custom manifest, enable merge in `tiapp.xml`:
-
-```bash
-ti config android.mergeCustomAndroidManifest true
-```
-
-This merges your custom manifest with the generated one instead of replacing it.
+`<tool-api-level>` is the compile API. Manifest min/target APIs are different settings; use the released [compatibility baseline](compatibility-matrix.md). Do not force debuggable in distributed artifacts. For other XML elements see [tiapp.xml](tiapp-config.md).

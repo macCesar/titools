@@ -1,407 +1,61 @@
 # App distribution guide
 
-Guide for distributing Titanium apps to Google Play (Android) and the App Store (iOS).
+## Release prerequisites and identities
 
-<!-- TOC-START -->
-## Contents
+Use a shipped SDK and compatible native modules, keep the app ID stable, and build distributed artifacts with `--deploy-type production`. Distribution targets imply production; development leaves debugging enabled. Android needs a developer account and signing keystore; iOS needs macOS, paid Apple Developer membership, a distribution certificate/private key and a profile matching the app ID and distribution method. Uploading an artifact is separate from submitting review or rolling out a release.
 
-- [Android distribution](#android-distribution)
-  - [1. Generate keystore and certificate](#1-generate-keystore-and-certificate)
-  - [2. Verify keystore](#2-verify-keystore)
-  - [3. Build for Google Play](#3-build-for-google-play)
-  - [4. Verify APK signing](#4-verify-apk-signing)
-  - [5. Deploy to device for testing](#5-deploy-to-device-for-testing)
-  - [6. Google Play submission requirements](#6-google-play-submission-requirements)
-  - [7. SD card installation](#7-sd-card-installation)
-- [iOS distribution](#ios-distribution)
-  - [1. Distribution types](#1-distribution-types)
-  - [2. Create distribution certificate](#2-create-distribution-certificate)
-  - [3. Create distribution provisioning profile](#3-create-distribution-provisioning-profile)
-  - [4. Create App ID on App Store Connect](#4-create-app-id-on-app-store-connect)
-  - [5. Build and package](#5-build-and-package)
-  - [6. Upload to App Store Connect](#6-upload-to-app-store-connect)
-  - [7. Ad Hoc distribution](#7-ad-hoc-distribution)
-- [Mac Catalyst distribution (Mac App Store)](#mac-catalyst-distribution-mac-app-store)
-  - [1. Enable Mac Catalyst for your App ID](#1-enable-mac-catalyst-for-your-app-id)
-  - [2. Create Mac App Store Distribution Certificate](#2-create-mac-app-store-distribution-certificate)
-  - [3. Mac Catalyst build targets](#3-mac-catalyst-build-targets)
-  - [4. Build for Mac Catalyst (Development)](#4-build-for-mac-catalyst-development)
-  - [5. Build for Mac App Store (Distribution)](#5-build-for-mac-app-store-distribution)
-  - [6. Upload to Mac App Store Connect](#6-upload-to-mac-app-store-connect)
-  - [7. Create app listing in App Store Connect](#7-create-app-listing-in-app-store-connect)
-  - [8. Mac Catalyst entitlements](#8-mac-catalyst-entitlements)
-  - [9. Common issues](#9-common-issues)
-  - [10. Versioning](#10-versioning)
-  - [11. Testing on Mac](#11-testing-on-mac)
+Back up signing credentials and passwords securely; exclude keystores, `.p12` files, provisioning files and secrets from source control. A certificate downloaded without its private key cannot sign. Export an encrypted `.p12` from the originating keychain when moving a team identity to another Mac. Xcode Settings → Accounts → Manage Certificates or the developer portal creates identities; available actions depend on account role, not an unconditional “only Team Agent” rule. Inspect detected certificates/profile UUIDs with `ti info -t ios`.
 
-<!-- TOC-END -->
+## Android: keystore, bundle and release track
 
-## Android distribution
-
-### 1. Generate keystore and certificate
-
-Create a keystore for signing your app:
-
-```bash
-keytool -genkeypair -v -keystore android.keystore -alias helloworld -keyalg RSA -sigalg SHA1withRSA -validity 10000
+```sh
+keytool -genkeypair -v -keystore myapp.keystore -alias myapp -keyalg RSA -keysize 2048 -validity 10000
+keytool -list -v -keystore myapp.keystore
+ti build -p android -T dist-playstore -K /secure/myapp.keystore -L myapp -O ./dist
 ```
 
-Requirements:
-- `keyalg`: RSA (required by Google Play)
-- `sigalg`: SHA1withRSA (Android 4.3-) or SHA256withRSA (Android 4.4+)
-- `validity`: 10000 days minimum (~25 years)
+Let the CLI prompt for the password. CI can supply `--store-password` and, when distinct, `--key-password` from its secret system; command-line values can appear in logs/history. VS Code can remember `titanium.android.keystorePath` and `titanium.android.keystoreAlias`; do not put the password in settings. Avoid legacy SHA-1 generation advice.
 
-Save your keystore password securely. If it is lost, you cannot release updates.
-
-### 2. Verify keystore
-
-```bash
-keytool -list -v -keystore android.keystore
-```
-
-### 3. Build for Google Play
-
-CLI command:
-```bash
-ti build -p android -T dist-playstore [-K <KEYSTORE_FILE> -P <KEYSTORE_PASSWORD> -L <KEYSTORE_ALIAS> -O <OUTPUT_DIRECTORY>]
-```
-
-Example:
-```bash
-ti build -p android -T dist-playstore -K ~/android.keystore -P secret -L foo -O ./dist/
-```
-
-Output files:
-- `.apk`: legacy format (still supported)
-- `.aab`: Android App Bundle (preferred, smaller downloads). Requires Titanium 9.0.0+. An AAB file cannot be installed directly on a device. After upload, Google Play generates device-specific APKs split by CPU architecture and image density.
-
-### 4. Verify APK signing
-
-```bash
-jarsigner -verify -verbose path/yourapp.apk
-```
-
-### 5. Deploy to device for testing
-
-Using CLI:
-```bash
-ti build -p android -T device --device-id "<DEVICE_ID>"
-```
-
-Using adb:
-```bash
-adb install -r your_project/build/android/bin/app.apk
-adb uninstall com.your.appid
-```
-
-Remote testing:
-- Host the APK on a web server or Dropbox and email a link
-- Use HockeyKit/HockeyApp for beta distribution
-
-### 6. Google Play submission requirements
-
-Required assets:
-- At least 2 screenshots (320x480, 480x800, or 480x854)
-- High-res icon (512x512)
-- Title, description (4000 chars max)
-- Promo text (80 chars max)
-- Category and content rating
-- Contact information
-
-Versioning in `tiapp.xml`:
-```xml
-<android xmlns:android="http://schemas.android.com/apk/res/android">
-    <manifest android:versionCode="2" android:versionName="1.0.1"/>
-</android>
-```
-
-- `versionCode`: must be a 32-bit integer and increment for each update. No floating point values.
-- `versionName`: string in any format you choose
-
-### 7. SD card installation
+Current Google Play submissions use an `.aab` Android App Bundle. Play creates device-specific APKs; an AAB cannot be installed with `adb install`. Test the actual bundle through a Play internal track or Google's bundletool, not only a debug APK. A locally installable APK can be checked with `apksigner verify --verbose --print-certs app.apk`; `jarsigner` alone does not verify every modern APK signature scheme.
 
 ```xml
 <android xmlns:android="http://schemas.android.com/apk/res/android">
-   <manifest android:installLocation="preferExternal"/>
+  <manifest android:versionCode="2" android:versionName="1.0.1"/>
 </android>
 ```
 
-Values: `preferExternal`, `auto`, `internalOnly`
+Increase the integer `android:versionCode` on every upload. The human `<version>`/versionName is separate. Check the current Play Console limit and annual target API policy; SDK 13.4.1 defaults to API 36. Compile API (`tool-api-level`) and target API are distinct settings. Provide store text/artwork, content rating, privacy policy and Data safety responses reflecting actual app/module collection and merged permissions. Screenshot/device requirements change; use Console's current required slots rather than archived 320×480 rules.
 
----
+Upload to internal, closed, open or production track, then explicitly roll out that track. For direct device development use `ti build -p android -T device --device-id <id>`; a test APK installs with `adb install -r app.apk`. Uninstalling first deletes local data and is not a harmless update step.
 
-## iOS distribution
+Play App Signing holds the app-signing key and lets you use a separate upload key. Losing a resettable upload key is different from losing the only self-managed app-signing key; check the app's signing setup before concluding updates are impossible. Follow [Google's signing and upload-key reset procedure](https://support.google.com/googleplay/android-developer/answer/9842756). Retain independent backups even with managed signing.
 
-### 1. Distribution types
+## iOS: provisioning, archive and review
 
-- App Store: public distribution via App Store (formerly iTunes Connect, now App Store Connect)
-- Ad Hoc: limited testing (max 100 devices per year; devices cannot be removed once registered, so use care when registering)
-- In House: enterprise distribution for employees (Enterprise program only)
+Create an App ID matching `<id>`, a distribution certificate, then a profile for that App ID/certificate. Ad Hoc profiles must contain every tester UDID; device quotas and annual registration rules are controlled by Apple. Download/install the profile and verify the certificate's private key in Keychain.
 
-### 2. Create distribution certificate
-
-Certificate types:
-- Development certificate: each developer can have their own, used for test builds.
-- Distribution certificate: a single certificate for the entire team. Only the Team Agent (account owner) can create it.
-
-Steps:
-1. Log in to Apple Developer Member Center as Team Agent or Admin.
-2. Go to Certificates, Identifiers & Profiles, then Certificates.
-3. Click +, then choose App Store and Ad Hoc.
-4. Create a CSR (Certificate Signing Request) in Keychain Access.
-5. Upload the CSR and generate the certificate.
-6. Download and install the `.cer` file.
-7. Export the private key as a `.p12` file (File > Export Items).
-
-### 3. Create distribution provisioning profile
-
-1. In Member Center, go to Provisioning Profiles.
-2. Click + and select the distribution type.
-3. Select an App ID.
-4. Select the distribution certificate.
-5. For Ad Hoc, select test devices.
-6. Name the profile (include "distribution" or "ad hoc").
-7. Download the `.mobileprovision` file and install it (drag to Xcode).
-
-### 4. Create App ID on App Store Connect
-
-App Store Connect is the portal for app distribution management.
-
-1. Log in to App Store Connect.
-2. Go to Manage Your Apps, then Add New App.
-3. Provide:
-   - App name
-   - SKU number (unique ID)
-   - Bundle ID (must match App ID from Developer Portal)
-4. Configure:
-   - Availability date
-   - Price tier
-   - Version number
-   - Description (4000 chars max)
-   - Category, keywords (100 chars max)
-   - Copyright
-   - Support URL
-   - Rating info
-   - High-res icon: 1024x1024, 72 DPI, RGB, flat artwork
-   - Screenshots:
-     - iPhone (3.5"): 960x640, 960x600, 640x960, or 640x920
-     - iPhone (4"): 1136x640, 1136x600, 640x1136, or 640x1096
-     - iPad: 1024x768, 1024x748, 768x1024, 768x1004, 2048x1536, 2048x1496, 1536x2048, or 1536x2008
-5. Click Ready to Upload Binary.
-
-### 5. Build and package
-
-CLI command - Ad Hoc:
-```bash
-ti build -p ios -T dist-adhoc [-R <DISTRIBUTION_CERTIFICATE_NAME> -P <PROVISIONING_PROFILE_UUID> -O <OUTPUT_DIRECTORY>]
+```sh
+ti build -p ios -T dist-appstore -R "Apple Distribution: Example Ltd (ABCDE12345)" -P <profile-uuid> -O ./dist
+ti build -p ios -T dist-adhoc -R "Apple Distribution: Example Ltd (ABCDE12345)" -P <adhoc-profile-uuid> -O ./dist
 ```
 
-Example:
-```bash
-ti build -p ios -T dist-adhoc -R "Pseudo, Inc." -P "FFFFFFFF-EEEE-DDDD-CCCC-BBBBBBBBBBBB" -O ./dist/
-```
+The App Store target creates an archive for Xcode Organizer and exports an IPA to the output directory; inspect the build log for actual archive/export paths. Validate and distribute through Xcode Organizer, or upload an exported signed IPA through Transporter using the supported Apple workflow. Uploading does not submit review: create/select the App Store Connect app record (name, language, SKU and matching bundle ID), attach the processed build to a version, complete metadata/privacy/export answers, and submit. Ad Hoc IPA installation requires a device listed in the embedded profile; use Xcode's device tooling or a supported installation service. TestFlight is the normal store-managed beta path.
 
-CLI command - App Store:
-```bash
-ti build -p ios -T dist-appstore [-R <DISTRIBUTION_CERTIFICATE_NAME> -P <PROVISIONING_PROFILE_UUID>]
-```
+Keep marketing version `<version>` and upload build number distinct. Set `CFBundleVersion` in `<ios><plist><dict>` to increase build numbers without unnecessarily changing the marketing version. Do not reuse a build number already uploaded for that version.
 
-Example:
-```bash
-ti build -p ios -T dist-appstore -R "Pseudo, Inc." -P "AAAAAAAA-0000-9999-8888-777777777777"
-```
+Before submission verify:
 
-The CLI installs the package to Xcode's Organizer.
+- Real permission purpose strings under `<ios><plist><dict>`, plus runtime permission requests. Missing required strings can crash permission access; generic reasons can fail review.
+- A correct `PrivacyInfo.xcprivacy` based on actual required-reason APIs and data collection. For the 13.4.1 bundle resource pipeline use `Resources/iphone/PrivacyInfo.xcprivacy` (Classic), or `app/assets/iphone/PrivacyInfo.xcprivacy` (Alloy). Verify it exists at the built app's root. Bare `platform/ios/PrivacyInfo.xcprivacy` goes to the native build directory, not automatically the app bundle root.
+- Required screenshots, icon, categories, age rating, support/privacy URLs, login/demo access, and device-family/OS support. Current App Store Connect requirements replace archive-era 3.5-inch screenshot tables.
+- The selected capabilities, profile and entitlements agree, and the release launches on real supported devices.
 
-### 6. Upload to App Store Connect
+## JavaScript encryption and debugging
 
-1. Open Xcode, then Window, then Organizer.
-2. Select your app archive.
-3. Click Verify to validate against the App Store Connect app definition.
-4. Click Submit to upload.
-5. Status changes to Waiting for Review.
+SDK 13.4.1 uses `ti.cloak` internally. Development does not encrypt; test and production encrypt/minify, while test keeps debugging and production disables it. `dist-appstore` and `dist-playstore` use production. The new website's alternative `<encryption>ti.crypt</encryption>` selector is not present in the 13.4.1 builders and must not be offered as GA configuration.
 
-### 7. Ad Hoc distribution
+Encryption deters casual inspection; the application must decrypt its code to run, so it is not a security boundary. Embedded server secrets remain recoverable in JavaScript, JSON, properties or `tiapp.xml`. Keep them on a server and use appropriate native secure storage for user credentials. Reproduce encryption-specific bugs with test deploy type; preserve source maps securely when emitting them.
 
-Testers need:
-- The `.mobileprovision` file installed on their device
-- The `.ipa` package file
+Complete Apple's encryption/export declaration according to the app's actual cryptography. `ITSAppUsesNonExemptEncryption=false` belongs in `<ios><plist><dict>` only when the app qualifies for that answer; do not set it universally because a template did. Consult Apple's current criteria for the specific app.
 
-Installation method:
-1. Connect the device to a Mac.
-2. Open Xcode, then Window, then Devices.
-3. Select the device, then Installed Apps, then +.
-4. Select the IPA file.
-
----
-
-## Mac Catalyst distribution (Mac App Store)
-
-Mac Catalyst allows you to run your iPad app on macOS. Titanium SDK 13.1.1.GA and later supports building for Mac Catalyst.
-
-### 1. Enable Mac Catalyst for your App ID
-
-1. Go to [Apple Developer → Identifiers](https://developer.apple.com/account/resources/identifiers/list)
-2. Select your App ID or create a new one
-3. Enable **Mac Catalyst** capability
-4. Save the changes
-
-### 2. Create Mac App Store Distribution Certificate
-
-1. Go to [Apple Developer → Certificates](https://developer.apple.com/account/resources/certificates/list)
-2. Click **+** to create a new certificate
-3. Select **Mac App Store Distribution**
-4. Upload your CSR (Certificate Signing Request)
-5. Download and install the certificate
-
-### 3. Mac Catalyst build targets
-
-Titanium provides two targets for Mac Catalyst:
-
-| Target | Description | Configuration |
-|--------|-------------|---------------|
-| `macos` | Development builds for testing on Mac | Debug-maccatalyst |
-| `dist-macappstore` | Production builds for Mac App Store | Release-maccatalyst |
-
-### 4. Build for Mac Catalyst (Development)
-
-```bash
-ti build -p ios -T macos
-```
-
-The `.app` bundle will be created at:
-```
-build/iphone/build/Products/Debug-maccatalyst/AppName.app
-```
-
-For a production-ready build:
-```bash
-ti build -p ios -T macos --deploy-type production
-```
-
-The `.app` bundle will be at:
-```
-build/iphone/build/Products/Release-maccatalyst/AppName.app
-```
-
-### 5. Build for Mac App Store (Distribution)
-
-```bash
-ti build -p ios -T dist-macappstore [-R <CERTIFICATE_NAME>]
-```
-
-Example:
-```bash
-ti build -p ios -T dist-macappstore -R "Apple Distribution: Your Team Name (TEAM_ID)"
-```
-
-If you omit the `-R` flag, Titanium will prompt you to select a certificate.
-
-**What happens during the build:**
-- Uses `Release-maccatalyst` configuration
-- Sets code signing to Manual with identity `-`
-- Creates a `.xcarchive` for Mac App Store
-- Installs the archive in Xcode's Organizer
-- Destination: `generic/platform=macOS`
-
-### 6. Upload to Mac App Store Connect
-
-1. Open Xcode → Window → Organizer
-2. Select your Mac Catalyst archive
-3. Click **Validate App** to check for issues
-4. Click **Distribute App**
-5. Select **Mac App Store**
-6. Follow the prompts to upload
-
-### 7. Create app listing in App Store Connect
-
-1. Go to [App Store Connect](https://appstoreconnect.apple.com)
-2. **My Apps → + → New App**
-3. Select **Mac** as platform
-4. Enter app details:
-   - Name
-   - Primary Language
-   - Bundle ID (must match your App ID with Mac Catalyst enabled)
-   - SKU
-5. Complete required metadata:
-   - Description
-   - Keywords
-   - Screenshots (Mac-specific sizes)
-   - Category
-   - Age rating
-
-### 8. Mac Catalyst entitlements
-
-Add Mac-specific entitlements in `tiapp.xml`:
-
-```xml
-<ios>
-  <entitlements>
-    <dict>
-      <!-- File access for saving to Downloads -->
-      <key>com.apple.security.files.user-selected.read-write</key>
-      <true/>
-      <key>com.apple.security.files.downloads.read-write</key>
-      <true/>
-
-      <!-- App sandbox (required for Mac App Store) -->
-      <key>com.apple.security.app-sandbox</key>
-      <true/>
-
-      <!-- Network access -->
-      <key>com.apple.security.network.client</key>
-      <true/>
-
-      <!-- Additional entitlements as needed -->
-      <key>com.apple.security.print</key>
-      <true/>
-    </dict>
-  </entitlements>
-</ios>
-```
-
-### 9. Common issues
-
-**Issue**: "No suitable signing certificate found"
-- Ensure you have a **Mac App Store Distribution Certificate** (not iOS Distribution)
-- The certificate must be installed in your Keychain
-
-**Issue**: Build fails with code signing errors
-- Verify your App ID has Mac Catalyst enabled
-- Check that the certificate matches the App ID
-- Try cleaning the build: `ti clean -p ios`
-
-**Issue**: App crashes on launch
-- Verify entitlements are correctly configured
-- Check Console.app for crash logs
-- Ensure all required capabilities are enabled
-
-### 10. Versioning
-
-Update version numbers in `tiapp.xml`:
-
-```xml
-<ti:app xmlns:ti="http://ti.tidev.io">
-  <id>com.yourcompany.yourapp</id>
-  <name>Your App Name</name>
-  <version>1.0.0</version>
-  <publisher>Your Company</publisher>
-  ...
-</ti:app>
-```
-
-- `version`: Display version (e.g., "1.0.0")
-- For iOS, use `pv-version-code` in `<ios>` section for build number
-- For Mac, the build number can be set in Xcode or via `CFBundleVersion`
-
-### 11. Testing on Mac
-
-Before submitting to Mac App Store:
-
-1. Build with `macos` target for testing
-2. Run the app on different Mac architectures (Intel and Apple Silicon)
-3. Test all features that use file system, network, and other sandboxed resources
-4. Verify entitlements are working correctly
-5. Test on macOS versions you plan to support
-
----
+Sources: [distribution](https://titaniumsdk.com/docs/distribute.md), [signing](https://titaniumsdk.com/docs/distribute/signing.md), [iOS](https://titaniumsdk.com/docs/distribute/ios.md), [Android](https://titaniumsdk.com/docs/distribute/android.md), [encryption](https://titaniumsdk.com/docs/distribute/encryption.md), and [Apple certificates](https://developer.apple.com/help/account/certificates/certificates-overview).

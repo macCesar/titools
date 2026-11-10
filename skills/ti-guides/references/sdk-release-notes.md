@@ -1,86 +1,43 @@
-# SDK release notes: what changes your code
+# SDK 13.4.1 release notes
 
-Condensed 13.x release history, filtered down to what actually affects how you write or configure an app. Full changelogs (every commit, every credit) live upstream under `Titanium_SDK_Release_Notes/`.
+Released baseline: SDK 13.4.1.GA. These are the current official registry notes. Use [compatibility](compatibility-matrix.md) for toolchain requirements; unreleased SDK 14 guidance is deferred.
 
-Each GA release desupports the previous patch release. Running an unsupported version is allowed, but bug reports against it are not accepted.
 
-<!-- TOC-START -->
-## Contents
+## About this release
 
-- [1. Version timeline](#1-version-timeline)
-- [2. 13.4.1 — patch](#2-1341--patch)
-- [3. 13.4.0 — Android target SDK 36 groundwork](#3-1340--android-target-sdk-36-groundwork)
-- [4. 13.3.1 — patch](#4-1331--patch)
-- [5. 13.3.0 — Xcode 27, iOS 27, multi-scene](#5-1330--xcode-27-ios-27-multi-scene)
-- [6. 13.2.0 — ViewPager2, keepHardwareMode](#6-1320--viewpager2-keephardwaremode)
-- [7. Bundled module versions](#7-bundled-module-versions)
+Titanium SDK 13.4.1 is a patch release of the SDK, addressing high-priority issues from previous releases, including keyboard issues in BottomNavigation on Android and a possible deadlock when opening windows on iOS.
 
-<!-- TOC-END -->
+As of this GA release, the previous Titanium SDK patch release (13.4.0) is no longer supported.
 
-## 1. Version timeline
+## Community Credits
 
-| Version | Date | Headline |
-|---|---|---|
-| 13.4.1.GA | 25 August 2026 | Patch — BottomNavigation keyboard and androidback (Android), window-open deadlock (iOS) |
-| 13.4.0.GA | 28 July 2026 | Prepares the SDK for Android target SDK 36; v8 memory cleanup |
-| 13.3.1.GA | 20 July 2026 | Patch — iOS restart and LiveView fixes |
-| 13.3.0.GA | 01 July 2026 | Xcode 27 and iOS 27, Hyperloop 8.0.0, iOS multi-scene apps |
-| 13.2.0.GA | 08 April 2026 | iOS core changes, Node.js 24 support, Android fixes |
-| 13.1.0.GA | — | Minor release, high-priority fixes |
-| 13.0.0.GA | — | Major release: iOS 26 / Xcode 26, Android 16 KB page size |
+* Michael Gangolf
+  * keyboard issues in BottomNavigation and `androidback` issue ([ef44640](https://github.com/tidev/titanium-sdk/commit/ef44640f9501807decc70377d1b8ff246d9fa554))
 
-## 2. 13.4.1 — patch
+* Hans Knöchel
+  * fix possible deadlock when opening window ([2957c43](https://github.com/tidev/titanium-sdk/commit/2957c4361b67709fb5131811c87e4c7c17429869))
+  * bump version ([98531c3](https://github.com/tidev/titanium-sdk/commit/98531c3962aa7b0b0b31db21821dba0acb7a5f03))
 
-Released 25 August 2026. Two fixes, both to crashes and input handling rather than to any API:
+## Bug Fixes
 
-- **Android:** keyboard issues in `BottomNavigation`, and the `androidback` event.
-- **iOS:** a possible deadlock when opening a window.
+### Android platform
 
-Desupports 13.4.0. No API surface changed, so code written against 13.4.0 needs no edit.
+* keyboard issues in BottomNavigation and `androidback` issue ([ef44640](https://github.com/tidev/titanium-sdk/commit/ef44640f9501807decc70377d1b8ff246d9fa554))
 
-## 3. 13.4.0 — Android target SDK 36 groundwork
+### iOS platform
 
-- **Prepares the SDK for Android target SDK 36.** Groundwork only; the compatibility matrix still lists API 35 as the maximum target. See [compatibility-matrix.md](compatibility-matrix.md) § Android.
-- v8 memory cleanup (Android).
-- `Window.rect` now reflects pre-open `left`/`top` instead of reporting zeros before the window opens (Android).
-- Build paths adjusted for Windows hosts.
-- iOS: fixed the dimming area in a TableView SearchBar.
-- The debug-only selector for `Ti.App._restart()` was removed, making the method callable outside debug builds.
+* fix possible deadlock when opening window ([2957c43](https://github.com/tidev/titanium-sdk/commit/2957c4361b67709fb5131811c87e4c7c17429869))
 
-## 4. 13.3.1 — patch
+## SDK Module Versions
 
-iOS-only fixes: the `restart` method, and LiveView restart. Hyperloop bumped to 8.0.1.
-
-## 5. 13.3.0 — Xcode 27, iOS 27, multi-scene
-
-- **Xcode 27 and iOS 27 support.** This postdates the Xcode/iOS rows in the compatibility matrix, which still cap at Xcode 16.x.
-- **iOS multi-scene applications** are supported.
-- **Hyperloop 8.0.0.**
-- ScrollableView (Android): a deprecation note was added for its older events. As of SDK 13.4.0 no ScrollableView event is actually flagged deprecated in the API metadata — `scroll`, `scrollend` and `dragend` all remain current — so treat this as advance warning, not as a removal.
-- ImageView: pinch-and-zoom improved on Android; the remote-image fade-in animation was removed on iOS.
-- TabGroup (iOS): `focus` is now emitted separately from `selected`. Code that assumed one event covered both cases needs checking.
-- `borderWidth` no longer renders at double thickness when `borderRadius` is an array (iOS).
-- Android: Material 3 BottomNavigation theme and dark/light switching fixes, CameraX rotation fix under orientation lock, WebView fix for URLs carrying large GET data, `Ti.Preferences` optimized.
-
-## 6. 13.2.0 — ViewPager2, keepHardwareMode
-
-- **ScrollableView moved to ViewPager2 on Android.** A backing-widget swap; verify paging, nested scrolling and any custom paging control against it.
-- **`keepHardwareMode` added to `Ti.UI.View`** (Android) — controls the view's render mode.
-- **`hideKeyboardAccessoryView` added to WebView** (iOS) to hide the keyboard accessory bar.
-- **AttributedString support on Android**, previously iOS-only.
-- Images can be dragged horizontally inside a ScrollableView (Android).
-- ListView caches `searchText` (Android).
-- The app name in `AndroidManifest.xml` now uses the i18n value.
-- Node.js 24 support; core-js upgraded, removing the `baseline-browser-mapping` warning.
-- iOS: Mac Catalyst fixes for `Ti.UI.Button` styling and events, and module builds with `mac=true`.
-
-## 7. Bundled module versions
-
-Versions shipped with each SDK. Unchanged rows are omitted.
-
-| Module | 13.2.0 (Android / iOS) | 13.3.0+ (Android / iOS) |
-|---|---|---|
-| facebook | 14.0.0 / 15.0.0 | 15.0.0 / 16.0.0 |
-| hyperloop | 7.1.0 / 7.1.0 | 8.0.1 / 8.0.1 (8.0.0 in 13.3.0) |
-
-Stable across 13.2.0–13.4.1: `ti.map` 5.7.0 / 7.3.1, `ti.webdialog` 2.5.0 / 3.0.2, `ti.playservices` 18.6.0 (Android only), `ti.identity` 3.2.0 / 5.0.0, `urlSession` 4.0.1 (iOS only), `ti.coremotion` 4.0.1 (iOS only), `ti.applesignin` 3.1.2 (iOS only).
+| Module      | Android version | iOS Version |
+| ----------- | --------------- | ----------- |
+| facebook | 15.0.0 | 16.0.0 |
+| ti.map | 5.7.0 | 7.3.1 |
+| ti.webdialog | 2.5.0 | 3.0.2 |
+| ti.playservices | 18.6.0 | n/a |
+| ti.identity | 3.2.0 | 5.0.0 |
+| urlSession | n/a | 4.0.1 |
+| ti.coremotion | n/a | 4.0.1 |
+| ti.applesignin | n/a | 3.1.2 |
+| hyperloop | 8.0.1 | 8.0.1 |

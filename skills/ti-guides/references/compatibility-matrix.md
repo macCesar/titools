@@ -1,89 +1,50 @@
-# Compatibility matrix
+# Titanium compatibility matrix
 
-Which JDK, Node.js, Xcode and Android SDK versions a given Titanium SDK release can build with. Components outside the min/max ranges below are not compatible.
+## Released baseline: SDK 13.4.1.GA
 
-Only the currently supported ranges are reproduced here. Upstream also keeps collapsed tables of long-unsupported ranges (back to Titanium 1.7); if a project is pinned to something older than the rows below, consult the upstream matrix directly.
+These are the declared ranges for **13.4.1.GA**, not promises about every future release. Check the [rendered compatibility tables](https://titaniumsdk.com/docs/reference/compatibility.md) and the [versioned API](https://titaniumsdk.com/docs/sdk/13.4.1) for another SDK. Raw website Markdown contains generated-table directives; read the rendered page to obtain the actual rows. Unreleased SDK 14 requirements are outside this baseline.
 
-<!-- TOC-START -->
-## Contents
+| Component | SDK 13.4.1 declaration |
+| --- | --- |
+| Node.js used by SDK | >=20.18.1 |
+| Titanium CLI | >=8.0.0 |
+| JDK | >=17.x |
+| Android SDK platforms | 23.x through 36.x |
+| Android Build Tools | 30.0.2 through 35.x |
+| Android Platform Tools | 33.x |
+| Android SDK Tools | <=35.x |
+| Android NDK, for native compilation | r21 through r22b |
+| Xcode | 15.0 through 26.x |
+| iOS SDK | 17.0 through 26.x |
 
-- [1. Operating system](#1-operating-system)
-- [2. Java Development Kit](#2-java-development-kit)
-- [3. Node.js](#3-nodejs)
-- [4. Android](#4-android)
-- [5. iOS and Xcode](#5-ios-and-xcode)
-- [6. Which platform can build what](#6-which-platform-can-build-what)
+A platform that can be detected is not necessarily the runtime floor or the default compile target. For 13.4.1 the Android minimum runtime is API 24, default compile/target is API 36, iOS minimum runtime is 15.0, and watchOS minimum is 8.0. Setting a lower `min-ios-ver` does not lower the SDK floor. Module compatibility is separate: check each native module's supported SDK, architecture and platform versions.
 
-<!-- TOC-END -->
+## SDK and CLI requirements differ
 
-## 1. Operating system
+The current CLI 9.1.0 requires Node >=22.19.0 even though SDK 13.4.1 declares >=20.18.1. Use Node 22.19+ in the 22 line or Node 24 with that pairing. SDK 13.4.1's `ioslib`/`node-ios-device` dependencies provide prebuilt bindings through Node 24; Node 26 can fail while rebuilding/loading them. Do not infer unrestricted practical compatibility from a lower-bound-only SDK declaration. Use Node 24 for this released baseline rather than adopting SDK 14 instructions before GA.
 
-| Operating system | Version |
-|---|---|
-| macOS | 10.11.5 and later |
-| Windows | Windows 7 and later (Android) |
-| Linux | Tested on Fedora and (K)Ubuntu; others should work |
+JDK source/target bytecode settings such as `android.javac.source` do not identify the JDK that runs Gradle. Check `javac -version`, `JAVA_HOME` and `ti info` independently.
 
-## 2. Java Development Kit
+## Host platforms and native tooling
 
-The JDK is required to build Titanium apps and modules for Android. OpenJDK or Oracle both work.
+| Host | Android | iOS and Mac Catalyst |
+| --- | --- | --- |
+| macOS | Yes | Yes, through Xcode |
+| Windows | Yes | No |
+| Linux | Yes | No |
 
-| Titanium SDK version | Min JDK | Max JDK |
-|---|---|---|
-| 13.3.0 - latest | 18 | 25 |
-| 12.8.0 - 13.2.0 | 18 | 21 |
+The host OS must also support the installed Node, JDK, Android tools and Xcode; old archive claims such as Windows 7 or macOS 10.11 are not current installation advice. On macOS open Xcode once, finish its installation, and select the intended copy with `sudo xcode-select -s /Applications/Xcode.app`.
 
-`12.0.0 - 12.7.0` (JDK 11-17) moved to the unsupported table when 13.3.0 shipped.
+Components newer than the SDK's tested range can produce warnings while builds continue; a warning alone does not establish either failure or support. Diagnose a failing build with the tested version first. Pin Android Build Tools with `ti config android.buildTools.selectedVersion 35.0.0` when needed. NDK warnings are irrelevant to ordinary app builds that do not compile native code.
 
-## 3. Node.js
+## Verify the selected environment
 
-Node.js is required to install and run the Titanium SDK. On Windows, enable `dev mode` in Windows settings for Node to work correctly.
+```sh
+node -v
+javac -version
+ti -v
+ti sdk list
+ti info
+```
 
-| Titanium SDK version | Min Node | Max Node |
-|---|---|---|
-| 13.1.1 - latest | 20.x | 24.x |
-| 13.0.0 - 13.1.0 | 20.x | 22.x |
-| 12.6.0 - 12.8.0 | 18.x | 22.x |
-
-## 4. Android
-
-As of Titanium 9.0.0 the build system downloads the needed Android SDK platforms and tools automatically. Upgrade those packages only between major projects — changes there have broken the Titanium toolchain several times.
-
-| Titanium SDK version | Min target (`android:targetSdkVersion`) | Max target | Min supported (`android:minSdkVersion`) |
-|---|---|---|---|
-| 13.1.0+ | 15.x (API 35) | 15.x (API 35) | 7.x (API 24) |
-| 12.8.0 - 13.0.1 | 15.x (API 35) | 15.x (API 35) | 5.x (API 21) |
-| 12.5.0 - 12.8.0 | 14.x (API 34) | 14.x (API 34) | 5.x (API 21) |
-| 12.0.0 - 12.5.0 | 13.x (API 33) | 13.x (API 33) | 5.x (API 21) |
-
-A `android:targetSDKVersion` set in `tiapp.xml` must fall inside the min/max target range of the SDK in use.
-
-> **Note:** Titanium SDK 13.4.0 is described in its release note as *preparing the SDK for Android target SDK 36*. The matrix above still lists API 35 as the maximum; treat API 36 as in-progress rather than as a supported target until the matrix says otherwise.
-
-Developing native Android add-on modules on macOS also requires the Xcode command line tools.
-
-## 5. iOS and Xcode
-
-Building for iOS requires macOS — Apple's license agreement allows iOS development only on Apple hardware.
-
-| Titanium SDK version | Min Xcode | Max Xcode | Notes |
-|---|---|---|---|
-| 12.6.3 - latest | 12.0.0 | 16.x | Full support for iOS 18.4 |
-| 12.2.0 - 12.6.2 | 12.0.0 | 16.2 | Full support for iOS 17 |
-| 10.1.0 - 12.1.2 | 11.0.0 | 13.x | Full support for iOS 15 |
-
-| Titanium SDK version | Min iOS SDK | Max iOS SDK | Min target iOS | Max target iOS |
-|---|---|---|---|---|
-| 12.2.0 - latest | 13.0.0 | 17.x | 12.0 | 17.x |
-| 10.1.0 - 12.1.2 | 13.0.0 | 15.x | 12.0 | 15.x |
-
-> **Note:** these two tables lag behind the release notes. Titanium SDK 13.3.0 shipped *support for Xcode 27 and iOS 27*, which no row above reflects. Where they disagree, the release note is the newer statement — see [sdk-release-notes.md](sdk-release-notes.md).
-
-## 6. Which platform can build what
-
-| Target | macOS | Windows | Linux |
-|---|---|---|---|
-| Android | Yes | Yes | Yes |
-| iOS | Yes | No | No |
-
-Anything marked *pre-release* upstream — Beta, Developer Preview, Release Candidate, and continuous builds — is not officially supported.
+Use `ti info -t ios` or `ti info -t android` to narrow detection. Pin `<sdk-version>13.4.1.GA</sdk-version>` in `tiapp.xml` for reproducible builds; an explicit `--sdk` overrides it for one invocation. Development snapshots and release candidates are for testing, not a replacement for a supported GA production baseline.

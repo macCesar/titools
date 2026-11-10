@@ -1,86 +1,47 @@
 ---
 name: ti-guides
-description: 'Use when working on Titanium SDK fundamentals: project configuration (`tiapp.xml`, `timodule.xml`), CommonJS modules, Hyperloop native access, app distribution (App Store / Google Play, certificates, provisioning), Titanium CLI usage, memory management, bridge optimization, SQLite transactions, image memory, coding standards, the compatibility matrix (which JDK, Node.js, Xcode or Android SDK a given Titanium SDK needs), or what changed in a Titanium SDK release. Triggers include `tiapp.xml` in the project root, for either Alloy (`app/`) or Classic (`Resources/`) Titanium projects.'
+description: 'Use when working on current Titanium SDK fundamentals: environment setup, Classic or Alloy project creation and structure, tiapp.xml or timodule.xml configuration, native modules and npm dependencies, Hyperloop, app signing/distribution, Titanium CLI commands/configuration, local persistence, editor integration, released SDK compatibility and release notes. Applies when a project contains tiapp.xml, with Alloy app/ or Classic Resources/ sources. Use ti-api for individual API contracts, alloy-guides for MVC, and ti-howtos for native integrations.'
 ---
 
 # ti-guides
 
-## Overview
+Use current official guides maintained in [tidev/titaniumsdk.com](https://github.com/tidev/titaniumsdk.com). Discover routes through [llms.txt](https://titaniumsdk.com/llms.txt); append `.md` to guide routes. API routes can be pinned, for example `https://titaniumsdk.com/docs/sdk/13.4.1`. Read rendered compatibility Markdown because raw source uses generated includes.
 
-Reference for Titanium SDK fundamentals: project configuration, distribution, native access via Hyperloop, CommonJS module patterns, memory and bridge optimization, and TiDev coding standards. Applies to both Alloy and Classic projects.
+This skill covers the released SDK 13.4.1.GA baseline. Verify version-specific contracts against the selected SDK's declarations and implementation; do not treat SDK `main`, an unversioned API page, or SDK 14-only site guidance as released behavior. Current guides can contain errors. Explain a verified discrepancy instead of copying an invalid example.
 
-## When to use
+## Routes
 
-Use this skill when:
+| Task | Reference |
+| --- | --- |
+| Toolchains, setup, Classic/Alloy creation, first run and hardware | [hello-world.md](references/hello-world.md) |
+| Source versus generated files, asset/native paths, framework choice | [application-frameworks.md](references/application-frameworks.md) |
+| Native module installation/declaration and npm runtime compatibility | [commonjs-advanced.md](references/commonjs-advanced.md) |
+| Properties, app files, SQLite cursors, async queries and seed migration | [advanced-data-and-images.md](references/advanced-data-and-images.md) |
+| Hyperloop setup, platform guards, native require paths and bridge costs | [hyperloop-native-access.md](references/hyperloop-native-access.md) |
+| Android manifest elements, merge behavior and release inspection | [android-manifest.md](references/android-manifest.md) |
+| Signing, AAB/archive/IPA workflows, review and code encryption | [app-distribution.md](references/app-distribution.md) |
+| Current tiapp.xml elements, ignored/removed settings and timodule.xml | [tiapp-config.md](references/tiapp-config.md) |
+| Current CLI commands, automation and machine configuration | [cli-reference.md](references/cli-reference.md) |
+| Released toolchain requirements and host/platform support | [compatibility-matrix.md](references/compatibility-matrix.md) |
+| Current registry release notes for SDK 13.4.1 | [sdk-release-notes.md](references/sdk-release-notes.md) |
+| VS Code, Pulsar and JetBrains integration | [resources.md](references/resources.md) |
 
-- The project contains `tiapp.xml` (definitive Titanium project indicator)
-- Configuring `tiapp.xml` or `timodule.xml`
-- Setting up app distribution (App Store / Google Play, certificates, provisioning, AAB / IPA)
-- Using Hyperloop to call native APIs (Objective-C / Swift / Java)
-- Optimizing memory: removing global listeners, caching native properties, image memory footprints
-- Working with the Titanium CLI (`ti build`, `ti sdk install`, `ti sdk select`)
-- Checking which JDK, Node.js, Xcode or Android SDK a Titanium SDK version requires
-- Finding out what changed in a Titanium SDK release and whether it affects existing code
-- Writing CommonJS modules (stateful caching, ES6+ patterns, antipatterns)
-- Authoring `AndroidManifest.xml` overrides
-- Following TiDev style and naming conventions
+## Working rules
 
-Do NOT use for:
-
-- Alloy MVC concepts, controllers, models (use `alloy-guides`)
-- Alloy CLI usage and configuration files (use `alloy-howtos`)
-- Looking up specific Titanium API surfaces (use `ti-api`)
-- Native module dependency updates (use `ti-module-update`)
-
-## Quick reference
-
-| Topic | Reference |
-|---|---|
-| Project creation, structure, getting started (Alloy or Classic) | [hello-world.md](references/hello-world.md) |
-| JavaScript fundamentals, learning resources, ES6+ features | [javascript-primer.md](references/javascript-primer.md) |
-| Alloy vs Classic Titanium, framework selection | [application-frameworks.md](references/application-frameworks.md) |
-| Memory leaks, bridge efficiency, event naming, security, lazy loading | [coding-best-practices.md](references/coding-best-practices.md) |
-| Stateful modules, caching, ES6+ support, antipatterns | [commonjs-advanced.md](references/commonjs-advanced.md) |
-| SQLite transactions and image memory optimization | [advanced-data-and-images.md](references/advanced-data-and-images.md) |
-| Hyperloop: Objective-C / Swift / Java syntax, casting, debugging, XIB / Storyboards | [hyperloop-native-access.md](references/hyperloop-native-access.md) |
-| Naming standards and formatting rules | [style-and-conventions.md](references/style-and-conventions.md) |
-| ECMAScript, iOS, and Alloy reserved keywords to avoid | [reserved-words.md](references/reserved-words.md) |
-| Custom `AndroidManifest.xml`, permissions, manifest merge | [android-manifest.md](references/android-manifest.md) |
-| Google Play (APK / AAB), App Store (IPA), certificates, provisioning, deployment | [app-distribution.md](references/app-distribution.md) |
-| Complete `tiapp.xml` and `timodule.xml` reference | [tiapp-config.md](references/tiapp-config.md) |
-| Titanium CLI commands, options, tasks, configuration, build processes | [cli-reference.md](references/cli-reference.md) |
-| JDK, Node.js, Xcode and Android SDK versions each Titanium SDK supports | [compatibility-matrix.md](references/compatibility-matrix.md) |
-| What changed per 13.x release, and which changes affect your code | [sdk-release-notes.md](references/sdk-release-notes.md) |
-| Community support, modules, sample code, Slack, learning materials | [resources.md](references/resources.md) |
-
-## Core practices
-
-1. Validate that the project follows a modular pattern (CommonJS or Alloy).
-2. Ensure global listeners are removed and heavy objects are nulled during cleanup.
-3. Cache frequently accessed native properties to reduce bridge crossings.
-4. Use Hyperloop for specialized native functionality and handle casting and threading correctly.
-5. Use transactions for database work and manage image memory footprints.
-
-## Procedural rules
-
-- Always remove `Ti.App` and `Ti.Geolocation` listeners during controller cleanup.
-- Do not access `Ti.Platform` or `Ti.DisplayCaps` inside loops. Store values in local variables.
-- Concatenate Hyperloop selectors accurately (for example, `addAttribute:value:range:` → `addAttributeValueRange`).
-- Close result sets and database handles after every transaction block.
-
-## Response format
-
-When answering Titanium SDK questions:
-
-1. **Technical recommendation** — cite the specific TiDev best practice.
-2. **Optimized implementation** — provide modern ES6+ code.
-3. **Rationale** — briefly explain the performance or memory impact.
+- Confirm Classic versus Alloy source ownership before editing. Alloy generates `Resources/`; edit `app/` instead.
+- Pin SDK/module dependencies where reproducibility matters. Separate CLI requirements, SDK declarations and native-module compatibility.
+- A native module needs unpacking, declaration and a require. A JavaScript dependency must fit Titanium's actual runtime/API subset rather than assuming full Node.js or browser support.
+- Close SQLite cursors and database handles on success and failure. Await asynchronous work before closing resources.
+- Properties and encrypted JavaScript are not secure credential storage. Keep server secrets off the device.
+- Verify the final release manifest, privacy manifest placement, signing identity and actual exported artifact before submission.
+- For official guide examples use modern JavaScript, semicolons, braces and spaces. Preserve a regular function when callback behavior depends on its native `this` receiver.
 
 ## Related skills
 
-| Task | Use this skill |
-|---|---|
-| Alloy MVC concepts, controllers, models, data binding | `alloy-guides` |
-| Alloy CLI, `alloy.jmk`, `config.json`, debugging | `alloy-howtos` |
-| Titanium API lookup (Ti.UI, Ti.Network, modules) | `ti-api` |
+| Task | Skill |
+| --- | --- |
+| Alloy controllers, views, styles, models, collections and widgets | `alloy-guides` |
+| Alloy CLI, build configuration, debugging and localization | `alloy-howtos` |
+| Individual Titanium API properties, methods and event contracts | `ti-api` |
+| Media, notifications, maps, location and other native integrations | `ti-howtos` |
 | Native module dependency updates | `ti-module-update` |
