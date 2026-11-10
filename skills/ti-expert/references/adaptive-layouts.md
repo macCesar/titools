@@ -560,4 +560,4 @@ aapt2 dump xmltree --file AndroidManifest.xml <apk> | grep -A2 "E: activity"
 | Spacing | `left`/`top` as offset from previous sibling in horizontal/vertical |
 | Batch updates | `view.applyProperties({...})` to reduce bridge overhead |
 
-For detailed layout APIs, see the `ti-ui` skill's [layouts-and-positioning.md](../../ti-ui/references/layouts-and-positioning.md) and [orientation.md](../../ti-ui/references/orientation.md).
+For detailed layout APIs, see the `ti-ui` skill's [layouts-and-positioning.md](../../ti-ui/references/layouts-and-positioning.md) and the released [Window orientation API](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Window).

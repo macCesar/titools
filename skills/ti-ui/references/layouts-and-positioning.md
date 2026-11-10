@@ -1,476 +1,249 @@
-# Layouts, positioning, and view hierarchy
+# Layout & positioning
 
-<!-- TOC-START -->
-## Contents
+> The three layout modes, the two sizing constants, and the precedence order that decides which of your properties wins.
 
-- [Critical: platform-specific properties require modifiers](#critical-platform-specific-properties-require-modifiers)
-- [1. Units of measurement](#1-units-of-measurement)
-- [2. Positioning properties](#2-positioning-properties)
-- [3. Layout modes](#3-layout-modes)
-- [4. Auto-size behaviors](#4-auto-size-behaviors)
-- [5. Combining layouts](#5-combining-layouts)
-- [6. View hierarchy and zIndex](#6-view-hierarchy-and-zindex)
-- [7. Common layout patterns](#7-common-layout-patterns)
-- [8. Platform considerations](#8-platform-considerations)
-- [Best practices](#best-practices)
+- Source: https://titaniumsdk.com/docs/build/ui/layout
+- Written for Titanium SDK 13.4.0 and later.
+- This corpus documents Titanium SDK 13.4.1. Anything here that does not name a version describes 13.4.1.
+- Titanium is maintained by TiDev. The Appcelerator toolchain is retired: there is no `appc` CLI, no Appcelerator Studio and no hosted build service. The supported CLI is `titanium` on npm, invoked as `ti`.
 
-<!-- TOC-END -->
+---
 
-## Critical: platform-specific properties require modifiers
+Titanium positions a view from properties you set on it: `top`, `left`,
+`right`, `bottom`, `center`, `width`, `height`. Which of them apply depends on
+one property on the **parent**: its `layout`.
 
-Do not use `Ti.UI.iOS.*` or `Ti.UI.Android.*` properties without modifiers. It will break builds.
+There are three modes, and the default is the one people trip over.
 
-Example of the problem:
-```javascript
-// WRONG - Adds Ti.UI.iOS to Android project
-const win = Ti.UI.createWindow({
-  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT  // Fails on Android
-})
+## The three layout modes
+
+`composite` is the default. Children are pinned to the parent's edges, and a
+child with no positioning properties at all is centred.
+
+`vertical` stacks children top to bottom in the order you add them.
+
+`horizontal` places them left to right, wrapping onto a new row when they run
+out of width.
+
+```js
+const win = Ti.UI.createWindow({ backgroundColor: 'white' });
+
+const stack = Ti.UI.createView({
+  layout: 'vertical',
+  top: 40,
+  width: '80%',
+  height: Ti.UI.SIZE
+});
+
+stack.add(Ti.UI.createLabel({ text: 'First', top: 10 }));
+stack.add(Ti.UI.createLabel({ text: 'Second', top: 10 }));
+stack.add(Ti.UI.createLabel({ text: 'Third', top: 10 }));
+
+win.add(stack);
+win.open();
 ```
 
-Correct approaches:
+![Three parents side by side holding the same four coloured squares. Under composite only one square is visible, because all four are pinned to the same spot and the last one added is on top. Under vertical they stack in a column. Under horizontal they run left to right and wrap onto a second row.](https://titaniumsdk.com/docs/guides/layout-modes-ios.png)
 
-Option 1: TSS modifier (Alloy projects)
-```tss
-// CORRECT - Only adds to iOS
-"#mainWindow[platform=ios]": {
-  statusBarStyle: Ti.UI.iOS.StatusBar.LIGHT_CONTENT
+`layout` is set on the container, never on the child. A child cannot ask to be
+stacked; its parent decides.
+
+## Sizing: SIZE, FILL, and numbers
+
+`width` and `height` each take one of four kinds of value.
+
+| Value | Meaning |
+| ----- | ------- |
+| `Ti.UI.SIZE` | As large as the content needs, and no larger |
+| `Ti.UI.FILL` | As large as the parent allows |
+| A number | That many units. `120` is 120dp with the template's default unit |
+| A string | An explicit unit or a percentage: `'120dp'`, `'50%'` |
+
+A plain number is in whatever `ti.ui.defaultunit` says in `tiapp.xml`, which
+`ti create` sets to `dp`. Density-independent pixels, so `120` is the same
+physical size on any screen. Write `'120px'` if you really mean device pixels,
+which you rarely do.
+
+> [!IMPORTANT]
+> `Ti.UI.SIZE` on a container measures its **children**. A container with
+> `height: Ti.UI.SIZE` and no children is zero tall and invisible, which is the
+> usual reason a view you definitely added is nowhere on screen.
+
+### What a view does when you say nothing
+
+Leave `width` and `height` unset and each view falls back to its own default,
+which is `SIZE` for things that wrap content and `FILL` for things that own a
+region:
+
+| View | Default width | Default height |
+| ---- | ------------- | -------------- |
+| `Label`, `Button`, `Switch`, `ImageView` | SIZE | SIZE |
+| `ActivityIndicator`, `Picker` | SIZE | SIZE |
+| `TextField`, `TextArea`, `SearchBar` | FILL | SIZE |
+| `Slider`, `ProgressBar`, `Toolbar` | FILL | SIZE |
+| `ScrollView`, `ScrollableView`, `WebView` | FILL | FILL |
+| `ListView`, `TableView`, `TabGroup` | FILL | FILL |
+
+Read off the iOS layout code, where these are declared. Android reaches the
+same answers through each native widget's own measurement rather than a
+declared default, so treat the table as the shape of the behaviour and set
+`width` and `height` yourself wherever it matters.
+
+A plain `View` declares neither. Give it a size, or give it children and
+`Ti.UI.SIZE`.
+
+## Composite layout, and why your property was ignored
+
+In composite layout you can over-specify a view: `height`, `top`, `center` and
+`bottom` can all be set, and they cannot all be honoured. Rather than erroring,
+Titanium applies a fixed precedence and silently drops the rest.
+
+**Vertically the order is `height`, `top`, `center.y`, `bottom`.** The two
+highest-precedence properties you set are the two that win.
+
+| What you set | What happens |
+| ------------ | ------------ |
+| `height` and `top` | Positioned `top` from the parent's top, at that height. `center.y` and `bottom` ignored |
+| `height` and `center.y` | Centred on `center.y`, at that height. `bottom` ignored |
+| `height` and `bottom` | Positioned `bottom` from the parent's bottom, at that height |
+| `top` and `bottom` | Both edges pinned. **Height is whatever is left between them** |
+| `top` and `center.y` | Top edge pinned, centre pinned, height implied. `bottom` ignored |
+| `top` only | Pinned from the top, at the view's default height |
+| `bottom` only | Pinned from the bottom, at the view's default height |
+| none of them | Centred vertically, at the view's default height |
+
+Horizontally it works the same way, with the order `width`, `left`,
+`center.x`, `right`.
+
+That table is the answer to most "why is my view the wrong size" questions.
+Setting `top`, `bottom` **and** `height` does not stretch anything: `height`
+outranks `bottom`, so the view sits at the top with the height you asked for.
+Drop the `height` and the two pins size it.
+
+![Two panes side by side on an iPhone. In the left pane a blue view with top, bottom and height all set sits 100 points tall against the top of its grey parent, leaving the rest of the parent empty below it. In the right pane the same view with no height fills the parent, stopping 20 points short of each end.](https://titaniumsdk.com/docs/guides/layout-precedence-ios.png)
+
+## Vertical layout
+
+Children stack in the order added. A child's `top` is the gap above it and its
+`bottom` is the gap below, so the space between two children is the upper
+one's `bottom` plus the lower one's `top`.
+
+```js
+const win = Ti.UI.createWindow({ backgroundColor: 'white', layout: 'vertical' });
+
+win.add(Ti.UI.createLabel({ text: 'Title', top: 60, left: 20 }));
+win.add(Ti.UI.createLabel({ text: 'Subtitle', top: 8, left: 20 }));
+win.add(Ti.UI.createView({ height: 1, width: Ti.UI.FILL, top: 16, backgroundColor: '#ccc' }));
+
+win.open();
+```
+
+Horizontally each child still behaves as it would in composite layout, which is
+why `left: 20` works above and why a child with no horizontal properties is
+centred.
+
+> [!WARNING]
+> A child with `height: Ti.UI.FILL` in a vertical layout takes everything left
+> over, and every child after it gets nothing. One `FILL` child per vertical
+> container, and put it last unless you mean to push the rest off screen.
+
+## Horizontal layout
+
+Children run left to right. **Wrapping is on by default**: when a child does
+not fit in the current row it starts a new one, and each row is as tall as its
+tallest child.
+
+```js
+const tags = Ti.UI.createView({
+  layout: 'horizontal',
+  top: 40,
+  width: 240,
+  height: Ti.UI.SIZE
+});
+
+for (const name of ['alloy', 'android', 'ios', 'layout', 'listview']) {
+  tags.add(Ti.UI.createLabel({
+    text: name,
+    width: Ti.UI.SIZE,
+    height: Ti.UI.SIZE,
+    left: 4,
+    right: 4,
+    top: 4,
+    bottom: 4,
+    color: '#fff',
+    backgroundColor: '#4a4a4a'
+  }));
 }
 ```
 
-Option 2: conditional code
-```javascript
-if (OS_IOS) {
-  $.mainWindow.statusBarStyle = Ti.UI.iOS.StatusBar.LIGHT_CONTENT
-}
-```
+![Five dark chips labelled alloy, android, ios, layout and listview. The first four fill the row and listview has wrapped onto a second row below them.](https://titaniumsdk.com/docs/guides/horizontal-wrap-ios.png)
 
-Common platform-specific properties that require modifiers:
-- iOS: `statusBarStyle`, `modalStyle`, `modalTransitionStyle`, any `Ti.UI.iOS.*`
-- Android: `actionBar` config, any `Ti.Android.*` constant
+**Give each child a size.** Set `width: Ti.UI.SIZE` when a chip should wrap its
+text. Do not rely on an unspecified width: defaults vary by view and platform,
+as the sizing table above explains. Explicit sizing makes the intended row layout clear.
 
-## 1. Units of measurement
+Within a row, a child with neither `top` nor `bottom` is centred; with one of
+them it aligns to that edge with that much padding; with both, the two are
+treated as padding.
 
-### Available units
+Set `horizontalWrap: false` and the children stay on one line instead, with
+`left` and `right` acting as the gaps between them.
 
-| Unit         | Description                | Platform notes                           |
-| ------------ | -------------------------- | ---------------------------------------- |
-| `dp` / `dip` | Density-independent pixels | Recommended for cross-platform           |
-| `px`         | Absolute pixels            | Use sparingly, varies by density         |
-| `%`          | Percentage of parent size  | Relative to parent dimension             |
-| `mm`         | Millimeters                | Absolute physical unit                   |
-| `cm`         | Centimeters                | Absolute physical unit                   |
-| `in`         | Inches                     | Absolute physical unit                   |
-| `system`     | Platform default           | iOS = dip, Android = px (unless changed) |
+## Overlap and stacking
 
-### Density-independent pixels (dp)
+Composite layout lets children overlap. Later children draw on top of earlier
+ones, and `zIndex` overrides that for siblings:
 
-Android: `actual pixels = dip * (screen density) / 160`
-- mdpi (160 dpi): 1dp = 1px
-- hdpi (240 dpi): 1dp = 1.5px
-- xhdpi (320 dpi): 1dp = 2px
-- xxhdpi (480 dpi): 1dp = 3px
-
-iOS: effectively `1dip = 1px` on non-retina, `1dip = 2px` on retina.
-
-### Default units in tiapp.xml
-
-You can set app-wide default units via `ti.ui.defaultunit` in `tiapp.xml`:
-
-```xml
-<property name="ti.ui.defaultunit" type="string">dp</property>
-```
-
-When set, numeric values without explicit units (for example, `width: 100`) use this unit instead of the platform default.
-
-### Platform coordinate grid differences
-
-iOS uses a density-independent grid. Android uses a pixel-based grid by default. That is why setting `ti.ui.defaultunit` to `dp` is the safest cross-platform choice.
-
-### Best practice
-
-Use `dp` for consistent sizing across devices:
-
-```javascript
-// GOOD
-const view = Ti.UI.createView({
-  width: '100dp',
-  height: '50dp'
-});
-
-// AVOID (platform-dependent)
-const view = Ti.UI.createView({
-  width: 100,  // pixels - varies by device
-  height: 50
-});
-```
-
-## 2. Positioning properties
-
-### Edge-based positioning
-
-Relative to parent edges:
-
-```javascript
-const view = Ti.UI.createView({
-  top: 20,      // 20dp from top
-  left: 30,     // 30dp from left
-  bottom: 10,   // 10dp from bottom (height = parent.height - 30)
-  right: 15     // 15dp from right (width = parent.width - 45)
-});
-```
-
-### Center positioning
-
-```javascript
-const view = Ti.UI.createView({
-  center: { x: 50, y: 50 }  // 50% from parent's top-left
-});
-```
-
-### Dynamic sizing
-
-Omit a dimension to calculate dynamically:
-
-```javascript
-const view = Ti.UI.createView({
-  top: 10,
-  bottom: 10,  // Height = parent.height - 20
-  left: 0,
-  right: 0      // Width = parent.width
-});
-```
-
-## 3. Layout modes
-
-### Composite (default)
-
-Views stack on top of each other:
-
-```javascript
-const container = Ti.UI.createView({
-  layout: 'composite'  // default
-});
-
-const view1 = Ti.UI.createView({
+```js
+const badge = Ti.UI.createView({
+  width: 20,
+  height: 20,
+  borderRadius: 10,
   backgroundColor: 'red',
-  top: 10, left: 10, width: 100, height: 100
-});
-
-const view2 = Ti.UI.createView({
-  backgroundColor: 'blue',
-  top: 20, left: 20, width: 100, height: 100
-});
-
-container.add(view1);
-container.add(view2);
-// view2 appears on top of view1
-```
-
-Stacking order is controlled by:
-- Addition order
-- `zIndex` (higher is on top)
-
-Android limitation: `zIndex` is only supported by composite layouts. It is ignored by horizontal and vertical layouts.
-
-### Vertical layout
-
-Children stack vertically:
-
-```javascript
-const container = Ti.UI.createView({
-  layout: 'vertical',
-  height: Ti.UI.SIZE  // Grows to fit children
-});
-
-const label1 = Ti.UI.createLabel({
-  text: 'First',
-  height: Ti.UI.SIZE
-});
-
-const label2 = Ti.UI.createLabel({
-  text: 'Second',
-  top: 10,  // Offset from previous sibling's bottom
-  height: Ti.UI.SIZE
-});
-
-container.add(label1);
-container.add(label2);
-// label2 appears below label1 with 10dp gap
-```
-
-Vertical layout rules:
-- `top` is an offset from the previous sibling.
-- Children are horizontally centered by default.
-- Set `horizontalWrap: false` to prevent wrapping.
-
-### Horizontal layout
-
-Children line up left to right:
-
-```javascript
-const container = Ti.UI.createView({
-  layout: 'horizontal',
-  width: Ti.UI.FILL,
-  height: Ti.UI.SIZE
-});
-
-const view1 = Ti.UI.createView({
-  width: 100, height: 50,
-  backgroundColor: 'red'
-});
-
-const view2 = Ti.UI.createView({
-  width: 100, height: 50,
-  left: 10,  // Offset from previous sibling's right
-  backgroundColor: 'blue'
-});
-
-container.add(view1);
-container.add(view2);
-// view2 appears to right of view1 with 10dp gap
-```
-
-Horizontal layout rules:
-- `left` is an offset from the previous sibling.
-- `horizontalWrap: true` (default) moves to the next row if needed.
-- `horizontalWrap: false` keeps items on one row and may overflow.
-
-## 4. Auto-size behaviors
-
-### Ti.UI.SIZE
-
-View sizes to fit its content:
-
-```javascript
-const label = Ti.UI.createLabel({
-  text: 'Hello World',
-  width: Ti.UI.SIZE,   // Width fits text
-  height: Ti.UI.SIZE  // Height fits text
+  top: -6,
+  right: -6,
+  zIndex: 1
 });
 ```
 
-### Ti.UI.FILL
+Negative pins put a child outside its parent's bounds, which is how a badge
+sits on a corner. On Android a child drawn outside its parent may be clipped,
+so give the parent enough room rather than relying on the overflow.
 
-View fills remaining space in parent:
+## Reading a size back
 
-```javascript
-const view = Ti.UI.createView({
-  width: Ti.UI.FILL,   // Fill remaining width
-  height: Ti.UI.FILL   // Fill remaining height
-});
-```
+`width` and `height` are what you asked for, not what happened. A view whose
+width is `Ti.UI.FILL` reports `Ti.UI.FILL`, not a number. For the measured
+result use `rect` or `size`, and only after the view has been laid out:
 
-### Component defaults
-
-| SIZE components | FILL components | Mixed                                  |
-| --------------- | --------------- | -------------------------------------- |
-| Button          | Window          | TableViewRow (FILL width, SIZE height) |
-| Label           | View            | Slider (FILL width, SIZE height)       |
-| ImageView       | ScrollView      | Toolbar (FILL width, SIZE height)      |
-| Switch          | WebView         |                                        |
-| TextField       | ScrollableView  |                                        |
-
-### ScrollView auto-sizing
-
-When a `ScrollView` has `contentWidth` or `contentHeight` set to `"auto"` or `Ti.UI.SIZE`, its content area grows based on the bottom and right offsets of its children:
-
-```javascript
-const scrollView = Ti.UI.createScrollView({
-  contentWidth: 'auto',
-  contentHeight: 'auto',
-  layout: 'vertical'
-});
-```
-
-### Auto-size in layout modes
-
-In vertical and horizontal layouts:
-- `FILL` takes into account previously added siblings.
-- Example: First child `FILL`, second child `SIZE` means the second gets remaining space.
-
-## 5. Combining layouts
-
-### Nested layouts
-
-```javascript
-const outerContainer = Ti.UI.createView({
-  layout: 'vertical',
-  width: Ti.UI.FILL,
-  height: Ti.UI.FILL
-});
-
-// Top section
-const header = Ti.UI.createView({
-  layout: 'horizontal',
-  height: 50,
-  backgroundColor: 'blue'
-});
-
-const title = Ti.UI.createLabel({
-  text: 'Header',
-  color: 'white'
-});
-
-const button = Ti.UI.createButton({
-  title: 'Menu'
-});
-
-header.add(title);
-header.add(button);
-
-// Content area
-const content = Ti.UI.createView({
-  layout: 'composite',
-  backgroundColor: 'white',
-  height: Ti.UI.FILL
-});
-
-outerContainer.add(header);
-outerContainer.add(content);
-```
-
-## 6. View hierarchy and zIndex
-
-### Stacking order
-
-Views added later appear on top:
-
-```javascript
-const view1 = Ti.UI.createView({
-  backgroundColor: 'red',
-  width: 100, height: 100
-});
-
-const view2 = Ti.UI.createView({
-  backgroundColor: 'blue',
-  width: 100, height: 100,
-  top: 50, left: 50
-});
-
-win.add(view1);
-win.add(view2);  // view2 appears on top of view1
-```
-
-### The `size` property and `postlayout` event
-
-The read-only `size` property gives the width and height of a view after layout. It is accurate only after `postlayout` fires:
-
-```javascript
-const view = Ti.UI.createView({ width: '50%', height: Ti.UI.SIZE });
-
+```js
 view.addEventListener('postlayout', () => {
-  Ti.API.info(`Actual size: ${view.size.width}x${view.size.height}`);
+  Ti.API.info(`${view.rect.width} x ${view.rect.height}`);
 });
 ```
 
-### Explicit zIndex
+`postlayout` fires whenever the view is measured, which is more than once. If
+you only want the first, remove the listener inside it.
 
-```javascript
-const view1 = Ti.UI.createView({
-  backgroundColor: 'red',
-  zIndex: 1,
-  width: 100, height: 100
-});
+## Common mistakes
 
-const view2 = Ti.UI.createView({
-  backgroundColor: 'blue',
-  zIndex: 2,  // Higher = on top
-  width: 100, height: 100,
-  top: 50, left: 50
-});
+**A container sized `Ti.UI.SIZE` with no children** is zero by zero. Nothing is
+wrong with the children you add later; they are inside a box with no area.
 
-win.add(view2);
-win.add(view1);  // Still below view2 due to zIndex
-```
+**`top` and `bottom` with a `height`** does not stretch. See the precedence
+table above.
 
-## 7. Common layout patterns
+**Two `Ti.UI.FILL` children in a vertical layout.** The first takes the
+remaining space and the second has none.
 
-### Full-screen overlay
+**Setting `layout` on the child.** It controls that view's own children, not
+where it sits in its parent.
 
-```javascript
-const overlay = Ti.UI.createView({
-  backgroundColor: 'rgba(0, 0, 0, 0.7)',
-  width: Ti.UI.FILL,
-  height: Ti.UI.FILL,
-  zIndex: 999  // Ensure on top
-});
+**A percentage against a `Ti.UI.SIZE` parent.** `'50%'` of a parent that is
+sizing itself to its children is not a number anyone can compute, and the
+result is not useful. Give the parent a real size first.
 
-const dialog = Ti.UI.createView({
-  backgroundColor: 'white',
-  width: 300,
-  height: 200,
-  borderRadius: 10
-});
+## Next
 
-overlay.add(dialog);
-win.add(overlay);
-```
-
-### Centered content
-
-```javascript
-const container = Ti.UI.createView({
-  width: Ti.UI.FILL,
-  height: Ti.UI.FILL
-});
-
-const centered = Ti.UI.createView({
-  width: 200,
-  height: 100,
-  backgroundColor: 'blue',
-  center: { x: '50%', y: '50%' }
-});
-
-container.add(centered);
-```
-
-### Bottom-aligned content
-
-```javascript
-const footer = Ti.UI.createView({
-  backgroundColor: 'gray',
-  height: 50,
-  bottom: 0  // Anchor to bottom
-});
-```
-
-### Percentage-based layout
-
-```javascript
-const leftPanel = Ti.UI.createView({
-  width: '30%',
-  height: Ti.UI.FILL,
-  backgroundColor: 'lightgray'
-});
-
-const rightPanel = Ti.UI.createView({
-  width: '70%',
-  height: Ti.UI.FILL,
-  left: '30%',  // Starts where left ends
-  backgroundColor: 'white'
-});
-```
-
-## 8. Platform considerations
-
-### Android density-specific resources
-
-Place resources in appropriate directories:
-- `res-ldpi`, `res-mdpi`, `res-hdpi`, `res-xhdpi`, `res-xxhdpi`
-
-### iOS asset catalog
-
-PNG or JPEG images with naming conventions:
-- `foo.png` for non-retina
-- `foo@2x.png` for retina
-- `foo@3x.png` for iPhone Plus sizes
-
-## Best practices
-
-1. Use `dp` units for cross-platform consistency.
-2. Prefer `Ti.UI.FILL` over percentages for containers.
-3. Avoid `Ti.UI.SIZE` in ListViews for performance.
-4. Use layout modes instead of manual positioning when possible.
-5. Test on multiple devices with different screen sizes.
-6. Use `zIndex` sparingly and rely on add order where possible.
+[Lists and tables](listviews-and-performance.md) covers the two scrolling list types
+and which to use.
