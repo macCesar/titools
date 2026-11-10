@@ -1,160 +1,82 @@
-# Alloy Widgets
+# Alloy widgets
 
-## Introduction
+A widget packages views, styles, controllers, assets and a manifest for reuse between apps. Use `<Require>` to reuse part of one app; use a widget for a component shared across apps.
 
-Widgets are self-contained components that can be easily dropped into Alloy-powered Titanium projects. They were conceived as a way to reuse code in multiple applications or to be used multiple times in the same application. Widgets have their own views, controllers, styles and assets and are laid out the same as the `app` directory in the Alloy project.
+## Create and declare
 
-## Using Widgets
-
-See [Importing Widgets](./VIEWS_XML.md#importing-widgets) for more information on using widgets in your project.
-
-## Creating Widgets
-
-Widgets should be built in their own directory in the Alloy project's `app/widgets/` directory. Widgets have their own views, controllers, models, styles and assets and are laid out the same as the `app` directory in the Alloy project. Also, since widgets are self-contained, they should not reference any code or assets not within its path, except for internationalization and localization files, which are located in the `i18n` folder.
-
-## Assets and Libs
-
-For any files in the `assets` or `libs` folder, use the `WPATH()` macro to automatically map the path relative from the widget's root folder.
-
-For example, if you have a library located at `app/widgets/foo/lib/helper.js`, to require it:
-
-```javascript
-require(WPATH('helper'))
+```bash
+alloy generate widget com.example.rating
 ```
 
-If you have an image located at `app/widgets/foo/assets/images/foo.png`, to reference it:
+The default controller is named `widget`, with these files under `app/widgets/com.example.rating/`:
 
-```javascript
-WPATH('images/foo.png')
+```text
+controllers/widget.js
+views/widget.xml
+styles/widget.tss
+assets/
+widget.json
 ```
-
-## Configuration
-
-Widgets have their own configuration file called `widget.json` located in the widget's root directory.
-
-Example **widget.json**:
 
 ```json
 {
-    "id": "com.example.widget",
-    "name": "My Widget",
-    "description": "A sample widget",
-    "author": "Your Name",
-    "version": "1.0",
-    "platform": [
-        "android",
-        "ios"
-    ],
-    "min_alloy": "1.0"
+    "id": "com.example.rating",
+    "name": "rating",
+    "version": "1.0.0",
+    "platforms": "android,ios"
 }
 ```
 
-## Controllers
+The reverse-DNS ID must be unique across the app's widgets. Declare it in `app/config.json`, including when copying its directory from another project:
 
-The main controller is called `widget.js` instead of `index.js`.
-
-To use another view-controller besides `widget.js`/`widget.xml`, use the `Widget.createController(controller_name, [params])` method to create a new instance and the `getView()` method to access the Titanium proxy object.
-
-**app/widgets/foo/controllers/widget.js**
-
-```javascript
-const button = Widget.createController('button').getView();
-$.widget.add(button);
-```
-
-All methods in the widget controller are private unless you prefix the method with `$`, which makes it accessible to the Alloy project and other widgets.
-
-**app/widgets/foo/controllers/widget.js**
-
-```javascript
-$.init = args => {
-    $.button.title = args.title || 'Yes';
-    $.button.color = args.color || 'black';
-    const message = args.message || 'Hello World';
+```json
+{
+    "dependencies": {
+        "com.example.rating": "1.0.0"
+    }
 }
 ```
 
-Then, in the Alloy project:
+The generator creates a dependency; inspect it for the actual generated version. A declaration does not fetch files. Copy the widget directory or populate `app/widgets` with a build step, including one from an npm package. The current guide provides no registry workflow.
 
-```javascript
-$.foo.init({title:'Yes', color:'gray', message:'I pity the foo.'});
-```
-
-## Models
-
-Use models the same way as with a regular Alloy project except to create a model or collection inside a widget controller, use the `Widget.createModel(model_name, [params])` and `Widget.createCollection(model_name, [params])` methods, respectively.
-
-You can also use the `Model` and `Collection` tags in widget views.
-
-## Styles
-
-The main TSS file is called `widget.tss` instead of `index.tss`.
-
-## Themes
-
-Widget themes work the same as project themes except for the placement of the files. Inside your theme folder (`app/themes/<THEME_NAME>`), create `widgets/<WIDGET_NAME>` folders, where `<THEME_NAME>` is the name of the theme and `<WIDGET_NAME>` is the name of the widget. When using a theme, the files in these folders replace the files in the widget's folders.
-
-Create two folders, `assets` and `styles`, to place your custom images and styles for your widget, respectively.
-
-```
-app
-├── themes
-│   └── mytheme
-│       └── widgets
-│           └── mywidget
-│               ├── assets
-│               │   ├── ios
-│               │   │   └── star_half.png
-│               │   ├── star.png
-│               │   └── star_off.png
-│               └── styles
-│                   ├── ios
-│                   │   └── star.tss
-│                   └── star.tss
-└── widgets
-    └── mywidget
-        ├── assets
-        │   ├── star.png
-        │   ├── star_half.png
-        │   └── star_off.png
-        ├── controllers
-        │   ├── star.js
-        │   └── widget.js
-        ├── styles
-        │   ├── star.tss
-        │   └── widget.tss
-        ├── views
-        │   ├── star.xml
-        │   └── widget.xml
-        └── widget.json
-```
-
-To use a theme, in the project's `config.json` file, add the `theme` key with the name of the theme folder as the value.
-
-## Views
-
-The main view is called `widget.xml` instead of `index.xml`.
-
-Specifying the `id` attribute in the XML markup components will make it easier to access and override Titanium object properties. For example, if you have a Button object in a widget view with id `button` and in the Alloy project the widget id is `foo`:
-
-```javascript
-Ti.API.info("button state: " + $.foo.button.enabled);
-```
-
-For widgets that have multiple view-controllers, to include a widget's view-controller in another widget's view, use the `Widget` tag and assign the `name` attribute with the name of the view-controller minus the file extension. Since Alloy 1.5.0, if you omit the `src` attribute, Alloy assumes you are referencing the current widget. For Alloy 1.4.x and prior, you need to assign the `src` attribute to the widget's name.
-
-**app/widgets/foo/views/widget.xml**
+## Use and communicate
 
 ```xml
 <Alloy>
-  <View>
-    <Widget src="foo" name="button"/>
-  </View>
+    <Window>
+        <Widget src="com.example.rating" id="rating" score="4" />
+    </Window>
 </Alloy>
 ```
 
-## Widgets
+The widget reads `$.args.score`. Or construct it from JavaScript:
 
-Widgets can also contain other widgets. Follow the same directions from [Importing Widgets](./VIEWS_XML.md#importing-widgets) except the widget's configuration file is called `widget.json` instead of `config.json`.
+```javascript
+const rating = Alloy.createWidget('com.example.rating', { score: 4 });
+$.index.add(rating.getView());
+```
 
-To create a widget inside a widget controller, use the `Widget.createWidget(widget_name, [controller_name], [params])` method.
+The containing view must provide the `$.index` Window. Expose methods with `exports`, and send events with `$.trigger()`:
+
+```javascript
+// Widget controller; its view provides a Label with id="stars".
+exports.setScore = (score) => {
+    $.stars.text = '*'.repeat(score);
+};
+```
+
+```javascript
+// App controller, after constructing rating.
+rating.setScore(4);
+rating.on('changed', (event) => {
+    Ti.API.info(event.score);
+});
+```
+
+The widget emits `$.trigger('changed', { score: 3 })` when its state changes, after listeners have been attached. Events emitted during construction can precede the caller's subscription. Clean up subscriptions with their owning controller.
+
+## Isolation and styling
+
+Keep widget styles and assets with the component and pass values such as `tint` in arguments rather than coupling it to one app's `Alloy.Globals`. The published guide describes stylesheet isolation, but released Alloy 3.0.1 includes matching app `app.tss` rules in widget styles: do not rely on a widget being shielded from global selectors. Use explicit widget styles and deliberate configuration to control its appearance. Keep assets in the widget's own directory; verify exact asset resolution for the target Alloy version when integrating an asset-heavy widget.
+
+Source: [widgets](https://titaniumsdk.com/docs/alloy/widgets.md).
