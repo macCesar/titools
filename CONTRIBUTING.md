@@ -1,6 +1,6 @@
 # Contributing to TiTools
 
-TiTools distributes thirteen Titanium SDK skills, a research agent and slash
+TiTools distributes fourteen Titanium SDK skills, a research agent and slash
 commands through an npm CLI and a Claude Code marketplace plugin. Product
 content lives in `skills/`, `agents/` and `commands/`; CLI source lives in
 `bin/` and `lib/`. Both channels use this source tree.

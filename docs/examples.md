@@ -98,3 +98,12 @@ existing components, then check scene input, native audio ownership and cleanup
 using the appropriate references."
 
 See [how the knowledge index works](knowledge-index.md) for reference discovery.
+
+
+## Native module releases — ti-create-release
+
+- "Prepare an iOS-only release of this Titanium module using its existing tag and build conventions."
+- "Publish the agreed Android/iOS ZIPs from the verified source commit and check the module's discovery topics and description."
+- "Review this fork's release readiness without publishing or changing GitHub metadata."
+
+Use [the release skill](../skills/ti-create-release/SKILL.md) for artifact provenance, authorized publication and directory discovery. App-store releases use their own workflows.

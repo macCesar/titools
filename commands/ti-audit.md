@@ -29,6 +29,8 @@ Native-module audit:
 
 13. If the project declares `ti.admob.unified`/mediation complements or uses this module, invoke `ti-admob-unified` — verify public release/platform requirements, consent/request eligibility/initialization, ATT status versus permission, test IDs, independent banner lifecycle and deliberate fullscreen ownership. Check rewarded interstitial's reward introduction, visible Skip, reward-event credit and pending-context cancellation. Use the production guide for app IDs, app-ads.txt, privacy entry points and account readiness. Separate linking, Google test ads, selected-provider delivery and physical acceptance; preserve game frequency and pause/audio/input policy.
 
+For a native-module release-readiness review, consult `ti-create-release` in read-only mode to check source/artifact provenance and discovery metadata. An audit does not authorize publishing a release or changing GitHub metadata.
+
 If a conditional skill does not apply, record it as `not applicable` with the detected reason instead of inventing findings from it.
 
 Report findings grouped by severity: critical, warning, info.

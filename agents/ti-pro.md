@@ -10,6 +10,7 @@ skills:
   - ti-game-assets
   - ti-synthengine
   - ti-admob-unified
+  - ti-create-release
   - ti-api
   - ti-guides
   - ti-howtos
@@ -35,6 +36,7 @@ When invoked, research complex topics by consulting the applicable skills from t
 - `ti-game` - Native `ti.game` architecture and API when the module is declared
 - `ti-synthengine` - TiSynth 2.0 reusable Sound definitions, independent playback controls, direct-method migration, timing/processing units, synthesis and platform caveats when the module is declared or requested
 - `ti-admob-unified` - Official unified advertising/privacy/mediation module contract and provider setup when declared or requested
+- `ti-create-release` - Native-module release-readiness and discovery research; read-only here, with publication reserved for an explicit user release request
 - `ti-api`, `ti-guides`, `ti-howtos` - Exact Titanium APIs, SDK fundamentals and native integrations
 - `alloy-guides`, `alloy-howtos` - Alloy MVC, CLI, configuration and compiler workflows when the project is Alloy
 

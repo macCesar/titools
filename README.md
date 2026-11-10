@@ -6,7 +6,7 @@
 
 </div>
 
-TiTools is a Titanium SDK toolkit for AI coding assistants. It ships 13 skills — 8 specialist skills (`ti-reuse-first`, `ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-game-assets`, `ti-synthengine`, `ti-admob-unified`) plus 5 documentation-mirror skills (`ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`) — a research agent, and reference files covering reuse and simplification, Titanium architecture, API reference, native how-tos, Alloy MVC, PurgeTSS styling and resource automation, UI/UX patterns, 2D games, and native sound synthesis.
+TiTools is a Titanium SDK toolkit for AI coding assistants. It ships 14 skills — 9 specialist skills (`ti-reuse-first`, `ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-game-assets`, `ti-synthengine`, `ti-admob-unified`, `ti-create-release`) plus 5 documentation-mirror skills (`ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`) — a research agent, and reference files covering reuse and simplification, Titanium architecture, API reference, native how-tos, Alloy MVC, PurgeTSS styling and resource automation, UI/UX patterns, 2D games, and native sound synthesis.
 
 The reference files are maintained against official documentation whenever an official source exists, so the assistant can retrieve current framework behavior instead of guessing from generic training data. As of v5.0.0 those sources are the Titanium SDK's own API definitions and the rewritten guides at [titaniumsdk.com](https://titaniumsdk.com). [Where the references come from](#where-the-references-come-from) has the detail.
 
@@ -36,7 +36,7 @@ The fastest way to get started with Claude Code. One command to add the marketpl
 ```
 
 What you get:
-- All 13 TiTools skills (`ti-reuse-first`, `ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-game-assets`, `ti-synthengine`, `ti-admob-unified`, `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`)
+- All 14 TiTools skills (`ti-reuse-first`, `ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-game-assets`, `ti-synthengine`, `ti-admob-unified`, `ti-create-release`, `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos`)
 - ti-pro research agent
 - Session hook that auto-detects Titanium projects (`tiapp.xml`, Alloy, PurgeTSS, `ti.game`, `ti.synthengine`)
 - Slash commands: `/ti-check`, `/ti-new-screen`, `/ti-audit`
@@ -70,7 +70,7 @@ claude   # or gemini, or codex
 ```
 
 What gets installed:
-- The 13 TiTools skills to `~/.agents/skills/`
+- The 14 TiTools skills to `~/.agents/skills/`
 - ti-pro agent for Claude Code
 - Platform symlinks for Claude Code (Gemini CLI and Codex CLI auto-discover from `~/.agents/skills/` — no symlinks needed)
 - Knowledge index in your project's `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`
@@ -174,6 +174,7 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 | ti-game-assets   | Visual and sound assets             | Image generation/editing, synthesis variants, stereo placement, alpha cleanup, manifests, parallax and complete exports                                                                                                                                                                              |
 | ti-synthengine   | Sound design with `ti.synthengine`  | TiSynth 2.0 reusable Sound presets, independent playback controls, tones/chords, held notes, native repetitions/patterns, ADSR, FM, filters, binaural positioning, shared effects, variation, TypeScript and troubleshooting |
 | ti-admob-unified | Advertising, privacy and mediation  | Official `ti.admob.unified` guides, copy-ready library, banners/fullscreen, UMP/ATT and selected-provider configuration                                                                                                                                                                              |
+| ti-create-release | Native module releases | Build and verify ZIPs, follow repository release conventions, publish authorized GitHub releases and configure directory discovery |
 | ti-api           | Titanium API lookup     | Looking up properties, methods, events                                                                                                                                                                                                                                                               |
 | ti-guides        | SDK fundamentals                    | tiapp.xml, Hyperloop, distribution, JDK/Xcode compatibility, release notes                                                                                                                                                                                                                           |
 | ti-howtos        | Native feature integration          | Location, push, media, platform APIs                                                                                                                                                                                                                                                                 |
@@ -181,7 +182,7 @@ The knowledge index is based on the latest Titanium SDK documentation. If your p
 | alloy-howtos     | Alloy CLI, configuration, debugging | alloy.jmk, config.json, build constants and debugging                                                                                                                                                                                                                                                              |
 
 Notes:
-- The first eight (`ti-reuse-first`, `ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-game-assets`, `ti-synthengine`, `ti-admob-unified`) are specialist workflow skills reflecting TiTools' Titanium conventions and native-module contracts.
+- The first nine (`ti-reuse-first`, `ti-expert`, `purgetss`, `ti-ui`, `ti-game`, `ti-game-assets`, `ti-synthengine`, `ti-admob-unified`, `ti-create-release`) are specialist workflow skills reflecting TiTools' Titanium conventions and native-module contracts.
 - `ti-reuse-first` runs before the others. It asks whether a thing needs to exist and what already does it — a search order that stops at the first rung that holds — and sweeps an existing `app/` for near-identical controllers, single-listener events, wrappers around one call, and layout recomputed in JavaScript. It is deliberately two-sided: it says when adding a module or a Widget is the right answer, so the bias does not simply invert.
 - `ti-game` documents the `ti.game` native module (2D sprite engine using OpenGL ES 2.0 on Android and Metal on iPhone, iPad and Mac Catalyst). Its API reference was verified against the module source and records the reviewed upstream commit and fork documentation snapshot; it applies to Alloy and Classic projects alike and does not depend on PurgeTSS.
 - `ti-synthengine` translates sound requests into checked JavaScript for published Android/iOS `ti.synthengine` 2.0.0. It covers reusable Sound definitions, independent held/repetition/pattern controls, atomic preset edits, temporary overrides, processing units and migration from supported direct methods. Practical references, curated recipes, runnable examples and TypeScript declarations support implementation and troubleshooting.
@@ -224,14 +225,14 @@ In addition to skills, this repository includes sub-agents for Claude Code. Sub-
 
 ### ti-pro
 
-Deep-dive research specialist that can combine the complete 13-skill TiTools catalog.
+Deep-dive research specialist that can combine the complete 14-skill TiTools catalog.
 
 | Aspect           | Details                                     |
 | ---------------- | ------------------------------------------- |
 | Location         | `~/.claude/agents/ti-pro.md`                |
 | Model            | Sonnet (comprehensive analysis)             |
 | Tools            | Read, Grep, Glob, Bash                      |
-| Preloaded Skills | All 13 skills registered in `lib/config.js` |
+| Preloaded Skills | All 14 skills registered in `lib/config.js` |
 
 When to use the agent vs skills:
 
@@ -273,7 +274,7 @@ TiTools provides slash commands for common tasks. Both channels ship them: the p
 These commands automatically invoke the relevant skills:
 - `/ti-check` reads `tiapp.xml`, validates declared native modules, and reports project health
 - `/ti-new-screen` uses `ti-expert` + `purgetss` to create properly structured files
-- `/ti-audit` routes all 13 skills: the reuse sweep first, core Titanium checks always, Alloy/PurgeTSS checks when detected, integration how-tos when used, `ti-game-assets` checks for game asset workflows, and `ti-game` / `ti-synthengine` / `ti-admob-unified` checks when those modules are declared
+- `/ti-audit` routes all 14 skills: the reuse sweep first, core Titanium checks always, Alloy/PurgeTSS checks when detected, integration how-tos when used, `ti-game-assets` checks for game asset workflows, and `ti-game` / `ti-synthengine` / `ti-admob-unified` checks when those modules are declared
 
 ---
 
@@ -335,11 +336,12 @@ Why this matters:
 | Whether to build it at all | `ti-reuse-first`, first                                                     |
 | Architecture and UI        | `ti-expert`, `ti-ui`, `purgetss` when configured                            |
 | Game assets                | `ti-game-assets` for visual and sound creation, preparation and integration |
+| Native module releases     | `ti-create-release` when preparing or publishing a module release |
 | Native modules             | `ti-game`, `ti-synthengine`, `ti-admob-unified` when declared or requested  |
 | Exact SDK/API guidance     | `ti-api`, `ti-guides`, `ti-howtos`                                          |
 | Alloy MVC and tooling      | `alloy-guides`, `alloy-howtos` for Alloy projects                           |
 
-All thirteen ship with TiTools; no second skill package is required.
+All fourteen ship with TiTools; no second skill package is required.
 
 ---
 
@@ -683,7 +685,7 @@ Behavior depends on where you run it:
 | With `--local` flag        | Installs skills locally to `./.agents/skills/` in the current project |
 
 What it does:
-- Installs the 13 TiTools skills (global or local depending on context)
+- Installs the 14 TiTools skills (global or local depending on context)
 - Installs ti-pro agent for Claude Code
 - Installs the `/ti-check`, `/ti-new-screen` and `/ti-audit` slash commands into `~/.claude/commands/`
 - Detects installed AI platforms and lets you choose which to link (only Claude Code needs platform symlinks; Gemini CLI and Codex CLI auto-discover from `~/.agents/skills/`)
@@ -862,6 +864,7 @@ Specialist skills such as PurgeTSS, native games and synthesis retain their decl
 | ti-game-assets   | Visual and Sound Assets       | 10 guides and a manifest example; alpha and contract validation scripts                                                                                                                              |
 | ti-admob-unified | Unified Advertising           | 20 Markdown references including production, rewarded interstitial, mediation parity, integration library guidance, provenance and game monetization; source/hash checks and official example assets |
 | ti-synthengine   | Native Sound Synthesis        | TiSynth 2.0 Sound interface and migration, native parameter reference, practical sound design/recipes, runnable example and TypeScript declarations |
+| ti-create-release | Native Module Releases | Release workflow plus current module-directory discovery reference |
 | ti-api           | Titanium API                  | 20 references for core/platform APIs and native modules                                                                                                                                              |
 | ti-guides        | SDK Fundamentals              | 12 current references for setup, configuration, CLI and distribution                                                                                                                                         |
 | ti-howtos        | Native Integrations           | 9 current references for platform features and integration workflows                                                                                                                                        |

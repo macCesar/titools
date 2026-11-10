@@ -25,7 +25,7 @@ and generating an index in a consuming app are separate operations.
 
 ## Choose the relevant skills
 
-The catalog contains thirteen public skills:
+The catalog contains fourteen public skills:
 
 | Task | Skill |
 | --- | --- |
@@ -37,6 +37,7 @@ The catalog contains thirteen public skills:
 | Visual and sound asset production | `ti-game-assets` |
 | Native synthesis | `ti-synthengine` |
 | Unified advertising | `ti-admob-unified` |
+| Native module releases and discovery | `ti-create-release` |
 | Exact Titanium APIs | `ti-api` |
 | SDK fundamentals | `ti-guides` |
 | Native integrations | `ti-howtos` |

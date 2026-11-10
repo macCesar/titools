@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- Bundle `ti-create-release` for any Titanium native-module maintainer: repository-specific release conventions, exact-commit ZIP verification, scoped GitHub publication and module-directory discovery metadata.
+
 - Rebuild Titanium/Alloy guide and UI skills from the current official documentation in `tidev/titaniumsdk.com`; retire archived-only and community-only material from these skills. Keep PurgeTSS and native-module sources independent.
 - Verify current guide examples against released SDK 13.4.1.GA and Alloy 3.0.1 contracts, correcting documented conflicts in configuration, hooks, widgets, notifications, platform defaults and distribution.
 - Link core API summaries to complete release-specific contracts and correct API return/platform metadata. Defer SDK 14-only guidance until its released contracts are available.
