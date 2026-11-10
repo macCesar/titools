@@ -1,158 +1,75 @@
-# Alloy configuration files reference
+# Alloy configuration
 
-## Build configuration file (alloy.jmk)
-
-Alloy exposes hooks to customize compilation with a JS Makefile (JMK).
-
-**Location:** `app/alloy.jmk`
-
-**Example:**
-```javascript
-task('pre:compile', (event, logger) => {
-    logger.showTimestamp = true;
-    logger.info(`building project at ${event.dir.project}`);
-});
-
-task('post:compile', (event, logger) => {
-    logger.info('compile finished!');
-});
-```
-
-### Compiler tasks (event names)
-
-| Task             | When Called                                               |
-| ---------------- | --------------------------------------------------------- |
-| `pre:load`       | After project clean, before copying assets to `Resources` |
-| `pre:compile`    | Before compiler starts                                    |
-| `post:compile`   | After compiler finishes, before exit                      |
-| `compile:app.js` | After compiling `app.js`, before writing to disk          |
-
-### Event object
-
-| Property       | Type    | Description                                                                                                                                                                                                         |
-| -------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `adapters`     | Array   | List of adapters                                                                                                                                                                                                    |
-| `alloyConfig`  | Object  | Compiler config: `platform` (android/ios), `file` (selective compile), `deploytype` (development/test/production), `beautify` (Boolean)                                                                             |
-| `autoStyle`    | Boolean | Autostyle enabled for project                                                                                                                                                                                       |
-| `dependencies` | Object  | Value of `dependencies` key in config.json                                                                                                                                                                          |
-| `dir`          | Object  | Directory paths: `home` (app path), `project` (root path), `resources`, `resourcesAlloy`, `assets`, `config`, `controllers`, `migrations`, `models`, `styles`, `themes`, `views`, `widgets`, `builtins`, `template` |
-| `sourcemap`    | Boolean | If `true`, generates mapping files to link generated Titanium files in `Resources` back to the source files in `app` for debugging.                                                                                 |
-| `theme`        | String  | Theme name being used                                                                                                                                                                                               |
-| `code`         | String  | *(compile:app.js only)* Contents of `app.js`                                                                                                                                                                        |
-| `appJSFile`    | String  | *(compile:app.js only)* Absolute path to `app.js`                                                                                                                                                                   |
-
-### Logger object
-
-The `logger` object controls compilation log output.
-
-#### Properties
-
-| Property        | Type    | Description                                     |
-| --------------- | ------- | ----------------------------------------------- |
-| `DEBUG`         | Number  | READONLY. Output all log messages.              |
-| `INFO`          | Number  | READONLY. Output all except debug messages.     |
-| `WARN`          | Number  | READONLY. Output only warning and error.        |
-| `ERROR`         | Number  | READONLY. Output only error messages.           |
-| `NONE`          | Number  | READONLY. Disable log messages.                 |
-| `logLevel`      | Number  | Sets which log messages to output.              |
-| `showTimestamp` | Boolean | If `true`, outputs timestamp with log messages. |
-| `stripColors`   | Boolean | If `true`, suppresses color output.             |
-
-#### Methods
-
-| Method               | Description                    |
-| -------------------- | ------------------------------ |
-| `debug(msg: String)` | Outputs a debug log message.   |
-| `info(msg: String)`  | Outputs an info log message.   |
-| `warn(msg: String)`  | Outputs a warning log message. |
-| `error(msg: String)` | Outputs an error log message.  |
-
----
-
-## Global initializer (alloy.js)
-
-**Location:** `app/alloy.js`
-
-Runs before any controllers load. Use it to set up globals and singletons.
-
-Common uses:
-- Creating `Alloy.Collections` (e.g., `Alloy.Collections.myModel = Alloy.createCollection('myModel');`)
-- Setting up `Alloy.Globals` (shared references, utility functions)
-- Initializing singletons (analytics, logging, network managers)
-- Configuring global event listeners
-
-**Example:**
-```javascript
-// app/alloy.js
-Alloy.Globals.loading = Alloy.createWidget('com.example.loading');
-Alloy.Collections.users = Alloy.createCollection('user');
-
-// Global utility
-Alloy.Globals.alert = (title, message) => {
-    Ti.UI.createAlertDialog({ title, message }).show();
-};
-```
-
----
-
-## Project configuration file (config.json)
-
-**Location:** `app/config.json`
-
-Alloy uses `config.json` for global values, environment and platform overrides, and widget dependencies.
-### Objects
-
-| Object            | Description                                                 |
-| ----------------- | ----------------------------------------------------------- |
-| `global`          | Key-value pairs for all environments and platforms          |
-| `env:development` | Development builds (simulator/emulator)                     |
-| `env:test`        | Test builds on device                                       |
-| `env:production`  | Production builds (after package installation)              |
-| `os:android`      | Android-specific values                                     |
-| `os:ios`          | iOS-specific values                                         |
-| `dependencies`    | Widget dependencies (name: version)                         |
-| `autoStyle`       | Enable autostyle for entire project                         |
-| `backbone`        | Backbone.js version: `0.9.2` (default), `1.1.2`, or `1.3.3` |
-
-**Precedence:** `os` > `env` > `global`. Combinations (for example, `os:ios env:production`) override single values.
-
-**Runtime access:** Values are available at runtime via `Alloy.CFG.<key>`.
-
-**Example:**
+`app/config.json` holds runtime settings and compiler configuration. A generated project uses these sections:
 
 ```json
 {
-    "global": { "foo": 1 },
-    "env:development": { "foo": 2 },
-    "env:test": { "foo": 3 },
-    "env:production": { "foo": 4 },
-    "os:ios env:production": { "foo": 5 },
-    "os:ios env:development": { "foo": 6 },
-    "os:ios env:test": { "foo": 7 },
-    "os:android": { "foo": 8 },
-    "dependencies": {
-        "com.foo.widget": "1.0"
-    }
+    "global": {},
+    "env:development": {},
+    "env:test": {},
+    "env:production": {},
+    "os:android": {},
+    "os:ios": {},
+    "dependencies": {},
+    "backbone": "1.4.0"
 }
 ```
 
-Accessing values: `Ti.API.info(Alloy.CFG.foo)` on iPhone simulator returns `6`.
+## Runtime values and overrides
 
----
+```json
+{
+    "global": { "apiRoot": "https://example.com/api", "pageSize": 20 },
+    "env:production": { "apiRoot": "https://api.example.com" },
+    "os:android": { "pageSize": 10 }
+}
+```
 
-## Widget configuration file (widget.json)
+Read the resulting values with `Alloy.CFG.apiRoot`. The selected `env:` is the build deploy type, not its target. Simulator builds normally use `development`; `--deploy-type production` selects production.
 
-**Location:** Root directory of the widget. Follows the npm `package.json` format with a few exceptions.
-### Keys
+For conflicting keys, released Alloy 3.0.1 merges `global`, then the matching `env:`, then `os:`: the OS value wins. The current published configuration page reverses the last two in its prose. Do not rely on that wording; verify the installed compiler when a collision matters.
 
-| Key                    | Type   | Required | Description                           |
-| ---------------------- | ------ | -------- | ------------------------------------- |
-| `id`                   | String | Yes      | Must match widget root folder name    |
-| `copyright`            | String | No       | Copyright information                 |
-| `license`              | String | No       | License information                   |
-| `min-alloy-version`    | Float  | No*      | Minimum Alloy version required        |
-| `min-titanium-version` | Float  | No*      | Minimum Titanium version required     |
-| `tags`                 | String | No       | Comma-delimited keywords              |
-| `platforms`            | String | No*      | Supported platforms (comma-delimited) |
+The merged configuration ships in the app and can be extracted. API roots belong here; secrets belong on a server. Compiler settings can also appear in the generated configuration: do not treat it as a secret store or assume compiler-only keys are stripped.
 
-(*) Currently, `min-alloy-version`, `min-titanium-version`, and `platforms` are not strictly enforced, but Alloy will perform checks against these in future versions.
+## Compile-time constants
+
+| Constant | True when |
+| --- | --- |
+| `OS_IOS`, `OS_ANDROID` | Building that platform |
+| `ENV_DEV`, `ENV_DEVELOPMENT` | Development deploy type |
+| `ENV_TEST` | Test deploy type |
+| `ENV_PROD`, `ENV_PRODUCTION` | Production deploy type |
+| `DIST_ADHOC` | Target `dist-adhoc` |
+| `DIST_STORE` | Target `dist-appstore` or `dist-playstore` |
+
+These are compiler-provided, not entries in `config.json`. Write the platform condition explicitly so the compiler can remove the other branch:
+
+```javascript
+if (OS_IOS) {
+    // iOS-specific implementation.
+}
+```
+
+Guard or remove logging before distribution; release logging can expose interpolated private data. Do not infer a target named `dist-store` from the constant.
+
+## Themes, widgets and Backbone
+
+Set a build-time theme using `{ "global": { "theme": "dark" } }` and provide its directory under `app/themes/dark`. See [styles and themes](../../alloy-guides/references/VIEWS_STYLES.md#themes).
+
+`dependencies` lists widget IDs and versions. Provide those widget directories under `app/widgets`; an undeclared widget is not compiled. See [widgets](../../alloy-guides/references/WIDGETS.md).
+
+`backbone` pins the bundled Backbone version. The released Alloy 3.0.1 template already selects `1.4.0`; do not infer that the project needs unreleased Alloy 3.1.0 from the current model guide's attribution. Check the actual config and `alloy --version`.
+
+## Build hooks
+
+`app/alloy.jmk` runs around compilation and can copy inputs or adjust generated output:
+
+```javascript
+task('post:compile', (event, logger) => {
+    logger.info(`compiled ${event.dir.project}`);
+});
+```
+
+Keep hooks small: they execute on each build. The current guide names `pre:load`, `post:load`, `pre:compile` and `post:compile`; released Alloy 3.0.1 implements `pre:load`, `pre:compile` and `post:compile`, but not `post:load`. Do not write a `post:load` recipe without checking support in the version actually installed.
+
+Sources: [configuration](https://titaniumsdk.com/docs/alloy/config.md), [models](https://titaniumsdk.com/docs/alloy/models.md). The precedence, Backbone and hook caveats are verified against released Alloy 3.0.1.

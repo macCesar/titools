@@ -1,78 +1,34 @@
-# Alloy debugging and troubleshooting
+# Debugging an Alloy application
 
-## Debugging
+First separate a compiler/native build failure from a failure in the running app.
 
-### Compiler error messages
+## Build failures
 
-The Alloy compiler reports syntax errors in JavaScript, JSON, TSS, and XML. Error messages include:
-- File path
-- Line and character position
-- Description of the error
+1. Run `ti info` and fix toolchain errors first.
+2. If generated files are stale, run `ti clean` and rebuild.
+3. Read upward to the first Gradle/Xcode error; later messages can be consequences.
+4. For linker failures, inspect native-module compatibility with the SDK through `ti-guides`.
 
-## Troubleshooting
+`Resources/` and `build/` are generated in an Alloy app. Do not repair generated output by editing it.
 
-### Error: No app.js found
+## Runtime diagnosis
 
-**Error:** `[ERROR] No app.js found. Ensure the app.js file exists in your project's Resources directory.`
+Use `Ti.API.trace`, `debug`, `info`, `warn`, `error` and `log`. `info` is the default build log level; add `--log-level warn` to reduce output or `--log-level trace` for build diagnostics. Logs ship with release builds and can expose tokens, email addresses or other interpolated private data; guard or remove them before distribution.
 
-**Solution:** If part of the contents of your `Resources` folder were deleted, run:
+The VS Code Titanium extension provides the `titanium` debug type for breakpoints. The JetBrains integration uses Chrome DevTools Protocol and also needs `ios-webkit-debug-proxy` for iOS. Without an editor integration, use logs rather than assuming breakpoints are available.
+
+For native crashes, inspect Android `adb logcat`, or macOS Console with the iOS device selected and filtered by app name. Xcode also retains device crash reports.
+
+## LiveView
+
 ```bash
-alloy compile --config platform=<platform>
+ti build --platform android --liveview
 ```
 
-### Android: images, HTML, and assets not displaying
+LiveView re-runs JavaScript against the installed app. Changes to `tiapp.xml`, modules, native dependencies or `app/platform/` require a real build. Check this when a saved change appears ineffective.
 
-**Problem:** Assets display on iOS and Mobile Web but not Android.
+## Profiling
 
-**Solution:** Android requires absolute paths. Precede asset paths with a slash ('/'). iOS and Mobile Web accept both relative and absolute paths.
+Use Android Studio Profiler on a debug build or Xcode Instruments on iOS. Allocations and Leaks help investigate memory growth. Native frames may show JavaScript work as bridge time rather than a precise source line. For list performance, inspect row/template work and use the current lists guidance through `ti-ui`.
 
-### Android runtime error: cannot call method of undefined
-
-**Error:** `Uncaught TypeError: Cannot call method xxx of undefined`
-
-**Causes:**
-1. Creating an iOS-only Titanium object. Use the `platform` attribute in views to enforce platform-specific objects.
-2. Top-level UI component has an assigned ID. The controller cannot use `$.<controller_name>` to reference it; use the assigned ID instead.
-
-### Android runtime error: Alloy is not defined
-
-**Error:** `Uncaught ReferenceError: Alloy is not defined`
-
-**Cause:** Non-controller JavaScript files are not automatically wrapped by Alloy. See [best_practices.md](best_practices.md) for the safe require pattern for non-controller files.
-
-**Solution:** Require the 'alloy' module:
-```javascript
-const Alloy = require('alloy');
-```
-
-### iOS application error: invalid method passed to UIModule
-
-**Error:** `invalid method (xxx) passed to UIModule (unknown file)`
-
-**Cause:** Trying to create an Android-only Titanium object.
-
-**Solution:** Use the `platform` attribute in the view to enforce platform-specific objects.
-
-### iOS application error: undefined is not an object
-
-**Error:** `undefined is not an object (evaluating $.xxx.open) (unknown file)`
-
-**Cause:** Top-level UI component has an assigned ID in XML markup.
-
-**Solution:** The controller cannot use `$.<controller_name>` to reference it; use the assigned ID instead.
-
-## Getting help
-
-Use the [TiDev Community Slack](https://slack.tidev.io/) or [GitHub Discussions](https://github.com/tidev/titanium-sdk/discussions):
-- Include 'alloy' as a tag
-- Include the Alloy version (run `alloy --version`)
-- Include platform information
-
-## Submitting a bug report
-
-Search [existing issues](https://github.com/tidev/alloy/issues) first to avoid duplicates. If none match, create a new issue:
-- Select 'Alloy' as the component
-- Include Alloy version (`alloy --version`)
-- Include environment information
-
-For detailed instructions, see [How to Report a Bug or Make a Feature Request](https://titaniumsdk.com/contribute).
+Source: [debugging and profiling](https://titaniumsdk.com/docs/build/debugging.md).

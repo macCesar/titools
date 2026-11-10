@@ -1,156 +1,39 @@
-# Alloy samples
+# Current Alloy examples
 
-## Kitchen sink
+For a full maintained app, use [KitchenSink-v2](https://github.com/tidev/kitchensink-v2).
 
-See the [KitchenSink-v2 application on GitHub](https://github.com/tidev/kitchensink-v2) for Alloy samples in a full app.
+## A working screen
 
-## Controller sample
-
-**index.js**
-```javascript
-// These "builtin" requires are detected by alloy compile process
-// Automatically included as Resources/alloy/animation.js and Resources/alloy/string.js
-const animation = require('alloy/animation');
-const string = require('alloy/string');
-
-function shake(e) {
-    animation.shake($.mover, 0, () => {
-        alert("Shake ended.");
-    });
-}
-
-function flash(e) {
-    animation.flash($.mover);
-}
-
-function trim(e) {
-    $.label.text = string.trim($.label.text);
-}
-
-if (OS_IOS) {
-    function flip(e) {
-        let front, back;
-        e.bubbleParent = false;
-        if (e.source === $.back) {
-            front = $.back;
-            back = $.front;
-        } else {
-            front = $.front;
-            back = $.back;
-        }
-        animation.flipHorizontal(front, back, 500, (e) => {
-            Ti.API.info('flipped');
-        });
-    }
-}
-
-$.index.open();
-
-// Runtime unit tests
-if (!ENV_PROD) {
-    require('specs/index')($);
-}
-```
-
-## Conditional statements in views
-
-Alloy separates business logic (controllers) from UI definition (XML/TSS). A common challenge is showing or hiding content based on app state (for example, login status).
-
-> **💡 TSS defaults**
-> The samples below assume some additional TSS: views and windows use a vertical layout, and the `View` tag has a default height and width of `Ti.UI.SIZE`.
-
-### Problems with traditional approaches
-
-**Approach 1: show/hide (in controller)**
-```javascript
-if (Alloy.Globals.isLoggedIn()) {
-    $.loggedIn.show();
-    $.notLoggedIn.hide();
-} else {
-    $.loggedIn.hide();
-    $.notLoggedIn.show();
-}
-```
-**Problem:** Both views render when the window opens. If the user isn't logged in, there is empty space where the logged-in view was.
-
-**Approach 2: setHeight (in controller)**
-```javascript
-if (Alloy.Globals.isLoggedIn()) {
-    $.loggedIn.setHeight(Ti.UI.SIZE);
-    $.notLoggedIn.setHeight(0);
-} else {
-    $.loggedIn.setHeight(0);
-    $.notLoggedIn.setHeight(Ti.UI.SIZE);
-}
-```
-**Problem:** This works, but it forces you to manage height values (`Ti.UI.SIZE`) in JavaScript instead of TSS.
-
-### Solution: IF attributes in XML
-
-Use `if` attributes directly in the XML view. These conditions are evaluated before rendering.
-
-**index.xml**
 ```xml
+<!-- app/views/index.xml -->
 <Alloy>
     <Window>
-        <View>
-            <!-- Only one of these will ever be rendered -->
-            <View if="Alloy.Globals.isLoggedIn()" id="notLoggedIn" class="vertical">
-                 <Label text="Not logged in" />
-            </View>
-            <View if="!Alloy.Globals.isLoggedIn()" id="loggedIn" class="vertical">
-                <Label text="Logged in" />
-            </View>
-        </View>
+        <Label id="label" top="80">Tap the button</Label>
+        <Button id="button" top="140" onClick="sayHello">Say hello</Button>
     </Window>
 </Alloy>
 ```
 
-Benefits:
-- Only the view that matches the condition is rendered.
-- The UI is correct from the first frame.
-- No visibility logic in controllers.
-
-### Conditional queries in TSS
-
-Use `if` attributes in TSS definitions:
-
 ```tss
-"#info[if=Alloy.Globals.isIos7Plus]": {
-    font: {
-        textStyle: Ti.UI.TEXT_STYLE_FOOTNOTE
-    }
+// app/styles/index.tss
+"Window": {
+    backgroundColor: "backgroundColor"
 },
-"#title[if=Alloy.Globals.isIos7Plus]": {
-    top: "25dp",
-    font: {
-        textStyle: Ti.UI.TEXT_STYLE_HEADLINE
-    }
-},
-"#content[if=Alloy.Globals.isIos7Plus]": {
-    font: {
-        textStyle: Ti.UI.TEXT_STYLE_CAPTION1
-    }
-},
-"ScrollView[if=Alloy.Globals.iPhoneTall]": {
-    height: "500dp"
+"#label": {
+    color: "textColor"
 }
 ```
 
-### Data-binding with conditional queries
-
-Define custom methods in models and render based on those methods:
-
-**Model Method:** `shouldShowCommentRow()` returns `true`
-
-**XML View:**
-```xml
-<Alloy>
-    <TableViewRow id="commentRow" hasChild="false" if="$model.shouldShowCommentRow()" onClick="onSelectComment">
-        <Label id="commentPlaceholderLabel" class="commentRowPreviewLabel placeholderLabel" text="Ti.App.L('AddComment')" />
-        <Label id="commentRowLabel" class="commentRowPreviewLabel" text="{Comment}" />
-    </TableViewRow>
-</Alloy>
+```javascript
+// app/controllers/index.js
+function sayHello() {
+    $.label.text = 'Hello from Titanium';
+}
+$.index.open();
 ```
 
-See `VIEWS_STYLES.md` in the `alloy-guides` skill (Custom Query Styles section) for more details.
+The semantic color names must exist in `app/assets/semantic.colors.json`; they resolve differently in light and dark mode. Rebuild and tap the button. Use `ti build --platform android --liveview` to reload JavaScript changes while iterating.
+
+For a complete persistent list with model definition, XML binding, filtering, transformation, fetch and cleanup, read [models and collections](../../alloy-guides/references/MODELS.md). For a reusable component, read [widgets](../../alloy-guides/references/WIDGETS.md).
+
+Sources: [first app](https://titaniumsdk.com/docs/build/first-app.md), [models](https://titaniumsdk.com/docs/alloy/models.md), [widgets](https://titaniumsdk.com/docs/alloy/widgets.md).

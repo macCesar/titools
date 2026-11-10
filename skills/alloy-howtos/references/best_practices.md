@@ -1,121 +1,17 @@
-# Alloy best practices and recommendations
+# Practical Alloy conventions
 
-Recommendations for writing Alloy apps. This supplements the Titanium SDK [Best Practices and Recommendations](https://titaniumsdk.com/docs/build) guide and focuses on coding style and conventions.
+Keep structure in XML, shared appearance in `app/styles/app.tss`, screen-specific styles in the corresponding TSS file and behavior in the controller. The controller can still use the Titanium API directly.
 
-## Titanium-to-Alloy Guidance
+Read `$.args` at the top of a controller so its inputs are visible in one place. Share plain code through CommonJS modules in `app/lib`, and initialize shared configuration in `app/alloy.js` before the first controller.
 
-### Loading Libraries in Alloy
+A controller is not a native Window. Construct it, then call `getView().open()`, or expose a method that opens its own Window. Do not combine both opening approaches.
 
-If you need global functionality, require modules in all controllers or create a single global reference:
+Clean up external listeners, timers and service subscriptions when the controller is disposed. Separately call `$.destroy()` to remove generated data bindings. See [controllers](../../alloy-guides/references/CONTROLLERS.md#cleaning-up) for callback ownership and the required lifecycle.
 
-**alloy.js**
-```javascript
-// Alloy.Globals.refToYourModule will be available in all controllers
-Alloy.Globals.refToYourModule = require('yourModule');
-```
+Use widgets for reuse between projects and `<Require>` for composition within one app. Pass widget arguments and report changes through exported methods/events; coupling a reusable widget to the app's global state defeats that isolation.
 
-### Performance Best Practices
+Use models for data that persists, is shared between screens or outlives a screen. A plain array and `Ti.Network` are adequate for data fetched once and rendered. Keep data transforms inexpensive because they run per row when data changes.
 
-The same best practices from traditional Titanium development apply to Alloy. Alloy controllers can do what classic controllers can.
+Do not edit or commit generated `Resources/` or `build/`. Keep signing credentials out of the repository. Do not put secrets in `config.json` or production logs; both reach the app package/device.
 
-Use compiler directives to reduce runtime work (see Conditional Code in Alloy Controllers).
-
-### Project Organization
-
-Decide whether to adapt Alloy to your existing structure, or to adopt Alloy's structure. Alloy standardizes common Titanium patterns and makes projects easier to maintain.
-
-## Coding Style Best Practices
-
-### Naming Conventions
-
-- **Do not use double underscore prefixes** on variables, properties, or function names (e.g., `__foo`). They are reserved for Alloy and may cause conflicts and unexpected behavior.
-- **Do not use JavaScript reserved words as IDs.** See [Titanium SDK Reserved Words](https://titaniumsdk.com/docs/buildReserved_Words/) for the complete list.
-
-### Global Variables
-
-Avoid declaring globals in app.js and using them in other files. It still works, but it is not recommended and may be deprecated.
-
-Instead, declare these in your JS files:
-
-```javascript
-const Alloy = require('alloy');
-const Backbone = require('alloy/backbone');
-const _ = require('alloy/underscore')._;
-```
-
-Safe pattern for non-controller files:
-
-```javascript
-if (typeof Alloy === 'undefined') {
-    var Alloy = require('alloy');
-}
-if (typeof Backbone === 'undefined') {
-    var Backbone = require('alloy/backbone');
-}
-if (typeof _ === 'undefined') {
-    var _ = require('alloy/underscore')._;
-}
-
-const loading = Alloy.createWidget("com.titaniumsdk.loading");
-```
-
-### Global Events
-
-**Avoid `Ti.App.fireEvent` and `Ti.App.addEventListener`.** It crosses the native-JS bridge and can cause memory leaks and slower execution.
-
-#### Use Callbacks for Master-Child Communication
-
-**master.js**
-```javascript
-function openChild() {
-    Alloy.createController('child', {callback: refreshData});
-}
-
-function refreshData(value) {
-    // Refresh master data here
-}
-```
-
-**child.js**
-```javascript
-const args = arguments[0] || {};
-
-function refreshParent() {
-    // Pass return value to parent
-    args.callback(true);
-}
-```
-
-#### Use Backbone.Events for App-Wide Communication
-
-**alloy.js**
-```javascript
-Alloy.Events = _.clone(Backbone.Events);
-```
-
-**controller_a.js** (listener)
-```javascript
-Alloy.Events.on('updateMainUI', refreshData);
-
-function refreshData(value) {
-    // Do work here
-    // Optionally disable one-time events
-    // Alloy.Events.off('updateMainUI');
-}
-
-// Clean up when closing to avoid memory leaks
-$.controller_a.addEventListener('close', () => {
-    Alloy.Events.off('updateMainUI');
-});
-```
-
-**controller_b.js** (trigger)
-```javascript
-Alloy.Events.trigger('updateMainUI');
-```
-
-**Note:** Alloy controllers are Backbone event dispatchers. You can also use:
-```javascript
-Alloy.createController('child').on('refresh', refreshData);
-```
-This is a simpler way to do cross-controller communication with Backbone events.
+Sources: [Alloy](https://titaniumsdk.com/docs/alloy.md), [controllers](https://titaniumsdk.com/docs/alloy/controllers.md), [models](https://titaniumsdk.com/docs/alloy/models.md), [widgets](https://titaniumsdk.com/docs/alloy/widgets.md), [project structure](https://titaniumsdk.com/docs/build/project-structure.md).
