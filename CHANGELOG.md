@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [5.4.1] - 2026-11-11
+
+### Changed
+
+- Align PurgeTSS guidance and class indexes with 7.20.2, including SDK 14 compatibility, read-only exclusions, numeric SplitWindow values, font priority and metadata, modern custom-font CSS, profiling and Node requirements. Preserve existing examples and documented platform/font limitations.
+- Document restored RGB/RGBA arbitrary colors in XML, controller-extracted classes and apply directives, including preserved compound values and quoted text. Keep canonical negative syntax and hexadecimal gradient examples.
+- Remove tracked Python bytecode from game asset helpers and ignore generated caches.
+
 ## [5.4.0] - 2026-11-10
 
 ### Added

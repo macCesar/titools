@@ -213,7 +213,7 @@ Use [llms.txt](https://titaniumsdk.com/llms.txt) to discover official routes and
 
 `ti-guides`, `ti-howtos`, `alloy-guides`, `alloy-howtos` and `ti-ui` include current official guide topics. They do not supplement missing sections with the old `titanium-docs` corpus or unpublished community recipes. Topics can return when the official site publishes them.
 
-A guide's scope does not guarantee every example is correct. References identify verified conflicts with released API/compiler contracts, including Alloy configuration precedence and hooks, notification registration and safe-area defaults. The core API baseline is SDK 13.4.1.GA, with explicit version links; unreleased SDK 14 features remain excluded. Native modules have independent versions and authorities.
+A guide's scope does not guarantee every example is correct. References identify verified conflicts with released API/compiler contracts, including Alloy configuration precedence and hooks, notification registration and safe-area defaults. The core API baseline is SDK 13.4.1.GA, with explicit version links; SDK 14 API additions remain outside that reviewed baseline. Native modules have independent versions and authorities.
 
 PurgeTSS and the native-module skills retain their own official sources and declared curated resources. Their source policies are independent of the website migration.
 
@@ -858,7 +858,7 @@ Specialist skills such as PurgeTSS, native games and synthesis retain their decl
 | ---------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | ti-reuse-first   | Reuse Before You Write        | 5 files (the ladder, Alloy reuse, indirection, PurgeTSS reuse, diagnostics)                                                                                                                          |
 | ti-expert        | Architecture + Implementation | 27 files (patterns, feedback surfaces, file type association, sharing, testing, security, etc.)                                                                                                      |
-| purgetss         | Setup + Critical Rules        | 39 files (Classic compatibility, grid, animations, icons, class-index, SVG pipeline, etc.)                                                                                                           |
+| purgetss         | Setup + Critical Rules        | 40 files (SDK 14 compatibility, Classic compatibility, grid, animations, icons, class-index, SVG pipeline, etc.)                                                                                                           |
 | ti-ui            | UI Rules + Platform Diffs     | 5 current official guides (native UI, layouts, lists, icons and platform conventions)                                                                                                                                                            |
 | ti-game          | Native 2D Game Workflow       | 12 files (API, input, source notes, setup, physics, patterns, recipes, tile maps, debugging, roadmap)                                                                                                |
 | ti-game-assets   | Visual and Sound Assets       | 10 guides and a manifest example; alpha and contract validation scripts                                                                                                                              |
