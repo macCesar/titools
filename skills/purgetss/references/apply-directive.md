@@ -14,6 +14,7 @@
 - [Customizing Window, View, and ImageView](#customizing-window-view-and-imageview)
 - [Platform-Specific Classes](#platform-specific-classes)
 - [Community-Discovered Patterns](#community-discovered-patterns)
+- [RGB/RGBA values in apply (7.20.2)](#rgbrgba-values-in-apply-7202)
 
 <!-- TOC-END -->
 
@@ -105,7 +106,7 @@ module.exports = {
 '.close-button': { color: '#374151', textColor: '#374151', width: 48, height: 48, font: { fontFamily: 'FontAwesome7Free-Solid' }, text: '\uf057', title: '\uf057' }
 ```
 
-The same lookup runs for `mi-*`, `ms-*`, and `f7-*` classes. If the project ships its own `purgetss/styles/fontawesome.tss` (for example, FontAwesome Pro or Beta), that file takes precedence over the bundled default — matching the precedence order used when the same icon class appears directly in XML.
+The same lookup runs for `mi-*`, `ms-*`, and `f7-*` classes. In 7.20.1, each selector is resolved from `purgetss/styles/fonts.tss`, then the project's `purgetss/styles/fontawesome.tss` (for example, Font Awesome Pro/Beta), then the bundled catalogs. Missing selectors fall through to the next source, and a custom definition takes precedence without emitting a duplicate bundled selector. This matches direct XML/controller purging and also applies to platform-specific target classes. See [CSS formats and selector priority](./custom-fonts.md#css-formats-and-selector-priority) for the full source order and family-class requirements.
 
 > **PRE-v7.10.0 BEHAVIOR**
 > Before v7.10.0, those icon font classes were silently dropped from `apply`-generated rules. `apply: 'fas fa-times-circle wh-12 ...'` produced every utility **except** the FontAwesome family and the icon glyph. If a project worked around this by running `build-fonts` first, that workaround is no longer required.
@@ -491,3 +492,7 @@ module.exports = {
 ```
 
 These three classes exist without a platform suffix in `utilities.tss`, so they would resolve from a `default` block too; the `ios:` block is what scopes the generated rule to `[platform=ios]` so Android never receives these properties. The *why* (rendering delay vs content-behind-nav-bar), the display-mode constants, and per-window overrides live in [`ios-large-titles.md`](./ios-large-titles.md) and in the official PurgeTSS docs at [Best Practices → Large Titles on iOS](https://purgetss.com/docs/best-practices/large-titles-on-ios).
+
+## RGB/RGBA values in apply (7.20.2)
+
+PurgeTSS 7.20.2 accepts balanced RGB/RGBA arbitrary color classes in `apply`, for example `bg-(rgba(10,20,30,0.5)) border-(rgb(100,200,50))`. Property deduplication preserves commas inside color strings and nested values, plus escaped quoted text; applied values still override static defaults. Keep each class free of spaces. See [Arbitrary Values](arbitrary-values.md#color-properties) for version limits and hexadecimal gradient examples.

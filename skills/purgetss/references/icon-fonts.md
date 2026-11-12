@@ -12,6 +12,21 @@ For user-defined fonts (Google Fonts, brand typefaces, community icon libraries 
 >
 > Older versions of PurgeTSS bundled additional libraries (Bootstrap Icons, Boxicons, LineIcons, Tabler Icons). They were removed to keep maintenance under control, but you can [recreate them at the bottom of this page](#recreating-removed-icon-libraries).
 
+<!-- TOC-START -->
+## Contents
+
+- [Icon families reference](#icon-families-reference)
+- [Installing the icon fonts](#installing-the-icon-fonts)
+- [Using icons in Alloy XML](#using-icons-in-alloy-xml)
+- [Complete example with all four families](#complete-example-with-all-four-families)
+- [Maintaining bundled Font Awesome Free](#maintaining-bundled-font-awesome-free)
+- [Maintaining Framework7 and Material headers](#maintaining-framework7-and-material-headers)
+- [Customizing Font Awesome](#customizing-font-awesome)
+- [Recreating removed icon libraries](#recreating-removed-icon-libraries)
+- [Community-Discovered Patterns](#community-discovered-patterns)
+
+<!-- TOC-END -->
+
 ## Icon families reference
 
 Each family ships one or more variant classes, each pointing to a specific font file. Combine a variant class with an icon class to render a glyph. For example, `msr ms-home` uses the Material Symbols Rounded font with the `home` icon.
@@ -93,8 +108,10 @@ $ purgetss il -m -s
 
 - `fa`, `fontawesome` = Font Awesome Icons
 - `mi`, `materialicons` = Material Icons
-- `ms`, `materialsymbol` = Material Symbols
+- `ms`, `materialsymbol`, `materialsymbols` = Material Symbols (plural alias since v7.18.0)
 - `f7`, `framework7` = Framework7 Icons
+
+Since v7.18.0, an unknown vendor stops the command before it writes files and reports the valid choices. The Pro/Beta `--module` and `--styles` paths also run the real builders instead of printing a placeholder; successful file generation alone does not verify the font-family compatibility described below.
 
 ### CommonJS modules in Classic
 
@@ -228,13 +245,58 @@ Generated `app.tss` excerpt:
 '.f7-house': { text: 'house', title: 'house' }
 ```
 
+## Maintaining bundled Font Awesome Free
+
+Application users receive the bundled Free fonts through `purgetss icon-library --vendor=fa`; they do not need to download desktop fonts or install the npm icon package separately. In 7.20.1, TSS families, JavaScript aliases and copied filenames use the fonts' internal PostScript names.
+
+To update Font Awesome **inside the PurgeTSS source repository**:
+
+1. Install the desired `@fortawesome/fontawesome-free` version; its CSS supplies the icon definitions.
+2. Download the matching Free desktop fonts and replace the previous set in `src/fonts/` with exactly one Solid, Regular and Brands OTF. This remains manual; the npm webfonts do not supply these desktop copies.
+3. Run the corresponding distribution builders:
+
+```bash
+npm run build:fa
+npm run build:fa-js
+npm run build:fonts
+```
+
+The builders validate the desktop fonts against the installed npm version. Missing or duplicate faces, unreadable version metadata, or mismatches stop the affected builder before it replaces its Free outputs. Both Free header templates use the installed npm version automatically; families come from the font metadata, so neither requires a hardcoded version/name edit. Keep the OTFs aligned with the dependency.
+
+The distribution keeps its `.ttf` filename convention; copying does not convert the OTF bytes. Obsolete generated Free filenames are removed from the distribution font folder when family names change.
+
+## Maintaining Framework7 and Material headers
+
+In 7.20.1, both TSS and JavaScript headers identify their actual inputs:
+
+| Library | Header version source | Icon definitions |
+| --- | --- | --- |
+| Framework7 Icons | Installed `framework7-icons/package.json` | Package SVG names, rendered as ligatures |
+| Material Icons | Internal version metadata of each bundled font variant | `lib/templates/materialicons/*.codepoints` |
+| Material Symbols | Internal version metadata of each bundled font variant | `lib/templates/materialsymbols/*.codepoints` |
+
+This is a contributor workflow inside PurgeTSS. Update the Framework7 npm dependency. For Material Icons/Symbols, replace the fonts in `assets/fonts/` and their matching `.codepoints` files manually, using the same upstream revision for each pair; these classes are not generated from CSS.
+
+```bash
+npm run build:framework7
+npm run build:framework7-js
+npm run build:material
+npm run build:material-js
+npm run build:symbols
+npm run build:symbols-js
+```
+
+Run only the pair for the library you updated, or use the normal full distribution build. Missing package versions or missing/unreadable font version metadata stop the affected builders. Header templates no longer need manual version/date edits.
+
+Material variants can have different internal versions; some store ISO timestamps. Headers report these as **bundled font versions**, without inventing a single release number or using the build day as an update date. A header does not establish that the separately maintained codepoints match the fonts. Glyph generation, classes and public family aliases are preserved.
+
 ## Customizing Font Awesome
 
 If you have a [Font Awesome Pro account](https://fontawesome.com/pro) or want to try the Beta, PurgeTSS can generate a custom `./purgetss/styles/fontawesome.tss` with the Pro or Beta classes.
 
 ### Font Awesome Pro
 
-After setting the [@fortawesome scope](https://fontawesome.com/how-to-use/on-the-web/setup/using-package-managers#installing-pro) with your token, install it in your project's root folder with `npm init` and `npm install --save-dev @fortawesome/fontawesome-pro` (current version 7.1.0).
+After setting the [@fortawesome scope](https://fontawesome.com/how-to-use/on-the-web/setup/using-package-managers#installing-pro) with your token, install it in your project's root folder with `npm init` and `npm install --save-dev @fortawesome/fontawesome-pro`. The documented package example uses version 7.1.0; check the installed package rather than assuming it is the latest Pro release.
 
 To generate a new `purgetss/styles/fontawesome.tss`, run `purgetss build`. It also copies the Pro font files into `./app/assets/fonts` if needed.
 
@@ -262,6 +324,16 @@ purgetss
 ```
 
 Then run `purgetss build` to generate your custom `fontawesome.tss` file and test the new icons.
+
+### Pro/Beta font-family compatibility
+
+PurgeTSS 7.20.1 reads each installed TTF's PostScript name and uses the same value for TSS `fontFamily`, module `families`/face aliases, and copied filenames. A Solid TTF is required; missing optional faces are omitted instead of assigned guessed names. Available face aliases are `solid`, `regular`, `brands`, and `thin`/`light` when installed. The alternate `app/lib/node_modules/@fortawesome/fontawesome-pro` build path generates its JavaScript module too.
+
+When diagnosing missing glyphs, compare the installed font metadata with `purgetss/styles/fontawesome.tss` and the generated module, then check the actual glyphs on your target platform. These metadata corrections do not establish device rendering with every genuine Pro/Beta package. Regeneration can replace edits to generated files, and the duotone limitation still applies. Pro/Beta TSS and JavaScript header templates still use a fixed major version `7`; metadata-driven family names do not imply automatic Pro/Beta header versions.
+
+For projects still using 7.20.0, its reset templates select `FontAwesome6Pro-*` while generated filenames use `FontAwesome7Pro-*` or `FontAwesome7Beta-*`. A copied filename does not establish the embedded PostScript name. Upgrade to 7.20.1 for the metadata-based mapping; if remaining on 7.20.0, inspect and correct the project-specific family mapping before relying on it. The v7.18.0 builder corrections fixed missing outputs and remain distinct from this family-name fix.
+
+Source: PurgeTSS 7.20.1 `src/dev/utils/fontawesome-fonts.js`, `src/dev/builders/fontawesome-builder.js`, `src/cli/commands/icon-library.js`, and `lib/templates/fontawesome/{pro,beta}-reset.tss` plus the Pro/Beta header templates.
 
 ## Recreating removed icon libraries
 

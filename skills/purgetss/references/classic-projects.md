@@ -4,6 +4,10 @@ The utility-class lifecycle remains Alloy-only while independent asset and Commo
 
 Official source: <https://purgetss.com/docs/commands#alloy-and-classic-compatibility>
 
+Since v7.18.0, project detection consistently requires `app/views/` for Alloy. A Classic project with a stray `app/` folder still routes standalone outputs to `Resources/`, including `images`.
+
+The global `--profile <file.json>` option added in v7.19.0 also works with Classic-compatible commands and aliases. It records CLI execution metrics without installing the Alloy lifecycle; it does not change command compatibility. See [Execution Profiles](./cli-commands.md#execution-profiles).
+
 ## Compatibility Matrix
 
 | Command | Alloy | Classic | Classic behavior |

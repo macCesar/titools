@@ -1,8 +1,10 @@
 # PurgeTSS Class Index
 
 <!-- GENERATED:counts START -->
-**Generated from `utilities.tss` (PurgeTSS 7.18.0): 23,332 unique classes, 403 first segments, 620 Titanium properties.** Counts grow with each Titanium SDK and icon-font release.
+**Generated from `utilities.tss` (PurgeTSS 7.20.2): 23,449 unique classes, 391 first segments, 593 Titanium properties.** Counts depend on the PurgeTSS version and project configuration.
 <!-- GENERATED:counts END -->
+
+The catalog uses SDK 14.0.0.GA Completions and includes the generator corrections published in 7.20.1 and retained in 7.20.2. Read [SDK 14 compatibility](sdk-14-compatibility.md) for read-only state, numeric SplitWindow values and platform/OS restrictions; an emitted class is not proof of SDK support.
 
 Before suggesting ANY class, verify it exists:
 ```bash
@@ -172,6 +174,8 @@ For these families the class stem is not the property name in kebab-case, so gue
 | `line-h-multiple-*` | `lineHeightMultiple` | ParagraphAttribute |
 | `list-item-template`, `list-item-template-contacts`, `list-item-template-settings`, `list-item-template-subtitle` | `defaultItemTemplate` | ListView |
 | `m-*`, `my-*`, `mx-*`, `mt-*`, `mr-*`, `mb-*`, `ml-*`, `-m-*`, … | `top`, `right`, `bottom`, `left` | — |
+| `maximum-primary-col-w-*` | `maximumPrimaryColumnWidth` | iOS.SplitWindow |
+| `minimum-primary-col-w-*` | `minimumPrimaryColumnWidth` | iOS.SplitWindow |
 | `minimum-text-*` | `minimumFontSize` | label, TextField |
 | `object-auto`, `object-fill`, `object-none`, `object-cover`, `object-contain` | `scalingMode` | ImageView |
 | `orientation-landscape-left`, `orientation-landscape-right`, `orientation-portrait`, `orientation-upside-portrait`, `orientation-landscape`, `orientation-all` | `orientationModes` | NavigationWindow, TabGroup, Window, iOS.SplitWindow |
@@ -183,6 +187,7 @@ For these families the class stem is not the property name in kebab-case, so gue
 | `platform-w`, `platform-h`, `platform-wh`, `platform-w-inverted`, `platform-h-inverted`, `platform-wh-inverted`, `inverted-platform-w`, `inverted-platform-h` | `width`, `height` | ActivityIndicator, Animation, iPad.Popover, View |
 | `pointer-events-auto`, `pointer-events-none` | `touchEnabled` | View |
 | `portrait`, `upside-portrait`, `landscape-left`, `landscape-right`, `landscape` | `orientationModes` | NavigationWindow, TabGroup, Window, iOS.SplitWindow |
+| `primary-col-w-fraction-*` | `primaryColumnWidthFraction` | iOS.SplitWindow |
 | `progress-bar-style-bar`, `progress-bar-style`, `progress-bar-style-plain` | `style` | ProgressBar |
 | `pull-bg-*` | `pullBackgroundColor` | View, Ti.Media.VideoPlayer, Button +31 more |
 | `r-drawable-*` | `icon` | — |
@@ -263,40 +268,39 @@ The rest of this document collects conventions, prohibitions, and insights surfa
 
 <!-- GENERATED:prefixes START -->
 ```
-accessibility, accessory, accuracy, action, activation, active, activity, alert, alignment, all,
-allow, allows, amber, anchor, animated, animation, app, arrow, aspect, audio, authentication,
-authorization, auto, autocapitalization, autocorrect, autofill, autohide, autoplay, autorepeat,
-autoreverse, autorotate, availability, available, backfill, background, backward, badge, bar,
-battery, behavior, bg, black, block, blue, border, bottom, break, bubble, bubbles, button, bypass,
-cache, calendar, camera, can, cancel, cancelable, canceled, capitalize, car, case, category, charset,
-checkable, checked, clear, clip, closed, code, col, collision, colors, compact, composite,
-compression, connected, contacts, content, continuous, count, critical, current, curve, custom, cyan,
-date, debug, deceleration, defaults, delay, destructive, dim, disable, disabled, display, drag,
-drawer, drop, duration, ease, editable, editing, effect, elevation, eligible, ellipsize, emerald,
-enable, enabled, exact, exit, experimental, extend, fast, filter, fixed, flag, flags, flip,
-focusable, font, footer, force, format, format24, frequency, from, fuchsia, fullscreen, gap,
-generated, getters, gravity, gray, green, grid, group, grouping, h, handle, has, header, hidden,
-hide, hides, highlighted, hint, hires, home, horizontal, hour12, html, httponly, hyphenation, icon,
-iconified, idle, ignore, image, importance, in, include, indention, indicator, indigo, injection,
-input, inputs, inset, interactive, inverted, is, italic, item, items, java, keep, keyboard, kind,
-landscape, large, launch, layer, lazy, left, letter, light, lime, line, lines, list, loading,
-location, lock, lockscreen, login, looping, m, main, manual, master, max, maximum, mb, media, method,
-min, minimize, minimum, mixed, ml, modal, mode, move, moveable, movie, moving, mr, mt, multiple, mx,
-my, native, nav, navigation, needs, network, neutral, no, normal, not, notification, numeric, object,
-on, online, opacity, opaque, opaquebackground, opaquebg, options, orange, orientation, origin,
+accessibility, accessory, accuracy, activation, active, activity, alert, alignment, all, allow,
+allows, amber, anchor, animated, animation, app, arrow, audio, authentication, authorization, auto,
+autocapitalization, autocorrect, autofill, autohide, autoplay, autorepeat, autoreverse, autorotate,
+availability, available, axis, backfill, background, backward, badge, bar, battery, behavior, bg,
+black, block, blue, border, bottom, break, bubble, button, bypass, cache, calendar, camera, can,
+cancel, cancelable, canceled, capitalize, car, case, category, charset, checkable, checked, clear,
+clip, code, col, collision, colors, compact, composite, compression, connected, content, continuous,
+count, critical, current, curve, custom, cyan, date, debug, deceleration, defaults, delay,
+destructive, dim, disable, disabled, display, drag, drawer, drop, duration, ease, editable, editing,
+effect, elevation, eligible, ellipsize, emerald, enable, enabled, exact, exit, experimental, extend,
+fast, filter, fixed, flag, flags, flip, focusable, font, footer, force, format, format24, frequency,
+from, fuchsia, fullscreen, gap, generated, getters, gravity, gray, green, grid, group, grouping, h,
+handle, has, header, hidden, hide, hides, highlighted, hint, hires, home, horizontal, hour12, html,
+httponly, hyphenation, icon, iconified, idle, ignore, image, importance, in, include, indention,
+indicator, indigo, injection, input, inputs, inset, interactive, inverted, is, italic, item, items,
+java, keep, keyboard, kind, landscape, large, launch, layer, lazy, left, letter, light, lime, line,
+lines, link, list, loading, location, lock, lockscreen, login, looping, m, main, manual, master, max,
+maximum, mb, media, min, minimize, minimum, mixed, ml, modal, mode, move, moveable, moving, mr, mt,
+multiple, mx, my, native, nav, navigation, needs, neutral, no, normal, not, notification, numeric,
+object, on, opacity, opaque, opaquebackground, opaquebg, options, orange, orientation, origin,
 outputs, over, overflow, overlay, override, p, padding, page, paging, paragraph, password, path,
-pause, pb, persistent, physical, picture, pink, pl, placeholder, platform, playback, plugin, pointer,
-portrait, position, pr, prevent, progress, provides, proximity, prune, pt, pull, purple, push, px,
-py, r, ready, recording, red, remote, repeat, requested, requires, results, return, reverse, right,
-role, rose, rotate, rounded, row, running, save, scale, scales, scaling, scroll, scrollable,
-scrollbars, scrolling, scrolls, search, section, secure, selected, selection, sentences, separator,
-severity, shadow, shift, show, shows, shuffle, size, sky, slate, smooth, snap, soft, sorted, sound,
-source, split, start, state, status, stone, stopped, style, submit, subtitle, success, suppress,
-suppresses, sustained, swipe, swipeable, system, tab, tabs, target, teal, text, theme, throw, thumb,
-timeout, tint, title, tls, to, toggle, toolbar, top, torch, touch, trace, track, transition,
-translucent, transparent, treat, type, unique, update, uppercase, upright, upside, use, user, valid,
-validates, value, vertical, video, view, violet, visibility, visible, w, waits, wh, which, white,
-will, window, wobble, wraps, x, y, yellow, z, zinc, zoom
+pause, pb, persistent, picture, pink, pl, placeholder, platform, plugin, pointer, portrait, position,
+pr, presents, prevent, primary, progress, provides, proximity, prune, pt, pull, purple, push, px, py,
+r, ready, recording, red, repeat, requested, requires, results, return, reverse, right, role, rose,
+rotate, rounded, row, save, scale, scales, scaling, scroll, scrollable, scrollbars, scrolling,
+scrolls, search, section, secure, selected, selection, sentences, separator, severity, shadow, shift,
+show, shows, shuffle, size, sky, slate, smooth, snap, snapping, soft, sorted, sound, split, start,
+state, status, stone, style, submit, subtitle, success, suppress, suppresses, sustained, swipe,
+swipeable, system, tab, tabs, target, teal, text, theme, throw, thumb, timeout, tint, title, tls, to,
+toggle, toolbar, top, torch, touch, trace, track, transition, translucent, transparent, treat, type,
+underline, unique, update, uppercase, upside, use, validates, value, vertical, video, view, violet,
+visibility, visible, w, waits, wh, which, white, will, window, wobble, wraps, x, y, yellow, z, zinc,
+zoom
 ```
 <!-- GENERATED:prefixes END -->
 

@@ -1,13 +1,13 @@
 # PurgeTSS Class Index — Titanium Properties (A–Z)
 
-Every Titanium property that has PurgeTSS utility classes, with the classes that set it. Generated from `utilities.tss` (PurgeTSS 7.18.0) by `.claude/skills/titools-skill-auditor/scripts/purgetss-class-index.mjs`; do not edit by hand. For naming rules and verification commands see [class-index.md](./class-index.md); for classes grouped by kind of value see [class-categories.md](./class-categories.md).
+Every Titanium property that has PurgeTSS utility classes, with the classes that set it. Generated from `utilities.tss` (PurgeTSS 7.20.2) by `.claude/skills/titools-skill-auditor/scripts/purgetss-class-index.mjs`; do not edit by hand. For naming rules and verification commands see [class-index.md](./class-index.md); for classes grouped by kind of value see [class-categories.md](./class-categories.md).
 
 > Before suggesting ANY class, verify it exists: `grep -E "PATTERN" ./purgetss/styles/utilities.tss`
 
 <!-- TOC-START -->
 ## Contents
 
-- [620 Titanium Properties with Classes](#620-titanium-properties-with-classes)
+- [593 Titanium Properties with Classes](#593-titanium-properties-with-classes)
   - [A–C](#ac)
   - [D–H](#dh)
   - [I–O](#io)
@@ -16,7 +16,7 @@ Every Titanium property that has PurgeTSS utility classes, with the classes that
 
 <!-- TOC-END -->
 
-## 620 Titanium Properties with Classes
+## 593 Titanium Properties with Classes
 
 A property set inside `font` or `animationProperties` is listed with its container (`font.fontSize`). A class that sets several properties appears under each of them. **Classes** shows the family as it appears in `utilities.tss`: `name-*` when the classes share that stem, otherwise the class names themselves. **Count** is the number of distinct class names in that family.
 
@@ -25,14 +25,12 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | Property | Classes | Count | Components | Platform |
 | --- | --- | --- | --- | --- |
 | `accessibilityDisableLongPress` | `accessibility-disable-long-press`, `accessibility-disable-long-press-false` | 2 | View, Ti.Media.VideoPlayer, ActivityIndicator +37 more | — |
-| `accessibilityEnabled` | `accessibility-enabled`, `accessibility-enabled-false` | 2 | Ti.App | — |
 | `accessibilityHidden` | `accessibility-hidden`, `accessibility-hidden-false` | 2 | View, Ti.Media.VideoPlayer, Android.CardView +32 more | — |
 | `accessoryType` | `accessory-type-list-none`, `accessory-type-list-checkmark`, `accessory-type-list-detail`, `accessory-type-list-disclosure` | 4 | ListItem | — |
 | `accuracy` | `accuracy-*` | 9 | Ti.Geolocation.Android.LocationRule, Ti.Geolocation, LocationCoordinates +3 more | — |
 | `accuracyAuthorization` | `accuracy-authorization-full`, `accuracy-authorization-reduced` | 2 | LocationAccuracyAuthorizationResponse | — |
-| `actionViewExpanded` | `action-view-expanded`, `action-view-expanded-false` | 2 | Ti.Android.MenuItem | — |
 | `activationMode` | `activation-mode-background`, `activation-mode-foreground` | 2 | Ti.App.iOS.UserNotificationAction | iOS only |
-| `active` | `active`, `active-false` | 2 | Tab, iOS.PushBehavior | — |
+| `active` | `active`, `active-false` | 2 | Tab, ReservedRegion, iOS.PushBehavior | — |
 | `activeIconIsMask` | `active-icon-is-mask`, `active-icon-is-mask-false` | 2 | Tab | — |
 | `activeTab` | `active-tab-*` | 13 | TabGroup | — |
 | `activeTintColor` | `active-tint-*` | 245 | Tab, TabGroup, TabbedBar | — |
@@ -74,7 +72,7 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `allowUserCustomization` | `allow-user-customization`, `allow-user-customization-false` | 2 | TabGroup | — |
 | `anchorPoint` | `origin-*` | 9 | Animation, View | — |
 | `anchorPoint` | `anchor-point-*` | 9 | — | — |
-| `animated` | `animated`, `animated-false` | 2 | showParams, showContactsParams, MusicLibraryOptionsType +16 more | — |
+| `animated` | `animated`, `animated-false` | 2 | showContactsParams, MusicLibraryOptionsType, CameraOptionsType +16 more | — |
 | `animationProperties.close` | `opacity-to-0`, `opacity-to-100`, `toggle-visible` | 3 | Animation | — |
 | `animationProperties.close` | `zoom-*` | 30 | Animation | — |
 | `animationProperties.complete` | `zoom-*` | 30 | Animation | — |
@@ -85,9 +83,7 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `animationStyle` | `animation-style-*` | 14 | ListViewAnimationProperties, TableViewAnimationProperties, closeWindowParams | iOS only |
 | `appSupportsShakeToEdit` | `app-supports-shake-to-edit`, `app-supports-shake-to-edit-false` | 2 | iOS | — |
 | `arrowDirection` | `arrow-direction-*` | 11 | CameraOptionsType, PhotoGalleryOptionsType, MenuPopupShowParams, iPad.Popover | some variants platform-only |
-| `aspectRatio` | `aspect-ratio-4-3`, `aspect-ratio-16-9` | 2 | Ti.Media | — |
 | `audioFocus` | `audio-focus`, `audio-focus-false` | 2 | Ti.Media.AudioPlayer | — |
-| `audioPlaying` | `audio-playing`, `audio-playing-false` | 2 | Ti.Media | — |
 | `audioSessionCategory` | `audio-session-category-ambient`, `audio-session-category-playback`, `audio-session-category-play-and-record`, `audio-session-category-record`, `audio-session-category-solo-ambient` | 5 | Ti.Media | — |
 | `audioStreamType` | `audio-stream-type`, `audio-stream-type-*` | 7 | Ti.Android.Notification | Android only |
 | `audioType` | `audio-type-alarm`, `audio-type-signalling`, `audio-type-media`, `audio-type-notification`, `audio-type-ring`, `audio-type-voice` | 6 | Ti.Media.AudioPlayer, Ti.Media.Sound | — |
@@ -111,9 +107,9 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `autoTabTitle` | `auto-tab-title`, `auto-tab-title-false` | 2 | TabGroup | — |
 | `availability` | `availability-calendar-notsupported`, `availability-calendar-busy`, `availability-calendar-free`, `availability-calendar-tentative`, `availability-calendar-unavailable` | 5 | Ti.Calendar.Event | — |
 | `availableCameraMediaTypes` | `available-camera-media-types-type-photo`, `available-camera-media-types-type-livephoto`, `available-camera-media-types-type-video` | 3 | Ti.Media | — |
-| `availableCameras` | `available-cameras-camera-front`, `available-cameras-camera-rear` | 2 | Ti.Media | — |
 | `availablePhotoGalleryMediaTypes` | `available-photo-gallery-media-types-type`, `available-photo-gallery-media-types-type-livephoto`, `available-photo-gallery-media-types-type-video` | 3 | Ti.Media | — |
 | `availablePhotoMediaTypes` | `available-photo-media-types-type`, `available-photo-media-types-type-livephoto`, `available-photo-media-types-type-video` | 3 | Ti.Media | — |
+| `axisBehavior` | `axis-behavior-bar-button-automatic`, `axis-behavior-bar-button-horizontal-only`, `axis-behavior-bar-button-vertical-preferred` | 3 | Button | iOS only |
 | `backfillEnd` | `backfill-end`, `backfill-end-false` | 2 | Gradient | — |
 | `backfillStart` | `backfill-start`, `backfill-start-false` | 2 | Gradient | — |
 | `backgroundColor` | `bg-*` | 245 | View, Ti.Media.VideoPlayer, Android.CardView +40 more | — |
@@ -152,19 +148,16 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `bottom` | `items-start`, `items-end`, `items-center` | 3 | ActivityIndicator, Animaiton, View, Window | — |
 | `bottom` | `top-auto`, `left-auto`, `right-auto`, `bottom-auto`, `inset-x-0`, `inset-y-0`, `inset-0`, `inset-x-auto`, … | 10 | ActivityIndicator, Animation, View, Window | — |
 | `bottom` | `gap-*` | 259 | ActivityIndicator, Animation, View, Window | — |
-| `bottom` | `bottom-*` | 63 | View, Ti.Media.VideoPlayer, ActivityIndicator +38 more | — |
+| `bottom` | `bottom-*` | 63 | View, Ti.Media.VideoPlayer, ActivityIndicator +39 more | — |
 | `breakStrategy` | `break-strategy-simple`, `break-strategy-high-quality`, `break-strategy-balanced` | 3 | Label | — |
-| `bubbleParent` | `bubble-parent`, `bubble-parent-false` | 2 | Ti.Proxy, Ti.Module, View +190 more | — |
-| `bubbles` | `bubbles`, `bubbles-false` | 2 | Ti.Event | — |
+| `bubbleParent` | `bubble-parent`, `bubble-parent-false` | 2 | Ti.Proxy, Ti.Module, View +191 more | — |
 | `buttonClickRequired` | `button-click-required`, `button-click-required-false` | 2 | AlertDialog | — |
 | `bypassDnd` | `bypass-dnd`, `bypass-dnd-false` | 2 | Ti.Android.NotificationChannel | — |
 | `cache` | `cache`, `cache-false` | 2 | Ti.Network.HTTPClient | — |
 | `cacheMode` | `cache-mode-webview-load`, `cache-mode-webview-load-no`, `cache-mode-webview-load-only`, `cache-mode-webview-load-else-network` | 4 | WebView | Android only |
 | `cachePolicy` | `cache-policy-use-protocol`, `cache-policy-reload-ignoring-local-data`, `cache-policy-return-data-else-load`, `cache-policy-return-data-dont-load` | 4 | WebView | iOS only |
 | `cacheSize` | `cache-size-*` | 13 | ScrollableView | — |
-| `calendarAuthorization` | `calendar-authorization-authorized`, `calendar-authorization-denied`, `calendar-authorization-restricted`, `calendar-authorization-unknown` | 4 | Ti.Calendar | — |
 | `calendarViewShown` | `calendar-view-shown`, `calendar-view-shown-false` | 2 | Picker | — |
-| `cameraAuthorization` | `camera-authorization-authorized`, `camera-authorization-denied`, `camera-authorization-restricted`, `camera-authorization-unknown` | 4 | Ti.Media | — |
 | `cameraFlashMode` | `camera-flash-mode-auto`, `camera-flash-mode-off`, `camera-flash-mode-on` | 3 | Ti.Media | — |
 | `canCancelEvents` | `can-cancel-events`, `can-cancel-events-false` | 2 | ScrollView | — |
 | `cancelable` | `cancelable`, `cancelable-false` | 2 | Android.ProgressIndicator | — |
@@ -174,7 +167,6 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `canEdit` | `can-edit`, `can-edit-false` | 2 | ListItem | — |
 | `canInsert` | `can-insert`, `can-insert-false` | 2 | ListItem | — |
 | `canMove` | `can-move`, `can-move-false` | 2 | ListItem | — |
-| `canRecord` | `can-record`, `can-record-false` | 2 | Ti.Media | — |
 | `canScroll` | `can-scroll`, `can-scroll-false` | 2 | ListView | — |
 | `carPlaySetting` | `car-play-setting-not-supported`, `car-play-setting-enabled`, `car-play-setting-disabled` | 3 | GetUserNotificationSettings | iOS only |
 | `caseInsensitiveSearch` | `case-insensitive-search`, `case-insensitive-search-false` | 2 | ListView | — |
@@ -187,7 +179,6 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `clearOnEdit` | `clear-on-edit`, `clear-on-edit-false` | 2 | TextArea, TextField | — |
 | `clipMode` | `clip-enabled`, `clip-disabled` | 2 | View | iOS only |
 | `clipViews` | `clip-views`, `clip-views-false` | 2 | ScrollableView | — |
-| `closed` | `closed`, `closed-false` | 2 | NavigationWindow, TabGroup, Window, iOS.SplitWindow | — |
 | `code` | `code-device-busy`, `code-no-camera`, `code-unknown-error`, `code-no-focus` | 4 | assert.AssertionError, EmitWarningOptions, RequestPermissionAccessResult +28 more | — |
 | `collisionMode` | `collision-mode-all`, `collision-mode-boundary`, `collision-mode-item` | 3 | iOS.CollisionBehavior | iOS only |
 | `color` | `text-*` | 245 | Button, Label, PickerRow +10 more | — |
@@ -198,7 +189,6 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `compression` | `compression-audio-format-*` | 7 | Ti.Media.AudioRecorder | — |
 | `connected` | `connected`, `connected-false` | 2 | process, Ti.Network.HTTPClient, Ti.Network.Socket.TCP | — |
 | `constraint` | `horizontal-constraint`, `vertical-constraint` | 2 | Animation | — |
-| `contactsAuthorization` | `contacts-authorization-authorized`, `contacts-authorization-denied`, `contacts-authorization-unknown` | 3 | Ti.Contacts | — |
 | `contentHeight` | `content-w-auto`, `content-h-auto`, `content-w-screen`, `content-h-screen`, `content-auto`, `content-screen` | 6 | ScrollView | — |
 | `contentHeight` | `content-h-*` | 35 | ScrollView, iOS.PreviewContext | — |
 | `contentScrimColor` | `content-scrim-*` | 245 | Android.CollapseToolbar | — |
@@ -231,6 +221,7 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `disabledColor` | `disabled-*` | 245 | Button | — |
 | `disableNetworkActivityIndicator` | `disable-network-activity-indicator`, `disable-network-activity-indicator-false` | 2 | Ti.App | — |
 | `displayHomeAsUp` | `display-home-as-up`, `display-home-as-up-false` | 2 | Ti.Android.ActionBar, Android.CollapseToolbar | — |
+| `displayMode` | `display-mode-split-window-automatic`, `display-mode-split-window-secondary-only`, `display-mode-split-window-one-beside-secondary`, `display-mode-split-window-one-over-secondary` | 4 | iOS.SplitWindow | iOS only |
 | `draggingType` | `drag-apply`, `drag-animate` | 2 | For the Animation Component | — |
 | `drawerIndicatorEnabled` | `drawer-indicator-enabled`, `drawer-indicator-enabled-false` | 2 | Android.DrawerLayout | — |
 | `drawerLockMode` | `drawer-lock-mode-locked-closed`, `drawer-lock-mode-locked-open`, `drawer-lock-mode-undefined`, `drawer-lock-mode-unlocked` | 4 | Android.DrawerLayout | Android only |
@@ -280,7 +271,6 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `forceBottomPosition` | `force-bottom-position`, `force-bottom-position-false` | 2 | TabGroup | — |
 | `forceModal` | `force-modal`, `force-modal-false` | 2 | openWindowParams | — |
 | `forceSplashAsSnapshot` | `force-splash-as-snapshot`, `force-splash-as-snapshot-false` | 2 | Ti.App | — |
-| `forceTouchSupported` | `force-touch-supported`, `force-touch-supported-false` | 2 | iOS | — |
 | `forceUpdates` | `force-updates`, `force-updates-false` | 2 | ListView | — |
 | `format` | `format-audio-fileformat-*` | 9 | Ti.Media.AudioRecorder | — |
 | `format24` | `format24`, `format24-false` | 2 | Picker | — |
@@ -292,10 +282,8 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `grouping` | `grouping-music-media-group-*` | 8 | MediaQueryType | — |
 | `groupSummary` | `group-summary`, `group-summary-false` | 2 | Ti.Android.Notification | — |
 | `handleLinks` | `handle-links`, `handle-links-false` | 2 | TextArea | — |
-| `hasAlarm` | `has-alarm`, `has-alarm-false` | 2 | Ti.Calendar.Event | — |
 | `hasCheck` | `has-check`, `has-check-false` | 2 | TableViewRow | — |
 | `hasChild` | `has-child`, `has-child-false` | 2 | TableViewRow | — |
-| `hasCompass` | `has-compass`, `has-compass-false` | 2 | Ti.Geolocation | — |
 | `hasDetail` | `has-detail`, `has-detail-false` | 2 | TableViewRow | — |
 | `hasProtectedAsset` | `has-protected-asset`, `has-protected-asset-false` | 2 | Ti.Media.Item, MediaQueryType | — |
 | `headerDividersEnabled` | `header-dividers-enabled`, `header-dividers-enabled-false` | 2 | ListView, TableView | — |
@@ -317,6 +305,7 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `hidesBarsWhenKeyboardAppears` | `hides-bars-when-keyboard-appears`, `hides-bars-when-keyboard-appears-false` | 2 | NavigationWindow, TabGroup, Window, iOS.SplitWindow | — |
 | `hideSearchOnSelection` | `hide-search-on-selection`, `hide-search-on-selection-false` | 2 | TableView | — |
 | `hideShadow` | `hide-shadow`, `hide-shadow-false` | 2 | TabGroup, Window, iOS.SplitWindow | — |
+| `hideSharedBackground` | `hide-shared-background`, `hide-shared-background-false` | 2 | Toolbar | — |
 | `hidesSearchBarWhenScrolling` | `hides-search-bar-when-scrolling`, `hides-search-bar-when-scrolling-false` | 2 | NavigationWindow, TabGroup, Window, iOS.SplitWindow | — |
 | `highlightedColor` | `highlighted-*` | 245 | Label | — |
 | `hintTextColor` | `placeholder-*` | 245 | Android.SearchView, SearchBar, TextArea, TextField | — |
@@ -364,19 +353,14 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `inputType` | `input-type-class-number`, `input-type-class-text` | 2 | TextField | — |
 | `interactive` | `interactive`, `interactive-false` | 2 | GlassEffectConfiguration | — |
 | `interactiveDismissModeEnabled` | `interactive-dismiss-mode-enabled`, `interactive-dismiss-mode-enabled-false` | 2 | NavigationWindow, TabGroup | — |
-| `isCameraSupported` | `is-camera-supported`, `is-camera-supported-false` | 2 | Ti.Media | — |
 | `isCloudItem` | `is-cloud-item`, `is-cloud-item-false` | 2 | Ti.Media.Item, MediaQueryType | — |
 | `isCompilation` | `is-compilation`, `is-compilation-false` | 2 | Ti.Media.Item, MediaQueryType | — |
-| `isDetached` | `is-detached`, `is-detached-false` | 2 | Ti.Calendar.Event | — |
-| `isExplicit` | `is-explicit`, `is-explicit-false` | 2 | Ti.Media.Item | — |
 | `isLeftOpen` | `is-left-open`, `is-left-open-false` | 2 | Android.DrawerLayout | — |
 | `isLeftVisible` | `is-left-visible`, `is-left-visible-false` | 2 | Android.DrawerLayout | — |
 | `isLocal` | `is-local`, `is-local-false` | 2 | Ti.Network.BonjourService | — |
-| `isOrganizer` | `is-organizer`, `is-organizer-false` | 2 | Ti.Calendar.Attendee | — |
 | `isRightOpen` | `is-right-open`, `is-right-open-false` | 2 | Android.DrawerLayout | — |
 | `isRightVisible` | `is-right-visible`, `is-right-visible-false` | 2 | Android.DrawerLayout | — |
 | `isSearching` | `is-searching`, `is-searching-false` | 2 | Ti.Network.BonjourBrowser | — |
-| `isTranslatedBinaryOnAppleSilicon` | `is-translated-binary-on-apple-silicon`, `is-translated-binary-on-apple-silicon-false` | 2 | Ti.Platform | — |
 | `itemContentType` | `item-content-type-uttype-*` | 33 | Ti.App.iOS.SearchableItemAttributeSet | iOS only |
 | `javaScriptCanOpenWindowsAutomatically` | `java-script-can-open-windows-automatically`, `java-script-can-open-windows-automatically-false` | 2 | WebViewPreferencesObject | — |
 | `javaScriptEnabled` | `java-script-enabled`, `java-script-enabled-false` | 2 | WebViewPreferencesObject | — |
@@ -389,19 +373,18 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `keyboardToolbarColor` | `keyboard-toolbar-*` | 245 | TextArea, TextField | — |
 | `keyboardToolbarHeight` | `keyboard-toolbar-h-*` | 35 | TextArea, TextField | — |
 | `keyboardType` | `keyboard-type`, `keyboard-type-*` | 11 | AlertDialog, SearchBar, TextArea, TextField | — |
-| `keyboardVisible` | `keyboard-visible`, `keyboard-visible-false` | 2 | Ti.App | — |
-| `kind` | `kind-contacts-organization`, `kind-contacts-person` | 2 | Ti.App.iOS.SearchableItemAttributeSet, Ti.Contacts.Person | — |
+| `kind` | `kind-contacts-organization`, `kind-contacts-person` | 2 | Ti.App.iOS.SearchableItemAttributeSet, Ti.Contacts.Person, ReservedRegion | — |
 | `largeTitleDisplayMode` | `large-title-display-mode-automatic`, `large-title-display-mode-always`, `large-title-display-mode-never` | 3 | NavigationWindow, TabGroup, Window, iOS.SplitWindow | iOS only |
 | `largeTitleEnabled` | `large-title-enabled`, `large-title-enabled-false` | 2 | NavigationWindow, TabGroup, Window, iOS.SplitWindow | — |
 | `launchOptionsLocationKey` | `launch-options-location-key`, `launch-options-location-key-false` | 2 | launchOptions | — |
 | `layerType` | `layer-type-web-view-none`, `layer-type-web-view-software`, `layer-type-web-view-hardware` | 3 | WebView | — |
 | `layout` | `grid`, `grid-flow-col`, `grid-flow-row` | 3 | View | — |
 | `layout` | `vertical`, `horizontal`, `composite` | 3 | View, Ti.Android.R, Ti.Media.VideoPlayer +31 more | — |
-| `lazyLoadingEnabled` | `lazy-loading-enabled`, `lazy-loading-enabled-false` | 2 | ListView | — |
+| `lazyLoadingEnabled` | `lazy-loading-enabled`, `lazy-loading-enabled-false` | 2 | ListView, TabGroup | — |
 | `left` | `m-*`, `my-*`, `mx-*`, `mt-*`, `mr-*`, `mb-*`, `ml-*`, `-m-*`, … | 1134 | — | — |
 | `left` | `top-auto`, `left-auto`, `right-auto`, `bottom-auto`, `inset-x-0`, `inset-y-0`, `inset-0`, `inset-x-auto`, … | 10 | ActivityIndicator, Animation, View, Window | — |
 | `left` | `gap-*` | 259 | ActivityIndicator, Animation, View, Window | — |
-| `left` | `left-*` | 63 | View, Ti.Media.VideoPlayer, ActivityIndicator +41 more | — |
+| `left` | `left-*` | 63 | View, Ti.Media.VideoPlayer, ActivityIndicator +42 more | — |
 | `leftButtonMode` | `left-button-mode-always`, `left-button-mode-never`, `left-button-mode-onblur`, `left-button-mode-onfocus` | 4 | TextField | — |
 | `leftButtonPadding` | `left-button-padding-*` | 35 | TextField | — |
 | `leftDrawerLockMode` | `left-drawer-lock-mode-locked-closed`, `left-drawer-lock-mode-locked-open`, `left-drawer-lock-mode-undefined`, `left-drawer-lock-mode-unlocked` | 4 | Android.DrawerLayout | Android only |
@@ -415,11 +398,9 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `lineHeightMultiple` | `line-h-multiple-*` | 64 | ParagraphAttribute | — |
 | `lines` | `lines-*` | 12 | Label, TextArea | — |
 | `lineSpacing` | `line-spacing-*` | 64 | ParagraphAttribute, Label | — |
+| `linkColor` | `link-*` | 245 | Label | — |
 | `loading` | `loading`, `loading-false` | 2 | WebView, iOS.ButtonConfiguration | — |
 | `location` | `location-progress-indicator-dialog`, `location-progress-indicator-status-bar` | 2 | Ti.Calendar.Event, Ti.Network.HTTPClient, Android.ProgressIndicator +2 more | Android only |
-| `locationAccuracyAuthorization` | `location-accuracy-authorization-full`, `location-accuracy-authorization-reduced` | 2 | Ti.Geolocation | — |
-| `locationServicesAuthorization` | `location-services-authorization-denied`, `location-services-authorization-restricted`, `location-services-authorization-unknown`, `location-services-authorization-always`, `location-services-authorization-when-in-use` | 5 | Ti.Geolocation | — |
-| `locationServicesEnabled` | `location-services-enabled`, `location-services-enabled-false` | 2 | Ti.Geolocation | — |
 | `lockScreenSetting` | `lock-screen-setting-not-supported`, `lock-screen-setting-enabled`, `lock-screen-setting-disabled` | 3 | GetUserNotificationSettings | iOS only |
 | `lockscreenVisibility` | `lockscreen-visibility-private`, `lockscreen-visibility-public`, `lockscreen-visibility-secret` | 3 | Ti.Android.NotificationChannel | Android only |
 | `loginKeyboardType` | `login-keyboard-type`, `login-keyboard-type-*` | 11 | AlertDialog | — |
@@ -432,16 +413,17 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `maxElevation` | `max-elevation-*` | 35 | Android.CardView | — |
 | `maxImages` | `max-images`, `max-images-false` | 2 | PhotoGalleryOptionsType | — |
 | `maximumLineHeight` | `maximum-line-h-*` | 35 | ParagraphAttribute | — |
+| `maximumPrimaryColumnWidth` | `maximum-primary-col-w-*` | 34 | iOS.SplitWindow | iOS only |
 | `maxLines` | `max-lines-*` | 12 | Label, TextArea | — |
 | `maxRowHeight` | `max-row-h-*` | 35 | TableView | — |
 | `maxZoomScale` | `max-zoom-scale-*` | 15 | ScrollView | — |
 | `mediaType` | `media-type-music-all`, `media-type-music-any-audio`, `media-type-music-audiobook`, `media-type-music`, `media-type-music-podcast` | 5 | Ti.Media.Item, MediaQueryType, CameraMediaItemType | — |
 | `mediaTypes` | `media-types-*` | 18 | Ti.App.iOS.SearchableItemAttributeSet, MusicLibraryOptionsType, CameraOptionsType +2 more | — |
 | `mediaTypesRequiringUserActionForPlayback` | `media-types-requiring-user-action-for-playback-audiovisual-type-none`, `media-types-requiring-user-action-for-playback-audiovisual-type-audio`, `media-types-requiring-user-action-for-playback-audiovisual-type-video`, `media-types-requiring-user-action-for-playback-audiovisual-type-all` | 4 | iOS.WebViewConfiguration | iOS only |
-| `method` | `method-calendar-alert`, `method-calendar`, `method-calendar-email`, `method-calendar-sms` | 4 | Ti.Calendar.Reminder | — |
 | `minimizeBehavior` | `minimize-behavior-tab-group-automatic`, `minimize-behavior-tab-group-never`, `minimize-behavior-tab-group-on-scroll-up`, `minimize-behavior-tab-group-on-scroll-down` | 4 | TabGroup | iOS only |
 | `minimumFontSize` | `minimum-text-*` | 13 | label, TextField | — |
 | `minimumLineHeight` | `minimum-line-h-*` | 64 | ParagraphAttribute | — |
+| `minimumPrimaryColumnWidth` | `minimum-primary-col-w-*` | 34 | iOS.SplitWindow | iOS only |
 | `minRowHeight` | `min-row-h-*` | 35 | TableView | — |
 | `minZoomScale` | `min-zoom-scale-*` | 15 | ScrollView | — |
 | `mixedContentMode` | `mixed-content-mode`, `mixed-content-mode-false` | 2 | WebView | — |
@@ -453,7 +435,6 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `moveByAnimate` | `move-by-animate`, `move-by-animate-false` | 2 | — | — |
 | `moveByAnimation` | `move-by-animation`, `move-by-animation-false` | 2 | — | — |
 | `moveByProperties` | `move-by-properties`, `move-by-properties-false` | 2 | — | — |
-| `moviePlayerStatus` | `movie-player-status-video-load-state-failed`, `movie-player-status-video-load-state-playable`, `movie-player-status-video-load-state-unknown` | 3 | Ti.Media.VideoPlayer | — |
 | `moving` | `moving`, `moving-false` | 2 | TableView | — |
 | `multipleWindows` | `multiple-windows`, `multiple-windows-false` | 2 | WebView | — |
 | `nativeSpinner` | `native-spinner`, `native-spinner-false` | 2 | Picker | — |
@@ -463,18 +444,16 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `navigationMode` | `navigation-mode-standard`, `navigation-mode-tabs` | 2 | Ti.Android.ActionBar | Android only |
 | `navTintColor` | `nav-tint-*` | 245 | TabGroup, Window, iOS.SplitWindow | — |
 | `needsSave` | `needs-save`, `needs-save-false` | 2 | Ti.App.iOS.UserActivity | — |
-| `networkType` | `network-type-lan`, `network-type-mobile`, `network-type-none`, `network-type-unknown`, `network-type-wifi` | 5 | Ti.Network | — |
 | `noDeprecation` | `no-deprecation`, `no-deprecation-false` | 2 | process | — |
 | `notificationCenterSetting` | `notification-center-setting-user-not-supported`, `notification-center-setting-user-enabled`, `notification-center-setting-user-disabled` | 3 | GetUserNotificationSettings | iOS only |
 | `numeric` | `numeric`, `numeric-false` | 2 | CollatorOptions | — |
-| `online` | `online`, `online-false` | 2 | Ti.Network | — |
 | `onThumbColor` | `on-thumb-*` | 245 | Switch | — |
 | `onTintColor` | `on-tint-*` | 245 | Switch | — |
 | `opacity` | `opacity-to-0`, `opacity-to-100`, `toggle-visible` | 3 | Animation | — |
 | `opacity` | `opacity-*` | 21 | View, Ti.Media.VideoPlayer, Android.CardView +33 more | — |
 | `opaque` | `opaque`, `opaque-false` | 2 | Animation | — |
 | `opaquebackground` | `opaquebackground`, `opaquebg-false` | 2 | OptionDialog | — |
-| `options` | `options-category-none`, `options-category-custom-dismiss-action`, `options-category-allow-in-carplay`, `options-category-hidden-previews-show-title`, `options-category-hidden-previews-show-subtitle` | 5 | showParams, Ti.App.iOS.UserNotificationCategory, UserNotificationAttachment +2 more | iOS only |
+| `options` | `options-category-none`, `options-category-custom-dismiss-action`, `options-category-allow-in-carplay`, `options-category-hidden-previews-show-title`, `options-category-hidden-previews-show-subtitle` | 5 | QuickSettingsServiceShowParams, Ti.App.iOS.UserNotificationCategory, UserNotificationAttachment +2 more | iOS only |
 | `orientationModes` | `orientation-landscape-left`, `orientation-landscape-right`, `orientation-portrait`, `orientation-upside-portrait`, `orientation-landscape`, `orientation-all` | 6 | NavigationWindow, TabGroup, Window, iOS.SplitWindow | — |
 | `orientationModes` | `portrait`, `upside-portrait`, `landscape-left`, `landscape-right`, `landscape` | 5 | NavigationWindow, TabGroup, Window, iOS.SplitWindow | — |
 | `outputs` | `outputs-audio-session-port-*` | 14 | RouteDescription | — |
@@ -488,7 +467,7 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | Property | Classes | Count | Components | Platform |
 | --- | --- | --- | --- | --- |
 | `padding` | `p-*`, `py-*`, `px-*`, `pt-*`, `pr-*`, `pb-*`, `pl-*` | 245 | Android.CardView, TextArea, TextField | — |
-| `padding` | `padding-*` | 35 | Android.CardView, ScrollableView, TextArea +2 more | — |
+| `padding` | `padding-*` | 35 | Android.CardView, Label, ScrollableView +3 more | — |
 | `paddingBottom` | `padding-bottom-*` | 35 | Android.CardView, TabGroup | — |
 | `paddingLeft` | `padding-left-*` | 35 | Android.CardView, TabGroup | — |
 | `paddingRight` | `padding-right-*` | 35 | Android.CardView, TabGroup | — |
@@ -509,22 +488,20 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `pathOnly` | `path-only`, `path-only-false` | 2 | PhotoGalleryOptionsType | — |
 | `pauseLocationUpdateAutomatically` | `pause-location-update-automatically`, `pause-location-update-automatically-false` | 2 | Ti.Geolocation | — |
 | `persistent` | `persistent`, `persistent-false` | 2 | AlertDialog, OptionDialog | — |
-| `physicalSizeCategory` | `physical-size-category-large`, `physical-size-category-normal`, `physical-size-category-small`, `physical-size-category-undefined`, `physical-size-category-xlarge` | 5 | Ti.Platform.Android | Android only |
 | `pictureInPictureEnabled` | `picture-in-enabled`, `picture-in-enabled-false` | 2 | Ti.Media.VideoPlayer | — |
-| `playbackState` | `playback-state-*` | 12 | Ti.Media.MusicPlayer, Ti.Media.VideoPlayer | — |
 | `pluginState` | `plugin-state-webview-plugins-off`, `plugin-state-webview-plugins-on`, `plugin-state-webview-plugins-on-demand` | 3 | WebView | Android only |
 | `position` | `position-*` | 8 | EncodeNumberDict, DecodeNumberDict, DecodeStringDict +3 more | some variants platform-only |
+| `presentsWithGesture` | `presents-with-gesture`, `presents-with-gesture-false` | 2 | iOS.SplitWindow | iOS only |
 | `preventCornerOverlap` | `prevent-corner-overlap`, `prevent-corner-overlap-false` | 2 | Android.CardView | — |
 | `preventDefaultImage` | `prevent-default-image`, `prevent-default-image-false` | 2 | ImageView | — |
+| `primaryColumnWidthFraction` | `primary-col-w-fraction-*` | 29 | iOS.SplitWindow | iOS only |
 | `providesAppNotificationSettings` | `provides-app-notification-settings-not-supported`, `provides-app-notification-settings-enabled`, `provides-app-notification-settings-disabled` | 3 | GetUserNotificationSettings | iOS only |
 | `proximityDetection` | `proximity-detection`, `proximity-detection-false` | 2 | Ti.App | — |
-| `proximityState` | `proximity-state`, `proximity-state-false` | 2 | Ti.App | — |
 | `pruneSectionsOnEdit` | `prune-sections-on-edit`, `prune-sections-on-edit-false` | 2 | ListView | — |
 | `pullBackgroundColor` | `pull-bg-*` | 245 | View, Ti.Media.VideoPlayer, Button +31 more | — |
 | `pushMode` | `push-mode-continuous`, `push-mode-instantaneous` | 2 | iOS.PushBehavior | iOS only |
 | `readyState` | `ready-state-network-httpclient-unsent`, `ready-state-network-httpclient-opened`, `ready-state-network-httpclient-headers-received`, `ready-state-network-httpclient-loading`, `ready-state-network-httpclient-done` | 5 | Ti.Network.HTTPClient, ReadyStatePayload | — |
 | `recording` | `recording`, `recording-false` | 2 | Ti.Media.AudioRecorder, CameraOptionsType | — |
-| `remoteNotificationsEnabled` | `remote-notifications-enabled`, `remote-notifications-enabled-false` | 2 | Ti.Network | — |
 | `repeat` | `repeat-*` | 13 | NotificationParams, Animation | — |
 | `repeatCount` | `repeat-count-*` | 12 | ImageView | — |
 | `repeatMode` | `repeat-mode-music-player-all`, `repeat-mode-music-player`, `repeat-mode-music-player-none`, `repeat-mode-music-player-one`, `repeat-mode-video-none`, `repeat-mode-video-one` | 6 | Ti.Media.MusicPlayer, Ti.Media.VideoPlayer | — |
@@ -538,7 +515,7 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `right` | `m-*`, `my-*`, `mx-*`, `mt-*`, `mr-*`, `mb-*`, `ml-*`, `-m-*`, … | 1134 | — | — |
 | `right` | `top-auto`, `left-auto`, `right-auto`, `bottom-auto`, `inset-x-0`, `inset-y-0`, `inset-0`, `inset-x-auto`, … | 10 | ActivityIndicator, Animation, View, Window | — |
 | `right` | `gap-*` | 259 | ActivityIndicator, Animation, View, Window | — |
-| `right` | `right-*` | 63 | View, Ti.Media.VideoPlayer, ActivityIndicator +39 more | — |
+| `right` | `right-*` | 63 | View, Ti.Media.VideoPlayer, ActivityIndicator +40 more | — |
 | `rightButtonMode` | `right-button-mode-always`, `right-button-mode-never`, `right-button-mode-onblur`, `right-button-mode-onfocus` | 4 | TextField | — |
 | `rightButtonPadding` | `right-button-padding-*` | 35 | TextField | — |
 | `rightDrawerLockMode` | `right-drawer-lock-mode-locked-closed`, `right-drawer-lock-mode-locked-open`, `right-drawer-lock-mode-undefined`, `right-drawer-lock-mode-unlocked` | 4 | Android.DrawerLayout | Android only |
@@ -550,7 +527,6 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `rotate` | `rotate-*` | 14 | Matrix2DCreationDict | — |
 | `rowCount` | `row-count-*` | 12 | Ti.Database.ResultSet, DashboardView, PickerColumn, TableViewSection | — |
 | `rowHeight` | `row-h-*` | 35 | TableView | — |
-| `running` | `running`, `running-false` | 2 | iOS.Animator | — |
 | `saveToPhotoGallery` | `save-to-photo-gallery`, `save-to-photo-gallery-false` | 2 | CameraOptionsType | — |
 | `scale` | `scale-*` | 15 | Matrix2DCreationDict, Matrix3DCreationDict | — |
 | `scalesPageToFit` | `scales-page-to-fit`, `scales-page-to-fit-false` | 2 | WebView | — |
@@ -612,20 +588,18 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `showVerticalScrollIndicator` | `show-vertical-scroll-indicator`, `show-vertical-scroll-indicator-false` | 2 | ListView, ScrollView, TableView | — |
 | `shuffleMode` | `shuffle-mode-music-player-albums`, `shuffle-mode-music-player`, `shuffle-mode-music-player-none`, `shuffle-mode-music-player-songs` | 4 | Ti.Media.MusicPlayer | — |
 | `smoothScrollOnTabClick` | `smooth-scroll-on-tab-click`, `smooth-scroll-on-tab-click-false` | 2 | TabGroup | — |
+| `snapping` | `snapping`, `snapping-false` | 2 | ListView, TableView | — |
 | `softKeyboardOnFocus` | `soft-keyboard-on-focus`, `soft-keyboard-on-focus-hide`, `soft-keyboard-on-focus-show` | 3 | View, Ti.Media.VideoPlayer, Android.CardView +25 more | Android only |
 | `sorted` | `sorted`, `sorted-false` | 2 | UtilInspectOptions | — |
 | `soundSetting` | `sound-setting-not-supported`, `sound-setting-enabled`, `sound-setting-disabled` | 3 | GetUserNotificationSettings | iOS only |
-| `sourceType` | `source-type-calendar-local`, `source-type-calendar-exchange`, `source-type-calendar-caldav`, `source-type-calendar-mobileme`, `source-type-calendar-subscribed`, `source-type-calendar-birthdays` | 6 | Ti.Calendar.Calendar | — |
+| `splitBehavior` | `split-behavior-window-automatic`, `split-behavior-window-tile`, `split-behavior-window-overlay`, `split-behavior-window-displace` | 4 | iOS.SplitWindow | iOS only |
 | `splitTrack` | `split-track`, `split-track-false` | 2 | Slider | — |
 | `startMode` | `start-mode-not-sticky`, `start-mode-redeliver-intent` | 2 | ServiceIntentOptions | Android only |
-| `state` | `state-*` | 19 | Ti.Android.QuickSettingsService, Ti.Calendar.Alert, GeocodedAddress +3 more | some variants platform-only |
-| `status` | `status-calendar-*` | 13 | Ti.Calendar.Attendee, Ti.Calendar.Event, Ti.Network.HTTPClient | — |
+| `state` | `state-*` | 20 | Ti.Android.QuickSettingsService, Ti.Calendar.Alert, GeocodedAddress +3 more | some variants platform-only |
 | `statusBarBackgroundColor` | `status-bar-bg-*` | 245 | iOS | — |
 | `statusBarColor` | `status-bar-*` | 245 | NavigationWindow, TabGroup, Window | — |
-| `statusBarHeight` | `status-bar-h-*` | 64 | Ti.UI | — |
 | `statusBarStyle` | `status-bar`, `status-bar-dark`, `status-bar-light` | 3 | Window | iOS only |
 | `statusBarStyle` | `status-bar-style`, `status-bar-style-light-content` | 2 | NavigationWindow, TabGroup, Window, iOS.SplitWindow | iOS only |
-| `stopped` | `stopped`, `stopped-false` | 2 | Ti.Media.AudioRecorder | — |
 | `style` | `alert-dialog-style`, `alert-dialog-style-login-and-password`, `alert-dialog-style-plain-text-input`, `alert-dialog-style-secure-text-input` | 4 | — | iOS only |
 | `style` | `progress-bar-style-bar`, `progress-bar-style`, `progress-bar-style-plain` | 3 | ProgressBar | iOS only |
 | `style` | `style-*` | 32 | NumberFormatOptions, Ti.Android.Notification, Ti.Android.R +16 more | some variants platform-only |
@@ -674,7 +648,7 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `top` | `items-start`, `items-end`, `items-center` | 3 | ActivityIndicator, Animaiton, View, Window | — |
 | `top` | `top-auto`, `left-auto`, `right-auto`, `bottom-auto`, `inset-x-0`, `inset-y-0`, `inset-0`, `inset-x-auto`, … | 10 | ActivityIndicator, Animation, View, Window | — |
 | `top` | `gap-*` | 259 | ActivityIndicator, Animation, View, Window | — |
-| `top` | `top-*` | 63 | View, Ti.Media.VideoPlayer, ActivityIndicator +41 more | — |
+| `top` | `top-*` | 63 | View, Ti.Media.VideoPlayer, ActivityIndicator +42 more | — |
 | `torch` | `torch`, `torch-false` | 2 | Ti.Media | — |
 | `touchEnabled` | `pointer-events-auto`, `pointer-events-none` | 2 | View | — |
 | `touchEnabled` | `touch-enabled`, `touch-enabled-false` | 2 | View, Ti.Media.VideoPlayer, Android.CardView +34 more | — |
@@ -688,19 +662,17 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `translucent` | `translucent`, `translucent-false` | 2 | TabGroup, Toolbar, Window +2 more | — |
 | `treatReferenceAsBoundary` | `treat-reference-as-boundary`, `treat-reference-as-boundary-false` | 2 | iOS.CollisionBehavior | — |
 | `type` | `type-*` | 41 | DateTimeFormattedPart, NumberFormattedPart, EmitWarningOptions +16 more | some variants platform-only |
+| `underline` | `underline`, `underline-false` | 2 | Attribute | — |
 | `unique` | `unique`, `unique-false` | 2 | Clipboard | — |
 | `updateCurrentIntent` | `update-current-intent`, `update-current-intent-false` | 2 | Ti.Android.PendingIntent | — |
-| `uprightHeight` | `upright-h-*` | 35 | Ti.Blob | — |
-| `uprightWidth` | `upright-w-*` | 35 | Ti.Blob | — |
-| `useCameraX` | `use-camera-x`, `use-camera-x-false` | 2 | Ti.Media | — |
 | `useCompatPadding` | `use-compat-padding`, `use-compat-padding-false` | 2 | Android.CardView | — |
 | `useGrouping` | `use-grouping`, `use-grouping-false` | 2 | NumberFormatOptions | — |
-| `userInterfaceStyle` | `user-interface-style-unspecified`, `user-interface-style-light`, `user-interface-style-dark` | 3 | Ti.App.iOS, Ti.UI | — |
 | `useSpinner` | `use-spinner`, `use-spinner-false` | 2 | Picker | — |
 | `validatesSecureCertificate` | `validates-secure-certificate`, `validates-secure-certificate-false` | 2 | Ti.Network.HTTPClient | — |
-| `validRow` | `valid-row`, `valid-row-false` | 2 | Ti.Database.ResultSet | — |
 | `value` | `value-attribute-*` | 10 | DateTimeFormattedPart, NumberFormattedPart, Ti.Buffer +16 more | — |
 | `verticalAlign` | `vertical-align-center`, `vertical-align-top`, `vertical-align-bottom`, `vertical-align-text-bottom`, `vertical-align-text-center`, `vertical-align-text-top` | 6 | Ti.Media, Button, Label +3 more | — |
+| `verticalBarBehavior` | `vertical-bar-behavior-automatic`, `vertical-bar-behavior-disabled` | 2 | openWindowParams | iOS only |
+| `verticalBarCompressionBehavior` | `vertical-bar-compression-behavior-automatic`, `vertical-bar-compression-behavior-prefers-items`, `vertical-bar-compression-behavior-prefers-tab` | 3 | openWindowParams | iOS only |
 | `verticalBounce` | `vertical-bounce`, `vertical-bounce-false` | 2 | ScrollView | — |
 | `verticalMargin` | `vertical-margin-top`, `vertical-margin-bottom`, `vertical-margin-middle` | 3 | Notification | — |
 | `videoQuality` | `video-quality-*` | 7 | CameraOptionsType | — |
@@ -709,6 +681,7 @@ A property set inside `font` or `animationProperties` is listed with its contain
 | `viewShadowOffset` | `shadow`, `shadow-*` | 10 | iOS: Ti.UI.View, Android: Ti.UI.Android.CardView, Animation, View | — |
 | `viewShadowRadius` | `shadow`, `shadow-*` | 10 | iOS: Ti.UI.View, Android: Ti.UI.Android.CardView, Animation, View | — |
 | `visibility` | `visibility-*` | 7 | Ti.Android.Notification, Ti.Calendar.Event | some variants platform-only |
+| `visibilityPriority` | `visibility-priority-bar-button-low`, `visibility-priority-bar-button-standard`, `visibility-priority-bar-button-high` | 3 | Button | iOS only |
 | `visible` | `block`, `hidden` | 2 | View, Ti.Android.ActionBar, Ti.Android.MenuItem +37 more | — |
 | `visible` | `visible`, `visible-false` | 2 | View, Ti.Android.ActionBar, Ti.Android.MenuItem +38 more | — |
 | `waitsForConnectivity` | `waits-for-connectivity`, `waits-for-connectivity-false` | 2 | Ti.Network.HTTPClient | — |

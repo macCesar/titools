@@ -9,8 +9,9 @@ Install PurgeTSS globally on your machine using [NPM](https://www.npmjs.com/).
 ```
 
 > **CAUTION**
-> Node.js 20+ required.
-> PurgeTSS requires Node 20.0.0 or higher.
+> PurgeTSS 7.19.0+ requires Node 20.12 or later in the 20.x branch, 22.13 or later in the 22.x branch, or 23.5 and later. The exact supported range is `^20.12.0 || ^22.13.0 || >=23.5.0`, matching the CLI dependencies. Node 21 and early Node 22/23 versions are outside that range.
+
+PurgeTSS 7.20.1 uses Titanium SDK 14.0.0.GA Completions with the read-only and numeric-value corrections described in [SDK 14 compatibility](sdk-14-compatibility.md). Select classes supported by your application's SDK and platform; the catalog update does not require every existing project to move to SDK 14. For the restored RGB/RGBA syntax, see [the 7.20.2 upgrade steps](migration-guide.md#upgrade-to-v7202). Follow [the 7.20.1 upgrade steps](migration-guide.md#upgrade-to-v7201) to refresh generated styles, fonts and modules after updating the CLI.
 
 ## Alloy vs. Classic Setup
 
@@ -99,6 +100,8 @@ purgetss
 - `fonts`
 
   Place icon, serif, sans-serif, or monospace font files here. See [Custom Fonts](./custom-fonts.md) for the full guide, or [`build-fonts` Command](./cli-commands.md#build-fonts-command) for the terse flag reference.
+
+PurgeTSS 7.19.0+ also stores configuration and generator signatures in `purgetss/.cache/generator-signature.json`. Add `purgetss/.cache/` to `.gitignore`. An existing project rebuilds its catalog once to establish this metadata; later invocations detect effective configuration changes even within the same second. See [CLI generation and profiles](./performance-tips.md#cli-generation-and-execution-profiles) for cache boundaries, unchanged files and LiveView skips.
 
 > **CAUTION**
 > **PurgeTSS overwrites your existing `app.tss` file.**

@@ -5,7 +5,6 @@ allowed-tools: Read, Grep, Glob, Edit, Write, Bash(purgetss *), Bash(node *)
 ---
 
 # PurgeTSS Expert
-
 PurgeTSS is a utility-first styling toolkit for Titanium Alloy and a standalone asset/CommonJS generator for Alloy and Classic projects. The project layout determines which half of the toolkit is valid.
 
 ## Required workflow (read before responding)
@@ -24,8 +23,8 @@ Before recommending a command, class, output path, `$.UI.create()`, TSS file, or
 | Task involves | Required reading |
 |---|---|
 | Alloy vs. Classic support or output paths | [references/classic-projects.md](references/classic-projects.md), [references/cli-commands.md](references/cli-commands.md) |
-| Setup, auto-purge, or `watch` diagnostics | [references/installation-setup.md](references/installation-setup.md), [references/cli-commands.md](references/cli-commands.md) |
-| Choosing utility classes | [references/class-index.md](references/class-index.md) |
+| Setup, auto-purge, `watch` or profiling diagnostics | [references/installation-setup.md](references/installation-setup.md), [references/cli-commands.md](references/cli-commands.md), [references/performance-tips.md](references/performance-tips.md) |
+| Choosing utility classes / SDK 14 compatibility | [references/class-index.md](references/class-index.md), [references/sdk-14-compatibility.md](references/sdk-14-compatibility.md) |
 | Layout (horizontal/vertical/composite, grid) | [references/grid-layout.md](references/grid-layout.md), [references/ui-ux-design.md](references/ui-ux-design.md) |
 | Dynamic components in controllers | [references/dynamic-component-creation.md](references/dynamic-component-creation.md) |
 | App branding or artwork geometry | [references/app-branding.md](references/app-branding.md), [references/cli-commands.md](references/cli-commands.md) |
@@ -417,6 +416,7 @@ PurgeTSS shares naming with some CSS Frameworks but has DIFFERENT classes for Ti
 Load these only when needed:
 
 ### Essential References
+- **[SDK 14 Compatibility](references/sdk-14-compatibility.md)** - PurgeTSS 7.20.2 catalog, read-only state, numeric SplitWindow values and SDK/OS limits
 - **[Class Index](references/class-index.md)** - Naming conventions, prohibited classes, prefix inventory, verification commands (LOAD FIRST when unsure about a class)
 - **[Class Index — Properties (A–Z)](references/class-index-properties.md)** - Every Titanium property with the class families that set it, generated from `utilities.tss`
 - **[Class Categories](references/class-categories.md)** - Every class family grouped by kind of value: colors, dimensions, constants, booleans
@@ -427,13 +427,13 @@ Load these only when needed:
 - [CLI Commands](references/cli-commands.md) - All `purgetss` commands
 - [Color Commands](references/color-commands.md) - `semantic`, `shades` and `color-module`: Light/Dark semantic colors, palettes in `config.cjs`, and the CommonJS color module
 - [Adopting PurgeTSS](references/adopting-purgetss.md) - Moving an existing Alloy app from hand-written `.tss` files to utility classes: the style-priority trap, view-by-view workflow, and property-to-class translation tables
-- [Migration Guide](references/migration-guide.md) - Upgrading between PurgeTSS versions (v7.2.6 → v7.18.0): breaking changes and what to review after each upgrade
+- [Migration Guide](references/migration-guide.md) - Upgrading between PurgeTSS versions (v7.2.6 → v7.20.2): breaking changes and what to regenerate after each upgrade
 - **[Values and Units](references/values-and-units.md)** - How `ti.ui.defaultunit` in `tiapp.xml` interprets the unitless numeric values PurgeTSS writes (foundational concept for spacing, sizes, typography)
 
 ### Customization
 - [Deep Customization](references/customization-deep-dive.md) - config.cjs, colors, spacing, Ti Elements
 - [Custom Rules](references/custom-rules.md) - Styling Ti Elements, IDs, classes
-- [Apply Directive](references/apply-directive.md) - Extracting utility combinations
+- [Apply Directive](references/apply-directive.md) - Extracting utility combinations and resolving icon selectors with project-to-bundled fallback
 - [Configurable Properties](references/configurable-properties.md) - All 80+ customizable properties
 
 ### Appearance & Theming
@@ -458,20 +458,20 @@ Load these only when needed:
 - [SVG Pipeline](references/svg-pipeline.md) - SVG-aware compile-time image pipeline: `.svg` refs + numeric `w-*`/`h-*` classes compile to 8 density PNGs; `images.files`/`images.autoSync` (v7.11.0–v7.11.1)
 
 ### Performance
-- [Performance Tips](references/performance-tips.md) - Optimizing PurgeTSS apps (bridge crossings, ListView, animations)
+- [Performance Tips](references/performance-tips.md) - CLI profiles, generation signatures and measurements; app bridge, ListView and animation patterns
 
 ### Components
 - [TiKit UI Components](references/tikit-components.md) - Ready-to-use Alerts, Avatars, Buttons, Cards, Tabs built with PurgeTSS
 
 ### Fonts & Animations
-- [Custom Fonts](references/custom-fonts.md) - `build-fonts` command for Google Fonts, brand typefaces, and community icon fonts (.ttf + .css)
+- [Custom Fonts](references/custom-fonts.md) - `build-fonts` for text/icon fonts, modern and legacy CSS glyphs, selector aliases and font-family selection
 - [Icon Fonts](references/icon-fonts.md) - The 4 official families (Font Awesome 7, Material Icons, Material Symbols, Framework7) — variant tables + `icon-library` install flow + recreating removed libraries
 - [Animation System](references/animation-system.md) - 15 methods including collision detection, transitions, and sequential animations
 - [Animation Advanced](references/animation-advanced.md) - Property forwarding, runtime rules, utility classes, and platform behavior
 - [PurgeTSS UI in Classic](references/purgetss-ui-classic.md) - Native JavaScript setup, public exports, animation objects, cleanup, and platform notes
 
 ### Release Notes
-- [Version History](references/version-history.md) - Release-by-release feature additions and behavior changes (v7.4.0 → v7.18.0)
+- [Version History](references/version-history.md) - Release-by-release feature additions and behavior changes (v7.4.0 → v7.20.2)
 
 > **💡 TEXT FONTS (Google Fonts, Roboto, etc.)**
 > For text fonts, see [Custom Fonts](references/custom-fonts.md).

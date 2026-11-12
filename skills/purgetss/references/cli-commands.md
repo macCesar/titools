@@ -6,6 +6,7 @@ This page lists the commands available in PurgeTSS. For release-by-release featu
 ## Contents
 
 - [Alloy and Classic Compatibility](#alloy-and-classic-compatibility)
+- [Execution Profiles](#execution-profiles)
 - [`init` Command](#init-command)
 - [`create` Command](#create-command)
 - [`brand` Command](#brand-command)
@@ -42,9 +43,24 @@ The utility-class lifecycle remains Alloy-only. Classic projects can use indepen
 
 The output-only modes `shades --log`, `shades --json`, `shades --tailwind`, and `semantic --log` write nothing and also work outside a project.
 
-The root command is `purgetss [-a|--all] [--debug]`: without options it purges the Alloy project; `--all` runs `build`, `build-fonts`, and the purge in sequence; `--debug` displays execution time for each process.
+The root command is `purgetss [-a|--all] [--debug] [--profile <file.json>]`: without options it purges the Alloy project; `--all` runs `build`, `build-fonts`, and the purge in sequence; `--debug` displays execution time for each process.
 
 See [Classic Project Support](./classic-projects.md) for the complete boundary and audit checklist.
+
+## Execution Profiles
+
+Since v7.19.0, the global `--profile <file.json>` option saves JSON execution metrics for commands, aliases and `--all`:
+
+```bash
+purgetss --profile purge-profile.json
+purgetss build --profile build-profile.json
+purgetss bf --module --profile fonts-profile.json
+purgetss --all --profile all-profile.json
+```
+
+Paths are relative to the current directory unless absolute; the parent directory must exist. Reusing a destination replaces its profile. The versioned output records the canonical command, completion/skip/failure status, timings, CPU, memory, phases and counters. Controlled failures also save profiles. An unwritable destination reports to stderr and preserves the command's original exit code. `--debug` alone prints timings without saving JSON.
+
+Profiling does not make an Alloy-only command Classic-compatible. The two-second LiveView guard still applies, and `--all` can complete with a skipped purge phase. See [CLI generation and execution profiles](./performance-tips.md#cli-generation-and-execution-profiles) for fields, counter meanings, signatures and measurement boundaries.
 
 ## `init` Command
 
@@ -489,6 +505,8 @@ purgetss bf [-m] [-f]
 2. In Alloy only, creates `purgetss/styles/fonts.tss` with the TSS class definitions.
 3. With `--module`, creates the CommonJS module even for text-only font collections. Classic loads it with `require('lib/purgetss.fonts')`; see the [Classic module path table](./classic-projects.md#loading-generated-modules-in-classic).
 
+From 7.20.1, icon CSS accepts literal modern `--fa` and legacy `content` glyphs, preserving selector aliases and supplementary Unicode. In Alloy, direct classes and `apply` resolve each selector from custom fonts, project Font Awesome, then bundled catalogs. See [CSS formats and selector priority](custom-fonts.md#css-formats-and-selector-priority) for fallback, family selection and nonliteral CSS limits.
+
 `Resources/app.js`
 ```javascript
 const customFonts = require('lib/purgetss.fonts')
@@ -524,7 +542,9 @@ purgetss build
 purgetss b
 ```
 
-When `purgetss` runs (manually or via `watch`), it checks for changes in `config.cjs` and regenerates `utilities.tss` when needed.
+When `purgetss` runs (manually or via `watch`), it checks a signature of the evaluated configuration and generator inputs and regenerates `utilities.tss` when needed. Changes made within the same second are detected. An existing project without signature metadata rebuilds once to establish it.
+
+An explicit `build` computes the catalog even when the output is identical. Generated text is written only when its bytes change: `unchanged (not written)` preserves the file's modification time. Rebuild messages distinguish missing, unreadable or invalid signatures, changed inputs and inputs that cannot be signed reliably. See [Generation signatures and unchanged files](./performance-tips.md#generation-signatures-and-unchanged-files).
 
 ### Options
 
@@ -622,7 +642,7 @@ purgetss su
 
 These items were surfaced in community threads during the v7.2.x rollout and remain relevant operational context for anyone upgrading from pre-v7.2 installs:
 
-- Node.js 20+ required (due to the `inquirer` v13 upgrade).
+- The v7.2.x rollout raised the Node baseline through the `inquirer` v13 upgrade. For v7.19.0+, use the exact supported range in [Installation](./installation-setup.md#installation).
 - Font Awesome 7 support, including the CSS custom properties format.
 - Titanium SDK 13.1.x support, with new properties from 13.1.0.GA.
 - Removed deprecated commands: `copy-fonts` and `build-legacy` are no longer available — scripts referencing either will fail.

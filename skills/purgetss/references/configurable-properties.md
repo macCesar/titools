@@ -2,12 +2,14 @@
 
 This reference lists all customizable properties from the official PurgeTSS configuration guide. Add these under `theme` in `config.cjs` to override defaults, or under `theme.extend` to add new values while keeping defaults.
 
-The lists below also include properties that PurgeTSS v7.17.1 generates classes for but the official guide omits (e.g. `badgeBackgroundColor`, `statusBarColor`, `letterSpacing`, `titlePadding`). `scalesPageToFit` appears in the official configurable list but is a Boolean property: it only generates `.scales-page-to-fit` and `.scales-page-to-fit-false`.
+The lists below describe the PurgeTSS v7.20.1 catalog. They also include generated properties omitted from the official guide's lists (e.g. `linkColor` and the three split-view numeric properties introduced in the SDK 14.0.0.GA refresh). `scalesPageToFit` appears in the official configurable list but is a Boolean property: it only generates `.scales-page-to-fit` and `.scales-page-to-fit-false`. For exact generated families and component metadata, see [Class Index — Properties](./class-index-properties.md); check [SDK 14 compatibility](./sdk-14-compatibility.md) before using split-view ratios or bounds.
 
 ## Global Properties
 
 - All color properties inherit from `theme.colors`.
 - All spacing properties inherit from `theme.spacing`.
+
+The three SplitWindow numeric properties have their own value constraints: `primaryColumnWidthFraction` takes ratios from 0 to 1, and the minimum/maximum widths take numeric points. See [SplitWindow ratios and column bounds](./customization-deep-dive.md#splitwindow-ratios-and-column-bounds-7201) for customization and validation.
 
 You can customize any of the following properties individually by adding them in the `theme` section of your `config.cjs` file, or by extending them in the `theme.extend` section.
 
@@ -39,6 +41,7 @@ You can customize any of the following properties individually by adding them in
 - `indicatorColor`
 - `keyboardToolbarColor`
 - `lightColor`
+- `linkColor`
 - `navBarColor`
 - `navigationIconColor`
 - `navTintColor`
@@ -112,11 +115,13 @@ You can customize any of the following properties individually by adding them in
 - `lineSpacing`
 - `maxElevation`
 - `maximumLineHeight`
+- `maximumPrimaryColumnWidth`
 - `maxLines`
 - `maxRowHeight`
 - `maxZoomScale`
 - `minimumFontSize`
 - `minimumLineHeight`
+- `minimumPrimaryColumnWidth`
 - `minRowHeight`
 - `minZoomScale`
 - `opacity`
@@ -132,6 +137,7 @@ You can customize any of the following properties individually by adding them in
 - `pagingControlTimeout`
 - `paragraphSpacingAfter`
 - `paragraphSpacingBefore`
+- `primaryColumnWidthFraction`
 - `repeat`
 - `repeatCount`
 - `right`
@@ -149,20 +155,21 @@ You can customize any of the following properties individually by adding them in
 - `separatorHeight`
 - `shadowRadius`
 - `shiftMode`
-- `statusBarHeight`
 - `targetImageHeight`
 - `targetImageWidth`
 - `timeout`
 - `titlePadding`
 - `top`
-- `uprightHeight`
-- `uprightWidth`
 - `verticalMargin`
 - `width`
 - `xOffset`
 - `yOffset`
 - `zIndex`
 - `zoomScale`
+
+## Read-only output excluded since 7.20.1
+
+Published 7.20.0 included `statusBarHeight`, `uprightHeight` and `uprightWidth` in the configurable catalog. These SDK values are read-only. PurgeTSS 7.20.1 uses the regenerated Completions `readOnly` flag and no longer emits setters for them; read their values from the appropriate SDK object instead. Shared names remain eligible when at least one SDK type is writable, so verify the owning type before assigning them. The generated index records the published 7.20.1 catalog.
 
 ## Custom Rules and Ti Elements
 

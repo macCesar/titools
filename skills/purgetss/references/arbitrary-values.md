@@ -68,7 +68,9 @@ The pre-validator only fires on the four patterns above. Any other unknown class
 
 ### v7.8.0 parser fix for negatives inside parentheses
 
-Before v7.8.0, a hyphen inside the value (e.g. `top-(-10)`, `mt-(-5)`, `rotate-(-45)`, `origin-(-10,-20)`) crashed the arbitrary-value parser with an unhandled `Cannot read properties of null (reading 'pop')` exception. v7.8.0 rewrote the parser to extract the `(...)` part first, so the value can contain any characters, and classes with empty values (`wh-()`) or unbalanced parentheses (`wh-(`) now produce a "not yet supported" comment instead of invalid TSS. `top-(-10)` itself is now caught by the pre-validator as an inverted negative sign, with the `-top-(10)` fix.
+Before v7.8.0, a hyphen inside the value (e.g. `top-(-10)`, `mt-(-5)`, `rotate-(-45)`, `origin-(-10,-20)`) crashed the arbitrary-value parser with an unhandled `Cannot read properties of null (reading 'pop')` exception. v7.8.0 rewrote the parser to extract the `(...)` part before splitting the rule name, avoiding that crash. Classes with empty values (`wh-()`) or unbalanced parentheses (`wh-(`) produce a "not yet supported" comment instead of invalid TSS. `top-(-10)` itself is caught by the pre-validator as an inverted negative sign, with the `-top-(10)` fix.
+
+The supported negative syntax is `-top-(10)`. The normal purge intentionally rejects `top-(-10)` before formatting; this is the expected validation policy, not a compatibility defect or a request to support both forms. In v7.20.0, a direct formatter call could still process the latter internally, but that implementation detail did not make it supported project syntax. Since v7.20.1, the formatter also rejects that form: it returns no properties (`null`), or an unsupported-class comment when selector output is requested. Do not recommend it or bypass validation to process it. `-top-(10)` remains supported.
 
 ## Arbitrary nesting depth in `theme` objects (v7.10.0)
 
@@ -142,12 +144,37 @@ If you have a project that previously kept color shades only at depth ≤ 2 to a
 
 ## Color Properties
 
-You can set arbitrary color values for all available color properties using `hex`, `rgb`, or `rgba` values, directly in XML files or in `config.cjs`.
+PurgeTSS 7.20.2 restores inline RGB/RGBA color classes such as `bg-(rgb(100,200,50))`, `text-(rgba(10,20,30,0.5))`, `border-(rgba(10,20,30,0.5))` and selected/focused background colors. Versions 7.8.0 through 7.20.1 reject these nested-parenthesis forms. The [7.20.2 parser](https://github.com/macCesar/purgeTSS/blob/2079fffdfd8c2ec35298b00cf5576e29fe1faa46/src/shared/helpers/utils.js) accepts balanced parentheses while rejecting malformed values and inverted negatives. Keep classes free of spaces; use `-top-(10)` for negatives.
+
+These colors work in Alloy XML, controller-extracted classes, platform modifiers and `apply`. For example, `apply: 'bg-(rgba(10,20,30,0.5)) border-(rgb(100,200,50))'` preserves the commas inside each value. Keep gradient examples hexadecimal: the transparency helper used by `from` and related gradient prefixes has a hexadecimal contract.
+
+Hexadecimal forms such as `bg-(#64C832)` and `bg-(#800A141E)`, named theme colors and [custom rules](custom-rules.md) remain available. For example:
+
+```javascript
+// purgetss/config.cjs
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        'rgba-accent': 'rgba(10,20,30,0.5)'
+      }
+    }
+  }
+};
+```
+
+```xml
+<View class="bg-rgba-accent" />
+```
+
+```tss
+'.bg-rgba-accent': { backgroundColor: 'rgba(10,20,30,0.5)' }
+```
 
 ```xml
 <Alloy>
   <Window class="from-(#4C61E4) to-(#804C61E4)">
-    <Label class="w-(250) bg-(rgba(100,200,50)) text-(#4C61E4) text-(15) rounded-4 h-8 text-center" text="Green Label" />
+    <Label class="w-(250) bg-(rgb(100,200,50)) text-(#4C61E4) text-(15) rounded-4 h-8 text-center" text="Green Label" />
   </Window>
 </Alloy>
 ```
@@ -162,7 +189,7 @@ You can set arbitrary color values for all available color properties using `hex
 '.text-center': { textAlign: Ti.UI.TEXT_ALIGNMENT_CENTER }
 
 /* Arbitrary Values */
-'.bg-(rgba(100,200,50))': { backgroundColor: 'rgba(100,200,50)' }
+'.bg-(rgb(100,200,50))': { backgroundColor: 'rgb(100,200,50)' }
 '.from-(#4C61E4)': { backgroundGradient: { colors: [ '#004C61E4', '#4C61E4' ] } }
 '.text-(#4C61E4)': { color: '#4C61E4', textColor: '#4C61E4' }
 '.text-(15)': { font: { fontSize: 15 } }
@@ -174,68 +201,68 @@ You can set arbitrary color values for all available color properties using `hex
 
 You can set an arbitrary value for any of the following color properties:
 
-- `active-tint-` (*hex-rgb-or-rgba-value*)
-- `active-title-` (*hex-rgb-or-rgba-value*)
-- `badge-` (*hex-rgb-or-rgba-value*)
-- `badge-bg-` (*hex-rgb-or-rgba-value*)
-- `badge-text-` (*hex-rgb-or-rgba-value*)
-- `bar-` (*hex-rgb-or-rgba-value*)
-- `bg-` (*hex-rgb-or-rgba-value*)
-- `bg-disabled-` (*hex-rgb-or-rgba-value*)
-- `bg-focused-` (*hex-rgb-or-rgba-value*)
-- `bg-from-` (*hex-rgb-or-rgba-value*) — v7.18.0; earlier versions wrote a literal `{value1}`
-- `bg-selected-` (*hex-rgb-or-rgba-value*)
-- `bg-selected-from-` (*hex-rgb-or-rgba-value*)
-- `bg-selected-to-` (*hex-rgb-or-rgba-value*)
-- `bg-to-` (*hex-rgb-or-rgba-value*)
-- `border-` (*hex-rgb-or-rgba-value*)
-- `colors-` (*hex-rgb-or-rgba-value*)
-- `content-scrim-` (*hex-rgb-or-rgba-value*)
-- `current-page-indicator-` (*hex-rgb-or-rgba-value*)
-- `date-time-` (*hex-rgb-or-rgba-value*)
-- `disabled-` (*hex-rgb-or-rgba-value*)
-- `drop-shadow-` (*hex-rgb-or-rgba-value*)
-- `from-` (*hex-rgb-or-rgba-value*)
-- `highlighted-` (*hex-rgb-or-rgba-value*)
-- `hint-text-` (*hex-rgb-or-rgba-value*)
-- `icon-` (*hex-rgb-or-rgba-value*)
-- `image-touch-feedback-` (*hex-rgb-or-rgba-value*)
-- `indicator-` (*hex-rgb-or-rgba-value*)
-- `keyboard-toolbar-` (*hex-rgb-or-rgba-value*)
-- `light-` (*hex-rgb-or-rgba-value*)
-- `nav-tint-` (*hex-rgb-or-rgba-value*)
-- `navigation-icon-` (*hex-rgb-or-rgba-value*)
-- `on-tint-` (*hex-rgb-or-rgba-value*)
-- `page-indicator-` (*hex-rgb-or-rgba-value*)
-- `paging-control-` (*hex-rgb-or-rgba-value*)
-- `placeholder-` (*hex-rgb-or-rgba-value*)
-- `pull-bg-` (*hex-rgb-or-rgba-value*)
-- `results-bg-` (*hex-rgb-or-rgba-value*)
-- `results-separator-` (*hex-rgb-or-rgba-value*)
-- `selected-` (*hex-rgb-or-rgba-value*)
-- `selected-bg-` (*hex-rgb-or-rgba-value*)
-- `selected-button-` (*hex-rgb-or-rgba-value*)
-- `selected-subtitle-` (*hex-rgb-or-rgba-value*)
-- `selected-text-` (*hex-rgb-or-rgba-value*)
-- `separator-` (*hex-rgb-or-rgba-value*)
-- `shadow-` (*hex-rgb-or-rgba-value*)
-- `status-bar-bg-` (*hex-rgb-or-rgba-value*)
-- `subtitle-` (*hex-rgb-or-rgba-value*)
-- `subtitle-text-` (*hex-rgb-or-rgba-value*)
-- `tabs-bg-` (*hex-rgb-or-rgba-value*)
-- `tabs-bg-selected-` (*hex-rgb-or-rgba-value*)
-- `text-` (*hex-rgb-or-rgba-value*)
-- `thumb-tint-` (*hex-rgb-or-rgba-value*)
-- `tint-` (*hex-rgb-or-rgba-value*)
-- `tint-color-` (*hex-rgb-or-rgba-value*)
-- `title-` (*hex-rgb-or-rgba-value*)
-- `title-attributes-` (*hex-rgb-or-rgba-value*)
-- `title-attributes-shadow-` (*hex-rgb-or-rgba-value*)
-- `title-text-` (*hex-rgb-or-rgba-value*)
-- `to-` (*hex-rgb-or-rgba-value*)
-- `touch-feedback-` (*hex-rgb-or-rgba-value*)
-- `track-tint-` (*hex-rgb-or-rgba-value*)
-- `view-shadow-` (*hex-rgb-or-rgba-value*)
+- `active-tint-` (*hex-value*)
+- `active-title-` (*hex-value*)
+- `badge-` (*hex-value*)
+- `badge-bg-` (*hex-value*)
+- `badge-text-` (*hex-value*)
+- `bar-` (*hex-value*)
+- `bg-` (*hex-value*)
+- `bg-disabled-` (*hex-value*)
+- `bg-focused-` (*hex-value*)
+- `bg-from-` (*hex-value*) — v7.18.0; earlier versions wrote a literal `{value1}`
+- `bg-selected-` (*hex-value*)
+- `bg-selected-from-` (*hex-value*)
+- `bg-selected-to-` (*hex-value*)
+- `bg-to-` (*hex-value*)
+- `border-` (*hex-value*)
+- `colors-` (*hex-value*)
+- `content-scrim-` (*hex-value*)
+- `current-page-indicator-` (*hex-value*)
+- `date-time-` (*hex-value*)
+- `disabled-` (*hex-value*)
+- `drop-shadow-` (*hex-value*)
+- `from-` (*hex-value*)
+- `highlighted-` (*hex-value*)
+- `hint-text-` (*hex-value*)
+- `icon-` (*hex-value*)
+- `image-touch-feedback-` (*hex-value*)
+- `indicator-` (*hex-value*)
+- `keyboard-toolbar-` (*hex-value*)
+- `light-` (*hex-value*)
+- `nav-tint-` (*hex-value*)
+- `navigation-icon-` (*hex-value*)
+- `on-tint-` (*hex-value*)
+- `page-indicator-` (*hex-value*)
+- `paging-control-` (*hex-value*)
+- `placeholder-` (*hex-value*)
+- `pull-bg-` (*hex-value*)
+- `results-bg-` (*hex-value*)
+- `results-separator-` (*hex-value*)
+- `selected-` (*hex-value*)
+- `selected-bg-` (*hex-value*)
+- `selected-button-` (*hex-value*)
+- `selected-subtitle-` (*hex-value*)
+- `selected-text-` (*hex-value*)
+- `separator-` (*hex-value*)
+- `shadow-` (*hex-value*)
+- `status-bar-bg-` (*hex-value*)
+- `subtitle-` (*hex-value*)
+- `subtitle-text-` (*hex-value*)
+- `tabs-bg-` (*hex-value*)
+- `tabs-bg-selected-` (*hex-value*)
+- `text-` (*hex-value*)
+- `thumb-tint-` (*hex-value*)
+- `tint-` (*hex-value*)
+- `tint-color-` (*hex-value*)
+- `title-` (*hex-value*)
+- `title-attributes-` (*hex-value*)
+- `title-attributes-shadow-` (*hex-value*)
+- `title-text-` (*hex-value*)
+- `to-` (*hex-value*)
+- `touch-feedback-` (*hex-value*)
+- `track-tint-` (*hex-value*)
+- `view-shadow-` (*hex-value*)
 
 ## Spacing Properties
 
@@ -412,7 +439,7 @@ You can set arbitrary values for the following properties, like border radius an
 
 ## Examples
 
-You can use any supported units depending on the property you are generating. Use `hex` or `rgba` values for any color property, or unitless numbers or `rem` for position and sizing properties.
+You can use any supported units depending on the property you are generating. Use hexadecimal values for inline arbitrary color classes, named theme colors for RGB/RGBA values, or unitless numbers or `rem` for position and sizing properties.
 
 ### Credit Card
 

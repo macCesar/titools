@@ -8,6 +8,34 @@ When in doubt about whether a class, flag, or config key exists in the user's in
 
 ---
 
+## v7.20.2
+- Restore RGB/RGBA arbitrary colors in XML, controller-extracted classes and `apply`, regressed in 7.8.0. Balanced nested parentheses are accepted; malformed parentheses and inverted negatives remain rejected.
+- Preserve color commas, nested values and escaped quoted text when deduplicating properties in `apply`. Applied values retain priority over defaults. See [Arbitrary Values](arbitrary-values.md#color-properties).
+- The bundled SDK utility catalog is unchanged from 7.20.1; font and SDK compatibility guidance remains applicable.
+
+## v7.20.1
+- Read the regenerated SDK Completions `readOnly` flag and exclude read-only properties from utility/glossary generation. Shared names stay eligible if any occurrence is writable. SplitWindow fractions use numeric ratios from 0 to 1, bounds use numeric points, and these classes carry iOS conditions. Invalid custom numeric values fail before replacing utilities. See [SDK 14 compatibility](sdk-14-compatibility.md).
+- Resolve each icon selector from `fonts.tss`, then project Font Awesome Pro/Beta, then bundled catalogs, in direct purging and `apply`. Missing selectors fall through; higher-priority definitions are emitted once. Comments mentioning Font Awesome no longer suppress its catalog. See [Custom Fonts](custom-fonts.md#css-formats-and-selector-priority).
+- `build-fonts` reads literal modern `--fa` and legacy `content` declarations regardless of property order. Preserve simple selector aliases, filename-based prefixes and supplementary Unicode in TSS and CommonJS. Nonliteral `content: var(--fa)` alone does not define a glyph.
+- Font Awesome Free families, aliases and copied filenames come from the manually supplied desktop fonts' PostScript metadata. Distribution builds validate all required faces against the installed npm package version before writing Free outputs; source OTF bytes are copied under the generated `.ttf` names without conversion. npm consumers receive these prebuilt assets. See [Icon Fonts](icon-fonts.md).
+- Framework7 TSS/CommonJS headers use its installed npm version; each Material Icons/Symbols header uses that font variant's version metadata. Fixed update dates and the single Material Icons release label are removed. Material `.codepoints` and fonts still require coordinated manual maintenance.
+- Pro/Beta font names come from installed TTF metadata for TSS, module aliases and copied assets. The alternate Pro path generates its module; missing optional faces are omitted. Their fixed version-7 headers and genuine Pro/Beta device rendering remain separate caveats in [Icon Fonts](icon-fonts.md).
+- Reject inverted negatives in the formatter too; supported project syntax remains `-top-(10)`. See [Arbitrary Values](arbitrary-values.md).
+- Bundled catalog: 23,449 unique classes, 593 properties and 391 first segments. Compared with 7.20.0, 261 read-only classes and 95 invalid numeric variants are removed. See [Migration Guide](migration-guide.md#upgrade-to-v7201) for regeneration steps. Incompatible dependency upgrades remain separate work.
+
+## v7.20.0
+- Utilities now use Titanium SDK 14.0.0.GA Completions: 63 new property entries and 356 recovered descriptions; 18 new generated property families cover booleans, link color, bar behavior and SplitWindow layout.
+- The published catalog originally contained 23,805 unique names and 638 properties. Class existence alone does not prove SDK/component compatibility. See [SDK 14 compatibility](sdk-14-compatibility.md) for read-only scene state, SplitWindow ratios and deprecated controls.
+
+## v7.19.0
+- **Node:** `^20.12.0 || ^22.13.0 || >=23.5.0` replaces the broad Node 20+ requirement.
+- Global `--profile <file.json>` records versioned metrics for commands, aliases and `--all`, including controlled failures and LiveView skips. See [performance-tips.md](performance-tips.md).
+- Purge reuses text/XML/AST extractions and indexed lookups while preserving class order, duplicates, first matches, font priorities, prefix searches and diagnostics. Command/font catalog loading is lazy.
+- Configuration is reevaluated and cloned per invocation. Effective-config and generator signatures catch edits within the same second and avoid stale mutated values or retained `apply` directives.
+- Generated text skips identical writes and reports created/updated/unchanged; `app.tss` still writes after each completed purge and keeps the two-second LiveView guard. Independent monotonic timings replace shared timers.
+- Distribution builders share CSS/codepoint inputs and await copies; image generation shares metadata and identical renders with a bounded queue while preserving output quality. Creation/installation use Node filesystem APIs; unused npm `path` dependency removed.
+- Test runners propagate failures. Compatible dependency fixes include Sharp 0.35.5; incompatible `css`/`glob` upgrades and their remaining advisories remain separate upstream work.
+
 ## v7.18.0
 - **`(Npx)` is valid again.** The redundant-`px` check is gone: `w-(100px)` generates `width: '100px'`, explicit pixels; unitless values follow `ti.ui.defaultunit`. The pre-validator catches 4 patterns. See [arbitrary-values.md](arbitrary-values.md).
 - Stacked modifiers (`ios:tablet:`, either order) generate one bracket, `[platform=ios formFactor=tablet]`; a contradicting modifier leaves a comment in `app.tss`. See [platform-modifiers.md](platform-modifiers.md).

@@ -17,6 +17,9 @@ an audio or advertising module.
 
 ## PurgeTSS — purgetss
 
+- "Check PurgeTSS 7.20.2 classes against SDK 14, including numeric SplitWindow ratios and excluded read-only properties."
+- "Update this custom icon font workflow for PurgeTSS 7.20.2, checking modern CSS glyphs and per-selector fallback."
+- "Profile this purge with PurgeTSS 7.19 or later and explain unchanged output and LiveView skips."
 - "Style this Alloy layout with the PurgeTSS classes supported by the installed version."
 - "Prepare responsive images for this Classic Titanium project using the supported PurgeTSS asset workflow."
 

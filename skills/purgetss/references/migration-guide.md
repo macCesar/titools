@@ -1,6 +1,6 @@
 # Migration Guide
 
-This guide summarizes the official PurgeTSS changelog: `CHANGELOG.md` in the package repository and the docs changelog page (`src/pages/changelog.md`, published at <https://purgetss.com/changelog>). It walks through the upgrade-relevant changes from v7.2.6 through v7.18.0, flags breaking changes, and links each section to the reference files that cover the new surface area in depth.
+This guide summarizes the official PurgeTSS changelog: `CHANGELOG.md` in the package repository and the docs changelog page (`src/pages/changelog.md`, published at <https://purgetss.com/changelog>). It walks through the upgrade-relevant changes from v7.2.6 through v7.20.2, flags breaking changes, and links each section to the reference files that cover the new surface area in depth.
 
 Changelog source of truth: [CHANGELOG.md](https://github.com/macCesar/purgetss/blob/main/CHANGELOG.md).
 
@@ -9,6 +9,10 @@ Changelog source of truth: [CHANGELOG.md](https://github.com/macCesar/purgetss/b
 <!-- TOC-START -->
 ## Contents
 
+- [Upgrade to v7.20.2](#upgrade-to-v7202)
+- [Upgrade to v7.20.1](#upgrade-to-v7201)
+- [Upgrade to v7.20.0](#upgrade-to-v7200)
+- [Upgrade to v7.19.0](#upgrade-to-v7190)
 - [Upgrade to v7.18.0](#upgrade-to-v7180)
 - [Upgrade to v7.17.x](#upgrade-to-v717x)
 - [Upgrade to v7.16.x](#upgrade-to-v716x)
@@ -33,6 +37,43 @@ Changelog source of truth: [CHANGELOG.md](https://github.com/macCesar/purgetss/b
 - [Quick Checklist](#quick-checklist)
 
 <!-- TOC-END -->
+
+## Upgrade to v7.20.2
+
+Run the normal Alloy purge after updating to restore inline RGB/RGBA classes in XML, controller-extracted classes and `apply`. Use valid forms such as `bg-(rgb(100,200,50))` or `text-(rgba(10,20,30,0.5))` without spaces. Keep `-top-(10)` for negatives and hexadecimal gradient examples. Existing hex, named-theme and custom-rule alternatives remain valid; no configuration migration is required. Follow the 7.20.1 steps below when upgrading from an older catalog or copied font outputs.
+
+## Upgrade to v7.20.1
+
+Version 7.20.1 publishes the SDK 14 generator corrections and fixes font selection, custom CSS parsing and font metadata. Updating the CLI does not refresh every style, module or font file previously copied into a project.
+
+- **Alloy utilities:** run `purgetss build`, then `purgetss` to regenerate `utilities.tss` and `app/styles/app.tss`. The bundled default catalog now has 23,449 unique classes: 261 read-only setters and 95 invalid numeric variants from 7.20.0 are removed. Read state from the SDK object instead of assigning it through a class. Existing custom configuration can change catalog counts.
+- **SplitWindow values:** review custom fraction and bound scales. Fractions must be finite numbers from 0 to 1; minimum/maximum widths must be finite nonnegative numeric points. Strings, percentages and size constants are rejected before utilities are replaced. These classes remain iOS-only; see [SDK 14 compatibility](sdk-14-compatibility.md).
+- **Negative syntax:** keep `-top-(10)`. The formatter now rejects `top-(-10)` too; it was already invalid in normal CLI purging. No class syntax migration is needed for the supported form.
+- **Copied fonts and modules:** rerun the relevant `purgetss icon-library --module` command when the project keeps copied official fonts/modules. Alloy projects using Pro/Beta should also rerun `purgetss build` so styles and aliases use the installed TTF PostScript names. See [Icon Fonts](icon-fonts.md) for optional faces and remaining genuine-font/device checks.
+- **Custom icon CSS:** rerun `purgetss build-fonts --module` when using modern `--fa`, legacy `content`, aliases or supplementary Unicode. Then purge Alloy styles again. Family and glyph classes remain separate; importing Pro CSS does not create a `fas` alias. Both direct purging and `apply` now resolve each selector from custom fonts, project Font Awesome, then bundled catalogs, preserving fallback. See [Custom Fonts](custom-fonts.md#css-formats-and-selector-priority).
+- **Classic projects:** refresh fonts/modules with the supported standalone `icon-library` and `build-fonts` commands. Continue using `Resources/fonts/` and `Resources/lib/`; do not introduce the Alloy utility build or generated TSS lifecycle.
+
+Manual desktop OTF installation and matching npm-version checks apply to maintainers rebuilding the Font Awesome Free distribution. npm users receive prebuilt fonts; the patch does not add a manual font-download prerequisite. Material fonts/codepoints still require coordinated maintenance, and incompatible `css`/`glob` dependency upgrades remain separate work.
+
+## Upgrade to v7.20.0
+
+The class catalog now uses SDK 14.0.0.GA Completions: 63 new property entries, 356 restored descriptions and 18 new generated property families. Existing apps do not have to switch SDK just to use PurgeTSS 7.20.0. New SDK 14 properties still require a compatible app SDK and platform/OS.
+
+- Regenerate utilities through PurgeTSS rather than copying generated tables into the app. Version 7.20.1 publishes corrections for read-only state, numeric SplitWindow values and Pro/Beta font metadata; follow [the 7.20.1 upgrade steps](#upgrade-to-v7201) for those fixes. Published 7.20.0 retains the documented caveats.
+- Consult [SDK 14 compatibility](sdk-14-compatibility.md) before using the new scene, bar or SplitWindow classes: scene state is read-only, generated ratio values need care, and several old SplitWindow controls no longer have an effect.
+- Recheck unused/conflicting classes and compile against the selected SDK. The inventory records emitted classes, not runtime support on every component.
+
+## Upgrade to v7.19.0
+
+The release optimizes purge parsing, class lookup, generators and unchanged-file writes while preserving output ordering, duplicates, font precedence, XML diagnostics and JavaScript fallback behavior. No class renaming or project conversion is required.
+
+- **Node requirement:** `^20.12.0 || ^22.13.0 || >=23.5.0`. A general “Node 20+” check is insufficient; Node 21 and early Node 22/23 do not satisfy this range.
+- **Configuration:** each invocation reevaluates and clones configuration; effective config and generator signatures replace second-resolution timestamp checks. A config edit within the same second must still rebuild utilities. Do not use the timestamp or old “config.js changed” wording as the only rebuild diagnostic.
+- **Writes and LiveView:** generated text reports created/updated/unchanged and skips identical writes; completed `app.tss` writes and the two-second LiveView guard remain. An unchanged message is not a failed run.
+- **Profiles:** use the global `--profile <file.json>` with commands, aliases or `--all`; see [CLI commands](cli-commands.md) and [performance](performance-tips.md) for metrics, failures and skipped LiveView runs. Profiles measure the build tool, not native app bridge or device performance.
+- **Dependencies:** compatible fixes include Sharp 0.35.5. Incompatible `css`/`glob` dependency-chain upgrades remain separate upstream work; 7.19.0 is not a claim that every advisory is fixed.
+
+Review custom automation that parses generated-file messages or uses timestamps to infer a rebuild. Keep profiles out of Alloy views/styles and use separate output files when comparing runs.
 
 ## Upgrade to v7.18.0
 
@@ -633,7 +674,7 @@ If you previously worked around this by inlining the gradient directly in TSS, r
 ## Quick Checklist
 
 - Replace every legacy `tailwind.tss` reference with `utilities.tss`.
-- Verify Node.js 20+ before upgrading to v7.2.7 or later.
+- Verify Node.js 20+ for v7.2.7–v7.18.0; for v7.19.0 or later require `^20.12.0 || ^22.13.0 || >=23.5.0`.
 - Rebuild after updating `config.cjs` or custom gradient rules.
 - Re-test any Classic Titanium code that depends on `deviceInfo()`.
 - After v7.5.0: diff generated `utilities.tss` to confirm property deduplication produces the expected output.
@@ -650,3 +691,8 @@ If you previously worked around this by inlining the gradient directly in TSS, r
 - After v7.15.0: if one platform is disabled in `tiapp.xml`, pass `--android` or `--ios` to `purgetss images` when you still need that platform's densities.
 - After v7.17.0: remove unknown keys from `images:` and re-run `purgetss install-dependencies` in Alloy projects that still have `.eslintrc.js`.
 - After v7.17.1: point the FCM meta-data at `@drawable/notificationicon` and delete the old `ic_stat_notify.png` files.
+
+- After v7.18.0: replace removed magnet/keyboard-type-appearance classes and `init --all`; verify explicit `px` sizes and stacked modifiers.
+- After v7.19.0: check the Node range, updated generation messages and profile output instead of relying on file timestamps alone.
+- After v7.20.0: check SDK/platform availability and the read-only, numeric-ratio and deprecated-property caveats in [SDK 14 compatibility](sdk-14-compatibility.md).
+- After v7.20.1: rebuild Alloy utilities and purge styles; refresh copied fonts/modules and affected custom CSS. Recheck per-selector icon priority and fallback in direct classes and `apply`.

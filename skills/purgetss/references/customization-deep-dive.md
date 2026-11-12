@@ -22,6 +22,8 @@
 
 By default, PurgeTSS looks for `./purgetss/config.cjs`, where you can define customizations.
 
+Since v7.19.0, each invocation reevaluates the configuration, including calculated or environment-dependent values, and generation uses an independent copy. Effective configuration and generator-input signatures detect changes within the same second. See [Performance Tips](./performance-tips.md) for signature metadata, the initial rebuild, and unchanged generated-file timestamps.
+
 ## Create the `config.cjs` File
 
 > **ℹ️ INFO**
@@ -330,7 +332,7 @@ theme: {
 }
 ```
 
-The scope is defined by the `FIELD_RULES` array in `src/shared/validation/config-validator.js`; additional fields can be added there. Today only the two `fontFamily` paths are validated.
+The load-time scope is defined by the `FIELD_RULES` array in `src/shared/validation/config-validator.js`; additional fields can be added there. Today it covers only the two `fontFamily` paths. Since 7.20.1, utility generation separately validates [SplitWindow numeric values](#splitwindow-ratios-and-column-bounds-7201) before replacing its output.
 
 ## Overriding and Extending Properties
 
@@ -646,6 +648,26 @@ module.exports = {
 ```
 
 This generates classes like `p-72`, `m-84`, and `h-96` in addition to all of the default spacing and sizing utilities.
+
+### SplitWindow ratios and column bounds (7.20.1)
+
+`primaryColumnWidthFraction` has a separate numeric ratio scale. For example, `primary-col-w-fraction-1/2` sets `primaryColumnWidthFraction: 0.5`; `primary-col-w-fraction-1` and `primary-col-w-fraction-full` set `1`. The minimum and maximum width families take numeric points: `minimum-primary-col-w-16` sets `minimumPrimaryColumnWidth: 64`. All three families carry `[platform=ios]`.
+
+Configure these properties with Numbers under `theme` to replace their defaults, or under `theme.extend` to add values:
+
+```javascript
+module.exports = {
+  theme: {
+    extend: {
+      primaryColumnWidthFraction: { custom: 0.35 },
+      minimumPrimaryColumnWidth: { custom: 280 },
+      maximumPrimaryColumnWidth: { custom: 420 }
+    }
+  }
+};
+```
+
+Ratios must be finite Numbers from 0 to 1. Column bounds must be finite nonnegative Numbers in points. Percentage strings, `Ti.UI.FILL`, `Ti.UI.SIZE`, and strings such as `'50%'` or `'auto'` are invalid custom values; generation stops before replacing `utilities.tss`. See [SDK 14 compatibility](./sdk-14-compatibility.md) for the earlier 7.20.0 behavior, owning component and SDK requirements.
 
 ## Community-Discovered Patterns
 
