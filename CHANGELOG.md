@@ -11,6 +11,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Update the core API and SDK guides to Titanium SDK 14.0.0.GA, including scenes, SplitWindow, scrolling and animation contracts, Android database flags, toolchain requirements and platform-specific encryption behavior. Keep independent module versions separate and preserve valid reference content.
 - Make the Alloy guide skills usable without the optional TiTools `ti-ui` skill by linking the official layout and list guides.
 
+### Added
+
+- Add a maintainer command to check, synchronize and contribute the five shared reference skills to TiDev, with isolated Git regression tests. The audit workflow requires an agent review with humanizer before publishing the PR text.
+
 ## [5.4.1] - 2026-11-11
 
 ### Changed

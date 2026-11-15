@@ -10,7 +10,7 @@ TiTools is a Titanium SDK toolkit for AI coding assistants. It ships 14 skills â
 
 The reference files are maintained against official documentation whenever an official source exists, so the assistant can retrieve current framework behavior instead of guessing from generic training data. As of v5.0.0 those sources are the Titanium SDK's own API definitions and the rewritten guides at [titaniumsdk.com](https://titaniumsdk.com). [Where the references come from](#where-the-references-come-from) has the detail.
 
-The core API and SDK guide references target Titanium SDK 14.0.0.GA. They link to the matching released contracts; native modules retain their own versioned sources. The five reference skills can also be synchronized into [tidev/skills](https://github.com/tidev/skills), with TiTools as their maintenance source.
+The core API and SDK guide references target Titanium SDK 14.0.0.GA. They link to the matching released contracts; native modules retain their own versioned sources. The five reference skills can also be synchronized into [tidev/skills](https://github.com/tidev/skills), with TiTools as their maintenance source. See [the contribution workflow](CONTRIBUTING.md#synchronize-the-tidev-reference-skills) for the maintainer command.
 
 Without TiTools, assistants rely on general training data. That data can be outdated or too generic for Titanium work. With TiTools, the assistant can look up Alloy architecture, memory cleanup patterns, PurgeTSS utility classes, and platform-specific APIs.
 

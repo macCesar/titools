@@ -10,7 +10,8 @@
   "scripts": {
     "test": "node --test test/**/*.test.js",
     "lint": "eslint bin lib test",
-    "format": "prettier --write lib/**/*.js"
+    "format": "prettier --write lib/**/*.js",
+    "sync:tidev-skills": "node scripts/sync-tidev-skills.mjs"
   },
   "keywords": [
     "titanium",

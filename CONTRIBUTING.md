@@ -38,6 +38,26 @@ they are repository tooling and are not installed as CLI commands.
 - CLI modules use ESM imports with explicit `.js` extensions. Use asynchronous
   child processes inside spinners so the UI remains responsive.
 
+## Synchronize the TiDev reference skills
+
+After an authorized audit updates `ti-api`, `ti-guides`, `ti-howtos`, `alloy-guides` or `alloy-howtos`, synchronize their versioned folders into an existing `tidev/skills` contribution checkout. TiTools is the maintenance source for this proposed workflow; the two native-module workflow skills in TiDev remain independently maintained there.
+
+Run the maintainer command from the TiTools source checkout:
+
+```sh
+npm run sync:tidev-skills -- --target /path/to/tidev-skills --check
+```
+
+Review the plan, prepare a clean contribution branch in the target checkout, and record the TiTools source commit. The command reads committed files, not ignored caches or private audit evidence. Use `--apply` to copy without publishing.
+
+Before publication, the auditing agent applies `humanizer:humanizer` to the final title and description and saves the reviewed description to a file. The script consumes that text; it does not perform or claim the skill's editorial review. Describe maintenance changes as proposals while maintainer agreement is pending.
+
+```sh
+npm run sync:tidev-skills -- --target /path/to/tidev-skills --publish --title "docs: update Titanium and Alloy reference skills" --body-file /path/to/reviewed-pr.md
+```
+
+Publication commits changed mirror files, pushes the contribution branch to its fork and creates or updates its open PR in `tidev/skills`. A synchronization with no changes and no contribution commits skips publication. The command does not merge a PR or release TiTools. A read-only audit ends with findings and does not enter this update workflow.
+
 ## Shared CLI engine
 
 TiTools and [AISkills](https://github.com/macCesar/aiskills) share the installer,
