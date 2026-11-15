@@ -3,8 +3,8 @@
 > The three layout modes, the two sizing constants, and the precedence order that decides which of your properties wins.
 
 - Source: https://titaniumsdk.com/docs/build/ui/layout
-- Written for Titanium SDK 13.4.0 and later.
-- This corpus documents Titanium SDK 13.4.1. Anything here that does not name a version describes 13.4.1.
+- Released baseline: Titanium SDK 14.0.0.GA.
+- Requirements and platform/version caveats below follow that release unless noted.
 - Titanium is maintained by TiDev. The Appcelerator toolchain is retired: there is no `appc` CLI, no Appcelerator Studio and no hosted build service. The supported CLI is `titanium` on npm, invoked as `ti`.
 
 ---

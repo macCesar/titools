@@ -19,6 +19,6 @@ Run `ti info` before diagnosing a toolchain failure as an Alloy defect. Keep sec
 
 The currently published configuration page has release-sensitive details. Read the configuration reference's verified caveats before relying on conflicting environment/platform values or selecting a build hook. Confirm the installed Alloy release with `alloy --version`.
 
-Use `alloy-guides` for XML, controllers, TSS, models, migrations and widgets; `ti-guides` for SDK setup, modules and distribution; `ti-api` for exact API/platform contracts; and `ti-ui` for native layout/list behavior.
+Use `alloy-guides` for XML, controllers, TSS, models, migrations and widgets; `ti-guides` for SDK setup, modules and distribution; and `ti-api` for exact API/platform contracts. For native layout and list behavior, read the official [layout](https://titaniumsdk.com/docs/build/ui/layout.md) and [list](https://titaniumsdk.com/docs/build/ui/lists.md) guides, or use `ti-ui` when installed.
 
 Sources: [current Alloy guides](https://titaniumsdk.com/docs/alloy.md), [first app](https://titaniumsdk.com/docs/build/first-app.md), [debugging](https://titaniumsdk.com/docs/build/debugging.md).

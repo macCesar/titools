@@ -32,7 +32,7 @@
 <!-- TOC-END -->
 
 ## Ti.XML
-> Full released contract: [Titanium.XML](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML)
+> Full released contract: [Titanium.XML](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML)
 
 > The top level XML module.  The XML module is used for parsing and processing XML-based content.
 > Extends Ti.Module
@@ -45,20 +45,18 @@ Android and iOS implement the [DOM Level 2](https://www.w3.org/TR/DOM-Level-2-Co
 
 Both iOS and Android lack DTD support.
 
-
 ### Methods (2)
 | Method | Returns | Platform | Description |
 |--------|---------|----------|-------------|
 | parseString(xml) | Ti.XML.Document | both | Parses an XML string into a <Titanium.XML.Document> object. |
-| serializeToString(node) | String | both | Serializes a [Node](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.Node) object into a string. |
-
+| serializeToString(node) | String | both | Serializes a [Node](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.Node) object into a string. |
 
 ---
 
 ## Ti.XML.Attr
-> Full released contract: [Titanium.XML.Attr](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.Attr)
+> Full released contract: [Titanium.XML.Attr](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.Attr)
 
-> Represents an attribute of an [Element](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.Element).
+> Represents an attribute of an [Element](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.Element).
 > Extends Ti.XML.Node
 > Platforms: both
 
@@ -72,13 +70,10 @@ Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.htm
 | specified | Boolean | — | both | True if this attribute was explicitly given a value in the instance document, f… |
 | value | String | — | both | The attribute value as a string. |
 
-
-
-
 ---
 
 ## Ti.XML.CDATASection
-> Full released contract: [Titanium.XML.CDATASection](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.CDATASection)
+> Full released contract: [Titanium.XML.CDATASection](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.CDATASection)
 
 > Used to include blocks of literal text containing characters that would otherwise need to be escaped.
 > Extends Ti.XML.Text
@@ -86,13 +81,10 @@ Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.htm
 
 Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-667469212) on Android and iOS with some non-standard extensions.
 
-
-
-
 ---
 
 ## Ti.XML.CharacterData
-> Full released contract: [Titanium.XML.CharacterData](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.CharacterData)
+> Full released contract: [Titanium.XML.CharacterData](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.CharacterData)
 
 > An interface extending <Titanium.XML.Node> with a set of attributes and methods for accessing character data in the DOM. Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-FF21A306) on Android and iOS. For reasons of compatibility with the JavaScript engine, text is represented by UTF-8 instead of UTF-16 on Android and iOS.
 > Extends Ti.XML.Node
@@ -104,7 +96,6 @@ Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.htm
 | data | String | — | both | The character data of the node that implements this interface. Throws an except… |
 | length | Number | — | both | The number of characters that are available through data and the substringData … |
 
-
 ### Methods (5)
 | Method | Returns | Platform | Description |
 |--------|---------|----------|-------------|
@@ -114,11 +105,10 @@ Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.htm
 | replaceData(offset, count, arg) | void | both | Replace the characters starting at the specified offset with the specified stri… |
 | substringData(offset, count) | String | both | Extracts a range of data from the node. Throws an exception if offset is negati… |
 
-
 ---
 
 ## Ti.XML.Comment
-> Full released contract: [Titanium.XML.Comment](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.Comment)
+> Full released contract: [Titanium.XML.Comment](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.Comment)
 
 > Represents the contents of an XML comment.
 > Extends Ti.XML.CharacterData
@@ -126,18 +116,14 @@ Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.htm
 
 Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-1728279322) on Android and iOS with some non-standard extensions.
 
-
-
-
 ---
 
 ## Ti.XML.DOMImplementation
-> Full released contract: [Titanium.XML.DOMImplementation](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.DOMImplementation)
+> Full released contract: [Titanium.XML.DOMImplementation](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.DOMImplementation)
 
 > The <Titanium.XML.DOMImplementation> interface provides a number of methods for performing operations that are independent of any particular instance of the document object model.Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-102161490) on Android and iOS.
 > Extends Ti.Proxy
 > Platforms: both
-
 
 ### Methods (3)
 | Method | Returns | Platform | Description |
@@ -146,11 +132,10 @@ Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.htm
 | createDocumentType(qualifiedName, publicId, systemId) | Ti.XML.DocumentType | both | Creates an empty <Titanium.XML.DocumentType> node. Entity declarations and nota… |
 | hasFeature(feature, version) | Boolean | both | Test if the <Titanium.XML.DOMImplementation> implements a specific feature. |
 
-
 ---
 
 ## Ti.XML.Document
-> Full released contract: [Titanium.XML.Document](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.Document)
+> Full released contract: [Titanium.XML.Document](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.Document)
 
 > The DOM Document returned from <Titanium.XML.parseString>.
 > Extends Ti.XML.Node
@@ -167,32 +152,30 @@ This has been reported as [Android Issue #7395](http://code.google.com/p/android
 |----------|------|---------|----------|-------------|
 | doctype | Ti.XML.DocumentType | — | both | An interface to the list of entities that are defined for the document, such as… |
 | documentElement | Ti.XML.Element | — | both | Root element of this document. |
-| implementation | Ti.XML.DOMImplementation | — | both | [DOMImplementation](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.DOMImplementation) object associated with this… |
-
+| implementation | Ti.XML.DOMImplementation | — | both | [DOMImplementation](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.DOMImplementation) object associated with this… |
 
 ### Methods (14)
 | Method | Returns | Platform | Description |
 |--------|---------|----------|-------------|
 | createAttribute(name) | Ti.XML.Attr | both | Creates an attribute with the given name. |
 | createAttributeNS(namespaceURI, name) | Ti.XML.Attr | both | Creates an attribute with the given name and namespace. |
-| createCDATASection(data) | Ti.XML.CDATASection | both | Creates and returns a [CDATASection](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.CDATASection). |
-| createComment(data) | Ti.XML.Comment | both | Creates a [Comment](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.Comment) with the supplied string data. |
-| createDocumentFragment(—) | Ti.XML.DocumentFragment | both | Creates an empty [DocumentFragment](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.DocumentFragment). |
+| createCDATASection(data) | Ti.XML.CDATASection | both | Creates and returns a [CDATASection](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.CDATASection). |
+| createComment(data) | Ti.XML.Comment | both | Creates a [Comment](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.Comment) with the supplied string data. |
+| createDocumentFragment(—) | Ti.XML.DocumentFragment | both | Creates an empty [DocumentFragment](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.DocumentFragment). |
 | createElement(tagName) | Ti.XML.Element | both | Creates an element with the given tag name. |
 | createElementNS(namespaceURI, name) | Ti.XML.Element | both | Create a new element with the given namespace and name. |
-| createEntityReference(name) | Ti.XML.EntityReference | both | Creates an [EntityReference](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.EntityReference) with the given name. |
+| createEntityReference(name) | Ti.XML.EntityReference | both | Creates an [EntityReference](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.EntityReference) with the given name. |
 | createProcessingInstruction(target, data) | Ti.XML.ProcessingInstruction | both | Creates a processing instruction for inserting into the DOM tree. |
 | createTextNode(data) | Ti.XML.Text | both | Creates a text node. |
-| getElementById(elementId) | Ti.XML.Element | both | Returns an [Element](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.Element) that has an ID attribute with the gi… |
+| getElementById(elementId) | Ti.XML.Element | both | Returns an [Element](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.Element) that has an ID attribute with the gi… |
 | getElementsByTagName(tagname) | Ti.XML.NodeList | both | Returns a node list of elements in the document which have the given tag. |
 | getElementsByTagNameNS(namespaceURI, localname) | Ti.XML.NodeList | both | Returns a node list of elements in the document which belong to the given names… |
 | importNode(importedNode, deep) | Ti.XML.Node | both | Imports a node from another document to this document, without altering or remo… |
 
-
 ---
 
 ## Ti.XML.DocumentFragment
-> Full released contract: [Titanium.XML.DocumentFragment](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.DocumentFragment)
+> Full released contract: [Titanium.XML.DocumentFragment](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.DocumentFragment)
 
 > A lightweight document object used as a container for a group of nodes.
 > Extends Ti.XML.Node
@@ -202,13 +185,10 @@ When a `DocumentFragment` is inserted into a DOM tree, children of the `Document
 
 Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-B63ED1A3) on Android and iOS with some non-standard extensions.
 
-
-
-
 ---
 
 ## Ti.XML.DocumentType
-> Full released contract: [Titanium.XML.DocumentType](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.DocumentType)
+> Full released contract: [Titanium.XML.DocumentType](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.DocumentType)
 
 > Each <Titanium.XML.Document> has a `doctype` attribute whose value is either 'null' or a <Titanium.XML.DocumentType> object.
 > Extends Ti.XML.Node
@@ -228,15 +208,12 @@ As of version 3.1, Android still does not truly support DTDs.  A document with a
 | publicId | String | — | both | The public identifier of the external subset. |
 | systemId | String | — | both | The system identifier of the external subset. |
 
-
-
-
 ---
 
 ## Ti.XML.Element
-> Full released contract: [Titanium.XML.Element](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.Element)
+> Full released contract: [Titanium.XML.Element](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.Element)
 
-> Represents an element in a DOM document, a <Titanium.XML.Node> defined by a start-tag and end-tag (or an empty tag). Elements may have [attributes](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.Attr) associated with them. Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-745549614) on Android and iOS with some non-standard extensions.
+> Represents an element in a DOM document, a <Titanium.XML.Node> defined by a start-tag and end-tag (or an empty tag). Elements may have [attributes](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.Attr) associated with them. Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-745549614) on Android and iOS with some non-standard extensions.
 > Extends Ti.XML.Node
 > Platforms: both
 
@@ -246,7 +223,6 @@ As of version 3.1, Android still does not truly support DTDs.  A document with a
 | textContent | String | — | both | Content (value) of all text nodes within this node. |
 | text | String | — | both | Content (value) of all text nodes within this node. |
 | tagName | String | — | both | The name of the element, as defined by its tag. |
-
 
 ### Methods (15)
 | Method | Returns | Platform | Description |
@@ -267,11 +243,10 @@ As of version 3.1, Android still does not truly support DTDs.  A document with a
 | hasAttribute(name) | Boolean | both | Determines whether or not an attribute with the given name is available in the … |
 | hasAttributeNS(namespaceURI, localName) | Boolean | both | Determines whether or not an attribute with the given name is available in the … |
 
-
 ---
 
 ## Ti.XML.Entity
-> Full released contract: [Titanium.XML.Entity](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.Entity)
+> Full released contract: [Titanium.XML.Entity](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.Entity)
 
 > This interface represents an entity, either parsed or unparsed, in an XML document. Note that this models the entity itself not the entity declaration. The nodeName attribute that is inherited from Node contains the name of the entity. An Entity node does not have any parent. Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-527DCFF2) on Android and iOS.
 > Extends Ti.XML.Node
@@ -284,13 +259,10 @@ As of version 3.1, Android still does not truly support DTDs.  A document with a
 | publicId | String | — | both | The public identifier associated with the entity, if specified. If the public i… |
 | systemId | String | — | both | The system identifier associated with the entity, if specified. If the system i… |
 
-
-
-
 ---
 
 ## Ti.XML.EntityReference
-> Full released contract: [Titanium.XML.EntityReference](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.EntityReference)
+> Full released contract: [Titanium.XML.EntityReference](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.EntityReference)
 
 > Represents an XML entity reference.
 > Extends Ti.XML.Node
@@ -298,13 +270,10 @@ As of version 3.1, Android still does not truly support DTDs.  A document with a
 
 Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-11C98490) on Android and iOS.
 
-
-
-
 ---
 
 ## Ti.XML.NamedNodeMap
-> Full released contract: [Titanium.XML.NamedNodeMap](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.NamedNodeMap)
+> Full released contract: [Titanium.XML.NamedNodeMap](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.NamedNodeMap)
 
 > A key-value paired map that maps String objects to <Titanium.XML.Node> objects. Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-1780488922) on Android and iOS.
 > Extends Ti.Proxy
@@ -314,7 +283,6 @@ Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.htm
 | Property | Type | Default | Platform | Description |
 |----------|------|---------|----------|-------------|
 | length | Number | — | both | The number of nodes in the map. The valid range of child node indices is 0-`len… |
-
 
 ### Methods (7)
 | Method | Returns | Platform | Description |
@@ -327,19 +295,18 @@ Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.htm
 | setNamedItemNS(node) | Ti.XML.Node | both | Adds a node using its `namespaceURI` and `localName` attributes. If a node with… |
 | removeNamedItemNS(namespaceURI, localName) | Ti.XML.Node | both | Removes a node from the map specified by local name and namespace URI. When thi… |
 
-
 ---
 
 ## Ti.XML.Node
-> Full released contract: [Titanium.XML.Node](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.Node)
+> Full released contract: [Titanium.XML.Node](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.Node)
 
-> A single node in the [Document](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.Document) tree.
+> A single node in the [Document](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.Document) tree.
 > Extends Ti.Proxy
 > Platforms: both
 
 Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-1950641247) on Android and iOS.
 
-Note that on iOS, only [Element](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.Element) nodes are mutable. This means that the methods `appendChild`, `insertBefore`, `removeChild`, and `replaceChild` only work on `Element` objects. If one of these methods is called on another type of node, it throws an exception.
+Note that on iOS, only [Element](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.Element) nodes are mutable. This means that the methods `appendChild`, `insertBefore`, `removeChild`, and `replaceChild` only work on `Element` objects. If one of these methods is called on another type of node, it throws an exception.
 
 ### Properties (unique: 16/31)
 | Property | Type | Default | Platform | Description |
@@ -375,7 +342,6 @@ Note that on iOS, only [Element](https://titaniumsdk.com/docs/sdk/13.4.1/Titaniu
 - **PROCESSING_INSTRUCTION_\***: PROCESSING_INSTRUCTION_NODE
 - **TEXT_\***: TEXT_NODE
 
-
 ### Methods (9)
 | Method | Returns | Platform | Description |
 |--------|---------|----------|-------------|
@@ -389,11 +355,10 @@ Note that on iOS, only [Element](https://titaniumsdk.com/docs/sdk/13.4.1/Titaniu
 | removeChild(oldChild) | Ti.XML.Node | both | Removes a child node from this node. |
 | replaceChild(newChild, oldChild) | Ti.XML.Node | both | Replaces the node `oldChild` with the node `newChild`. |
 
-
 ---
 
 ## Ti.XML.NodeList
-> Full released contract: [Titanium.XML.NodeList](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.NodeList)
+> Full released contract: [Titanium.XML.NodeList](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.NodeList)
 
 > A list of <Titanium.XML.Node> objects. Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-536297177) on Android and iOS.
 > Extends Ti.Proxy
@@ -404,17 +369,15 @@ Note that on iOS, only [Element](https://titaniumsdk.com/docs/sdk/13.4.1/Titaniu
 |----------|------|---------|----------|-------------|
 | length | Number | — | both | The length of the node list. |
 
-
 ### Methods (1)
 | Method | Returns | Platform | Description |
 |--------|---------|----------|-------------|
 | item(index) | Ti.XML.Node | both | Returns the <Titanium.XML.Node> object at the specified index. |
 
-
 ---
 
 ## Ti.XML.Notation
-> Full released contract: [Titanium.XML.Notation](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.Notation)
+> Full released contract: [Titanium.XML.Notation](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.Notation)
 
 > Represents a notation declared in the DTD.  Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-5431D1B9) on Android and iOS.
 > Extends Ti.Proxy
@@ -426,13 +389,10 @@ Note that on iOS, only [Element](https://titaniumsdk.com/docs/sdk/13.4.1/Titaniu
 | publicId | String | — | both | The public identifier of this notation. If the public identifier was not specif… |
 | systemId | String | — | both | The system identifier of this notation. If the system identifier was not specif… |
 
-
-
-
 ---
 
 ## Ti.XML.ProcessingInstruction
-> Full released contract: [Titanium.XML.ProcessingInstruction](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.ProcessingInstruction)
+> Full released contract: [Titanium.XML.ProcessingInstruction](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.ProcessingInstruction)
 
 > A way to keep processor-specific information in the text of the document. Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-1004215813) on Android and iOS.
 > Extends Ti.Proxy
@@ -444,13 +404,10 @@ Note that on iOS, only [Element](https://titaniumsdk.com/docs/sdk/13.4.1/Titaniu
 | data | String | — | both | Retrieve the content of this processing instruction. This from the first non wh… |
 | target | String | — | both | Retrieve the target of this processing instruction. XML defines this as being t… |
 
-
-
-
 ---
 
 ## Ti.XML.Text
-> Full released contract: [Titanium.XML.Text](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.XML.Text)
+> Full released contract: [Titanium.XML.Text](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.XML.Text)
 
 > Represents the textual content of an <Titanium.XML.Element> or <Titanium.XML.Attr> Implements the [DOM Level 2 API](https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-1312295772) on Android and iOS.
 > Extends Ti.XML.CharacterData
@@ -461,17 +418,15 @@ Note that on iOS, only [Element](https://titaniumsdk.com/docs/sdk/13.4.1/Titaniu
 |----------|------|---------|----------|-------------|
 | textContent | String | — | both | Content (value) of all text nodes within this node. |
 
-
 ### Methods (1)
 | Method | Returns | Platform | Description |
 |--------|---------|----------|-------------|
 | splitText(offset) | Ti.XML.Text | both | Breaks this node into two nodes at the specified by offset, and returns a new n… |
 
-
 ---
 
 ## Global
-> Full released contract: [Global](https://titaniumsdk.com/docs/sdk/13.4.1/Global)
+> Full released contract: [Global](https://titaniumsdk.com/docs/sdk/14.0.0/Global)
 
 > The APIs that reside in the global scope, which may be called without a namespace prefix.
 > Extends Object
@@ -482,24 +437,24 @@ Titanium provides a number of global built-in objects, detailed below.
 
 ### String Utilities
 
-Titanium includes several extra utility functions for formatting text, attached to the global [String](https://titaniumsdk.com/docs/sdk/13.4.1/Global.String) object.
+Titanium includes several extra utility functions for formatting text, attached to the global [String](https://titaniumsdk.com/docs/sdk/14.0.0/Global.String) object.
 
 ### console
 
-Titanium provides [console](https://titaniumsdk.com/docs/sdk/13.4.1/Global.Console) support familiar to many JavaScript developers for logging at the toplevel, in addition to the [Titanium](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.API) logging facilities.
+Titanium provides [console](https://titaniumsdk.com/docs/sdk/14.0.0/Global.Console) support familiar to many JavaScript developers for logging at the toplevel, in addition to the [Titanium](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.API) logging facilities.
 
 ### Timers
 
 Titanium has built-in support for one-off and repeating timers:
 
-Complete overview, setup, examples and version restrictions: [official Global API](https://titaniumsdk.com/docs/sdk/13.4.1/Global).
+Complete overview, setup, examples and version restrictions: [official Global API](https://titaniumsdk.com/docs/sdk/14.0.0/Global).
 
 ### Properties (unique: 4/16)
 | Property | Type | Default | Platform | Description |
 |----------|------|---------|----------|-------------|
 | console | Global.Console | — | both | Console logging facilities. |
 | global | Global | — | both | Reference to the global object itself. |
-| Buffer | buffer.Buffer | — | both | a global reference to the [Buffer](https://titaniumsdk.com/docs/sdk/13.4.1/buffer.Buffer) class. |
+| Buffer | buffer.Buffer | — | both | a global reference to the [Buffer](https://titaniumsdk.com/docs/sdk/14.0.0/buffer.Buffer) class. |
 | process | process | — | both | Reference to the global `process` object. |
 
 ### Constants (12)
@@ -507,7 +462,6 @@ Complete overview, setup, examples and version restrictions: [official Global AP
 - **ENV_\***: ENV_DEV, ENV_DEVELOPMENT, ENV_PROD, ENV_PRODUCTION, ENV_TEST
 - **OS_\***: OS_ANDROID, OS_IOS
 - **OS_VERSION_\***: OS_VERSION_MAJOR, OS_VERSION_MINOR, OS_VERSION_PATCH
-
 
 ### Methods (9)
 | Method | Returns | Platform | Description |
@@ -517,11 +471,10 @@ Complete overview, setup, examples and version restrictions: [official Global AP
 | clearTimeout(timerId) | void | both | Cancels a one-time timer. |
 | decodeURIComponent(encodedURI) | String | both | Replaces each escape sequence in the specified string, created using the `encod… |
 | encodeURIComponent(string) | String | both | Replaces each special character in the specified string with the equivalent URI… |
-| L(key, hint) | String | both | An alias for [Titanium.Locale.getString](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Locale). |
+| L(key, hint) | String | both | An alias for [Titanium.Locale.getString](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.Locale). |
 | require(moduleId) | any | both | Loads either a native Titanium module or a CommonJS module. |
 | setInterval(function, delay) | Number | both | Executes a function repeatedly with a fixed time delay between each call to tha… |
 | setTimeout(function, delay) | Number | both | Executes code or a function after a delay. |
-
 
 ### Related Types
 
@@ -565,7 +518,7 @@ Complete overview, setup, examples and version restrictions: [official Global AP
 ---
 
 ## Global.Console
-> Full released contract: [Global.Console](https://titaniumsdk.com/docs/sdk/13.4.1/Global.Console)
+> Full released contract: [Global.Console](https://titaniumsdk.com/docs/sdk/14.0.0/Global.Console)
 
 > Console logging facilities.
 > Extends Object
@@ -575,7 +528,6 @@ Complete overview, setup, examples and version restrictions: [official Global AP
 The toplevel `console` support is intended to supplement <Titanium.API> and make it easier for developers to port existing JavaScript code (especially CommonJS modules) to Titanium.
 
 Note that `console` does not currently implement the complete [Console](https://developer.mozilla.org/de/docs/Web/API/Console) specification. See the following supported methods for details and submit a pull request to add more!
-
 
 ### Methods (15)
 | Method | Returns | Platform | Description |
@@ -596,11 +548,10 @@ Note that `console` does not currently implement the complete [Console](https://
 | groupCollapsed(label) | void | both | Alias for `group()` |
 | groupEnd(—) | void | both | Decreases indentation of subsequent lines by spaces for `groupIndentation` leng… |
 
-
 ---
 
 ## Global.Intl
-> Full released contract: [Global.Intl](https://titaniumsdk.com/docs/sdk/13.4.1/Global.Intl)
+> Full released contract: [Global.Intl](https://titaniumsdk.com/docs/sdk/14.0.0/Global.Intl)
 
 > Namespace providing JavaScript's standard internationalization APIs.
 > Extends Object
@@ -611,17 +562,15 @@ Provides support for localized number formatting, date/time formatting, and lang
 
 For more detail, see the MDN website about [Intl](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Intl).
 
-
 ### Methods (1)
 | Method | Returns | Platform | Description |
 |--------|---------|----------|-------------|
 | getCanonicalLocales(locales) | Array<String> | both | Gets canonical locale identifiers matching given BCP 47 locale identifiers. |
 
-
 ---
 
 ## Global.Intl.Collator
-> Full released contract: [Global.Intl.Collator](https://titaniumsdk.com/docs/sdk/13.4.1/Global.Intl.Collator)
+> Full released contract: [Global.Intl.Collator](https://titaniumsdk.com/docs/sdk/14.0.0/Global.Intl.Collator)
 
 > Immutable object used to perform language sensitive string comparisons.
 > Extends Object
@@ -637,14 +586,12 @@ For more detail, see the MDN website about [Intl.Collator](https://developer.moz
 |----------|------|---------|----------|-------------|
 | constructor | Global.Intl.Collator | — | both | Creates a new `Intl.Collator` object with the given locale and comparison optio… |
 
-
 ### Methods (3)
 | Method | Returns | Platform | Description |
 |--------|---------|----------|-------------|
 | compare(string1, string2) | Number | both | Determines the sort order of the given strings or if they match. |
 | resolvedOptions(—) | CollatorOptions | both | Gets the object's collation options. |
 | supportedLocalesOf(locales) | Array<String> | both | Static method indicating what locales are supported by collators from the given… |
-
 
 ### Related Types
 
@@ -663,7 +610,7 @@ For more detail, see the MDN website about [Intl.Collator](https://developer.moz
 ---
 
 ## Global.Intl.DateTimeFormat
-> Full released contract: [Global.Intl.DateTimeFormat](https://titaniumsdk.com/docs/sdk/13.4.1/Global.Intl.DateTimeFormat)
+> Full released contract: [Global.Intl.DateTimeFormat](https://titaniumsdk.com/docs/sdk/14.0.0/Global.Intl.DateTimeFormat)
 
 > Immutable object used to generate localized date and time formatted strings.
 > Extends Object
@@ -679,7 +626,6 @@ For more detail, see the MDN website about [Intl.DateTimeFormat](https://develop
 |----------|------|---------|----------|-------------|
 | constructor | Global.Intl.DateTimeFormat | — | both | Creates a new `Intl.DateTimeFormat` object with the given locale and formatting… |
 
-
 ### Methods (4)
 | Method | Returns | Platform | Description |
 |--------|---------|----------|-------------|
@@ -687,7 +633,6 @@ For more detail, see the MDN website about [Intl.DateTimeFormat](https://develop
 | formatToParts(date) | Array<DateTimeFormattedPart> | both | Formats given date to an array of components describing what the formatted stri… |
 | resolvedOptions(—) | DateTimeFormatOptions | both | Gets the object's formatting options. |
 | supportedLocalesOf(locales) | Array<String> | both | Static method indicating what locales are supported by `DateTimeFormat` from th… |
-
 
 ### Related Types
 
@@ -718,7 +663,7 @@ For more detail, see the MDN website about [Intl.DateTimeFormat](https://develop
 ---
 
 ## Global.Intl.NumberFormat
-> Full released contract: [Global.Intl.NumberFormat](https://titaniumsdk.com/docs/sdk/13.4.1/Global.Intl.NumberFormat)
+> Full released contract: [Global.Intl.NumberFormat](https://titaniumsdk.com/docs/sdk/14.0.0/Global.Intl.NumberFormat)
 
 > Immutable object used to convert numbers to localized numeric strings.
 > Extends Object
@@ -734,7 +679,6 @@ For more detail, see the MDN website about [Intl.NumberFormat](https://developer
 |----------|------|---------|----------|-------------|
 | constructor | Global.Intl.NumberFormat | — | both | Creates a new `Intl.NumberFormat` object with the given locale and formatting o… |
 
-
 ### Methods (4)
 | Method | Returns | Platform | Description |
 |--------|---------|----------|-------------|
@@ -742,7 +686,6 @@ For more detail, see the MDN website about [Intl.NumberFormat](https://developer
 | formatToParts(value) | Array<NumberFormattedPart> | both | Formats given number to an array of components describing what the formatted st… |
 | resolvedOptions(—) | NumberFormatOptions | both | Gets the object's formatting options. |
 | supportedLocalesOf(locales) | Array<String> | both | Static method indicating what locales are supported by `NumberFormat` from the … |
-
 
 ### Related Types
 
@@ -765,7 +708,7 @@ For more detail, see the MDN website about [Intl.NumberFormat](https://developer
 ---
 
 ## Global.String
-> Full released contract: [Global.String](https://titaniumsdk.com/docs/sdk/13.4.1/Global.String)
+> Full released contract: [Global.String](https://titaniumsdk.com/docs/sdk/14.0.0/Global.String)
 
 > The JavaScript built-in String type.
 > Extends Object
@@ -773,7 +716,6 @@ For more detail, see the MDN website about [Intl.NumberFormat](https://developer
 > Type: module
 
 This module contains Titanium-only extensions for formatting data into locale-specific strings. The target locale is configured by the user in the device's system Settings.
-
 
 ### Methods (5)
 | Method | Returns | Platform | Description |
@@ -783,7 +725,6 @@ This module contains Titanium-only extensions for formatting data into locale-sp
 | formatDate(date, format) | String | both | Formats a date into the date format of the locale configured for the system. |
 | formatDecimal(value, locale, pattern) | String | both | Formats a number into the decimal format, including decimal symbol, of the loca… |
 | formatTime(date, format) | String | both | Formats a date into the time format of the locale configured for the system. |
-
 
 ---
 

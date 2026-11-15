@@ -7,6 +7,7 @@
 - [Ti.App.Android](#tiappandroid)
 - [Ti.App.Properties](#tiappproperties)
 - [Ti.App.iOS](#tiappios)
+- [Ti.App.iOS.SceneProxy](#tiappiossceneproxy)
 - [Ti.App.iOS.BackgroundService](#tiappiosbackgroundservice)
 - [Ti.App.iOS.LocalNotification](#tiappioslocalnotification)
 - [Ti.App.iOS.SearchQuery](#tiappiossearchquery)
@@ -25,7 +26,7 @@
 <!-- TOC-END -->
 
 ## Ti.App
-> Full released contract: [Titanium.App](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App)
+> Full released contract: [Titanium.App](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.App)
 
 > The top-level App module is mainly used for accessing information about the application at runtime, and for sending or listening for system events.
 > Extends Ti.Module
@@ -60,7 +61,6 @@
 ### Constants (2)
 - **EVENT_ACCESSIBILITY_\***: EVENT_ACCESSIBILITY_ANNOUNCEMENT, EVENT_ACCESSIBILITY_CHANGED
 
-
 ### Methods (2)
 | Method | Returns | Platform | Description |
 |--------|---------|----------|-------------|
@@ -89,7 +89,7 @@
 ---
 
 ## Ti.App.Android
-> Full released contract: [Titanium.App.Android](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.Android)
+> Full released contract: [Titanium.App.Android](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.App.Android)
 
 > A module used to access Android application resources.
 > Extends Ti.Module
@@ -104,27 +104,51 @@
 | appVersionName | String | android | The version name of the application. |
 | launchIntent | Ti.Android.Intent | android | Return the intent that was used to launch the app… |
 
-
-### Methods (1)
+### Methods (2)
 | Method | Returns | Platform | Description |
 |--------|---------|----------|-------------|
+| changeIcon(options) | void | android | Changes the launcher icon by disabling one activity alias and enabling another. Since 14.0.0. |
 | clearUserCache(—) | void | android | Clears app data and cache. This will close the ap… |
+
+Add the aliases under the Android manifest's `<application>` in `tiapp.xml`. Set `android:targetActivity` to your real main activity, and each alternate `android:icon` to its desired icon resource. For example, replace `.TestActivity` below with the main activity of your app and choose the icon resource for `.red`:
+
+```xml
+<activity-alias android:enabled="true" android:name=".default" android:targetActivity=".TestActivity" android:exported="true">
+  <intent-filter>
+    <action android:name="android.intent.action.MAIN"/>
+    <category android:name="android.intent.category.LAUNCHER"/>
+  </intent-filter>
+</activity-alias>
+<activity-alias android:icon="@mipmap/ic_launcher" android:name=".red" android:enabled="false" android:targetActivity=".TestActivity" android:exported="true">
+  <intent-filter>
+    <action android:name="android.intent.action.MAIN"/>
+    <category android:name="android.intent.category.LAUNCHER"/>
+  </intent-filter>
+</activity-alias>
+```
+
+At least one alias must have the `MAIN` action and `LAUNCHER` category and must not set `android:enabled="false"`. The build then removes the main activity's launcher entry; otherwise that entry remains. Switch with `Ti.App.Android.changeIcon({ from: 'default', to: 'red' })`, then use `{ from: 'red', to: 'default' }` to switch back.
 
 ### Events (1)
 | Event | Platform | Description |
 |-------|----------|-------------|
 | shortcutitemclick | android | Fired when a <Titanium.UI.ShortcutItem> is clicked. |
 
+### Related Types
+
+#### ChangeIconOptions
+
+`changeIcon(options: ChangeIconOptions)` requires `from: String` and `to: String`: the current and new `<activity-alias>` names without their leading dot. Your app must track which alias is enabled to switch back correctly.
+
 ---
 
 ## Ti.App.Properties
-> Full released contract: [Titanium.App.Properties](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.Properties)
+> Full released contract: [Titanium.App.Properties](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.App.Properties)
 
 > The App Properties module is used for storing application-related data in property/value pairs  that persist beyond application sessions and device power cycles.
 > Extends Ti.Module
 > Platforms: both
 > Type: module
-
 
 ### Methods (16)
 | Method | Returns | Platform | Description |
@@ -154,22 +178,28 @@
 ---
 
 ## Ti.App.iOS
-> Full released contract: [Titanium.App.iOS](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.iOS)
+> Full released contract: [Titanium.App.iOS](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.App.iOS)
 
 > The top-level App iOS module, available only to iOS devices, that includes the facilities to create and manage local notifications and background services.
 > Extends Ti.Module
 > Platforms: ios
 > Type: module
 
-### Properties (unique: 4/72)
+### Properties (unique: 7/79)
 | Property | Type | Platform | Description |
 |----------|------|----------|-------------|
 | currentUserNotificationSettings | UserNotificationSettings | ios | Notification types and user notification categori… |
 | supportedUserActivityTypes | Array<String> | ios | Provides an Array of the NSUserActivityTypes keys… |
 | applicationOpenSettingsURL | String | ios | Returns a URL to open the app's settings. |
 | userInterfaceStyle | Number | ios | The style associated with the user interface. |
+| currentScene | Ti.App.iOS.SceneProxy | ios | Read-only scene for the calling JavaScript context; iOS 13+, since 14.0.0. |
+| scenes | Array<Ti.App.iOS.SceneProxy> | ios | Read-only array of all registered scenes; iOS 13+, since 14.0.0. |
+| focusedScene | Ti.App.iOS.SceneProxy | ios | Read-only scene that most recently received a touch; iOS 13+, since 14.0.0. |
 
-### Constants (66)
+`currentScene` is null and `scenes` is empty when scenes are unavailable (before iOS 13 or without a scene manifest). Each scene has its own JavaScript context. `focusedScene` uses hit-test tracking and is null before any interaction or before iOS 13; two scenes can both be active and foreground, so those states alone do not identify input focus.
+
+### Constants (70)
+- **HINGE_STATUS_\***: HINGE_STATUS_UNKNOWN, HINGE_STATUS_CLOSED, HINGE_STATUS_PARTIALLY_OPEN, HINGE_STATUS_FULLY_OPEN
 - **BACKGROUNDFETCHINTERVAL_\***: BACKGROUNDFETCHINTERVAL_MIN, BACKGROUNDFETCHINTERVAL_NEVER
 - **EVENT_ACCESSIBILITY_LAYOUT_\***: EVENT_ACCESSIBILITY_LAYOUT_CHANGED
 - **EVENT_ACCESSIBILITY_SCREEN_\***: EVENT_ACCESSIBILITY_SCREEN_CHANGED
@@ -201,8 +231,7 @@
 - **UTTYPE_UTF8_PLAIN_\***: UTTYPE_UTF8_PLAIN_TEXT
 - **UTTYPE_WEB_\***: UTTYPE_WEB_ARCHIVE
 
-
-### Methods (11)
+### Methods (12)
 | Method | Returns | Platform | Description |
 |--------|---------|----------|-------------|
 | createUserDefaults(parameters) | Ti.App.iOS.UserDefaults | ios | Creates and returns an instance of Titanium.App.i… |
@@ -216,8 +245,11 @@
 | sendWatchExtensionReply(handlerId, userInfo) | void | ios | Marks the end of an `openParentApplication:reply`… |
 | createUserNotificationAction(parameters) | Ti.App.iOS.UserNotificationAction | ios | Creates and returns an instance of <Titanium.App.… |
 | createUserNotificationCategory(parameters) | Ti.App.iOS.UserNotificationCategory | ios | Creates and returns an instance of <Titanium.App.… |
+| requestScene(options?) | Promise<RequestSceneResult> | ios | Asynchronously requests a new scene; iOS 13+, since 14.0.0. |
 
-### Events (18)
+`requestScene(options?: Dictionary<RequestSceneOptions>)` asks iOS to activate a new scene session, such as another iPadOS Split View or Slide Over window. A new scene boots the app's JavaScript in its own context. The Promise resolves to `{ scene: Ti.App.iOS.SceneProxy }` when that scene connects; use `await` or `then` rather than expecting a synchronous proxy. It rejects with an Error if activation is refused, iOS is older than 13, or `UIApplicationSceneManifest` is unavailable. Attach per-scene lifecycle listeners to the returned proxy.
+
+### Events (21)
 | Event | Platform | Description |
 |-------|----------|-------------|
 | notification | ios | Fired when a local notification is received by the application. |
@@ -238,11 +270,67 @@
 | handleurl | ios | Fired when a new URL is handled by the application. |
 | traitcollectionchange | ios | Fired when the trait collection of the device changes, e.g. the user interface … |
 | screenshotcaptured | ios | Fired after the user takes a screenshot, e.g. by pressing both the home and loc… |
+| hingechange | iphone, ipad | Fold status changes; `{ status: Number, angle: Number }`. Since 14.0.0; device/build requirements below. |
+| scenewillconnect | iphone, ipad | New scene connecting, not yet active/foreground; `{ sceneId: String, scene: Ti.App.iOS.SceneProxy }`. iOS 13+, since 14.0.0. |
+| scenediddismiss | iphone, ipad | Scene removed by user/system; `{ sceneId: String }`. iOS 13+, since 14.0.0. |
+
+The read-only Number `HINGE_STATUS_*` constants require iOS 27.1+. `hingechange` fires only on iPhone Duo running iOS 27.1+ when built with the iOS 27.1+ SDK, continuously during folding and once with the current state after the first listener is added. `angle` is degrees: 0 closed, 180 flat, and 0 for unknown status. Use this for visual effects; use the window's size for layout. Other devices never fire the event.
+
+### Related Types
+
+#### RequestSceneOptions
+
+Optional `configurationName: String` must match a `UISceneConfiguration` in the app's `UIApplicationSceneManifest`; omission selects the default configuration. The dictionary is available on iphone/ipad since 14.0.0.
+
+#### RequestSceneResult
+
+Contains the newly connected `scene: Ti.App.iOS.SceneProxy`. Available on iphone/ipad since 14.0.0.
+
+---
+
+## Ti.App.iOS.SceneProxy
+> Full released contract: [Titanium.App.iOS.SceneProxy](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.App.iOS.SceneProxy)
+
+> Proxy for one UIWindowScene in a multi-scene application.
+> Extends Ti.Proxy
+> Platforms: iphone, ipad, macos
+> Since: 14.0.0
+
+Obtain a scene from `Ti.App.iOS.currentScene`, `scenes`, `focusedScene`, or [Ti.UI.Window.scene](api-ui-windows-navigation.md#tiuiwindow). Multi-scene support requires iOS 13+. The SDK generates `UIApplicationSceneManifest` in Info.plist with `UIApplicationSupportsMultipleScenes: true` and one configuration named `Default Configuration`, using delegate `TiApp`.
+
+Add extra configurations in `tiapp.xml` under `<ios><plist><dict>` → `UIApplicationSceneManifest` → `UISceneConfigurations` → `UIWindowSceneSessionRoleApplication`. Its array entries set `UISceneConfigurationName` and `UISceneDelegateClassName` (the default entry uses `Default Configuration` and `TiApp`). Keep `UIApplicationSupportsMultipleScenes` true. Without a manifest, `currentScene` is null and `scenes` is empty.
+
+### Properties (unique: 9/11)
+| Property | Type | Description |
+|----------|------|-------------|
+| id | String | Read-only alias of `sceneId`. |
+| sceneId | String | Read-only persistent identifier of the scene's UISceneSession. |
+| sceneName | String | Read-only configuration name; defaults to `Default Configuration`. |
+| isActive | Boolean | Read-only: foreground and receiving input; becomes true on `focus`, false on `blur`. |
+| isForeground | Boolean | Read-only: visible even if inactive; true on `resumed`, false on `paused`. |
+| isPrimary | Boolean | Read-only: first-launched or designated primary scene. |
+| isKey | Boolean | Read-only: last scene to receive a touch; hit-test focus tracking, iOS 13+. |
+| window | Ti.UI.Window | Read-only root window, or null if none. |
+| traitCollection | Dictionary | Read-only scene traits, or null without a window/before iOS 13. |
+
+In iPad Split View, both scenes may report native `isKeyWindow` and `foregroundActive` simultaneously. Use `isKey`, or `Ti.App.iOS.focusedScene`, to identify the most recent touch target.
+
+`traitCollection` contains Number values: `userInterfaceStyle` (0 unspecified, 1 light, 2 dark), `horizontalSizeClass` and `verticalSizeClass` (0 unspecified, 1 compact, 2 regular), `displayScale`, and `layoutDirection` (0 left-to-right, 1 right-to-left).
+
+### Events (4)
+| Event | Platform | Description |
+|-------|----------|-------------|
+| focus | iphone, ipad | Became active and receives input; equivalent to legacy App.iOS `resumed`. |
+| blur | iphone, ipad | About to resign active status; equivalent to legacy App.iOS `pause`. |
+| paused | iphone, ipad | Entered background and is no longer visible; equivalent to legacy App.iOS `paused`. |
+| resumed | iphone, ipad | About to enter foreground, visible but not necessarily active; equivalent to legacy App.iOS `resume`. |
+
+All four events require iOS 13+ and carry `{ sceneId: String, scene: Ti.App.iOS.SceneProxy }`. Attach them with `scene.addEventListener(eventName, listener)`; they fire only for that scene, not other scenes or the `Ti.App.iOS` module. For example, inspect `scene.sceneId`, `scene.isActive`, `scene.isForeground`, `scene.isPrimary`, `scene.isKey` and `scene.traitCollection` after checking for a non-null `Ti.App.iOS.currentScene`.
 
 ---
 
 ## Ti.App.iOS.BackgroundService
-> Full released contract: [Titanium.App.iOS.BackgroundService](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.iOS.BackgroundService)
+> Full released contract: [Titanium.App.iOS.BackgroundService](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.App.iOS.BackgroundService)
 
 > A service that runs when the application is placed in the background.
 > Extends Ti.Proxy
@@ -253,34 +341,30 @@
 |----------|------|----------|-------------|
 | url | String | ios | A local URL to a JavaScript file containing the c… |
 
-
 ### Methods (2)
 | Method | Returns | Platform | Description |
 |--------|---------|----------|-------------|
 | stop(—) | void | ios | Stops the service from running during the current… |
 | unregister(—) | void | ios | Unregisters the background service. |
 
-
 ---
 
 ## Ti.App.iOS.LocalNotification
-> Full released contract: [Titanium.App.iOS.LocalNotification](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.iOS.LocalNotification)
+> Full released contract: [Titanium.App.iOS.LocalNotification](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.App.iOS.LocalNotification)
 
 > A local notification to alert the user of new or pending application information.
 > Extends Ti.Proxy
 > Platforms: ios
-
 
 ### Methods (1)
 | Method | Returns | Platform | Description |
 |--------|---------|----------|-------------|
 | cancel(—) | void | ios | Cancels the pending notification. |
 
-
 ---
 
 ## Ti.App.iOS.SearchQuery
-> Full released contract: [Titanium.App.iOS.SearchQuery](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.iOS.SearchQuery)
+> Full released contract: [Titanium.App.iOS.SearchQuery](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.App.iOS.SearchQuery)
 
 > A search query object manages the criteria to apply when searching app content that you have previously  indexed by using the Core Spotlight APIs.
 > Extends Ti.Proxy
@@ -291,7 +375,6 @@
 |----------|------|----------|-------------|
 | queryString | String | ios | A formatted string that defines the matching crit… |
 | attributes | Array<String> | ios | An array of strings that represent the attributes… |
-
 
 ### Methods (3)
 | Method | Returns | Platform | Description |
@@ -309,12 +392,11 @@
 ---
 
 ## Ti.App.iOS.SearchableIndex
-> Full released contract: [Titanium.App.iOS.SearchableIndex](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.iOS.SearchableIndex)
+> Full released contract: [Titanium.App.iOS.SearchableIndex](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.App.iOS.SearchableIndex)
 
 > The SearchableIndex module is used to add or remove Ti.App.iOS.SearchableItem objects from the device search index.
 > Extends Ti.Proxy
 > Platforms: ios
-
 
 ### Methods (5)
 | Method | Returns | Platform | Description |
@@ -325,11 +407,10 @@
 | deleteAllSearchableItemByDomainIdentifiers(Array, callback) | void | ios | Removes search items based on an array of domain … |
 | deleteSearchableItemsByIdentifiers(Array, callback) | void | ios | Removes search items based on an array of identif… |
 
-
 ---
 
 ## Ti.App.iOS.SearchableItem
-> Full released contract: [Titanium.App.iOS.SearchableItem](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.iOS.SearchableItem)
+> Full released contract: [Titanium.App.iOS.SearchableItem](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.App.iOS.SearchableItem)
 
 > Used to create a unique object containing all of the search information that will appear in the device search index.
 > Extends Ti.Proxy
@@ -343,13 +424,10 @@
 | expirationDate | String | ios | Searchable items have an expiration date or time … |
 | uniqueIdentifier | String | ios | Unique identifier to your application group. |
 
-
-
-
 ---
 
 ## Ti.App.iOS.SearchableItemAttributeSet
-> Full released contract: [Titanium.App.iOS.SearchableItemAttributeSet](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.iOS.SearchableItemAttributeSet)
+> Full released contract: [Titanium.App.iOS.SearchableItemAttributeSet](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.App.iOS.SearchableItemAttributeSet)
 
 > The SearchableItemAttributeSet module defines metadata properties for SearchItem and UserActivity objects.
 > Extends Ti.Proxy
@@ -453,13 +531,10 @@
 | thoroughfare | String | ios | The location (e.g., street name) for the item acc… |
 | postalCode | String | ios | The postal code for the item according to guideli… |
 
-
-
-
 ---
 
 ## Ti.App.iOS.UserActivity
-> Full released contract: [Titanium.App.iOS.UserActivity](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.iOS.UserActivity)
+> Full released contract: [Titanium.App.iOS.UserActivity](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.App.iOS.UserActivity)
 
 > The UserActivity module is used to enable device Handoff and to create User Activities.
 > Extends Ti.Proxy
@@ -483,7 +558,6 @@
 | userInfo | Dictionary | ios | The userInfo dictionary contains application-spec… |
 | webpageURL | String | ios | When no suitable application is installed on a re… |
 
-
 ### Methods (7)
 | Method | Returns | Platform | Description |
 |--------|---------|----------|-------------|
@@ -505,7 +579,7 @@
 ---
 
 ## Ti.App.iOS.UserDefaults
-> Full released contract: [Titanium.App.iOS.UserDefaults](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.iOS.UserDefaults)
+> Full released contract: [Titanium.App.iOS.UserDefaults](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.App.iOS.UserDefaults)
 
 > The UserDefaults module is used for storing application-related data in property/value pairs  that persist beyond application sessions and device power cycles. UserDefaults allows the suiteName of the UserDefaults to be specified at creation time.  **Important**: Using this API requires the `NSPrivacyAccessedAPICategoryUserDefaults` property set in the privacy manifest that was introduced in iOS 17. You can learn more about it [here](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files/describing_use_of_required_reason_api).
 > Extends Ti.App.Properties
@@ -517,13 +591,10 @@
 |----------|------|----------|-------------|
 | suiteName | String | ios | Sets the name of the suite to be used to access U… |
 
-
-
-
 ---
 
 ## Ti.App.iOS.UserNotificationAction
-> Full released contract: [Titanium.App.iOS.UserNotificationAction](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.iOS.UserNotificationAction)
+> Full released contract: [Titanium.App.iOS.UserNotificationAction](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.App.iOS.UserNotificationAction)
 
 > An action the user selects in response to an interactive notification.
 > Extends Ti.Proxy
@@ -539,13 +610,10 @@
 | identifier | String | ios | Identifier for this action. Used to identify the … |
 | title | String | ios | Title of the button displayed in the notification. |
 
-
-
-
 ---
 
 ## Ti.App.iOS.UserNotificationCategory
-> Full released contract: [Titanium.App.iOS.UserNotificationCategory](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.iOS.UserNotificationCategory)
+> Full released contract: [Titanium.App.iOS.UserNotificationCategory](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.App.iOS.UserNotificationCategory)
 
 > A set of notification actions to associate with a notification.
 > Extends Ti.Proxy
@@ -562,19 +630,15 @@
 | hiddenPreviewsBodyPlaceholder | String | ios | The placeholder text to display when notification… |
 | options | Array<Number> | ios | Options for how to handle notifications of this t… |
 
-
-
-
 ---
 
 ## Ti.App.iOS.UserNotificationCenter
-> Full released contract: [Titanium.App.iOS.UserNotificationCenter](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.App.iOS.UserNotificationCenter)
+> Full released contract: [Titanium.App.iOS.UserNotificationCenter](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.App.iOS.UserNotificationCenter)
 
 > The top-level App iOS Notification Center module. It is used to control scheduled notifications and receive details about the system-wide notification settings.
 > Extends Ti.Module
 > Platforms: ios
 > Type: module
-
 
 ### Methods (5)
 | Method | Returns | Platform | Description |
@@ -585,11 +649,10 @@
 | removeDeliveredNotifications(notifications) | void | ios | Removes the specified delivered notifications fro… |
 | requestUserNotificationSettings(callback) | void | ios | Notification types and user notification categori… |
 
-
 ---
 
 ## Ti.Platform
-> Full released contract: [Titanium.Platform](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Platform)
+> Full released contract: [Titanium.Platform](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.Platform)
 
 > The top-level Platform module.  The Platform module is used to access the device's platform-related functionality.
 > Extends Ti.Module
@@ -632,7 +695,6 @@
 ### Constants (4)
 - **BATTERY_STATE_\***: BATTERY_STATE_CHARGING, BATTERY_STATE_FULL, BATTERY_STATE_UNKNOWN, BATTERY_STATE_UNPLUGGED
 
-
 ### Methods (5)
 | Method | Returns | Platform | Description |
 |--------|---------|----------|-------------|
@@ -650,7 +712,7 @@
 ---
 
 ## Ti.Platform.Android
-> Full released contract: [Titanium.Platform.Android](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Platform.Android)
+> Full released contract: [Titanium.Platform.Android](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.Platform.Android)
 
 > The Android-specific Platform module, used to access the device's platform-related functionality.
 > Extends Ti.Module
@@ -666,13 +728,10 @@
 - **API_\***: API_LEVEL
 - **PHYSICAL_SIZE_CATEGORY_\***: PHYSICAL_SIZE_CATEGORY_LARGE, PHYSICAL_SIZE_CATEGORY_NORMAL, PHYSICAL_SIZE_CATEGORY_SMALL, PHYSICAL_SIZE_CATEGORY_UNDEFINED, PHYSICAL_SIZE_CATEGORY_XLARGE
 
-
-
-
 ---
 
 ## Ti.Platform.DisplayCaps
-> Full released contract: [Titanium.Platform.DisplayCaps](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Platform.DisplayCaps)
+> Full released contract: [Titanium.Platform.DisplayCaps](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.Platform.DisplayCaps)
 
 > The Display Caps object returned by the <Titanium.Platform.displayCaps> property.
 > Extends Ti.Proxy
@@ -688,9 +747,6 @@
 | platformWidth | Number | both | Absolute width of the display in relation to UI o… |
 | xdpi | Number | android | Physical pixels per inch of the display in the X … |
 | ydpi | Number | android | Physical pixels per inch of the display in the Y … |
-
-
-
 
 ---
 

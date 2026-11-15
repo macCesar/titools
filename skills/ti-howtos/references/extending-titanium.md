@@ -1,6 +1,6 @@
 # Native modules
 
-Based on the [current official guide](https://titaniumsdk.com/docs/extend/modules.md). Examples target released SDK 13.4.1; verify the selected SDK before adopting version-specific behavior.
+Based on the [current official guide](https://titaniumsdk.com/docs/extend/modules.md). Examples target released SDK 14.0.0.GA; verify the selected SDK before adopting version-specific behavior.
 
 A native module wraps platform code and exposes it to JavaScript. Write one
 when the SDK has no API for something the platform does, or when you need a
@@ -9,6 +9,31 @@ native library that has no JavaScript equivalent.
 Before you do, check the [modules directory](https://titaniumsdk.com/modules.md) - somebody may already
 have. And check [Hyperloop](https://titaniumsdk.com/docs/extend/hyperloop.md), which reaches native APIs
 directly without a module at all.
+
+<!-- TOC-START -->
+## Contents
+
+- [Create one](#create-one)
+- [The manifest](#the-manifest)
+- [What the code looks like](#what-the-code-looks-like)
+- [Build and test](#build-and-test)
+- [Things that catch people](#things-that-catch-people)
+- [Next](#next)
+- [Hyperloop](#hyperloop)
+- [Install](#install)
+- [How the require works](#how-the-require-works)
+- [Hyperloop or a module](#hyperloop-or-a-module)
+- [What it costs](#what-it-costs)
+- [Next](#next-1)
+- [CLI plugins](#cli-plugins)
+- [The shape of one](#the-shape-of-one)
+- [Where they are found](#where-they-are-found)
+- [Useful events](#useful-events)
+- [Alloy's own hook file](#alloys-own-hook-file)
+- [Keep them cheap](#keep-them-cheap)
+- [Next](#next-2)
+
+<!-- TOC-END -->
 
 ## Create one
 
@@ -46,12 +71,12 @@ name: thing
 moduleid: com.example.thing
 guid: 1bf6ca03-c384-44f1-8bdc-f06454872771
 platform: android
-minsdk: 13.4.1
+minsdk: 14.0.0
 ```
 
 `minsdk` is the oldest Titanium SDK the module supports, and the build refuses
 when a project's SDK is older. `apiversion` is the module API generation - 4 on
-Android, 2 on iOS for 13.4.
+Android, 2 on iOS for SDK 14.0.0. Set `minsdk` to the oldest SDK you actually support and verify; it need not equal the SDK used to build the module.
 
 Bump `version` on every release. It is what a project pins against.
 
@@ -88,7 +113,7 @@ Build from the module directory:
 ti build --platform android --build-only
 ```
 
-That produces a distributable zip. Use `example/app.js` in the module test workflow; the `--build-only` packaging command does not itself demonstrate runtime behavior. It is an example app you run against the built module, which is the fastest way to exercise what you just wrote.
+That produces a distributable zip under `dist/`, containing `modules/<platform>/<id>/<version>/`. Check the produced archive and its manifest before distributing it. Use `example/app.js` in the module test workflow; the `--build-only` packaging command skips running that example and does not itself demonstrate runtime behavior. It is an example app you run against the built module, which is the fastest way to exercise what you just wrote.
 
 Install it into a project by unzipping it there - see
 [using modules](https://titaniumsdk.com/docs/build/modules.md) for the layout and for declaring it in
@@ -117,7 +142,7 @@ thread. Do the work on a background thread and call back.
 
 ## Hyperloop
 
-Based on the [current official guide](https://titaniumsdk.com/docs/extend/hyperloop.md). Examples target released SDK 13.4.1; verify the selected SDK before adopting version-specific behavior.
+Based on the [current official guide](https://titaniumsdk.com/docs/extend/hyperloop.md). Examples target released SDK 14.0.0.GA; verify the selected SDK before adopting version-specific behavior.
 
 Hyperloop lets JavaScript call native classes directly. Instead of writing a
 module to wrap `UIImpactFeedbackGenerator`, you require it and use it.
@@ -136,8 +161,7 @@ const Activity = Ti.Android.currentActivity;
 Toast.makeText(Activity, 'Saved', Toast.LENGTH_SHORT).show();
 ```
 
-It is a module, maintained by TiDev, and still current: 8.0.1 is the release
-against SDK 13.4.
+Hyperloop is a separate module maintained by TiDev. The SDK 14.0.0 release notes list version 8.0.1 for Android and iOS; verify module compatibility separately.
 
 ## Install
 
@@ -199,7 +223,7 @@ the build rather than the app.
 
 ## CLI plugins
 
-Based on the [current official guide](https://titaniumsdk.com/docs/extend/cli-plugins.md). Examples target released SDK 13.4.1; verify the selected SDK before adopting version-specific behavior.
+Based on the [current official guide](https://titaniumsdk.com/docs/extend/cli-plugins.md). Examples target released SDK 14.0.0.GA; verify the selected SDK before adopting version-specific behavior.
 
 A CLI plugin is JavaScript the CLI loads and lets subscribe to build events. It
 changes the build, not the app: generating a file before compilation, injecting
@@ -298,4 +322,4 @@ or in a `production`-only branch.
 Back to [building apps](https://titaniumsdk.com/docs/build.md), or the
 [CLI reference](https://titaniumsdk.com/docs/reference/cli.md) for the commands these hook into.
 
-CLI contract verification: Titanium CLI 9.1.0 `src/cli.js` (`createHook`, `emit`, `scanHooks`) and SDK 13.4.1 `build.pre.compile` emission. An event hook receives the supplied builder payload augmented with hook metadata; other events may have different payloads.
+CLI contract verification: Titanium CLI 9.1.0 `src/cli.js` (`createHook`, `emit`, `scanHooks`) and SDK 14.0.0.GA `build.pre.compile` emission. An event hook receives the supplied builder payload augmented with hook metadata; other events may have different payloads.

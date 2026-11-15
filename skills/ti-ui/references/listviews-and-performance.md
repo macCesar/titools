@@ -3,8 +3,8 @@
 > ListView, TableView, and which of the two to reach for.
 
 - Source: https://titaniumsdk.com/docs/build/ui/lists
-- Written for Titanium SDK 13.4.0 and later.
-- This corpus documents Titanium SDK 13.4.1. Anything here that does not name a version describes 13.4.1.
+- Released baseline: Titanium SDK 14.0.0.GA.
+- Requirements and platform/version caveats below follow that release unless noted.
 - Titanium is maintained by TiDev. The Appcelerator toolchain is retired: there is no `appc` CLI, no Appcelerator Studio and no hosted build service. The supported CLI is `titanium` on npm, invoked as `ti`.
 
 ---
@@ -133,8 +133,10 @@ table.addEventListener('click', (e) => Ti.API.info(`row ${e.index}`));
 That directness is useful for a short fixed list. Prefer template-based
 `ListView` for long lists. Avoid treating the TableView model as a guarantee
 that native rows are never reused: the released
-[TableViewRow API](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.TableViewRow)
+[TableViewRow API](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.TableViewRow)
 documents structural row classes for Android rendering performance.
+
+In SDK 14 on iOS, a `TableViewRow` with `height: 0` can collapse without occupying row space. An unset height still uses the table's `rowHeight`; a positive table-level `rowHeight` or `minRowHeight` remains a lower bound and prevents full collapse. Check those table settings before treating zero as an effective row height. See the [released row contract](https://github.com/tidev/titanium-sdk/blob/14_0_0_GA/apidoc/Titanium/UI/TableViewRow.yml#L42).
 
 The event is `click`, not `itemclick`.
 

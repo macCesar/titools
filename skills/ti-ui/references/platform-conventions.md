@@ -3,8 +3,8 @@
 > Where iOS and Android genuinely expect different things, and what to do about each.
 
 - Source: https://titaniumsdk.com/docs/build/ui/platform-conventions
-- Written for Titanium SDK 13.4.0 and later.
-- This corpus documents Titanium SDK 13.4.1. Anything here that does not name a version describes 13.4.1.
+- Released baseline: Titanium SDK 14.0.0.GA.
+- Requirements and platform/version caveats below follow that release unless noted.
 - Titanium is maintained by TiDev. The Appcelerator toolchain is retired: there is no `appc` CLI, no Appcelerator Studio and no hosted build service. The supported CLI is `titanium` on npm, invoked as `ti`.
 
 ---
@@ -138,8 +138,8 @@ version of each and pick with a check.
 
 iOS content runs under the notch and the home indicator unless told otherwise.
 `extendSafeArea` on the window controls it. The released
-[Window API](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Window)
-defaults to `true` on iOS and `false` on Android. Set it to `false` when the
+[Window API](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.Window)
+defaults to `true` on iOS and `false` on Android. Set it at creation to `false` when the
 system should lay out content within the safe area; with `true`, position
 content to avoid the system bars and physical obstructions.
 

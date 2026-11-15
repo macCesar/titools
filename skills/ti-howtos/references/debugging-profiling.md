@@ -1,6 +1,6 @@
 # Debugging & profiling
 
-Based on the [current official guide](https://titaniumsdk.com/docs/build/debugging.md). Examples target released SDK 13.4.1; verify the selected SDK before adopting version-specific behavior.
+Based on the [current official guide](https://titaniumsdk.com/docs/build/debugging.md). Examples target released SDK 14.0.0.GA; verify the selected SDK before adopting version-specific behavior.
 
 Most Titanium debugging is the log. The build streams it to your terminal until
 you stop it, and `Ti.API` is what writes to it.

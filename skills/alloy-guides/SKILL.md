@@ -22,6 +22,6 @@ Use this skill for Alloy screen structure, styling, controller lifecycle, persis
 
 Keep XML, TSS and JavaScript in their corresponding `app` directories. `Resources/` and `build/` are generated; do not edit or commit them. A controller creates its views but does not automatically open a Window. Read `$.args` at the top, export deliberate operations and clean up listeners/subscriptions separately from `$.destroy()`.
 
-For configuration, compiler constants, hooks and debugging use `alloy-howtos`. For API signatures and platform availability use `ti-api`. Use `ti-guides` for toolchain, native modules and distribution, `ti-howtos` for service setup, and `ti-ui` for current Titanium layout and list behavior.
+For configuration, compiler constants, hooks and debugging use `alloy-howtos`. For API signatures and platform availability use `ti-api`. Use `ti-guides` for toolchain, native modules and distribution and `ti-howtos` for service setup. For native layout and list behavior, read the official [layout](https://titaniumsdk.com/docs/build/ui/layout.md) and [list](https://titaniumsdk.com/docs/build/ui/lists.md) guides, or use `ti-ui` when installed.
 
 The current guide pages are at [titaniumsdk.com/docs/alloy.md](https://titaniumsdk.com/docs/alloy.md). References include released-compiler caveats where a published recipe conflicts with released behavior. PurgeTSS keeps its own source and is outside the official Alloy guide refresh.

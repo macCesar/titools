@@ -20,13 +20,15 @@
 <!-- TOC-END -->
 
 ## Ti.UI.View
-> Full released contract: [Titanium.UI.View](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.View)
+> Full released contract: [Titanium.UI.View](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.View)
 
 > An empty drawing surface or container
 > Extends Ti.Proxy
 > Platforms: both
 
-### Properties (unique: 69/72)
+`borderDashPattern` uses the same units as `borderWidth`: `[4, 2]` draws a 4-unit dash and a 2-unit gap; `[2, 4]` with `borderWidth: 2` draws square dots. Set `null` or `[]` for a solid border. The default is not specified. Clear parallax effects with `view.clearMotionEffects()`; `horizontalMotionEffect`, `verticalMotionEffect` and their cleanup method belong to `Ti.UI.View`.
+
+### Properties (unique: 70/73)
 | Property | Type | Platform | Description |
 |----------|------|----------|-------------|
 | accessibilityHidden | Boolean | both | Whether the view should be "hidden" from (i.e., i… |
@@ -49,6 +51,7 @@
 | backgroundSelectedImage | String | android | Selected background image URL for the view, speci… |
 | backgroundTopCap | Number | ios | Size of the top end cap. |
 | borderColor | String \| Ti.UI.Color | both | Border color of the view, as a color name or hex … |
+| borderDashPattern | Array<Number> | both | Alternating border dash and gap lengths; SDK 14.0.0+. |
 | borderRadius | Number \| String \| Array<Number> \| Array<String> | both | Radius for the rounded corners of the view's bord… |
 | borderWidth | Number | both | Border width of the view. |
 | bottom | Number \| String | both | View's bottom position, in platform-specific unit… |
@@ -141,13 +144,17 @@
 ---
 
 ## Ti.UI.Label
-> Full released contract: [Titanium.UI.Label](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Label)
+> Full released contract: [Titanium.UI.Label](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.Label)
 
 > A text label, with an optional background image.
 > Extends Ti.UI.View
 > Platforms: both
 
-### Properties (unique: 31/102)
+`padding` is included in the label's dimensions: `Ti.UI.SIZE` fits text plus padding, while a fixed size leaves a smaller interior for text. For example, `padding: { left: 16, right: 16 }` adds 16 units on each side. On iOS, `backgroundPaddingLeft/Right/Top/Bottom` move only the background image; use `padding` to move text. See [Padding](api-ui-text-input.md#padding) for its four sides.
+
+On Android, `linkColor` applies to both `autoLink` and `AttributedString` links. An attribute with `type: Ti.UI.ATTRIBUTE_LINK` can set `underline: false` to suppress its underline (Android, SDK 14.0.0+; default `true`). The `link` event also fires for `html` links on iOS starting with SDK 14.0.0; on Android, handling it overrides opening the URL in its default application.
+
+### Properties (unique: 33/105)
 | Property | Type | Platform | Description |
 |----------|------|----------|-------------|
 | attributedString | Ti.UI.AttributedString | both | Specify an attributed string for the label. |
@@ -158,6 +165,7 @@
 | backgroundPaddingRight | Number | ios | Number of pixels to extend the background image p… |
 | backgroundPaddingTop | Number | ios | Number of pixels to extend the background image p… |
 | color | String \| Ti.UI.Color | both | Color of the label text, as a color name or hex t… |
+| linkColor | String \| Ti.UI.Color | android | Color of autoLink and attributed-string links; SDK 14.0.0+. |
 | ellipsize | Number | both | Causes words in the text that are longer than the… |
 | font | Font | both | Font to use for the label text. |
 | highlightedColor | String \| Ti.UI.Color | both | Color of the label when in the highlighted state,… |
@@ -171,6 +179,7 @@
 | lineSpacing | LabelLineSpacing | android | Line spacing of the [text](Titanium.UI.Label.text… |
 | maxLines | Number | both | Makes the label at most this many lines tall. |
 | minimumFontSize | Number | both | Minimum font size when the font is sized based on… |
+| padding | Padding | both | Text padding included in the label size; SDK 14.0.0+. |
 | shadowColor | String \| Ti.UI.Color | both | Shadow color of the [text](Titanium.UI.Label.text… |
 | shadowOffset | Point | both | Shadow offset of the [text](Titanium.UI.Label.tex… |
 | shadowRadius | Number | android | Shadow radius of the [text](Titanium.UI.Label.tex… |
@@ -192,13 +201,15 @@
 ---
 
 ## Ti.UI.Button
-> Full released contract: [Titanium.UI.Button](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Button)
+> Full released contract: [Titanium.UI.Button](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.Button)
 
 > A button widget that has four states: normal, disabled, focused and selected.
 > Extends Ti.UI.View
 > Platforms: both
 
-### Properties (unique: 25/89)
+These two properties apply only when the button is a toolbar item or a window's `leftNavButton`, `rightNavButton`, `leftNavButtons` or `rightNavButtons` item. `visibilityPriority` defaults to `Ti.UI.iOS.BAR_BUTTON_VISIBILITY_PRIORITY_STANDARD`; lower-priority items enter the overflow menu first. `axisBehavior` defaults to `Ti.UI.iOS.BAR_BUTTON_AXIS_BEHAVIOR_AUTOMATIC`; vertical bars require iPhone Duo and an app built with the iOS 27.1 SDK or later. See [bar-item constants](api-ui-ios-namespace.md#sdk-1400-constants) for every value. Both APIs are declared for iPhone/iPad, not Mac Catalyst.
+
+### Properties (unique: 27/92)
 | Property | Type | Platform | Description |
 |----------|------|----------|-------------|
 | backgroundDisabledImage | String | both | Background image for the button in its disabled s… |
@@ -209,6 +220,7 @@
 | tintColor | String | both | Color applied to button's image and title. |
 | tooltip | String | both | The default text to display in the control's tool… |
 | attributedString | Ti.UI.AttributedString | both | Specify an attributed string for the label. |
+| axisBehavior | Number | ios | Bar-item axis preference; iPhone/iPad, iOS 27.1+, SDK 14.0.0+. |
 | color | String \| Ti.UI.Color | both | Default button text color, as a color name or hex… |
 | disabledColor | String \| Ti.UI.Color | ios | Text color of the button in its disabled state, a… |
 | configuration | Ti.UI.iOS.ButtonConfiguration \| Object | ios | Button configuration for modern button styling. |
@@ -226,6 +238,7 @@
 | title | String | both | Button title. |
 | titleid | String | both | Key identifying a string from the locale file to … |
 | verticalAlign | Number \| String | both | Vertical alignment for the text field, specified … |
+| visibilityPriority | Number | ios | Bar-item overflow priority; iPhone/iPad, iOS 27.0+, SDK 14.0.0+. |
 
 
 
@@ -237,13 +250,15 @@
 ---
 
 ## Ti.UI.ImageView
-> Full released contract: [Titanium.UI.ImageView](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.ImageView)
+> Full released contract: [Titanium.UI.ImageView](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.ImageView)
 
 > A view to display a single image or series of animated images.
 > Extends Ti.UI.View
 > Platforms: both
 
-### Properties (unique: 17/87)
+On Android, a drawable resource with the same basename as a plain image asset always takes precedence, including resources in `platform/android/res/drawable*` or `images/res-*`. For dark mode, supply both default and `-night` drawable variants; a plain asset is not a fallback for a missing default drawable.
+
+### Properties (unique: 17/88)
 | Property | Type | Platform | Description |
 |----------|------|----------|-------------|
 | tintColor | String \| Ti.UI.Color | both | The view's tintColor. Android does not support se… |
@@ -288,13 +303,15 @@
 ---
 
 ## Ti.UI.ScrollView
-> Full released contract: [Titanium.UI.ScrollView](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.ScrollView)
+> Full released contract: [Titanium.UI.ScrollView](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.ScrollView)
 
 > A view that contains a horizontally and/or vertically-scrollable region of content.
 > Extends Ti.UI.View
 > Platforms: both
 
-### Properties (unique: 21/93)
+`scrollToTop(options?)` and `scrollToBottom(options?)` accept an optional [AnimatedOptions](api-ui-windows-navigation.md#animatedoptions) dictionary on iOS since SDK 10.2.0. Both default to `{ animated: true }`; use `{ animated: false }` for an immediate move. The methods also exist on Android, where this options argument is not supported.
+
+### Properties (unique: 21/94)
 | Property | Type | Platform | Description |
 |----------|------|----------|-------------|
 | canCancelEvents | Boolean | both | Determines whether this scroll view can cancel su… |
@@ -326,8 +343,8 @@
 | scrollTo(x, y, options) | void | both | Moves the specified coordinate of the scrollable … |
 | setContentOffset(contentOffsetXY, animated) | void | ios | Sets the value of the [contentOffset](Titanium.UI… |
 | setZoomScale(zoomScale, options) | void | ios | Sets the value of the [zoomScale](Titanium.UI.Scr… |
-| scrollToBottom(—) | void | both | Moves the end of the scrollable region into the v… |
-| scrollToTop(—) | void | both | Moves the top of the scrollable region into the v… |
+| scrollToBottom(options) | void | both | Moves the end of the scrollable region into the v… |
+| scrollToTop(options) | void | both | Moves the top of the scrollable region into the v… |
 
 ### Events (6)
 | Event | Platform | Description |
@@ -342,13 +359,15 @@
 ---
 
 ## Ti.UI.ScrollableView
-> Full released contract: [Titanium.UI.ScrollableView](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.ScrollableView)
+> Full released contract: [Titanium.UI.ScrollableView](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.ScrollableView)
 
 > A view that encapsulates a horizontally-scrolling set of child views, known as pages, navigable using its built-in horizontal swipe gestures.
 > Extends Ti.UI.View
 > Platforms: both
 
-### Properties (unique: 20/91)
+`ScrollablePadding` extends [Padding](api-ui-text-input.md#padding), retaining `left`, `right`, `top` and `bottom`. Its Android-only `leftAdjust: Number` defaults to `0` (SDK 14.0.0+). It offsets the first current page horizontally in pixels, decreasing to `0` while scrolling toward the second page. It applies only with horizontal `scrollType` and requires `clipViews: false` to avoid clipping the moved page. For example, `{ left: 60, right: 60, leftAdjust: -44 }` places the first page 16 pixels from the left; other pages retain the normal left/right padding.
+
+### Properties (unique: 20/92)
 | Property | Type | Platform | Description |
 |----------|------|----------|-------------|
 | cacheSize | Number | both | Number of pages to cache (pre-render). |
@@ -370,7 +389,7 @@
 | views | Array<Titanium.UI.View> | both | Sets the pages within this Scrollable View. |
 | clipViews | Boolean | both | Determines whether the previous and next pages ar… |
 | hitRect | Dimension | ios | Sets the region where this view responds to gestu… |
-| padding | Padding | android | The padding applied to the scrollable view. |
+| padding | ScrollablePadding | android | The padding applied to the scrollable view. |
 
 
 ### Methods (7)
@@ -398,16 +417,25 @@
 | scrollend | both | Fired when the view has stopped moving completely. |
 | dragend | android | Fired when the scrolling drag gesture on the view has been completed. |
 
+### Related Types
+
+#### ScrollablePadding
+> Extends [Padding](api-ui-text-input.md#padding); used by Android `ScrollableView.padding`.
+
+| Property | Type | Default | Platform | Description |
+|----------|------|---------|----------|-------------|
+| leftAdjust | Number | `0` | android | SDK 14.0.0+: first-page horizontal offset in pixels; see the clipping and scroll constraints above. |
+
 ---
 
 ## Ti.UI.ActivityIndicator
-> Full released contract: [Titanium.UI.ActivityIndicator](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.ActivityIndicator)
+> Full released contract: [Titanium.UI.ActivityIndicator](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.ActivityIndicator)
 
 > An activity indicator that lets the user know an action is taking place.
 > Extends Ti.UI.View
 > Platforms: both
 
-### Properties (unique: 12/36)
+### Properties (unique: 12/37)
 | Property | Type | Platform | Description |
 |----------|------|----------|-------------|
 | bottom | Number \| String | both | Bottom position of the view. |
@@ -434,7 +462,7 @@
 ---
 
 ## Ti.UI.ActivityIndicatorStyle
-> Full released contract: [Titanium.UI.ActivityIndicatorStyle](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.ActivityIndicatorStyle)
+> Full released contract: [Titanium.UI.ActivityIndicatorStyle](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.ActivityIndicatorStyle)
 
 > A set of constants for the styles available for <Titanium.UI.ActivityIndicator> objects.
 > Extends Ti.Module
@@ -451,13 +479,13 @@
 ---
 
 ## Ti.UI.ProgressBar
-> Full released contract: [Titanium.UI.ProgressBar](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.ProgressBar)
+> Full released contract: [Titanium.UI.ProgressBar](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.ProgressBar)
 
 > A progress bar.
 > Extends Ti.UI.View
 > Platforms: both
 
-### Properties (unique: 10/80)
+### Properties (unique: 10/81)
 | Property | Type | Platform | Description |
 |----------|------|----------|-------------|
 | tintColor | String \| Ti.UI.Color | both | The color shown for the portion of the progress b… |
@@ -477,13 +505,13 @@
 ---
 
 ## Ti.UI.Slider
-> Full released contract: [Titanium.UI.Slider](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Slider)
+> Full released contract: [Titanium.UI.Slider](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.Slider)
 
 > A slider component with a draggable thumb.
 > Extends Ti.UI.View
 > Platforms: both
 
-### Properties (unique: 25/94)
+### Properties (unique: 25/95)
 | Property | Type | Platform | Description |
 |----------|------|----------|-------------|
 | tintColor | String \| Ti.UI.Color | both | The color shown for the portion of the progress b… |
@@ -516,7 +544,7 @@
 ### Methods (1)
 | Method | Returns | Platform | Description |
 |--------|---------|----------|-------------|
-| setValue(value, options) | void | ios | Sets the [value](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Slider) proper… |
+| setValue(value, options) | void | ios | Sets the [value](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.Slider) proper… |
 
 ### Events (4)
 | Event | Platform | Description |
@@ -529,13 +557,13 @@
 ---
 
 ## Ti.UI.Switch
-> Full released contract: [Titanium.UI.Switch](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Switch)
+> Full released contract: [Titanium.UI.Switch](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.Switch)
 
 > An on/off switch control.
 > Extends Ti.UI.View
 > Platforms: both
 
-### Properties (unique: 16/86)
+### Properties (unique: 16/87)
 | Property | Type | Platform | Description |
 |----------|------|----------|-------------|
 | tintColor | String \| Ti.UI.Color | both | The color used to tint the outline of the switch … |
@@ -566,13 +594,13 @@
 ---
 
 ## Ti.UI.MaskedImage
-> Full released contract: [Titanium.UI.MaskedImage](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.MaskedImage)
+> Full released contract: [Titanium.UI.MaskedImage](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.MaskedImage)
 
 > A control that displays an image composited with a background image or color.
 > Extends Ti.UI.View
 > Platforms: both
 
-### Properties (unique: 4/75)
+### Properties (unique: 4/76)
 | Property | Type | Platform | Description |
 |----------|------|----------|-------------|
 | mask | String | both | Image drawn as the background image. |
@@ -586,7 +614,7 @@
 ---
 
 ## Ti.UI.RefreshControl
-> Full released contract: [Titanium.UI.RefreshControl](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.RefreshControl)
+> Full released contract: [Titanium.UI.RefreshControl](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.RefreshControl)
 
 > The RefreshControl is a representation of the native iOS [UIRefreshControl](https://developer.apple.com/documentation/uikit/uirefreshcontrol) and Android [SwipeRefreshLayout](https://developer.android.com/reference/android/support/v4/widget/SwipeRefreshLayout.html).
 > Extends Ti.Proxy

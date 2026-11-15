@@ -2,14 +2,14 @@
 
 ## Prepare the toolchain
 
-Android builds work on macOS, Windows and Linux; iOS and Catalyst require macOS with Xcode. See [compatibility](compatibility-matrix.md) for the released SDK 13.4.1 baseline. The current CLI requires Node 22.19+ or 24; Node 24 avoids the SDK's Node 26 native-binding problem. Install Node with a version manager or an official installer, reopen the shell, and verify `node -v`. On Homebrew `node@24` is keg-only: add its `bin` directory to PATH. Windows LTS installers follow the current LTS, so check the installed version.
+Android builds work on macOS, Windows and Linux; iOS and Catalyst require macOS with Xcode. See [compatibility](compatibility-matrix.md) for the released SDK 14.0.0.GA baseline. Both SDK 14 and CLI 9.1.0 require Node >=22.19.0. The setup guide recommends Node 22.19+ or 24; its Node 26/native-binding warning applies to SDK 13.4.1 and earlier. Install Node with a version manager or an official installer, reopen the shell, and verify `node -v`. On Homebrew `node@24` is keg-only: add its `bin` directory to PATH. Windows LTS installers follow the current LTS, so check the installed version.
 
 Install a JDK, for example Temurin 21, and set `JAVA_HOME` to its installation directory. On macOS `/usr/libexec/java_home -v 21` locates it; on Linux derive it from the resolved `javac` executable; on Windows set a user environment variable and reopen PowerShell. Verify both `javac -version` and the `javac` under `JAVA_HOME`; a shell and Gradle can otherwise use different JDKs.
 
 ```sh
 npm install -g titanium
 ti -v
-ti sdk install 13.4.1.GA
+ti sdk install 14.0.0.GA
 ti sdk list
 ```
 
@@ -34,7 +34,7 @@ sudo xcode-select -s /Applications/Xcode.app
 xcode-select -p
 ```
 
-Install additional runtimes through Xcode Settings → Components. SDK 13.4.1 needs iOS 15+ devices/runtimes. Development devices need an Apple Development certificate plus a matching provisioning profile: add your Apple ID in Xcode Settings → Accounts, create the certificate in Manage Certificates, connect/register the device, and let Xcode create a profile. The private key must be in the keychain, not just a downloaded certificate. Distribution needs a paid account; simulator builds do not need signing.
+Install additional runtimes through Xcode Settings → Components. SDK 14 needs iOS 16+ devices/runtimes, Xcode 16.0–27.x and an iOS SDK in the 18.0–27.x range. Development devices need an Apple Development certificate plus a matching provisioning profile: add your Apple ID in Xcode Settings → Accounts, create the certificate in Manage Certificates, connect/register the device, and let Xcode create a profile. The private key must be in the keychain, not just a downloaded certificate. Distribution needs a paid account; simulator builds do not need signing.
 
 Run `ti info` and fix actual errors before creating a project. `ti info -t ios` or `-t android` narrows detection. Newer-tool and unused-NDK warnings can be harmless. If `ti` is missing, reopen the terminal and check npm's global prefix is on PATH. Antivirus file locking on Windows may require excluding generated `build/`; do not disable protection for the whole machine.
 
@@ -53,7 +53,7 @@ ti create --type app --alloy --name Hello --id com.example.hello --platforms and
 
 `--alloy` runs `alloy new` after creation and requires Alloy on PATH; without it the created project remains Classic. Existing Classic projects can be converted with `alloy new` after backing up source. Interactive creation prompts for values. In scripts add `--no-prompt` and explicitly provide `--type` and `--workspace-dir`.
 
-Use a lower-case reverse-DNS app ID whose domain you control; it becomes the Android package and iOS bundle identifier. Avoid spaces, special characters and Java keywords. Changing it after publication creates a new listing. `--name` sets the project directory and display name. `--platforms ios` targets iPhone and iPad; `iphone` targets iPhone only. Pin `<sdk-version>13.4.1.GA</sdk-version>` in `tiapp.xml`; `--sdk` overrides it for one build.
+Use a lower-case reverse-DNS app ID whose domain you control; it becomes the Android package and iOS bundle identifier. Avoid spaces, special characters and Java keywords. Changing it after publication creates a new listing. `--name` sets the project directory and display name. `--platforms ios` targets iPhone and iPad; `iphone` targets iPhone only. Pin `<sdk-version>14.0.0.GA</sdk-version>` in `tiapp.xml`; `--sdk` overrides it for one build.
 
 ## Source and generated files
 
@@ -119,6 +119,6 @@ ti build -p android -T device --device-id <android-id>
 ti build -p ios -T device --device-id <ios-udid>
 ```
 
-Android: enable Developer options (usually tap Build number seven times), enable USB debugging, connect and accept authorization. Debug signing is generated automatically. iOS: unlock the phone, trust the computer, and use a profile/certificate matching the app ID and device; selection prompts if several match. Free provisioning expires quickly (typically seven days), paid profiles commonly last a year; inspect the actual profile expiry. Simulators/emulators do not reproduce camera, GPS, notifications, hardware or real network conditions. Test physical hardware before release.
+Android: enable Developer options (usually tap Build number seven times), enable USB debugging, connect and accept authorization. Debug signing is generated automatically. iOS: unlock the device, trust the computer, and use a profile/certificate matching the app ID and device; selection prompts if several match. SDK 14 uses ioslib 6.0.2 and CoreDevice (`xcrun devicectl`) for device installation and launch. Free provisioning expires quickly (typically seven days), paid profiles commonly last a year; inspect the actual profile expiry. Simulators/emulators do not reproduce camera, GPS, notifications, hardware or real network conditions. Test physical hardware before release.
 
 Titanium analyzes/transpiles JavaScript, generates native projects, then invokes Gradle or `xcodebuild`. It still executes JavaScript through a runtime; it does not translate every JavaScript statement to native machine code. Test/production JavaScript encryption raises the cost of inspection and does not protect secrets. See [distribution](app-distribution.md), [frameworks](application-frameworks.md), and [official first app](https://titaniumsdk.com/docs/build/first-app.md).

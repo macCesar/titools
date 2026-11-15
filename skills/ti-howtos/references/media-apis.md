@@ -1,6 +1,6 @@
 # Media
 
-Based on the [current official guide](https://titaniumsdk.com/docs/build/media.md). Examples target released SDK 13.4.1; verify the selected SDK before adopting version-specific behavior.
+Based on the [current official guide](https://titaniumsdk.com/docs/build/media.md). Examples target released SDK 14.0.0.GA; verify the selected SDK before adopting version-specific behavior.
 
 Camera, library access and recording need their matching permissions. Playing an app-owned audio or video file does not itself require camera, microphone or music-library permission.
 
@@ -145,4 +145,4 @@ killing the app.
 [Location and maps](https://titaniumsdk.com/docs/build/location.md) covers the other capability that
 needs asking first.
 
-Contract corrections: [released Media API](https://github.com/tidev/titanium-sdk/blob/13_4_1_GA/apidoc/Titanium/Media/Media.yml), [VideoPlayer](https://github.com/tidev/titanium-sdk/blob/13_4_1_GA/apidoc/Titanium/Media/VideoPlayer.yml).
+Contract corrections: [released Media API](https://github.com/tidev/titanium-sdk/blob/14_0_0_GA/apidoc/Titanium/Media/Media.yml), [VideoPlayer](https://github.com/tidev/titanium-sdk/blob/14_0_0_GA/apidoc/Titanium/Media/VideoPlayer.yml).

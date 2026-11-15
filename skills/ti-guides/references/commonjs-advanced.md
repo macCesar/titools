@@ -20,9 +20,7 @@ three steps: unpack it, declare it, require it.
 > unpacking is done by hand. `ti module install` and `ti module search` are
 > planned; until they ship, this is the path.
 
-Download the release archive for the module and unzip it into a `modules`
-directory beside `tiapp.xml`. The archive already carries the right shape, so
-unzipping it in place gives you:
+Download the release archive for the module and extract it beside `tiapp.xml`, preserving its directory prefix. If it already contains `modules/`, do not create a second `modules/modules` level. The resulting layout is:
 
 ```
 modules/
@@ -101,9 +99,7 @@ npm install lodash
 const _ = require('lodash');
 ```
 
-Titanium bundles what is in `node_modules` at build time. There is no
-resolution at runtime, so a package pulled in dynamically by name computed at
-runtime will not be there.
+Titanium copies production dependencies from the installed `node_modules` tree at build time. Development dependencies and packages marked `titanium.ignore` or `titanium.type: native-module` are excluded; optional and peer dependencies are included by default. Runtime compatibility still needs checking.
 
 **Check runtime dependencies:** Titanium is not a full Node.js or browser runtime. Some Node-compatible shims (`fs`, `path`, `os`, `buffer`, `events`, `process`) exist in the released API; verify the exact supported subset. Packages requiring unavailable Node APIs such as `child_process`, a DOM or Node native bindings do not work unchanged. A package that only touches `Ti.*` and plain JavaScript is fine.
 Check before adopting a large dependency; the failure arrives at runtime as an
@@ -127,3 +123,5 @@ thing you just added is not working.
 ## Application CommonJS paths
 
 Classic `Resources/myModule.js` and Alloy `app/lib/myModule.js` are required as `require('myModule')`; the Alloy source prefix `app/lib/` is not a runtime module prefix. Use literal native requires by ID and declare the module first. Check the selected SDK's versioned API for Node-compatible shims rather than assuming full Node behavior.
+
+Contract correction: [released module copier](https://github.com/tidev/titanium-sdk/blob/14_0_0_GA/cli/lib/module-copier.js).

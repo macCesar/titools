@@ -107,7 +107,7 @@ project types use it unchanged.
     <target device="iphone">true</target>
     <target device="ipad">false</target>
   </deployment-targets>
-  <sdk-version>13.4.1.GA</sdk-version>
+  <sdk-version>14.0.0.GA</sdk-version>
 </ti:app>
 ```
 
@@ -146,7 +146,7 @@ Xcode project for iOS, a Gradle project for Android, and the compiled output.
 Nothing in it is yours to edit, because the next build overwrites it.
 
 Deleting `build/` forces a full rebuild, which is the fix when a build fails in
-a way the source does not explain. `ti clean` does the same thing.
+a way the source does not explain. `ti clean` removes generated build contents; `ti clean --platforms android` limits cleanup to Android output and its build log.
 
 In an Alloy project `Resources/` is generated too, from `app/`.
 

@@ -1,6 +1,6 @@
 # Notifications
 
-Based on the [current official guide](https://titaniumsdk.com/docs/build/notifications.md). Examples target released SDK 13.4.1; verify the selected SDK before adopting version-specific behavior.
+Based on the [current official guide](https://titaniumsdk.com/docs/build/notifications.md). Examples target released SDK 14.0.0.GA; verify the selected SDK before adopting version-specific behavior.
 
 Two kinds, and they share almost nothing in Titanium. A **local** notification
 is scheduled by the app on the device. A **push** notification arrives from a
@@ -103,6 +103,8 @@ if opening a screen is the response, check whether the app was in the
 foreground first - otherwise a notification arriving while someone is using the
 app navigates them away from what they were doing.
 
+SDK 14 clears the cached iOS notification payload after delivering it live or after registration, so registering the callback again does not replay an already-delivered cached payload. This cache cleanup does not establish an end-to-end exactly-once delivery guarantee.
+
 On iOS, ask for notification permission with
 `registerUserNotificationSettings` before registering for push. On Android, use a native FCM integration and its own token/message APIs. The guide mentions `google-services.json` and `ti.playservices`, but those alone do not implement FCM registration. Follow the selected integration's current installation instructions, including dependencies and configuration-file placement. Core `callback` / `success.deviceToken` are Apple-only.
 
@@ -128,4 +130,4 @@ The most common "push is broken" causes, in the order worth checking:
 [Using modules](https://titaniumsdk.com/docs/build/modules.md) covers adding capabilities the core SDK
 does not have, which is what `ti.playservices` above is.
 
-Contract corrections: [released Network API](https://github.com/tidev/titanium-sdk/blob/13_4_1_GA/apidoc/Titanium/Network/Network.yml), [UserNotificationCenter](https://github.com/tidev/titanium-sdk/blob/13_4_1_GA/apidoc/Titanium/App/iOS/UserNotificationCenter.yml), [NotificationManager](https://github.com/tidev/titanium-sdk/blob/13_4_1_GA/apidoc/Titanium/Android/NotificationManager/NotificationManager.yml).
+Contract corrections: [released Network API](https://github.com/tidev/titanium-sdk/blob/14_0_0_GA/apidoc/Titanium/Network/Network.yml), [UserNotificationCenter](https://github.com/tidev/titanium-sdk/blob/14_0_0_GA/apidoc/Titanium/App/iOS/UserNotificationCenter.yml), [NotificationManager](https://github.com/tidev/titanium-sdk/blob/14_0_0_GA/apidoc/Titanium/Android/NotificationManager/NotificationManager.yml), and [iOS notification cache delivery](https://github.com/tidev/titanium-sdk/blob/14_0_0_GA/iphone/Classes/NetworkModule.m#L253).

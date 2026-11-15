@@ -1,6 +1,6 @@
 # Working with data
 
-Based on the [current official guide](https://titaniumsdk.com/docs/build/data.md). Examples target released SDK 13.4.1; verify the selected SDK before adopting version-specific behavior.
+Based on the [current official guide](https://titaniumsdk.com/docs/build/data.md). Examples target released SDK 14.0.0.GA; verify the selected SDK before adopting version-specific behavior.
 
 Titanium gives you three places to keep data on the device, and the whole
 decision is how much of it there is and what shape it has.

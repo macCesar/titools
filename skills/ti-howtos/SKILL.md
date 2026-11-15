@@ -5,7 +5,7 @@ description: 'Use when implementing Titanium SDK device integrations, location a
 
 # ti-howtos
 
-Practical guidance from the current official Titanium website. Load the matching reference before implementing a feature. Release API/compiler contracts resolve mistakes in guide examples; do not assume an unreleased SDK feature is available.
+Practical guidance from the current official Titanium website. Load the matching reference before implementing a feature. The released baseline is SDK 14.0.0.GA. Release API/compiler contracts resolve mistakes in guide examples; SDK `main` can include later changes.
 
 | Task | Reference |
 |---|---|

@@ -1,6 +1,6 @@
 # Using modules
 
-Based on the [current official guide](https://titaniumsdk.com/docs/build/modules.md). Examples target released SDK 13.4.1; verify the selected SDK before adopting version-specific behavior.
+Based on the [current official guide](https://titaniumsdk.com/docs/build/modules.md). Examples target released SDK 14.0.0.GA; verify the selected SDK before adopting version-specific behavior.
 
 Two different things get added to a Titanium project and both are called
 dependencies.
@@ -101,9 +101,7 @@ const _ = require('lodash');
 
 Titanium bundles what is in `node_modules` at build time. Production dependencies are copied from the installed tree. Development dependencies and packages marked `titanium.ignore` or `titanium.type: native-module` are excluded; optional and peer dependencies are included by default. Runtime compatibility still needs checking.
 
-**What will not work:** anything that needs Node's built-ins (`fs`, `net`,
-`child_process`), anything that needs a DOM, and anything shipping native
-bindings. A package that only touches `Ti.*` and plain JavaScript is fine.
+**Check runtime dependencies:** Titanium provides only a subset of Node-compatible APIs, including shims such as `fs`, `path`, `os`, `buffer`, `events` and `process`. Check the selected SDK's versioned API for the exact supported members. Packages requiring unavailable Node APIs such as `child_process`, a DOM or Node native bindings do not work unchanged. A package that only touches `Ti.*` and plain JavaScript is fine.
 Check before adopting a large dependency; the failure arrives at runtime as an
 undefined require.
 
@@ -122,4 +120,4 @@ If neither exists, writing a native module is covered under Extending Titanium.
 [Debugging and profiling](https://titaniumsdk.com/docs/build/debugging.md) covers finding out why the
 thing you just added is not working.
 
-Contract correction: [released module copier](https://github.com/tidev/titanium-sdk/blob/13_4_1_GA/cli/lib/module-copier.js).
+Contract correction: [released module copier](https://github.com/tidev/titanium-sdk/blob/14_0_0_GA/cli/lib/module-copier.js).

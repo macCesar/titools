@@ -18,8 +18,7 @@ const Activity = Ti.Android.currentActivity;
 Toast.makeText(Activity, 'Saved', Toast.LENGTH_SHORT).show();
 ```
 
-It is a module, maintained by TiDev, and still current: 8.0.1 is the release
-against SDK 13.4.
+Hyperloop is a separate module maintained by TiDev. The SDK 14.0.0 release notes list version 8.0.1 for Android and iOS; check module compatibility separately from the selected SDK.
 
 ## Install
 
@@ -80,4 +79,4 @@ the build rather than the app.
 
 ## Platform guards in Classic and Alloy
 
-Use Alloy compile-time constants only in Alloy source. In Classic use `Ti.Platform.osname` or a supported platform directory; otherwise `OS_IOS`/`OS_ANDROID` are undefined. Native method availability is controlled by the installed OS/framework, so check platform documentation and guard optional APIs. SDK 14-only changes remain outside this released baseline.
+Use Alloy compile-time constants only in Alloy source. In Classic use `Ti.Platform.osname` or a supported platform directory; otherwise `OS_IOS`/`OS_ANDROID` are undefined. Native method availability is controlled by the installed OS/framework, so check platform documentation and guard optional APIs. Use the released SDK 14.0.0 API contracts for this baseline; newer SDK or native-platform features need their own availability checks.

@@ -1,7 +1,7 @@
 # tiapp.xml
 
 
-Every element the build reads, verified against Titanium SDK 13.4.1. For what
+This reference targets Titanium SDK 14.0.0.GA. For what
 `tiapp.xml` is and where it sits, see
 [project structure](https://titaniumsdk.com/docs/build/project-structure).
 
@@ -53,7 +53,7 @@ reads them: no build uses them and neither store shows them. `ti create` writes
 ## What gets built
 
 ```xml
-<sdk-version>13.4.1.GA</sdk-version>
+<sdk-version>14.0.0.GA</sdk-version>
 <deployment-targets>
   <target device="android">true</target>
   <target device="iphone">true</target>
@@ -87,6 +87,7 @@ read by one platform and silently ignored by the other.
 | `prerendered-icon`     | bool   | iOS      | `UIPrerenderedIcon`                                           |
 | `transpile`            | bool   | both     | Transpiles your JavaScript. **On unless set to `false`**      |
 | `source-maps`          | bool   | both     | Emits source maps. `--source-maps` overrides it               |
+| `encryption`           | string | Android  | SDK 14 defaults to `ti.crypt`; `ti.cloak` opts into that module. Unknown values warn and fall back to `ti.crypt` |
 
 `statusbar-style` is matched loosely: `opaque_black`, `opaque` or `black` give
 `UIStatusBarStyleBlackOpaque`, and `translucent_black`, `transparent` or
@@ -170,7 +171,7 @@ warning.
 | `entitlements`                    | dict      | Merged into `Entitlements.plist`                                          |
 | `capabilities`                    | element   | Only `<app-groups>` is understood, giving app group entitlements          |
 | `extensions`                      | element   | App extensions to build alongside the app                                 |
-| `min-ios-ver`                     | `15.0`    | Raises the deployment target. **Only honored above the SDK's own floor**  |
+| `min-ios-ver`                     | `16.0`    | Raises the deployment target. **Only honored above the SDK's own floor**  |
 | `team-id`                         | string    | Apple Developer team, when your account has more than one                 |
 | `default-background-color`        | `#rrggbb` | Background of the generated launch storyboard                             |
 | `use-app-thinning`                | bool      | App thinning and asset catalogs. Off unless set to `true`                 |
@@ -181,7 +182,7 @@ warning.
 | `exclude-dir-from-asset-catalog`  | bool      | Keeps a directory of images out of the asset catalog                      |
 | `log-server-port`                 | int       | Port for the log server, 1024 to 65535. Derived from the app id otherwise |
 
-The SDK's own iOS floor is 15.0 in 13.4.1, so a `min-ios-ver` below that is
+The SDK's own iOS floor is 16.0 in 14.0.0, so a `min-ios-ver` below that is
 ignored rather than applied. The floor per release is on
 [compatibility](https://titaniumsdk.com/docs/reference/compatibility).
 
@@ -291,4 +292,4 @@ in a different file. See [native modules](https://titaniumsdk.com/docs/extend/mo
 
 ## Verification boundaries
 
-Use the selected SDK's parser/compiler to verify a setting when a current guide and observed behavior disagree. Source-code encryption is not secure credential storage. On SDK 13.4.1 the `ti.crypt` encryption selector shown elsewhere on the website is not supported by the builders; use the released configuration, and defer SDK 14 changes until GA.
+Use the selected SDK's parser/compiler to verify a setting when a current guide and observed behavior disagree. Source-code encryption is not secure credential storage. On SDK 14.0.0 Android defaults to `ti.crypt`, while `<encryption>ti.cloak</encryption>` opts into `ti.cloak`; unknown values warn and fall back to `ti.crypt`. iOS uses `titanium_prep` and does not read that selector. See [distribution](app-distribution.md#javascript-encryption-and-debugging) for deploy-type behavior and the verified correction to the current website.

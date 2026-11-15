@@ -33,6 +33,6 @@ drop is a device the app will not install on.
 
 ## Merge and inspect the release variant
 
-SDK 13.4.1 generates a base `src/main/AndroidManifest.xml` plus variant overlays below `build/android/`; Gradle merges app, library and module manifests. Use Android manifest-merger rules and `tools:remove` when needed, then inspect the actual merged release manifest. The legacy `android.mergeCustomAndroidManifest=false` switch is unsupported and does not restore replacement mode. A declared permission still needs its runtime permission workflow where the OS requires it.
+SDK 14.0.0 generates a base `src/main/AndroidManifest.xml` plus variant overlays below `build/android/`; Gradle merges app, library and module manifests. Use Android manifest-merger rules and `tools:remove` when needed, then inspect the actual merged release manifest. The legacy `android.mergeCustomAndroidManifest=false` switch is unsupported and does not restore replacement mode. A declared permission still needs its runtime permission workflow where the OS requires it.
 
 `<tool-api-level>` is the compile API. Manifest min/target APIs are different settings; use the released [compatibility baseline](compatibility-matrix.md). Do not force debuggable in distributed artifacts. For other XML elements see [tiapp.xml](tiapp-config.md).

@@ -1,6 +1,6 @@
 # Networking & remote data
 
-Based on the [current official guide](https://titaniumsdk.com/docs/build/data/networking.md). Examples target released SDK 13.4.1; verify the selected SDK before adopting version-specific behavior.
+Based on the [current official guide](https://titaniumsdk.com/docs/build/data/networking.md). Examples target released SDK 14.0.0.GA; verify the selected SDK before adopting version-specific behavior.
 
 `Ti.Network.HTTPClient` is the HTTP client. It is shaped like
 `XMLHttpRequest` - `open`, then `send`, with callbacks - because that is what it
@@ -132,4 +132,4 @@ certificate.
 [Media](https://titaniumsdk.com/docs/build/media.md) covers the camera, the photo library, and playing
 audio and video.
 
-Contract correction: [released HTTPClient API](https://github.com/tidev/titanium-sdk/blob/13_4_1_GA/apidoc/Titanium/Network/HTTPClient.yml) and [Android response dispatch](https://github.com/tidev/titanium-sdk/blob/13_4_1_GA/android/modules/network/src/java/ti/modules/titanium/network/TiHTTPClient.java).
+Contract correction: [released HTTPClient API](https://github.com/tidev/titanium-sdk/blob/14_0_0_GA/apidoc/Titanium/Network/HTTPClient.yml) and [Android response dispatch](https://github.com/tidev/titanium-sdk/blob/14_0_0_GA/android/modules/network/src/java/ti/modules/titanium/network/TiHTTPClient.java).

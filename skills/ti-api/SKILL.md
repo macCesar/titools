@@ -7,7 +7,7 @@ description: 'Use when looking up properties, methods, events, constants, or typ
 
 ## Overview
 
-API reference for the Titanium SDK and TiDev-maintained modules. Use it to look up properties, methods, events, constants, and type signatures across 305 types grouped into 20 reference files.
+API reference for the Titanium SDK and TiDev-maintained modules. Use it to look up properties, methods, events, constants, and type signatures across 306 types grouped into 22 reference files.
 
 ## When to use
 
@@ -34,9 +34,9 @@ Do NOT use for:
 
 ## Release scope and authoritative contracts
 
-The core SDK tables are anchored to **13.4.1.GA**. Match the app's selected SDK before using a contract: `/docs/sdk` is the general API index, while [the 13.4.1 API index](https://titaniumsdk.com/docs/sdk/13.4.1) is explicitly release-scoped. Do not treat the general index or an unreleased `main` API as a feature of the installed GA.
+The core SDK tables are anchored to **14.0.0.GA**. Match the app's selected SDK before using a contract: `/docs/sdk` is the general API index, while [the 14.0.0 API index](https://titaniumsdk.com/docs/sdk/14.0.0) is explicitly release-scoped. Do not treat the general index or an unreleased `main` API as a feature of the installed GA.
 
-For a core type, use its complete name in the release URL, for example [Titanium.UI.Window in 13.4.1](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Window). The canonical source is the matching YAML under [tidev/titanium-sdk, tag 13_4_1_GA, apidoc](https://github.com/tidev/titanium-sdk/tree/13_4_1_GA/apidoc). Complete descriptions, examples, inherited contracts, permission/setup requirements and version restrictions take precedence over a shortened table summary. A table's em dash does not by itself distinguish a null default from an undocumented one. Method rows abbreviate parameter names; optionality, parameter types/defaults and event payload fields require the complete contract. Generated factory methods accept an optional creation dictionary.
+For a core type, use its complete name in the release URL, for example [Titanium.UI.Window in 14.0.0](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.Window). The canonical source is the matching YAML under [tidev/titanium-sdk, tag 14_0_0_GA, apidoc](https://github.com/tidev/titanium-sdk/tree/14_0_0_GA/apidoc). Complete descriptions, examples, inherited contracts, permission/setup requirements and version restrictions take precedence over a shortened table summary. A table's em dash does not by itself distinguish a null default from an undocumented one. Method rows abbreviate parameter names; optionality, parameter types/defaults and event payload fields require the complete contract. Generated factory methods accept an optional creation dictionary.
 
 `Modules.*` types belong to independently versioned native modules. Verify their own module release and documentation; the core SDK's version does not establish a Map, BLE, NFC or other module's behavior. For guide material use [tidev/titaniumsdk.com](https://github.com/tidev/titaniumsdk.com), which owns the current website. The old titanium-docs repository is historical provenance only, excluded from the current guide content.
 
@@ -49,11 +49,11 @@ For a core type, use its complete name in the release URL, for example [Titanium
 | `Ti.UI.TextField`, `Ti.UI.TextArea`, `Ti.UI.SearchBar`, `Ti.UI.AttributedString`, ... | [api-ui-text-input.md](references/api-ui-text-input.md) | Ti.UI Text & Input (9 APIs) |
 | `Ti.UI.ListView`, `Ti.UI.ListItem`, `Ti.UI.ListSection`, `Ti.UI.TableView`, ... | [api-ui-lists.md](references/api-ui-lists.md) | Ti.UI Lists & Tables (8 APIs) |
 | `Ti.UI.Animation`, `Ti.UI.Matrix2D`, `Ti.UI.Matrix3D`, `Ti.UI.WebView`, ... | [api-ui-extras.md](references/api-ui-extras.md) | Ti.UI Extras (13 APIs) |
-| `Ti.UI.iOS` | [api-ui-ios.md](references/api-ui-ios.md) | Ti.UI.iOS (36 APIs) |
+| `Ti.UI.iOS` and related types | [namespace and constants](references/api-ui-ios-namespace.md), [SplitWindow](references/api-ui-ios-split-window.md), [other iOS UI types](references/api-ui-ios.md) | Ti.UI.iOS (36 APIs) |
 | `Ti.UI.iOS` Animator / Physics | [api-ui-ios-animator.md](references/api-ui-ios-animator.md) | Ti.UI.iOS Animator & Physics (8 APIs) |
 | `Ti.UI.Android`, `Ti.UI.iPad` | [api-ui-android.md](references/api-ui-android.md) | Ti.UI.Android (10 APIs) |
 | `Ti.Android`, `Ti.Android.ActionBar`, `Ti.Android.Activity`, ... | [api-android.md](references/api-android.md) | Ti.Android (17 APIs) |
-| `Ti.App`, `Ti.App.Properties`, `Ti.App.iOS`, `Ti.Platform`, ... | [api-app-platform.md](references/api-app-platform.md) | Ti.App & Ti.Platform (18 APIs) |
+| `Ti.App`, `Ti.App.Properties`, `Ti.App.iOS`, `Ti.Platform`, ... | [api-app-platform.md](references/api-app-platform.md) | Ti.App & Ti.Platform (19 APIs) |
 | `Ti.Media`, `Ti.Media.AudioPlayer`, `Ti.Media.AudioRecorder`, ... | [api-media.md](references/api-media.md) | Ti.Media (9 APIs) |
 | `Ti.Network`, `Ti.Database`, `Ti.Database.DB`, `Ti.Filesystem`, ... | [api-data-network.md](references/api-data-network.md) | Ti.Network, Ti.Database & Ti.Filesystem (14 APIs) |
 | `Ti.Geolocation`, `Ti.Contacts`, `Ti.Calendar`, `Ti.WatchSession`, ... | [api-services.md](references/api-services.md) | Ti.Geolocation, Ti.Contacts, Ti.Calendar & Ti.WatchSession (15 APIs) |
@@ -99,7 +99,7 @@ Each API entry includes:
 
 ### Property counts
 
-Tables show `unique: X / Y` where `X` is properties defined on this class and `Y` is total including inherited. For inherited properties, check the parent class.
+Tables show `unique: X / Y`: `X` counts the property rows displayed in that table, while `Y` includes all declared properties, inherited properties and constants grouped separately. For inherited properties, check the parent class.
 
 ## API coverage
 
@@ -110,11 +110,11 @@ Tables show `unique: X / Y` where `X` is properties defined on this class and `Y
 | Ti.UI Text & Input | 9 | `api-ui-text-input.md` |
 | Ti.UI Lists & Tables | 8 | `api-ui-lists.md` |
 | Ti.UI Extras | 13 | `api-ui-extras.md` |
-| Ti.UI.iOS | 36 | `api-ui-ios.md` |
+| Ti.UI.iOS | 36 | `api-ui-ios-namespace.md`, `api-ui-ios-split-window.md`, `api-ui-ios.md` |
 | Ti.UI.iOS Animator & Physics | 8 | `api-ui-ios-animator.md` |
 | Ti.UI.Android | 10 | `api-ui-android.md` |
 | Ti.Android | 17 | `api-android.md` |
-| Ti.App & Ti.Platform | 18 | `api-app-platform.md` |
+| Ti.App & Ti.Platform | 19 | `api-app-platform.md` |
 | Ti.Media | 9 | `api-media.md` |
 | Ti.Network, Ti.Database & Ti.Filesystem | 14 | `api-data-network.md` |
 | Ti.Geolocation, Ti.Contacts, Ti.Calendar & Ti.WatchSession | 15 | `api-services.md` |

@@ -24,7 +24,7 @@ Current Google Play submissions use an `.aab` Android App Bundle. Play creates d
 </android>
 ```
 
-Increase the integer `android:versionCode` on every upload. The human `<version>`/versionName is separate. Check the current Play Console limit and annual target API policy; SDK 13.4.1 defaults to API 36. Compile API (`tool-api-level`) and target API are distinct settings. Provide store text/artwork, content rating, privacy policy and Data safety responses reflecting actual app/module collection and merged permissions. Screenshot/device requirements change; use Console's current required slots rather than archived 320×480 rules.
+Increase the integer `android:versionCode` on every upload. The human `<version>`/versionName is separate. Check the current Play Console limit and annual target API policy; SDK 14.0.0 defaults to API 36. Compile API (`tool-api-level`) and target API are distinct settings. Provide store text/artwork, content rating, privacy policy and Data safety responses reflecting actual app/module collection and merged permissions. Screenshot/device requirements change; use Console's current required slots rather than archived 320×480 rules.
 
 Upload to internal, closed, open or production track, then explicitly roll out that track. For direct device development use `ti build -p android -T device --device-id <id>`; a test APK installs with `adb install -r app.apk`. Uninstalling first deletes local data and is not a harmless update step.
 
@@ -46,16 +46,20 @@ Keep marketing version `<version>` and upload build number distinct. Set `CFBund
 Before submission verify:
 
 - Real permission purpose strings under `<ios><plist><dict>`, plus runtime permission requests. Missing required strings can crash permission access; generic reasons can fail review.
-- A correct `PrivacyInfo.xcprivacy` based on actual required-reason APIs and data collection. For the 13.4.1 bundle resource pipeline use `Resources/iphone/PrivacyInfo.xcprivacy` (Classic), or `app/assets/iphone/PrivacyInfo.xcprivacy` (Alloy). Verify it exists at the built app's root. Bare `platform/ios/PrivacyInfo.xcprivacy` goes to the native build directory, not automatically the app bundle root.
+- A correct `PrivacyInfo.xcprivacy` based on actual required-reason APIs and data collection. For the SDK 14.0.0 bundle resource pipeline use `Resources/iphone/PrivacyInfo.xcprivacy` (Classic), or `app/assets/iphone/PrivacyInfo.xcprivacy` (Alloy). Verify it exists at the built app's root. Bare `platform/ios/PrivacyInfo.xcprivacy` goes to the native build directory, not automatically the app bundle root.
 - Required screenshots, icon, categories, age rating, support/privacy URLs, login/demo access, and device-family/OS support. Current App Store Connect requirements replace archive-era 3.5-inch screenshot tables.
 - The selected capabilities, profile and entitlements agree, and the release launches on real supported devices.
 
 ## JavaScript encryption and debugging
 
-SDK 13.4.1 uses `ti.cloak` internally. Development does not encrypt; test and production encrypt/minify, while test keeps debugging and production disables it. `dist-appstore` and `dist-playstore` use production. The new website's alternative `<encryption>ti.crypt</encryption>` selector is not present in the 13.4.1 builders and must not be offered as GA configuration.
+Development does not encrypt; test and production encrypt/minify, while test keeps debugging and production disables it. `dist-appstore` and `dist-playstore` use production.
+
+On Android, SDK 14.0.0 defaults to the open-source `ti.crypt` module. Set top-level `<encryption>ti.cloak</encryption>` in `tiapp.xml` to opt into `ti.cloak`; `<encryption>ti.crypt</encryption>` selects the default explicitly. An unknown value warns and falls back to `ti.crypt`. Changing the selected module forces a full rebuild when JavaScript encryption is active. The current website encryption guide reverses this default; the released Android builder is the authority.
+
+On iOS, the SDK 14.0.0 builder still uses `titanium_prep`; it does not read the Android encryption-module selector. Do not present that selector as an iOS configuration option.
 
 Encryption deters casual inspection; the application must decrypt its code to run, so it is not a security boundary. Embedded server secrets remain recoverable in JavaScript, JSON, properties or `tiapp.xml`. Keep them on a server and use appropriate native secure storage for user credentials. Reproduce encryption-specific bugs with test deploy type; preserve source maps securely when emitting them.
 
 Complete Apple's encryption/export declaration according to the app's actual cryptography. `ITSAppUsesNonExemptEncryption=false` belongs in `<ios><plist><dict>` only when the app qualifies for that answer; do not set it universally because a template did. Consult Apple's current criteria for the specific app.
 
-Sources: [distribution](https://titaniumsdk.com/docs/distribute.md), [signing](https://titaniumsdk.com/docs/distribute/signing.md), [iOS](https://titaniumsdk.com/docs/distribute/ios.md), [Android](https://titaniumsdk.com/docs/distribute/android.md), [encryption](https://titaniumsdk.com/docs/distribute/encryption.md), and [Apple certificates](https://developer.apple.com/help/account/certificates/certificates-overview).
+Sources: [distribution](https://titaniumsdk.com/docs/distribute.md), [signing](https://titaniumsdk.com/docs/distribute/signing.md), [iOS](https://titaniumsdk.com/docs/distribute/ios.md), [Android](https://titaniumsdk.com/docs/distribute/android.md), [encryption](https://titaniumsdk.com/docs/distribute/encryption.md), [released Android encryption selection](https://github.com/tidev/titanium-sdk/blob/14_0_0_GA/android/cli/commands/_build.js#L931), [iOS encryption](https://github.com/tidev/titanium-sdk/blob/14_0_0_GA/iphone/cli/commands/_build.js#L7144), [iOS resource routing](https://github.com/tidev/titanium-sdk/blob/14_0_0_GA/iphone/cli/commands/_build.js#L5602), and [Apple certificates](https://developer.apple.com/help/account/certificates/certificates-overview).

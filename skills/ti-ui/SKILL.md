@@ -29,9 +29,9 @@ Before creating new UI files, use `ti-reuse-first` to check existing screens and
 
 ## Sources and release scope
 
-These references follow the current [official UI documentation](https://titaniumsdk.com/docs/build/ui), maintained in [tidev/titaniumsdk.com](https://github.com/tidev/titaniumsdk.com/tree/main/content/docs/build/ui). Use the pages' `.md` versions when reading them with an agent. The guide corpus identifies SDK 13.4.1; SDK 14-only instructions require its released contracts before use.
+These references follow the current [official UI documentation](https://titaniumsdk.com/docs/build/ui), maintained in [tidev/titaniumsdk.com](https://github.com/tidev/titaniumsdk.com/tree/main/content/docs/build/ui). Use the pages' `.md` versions when reading them with an agent. The released baseline is SDK 14.0.0.GA. SDK `main` and unversioned guides can describe later changes, so verify version-specific instructions against the selected release.
 
-The [release-specific API](https://titaniumsdk.com/docs/sdk/13.4.1) resolves property and platform details when a guide disagrees. In particular, iOS `Window.extendSafeArea` defaults to `true`; set `false` when content should stay within the safe area. PNG icons are the supported baseline here; do not assume a newer icon format works in SDK 13.4.1.
+The [release-specific API](https://titaniumsdk.com/docs/sdk/14.0.0) resolves property and platform details when a guide disagrees. In particular, iOS `Window.extendSafeArea` defaults to `true`; set `false` when content should stay within the safe area. SDK 14 supports PNG icons and Icon Composer documents on Xcode 26+; read the icon reference for filename, fallback and launch-screen requirements.
 
 ## Related skills
 

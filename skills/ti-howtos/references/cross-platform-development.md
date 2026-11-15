@@ -1,6 +1,6 @@
 # Platform conventions
 
-Based on the [current official guide](https://titaniumsdk.com/docs/build/ui/platform-conventions.md). Examples target released SDK 13.4.1; verify the selected SDK before adopting version-specific behavior.
+Based on the [current official guide](https://titaniumsdk.com/docs/build/ui/platform-conventions.md). Examples target released SDK 14.0.0.GA; verify the selected SDK before adopting version-specific behavior.
 
 Titanium gives you one layout system and one API, and most of a screen is the
 same on both platforms. This page is for the places where that stops being
@@ -128,7 +128,7 @@ version of each and pick with a check.
 ## Safe areas and system bars
 
 iOS content runs under the notch and the home indicator unless told otherwise.
-`extendSafeArea` on the window controls it, and is a creation property. In SDK 13.4.1 its default is `true` on iOS (content extends under system/physical obstructions) and `false` on Android; choose and verify the required safe-area behavior explicitly.
+`extendSafeArea` on the window controls it, and is a creation property. In SDK 14.0.0 its default is `true` on iOS (content extends under system/physical obstructions) and `false` on Android; choose and verify the required safe-area behavior explicitly.
 
 Android draws behind the status bar in some themes and not others. Set
 `theme` on the window to choose.
@@ -166,4 +166,4 @@ behaviour: the code for the other platform never ships.
 
 [Working with data](https://titaniumsdk.com/docs/build/data.md) covers storing things between launches.
 
-Contract correction: [released Window safe-area defaults](https://github.com/tidev/titanium-sdk/blob/13_4_1_GA/apidoc/Titanium/UI/Window.yml).
+Contract correction: [released Window safe-area defaults](https://github.com/tidev/titanium-sdk/blob/14_0_0_GA/apidoc/Titanium/UI/Window.yml).

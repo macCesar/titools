@@ -101,7 +101,7 @@ is the first command to run when a build breaks for no visible reason.
 
 ```sh
 ti sdk list
-ti sdk install 13.4.1.GA
+ti sdk install 14.0.0.GA
 ti sdk uninstall 13.3.0.GA
 ```
 
@@ -145,7 +145,7 @@ ti clean
 ti clean --platforms android
 ```
 
-Removes `build/`. Worth doing when a failure does not match the source.
+For apps, removes the generated contents of `build/`; the directory itself may remain. With `--platforms android`, removes `build/android` and `build/build_android.log`. Worth doing when a failure does not match the source. Stop active builds or file generators before cleaning. SDK 14.0.0.GA does not guarantee retries when another process creates files during removal.
 
 ## ti setup
 
@@ -209,8 +209,11 @@ config key, then `ANDROID_SDK_ROOT`, then `ANDROID_SDK`, then `adb` on `PATH`.
 | ---------------------- | -------------------------------- |
 | `ios.developerName`    | Default development certificate  |
 | `ios.distributionName` | Default distribution certificate |
+| `ios.deviceId`         | SDK 14 default simulator/device ID when `--device-id` is omitted |
 
-Setting these saves passing `--developer-name` on every device build.
+Certificate defaults save repeating the matching signing option on every build.
+
+For SDK 14, `ios.deviceId` must match a known destination for the current simulator/device target; an unavailable configured ID falls back to normal selection. Explicit `--device-id` wins. This setting is documented in the [SDK 14 release notes](sdk-release-notes.md) and checked by the [released iOS builder](https://github.com/tidev/titanium-sdk/blob/14_0_0_GA/iphone/cli/commands/_build.js#L676).
 
 ### CLI behaviour
 
@@ -264,4 +267,4 @@ is also why this one is not in version control and that one is.
 
 ## Release scope
 
-CLI commands and SDK build support are versioned separately. `ti serve` belongs to the Vite integration: check installed `ti serve --help` and the runtime's supported SDK versions before adopting it in a released 13.4.1 project. Do not infer SDK 14 GA from a command listed by a newer CLI. For API contracts use the project's versioned reference.
+CLI commands and SDK build support are versioned separately. `ti serve` belongs to the Vite integration: check installed `ti serve --help` and the runtime's supported SDK versions before adopting it in an SDK 14.0.0.GA project. A command listed by a newer CLI does not establish support in the selected SDK. For API contracts use the project's versioned reference.

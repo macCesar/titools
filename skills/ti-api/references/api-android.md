@@ -24,22 +24,23 @@
 <!-- TOC-END -->
 
 ## Ti.Android
-> Full released contract: [Titanium.Android](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android)
+> Full released contract: [Titanium.Android](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.Android)
 
 > The top-level Android module.
 > Extends Ti.Module
 > Platforms: android
 > Type: module
 
-### Properties (unique: 4/240)
+### Properties (unique: 5/241)
 | Property | Type | Platform | Description |
 |----------|------|----------|-------------|
 | R | Ti.Android.R | android | Accessor for Android system resources. |
 | currentActivity | Ti.Android.Activity | android | References the top-most window's activity. |
 | currentService | Ti.Android.Service | android | Service in the active context. |
 | rootActivity | Ti.Android.Activity | android | The first activity launched by the application. |
+| sdkVersion | Number | android | Read-only Android SDK API level, e.g. 35 for Android 15. Since 14.0.0. |
 
-### Constants (233)
+### Constants (234)
 - **ACTION_\***: ACTION_ANSWER, ACTION_CALL, ACTION_CHOOSER, ACTION_DEFAULT, ACTION_DELETE, ACTION_DIAL, ACTION_EDIT, ACTION_INSERT, ACTION_MAIN, ACTION_PICK, ACTION_REBOOT, ACTION_RUN, ACTION_SEARCH, ACTION_SEND, ACTION_SENDTO, ACTION_SHUTDOWN, ACTION_SYNC, ACTION_VIEW
 - **ACTION_AIRPLANE_MODE_\***: ACTION_AIRPLANE_MODE_CHANGED
 - **ACTION_ALL_\***: ACTION_ALL_APPS
@@ -154,7 +155,6 @@
 - **WAKE_LOCK_ON_AFTER_\***: WAKE_LOCK_ON_AFTER_RELEASE
 - **WAKE_LOCK_SCREEN_\***: WAKE_LOCK_SCREEN_DIM, WAKE_LOCK_SCREEN_BRIGHT
 
-
 ### Methods (20)
 | Method | Returns | Platform | Description |
 |--------|---------|----------|-------------|
@@ -179,11 +179,10 @@
 | createQuickSettingsService(parameters) | Ti.Android.QuickSettingsService | android | Creates and returns an instance of <Titanium.Andr… |
 | createRemoteViews(parameters) | Ti.Android.RemoteViews | android | Creates and returns an instance of <Titanium.Andr… |
 
-
 ---
 
 ## Ti.Android.ActionBar
-> Full released contract: [Titanium.Android.ActionBar](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.ActionBar)
+> Full released contract: [Titanium.Android.ActionBar](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.Android.ActionBar)
 
 > An action bar is a window feature that identifies the application and user location, and provides user actions and navigation modes.
 > Extends Ti.Proxy
@@ -205,7 +204,6 @@
 | customView | Ti.UI.View | android | Sets a view to be used for a custom navigation mo… |
 | visible | Boolean | android | Gets or sets the action bar visibility state. |
 
-
 ### Methods (4)
 | Method | Returns | Platform | Description |
 |--------|---------|----------|-------------|
@@ -214,11 +212,10 @@
 | setDisplayShowTitleEnabled(show) | void | android | Shows or hides the action bar title/subtitle |
 | show(—) | void | android | Shows the action bar if it is currently hidden. |
 
-
 ---
 
 ## Ti.Android.Activity
-> Full released contract: [Titanium.Android.Activity](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.Activity)
+> Full released contract: [Titanium.Android.Activity](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.Android.Activity)
 
 > The Titanium binding of an Android Activity.
 > Extends Ti.Proxy
@@ -240,7 +237,6 @@
 | onStop | Callback<ActivityLifecycleCallbackObject> | android | Callback function called when the Android activit… |
 | requestedOrientation | Number | android | Specifies a specific orientation for this activit… |
 | supportToolbar | Ti.UI.Toolbar | android | Toolbar instance that serves as ActionBar |
-
 
 ### Methods (11)
 | Method | Returns | Platform | Description |
@@ -268,7 +264,7 @@
 ---
 
 ## Ti.Android.BigPictureStyle
-> Full released contract: [Titanium.Android.BigPictureStyle](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.BigPictureStyle)
+> Full released contract: [Titanium.Android.BigPictureStyle](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.Android.BigPictureStyle)
 
 > Helper object for generating large-format notifications that include a large image attachment.
 > Extends Ti.Proxy
@@ -283,13 +279,10 @@
 | decodeRetries | Number | android | Number of times to retry decoding the bitmap at b… |
 | summaryText | String | android | Set the first line of text after the detail secti… |
 
-
-
-
 ---
 
 ## Ti.Android.BigTextStyle
-> Full released contract: [Titanium.Android.BigTextStyle](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.BigTextStyle)
+> Full released contract: [Titanium.Android.BigTextStyle](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.Android.BigTextStyle)
 
 > Helper object for generating large-format notifications that include a lot of text.
 > Extends Ti.Proxy
@@ -302,13 +295,10 @@
 | bigContentTitle | String | android | Overrides <Titanium.Android.Notification.contentT… |
 | summaryText | String | android | Set the first line of text after the detail secti… |
 
-
-
-
 ---
 
 ## Ti.Android.BroadcastReceiver
-> Full released contract: [Titanium.Android.BroadcastReceiver](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.BroadcastReceiver)
+> Full released contract: [Titanium.Android.BroadcastReceiver](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.Android.BroadcastReceiver)
 
 > Monitor and handle Android system broadcasts.
 > Extends Ti.Proxy
@@ -320,13 +310,10 @@
 | onReceived | Callback<Object> | android | The function called when a broadcast is received. |
 | url | String | android | URL of the JavaScript file to handle the broadcas… |
 
-
-
-
 ---
 
 ## Ti.Android.Intent
-> Full released contract: [Titanium.Android.Intent](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.Intent)
+> Full released contract: [Titanium.Android.Intent](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.Android.Intent)
 
 > Message objects passed between Android application components.
 > Extends Ti.Proxy
@@ -342,7 +329,6 @@
 | packageName | String | android | The fully-qualified Java package name of the acti… |
 | type | String | android | The MIME type for this Intent. |
 | url | String | android | The URL to a Titanium JavaScript Activity. |
-
 
 ### Methods (12)
 | Method | Returns | Platform | Description |
@@ -360,11 +346,10 @@
 | putExtra(name, value) | void | android | Puts an extra property on this `Intent`. |
 | putExtraUri(name, value) | void | android | Put a URI property on this `Intent` (useful for <… |
 
-
 ---
 
 ## Ti.Android.Menu
-> Full released contract: [Titanium.Android.Menu](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.Menu)
+> Full released contract: [Titanium.Android.Menu](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.Android.Menu)
 
 > The Titanium binding of an Android Options Menu.
 > Extends Ti.Proxy
@@ -375,15 +360,14 @@
 |----------|------|----------|-------------|
 | items | Array<Titanium.Android.MenuItem> | android | Array of menu items in this menu. |
 
-
 ### Methods (11)
 | Method | Returns | Platform | Description |
 |--------|---------|----------|-------------|
 | add(options) | Ti.Android.MenuItem | android | Creates a <Titanium.Android.MenuItem> from the pa… |
 | clear(—) | void | android | Clears all items from this menu. |
 | close(—) | void | android | Closes the menu, if visible. |
-| findItem(item) | Ti.Android.MenuItem | android | Locates a [MenuItem](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.MenuItem) i… |
-| getItem(index) | Ti.Android.MenuItem | android | Returns the [MenuItem](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.MenuItem)… |
+| findItem(item) | Ti.Android.MenuItem | android | Locates a [MenuItem](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.Android.MenuItem) i… |
+| getItem(index) | Ti.Android.MenuItem | android | Returns the [MenuItem](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.Android.MenuItem)… |
 | hasVisibleItems(—) | Boolean | android | Returns `true` if this menu has visible items. |
 | removeGroup(groupId) | void | android | Removes all menu items with the specified [groupI… |
 | removeItem(itemId) | void | android | Removes a specific [MenuItem](Titanium.Android.Me… |
@@ -391,11 +375,10 @@
 | setGroupVisible(groupId, visible) | void | android | Shows or hides a group of menu items identified b… |
 | size(—) | Number | android | Number of items in this menu. |
 
-
 ---
 
 ## Ti.Android.MenuItem
-> Full released contract: [Titanium.Android.MenuItem](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.MenuItem)
+> Full released contract: [Titanium.Android.MenuItem](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.Android.MenuItem)
 
 > The Titanium binding of an Android menu item.
 > Extends Ti.Proxy
@@ -420,7 +403,6 @@
 | title | String | android | Title of the item. |
 | titleCondensed | String | android | Shortened version of the item's title. |
 | visible | Boolean | android | Determines whether the menu item is visible. |
-
 
 ### Methods (11)
 | Method | Returns | Platform | Description |
@@ -447,7 +429,7 @@
 ---
 
 ## Ti.Android.Notification
-> Full released contract: [Titanium.Android.Notification](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.Notification)
+> Full released contract: [Titanium.Android.Notification](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.Android.Notification)
 
 > UI notifications that can be sent while the application is in the background.
 > Extends Ti.Proxy
@@ -483,7 +465,6 @@
 | wakeLock | wakeLockOptions | android | Will wake up the device for the given time (in mi… |
 | when | Date \| Number | android | The timestamp for the notification (defaults to t… |
 
-
 ### Methods (3)
 | Method | Returns | Platform | Description |
 |--------|---------|----------|-------------|
@@ -491,11 +472,10 @@
 | setProgress(max, progress, indeterminate) | void | android | Set the progress this notification represents. |
 | addAction(icon, title, intent) | void | android | Add an action button to the notification |
 
-
 ---
 
 ## Ti.Android.NotificationChannel
-> Full released contract: [Titanium.Android.NotificationChannel](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.NotificationChannel)
+> Full released contract: [Titanium.Android.NotificationChannel](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.Android.NotificationChannel)
 
 > Module for notification channels.
 > Extends Ti.Proxy
@@ -518,13 +498,10 @@
 | sound | String | android | A URL to the sound to play. |
 | vibratePattern | Array<Number> | android | The vibration pattern for notifications posted to… |
 
-
-
-
 ---
 
 ## Ti.Android.NotificationManager
-> Full released contract: [Titanium.Android.NotificationManager](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.NotificationManager)
+> Full released contract: [Titanium.Android.NotificationManager](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.Android.NotificationManager)
 
 > Module for managing notifications.
 > Extends Ti.Module
@@ -546,7 +523,6 @@
 - **FLAG_SHOW_\***: FLAG_SHOW_LIGHTS
 - **STREAM_\***: STREAM_DEFAULT
 
-
 ### Methods (6)
 | Method | Returns | Platform | Description |
 |--------|---------|----------|-------------|
@@ -557,11 +533,10 @@
 | deleteNotificationChannel(id) | void | android | Deletes a notification channel. |
 | areNotificationsEnabled(—) | Boolean | android | Returns whether showing notifications is enabled … |
 
-
 ---
 
 ## Ti.Android.PendingIntent
-> Full released contract: [Titanium.Android.PendingIntent](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.PendingIntent)
+> Full released contract: [Titanium.Android.PendingIntent](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.Android.PendingIntent)
 
 > The Titanium binding of an Android `PendingIntent`.
 > Extends Ti.Proxy
@@ -574,13 +549,10 @@
 | intent | Ti.Android.Intent | android | The intent data to pass to the [Activity](Titaniu… |
 | updateCurrentIntent | Boolean | android | If this property is true, flag <Titanium.Android.… |
 
-
-
-
 ---
 
 ## Ti.Android.QuickSettingsService
-> Full released contract: [Titanium.Android.QuickSettingsService](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.QuickSettingsService)
+> Full released contract: [Titanium.Android.QuickSettingsService](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.Android.QuickSettingsService)
 
 > Android service for creating custom quick settings tiles and handling user's interaction with them.
 > Extends Ti.Android.Service
@@ -592,7 +564,6 @@
 | icon | String \| Ti.Blob \| Ti.Filesystem.File | android | Changes the Tile's icon. |
 | state | Number | android | Sets the state of the Tile. |
 | label | String | android | The Tile's label. |
-
 
 ### Methods (12)
 | Method | Returns | Platform | Description |
@@ -623,10 +594,23 @@
 | tiledialogneutral | android | Dispatched when the neutral (index 1) button has been clicked. |
 | tiledialognegative | android | Dispatched when the negative (index 2) button has been clicked. |
 
+### Related Types
+
+#### QuickSettingsServiceShowParams
+
+`showDialog(options: QuickSettingsServiceShowParams)` accepts the following dictionary:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| title | String | Dialog title. |
+| message | String | Dialog message; takes priority if `options` is also supplied. |
+| buttonNames | Array<String> | At most three button labels, in positive, neutral, negative order. |
+| options | Array<String> | Items displayed as a single-choice list, when no message is supplied. |
+
 ---
 
 ## Ti.Android.R
-> Full released contract: [Titanium.Android.R](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.R)
+> Full released contract: [Titanium.Android.R](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.Android.R)
 
 > The Titanium binding of the native Android `R` class, giving access to Android system-wide resources or application resources.
 > Extends Ti.Proxy
@@ -658,13 +642,10 @@
 | transition | Object | android | Transition resources. See [R.transition](https://… |
 | xml | Object | android | XML resources. See [R.xml](https://developer.andr… |
 
-
-
-
 ---
 
 ## Ti.Android.RemoteViews
-> Full released contract: [Titanium.Android.RemoteViews](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.RemoteViews)
+> Full released contract: [Titanium.Android.RemoteViews](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.Android.RemoteViews)
 
 > The Titanium binding of [Android RemoteViews](https://developer.android.com/reference/android/widget/RemoteViews.html).
 > Extends Ti.Proxy
@@ -675,7 +656,6 @@
 |----------|------|----------|-------------|
 | layoutId | Number | android | Android layout resource ID for the view to displa… |
 | packageName | String | android | Package name that the resource ID lives in. Optio… |
-
 
 ### Methods (13)
 | Method | Returns | Platform | Description |
@@ -694,11 +674,10 @@
 | setUri(viewId, methodName, value) | void | android | Calls a method taking one URI on a view in the re… |
 | setViewVisibility(viewId, visibility) | void | android | Sets the visibility of a view in the remote view … |
 
-
 ---
 
 ## Ti.Android.Service
-> Full released contract: [Titanium.Android.Service](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.Android.Service)
+> Full released contract: [Titanium.Android.Service](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.Android.Service)
 
 > Android application component that executes in the background.
 > Extends Ti.Proxy
@@ -709,7 +688,6 @@
 |----------|------|----------|-------------|
 | intent | Ti.Android.Intent | android | The intent used to start or bind to the Service. |
 | serviceInstanceId | Number | android | A service can be started more than once -- this n… |
-
 
 ### Methods (4)
 | Method | Returns | Platform | Description |

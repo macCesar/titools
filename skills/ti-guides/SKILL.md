@@ -5,9 +5,9 @@ description: 'Use when working on current Titanium SDK fundamentals: environment
 
 # ti-guides
 
-Use current official guides maintained in [tidev/titaniumsdk.com](https://github.com/tidev/titaniumsdk.com). Discover routes through [llms.txt](https://titaniumsdk.com/llms.txt); append `.md` to guide routes. API routes can be pinned, for example `https://titaniumsdk.com/docs/sdk/13.4.1`. Read rendered compatibility Markdown because raw source uses generated includes.
+Use current official guides maintained in [tidev/titaniumsdk.com](https://github.com/tidev/titaniumsdk.com). Discover routes through [llms.txt](https://titaniumsdk.com/llms.txt); append `.md` to guide routes. API routes can be pinned, for example `https://titaniumsdk.com/docs/sdk/14.0.0`. Read rendered compatibility Markdown because raw source uses generated includes.
 
-This skill covers the released SDK 13.4.1.GA baseline. Verify version-specific contracts against the selected SDK's declarations and implementation; do not treat SDK `main`, an unversioned API page, or SDK 14-only site guidance as released behavior. Current guides can contain errors. Explain a verified discrepancy instead of copying an invalid example.
+This skill covers the released SDK 14.0.0.GA baseline. Verify version-specific contracts against the selected SDK's declarations and implementation; SDK `main` and unversioned API pages can include changes beyond that release. Current guides can contain errors. Explain a verified discrepancy instead of copying an invalid example.
 
 ## Routes
 
@@ -23,7 +23,7 @@ This skill covers the released SDK 13.4.1.GA baseline. Verify version-specific c
 | Current tiapp.xml elements, ignored/removed settings and timodule.xml | [tiapp-config.md](references/tiapp-config.md) |
 | Current CLI commands, automation and machine configuration | [cli-reference.md](references/cli-reference.md) |
 | Released toolchain requirements and host/platform support | [compatibility-matrix.md](references/compatibility-matrix.md) |
-| Current registry release notes for SDK 13.4.1 | [sdk-release-notes.md](references/sdk-release-notes.md) |
+| Current registry release notes for SDK 14.0.0 | [sdk-release-notes.md](references/sdk-release-notes.md) |
 | VS Code, Pulsar and JetBrains integration | [resources.md](references/resources.md) |
 
 ## Working rules

@@ -14,7 +14,7 @@
 <!-- TOC-END -->
 
 ## Ti.UI.Window
-> Full released contract: [Titanium.UI.Window](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Window)
+> Full released contract: [Titanium.UI.Window](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.Window)
 
 > The Window is an empty drawing surface or container.
 > Extends Ti.UI.View
@@ -26,15 +26,29 @@ A window is a top-level container which can contain other views. Windows can be 
 
 Windows *contain* other views, but in general they are not *contained* inside other views. There are a few specialized views that manage windows:
 
-* [NavigationWindow](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.NavigationWindow)
-* [SplitWindow](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.iOS.SplitWindow)
-* [TabGroup](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.TabGroup)
-* [Tab](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Tab)
+* [NavigationWindow](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.NavigationWindow)
+* [SplitWindow](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.iOS.SplitWindow)
+* [TabGroup](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.TabGroup)
+* [Tab](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.Tab)
 
 
-Complete overview, setup, examples and version restrictions: [official Titanium.UI.Window API](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Window).
+Complete overview, setup, examples and version restrictions: [official Titanium.UI.Window API](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.Window).
 
-### Properties (unique: 72/138)
+On iOS 26+, adjacent `leftNavButtons`/`rightNavButtons` items share a Liquid Glass background. Set an individual item's `hideSharedBackground: true` to give it a separate container; this has no effect before iOS 26.0.
+
+`reservedRegions` is read-only and requires iPhone Duo, iOS 27.1+ and an app built with the iOS 27.1 SDK or later. It helps place custom controls outside the safe area without overlapping the fold or camera. All regions are returned, including inactive ones: check `active`. Coordinates are relative to the window. The array is empty before the window opens, on devices without reserved regions, or with an older OS/build SDK.
+
+`reservedregionschange` runs after layout and fires only if the regions differ from the previous layout. On a device with reserved regions it first fires after opening/layout. Its payload is `regions: Array<ReservedRegion>`.
+
+`scene` is a read-only `Ti.App.iOS.SceneProxy` on iPhone/iPad (SDK 14.0.0+, iOS 13+); read it after `open`. It returns `null` when scenes are unavailable or the app lacks a scene manifest. See [scene APIs](api-app-platform.md#tiappios).
+
+The released YAML lists `scene`, `verticalBarBehavior` and `verticalBarCompressionBehavior` under [openWindowParams](#openwindowparams), although its descriptions and the [released native `TiWindowProxy`](https://github.com/tidev/titanium-sdk/blob/14_0_0_GA/iphone/TitaniumKit/TitaniumKit/Sources/API/TiWindowProxy.m#L887) expose Window properties. In particular, `scene` is a getter, not a creation option. The two bar preferences also have native getters/setters. This distinction avoids treating a YAML placement issue as a different runtime API.
+
+Both bar preferences are Number values for iPhone/iPad, SDK 14.0.0+, iOS 27.1+ and apps built with the iOS 27.1 SDK or later. `verticalBarBehavior` defaults to `Ti.UI.iOS.VERTICAL_BAR_BEHAVIOR_AUTOMATIC`; use `DISABLED` to keep horizontal bars on suitable screens, such as full-screen video or a calculator. Treat this as a stable screen preference, not something to toggle frequently. Set it on the content Window inside a NavigationWindow/TabGroup; the visible window's preference applies.
+
+`verticalBarCompressionBehavior` defaults to `Ti.UI.iOS.VERTICAL_BAR_COMPRESSION_BEHAVIOR_AUTOMATIC`. It only affects a vertical bar and requires the Window inside a NavigationWindow/TabGroup. [Vertical-bar constants](api-ui-ios-namespace.md#sdk-1400-constants) select whether bar items or the tab bar compress first.
+
+### Properties (unique: 73/140)
 | Property | Type | Default | Platform | Description |
 |----------|------|---------|----------|-------------|
 | backgroundColor | String \| Ti.UI.Color | Transparent | both | Background color of the window, as a color name or hex triplet. |
@@ -77,6 +91,7 @@ Complete overview, setup, examples and version restrictions: [official Titanium.
 | orientation | Number | — | both | Current orientation of the window. |
 | rightNavButton | Ti.UI.View | — | ios | View to show in the right nav bar area. |
 | rightNavButtons | Array<Titanium.UI.View> | — | ios | An Array of views to show in the right nav bar area. |
+| reservedRegions | Array<ReservedRegion> | — | ios | Read-only system-reserved regions; iPhone/iPad iOS 27.1+, SDK 14.0.0+. |
 | safeAreaPadding | Padding | — | both | The padding needed to safely display content without it being overlapped by the… |
 | shadowImage | String | — | ios | Shadow image for the navigation bar, specified as a URL to a local image.. |
 | splitActionBar | Boolean | — | android | Boolean value to enable split action bar. |
@@ -126,7 +141,7 @@ Complete overview, setup, examples and version restrictions: [official Titanium.
 | showToolbar(options) | void | ios | Makes the bottom toolbar visible. |
 | hideToolbar(options) | void | ios | Makes the bottom toolbar invisible. |
 
-### Events (10)
+### Events (11)
 | Event | Platform | Description |
 |-------|----------|-------------|
 | focus | both | Fired when the window gains focus. |
@@ -139,6 +154,7 @@ Complete overview, setup, examples and version restrictions: [official Titanium.
 | blur | both | Fired when the window loses focus. |
 | close | both | Fired when the window is closed. |
 | open | both | Fired when the window is opened. |
+| reservedregionschange | ios | Reserved regions changed after layout; iPhone/iPad SDK 14.0.0+. |
 
 ### Community-Discovered Patterns
 
@@ -162,6 +178,16 @@ Use `largeTitleDisplayMode` to control collapse behavior:
 This applies to Windows inside both standalone NavigationWindow and TabGroup (which wraps each Tab in an implicit NavigationWindow on iOS).
 
 ### Related Types
+
+#### ReservedRegion
+> System-reserved region returned by `Window.reservedRegions` and `reservedregionschange.regions`.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| kind | String | `division` for the fold, `occlusion` for the inner camera. |
+| active | Boolean | Whether it currently applies; division is active only while partially folded, occlusion only while the camera is in use. |
+| rect | Dimension | Rectangle in window coordinates, already including `margins`. |
+| margins | Padding | Interactive-content margins included in `rect`. |
 
 #### AnimatedOptions
 > A JavaScript object holding an `animated` property. Used for many UI methods as a means of specifying some transition should be animated.
@@ -224,7 +250,7 @@ Also referenced by this API, documented elsewhere: `Dictionary`, [Font](api-ui-l
 ---
 
 ## Ti.UI.NavigationWindow
-> Full released contract: [Titanium.UI.NavigationWindow](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.NavigationWindow)
+> Full released contract: [Titanium.UI.NavigationWindow](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.NavigationWindow)
 
 > A `NavigationWindow` implements a specialized view that manages the navigation of hierarchical content.
 > Extends Ti.UI.Window
@@ -236,7 +262,7 @@ All `NavigationWindow` objects must have at least one root window that cannot be
 
 This object is not meant to be added to other windows. However, it can be used within a <Titanium.UI.iOS.SplitWindow>.
 
-### Properties (unique: 2/119)
+### Properties (unique: 2/121)
 | Property | Type | Default | Platform | Description |
 |----------|------|---------|----------|-------------|
 | window | Ti.UI.Window | — | both | Window to add to this navigation window. |
@@ -266,7 +292,7 @@ This object is not meant to be added to other windows. However, it can be used w
 ---
 
 ## Ti.UI.TabGroup
-> Full released contract: [Titanium.UI.TabGroup](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.TabGroup)
+> Full released contract: [Titanium.UI.TabGroup](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.TabGroup)
 
 > A tabbed group of windows.
 > Extends Ti.UI.Window
@@ -274,20 +300,24 @@ This object is not meant to be added to other windows. However, it can be used w
 
 | Android | iOS |
 | ------- | --- |
-| [Android API reference](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.TabGroup) |  |
+| [Android API reference](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.TabGroup) |  |
 
-A tab group can contain one or more [Tab](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Tab) objects, each of which has an associated tab control that is used to bring it into focus.
+A tab group can contain one or more [Tab](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.Tab) objects, each of which has an associated tab control that is used to bring it into focus.
 
 Use the <Titanium.UI.createTabGroup> method or **`<TabGroup>`** Alloy element to create a tab group that, in turn, contains one or more `<Tab>` elements.
 
-You can add tabs to the group using [addTab](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.TabGroup), and programmatically switch to a specific tab using [setActiveTab](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.TabGroup).
+You can add tabs to the group using [addTab](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.TabGroup), and programmatically switch to a specific tab using [setActiveTab](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.TabGroup).
 
 ### Platform Implementation Notes
 
 
-Complete overview, setup, examples and version restrictions: [official Titanium.UI.TabGroup API](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.TabGroup).
+Complete overview, setup, examples and version restrictions: [official Titanium.UI.TabGroup API](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.TabGroup).
 
-### Properties (unique: 43/136)
+`lazyLoadingEnabled` is creation-only on iPhone/iPad/macOS, documented since SDK 13.3.0. `true` opens a tab's root Window when that tab is first shown; `false` opens all tab roots during initialization. **The released SDK 14.0.0 default remains `false`.** The YAML's sentence promising a default switch to `true` in 14.0.0.GA is stale; both its `default: false` and the [tagged native initializer/getter](https://github.com/tidev/titanium-sdk/blob/14_0_0_GA/iphone/Classes/TiUITabGroupProxy.m#L42) agree on `false`. Set the option explicitly when lifecycle timing matters.
+
+For Android floating bottom navigation, set `paddingLeft`, `paddingRight` or `paddingBottom`. Since SDK 14.0.0, set a single `borderRadius` at creation (default `17dp`); it is clamped to half the tab bar's height and has no effect without one of those paddings. Use `tabsBackgroundColor` for its background. A custom `titanium_rounded_corners.xml` is no longer needed for this configuration.
+
+### Properties (unique: 44/139)
 | Property | Type | Default | Platform | Description |
 |----------|------|---------|----------|-------------|
 | tintColor | String | — | both | The tintColor to apply to tabs. |
@@ -314,6 +344,7 @@ Complete overview, setup, examples and version restrictions: [official Titanium.
 | activeTitleColor | String \| Ti.UI.Color | — | both | Defines the color of the title of tab when it's active. |
 | editButtonTitle | String | — | ios | Title for the edit button on the **More** tab. |
 | forceBottomPosition | Boolean | false | ios | Force tab bar to bottom position. |
+| lazyLoadingEnabled | Boolean | false | ios | Creation-only: open each tab root only when selected if enabled. |
 | swipeable | Boolean | true | android | Boolean value indicating if tab navigation can be done by swipes, in addition t… |
 | smoothScrollOnTabClick | Boolean | true | android | Boolean value indicating if changing pages by tab clicks is animated. |
 | tabs | Array<Titanium.UI.Tab> | — | both | Tabs managed by the tab group. |
@@ -377,7 +408,7 @@ Complete overview, setup, examples and version restrictions: [official Titanium.
 | activityExitAnimation | Number | android | Animation resource to use for the outgoing activity. |
 
 #### disableTabOptions
-> Dictionary of options for the <Titanium.UI.TabGroup.disableTabOptions> method.
+> Dictionary of options for the <Titanium.UI.TabGroup.disableTabNavigation> method.
 
 | Property | Type | Platform | Description |
 |----------|------|----------|-------------|
@@ -396,12 +427,15 @@ Complete overview, setup, examples and version restrictions: [official Titanium.
 | left | Number \| String | both | Window's left position, in platform-specific units. |
 | modal | Boolean | both | Determines whether to open the window modal in front of other windows. |
 | forceModal | Boolean | ios | Indicates whether the window enforces modal behaviour. |
+| scene | Ti.App.iOS.SceneProxy | ios | Read-only Window scene; see the Window placement note. |
 | modalStyle | Number | ios | Presentation style of this modal window. |
 | modalTransitionStyle | Number | ios | Transition style of this modal window. |
 | navBarHidden | Boolean | both | For modal windows, hides the nav bar (`true`) or shows the nav bar (`false`). |
 | right | Number \| String | both | Window's right position, in platform-specific units. |
 | top | Number \| String | both | Window's top position, in platform-specific units. |
 | transition | Number | ios | Transition style of this non-modal window. |
+| verticalBarBehavior | Number | ios | Vertical-bar preference; default AUTOMATIC, iOS 27.1+. |
+| verticalBarCompressionBehavior | Number | ios | Compression preference; default AUTOMATIC, iOS 27.1+. |
 | width | Number \| String | both | Window's width, in platform-specific units. |
 | activityEnterAnimation | Number | android | Animation resource to run on the activity being opened. |
 | activityExitAnimation | Number | android | Animation resource to run on the activity that is being put in background as a … |
@@ -411,9 +445,9 @@ Also referenced by this API, documented elsewhere: `Dictionary`, [Font](api-ui-l
 ---
 
 ## Ti.UI.Tab
-> Full released contract: [Titanium.UI.Tab](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Tab)
+> Full released contract: [Titanium.UI.Tab](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.Tab)
 
-> A tab instance for a [TabGroup](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.TabGroup).
+> A tab instance for a [TabGroup](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.TabGroup).
 > Extends Ti.UI.View
 > Platforms: both
 
@@ -421,7 +455,7 @@ A `TabGroup` tab instance. Each tab includes a button and one or more windows, w
 
 Use the <Titanium.UI.createTab> method or **`<Tab>`** Alloy element to create a tab.
 
-Use [TabGroup.setActiveTab](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.TabGroup) to switch between tabs in a tab group.
+Use [TabGroup.setActiveTab](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.TabGroup) to switch between tabs in a tab group.
 
 The behavior of tabs and tab groups follows the platform's native navigation style, which varies significantly between platforms.
 
@@ -429,9 +463,9 @@ The behavior of tabs and tab groups follows the platform's native navigation sty
 
 On iOS, the tab maintains a stack of windows. Windows on top of the stack can partially or totally obscure windows lower in the stack.  Calling
 
-Complete overview, setup, examples and version restrictions: [official Titanium.UI.Tab API](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Tab).
+Complete overview, setup, examples and version restrictions: [official Titanium.UI.Tab API](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.Tab).
 
-### Properties (unique: 20/57)
+### Properties (unique: 20/58)
 | Property | Type | Default | Platform | Description |
 |----------|------|---------|----------|-------------|
 | backgroundColor | String \| Ti.UI.Color | — | android | Sets the color of the tab when it is inactive. |
@@ -500,12 +534,15 @@ Complete overview, setup, examples and version restrictions: [official Titanium.
 | left | Number \| String | Window's left position, in platform-specific units. |
 | modal | Boolean | Determines whether to open the window modal in front of other windows. |
 | forceModal | Boolean | Indicates whether the window enforces modal behaviour. |
+| scene | Ti.App.iOS.SceneProxy | ios | Read-only Window scene; see the Window placement note. |
 | modalStyle | Number | Presentation style of this modal window. |
 | modalTransitionStyle | Number | Transition style of this modal window. |
 | navBarHidden | Boolean | For modal windows, hides the nav bar (`true`) or shows the nav bar (`false`). |
 | right | Number \| String | Window's right position, in platform-specific units. |
 | top | Number \| String | Window's top position, in platform-specific units. |
 | transition | Number | Transition style of this non-modal window. |
+| verticalBarBehavior | Number | ios | Vertical-bar preference; default AUTOMATIC, iOS 27.1+. |
+| verticalBarCompressionBehavior | Number | ios | Compression preference; default AUTOMATIC, iOS 27.1+. |
 | width | Number \| String | Window's width, in platform-specific units. |
 | activityEnterAnimation | Number | Animation resource to run on the activity being opened. |
 | activityExitAnimation | Number | Animation resource to run on the activity that is being put in background as a … |
@@ -513,7 +550,7 @@ Complete overview, setup, examples and version restrictions: [official Titanium.
 ---
 
 ## Ti.UI.AlertDialog
-> Full released contract: [Titanium.UI.AlertDialog](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.AlertDialog)
+> Full released contract: [Titanium.UI.AlertDialog](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.AlertDialog)
 
 > An alert dialog is a modal view that includes an optional title, a message and buttons, positioned in the middle of the display.
 > Extends Ti.UI.View
@@ -521,7 +558,7 @@ Complete overview, setup, examples and version restrictions: [official Titanium.
 
 | Android | iOS |
 | ------- | --- |
-| [Android API reference](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.AlertDialog) | [iOS API reference](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.AlertDialog) |
+| [Android API reference](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.AlertDialog) | [iOS API reference](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.AlertDialog) |
 
 An alert dialog is created using <Titanium.UI.createAlertDialog> or **`<AlertDialog>`** Alloy element.
 
@@ -531,9 +568,11 @@ Although this dialog always appears in the middle of the display (not touching t
 
 On Android, the default alert dialog displays text information, via a title and message, without any buttons. As the user can use the system hardware `back` button to dismiss it, a button is optional.
 
-Complete overview, setup, examples and version restrictions: [official Titanium.UI.AlertDialog API](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.AlertDialog).
+Complete overview, setup, examples and version restrictions: [official Titanium.UI.AlertDialog API](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.AlertDialog).
 
-### Properties (unique: 36/60)
+Without `window`, an alert uses the foreground/key scene. Assign a specific Window before `show()` to present the alert in that window's scene even when another scene is foreground, including simultaneously visible iPadOS scenes. This property is declared for iPhone/iPad, not Mac Catalyst.
+
+### Properties (unique: 37/62)
 | Property | Type | Default | Platform | Description |
 |----------|------|---------|----------|-------------|
 | tintColor | String \| Ti.UI.Color | — | ios | The tint-color of the dialog. |
@@ -572,6 +611,7 @@ Complete overview, setup, examples and version restrictions: [official Titanium.
 | title | String | — | both | Title of the dialog. |
 | titleid | String | — | both | Key identifying a string in the locale file to use for the title text. |
 | value | String | — | ios | Value of the text field inside the dialog. |
+| window | Ti.UI.Window | — | ios | Present in this Window's scene; iPhone/iPad, SDK 14.0.0+, iOS 13+. |
 
 
 ### Methods (2)
@@ -597,7 +637,7 @@ Complete overview, setup, examples and version restrictions: [official Titanium.
 ---
 
 ## Ti.UI.OptionDialog
-> Full released contract: [Titanium.UI.OptionDialog](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.OptionDialog)
+> Full released contract: [Titanium.UI.OptionDialog](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.OptionDialog)
 
 > An option dialog is a modal view that includes a message and one or more option items positioned in the middle of the display on Android and at the bottom edge on iOS. On Android, buttons may be added below the options.
 > Extends Ti.UI.View
@@ -605,7 +645,7 @@ Complete overview, setup, examples and version restrictions: [official Titanium.
 
 | Android | iPhone | iPad |
 | ------- | ------ | ---- |
-| [Android API reference](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.OptionDialog) | [iPhone API reference](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.OptionDialog) | [iPad API reference](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.OptionDialog) |
+| [Android API reference](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.OptionDialog) | [iPhone API reference](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.OptionDialog) | [iPad API reference](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.OptionDialog) |
 
 An option dialog is created using <Titanium.UI.createOptionDialog> or Alloy `<OptionDialog>` element. See Examples below for usage.
 
@@ -616,9 +656,9 @@ This dialog is presented differently on each platform, as described below.
 On Android, the dialog is shown in the middle of the display (not touching the edges), with the option items represented in a picker. The previously-selected, or default, item can be set on creation.
 
 
-Complete overview, setup, examples and version restrictions: [official Titanium.UI.OptionDialog API](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.OptionDialog).
+Complete overview, setup, examples and version restrictions: [official Titanium.UI.OptionDialog API](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.OptionDialog).
 
-### Properties (unique: 10/35)
+### Properties (unique: 10/36)
 | Property | Type | Default | Platform | Description |
 |----------|------|---------|----------|-------------|
 | androidView | Ti.UI.View | — | android | View to load inside the message area, to create a custom layout. |
@@ -653,23 +693,19 @@ Complete overview, setup, examples and version restrictions: [official Titanium.
 |----------|------|-------------|
 | animated | Boolean | Determines whether to animate the dialog as it is dismissed. |
 
-#### showParams
-> Dictionary of options for the <Titanium.UI.OptionDialog.show> method.
+#### OptionDialogShowParams
+> Optional dictionary for `OptionDialog.show(params?)`, declared for iPad/macOS.
 
 | Property | Type | Description |
 |----------|------|-------------|
-| title | String | String to be used as title for the dialog. |
-| message | String | String to be used as a message for the dialog. |
-| buttonNames | Array<String> | Array of String instances. |
-| options | Array<String> | Array of String instances. |
-| animated | Boolean | Determines whether to animate the dialog as it is shown. |
-| view | Ti.UI.View | View to which to attach the dialog. |
-| rect | Dimension | Positions the arrow of the option dialog relative to the attached view's dimens… |
+| animated | Boolean | Optional: animate the dialog as it is shown. |
+| view | Ti.UI.View | Required view to which to attach the dialog. |
+| rect | Dimension | Optional arrow anchor; x/y `0` selects the top-left of `view`, with width/height `1`. |
 
 ---
 
 ## Ti.UI.Notification
-> Full released contract: [Titanium.UI.Notification](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Notification)
+> Full released contract: [Titanium.UI.Notification](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.Notification)
 
 > A toast notification.
 > Extends Ti.Proxy
@@ -677,7 +713,7 @@ Complete overview, setup, examples and version restrictions: [official Titanium.
 
 | Android | iOS |
 | ------- | --- |
-| [Android API reference](https://titaniumsdk.com/docs/sdk/13.4.1/Titanium.UI.Notification) |  |
+| [Android API reference](https://titaniumsdk.com/docs/sdk/14.0.0/Titanium.UI.Notification) |  |
 
 A toast notification is an unobtrusive, pop-up notification that does not block the UI. Use the <Titanium.UI.createNotification> method or **`<Notification>`** Alloy element to create a Toast notification.
 
