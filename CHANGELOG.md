@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [5.5.0] - 2026-11-15
+
 ### Changed
 
 - Update the core API and SDK guides to Titanium SDK 14.0.0.GA, including scenes, SplitWindow, scrolling and animation contracts, Android database flags, toolchain requirements and platform-specific encryption behavior. Keep independent module versions separate and preserve valid reference content.
